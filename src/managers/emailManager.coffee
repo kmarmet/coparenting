@@ -19,11 +19,11 @@ EmailManager =
       reply_to: 'support@peaceful-coparenting.app'
       from_name: fromName
     return config
-  SendEmail: ( templateName, message, fromName) ->
+  SendEmail: ( templateName, message, userEmail) ->
     config = EmailManager.GetConfig()
     config.template_id = templateName
     config.message = message
-    config.from_name = "kmarmet1@gmail.com"
+    config.from_name = userEmail
     emailjs.send(config.service_id, config.template_id, config)
   SendEmailToUser: ( templateName, message, userEmail, fromName) ->
     config = EmailManager.GetConfig()

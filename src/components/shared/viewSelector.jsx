@@ -1,13 +1,13 @@
 // Path: src\components\shared\viewSelector.jsx
-import React, { useContext, useEffect } from 'react'
+import React, {useContext, useEffect} from 'react'
 import globalState from '../../context'
 import DomManager from '/src/managers/domManager'
 import Manager from '../../managers/manager'
 
-export default function ViewSelector({ labels, updateState, wrapperClasses = "", defaultView, shouldUpdateStateOnLoad = true }) {
+export default function ViewSelector({labels, updateState, wrapperClasses = ''}) {
   // APP STATE
-  const { state, setState } = useContext(globalState)
-  const { theme, refreshKey } = state
+  const {state, setState} = useContext(globalState)
+  const {theme, refreshKey} = state
 
   const toggleActive = (el) => {
     const views = document.querySelectorAll('.view')
@@ -18,13 +18,7 @@ export default function ViewSelector({ labels, updateState, wrapperClasses = "",
   }
 
   useEffect(() => {
-    if (shouldUpdateStateOnLoad) {
-      if (defaultView) {
-        updateState(defaultView)
-      } else {
-        updateState('Details')
-      }
-    }
+    DomManager.setDefaultView()
   }, [])
 
   return (

@@ -4,19 +4,13 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import MenuItem from '@mui/material/MenuItem'
-import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import {child, getDatabase, onValue, ref} from 'firebase/database'
 import 'lightgallery/css/lightgallery.css'
-import {FaChildren, FaMinus, FaMoneyCheckDollar, FaPlus} from 'react-icons/fa6'
 import LightGallery from 'lightgallery/react'
 import moment from 'moment'
 import {Fade} from 'react-awesome-reveal'
-import {AiOutlineFileAdd, AiTwotoneTag} from 'react-icons/ai'
-import {GiMoneyStack} from 'react-icons/gi'
-import {PiUserCircleDuotone} from 'react-icons/pi'
+import {AiOutlineFileAdd} from 'react-icons/ai'
 import {RxUpdate} from 'react-icons/rx'
-import {TbCalendarCheck, TbCalendarDollar} from 'react-icons/tb'
-import {CgDetailsMore} from 'react-icons/cg'
 import NewExpenseForm from '../../forms/newExpenseForm.jsx'
 import NavBar from '../../navBar.jsx'
 import Modal from '../../shared/modal.jsx'
@@ -27,11 +21,10 @@ import SelectDropdown from '../../shared/selectDropdown.jsx'
 import Spacer from '../../shared/spacer'
 import PaymentOptions from './paymentOptions.jsx'
 import MyConfetti from '/src/components/shared/myConfetti.js'
-import DateFormats from '/src/constants/dateFormats.js'
+import DatetimeFormats from '/src/constants/datetimeFormats.js'
 import ExpenseCategories from '/src/constants/expenseCategories'
 import globalState from '/src/context.js'
 import DB from '../../../database/DB.js'
-import AlertManager from '/src/managers/alertManager'
 import DatasetManager from '/src/managers/datasetManager'
 import DateManager from '/src/managers/dateManager.js'
 import DomManager from '/src/managers/domManager'
@@ -44,6 +37,9 @@ import StringManager from '/src/managers/stringManager'
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
 import ViewSelector from '../../shared/viewSelector.jsx'
+import AccordionTitle from '../../shared/accordionTitle'
+import DetailBlock from '../../shared/detailBlock'
+import InputTypes from '../../../constants/inputTypes'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -94,7 +90,7 @@ export default function ExpenseTracker() {
     updatedExpense.name = name
 
     if (!Manager.isValid(dueDate)) {
-      updatedExpense.dueDate = moment(dueDate).format(DateFormats.dateForDb)
+      updatedExpense.dueDate = moment(dueDate).format(DatetimeFormats.dateForDb)
     }
     const cleanedExpense = ObjectManager.cleanObject(updatedExpense, ModelNames.expense)
     cleanedExpense.ownerKey = activeExpense.ownerKey
@@ -138,7 +134,8 @@ export default function ExpenseTracker() {
       Manager.isValid(expense?.dueDate) ? 'Due date is: ' + expense?.dueDate : ''
     }`
     NotificationManager.sendNotification(`Expense Reminder`, message, expense?.payer?.phone, currentUser, ActivityCategory.expenses)
-    AlertManager.successAlert('Reminder Sent')
+    setState({...state, successAlertMessage: 'Reminder Sent'})
+    setShowDetails(false)
   }
 
   const onTableChange = async () => {
@@ -153,12 +150,12 @@ export default function ExpenseTracker() {
     const allExpenses = await getSecuredExpenses()
 
     if (selectionType === 'single') {
-      setExpenses(allExpenses.filter((x) => x.isRepeating === false))
+      setExpenses(allExpenses.filter((x) => x.isRecurring === false))
       setExpenseDateType('single')
     }
-    if (selectionType === 'repeating') {
-      setExpenses(allExpenses.filter((x) => x.isRepeating === true))
-      setExpenseDateType('repeating')
+    if (selectionType === 'recurring') {
+      setExpenses(allExpenses.filter((x) => x.isRecurring === true))
+      setExpenseDateType('recurring')
     }
     if (selectionType === 'all') {
       setExpenses(allExpenses)
@@ -184,11 +181,11 @@ export default function ExpenseTracker() {
       return expense
     })
     if (sortByName === SortByTypes.recentlyAdded) {
-      setExpenses(expenses.sort((a, b) => new Date(a.dateAdded) - new Date(b.dateAdded)).reverse())
+      setExpenses(expenses.sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse())
       setSortMethod(SortByTypes.recentlyAdded)
     }
     if (sortByName === SortByTypes.recentlyAdded) {
-      const sortedByDateAsc = DatasetManager.sortByProperty(expenses, 'dateAdded', 'asc', true)
+      const sortedByDateAsc = DatasetManager.sortByProperty(expenses, 'creationDate', 'asc', true)
       setExpenses(sortedByDateAsc)
     }
     if (sortByName === SortByTypes.nearestDueDate) {
@@ -243,6 +240,32 @@ export default function ExpenseTracker() {
     await DB.deleteById(`${DB.tables.expenses}/${currentUser?.key}`, activeExpense?.id)
   }
 
+  const getRecurringDateText = (expense) => {
+    switch (expense?.recurringFrequency) {
+      case 'daily':
+        return 'Every Day'
+      case 'weekly':
+        return `Every Week on the ${moment(expense?.dueDate).format('Do')}`
+      case 'monthly':
+        return `Every Month on the ${moment(expense?.dueDate).format('Do')}`
+      case 'biweekly':
+        return `Every Two Weeks on the ${moment(expense?.dueDate).format('Do')}`
+    }
+  }
+
+  const getShortRecurringDateText = () => {
+    switch (activeExpense?.recurringFrequency) {
+      case 'daily':
+        return 'Every Day'
+      case 'weekly':
+        return `Every Week`
+      case 'monthly':
+        return `Every Month`
+      case 'biweekly':
+        return `Every Two Weeks`
+    }
+  }
+
   useEffect(() => {
     if (activeExpense) {
       setDefaults()
@@ -256,6 +279,23 @@ export default function ExpenseTracker() {
     catsAsArray.unshift('None')
     setCategoriesAsArray(catsAsArray)
   }, [])
+
+  const getDetailsDueDate = () => {
+    if (activeExpense?.dueDate) {
+      const text = getShortRecurringDateText(activeExpense)
+
+      switch (text) {
+        case 'Every Day':
+          return 'Daily'
+        case 'Every Week':
+          return moment(activeExpense?.dueDate).format('dddd')
+        case 'Every Month':
+          return moment(activeExpense?.dueDate).format('Do')
+        case 'Every Two Weeks':
+          return moment(activeExpense?.dueDate).format('Do')
+      }
+    }
+  }
 
   return (
     <>
@@ -273,7 +313,6 @@ export default function ExpenseTracker() {
         onSubmit={update}
         hasSubmitButton={view === 'edit'}
         className="expense-tracker form"
-        titleIcon={<FaMoneyCheckDollar />}
         wrapperClass="expense-tracker"
         onClose={() => {
           setActiveExpense(null)
@@ -284,126 +323,119 @@ export default function ExpenseTracker() {
         viewSelector={<ViewSelector labels={['Details', 'Edit']} updateState={(e) => setView(e.toLowerCase())} />}
         showCard={showDetails}>
         <div id="details" className={`content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
-          <Spacer height={0} />
+          <Spacer height={5} />
           {/* DETAILS */}
           {view === 'details' && (
             <>
-              {/* AMOUNT */}
-              <div className="flex">
-                <b>
-                  <GiMoneyStack />
-                  Amount
-                </b>
-                <span>${activeExpense?.amount}</span>
-              </div>
+              <div className="blocks">
+                {/*  Amount */}
+                <DetailBlock title={'Amount'} text={`$${activeExpense?.amount}`} valueToValidate={activeExpense?.amount} />
 
-              {activeExpense?.repeating && (
-                <>
-                  {/* IS RECURRING */}
-                  <div className="flex">
-                    <b>Recurring</b> <span>{activeExpense?.repeating ? 'Yes' : 'No'}</span>
-                  </div>
+                {/*  Due Date */}
+                {!activeExpense?.isRecurring && (
+                  <DetailBlock
+                    title={'Due Date'}
+                    text={moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                    valueToValidate={moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                  />
+                )}
+                {activeExpense?.isRecurring && (
+                  <DetailBlock
+                    title={'Due Date'}
+                    text={getDetailsDueDate(activeExpense)}
+                    valueToValidate={moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                  />
+                )}
 
-                  {/* RECURRING INTERVAL */}
-                  <div className="flex">
-                    <b>Recurring Frequency</b> <span>{StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.repeatInterval)}</span>
-                  </div>
-                </>
-              )}
+                {/*  Date Added */}
+                <DetailBlock
+                  title={'Date Added'}
+                  text={moment(activeExpense?.creationDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                  valueToValidate={moment(activeExpense?.creationDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                />
 
-              {/* CATEGORY */}
-              {Manager.isValid(activeExpense?.category) && (
-                <div className="flex">
-                  <b>
-                    <AiTwotoneTag />
-                    Category
-                  </b>
-                  <span>{activeExpense?.category}</span>
-                </div>
-              )}
+                {/*  Frequency */}
+                <DetailBlock
+                  title={'Frequency'}
+                  text={getShortRecurringDateText(activeExpense)}
+                  valueToValidate={activeExpense?.recurringFrequency}
+                />
 
-              {/* SENT TO */}
-              <div className="flex">
-                <b>
-                  <PiUserCircleDuotone />
-                  Sent to
-                </b>
-                <span>{StringManager.getFirstNameOnly(currentUser?.coparents?.filter((x) => x?.key === activeExpense?.payer?.key)[0]?.name)}</span>
-              </div>
+                {/*  Time Remaining */}
+                {!activeExpense?.isRecurring && (
+                  <DetailBlock
+                    classes={moment(moment(activeExpense?.dueDate).startOf('day')).fromNow().toString().includes('ago') ? 'red' : 'green'}
+                    title={'Time Remaining'}
+                    text={`${moment(moment(activeExpense?.dueDate).startOf('day')).fromNow().toString()}`}
+                    valueToValidate={moment(moment(activeExpense?.dueDate).startOf('day')).fromNow().toString()}
+                  />
+                )}
 
-              {/* PAY TO */}
-              <div className="flex">
-                <b>
-                  <PiUserCircleDuotone />
-                  Pay to
-                </b>
-                <span> {StringManager.getFirstNameOnly(activeExpense?.recipientName)}</span>
-              </div>
+                {/*  Pay To */}
+                <DetailBlock
+                  title={'Pay To'}
+                  text={StringManager.getFirstNameOnly(activeExpense?.recipientName)}
+                  valueToValidate={StringManager.getFirstNameOnly(activeExpense?.recipientName)}
+                />
 
-              {/* DUE DATE */}
-              {activeExpense?.dueDate && activeExpense?.dueDate?.length > 0 && (
-                <div className="flex">
-                  <b>
-                    <TbCalendarDollar />
-                    Due Date
-                  </b>
-                  <span>
-                    {DateManager.formatDate(activeExpense?.dueDate)} ({moment(moment(activeExpense?.dueDate).startOf('day')).fromNow().toString()})
-                  </span>
-                </div>
-              )}
+                {/*  Payer */}
+                <DetailBlock
+                  title={'Payer'}
+                  text={StringManager.getFirstNameOnly(currentUser?.coparents?.filter((x) => x?.key === activeExpense?.payer?.key)[0]?.name)}
+                  valueToValidate={StringManager.getFirstNameOnly(
+                    currentUser?.coparents?.filter((x) => x?.key === activeExpense?.payer?.key)[0]?.name
+                  )}
+                />
 
-              {/* CHILDREN */}
-              {Manager.isValid(activeExpense?.children) && (
-                <div className="flex children">
-                  <b>
-                    <FaChildren />
-                    Children
-                  </b>
-                  <div id="children">
+                {/*  Recurring */}
+                <DetailBlock title={'Recurring'} text={activeExpense?.isRecurring ? 'Yes' : 'No'} valueToValidate={activeExpense?.isRecurring} />
+
+                {/*  Category */}
+                <DetailBlock title={'Category'} text={activeExpense?.category} valueToValidate={activeExpense?.category} />
+
+                {/*  Recurring Frequency */}
+                <DetailBlock
+                  title={'Recurring Frequency'}
+                  text={StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.recurringFrequency)}
+                  valueToValidate={activeExpense?.frequency}
+                />
+
+                {/* CHILDREN */}
+                {Manager.isValid(activeExpense?.children) && (
+                  <div className="block">
                     {Manager.isValid(activeExpense?.children) &&
-                      activeExpense?.children.map((child, index) => {
-                        return <span key={index}>{child}</span>
+                      activeExpense?.children?.map((child, index) => {
+                        return (
+                          <p className="block-text" key={index}>
+                            {child}
+                          </p>
+                        )
                       })}
+                    <p className="block-title">Children</p>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* DATE ADDED */}
-              <div className="flex">
-                <b>
-                  <TbCalendarCheck />
-                  Created on
-                </b>
-                <span>{moment(activeExpense?.dateAdded).format(DateFormats.monthDayYear)}</span>
+                {/*  Notes */}
+                <DetailBlock title={'Notes'} text={activeExpense?.notes} isFullWidth={true} valueToValidate={activeExpense?.notes} />
+
+                {/* EXPENSE IMAGE */}
+                {Manager.isValid(activeExpense?.imageUrl) && (
+                  <>
+                    <div id="expense-image" className="block">
+                      <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
+                        <div
+                          style={{backgroundImage: `url(${activeExpense?.imageUrl})`}}
+                          data-src={activeExpense?.imageUrl}
+                          id="img-container"
+                          className="flex"></div>
+                      </LightGallery>
+                      <p className="block-text">Image</p>
+                    </div>
+                  </>
+                )}
+
+                <Spacer height={5} />
               </div>
-
-              {/* NOTES */}
-              {Manager.isValid(activeExpense?.notes) && (
-                <div className={`flex ${StringManager.addLongTextClass(activeExpense?.notes)}`}>
-                  <b>
-                    <CgDetailsMore />
-                    Notes
-                  </b>
-                  <span className="notes">{activeExpense?.notes}</span>
-                </div>
-              )}
-
-              {/* EXPENSE IMAGE */}
-              {Manager.isValid(activeExpense?.imageUrl) && (
-                <>
-                  <Label text={'Expense Images'} />
-                  <div id="expense-image">
-                    <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
-                      <div
-                        style={{backgroundImage: `url(${activeExpense?.imageUrl})`}}
-                        data-src={activeExpense?.imageUrl}
-                        id="img-container"
-                        className="flex"></div>
-                    </LightGallery>
-                  </div>
-                </>
-              )}
             </>
           )}
 
@@ -411,8 +443,7 @@ export default function ExpenseTracker() {
           {view === 'edit' && (
             <>
               <InputWrapper
-                isDebounced={false}
-                inputType="input"
+                inputType={InputTypes.text}
                 labelText={'Name'}
                 defaultValue={activeExpense?.name}
                 onChange={(e) => setName(e.target.value)}
@@ -420,21 +451,20 @@ export default function ExpenseTracker() {
 
               {/* AMOUNT */}
               <InputWrapper
-                inputValueType="number"
-                defaultValue={activeExpense?.amount}
+                inputType={InputTypes.text}
+                defaultValue={activeExpense?.amount.toString()}
                 labelText={'Amount'}
                 onChange={(e) => setAmount(e.target.value)}
               />
 
               {/* DUE DATE */}
-
-              <InputWrapper inputType={'date'} labelText={'Due Date'}>
-                <MobileDatePicker
-                  value={moment(activeExpense?.dueDate)}
-                  className="mt-0 w-100"
-                  onAccept={(e) => setDueDate(moment(e).format('MM/DD/yyyy'))}
-                />
-              </InputWrapper>
+              <InputWrapper
+                defaultValue={moment(activeExpense?.dueDate)}
+                inputType={'date'}
+                labelText={'Due Date'}
+                uidClass="expense-tracker-due-date"
+                onDateOrTimeSelection={(e) => setDueDate(moment(e).format('MM/DD/yyyy'))}
+              />
 
               {/* CATEGORY */}
               <SelectDropdown
@@ -457,24 +487,25 @@ export default function ExpenseTracker() {
               <InputWrapper
                 defaultValue={activeExpense?.notes}
                 onChange={(e) => setNotes(e.target.value)}
-                inputType={'textarea'}
-                labelText={'Notes'}></InputWrapper>
+                inputType={InputTypes.textarea}
+                labelText={'Notes'}
+              />
 
               {/* BUTTONS */}
               <div className="action-buttons">
                 {activeExpense?.paidStatus === 'unpaid' && (
-                  <button className="button green default" onClick={() => togglePaidStatus()}>
+                  <button className="button green default" onClick={togglePaidStatus}>
                     Mark Paid
                   </button>
                 )}
 
                 {activeExpense?.paidStatus === 'paid' && (
-                  <button className="button red default" onClick={() => togglePaidStatus()}>
+                  <button className="button red default" onClick={togglePaidStatus}>
                     Mark Unpaid
                   </button>
                 )}
 
-                <button className="button default grey center" onClick={() => sendReminder(activeExpense)}>
+                <button className="button default grey center" onClick={sendReminder}>
                   Send Reminder
                 </button>
               </div>
@@ -505,10 +536,7 @@ export default function ExpenseTracker() {
         {/* FILTERS */}
         <Accordion expanded={showFilters} id={'expenses-accordion'} className={showFilters ? 'open' : 'closed'}>
           <AccordionSummary onClick={() => setShowFilters(!showFilters)} className={showFilters ? 'open' : 'closed'}>
-            <p id="actions-button" className="expenses">
-              Filters {showFilters && <FaMinus />}
-              {!showFilters && <FaPlus />}
-            </p>
+            <AccordionTitle titleText={'Filters'} toggleState={showFilters} onClick={() => setShowFilters(!showFilters)} />
           </AccordionSummary>
           <AccordionDetails>
             <div id="filters">
@@ -524,8 +552,8 @@ export default function ExpenseTracker() {
                     One-time
                   </button>
                   <button
-                    className={`${expenseDateType === 'repeating' ? 'active' : ''} button default`}
-                    onClick={() => handleExpenseTypeSelection('repeating')}>
+                    className={`${expenseDateType === 'recurring' ? 'active' : ''} button default`}
+                    onClick={() => handleExpenseTypeSelection('recurring')}>
                     Recurring
                   </button>
                 </div>
@@ -591,7 +619,7 @@ export default function ExpenseTracker() {
             <></>
             {Manager.isValid(expenses) &&
               expenses.map((expense) => {
-                let dueDate = moment(expense?.dueDate).format(DateFormats.readableMonthAndDay) ?? ''
+                let dueDate = moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay) ?? ''
                 const readableDueDate = moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()
                 const isPastDue = readableDueDate.toString().includes('ago')
                 const dueInADay = readableDueDate.toString().includes('in a day')
@@ -618,24 +646,34 @@ export default function ExpenseTracker() {
                         <p className="name row-title">{StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}</p>
 
                         {/*  STATUS */}
-                        {!dueInADay && !dueInHours && (
-                          <span className={`${expense?.paidStatus} status`} id="request-status">
-                            {isPastDue ? 'PAST DUE' : StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
-                          </span>
+                        {!expense?.isRecurring && (
+                          <>
+                            {!dueInADay && !dueInHours && (
+                              <span className={`${expense?.paidStatus} status`} id="request-status">
+                                {isPastDue ? 'PAST DUE' : StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
+                              </span>
+                            )}
+                            {dueInADay ||
+                              (dueInHours && (
+                                <span className={`status soon`} id="request-status">
+                                  Soon
+                                </span>
+                              ))}
+                          </>
                         )}
-                        {dueInADay ||
-                          (dueInHours && (
-                            <span className={`status soon`} id="request-status">
-                              Soon
-                            </span>
-                          ))}
                       </div>
 
+                      {/* DATE */}
                       <div className="flex" id="below-title">
                         {Manager.isValid(dueDate, true) && (
-                          <p className={`due-date`}>
-                            {DateManager.formatDate(expense?.dueDate)} ({readableDueDate.toString()})
-                          </p>
+                          <>
+                            {!expense?.isRecurring && (
+                              <p className={`due-date`}>
+                                {DateManager.formatDate(expense?.dueDate)} ({readableDueDate.toString()})
+                              </p>
+                            )}
+                            {expense?.isRecurring && <p className={`due-date`}>{getRecurringDateText(expense)}</p>}
+                          </>
                         )}
                         {!Manager.isValid(dueDate, true) && <p className="due-date no-due-date">no due date</p>}
                       </div>

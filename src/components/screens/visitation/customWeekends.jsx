@@ -1,9 +1,9 @@
 // Path: src\components\screens\visitation\customWeekends.jsx
 import Modal from '../../../components/shared/modal'
 import globalState from '../../../context'
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import Manager from '../../../managers/manager'
-import DateFormats from '../../../constants/dateFormats'
+import DateFormats from '../../../constants/datetimeFormats'
 import AlertManager from '../../../managers/alertManager'
 import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/calendarEvent'
@@ -13,12 +13,11 @@ import MyConfetti from '../../../components/shared/myConfetti'
 import moment from 'moment'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import CheckboxGroup from '../../../components/shared/checkboxGroup'
-import DomManager from '../../../managers/domManager'
 import Spacer from '../../shared/spacer'
 
-export default function CustomWeekends({ hide, showCard }) {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+export default function CustomWeekends({hide, showCard}) {
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme} = state
   const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [shareWith, setShareWith] = useState([])
   const [fifthWeekendSelection, setFifthWeekendSelection] = useState('')
@@ -73,7 +72,7 @@ export default function CustomWeekends({ hide, showCard }) {
       const dateObject = new CalendarEvent()
       // Required
       dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
-      dateObject.startDate = moment(date).format(DateFormats.dateForDb)
+      dateObject.startDate = moment(date).format(DatetimeFormats.dateForDb)
       // Not Required
       dateObject.ownerKey = currentUser?.key
       dateObject.createdBy = currentUser?.name

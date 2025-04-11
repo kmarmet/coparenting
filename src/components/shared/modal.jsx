@@ -58,8 +58,13 @@ export default function Modal({
     }
   }
 
+  const scrollToTop = () => {
+    const header = document.getElementById('modal-title')
+    header.scrollIntoView({behavior: 'smooth', block: 'end'})
+  }
+
   useEffect(() => {
-    let modalWrapper = document.querySelector(`.${wrapperClass}#modal-wrapper`)
+    let modalWrapper = document.querySelector(`.${wrapperClass}#modal-wrapper.active`)
 
     // Check if creationFormToShow is valid and if so, find the modal wrapper
     if (Manager.isValid(creationFormToShow, true)) {
@@ -82,6 +87,13 @@ export default function Modal({
         // show card
 
         if (showCard) {
+          scrollToTop()
+          const checkboxes = modalWrapper.querySelectorAll('.checkbox')
+          if (Manager.isValid(checkboxes)) {
+            for (let checkbox of checkboxes) {
+              checkbox.checked = false
+            }
+          }
           document.body.classList.add('disable-scroll')
           appContentWithSidebar.classList.add('disable-scroll')
 

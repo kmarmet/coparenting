@@ -38,7 +38,7 @@ export default SmsManager = {
     return `This is a reminder to pay the ${expense.name} expense. ${dueDateInfo} ${SmsManager.lineBreak}${SmsManager.signature}`;
   },
   getSwapRequestReminderTemplate: function(recipient, request) {
-    return `This is a reminder to make a decision for the Swap Request on ${request.startDate} created by ${request.createdBy} on ${request.dateAdded}. ${SmsManager.lineBreak}${SmsManager.signature}`;
+    return `This is a reminder to make a decision for the Swap Request on ${request.startDate} created by ${request.createdBy} on ${request.creationDate}. ${SmsManager.lineBreak}${SmsManager.signature}`;
   },
   getTransferRequestTemplate: function(request, createdBy) {
     return `A new Child Transfer Request has been created by ${createdBy} for ${request.date} at ${request.time} ${SmsManager.lineBreak}${SmsManager.signature}`;
@@ -49,7 +49,7 @@ export default SmsManager = {
   * @return {number} Cube of input
    */
   getParentVerificationTemplate: function(childName, verificationCode) {
-    return `${StringManager.uppercaseFirstLetterOfAllWords(childName)} is registering for an account and requires your permission for access. ${SmsManager.lineBreak}${SmsManager.lineBreak}If you accept, please share this code with them: ${verificationCode} ${SmsManager.lineBreak}${SmsManager.signature}`;
+    return `${StringManager.uppercaseFirstLetterOfAllWords(childName)} is registering for an profile and requires your permission for access. ${SmsManager.lineBreak}${SmsManager.lineBreak}If you accept, please share this code with them: ${verificationCode} ${SmsManager.lineBreak}${SmsManager.signature}`;
   },
   getRegistrationVerificationTemplate: function(userName, verificationCode) {
     return `${userName} ,please enter this code to continue registration: ${verificationCode} ${SmsManager.lineBreak}${SmsManager.signature}`;

@@ -2,6 +2,137 @@
 
 #external-overrides {
   #child-info-container {
+    #child-wrapper {
+      display: flex;
+      width: 100%;
+      overflow: auto;
+      background-color: transparent;
+      border-radius: 0;
+      border: 0;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 20px 0;
+
+      .child {
+        transition: all 0.3s ease-in-out;
+        justify-content: center;
+        position: relative;
+
+        * {
+          opacity: 0.7;
+          user-select: none;
+          outline: 0;
+        }
+
+        @include hover;
+
+        .child-name {
+          font-size: 15px;
+          font-weight: $fwRegular;
+          border: 0;
+          color: $darkGrey;
+          text-align: center;
+          width: 100%;
+          display: block;
+          padding-top: 5px;
+        }
+
+        .child-image {
+          background-size: cover;
+          border-radius: 100%;
+          position: relative;
+          height: 100px;
+          width: 100px;
+
+          .after {
+            position: absolute;
+            z-index: 1;
+            @include centerHoriz;
+            margin-left: auto;
+            padding: 0;
+            width: 25px;
+            height: 25px;
+            overflow: hidden;
+            background: $grey;
+            border-radius: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0;
+            bottom: -5px;
+            right: -10px;
+            border: 2px solid white;
+
+            svg {
+              color: $darkerGrey;
+              display: block;
+              width: 100%;
+              opacity: 1;
+              position: absolute;
+              z-index: 10;
+              transform: scale(0.8);
+            }
+
+            input {
+              font-size: 5px;
+              align-self: stretch;
+            }
+          }
+        }
+
+        input {
+          opacity: 0;
+          display: block !important;
+          z-index: 100;
+          position: relative;
+        }
+
+        p {
+          color: white;
+          font-size: 12px;
+          text-align: center;
+        }
+
+        &.no-image {
+          border: 1px solid $lightBorderColor;
+          background: $grey;
+          .after {
+            background: transparent;
+            width: 100%;
+            right: unset;
+            border: 0;
+            bottom: unset;
+            height: 100%;
+            svg {
+              color: $lightDarkGrey;
+              font-size: 30px;
+            }
+          }
+
+          p {
+            font-weight: 500;
+          }
+        }
+
+        // ACTIVE
+        &.active {
+          transition: all 0.3s ease-in;
+          opacity: 1;
+
+          * {
+            transition: all 0.2s ease-in;
+            opacity: 1;
+          }
+
+          .child-name {
+            opacity: 1;
+            font-size: 16px;
+            font-weight: $fwBold;
+            color: $primaryText;
+          }
+        }
+      }
+    }
     #remove-child-button {
       background: $bootstrapBgRed;
       color: $bootstrapRedColor;
@@ -163,114 +294,6 @@
       }
     }
 
-    #image-and-actions-wrapper {
-      overflow: hidden;
-      margin-bottom: 20px;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      @include hover;
-
-      .child-name {
-        line-height: 1;
-        color: black;
-        font-weight: $fwMedium;
-        font-size: 20px;
-        text-align: center;
-        width: 100%;
-        display: block;
-        margin: 15px 0 8px 0;
-      }
-
-      .profile-pic-container {
-        height: 108px;
-        width: 108px;
-        border-radius: 50%;
-        background-size: cover;
-        position: relative;
-        display: flex;
-        align-items: center;
-        @include hover;
-
-        input {
-          opacity: 0;
-          display: block !important;
-        }
-
-        &.no-image {
-          border: 1px solid $lightDarkGrey;
-          .after {
-            background: transparent;
-            width: 100%;
-            right: unset;
-            border: 0;
-            bottom: unset;
-            svg {
-              color: $lightDarkGrey;
-              font-size: 30px;
-            }
-          }
-
-          p {
-            font-weight: 500;
-          }
-        }
-
-        p {
-          color: white;
-          font-size: 12px;
-          text-align: center;
-        }
-
-        input {
-          z-index: 100;
-          position: relative;
-        }
-
-        &.no-image {
-          .after {
-            height: 100%;
-          }
-        }
-
-        .after {
-          position: absolute;
-          z-index: 1;
-          @include centerHoriz;
-          margin-left: auto;
-          padding: 0;
-          width: 32px;
-          height: 32px;
-          overflow: hidden;
-          background: $grey;
-          border-radius: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-right: 0;
-          bottom: -5px;
-          right: -15px;
-          border: 2px solid white;
-
-          svg {
-            color: $darkGrey;
-            font-size: 16px;
-            display: block;
-            width: 100%;
-            opacity: 1;
-            position: absolute;
-            z-index: 10;
-          }
-
-          input {
-            font-size: 5px;
-            align-self: stretch;
-          }
-        }
-      }
-    }
-
     #child-info {
       overflow: hidden;
 
@@ -327,10 +350,6 @@
           transition: max-height 0.3s ease-in-out;
           max-width: calc(100vw - 30px);
           overflow: hidden;
-
-          &:first-child {
-            padding-top: 10px;
-          }
 
           @media screen and (min-width: 1000px) {
             &:hover {

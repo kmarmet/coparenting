@@ -1,5 +1,5 @@
 // Path: src\components\screens\auth\userDetails.jsx
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
@@ -8,28 +8,23 @@ import CheckboxGroup from '../../shared/checkboxGroup'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import Spacer from '/src/components/shared/spacer'
 import AlertManager from '/src/managers/alertManager.js'
-import StringManager from '../../../managers/stringManager'
-import phone from 'phone'
+import InputTypes from '../../../constants/inputTypes'
+import validator from 'validator'
 
 export default function UserDetails() {
-  const { state, setState } = useContext(globalState)
-  const { authUser, registrationUserName } = state
+  const {state, setState} = useContext(globalState)
+  const {authUser} = state
   const [accountType, setAccountType] = useState('')
+  const [name, setName] = useState('')
   const [userPhone, setUserPhone] = useState('')
 
-  const validatePhone = () => {
-    const validatePhone = phone(`+1${StringManager.formatPhone(userPhone)}`)
-    const { isValid } = validatePhone
-    return isValid
-  }
-
   const submit = async () => {
-    if (!validatePhone(userPhone)) {
+    if (!validator.isMobilePhone(userPhone)) {
       AlertManager.throwError('Phone number is not valid')
       return false
     }
     if (accountType === '') {
-      AlertManager.throwError('Please select an account type')
+      AlertManager.throwError('Please select an profile type')
       return false
     }
     if (userPhone === '') {
@@ -40,11 +35,12 @@ export default function UserDetails() {
       phone: userPhone,
       email: authUser?.email,
       accountType,
+      name,
       key: authUser?.uid,
     }
     const newUser = await DB_UserScoped.createAndInsertUser(userObject)
     AlertManager.successAlert('Success!')
-    setState({ ...state, currentScreen: ScreenNames.calendar, currentUser: newUser })
+    setState({...state, currentScreen: ScreenNames.calendar, currentUser: newUser})
   }
 
   const handleAccountType = (type) => {
@@ -62,16 +58,20 @@ export default function UserDetails() {
     <div id="user-details" className="page-container user-details">
       <p className="screen-title">Almost Done!</p>
       <p>
-        Please provide a just a couple more details about yourself to increase our efficiency and security. The information you enter is secure, and
-        will only used inside this app.
+        To increase our efficiency and security, we kindly ask you to provide a few additional details about yourself. The information you enter will
+        be secure and utilized only within this application.
       </p>
 
       <Spacer height={10} />
 
+      <InputWrapper inputType={InputTypes.text} required={true} labelText={'Name'} onChange={(e) => setName(e.target.value)} />
+
+      <InputWrapper inputType={InputTypes.phone} required={true} labelText={'Phone Number'} onChange={(e) => setUserPhone(e.target.value)} />
+
       <CheckboxGroup
         onCheck={handleAccountType}
-        parentLabel="Account Type (cannot be changed later)"
-        labelText="Account Type"
+        parentLabel="Profile Type (cannot be changed later)"
+        labelText="Profile Type"
         checkboxArray={Manager.buildCheckboxGroup({
           customLabelArray: ['Parent', 'Child'],
         })}
@@ -80,18 +80,9 @@ export default function UserDetails() {
         dataKey={['Parent', 'Child']}
       />
 
-      <Spacer height={5} />
-
-      <InputWrapper
-        inputType={'input'}
-        inputValueType="number"
-        required={true}
-        labelText={'Phone Number'}
-        onChange={(e) => setUserPhone(e.target.value)}
-      />
       <Spacer height={15} />
       <button
-        className="button default green has-bg center"
+        className="button default green center"
         onClick={() => {
           AlertManager.confirmAlert('Are the details you provided correct?', 'Yes', 'No', submit)
         }}>

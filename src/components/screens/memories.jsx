@@ -14,7 +14,7 @@ import {LuImagePlus, LuMinus, LuPlus} from 'react-icons/lu'
 import ImageManager from '../../managers/imageManager'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import NavBar from '../navBar'
-import DateFormats from '../../constants/dateFormats'
+import DatetimeFormats from '../../constants/datetimeFormats'
 import DateManager from '../../managers/dateManager'
 import DomManager from '../../managers/domManager'
 import StringManager from '../../managers/stringManager'
@@ -63,14 +63,16 @@ export default function Memories() {
       // Delete from Firebase Realtime DB
       await DB.deleteMemory(currentUser?.key, record).then(async () => {
         // Delete from Firebase Storage
-        // await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser?.key, imageName)
+        await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser?.key, imageName)
       })
     }
     // Memory was shared with current user -> hide it
     else {
-      const memoryKey = await DB.getSnapshotKey(`${DB.tables.memories}/${currentUser?.key}`, record, 'id')
-      const updatedShareWith = record.shareWith.filter((x) => x !== currentUser?.key)
-      await DB.updateByPath(`${DB.tables.memories}/${memoryKey}/shareWith`, updatedShareWith)
+      const memoryKey = await DB.getSnapshotKey(`${DB.tables.memories}/${record?.ownerKey}`, record, 'id')
+      if (Manager.isValid(memoryKey)) {
+        const updatedShareWith = record.shareWith.filter((x) => x !== currentUser?.key)
+        await DB.updateByPath(`${DB.tables.memories}/${record?.ownerKey}/${memoryKey}/shareWith`, updatedShareWith)
+      }
     }
   }
 
@@ -116,8 +118,8 @@ export default function Memories() {
           <Spacer height={5} />
           <AccordionDetails>
             <p>
-              All images will be automatically and <b>permanently</b> removed 30 days after their creation date. You are welcome to download them at
-              any time.
+              All images will be automatically and <b>permanently</b> removed 30 days after the date they were uploaded. You are welcome to download
+              them at any time.
             </p>
           </AccordionDetails>
         </Accordion>
@@ -152,7 +154,7 @@ export default function Memories() {
 
                     {/* DATE */}
                     {DateManager.dateIsValid(imgObj?.memoryCaptureDate) && (
-                      <p className="memory-date">Capture Date: {moment(imgObj?.memoryCaptureDate).format(DateFormats.readableMonthDayYear)}</p>
+                      <p className="memory-date">Capture Date: {moment(imgObj?.memoryCaptureDate).format(DatetimeFormats.readableMonthDayYear)}</p>
                     )}
 
                     {/* BELOW IMAGE */}

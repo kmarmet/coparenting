@@ -70,7 +70,7 @@ const DB_UserScoped = {
     const coparents = []
     if (Manager.isValid(currentUser?.coparents)) {
       for (let coparent of currentUser.coparents) {
-        // Will only get coparents that have a key (account)
+        // Will only get coparents that have a key (profile)
         if (coparent?.key) {
           const coparentAccount = await DB.find(DB.tables.users, ['key', coparent?.key], true)
           if (Manager.isValid(coparentAccount)) {
@@ -165,6 +165,14 @@ const DB_UserScoped = {
     }
     return coparent
   },
+  getNameFromKey: async (currentUser, key) => {
+    if (key === currentUser.key) {
+      return StringManager.getFirstNameOnly(currentUser?.name)
+    } else {
+      return currentUser?.coparents.find((c) => c.key === key)?.name
+    }
+  },
+
   // ADD
   addMultipleExpenses: async (currentUser, data) => {
     const dbRef = ref(getDatabase())
@@ -268,7 +276,7 @@ const DB_UserScoped = {
   },
   createAndInsertUser: async (userObject) => {
     const dbRef = ref(getDatabase())
-    const {email, key, accountType, phone} = userObject
+    const {email, key, accountType, phone, name} = userObject
 
     const locationDetails = await AppManager.getLocationDetails()
 

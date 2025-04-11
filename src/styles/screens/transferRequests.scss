@@ -1,19 +1,6 @@
 @import '../mixins';
 
 #transfer-requests-container {
-  @include lengthSelection;
-
-  @media only screen and (min-width: 800px) {
-    //    display: grid;
-    //    grid-template-columns: auto auto;
-    //    grid-gap: 10px;
-  }
-  #page-title {
-    font-weight: $fwBold;
-    font-size: 20px;
-    margin-top: 15px;
-  }
-
   #all-transfer-requests-container {
     #row {
       .request {

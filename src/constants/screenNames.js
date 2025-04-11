@@ -2,7 +2,7 @@
 var ScreenNames;
 
 ScreenNames = {
-  account: 'account',
+  profile: 'profile',
   notifications: 'notifications',
   adminDashboard: 'adminDashboard',
   calendar: 'calendar',

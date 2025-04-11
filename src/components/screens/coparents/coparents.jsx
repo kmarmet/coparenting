@@ -12,19 +12,17 @@ import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import {Fade} from 'react-awesome-reveal'
 import NavBar from '/src/components/navBar.jsx'
-import {BsFillSendFill, BsPersonAdd} from 'react-icons/bs'
+import {BsFillSendFill} from 'react-icons/bs'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
-import DatasetManager from '/src/managers/datasetManager'
-import DomManager from '/src/managers/domManager'
 import StringManager from '/src/managers/stringManager.coffee'
-import {PiTrashSimpleDuotone, PiUserCircle, PiUserCircleDuotone} from 'react-icons/pi'
-import AddressInput from '../../shared/addressInput'
+import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import Modal from '../../shared/modal'
 import EmailManager from '../../../managers/emailManager'
 import Spacer from '../../shared/spacer'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
+import InputTypes from '../../../constants/inputTypes'
 
 export default function Coparents() {
   const {state, setState} = useContext(globalState)
@@ -32,63 +30,58 @@ export default function Coparents() {
 
   // State
   const [userCoparents, setUserCoparents] = useState([])
-  const [selectedCoparentDataArray, setSelectedCoparentDataArray] = useState(null)
   const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
   const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
-  const [selectedCoparentRaw, setSelectedCoparentRaw] = useState()
+  const [selectedCoparent, setSelectedCoparent] = useState()
   const [showInvitationForm, setShowInvitationForm] = useState(false)
   const [invitedCoparentName, setInvitedCoparentName] = useState('')
   const [invitedCoparentEmail, setInvitedCoparentEmail] = useState('')
 
   const deleteProp = async (prop) => {
-    const coparent = await getCoparent()
-    await DB_UserScoped.deleteCoparentInfoProp(currentUser, StringManager.formatDbProp(prop), coparent)
-    setSelectedCoparentDataArray(Object.entries(coparent))
+    await DB_UserScoped.deleteCoparentInfoProp(currentUser, StringManager.formatDbProp(prop), selectedCoparent)
   }
 
   const getCoparent = async () => {
-    let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.key}/coparents`)
-    const keyArray = selectedCoparentDataArray.find((x) => x[0] === 'key')
-    const key = keyArray[1]
-    return coparents.filter((x) => x.key === key)[0]
+    return await DB.getTable(`${DB.tables.users}/${currentUser.key}/coparents`)
   }
 
   const update = async (prop, value) => {
-    setState({...state, successAlertMessage: 'Updated'})
-    const coparent = await getCoparent()
-    await DB_UserScoped.updateCoparent(currentUser, coparent, StringManager.formatDbProp(prop), value)
-    const updatedCoparent = await getCoparent()
-
-    setSelectedCoparentDataArray(Object.entries(updatedCoparent))
+    await DB_UserScoped.updateCoparent(currentUser, selectedCoparent, StringManager.formatDbProp(prop), value).finally(() => {
+      setState({...state, successAlertMessage: 'Updated'})
+    })
   }
 
   const deleteCoparent = async () => {
     const coparent = await getCoparent()
     await DB_UserScoped.deleteCoparent(currentUser, coparent)
-    await getCoparents()
-  }
-
-  const getCoparents = async () => {
-    let coparents = await DB.getTable(`${DB.tables.users}/${currentUser.key}/coparents`)
-    coparents = DatasetManager.getValidArray(coparents)
-    setUserCoparents(coparents)
-    setTimeout(() => {
-      if (Manager.isValid(currentUser?.coparents)) {
-        setSelectedCoparentDataArray(Object.entries(coparents[0]))
-        setSelectedCoparentRaw(coparents[0])
-      }
-    }, 300)
   }
 
   const onTableChange = async () => {
     if (currentUser) {
       const dbRef = getDatabase()
       const userRef = ref(dbRef, `${DB.tables.users}/${currentUser?.key}/coparents`)
-      onValue(userRef, async () => {
-        await getCoparents()
+      onValue(userRef, async (coparents) => {
+        const activeCoparentKey = selectedCoparent?.key
+        const updatedCoparents = coparents.val()
+        console.log(activeCoparentKey)
+        if (Manager.isValid(updatedCoparents)) {
+          if (Manager.isValid(activeCoparentKey)) {
+            const updatedCoparent = updatedCoparents.find((x) => x.key === activeCoparentKey)
+            setSelectedCoparent(updatedCoparent)
+          } else {
+            setSelectedCoparent(updatedCoparents[0])
+          }
+        }
+        setUserCoparents(updatedCoparents)
       })
     }
   }
+
+  useEffect(() => {
+    if (selectedCoparent) {
+      console.log(selectedCoparent.key)
+    }
+  }, [selectedCoparent?.key])
 
   useEffect(() => {
     onTableChange().then((r) => r)
@@ -97,7 +90,7 @@ export default function Coparents() {
   return (
     <>
       {/* CUSTOM INFO FORM */}
-      <CustomCoparentInfo hideCard={() => setShowCustomInfoCard(false)} activeCoparent={selectedCoparentRaw} showCard={showCustomInfoCard} />
+      <CustomCoparentInfo hideCard={() => setShowCustomInfoCard(false)} activeCoparent={selectedCoparent} showCard={showCustomInfoCard} />
 
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
@@ -136,7 +129,7 @@ export default function Coparents() {
             </div>
             <p>
               Add your Own Info
-              <span className="subtitle">Include personalized details about {selectedCoparentDataArray?.find((x) => x[0] === 'name')[1]}</span>
+              <span className="subtitle">Include personalized details about {selectedCoparent?.name}</span>
             </p>
           </div>
         </div>
@@ -146,10 +139,10 @@ export default function Coparents() {
           className="action-item"
           onClick={() => {
             setState({...state, showScreenActions: false})
-            AlertManager.confirmAlert(`Are you sure you would like to remove this co-parent?`, "I'm Sure", true, async () => {
+            AlertManager.confirmAlert(`Are you sure you would like to remove ${selectedCoparent?.name}`, "I'm Sure", true, async () => {
               await deleteCoparent()
               AlertManager.successAlert('Co-Parent Removed')
-              setSelectedCoparentDataArray(null)
+              setSelectedCoparent(null)
             })
           }}>
           <div className="content">
@@ -158,10 +151,8 @@ export default function Coparents() {
             </div>
 
             <p>
-              Unlink {selectedCoparentDataArray?.find((x) => x[0] === 'name')[1]} from Your Profile
-              <span className="subtitle">
-                Remove all information about {selectedCoparentDataArray?.find((x) => x[0] === 'name')[1]} from your profile
-              </span>
+              Unlink {selectedCoparent?.name} from Your Profile
+              <span className="subtitle">Remove all information about {selectedCoparent?.name} from your profile</span>
             </p>
           </div>
         </div>
@@ -182,7 +173,9 @@ export default function Coparents() {
           </div>
         </div>
         {/*</Fade>*/}
-        <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
+        <div id="close-icon-wrapper">
+          <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
+        </div>
       </ScreenActionsMenu>
 
       <Modal
@@ -203,57 +196,63 @@ export default function Coparents() {
         }}
         hideCard={() => setShowInvitationForm(false)}>
         <Spacer height={5} />
-        <InputWrapper labelText={'Co-Parent Name'} required={true} onChange={(e) => setInvitedCoparentName(e.target.value)} />
-        <InputWrapper labelText={'Co-Parent Email Address'} required={true} onChange={(e) => setInvitedCoparentEmail(e.target.value)} />
+        <InputWrapper
+          inputType={InputTypes.text}
+          labelText={'Co-Parent Name'}
+          required={true}
+          onChange={(e) => setInvitedCoparentName(e.target.value)}
+        />
+        <InputWrapper
+          inputType={InputTypes.text}
+          labelText={'Co-Parent Email Address'}
+          required={true}
+          onChange={(e) => setInvitedCoparentEmail(e.target.value)}
+        />
       </Modal>
 
       {/* COPARENTS CONTAINER */}
       <div id="coparents-container" className={`${theme} page-container coparents-wrapper form`}>
-        <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
+        <Fade direction={'up'} duration={1000} className={'coparents-fade-wrapper'} triggerOnce={true}>
+          <></>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title beside-action-button">Co-Parents </p>
-            {!DomManager.isMobile() && <BsPersonAdd id={'add-new-button'} onClick={() => setShowNewCoparentFormCard(true)} />}
           </div>
           <p>Maintain accessible records of important information regarding your co-parent.</p>
 
           {/* COPARENT ICONS CONTAINER */}
           <div id="coparent-container">
-            {selectedCoparentDataArray &&
-              Manager.isValid(userCoparents) &&
+            {Manager.isValid(userCoparents) &&
               userCoparents.map((coparent, index) => {
-                const coparentKeyArray = selectedCoparentDataArray.find((x) => x[0] === 'key')
-                const coparentKey = coparentKeyArray[1]
+                const coparentKey = selectedCoparent?.key
                 return (
                   <div
-                    onClick={() => {
-                      setSelectedCoparentDataArray(Object.entries(coparent))
-                      setSelectedCoparentRaw(coparent)
-                    }}
+                    onClick={() => setSelectedCoparent(coparent)}
                     className={coparentKey && coparentKey === coparent.key ? 'active coparent' : 'coparent'}
-                    data-phone={coparent.key}
                     data-name={coparent.name}
+                    data-key={coparent?.key}
                     key={index}>
-                    {coparentKey === coparent.key ? <PiUserCircleDuotone /> : <PiUserCircle />}
-                    <span className="coparent-name">{StringManager.getFirstNameOnly(coparent.name)}</span>
-                    <span className="coparent-type">{coparent.parentType}</span>
+                    <span className="coparent-name">{StringManager.getFirstNameOnly(coparent.name)[0]}</span>
                   </div>
                 )
               })}
           </div>
 
-          {!Manager.isValid(selectedCoparentDataArray) && <NoDataFallbackText text={'You have not added any co-parents yet'} />}
+          {!Manager.isValid(currentUser?.coparents) && <NoDataFallbackText text={'You have not added any co-parents yet'} />}
 
           {/* COPARENT INFO */}
           <div id="coparent-info">
+            <p id="coparent-name-primary">{StringManager.getFirstNameOnly(selectedCoparent?.name)}</p>
+            <p id="coparent-type-primary"> {selectedCoparent?.parentType}</p>
             <div className="form">
-              <Fade direction={'right'} className={'child-info-fade-wrapper'} duration={800} damping={0.08} triggerOnce={false} cascade={true}>
+              <Fade direction={'right'} className={'coparents-info-fade-wrapper'} duration={800} damping={0.08} triggerOnce={false} cascade={true}>
+                <></>
                 {/* ITERATE COPARENT INFO */}
-                {Manager.isValid(selectedCoparentDataArray) &&
-                  selectedCoparentDataArray.map((propArray, index) => {
+                {Manager.isValid(selectedCoparent) &&
+                  Object.entries(selectedCoparent).map((propArray, index) => {
                     let infoLabel = propArray[0]
                     infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
                     infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
-                    infoLabel = StringManager.formatTitle(infoLabel, true, true)
+                    infoLabel = StringManager.formatTitle(infoLabel, true)
                     const value = propArray[1]
                     const inputsToSkip = ['address', 'key']
                     return (
@@ -263,13 +262,12 @@ export default function Coparents() {
                             <div className="flex input">
                               {/* LOCATION */}
                               {infoLabel.toLowerCase().includes('address') && (
-                                <InputWrapper inputType={'date'} labelText={value}>
-                                  <AddressInput
-                                    onSelection={async (place) => {
-                                      await update('address', place)
-                                    }}
-                                  />
-                                </InputWrapper>
+                                <InputWrapper
+                                  defaultValue={value}
+                                  inputType={InputTypes.address}
+                                  labelText={'Home Address'}
+                                  onChange={(address) => update('address', address)}
+                                />
                               )}
 
                               {/* TEXT INPUT */}
@@ -281,9 +279,10 @@ export default function Coparents() {
                                       const inputValue = e.target.value
                                       await update(infoLabel, `${inputValue}`)
                                     }}
-                                    inputType={'input'}
-                                    labelText={StringManager.addSpaceBetweenWords(infoLabel)}></InputWrapper>
-                                  <PiTrashSimpleDuotone className="material-icons-outlined delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
+                                    inputType={InputTypes.text}
+                                    labelText={StringManager.addSpaceBetweenWords(infoLabel)}
+                                  />
+                                  <PiTrashSimpleDuotone className="delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
                                 </>
                               )}
                             </div>

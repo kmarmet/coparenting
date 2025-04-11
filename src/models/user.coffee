@@ -1,6 +1,6 @@
 import Manager from "../managers/manager"
 import moment from 'moment'
-import DateFormats from '../constants/dateFormats'
+import DateFormats from '../constants/datetimeFormats'
 
 export default class User
   constructor: (
@@ -8,6 +8,7 @@ export default class User
     @key = ''
     @name = ''
     @email = ''
+    @showInitialLoginAlert = true
     @phone = ''
     @children = []
     @childAccounts = []

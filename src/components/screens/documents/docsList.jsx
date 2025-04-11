@@ -1,19 +1,19 @@
 // Path: src\components\screens\documents\docsList.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import ScreenNames from '../../../constants/screenNames'
 import DB from '../../../database/DB'
 import Manager from '../../../managers/manager'
 import globalState from '../../../context'
 import DocumentsManager from '../../../managers/documentsManager'
-import { HiDocumentRemove } from 'react-icons/hi'
-import { child, getDatabase, onValue, ref } from 'firebase/database'
-import { Fade } from 'react-awesome-reveal'
+import {HiDocumentRemove} from 'react-icons/hi'
+import {child, getDatabase, onValue, ref} from 'firebase/database'
+import {Fade} from 'react-awesome-reveal'
 import SecurityManager from '../../../managers/securityManager'
 import NavBar from '../../navBar'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import StringManager from '../../../managers/stringManager'
-import { HiDocumentText } from 'react-icons/hi2'
-import { FaFileImage } from 'react-icons/fa'
+import {HiDocumentText} from 'react-icons/hi2'
+import {FaFileImage} from 'react-icons/fa'
 
 export default function DocsList() {
   const {state, setState} = useContext(globalState)
@@ -57,6 +57,7 @@ export default function DocsList() {
         {!Manager.isValid(selectedDoc) && (
           <div className="sections">
             <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={0.2}>
+              <></>
               {Manager.isValid(docs) &&
                 docs.map((doc, index) => {
                   const documentExts = ['doc', 'docx', 'pdf', 'txt', 'odt']

@@ -1,10 +1,10 @@
-import DateFormats from "../constants/dateFormats"
+import DateFormats from "../constants/datetimeFormats"
 import moment from "moment"
 
 export default class Notification
   constructor: (
     @id = ''
-    @dateCreated = moment().format(DateFormats.fullDatetime)
+    @creationDate = moment().format(DateFormats.fullDatetime)
     @category = ''
     @recipientKey = ''
     @ownerKey = ''

@@ -4,12 +4,12 @@ import React, {useContext} from 'react'
 import {Fade} from 'react-awesome-reveal'
 import globalState from '../../../context.js'
 import DatasetManager from '../../../managers/datasetManager.coffee'
-import {MdEventRepeat, MdLocalPhone} from 'react-icons/md'
-import DateFormats from '/src/constants/dateFormats'
+import {MdAssistantNavigation, MdEventRepeat, MdLocalPhone} from 'react-icons/md'
+import {BiSolidBellRing} from 'react-icons/bi'
+import {PiLinkBold, PiNotepadDuotone} from 'react-icons/pi'
+import DatetimeFormats from '/src/constants/datetimeFormats'
 import Manager from '/src/managers/manager'
 import {FaChildren} from 'react-icons/fa6'
-import {PiBellSimpleRingingDuotone, PiGlobeDuotone, PiNotepadDuotone} from 'react-icons/pi'
-import {TbLocationFilled} from 'react-icons/tb'
 import StringManager from '../../../managers/stringManager'
 
 export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (event) => {}}) {
@@ -97,7 +97,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
           cascade={true}
           damping={0.2}
           className={'calendar-events-fade-wrapper'}>
-          {!Manager.isValid(eventsOfActiveDay) && <p id="no-events-text">No events on this day</p>}
+          {!Manager.isValid(eventsOfActiveDay) && <p id="no-events-text">no events</p>}
           {Manager.isValid(eventsOfActiveDay) &&
             DatasetManager.getUniqueByPropValue(eventsOfActiveDay, 'title').map((event, index) => {
               let startDate = event?.startDate
@@ -133,7 +133,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
                         {/* FROM DATE */}
                         {Manager.isValid(startDate, true) && (
                           <span className="start-date" id="subtitle">
-                            {moment(startDate).format(DateFormats.readableMonthAndDay)}
+                            {moment(startDate).format(DatetimeFormats.readableMonthAndDay)}
                           </span>
                         )}
 
@@ -146,7 +146,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
 
                         {/* TO DATE */}
                         {Manager.isValid(event?.endDate, true) && event?.endDate !== startDate && (
-                          <span id="subtitle">{moment(event?.endDate).format(DateFormats.readableDay)}</span>
+                          <span id="subtitle">{moment(event?.endDate).format(DatetimeFormats.readableDay)}</span>
                         )}
 
                         {/* START/END TIMES */}
@@ -168,11 +168,11 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
                   {/* ICONS */}
                   {hasRowIcons(event) && (
                     <div id="icon-row">
-                      {Manager.isValid(event?.reminderTimes) && <PiBellSimpleRingingDuotone />}
+                      {Manager.isValid(event?.reminderTimes) && <BiSolidBellRing />}
                       {Manager.isValid(event?.notes) && <PiNotepadDuotone />}
-                      {Manager.isValid(event?.websiteUrl) && <PiGlobeDuotone />}
+                      {Manager.isValid(event?.websiteUrl) && <PiLinkBold className="website-icon" />}
                       {Manager.isValid(event?.phone) && <MdLocalPhone />}
-                      {Manager.isValid(event?.location) && <TbLocationFilled className="location-icon" />}
+                      {Manager.isValid(event?.location) && <MdAssistantNavigation className="location-icon" />}
                       {Manager.isValid(event?.children) && <FaChildren />}
                       {event?.isRecurring && <MdEventRepeat />}
                     </div>

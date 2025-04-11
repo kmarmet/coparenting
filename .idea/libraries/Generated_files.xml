@@ -8,6 +8,7 @@
         <item url="file://$PROJECT_DIR$/src/constants/datetimePickerViews.js" />
         <item url="file://$PROJECT_DIR$/src/constants/eventLengths.js" />
         <item url="file://$PROJECT_DIR$/src/constants/expenseCategories.js" />
+        <item url="file://$PROJECT_DIR$/src/constants/inputTypes.js" />
         <item url="file://$PROJECT_DIR$/src/constants/reminderTimes.js" />
         <item url="file://$PROJECT_DIR$/src/constants/scheduleTypes.js" />
         <item url="file://$PROJECT_DIR$/src/constants/screenNames.js" />
@@ -16,6 +17,7 @@
         <item url="file://$PROJECT_DIR$/src/constants/swapDurations.js" />
         <item url="file://$PROJECT_DIR$/src/managers/alertManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/appManager.js" />
+        <item url="file://$PROJECT_DIR$/src/managers/archivesManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/calendarManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/datasetManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />
@@ -27,7 +29,6 @@
         <item url="file://$PROJECT_DIR$/src/managers/logManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/notificationManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/objectManager.js" />
-        <item url="file://$PROJECT_DIR$/src/managers/recordsManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/securityManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/smsManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/stringManager.js" />
@@ -55,6 +56,7 @@
         <item url="file://$PROJECT_DIR$/src/models/inputSuggestion.js" />
         <item url="file://$PROJECT_DIR$/src/models/memory.js" />
         <item url="file://$PROJECT_DIR$/src/models/modelNames.js" />
+        <item url="file://$PROJECT_DIR$/src/models/notification.js" />
         <item url="file://$PROJECT_DIR$/src/models/notificationSubscriber.js" />
         <item url="file://$PROJECT_DIR$/src/models/parentPermissionCode.js" />
         <item url="file://$PROJECT_DIR$/src/models/shortcut.js" />
@@ -67,10 +69,10 @@
     <CLASSES>
       <root url="file://$PROJECT_DIR$/src/constants/allMenuItems.js" />
       <root url="file://$PROJECT_DIR$/src/constants/creationForms.js" />
-      <root url="file://$PROJECT_DIR$/src/constants/dateFormats.js" />
       <root url="file://$PROJECT_DIR$/src/constants/datetimePickerViews.js" />
       <root url="file://$PROJECT_DIR$/src/constants/eventLengths.js" />
       <root url="file://$PROJECT_DIR$/src/constants/expenseCategories.js" />
+      <root url="file://$PROJECT_DIR$/src/constants/inputTypes.js" />
       <root url="file://$PROJECT_DIR$/src/constants/reminderTimes.js" />
       <root url="file://$PROJECT_DIR$/src/constants/scheduleTypes.js" />
       <root url="file://$PROJECT_DIR$/src/constants/screenNames.js" />
@@ -79,6 +81,7 @@
       <root url="file://$PROJECT_DIR$/src/constants/swapDurations.js" />
       <root url="file://$PROJECT_DIR$/src/managers/alertManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/appManager.js" />
+      <root url="file://$PROJECT_DIR$/src/managers/archivesManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/calendarManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/datasetManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />
@@ -117,6 +120,7 @@
       <root url="file://$PROJECT_DIR$/src/models/inputSuggestion.js" />
       <root url="file://$PROJECT_DIR$/src/models/memory.js" />
       <root url="file://$PROJECT_DIR$/src/models/modelNames.js" />
+      <root url="file://$PROJECT_DIR$/src/models/notification.js" />
       <root url="file://$PROJECT_DIR$/src/models/notificationSubscriber.js" />
       <root url="file://$PROJECT_DIR$/src/models/parentPermissionCode.js" />
       <root url="file://$PROJECT_DIR$/src/models/shortcut.js" />
@@ -124,7 +128,7 @@
       <root url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />
       <root url="file://$PROJECT_DIR$/src/models/userKey.js" />
-      <root url="file://$PROJECT_DIR$/src/managers/archivesManager.js" />
+      <root url="file://$PROJECT_DIR$/src/constants/datetimeFormats.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

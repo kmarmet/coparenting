@@ -4,6 +4,22 @@ var DomManager;
 import Manager from "./manager";
 
 DomManager = {
+  setDefaultView: function() {
+    var activeModal, allViews, detailsView;
+    activeModal = document.querySelector('#modal.active');
+    if (activeModal) {
+      detailsView = activeModal.querySelector('.view.active');
+      if (detailsView) {
+        allViews = activeModal.querySelectorAll('.view');
+        if (Manager.isValid(allViews)) {
+          if (detailsView) {
+            detailsView.click();
+            return allViews[0].classList.add('active');
+          }
+        }
+      }
+    }
+  },
   toggleActive: function(element) {
     return element.classList.toggle("active");
   },
@@ -29,6 +45,25 @@ DomManager = {
     text = document.getElementById('swal2-html-container');
     if (text) {
       return text.style.color = 'white';
+    }
+  },
+  autoExpandingHeight: function(e) {
+    var ref, ref1, textarea;
+    textarea = e.target;
+    if (Manager.isValid(textarea)) {
+      if (textarea != null) {
+        if ((ref = textarea.style) != null) {
+          ref.height = '';
+        }
+      }
+      return textarea != null ? (ref1 = textarea.style) != null ? ref1.height = Math.min(textarea != null ? textarea.scrollHeight : void 0, 300) + 'px' : void 0 : void 0;
+    }
+  },
+  unsetHeight: function(e) {
+    var element, ref;
+    element = e.target;
+    if (Manager.isValid(element)) {
+      return element != null ? (ref = element.style) != null ? ref.height = 'unset' : void 0 : void 0;
     }
   },
   isMobile: function() {

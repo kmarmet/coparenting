@@ -155,7 +155,7 @@
   #home-navbar {
     justify-content: space-between;
     transition: all 0.3s ease-in-out;
-    padding: 20px 10px;
+    padding: 30px 10px 20px 10px;
 
     #choose-peace-text {
       color: black;
@@ -166,7 +166,7 @@
       line-height: 1.4;
 
       .emphasize {
-        color: $accent;
+        color: $mainBlue;
         font-weight: $fwMediumBold;
         opacity: 1;
       }
@@ -263,10 +263,7 @@
       ul {
         padding-left: 15px;
         li {
-          font-size: 14px;
-
           b {
-            font-size: 14px;
             color: $primaryText;
           }
         }
@@ -308,6 +305,7 @@
         * {
           color: white;
         }
+
         &.text-box {
           @media screen and (max-width: 800px) {
             margin: 0;
@@ -509,6 +507,9 @@
 
         svg {
           width: unset;
+          position: absolute;
+          top: 8px;
+          right: 8px;
         }
 
         .images {
@@ -680,17 +681,23 @@
       border-radius: $bigBorderRadius;
       padding: 30px;
       width: 50%;
-      border: 1px solid #d6d6d7;
-      min-height: 320px;
+      border: 1px solid $lightBorderColor;
       position: relative;
 
       @media screen and (max-width: 800px) {
         padding: 15px;
       }
+      svg {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        color: $mainBlue;
+        font-size: 22px;
+      }
 
       &.with-bg {
         background: $grey;
-        border: 0;
+        border: 1px solid $lightBorderColor;
       }
     }
 
@@ -702,8 +709,7 @@
       margin: 0 auto;
 
       @media screen and (max-width: 800px) {
-        width: 85%;
-        max-width: 95%;
+        width: calc(100vw - 30px);
       }
     }
 
@@ -768,11 +774,11 @@
             font-size: 28px;
             border-bottom: 2px solid $mainBlue;
             font-weight: $fwRegular;
+            color: $mainBlue;
           }
 
           @media screen and (max-width: 600px) {
             font-size: 22px;
-            padding-bottom: 10px;
             span {
               font-size: 22px;
             }
@@ -856,12 +862,6 @@
                 right: -5px;
               }
 
-              p {
-                b {
-                  font-size: 14px;
-                }
-              }
-
               &:first-child {
                 background: rgba(0, 93, 204, 0.13);
                 p,
@@ -904,30 +904,30 @@
               }
 
               &:nth-child(3) {
-                background: rgba(197, 69, 0, 0.26);
+                background: rgba(197, 69, 0, 0.09);
                 p,
                 li,
                 b,
                 .box-svg {
-                  color: #9e3700;
+                  color: #933300;
 
                   b {
-                    color: #9e3700;
+                    color: #933300;
                   }
                 }
                 .feature-title-wrapper {
                   .feature-title {
-                    color: #9e3700;
+                    color: #933300;
                   }
 
                   svg {
-                    background-color: #9e3700;
+                    background-color: #933300;
                   }
                 }
               }
 
               &:nth-child(4) {
-                background: rgba(183, 0, 81, 0.2);
+                background: rgba(183, 0, 81, 0.07);
                 p,
                 li,
                 b,
@@ -948,7 +948,7 @@
                 }
               }
               &:nth-child(6) {
-                background: rgba(0, 118, 171, 0.3);
+                background: rgba(0, 118, 171, 0.12);
                 p,
                 li,
                 b,
@@ -970,7 +970,7 @@
               }
 
               &:nth-child(5) {
-                background: rgba(0, 31, 196, 0.26);
+                background: rgba(0, 31, 196, 0.09);
 
                 p,
                 li,
@@ -994,7 +994,7 @@
               }
 
               &:last-child {
-                background: rgba(143, 68, 173, 0.26);
+                background: rgba(143, 68, 173, 0.1);
 
                 p,
                 li,
@@ -1060,6 +1060,9 @@
                   justify-content: center;
                   margin-left: auto;
                   padding: 5px;
+                  position: relative;
+                  top: -5px;
+                  right: -5px;
 
                   .star {
                     margin: 0;
@@ -1085,15 +1088,14 @@
                 .feature-details-box {
                   background: white;
                   list-style-type: none;
-                  border-radius: $borderRadius;
+                  border-radius: $buttonBorderRadius;
                   padding: 10px;
                   margin-bottom: 8px;
-                  border: 1px solid #dbdbdb;
 
                   .box-title {
                     font-weight: $fwMediumBold;
                     text-align: left;
-                    font-size: 16px;
+                    font-size: 18px;
                     text-decoration: underline;
                   }
 
@@ -1109,7 +1111,6 @@
                   }
 
                   p {
-                    font-size: 14px;
                     text-align: left;
 
                     &.center {
@@ -1119,7 +1120,6 @@
 
                   li {
                     i {
-                      font-size: 14px;
                     }
                   }
                 }
@@ -1131,6 +1131,7 @@
                   margin-left: 25px;
                   width: calc(100% - 30px);
                   list-style-type: disc;
+                  padding-bottom: 8px;
                   ul {
                     padding-top: 10px;
                     li {
@@ -1210,18 +1211,27 @@
 
         .text-box {
           border-radius: $bigBorderRadius;
-          padding: 20px;
           width: 50%;
-          border: 1px solid #d6d6d7;
-          min-height: 320px;
+          border: 1px solid $lightBorderColor;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
           @media screen and (max-width: 600px) {
             margin-bottom: 25px;
             width: 100%;
           }
 
+          svg {
+            position: absolute;
+            top: 8px;
+            font-size: 22px;
+            right: 8px;
+            color: $mainBlue;
+          }
+
           &.with-bg {
             background: $grey;
-            border: 0;
+            border: 1px solid $lightBorderColor;
           }
 
           .text-box-title {
@@ -1304,7 +1314,7 @@
         .box {
           border-radius: $bigBorderRadius;
           padding: 40px 20px 50px 20px;
-          border: 1px solid #d6d6d7;
+          border: 1px solid $lightBorderColor;
           margin-top: 30px;
           width: 100%;
 
@@ -1374,8 +1384,6 @@
           max-width: 100%;
           margin: 0;
           @media screen and (max-width: 600px) {
-            margin: 25px auto;
-
             &#collaboration,
             &.all-devices {
               width: 100vw;

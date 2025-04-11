@@ -9,7 +9,7 @@ import globalState from '../../../context'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import Manager from '../../../managers/manager'
 import InputWrapper from '../../../components/shared/inputWrapper'
-import DateFormats from '../../../constants/dateFormats'
+import DatetimeFormats from '../../../constants/datetimeFormats'
 import {MobileDateRangePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
 import AlertManager from '../../../managers/alertManager'
 import VisitationManager from '../../../managers/visitationManager'
@@ -63,7 +63,7 @@ export default function FiftyFifty({hide, showCard}) {
       const dateObject = new CalendarEvent()
       // Required
       dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
-      dateObject.startDate = moment(date).format(DateFormats.dateForDb)
+      dateObject.startDate = moment(date).format(DatetimeFormats.dateForDb)
       // Not Required
       dateObject.ownerKey = currentUser?.key
       dateObject.createdBy = currentUser?.name
@@ -143,8 +143,8 @@ export default function FiftyFifty({hide, showCard}) {
             views={['month', 'day']}
             onAccept={(dateArray) => {
               if (Manager.isValid(dateArray)) {
-                setFirstFFPeriodStart(dateArray[0].format(DateFormats.dateForDb))
-                setFirstFFPeriodEnd(moment(dateArray[1].format(DateFormats.dateForDb)))
+                setFirstFFPeriodStart(dateArray[0].format(DatetimeFormats.dateForDb))
+                setFirstFFPeriodEnd(moment(dateArray[1].format(DatetimeFormats.dateForDb)))
               }
             }}
             slots={{field: SingleInputDateRangeField}}
@@ -161,8 +161,8 @@ export default function FiftyFifty({hide, showCard}) {
             }}
             onAccept={(dateArray) => {
               if (Manager.isValid(dateArray)) {
-                setSecondFFPeriodStart(dateArray[0].format(DateFormats.dateForDb))
-                setSecondFFPeriodEnd(moment(dateArray[1].format(DateFormats.dateForDb)))
+                setSecondFFPeriodStart(dateArray[0].format(DatetimeFormats.dateForDb))
+                setSecondFFPeriodEnd(moment(dateArray[1].format(DatetimeFormats.dateForDb)))
               }
             }}
             slots={{field: SingleInputDateRangeField}}
@@ -179,8 +179,8 @@ export default function FiftyFifty({hide, showCard}) {
             }}
             onAccept={(dateArray) => {
               if (Manager.isValid(dateArray)) {
-                setThirdFFPeriodStart(dateArray[0].format(DateFormats.dateForDb))
-                setThirdFFPeriodEnd(moment(dateArray[1].format(DateFormats.dateForDb)))
+                setThirdFFPeriodStart(dateArray[0].format(DatetimeFormats.dateForDb))
+                setThirdFFPeriodEnd(moment(dateArray[1].format(DatetimeFormats.dateForDb)))
               }
             }}
             slots={{field: SingleInputDateRangeField}}

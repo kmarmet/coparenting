@@ -3,6 +3,8 @@ import OneSignal from 'react-onesignal'
 import Manager from "./manager.js"
 import NotificationSubscriber from "../models/notificationSubscriber"
 import Notification from "../models/notification"
+import moment from "moment"
+import DateFormats from "../constants/datetimeFormats"
 
 export default NotificationManager =
   currentUser: null
@@ -27,20 +29,21 @@ export default NotificationManager =
 
   # Template for swap request decision
     swapRequestApproval: (request, recipientName) ->
-      "Swap Request for #{request.startDate} has been APPROVED by #{recipientName}#{NotificationManager.lineBreak}#{NotificationManager.lineBreak}"
+      "Swap Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{NotificationManager.lineBreak}#{NotificationManager.lineBreak}"
 
     swapRequestRejection: (request, recipientName) ->
-      "Swap Request for #{request.startDate} has been REJECTED.#{NotificationManager.lineBreak}#{NotificationManager.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed with the
- request,
-  you can communicate with #{recipientName} to come to an agreement on the request."
+      "Swap Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{NotificationManager.lineBreak}#{NotificationManager.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed with the
+ request, please contact #{recipientName} to negotiate a potential agreement"
 
     transferRequestApproval: (request, recipientName) ->
-      "Transfer Change Request for #{request.date} has been APPROVED by #{recipientName}#{NotificationManager.lineBreak}#{NotificationManager.lineBreak}"
+      "Transfer Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{NotificationManager.lineBreak}#{NotificationManager.lineBreak}"
 
     transferRequestRejection: (request, recipientName) ->
-      "Transfer Change Request for #{request.date} has been REJECTED.#{NotificationManager.lineBreak}#{NotificationManager.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed
+      "Transfer Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{NotificationManager.lineBreak}#{NotificationManager.lineBreak} Reason: #{request.declineReason}. If you
+ would still
+ prefer to proceed
  with the
- request, you can communicate with #{recipientName} to come to an agreement on the request."
+ request, please contact #{recipientName} to negotiate a potential agreement"
 
 #  PRODUCTION
   apiKey: process.env.REACT_APP_ONE_SIGNAL_API_KEY_DEV
@@ -51,6 +54,7 @@ export default NotificationManager =
 #  appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
 
   init: (currentUser) ->
+
     NotificationManager.currentUser = currentUser
     window.OneSignalDeferred = window.OneSignalDeferred or []
     OneSignalDeferred.push ->
@@ -62,26 +66,30 @@ export default NotificationManager =
   eventListener: (event) ->
     userSubscribed = OneSignal.User.PushSubscription.optedIn
     subId = event?.current?.id
-    console.log(subId)
+
     if userSubscribed && subId
       newSubscriber = new NotificationSubscriber()
+
       setTimeout  ->
-        console.log(NotificationManager?.currentUser)
         newSubscriber.email = NotificationManager?.currentUser?.email
-        newSubscriber.phone = NotificationManager?.currentUser?.phone
         newSubscriber.key = NotificationManager?.currentUser?.key
         newSubscriber.id = Manager.getUid()
         newSubscriber.subscriptionId = subId
+
         fetch("https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}/user/identity")
           .then (identity) ->
             userIdentity = await identity.json()
             newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
-            existingSubscriber = await DB.find(DB.tables.notificationSubscribers, ["phone", NotificationManager?.currentUser?.phone], true)
+            existingSubscriber = await DB.find(DB.tables.notificationSubscribers, ["email", NotificationManager?.currentUser?.email], true)
 
             # If user already exists -> replace record
             if Manager.isValid(existingSubscriber)
               deleteKey = await DB.getSnapshotKey("#{DB.tables.notificationSubscribers}", existingSubscriber, "id")
               await DB.deleteByPath("#{DB.tables.notificationSubscribers}/#{deleteKey}")
+              await DB.add("/#{DB.tables.notificationSubscribers}", newSubscriber)
+
+            # Else create new record
+            else
               await DB.add("/#{DB.tables.notificationSubscribers}", newSubscriber)
       , 500
 

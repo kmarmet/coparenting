@@ -31,7 +31,7 @@ import ScreenActionsMenu from '../../shared/screenActionsMenu'
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, docToView, isLoading, currentScreen, refreshKey, showScreenActions} = state
+  const {currentUser, theme, docToView, currentScreen, creationFormToShow} = state
   const [tocHeaders, setTocHeaders] = useState([])
   const [showToc, setShowToc] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
@@ -335,6 +335,7 @@ export default function DocViewer() {
 
   const addUserHeaderToDatabase = async () => {
     const text = DomManager.getSelectionText()
+
     let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
     const alreadyExists = Manager.isValid(userHeaders.find((x) => x.headerText.includes(text)))
 
@@ -439,7 +440,7 @@ export default function DocViewer() {
       }
     }
   }, [])
-
+  // console.log(currentScreen, creationFormToShow)
   return (
     <>
       {/* SEARCH CARD */}
@@ -486,8 +487,8 @@ export default function DocViewer() {
           <hr />
           <Label text={'Create Your Own Headers'} isBold={true} />
           <p className="tip-text">
-            You might notice some predefined headers, which are dark blue text on a light blue background. However, it&#39;s a good idea to create
-            your own custom headers to make specific texts stand out to you.
+            You might notice some predefined headers, which are text on a light grey background. However, it&#39;s a good idea to create your own
+            custom headers to make specific texts stand out to you.
           </p>
           <p className="tip-text">
             To create a new header, just highlight the text you want to use, and then {DomManager.tapOrClick()} the confirmation button when it

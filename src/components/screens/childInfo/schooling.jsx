@@ -13,6 +13,7 @@ import DB from '/src/database/DB'
 import StringManager from '../../../managers/stringManager'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
+import InputTypes from '../../../constants/inputTypes'
 
 export default function Schooling() {
   const {state, setState} = useContext(globalState)
@@ -109,7 +110,7 @@ export default function Schooling() {
                     )}
                     {!infoLabel.toLowerCase().includes('phone') && (
                       <InputWrapper
-                        inputType={'input'}
+                        inputType={InputTypes.text}
                         labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
                         defaultValue={value}
                         onChange={(e) => update(infoLabel, e.target.value)}

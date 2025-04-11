@@ -18,8 +18,8 @@ import NewMemoryForm from '/src/components/forms/newMemoryForm.jsx'
 import NewSwapRequest from '/src/components/forms/newSwapRequest.jsx'
 import NewTransferChangeRequest from '/src/components/forms/newTransferRequest.jsx'
 import FullMenu from '/src/components/fullMenu'
-import Account from '/src/components/screens/account/account.jsx'
-import ResetPassword from '/src/components/screens/account/resetPassword.jsx'
+import Profile from '/src/components/screens/profile/profile.jsx'
+import ResetPassword from '/src/components/screens/profile/resetPassword.jsx'
 import Notifications from '/src/components/screens/notifications'
 import AdminDashboard from '/src/components/screens/admin/adminDashboard'
 import Login from '/src/components/screens/auth/login.jsx'
@@ -35,11 +35,12 @@ import Coparents from '/src/components/screens/coparents/coparents.jsx'
 import NewCoparentForm from '/src/components/screens/coparents/newCoparentForm.jsx'
 import DocsList from '/src/components/screens/documents/docsList.jsx'
 import DocViewer from '/src/components/screens/documents/docViewer'
-import UploadDocuments from '/src/components/screens/documents/uploadDocuments.jsx'
+import NewDocument from '/src/components/screens/documents/newDocument.jsx'
 import ExpenseTracker from '/src/components/screens/expenses/expenseTracker.jsx'
 import Home from '/src/components/screens/home'
 import InstallApp from '/src/components/screens/installApp.jsx'
 import Memories from '/src/components/screens/memories.jsx'
+
 import Archives from '/src/components/screens/archives.jsx'
 import Settings from '/src/components/screens/settings/settings.jsx'
 import SwapRequests from '/src/components/screens/swapRequests.jsx'
@@ -54,6 +55,7 @@ import DB_UserScoped from '/src/database/db_userScoped'
 import firebaseConfig from '/src/firebaseConfig.js'
 import AppManager from '/src/managers/appManager.js'
 import DomManager from '/src/managers/domManager'
+
 import Manager from '/src/managers/manager'
 import DB from './database/DB'
 import NotificationManager from './managers/notificationManager'
@@ -129,6 +131,28 @@ export default function App() {
     }
   }, [currentScreen])
 
+  useEffect(() => {
+    // Check if user needs to link co-parent
+    if (Manager.isValid(currentUser) && currentUser?.showInitialLoginAlert === true) {
+      const config = AlertManager.ThreeButtonAlertConfig
+      config.title = 'To communicate essential information and messages with a co-parent, you must link them to your profile'
+      config.confirmButtonText = 'Link Co-Parent'
+      config.cancelButtonText = 'Later'
+      config.denyButtonText = "Don't Show Again"
+      config.showThirdButton = true
+
+      config.onConfirm = async () => {
+        setState({...state, creationFormToShow: CreationForms.coparent})
+        await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/showInitialLoginAlert`, false)
+      }
+      config.onDeny = async () => {
+        await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/showInitialLoginAlert`, false)
+      }
+
+      AlertManager.threeButtonAlert(config)
+    }
+  }, [currentUser])
+
   // ON PAGE LOAD
   useEffect(() => {
     // Error Boundary Test
@@ -155,7 +179,8 @@ export default function App() {
         if (currentUserFromDb) {
           const body = document.getElementById('external-overrides')
           body.classList.add(currentUserFromDb?.settings?.theme)
-          // Check if child account and if parent access is granted
+
+          // Check if child profile and if parent access is granted
           if (currentUserFromDb?.accountType === 'child') {
             if (!Manager.isValid(currentUserFromDb?.parentAccessGranted) && currentUserFromDb?.parentAccessGranted === false) {
               screenToNavigateTo = ScreenNames.requestParentAccess
@@ -214,6 +239,7 @@ export default function App() {
         <Loading isLoading={isLoading} loadingText={loadingText} theme={currentUser?.settings?.theme} />
 
         <globalState.Provider value={stateToUpdate}>
+          {/* SUCCESS ALERT */}
           <SuccessAlert />
           {/* FULL MENU */}
           <FullMenu />
@@ -225,8 +251,12 @@ export default function App() {
           <NewSwapRequest showCard={creationFormToShow === CreationForms.swapRequest} />
           <NewTransferChangeRequest showCard={creationFormToShow === CreationForms.transferRequest} />
           <NewMemoryForm showCard={creationFormToShow === CreationForms.memories} />
-          <UploadDocuments showCard={creationFormToShow === CreationForms.documents} />
+          <NewDocument showCard={creationFormToShow === CreationForms.documents} />
           <NewExpenseForm showCard={creationFormToShow === CreationForms.expense} />
+          <NewCoparentForm
+            showCard={creationFormToShow === CreationForms.coparent}
+            hideCard={() => setState({...state, creationFormToShow: '', refreshKey: Manager.getUid()})}
+          />
           <NewChat />
 
           {/* BRAND BAR */}
@@ -257,7 +287,7 @@ export default function App() {
             {currentScreen === ScreenNames.archives && <Archives />}
 
             {/* UPLOAD */}
-            {currentScreen === ScreenNames.uploadDocuments && <UploadDocuments />}
+            {currentScreen === ScreenNames.uploadDocuments && <NewDocument />}
 
             {/* NEW */}
             {currentScreen === ScreenNames.newCalendarEvent && <NewCalendarEvent />}
@@ -274,7 +304,7 @@ export default function App() {
             {currentScreen === ScreenNames.notifications && <Notifications />}
             {currentScreen === ScreenNames.calendar && <EventCalendar />}
             {currentScreen === ScreenNames.settings && <Settings />}
-            {currentScreen === ScreenNames.account && <Account />}
+            {currentScreen === ScreenNames.profile && <Profile />}
             {currentScreen === ScreenNames.expenseTracker && <ExpenseTracker />}
             {currentScreen === ScreenNames.swapRequests && <SwapRequests />}
             {currentScreen === ScreenNames.resetPassword && <ResetPassword />}

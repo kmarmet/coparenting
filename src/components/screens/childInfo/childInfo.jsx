@@ -10,7 +10,6 @@ import General from '/src/components/screens/childInfo/general'
 import Medical from '/src/components/screens/childInfo/medical'
 import {HiDotsHorizontal} from 'react-icons/hi'
 import Schooling from '/src/components/screens/childInfo/schooling'
-
 import {FaCameraRotate, FaWandMagicSparkles} from 'react-icons/fa6'
 import {BiImageAdd, BiSolidUserCircle} from 'react-icons/bi'
 import {Fade} from 'react-awesome-reveal'
@@ -39,6 +38,7 @@ export default function ChildInfo() {
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
+  const [activeChild, setActiveChild] = useState()
 
   const uploadProfilePic = async () => {
     const imgFiles = document.getElementById('upload-image-input').files
@@ -207,8 +207,12 @@ export default function ChildInfo() {
             </p>
           </div>
         </div>
+
         {/*</Fade>*/}
-        <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
+
+        <div id="close-icon-wrapper">
+          <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
+        </div>
       </ScreenActionsMenu>
 
       {/* PAGE CONTAINER */}
@@ -234,29 +238,40 @@ export default function ChildInfo() {
         )}
 
         {/* IMAGE AND ACTIONS */}
-        <div id="image-and-actions-wrapper">
-          {/* PROFILE PIC */}
-          {Manager.isValid(activeInfoChild?.general?.profilePic) && (
-            <div className="profile-pic-container" style={{backgroundImage: `url(${activeInfoChild?.general?.profilePic})`}}>
-              <div className="after">
-                <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
-                <FaCameraRotate />
-              </div>
-            </div>
-          )}
+        <div id="child-wrapper">
+          {Manager.isValid(currentUser?.children) &&
+            currentUser?.children.map((child, index) => {
+              return (
+                <div key={index}>
+                  {/* PROFILE PIC */}
+                  {Manager.isValid(child?.general?.profilePic) && (
+                    <div onClick={() => setActiveChild(child)} className={activeInfoChild?.id === child?.id ? 'child active' : 'child'}>
+                      <div className="child-image" style={{backgroundImage: `url(${child?.general?.profilePic})`}}>
+                        <div className="after">
+                          <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
+                          <FaCameraRotate />
+                        </div>
+                      </div>
+                      {/* CHILD NAME */}
+                      <span className="child-name">{StringManager.getFirstNameOnly(child?.general?.name)}</span>
+                    </div>
+                  )}
 
-          {/* DEFAULT AVATAR */}
-          {!Manager.isValid(activeInfoChild?.general?.profilePic, true) && (
-            <div className="profile-pic-container no-image">
-              <div className="after">
-                <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
-                <BiImageAdd />
-              </div>
-            </div>
-          )}
-
-          {/* CHILD NAME */}
-          <span className="child-name">{StringManager.getFirstNameOnly(activeInfoChild?.general?.name)}</span>
+                  {/* DEFAULT AVATAR */}
+                  {!Manager.isValid(child?.general?.profilePic, true) && (
+                    <div className="child-image no-image">
+                      {child?.general?.name[0]?.toUpperCase()}
+                      <div className="after">
+                        <input ref={imgRef} type="file" id="upload-image-input" accept="image/*" onChange={uploadProfilePic} />
+                        <BiImageAdd />
+                      </div>
+                      {/* CHILD NAME */}
+                      <span className="child-name">{StringManager.getFirstNameOnly(child?.general?.name)}</span>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
         </div>
 
         {/* INFO */}

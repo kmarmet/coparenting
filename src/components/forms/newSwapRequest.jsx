@@ -9,12 +9,12 @@ import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import NotificationManager from '/src/managers/notificationManager'
 import Modal from '/src/components/shared/modal'
-import {MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
+import {MobileDateRangePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
 import ModelNames from '/src/models/modelNames'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import {MdOutlineSwapHorizontalCircle} from 'react-icons/md'
-import DateFormats from '/src/constants/dateFormats'
+import DatetimeFormats from '/src/constants/datetimeFormats'
 import ObjectManager from '/src/managers/objectManager'
 import AlertManager from '/src/managers/alertManager'
 import DB_UserScoped from '/src/database/db_userScoped'
@@ -25,6 +25,7 @@ import Spacer from '../shared/spacer'
 import creationForms from '../../constants/creationForms'
 import ToggleButton from '../shared/toggleButton'
 import Label from '../shared/label'
+import InputTypes from '../../constants/inputTypes'
 
 export default function NewSwapRequest() {
   const {state, setState} = useContext(globalState)
@@ -40,6 +41,7 @@ export default function NewSwapRequest() {
   const [endDate, setEndDate] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
   const [recipientKey, setRecipientKey] = useState('')
+  const [recipientName, setRecipientName] = useState()
 
   const resetForm = async (showSuccessAlert = false) => {
     Manager.resetForm('swap-request-wrapper')
@@ -69,7 +71,7 @@ export default function NewSwapRequest() {
     if (validAccounts === 0) {
       AlertManager.throwError(
         'No co-parent to \n assign requests to',
-        'It appears that you have not created any co-parents, or it is possible that they may have deactivated their account.'
+        'It appears that you have not created any co-parents, or it is possible that they may have deactivated their profile.'
       )
       return false
     }
@@ -90,10 +92,12 @@ export default function NewSwapRequest() {
     newRequest.children = requestChildren
     newRequest.startDate = startDate
     newRequest.endDate = endDate
-    newRequest.reason = requestReason
+    newRequest.requestReason = requestReason
     newRequest.duration = swapDuration
+    newRequest.ownerName = currentUser?.name
     newRequest.fromHour = requestFromHour
     newRequest.responseDueDate = responseDueDate
+    newRequest.recipientName = recipientName
     newRequest.toHour = requestToHour
     newRequest.ownerKey = currentUser?.key
     newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
@@ -138,11 +142,18 @@ export default function NewSwapRequest() {
 
   const handleRecipientSelection = (e) => {
     const coparentKey = e.getAttribute('data-key')
-    if (e.classList.contains('active')) {
-      setRecipientKey(coparentKey)
-    } else {
-      setRecipientKey('')
-    }
+    Manager.handleCheckboxSelection(
+      e,
+      (e) => {
+        setRecipientKey(coparentKey)
+        setRecipientName(e)
+      },
+      () => {
+        setRecipientName('')
+        setRecipientKey('')
+      },
+      false
+    )
   }
 
   const changeSwapDuration = (duration) => setSwapDuration(duration)
@@ -187,55 +198,41 @@ export default function NewSwapRequest() {
         <div id="request-form" className="form single">
           {/* SINGLE DATE */}
           {swapDuration === SwapDurations.single && (
-            <InputWrapper wrapperClasses="swap-request" inputType={'date'} labelText={'Date'} required={true}>
-              <MobileDatePicker
-                onOpen={addThemeToDatePickers}
-                className={`${theme}`}
-                onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))}
-              />
-            </InputWrapper>
+            <InputWrapper
+              uidClass="swap-single-date"
+              inputType={InputTypes.date}
+              labelText={'Date'}
+              required={true}
+              onDateOrTimeSelection={(day) => setStartDate(moment(day).format(DatetimeFormats.dateForDb))}
+            />
           )}
 
           {/* INTRADAY - HOURS */}
           {swapDuration === SwapDurations.intra && (
             <>
-              <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
-                <MobileDatePicker
-                  onOpen={addThemeToDatePickers}
-                  className={`${theme}`}
-                  onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))}
-                />
-              </InputWrapper>
+              <InputWrapper
+                uidClass="swap-hours-date"
+                inputType={InputTypes.date}
+                labelText={'Day'}
+                required={true}
+                onDateOrTimeSelection={(day) => setStartDate(moment(day).format(DatetimeFormats.dateForDb))}
+              />
 
               {/* TIMES */}
-              <div className="flex gap ">
-                <InputWrapper inputType={'date'} labelText={'Start Time'} required={true}>
-                  <MobileTimePicker
-                    minutesStep={5}
-                    slotProps={{
-                      actionBar: {
-                        actions: ['clear', 'accept'],
-                      },
-                    }}
-                    wrapperClasses="swap-request"
-                    onOpen={addThemeToDatePickers}
-                    className={`${theme} from-hour`}
-                    onChange={(e) => setRequestFromHour(moment(e).format('h a'))}
-                  />
-                </InputWrapper>
-                <InputWrapper wrapperClasses="swap-request" inputType={'date'} labelText={'End Time'} required={true}>
-                  <MobileTimePicker
-                    slotProps={{
-                      actionBar: {
-                        actions: ['clear', 'accept'],
-                      },
-                    }}
-                    minutesStep={5}
-                    onOpen={addThemeToDatePickers}
-                    className={`${theme} to-hour`}
-                    onChange={(e) => setRequestToHour(moment(e).format('h a'))}
-                  />
-                </InputWrapper>
+              <div className="flex gap">
+                <InputWrapper
+                  inputType={InputTypes.time}
+                  uidClass="swap-request-from-hour"
+                  labelText={'Start Time'}
+                  onDateOrTimeSelection={(e) => setRequestFromHour(moment(e).format('ha'))}
+                />
+
+                <InputWrapper
+                  inputType={InputTypes.time}
+                  uidClass="swap-request-to-hour"
+                  labelText={'End Time'}
+                  onDateOrTimeSelection={(e) => setRequestToHour(moment(e).format('ha'))}
+                />
               </div>
             </>
           )}
@@ -248,8 +245,8 @@ export default function NewSwapRequest() {
                 className={'w-100'}
                 onAccept={(dateArray) => {
                   if (Manager.isValid(dateArray)) {
-                    setStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))
-                    setEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))
+                    setStartDate(moment(dateArray[0]).format(DatetimeFormats.dateForDb))
+                    setEndDate(moment(dateArray[1]).format(DatetimeFormats.dateForDb))
                   }
                 }}
                 slots={{field: SingleInputDateRangeField}}
@@ -259,13 +256,13 @@ export default function NewSwapRequest() {
           )}
 
           {/* RESPONSE DUE DATE */}
-          <InputWrapper inputType={'date'} labelText={'Respond by'}>
-            <MobileDatePicker
-              onOpen={addThemeToDatePickers}
-              className={`${theme}  w-100`}
-              onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
-            />
-          </InputWrapper>
+          <InputWrapper
+            uidClass="swap-response-date"
+            inputType={InputTypes.date}
+            labelText={'Requested Response Date'}
+            required={true}
+            onDateOrTimeSelection={(day) => setResponseDueDate(moment(day).format(DatetimeFormats.dateForDb))}
+          />
 
           <Spacer height={5} />
 

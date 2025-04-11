@@ -1,5 +1,5 @@
 import Manager from "../../managers/manager"
-import DateFormats from "../../constants/dateFormats"
+import DateFormats from "../../constants/datetimeFormats"
 import moment from "moment"
 
 export default class ChatThread

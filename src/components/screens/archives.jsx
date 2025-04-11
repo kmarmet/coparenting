@@ -3,7 +3,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import CheckboxGroup from '/src/components/shared/checkboxGroup.jsx'
 import Label from '/src/components/shared/label.jsx'
 import SelectDropdown from '/src/components/shared/selectDropdown.jsx'
-import DateFormats from '/src/constants/dateFormats.coffee'
+import DatetimeFormats from '/src/constants/datetimeFormats.coffee'
 import DatasetManager from '/src/managers/datasetManager.coffee'
 import Manager from '/src/managers/manager'
 import ArchivesManager from '/src/managers/archivesManager.coffee'
@@ -47,26 +47,26 @@ export default function Archives() {
     allExpenses = DatasetManager.getUniqueArray(allExpenses, 'id')
     let payers = []
     for (const expense of allExpenses) {
-      if (expense.payer.name !== currentUser.name) {
+      if (expense.payer.key === currentUser.key) {
         payers.push('Me')
       } else {
-        payers.push(expense.payer.name)
+        payers.push(expense.payer.key)
       }
     }
-    payers = DatasetManager.getUniqueArray(payers)
-    setExpensePayers(payers)
+    let payerNames = []
+    for (const payerKey of payers) {
+      if (payerKey === 'Me') {
+        payerNames.push('Me')
+      } else {
+        const coparent = currentUser?.coparents?.find((x) => x.key === payerKey)
+        payerNames.push(coparent.name)
+      }
+    }
+
+    setExpensePayers(DatasetManager.getUniqueArray(payerNames, true))
     setExpenses(allExpenses)
 
     return allExpenses
-  }
-
-  const getCreator = (ownerKey) => {
-    let creator = 'Me'
-    if (ownerKey !== currentUser?.key) {
-      creator = currentUser?.coparents?.find((x) => x?.key === ownerKey)?.name
-    }
-
-    return creator
   }
 
   const handleRecordTypeSelection = (e) => {
@@ -91,7 +91,7 @@ export default function Archives() {
         if (e === 'Me') {
           filteredExpenses = allExpenses.filter((x) => x.payer?.key === currentUser?.key)
         } else {
-          const coparent = currentUser?.coparents?.filter((x) => x.name.includes(e))[0]
+          const coparent = currentUser?.coparents?.find((x) => x.name.includes(e))
           filteredExpenses = allExpenses.filter((x) => x.payer?.key === coparent?.key)
         }
 
@@ -116,7 +116,7 @@ export default function Archives() {
       return expense
     })
     if (sortByName === SortByTypes.recentlyAdded) {
-      setExpenses(expenses.sort((a, b) => new Date(a.dateAdded) - new Date(b.dateAdded)).reverse())
+      setExpenses(expenses.sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse())
       setSortMethod(SortByTypes.recentlyAdded)
     }
     // High -> Low
@@ -217,14 +217,14 @@ export default function Archives() {
 
         <Spacer height={5} />
 
-        {/* EXPORT BUTTON */}
+        {/* EXPENSES EXPORT BUTTON */}
         {recordType === RecordTypes.Expenses && Manager.isValid(expenses) && (
           <p id="export-button" onClick={exportExpenses}>
             Export <RiFileExcel2Fill />
           </p>
         )}
 
-        {/* EXPORT BUTTON */}
+        {/* CHATS EXPORT BUTTON */}
         {recordType === RecordTypes.Chats && Manager.isValid(messagesToExport) && (
           <p id="export-button" onClick={exportChat}>
             Export <RiFileExcel2Fill />
@@ -238,28 +238,13 @@ export default function Archives() {
             Manager.isValid(expenses) &&
             expenses.map((expense, index) => {
               return (
-                <div key={index} id="record-row" className={`${recordType.toLowerCase()} row`}>
+                <div key={index} className={`${recordType.toLowerCase()} record-row`}>
                   <p className="title">
                     {StringManager.formatTitle(expense?.name)} <span>${expense?.amount}</span>
                   </p>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Status</th>
-                        <th>Creator</th>
-                        <th>Payer</th>
-                        <th>Date Added</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus)}</td>
-                        <td>{getCreator(expense?.ownerKey)}</td>
-                        <td>{StringManager.getFirstNameOnly(expense?.payer?.name)}</td>
-                        <td>{moment(expense?.dateAdded).format(DateFormats.monthDayYear)}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <p className="date">
+                    Date Created <span>{moment(expense?.creationDate).format(DatetimeFormats.monthDayYear)}</span>
+                  </p>
                 </div>
               )
             })}

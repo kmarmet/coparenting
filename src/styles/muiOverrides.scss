@@ -329,7 +329,8 @@
                 &.MuiButtonBase-root {
                   &.Mui-selected {
                     background: transparent !important;
-                    color: $primaryText !important;
+                    color: $mainBlue !important;
+                    transform: scale(1.2);
                     margin: 0 !important;
                     transition: all 0.2s ease-in-out !important;
                     position: relative;
@@ -400,7 +401,7 @@
           justify-content: center;
           color: $primaryText;
           border-radius: $borderRadius !important;
-          font-size: 14px !important;
+          font-size: 16px !important;
 
           @media screen and (min-width: 650px) {
             &:hover {
@@ -520,7 +521,7 @@
         outline: 0 !important;
         font-weight: 400 !important;
         transition: all 0.2s ease-in-out !important;
-        padding: 0 8px !important;
+        padding: 0 10px !important;
         max-height: unset !important;
         position: absolute !important;
         caret-color: $mainBlue !important;
@@ -531,13 +532,21 @@
       }
     }
     .MuiInputLabel-root {
-      font-weight: $fwMedium !important;
-      color: black !important;
-      opacity: 0.6 !important;
+      font-weight: $fwRegular !important;
       margin: 0 !important;
-      letter-spacing: 0.4px !important;
-      line-height: 1.3 !important;
-      font-size: 16px !important;
+      font-size: 14px !important;
+      line-height: 1 !important;
+      color: $darkGrey !important;
+      font-style: italic !important;
+      position: absolute !important;
+      top: -23px !important;
+      width: max-content !important;
+      padding-right: 10px !important;
+      @include fontType;
+
+      &.active {
+        color: $primaryText !important;
+      }
     }
     .MuiSvgIcon-root {
       font-size: 28px !important;

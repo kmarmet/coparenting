@@ -3,7 +3,7 @@ import moment from 'moment'
 import DateManager from './dateManager'
 import Manager from '../managers/manager'
 import DB from '../database/DB'
-import DateFormats from '../constants/dateFormats'
+import DateFormats from '../constants/datetimeFormats'
 import DatasetManager from './datasetManager'
 import LogManager from './logManager'
 import CalendarManager from './calendarManager.js'
@@ -113,7 +113,7 @@ const VisitationManager = {
     return dateArray
   },
   getEveryOtherWeekend: (firstWeekend) => {
-    const firstWeekendDate = moment(firstWeekend).format(DateFormats.dateForDb)
+    const firstWeekendDate = moment(firstWeekend).format(DatetimeFormats.dateForDb)
     let iterationMonth = moment().startOf('month').format('MM')
     let readableMonths = []
     const monthsLeftInYear = 12 - moment().month() - 1
@@ -139,11 +139,11 @@ const VisitationManager = {
 
         // Add to dates array
         if (dayOfTheWeek === 'Friday') {
-          const thisFridayDate = moment(thisDay).format(DateFormats.dateForDb)
+          const thisFridayDate = moment(thisDay).format(DatetimeFormats.dateForDb)
           if (thisFridayDate === fridayToAddTo) {
-            const range = VisitationManager.getDateRange(moment(fridayToAddTo).format(DateFormats.dateForDb), moment(thisDay).add(2, 'days'))
+            const range = VisitationManager.getDateRange(moment(fridayToAddTo).format(DatetimeFormats.dateForDb), moment(thisDay).add(2, 'days'))
             const fridayPlusTwoWeeks = moment(thisDay).add(2, 'weeks')
-            fridayToAddTo = moment(fridayPlusTwoWeeks).format(DateFormats.dateForDb)
+            fridayToAddTo = moment(fridayPlusTwoWeeks).format(DatetimeFormats.dateForDb)
             dateArray.push(range.flat())
           }
         }
@@ -246,7 +246,7 @@ const VisitationManager = {
     return new Date(datetime.setDate(datetime.getDate() + howManyWeeks * 7))
   },
   getFiftyFifty: (dates) => {
-    const { firstFFPeriodStart, firstFFPeriodEnd, secondFFPeriodStart, secondFFPeriodEnd, thirdFFPeriodStart, thirdFFPeriodEnd } = dates
+    const {firstFFPeriodStart, firstFFPeriodEnd, secondFFPeriodStart, secondFFPeriodEnd, thirdFFPeriodStart, thirdFFPeriodEnd} = dates
     const nextYear = moment().year() + 1
     const year = new Date().getFullYear()
 

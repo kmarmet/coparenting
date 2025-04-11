@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import globalState from '../../context'
 
-function ToggleButton({ isDefaultChecked = false, onCheck = () => {}, onUncheck = () => {} }) {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey } = state
+function ToggleButton({isDefaultChecked = false, onCheck = () => {}, onUncheck = () => {}}) {
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, refreshKey} = state
   const [checked, setChecked] = useState(isDefaultChecked)
   return (
     <div className="toggle-button-wrapper">

@@ -1,19 +1,15 @@
 // Path: src\components\forms\newExpenseForm.jsx
 import React, {useContext, useState} from 'react'
 import MenuItem from '@mui/material/MenuItem'
-import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import globalState from '../../context'
-import {MdEventRepeat} from 'react-icons/md'
-import Toggle from 'react-toggle'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import UploadInputs from '/src/components/shared/uploadInputs'
-import DateFormats from '/src/constants/dateFormats'
+import DateFormats from '/src/constants/datetimeFormats'
 import ExpenseCategories from '/src/constants/expenseCategories.js'
 import DB from '../../database/DB'
 import DB_UserScoped from '../../database/db_userScoped'
-import {RiMoneyDollarCircleLine} from 'react-icons/ri'
 import FirebaseStorage from '/src/database/firebaseStorage'
 import AlertManager from '/src/managers/alertManager'
 import DateManager from '/src/managers/dateManager'
@@ -34,8 +30,9 @@ import DatasetManager from '../../managers/datasetManager.coffee'
 import CreationForms from '../../constants/creationForms'
 import ToggleButton from '../shared/toggleButton'
 import Label from '../shared/label'
+import InputTypes from '../../constants/inputTypes'
 
-export default function NewExpenseForm({hideCard, showCard}) {
+export default function NewExpenseForm({hideCard}) {
   const {state, setState} = useContext(globalState)
   const {currentUser, theme, refreshKey, authUser, creationFormToShow} = state
   const [expenseName, setExpenseName] = useState('')
@@ -44,18 +41,18 @@ export default function NewExpenseForm({hideCard, showCard}) {
   const [expenseNotes, setExpenseNotes] = useState('')
   const [expenseImage, setExpenseImage] = useState('')
   const [includeChildren, setIncludeChildren] = useState(false)
-  const [isRepeating, setIsRepeating] = useState(false)
+  const [isRecurring, setIsRecurring] = useState(false)
   const [expenseCategory, setExpenseCategory] = useState(ExpenseCategories.General)
   const [payer, setPayer] = useState({
     phone: '',
     name: '',
   })
   const [shareWith, setShareWith] = useState([])
-  const [repeatInterval, setRepeatInterval] = useState('')
+  const [recurringFrequency, setRecurringFrequency] = useState('')
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
   const [expenseAmount, setExpenseAmount] = useState('')
 
-  const resetForm = async () => {
+  const resetForm = async (showAlert) => {
     Manager.resetForm('expenses-wrapper')
     setExpenseName('')
     setExpenseChildren([])
@@ -63,18 +60,24 @@ export default function NewExpenseForm({hideCard, showCard}) {
     setExpenseNotes('')
     setExpenseImage('')
     setIncludeChildren(false)
-    setIsRepeating(false)
+    setIsRecurring(false)
     setExpenseCategory('')
     setPayer({
       phone: '',
       name: '',
     })
     setShareWith([])
-    setRepeatInterval('')
+    setRecurringFrequency('')
     setRepeatingEndDate('')
     setExpenseAmount('')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid(), creationFormToShow: ''})
+    setState({
+      ...state,
+      currentUser: updatedCurrentUser,
+      refreshKey: Manager.getUid(),
+      creationFormToShow: '',
+      successAlertMessage: showAlert ? `${StringManager.formatTitle(expenseName)} Added` : null,
+    })
   }
 
   const submitNewExpense = async () => {
@@ -83,7 +86,7 @@ export default function NewExpenseForm({hideCard, showCard}) {
     if (validAccounts === 0) {
       AlertManager.throwError(
         'No co-parent to \n assign expenses to',
-        'You have not added any co-parents. Or, it is also possible they have closed their account.'
+        'You have not added any co-parents. Or, it is also possible they have closed their profile.'
       )
       return false
     }
@@ -113,16 +116,16 @@ export default function NewExpenseForm({hideCard, showCard}) {
     newExpense.children = expenseChildren
     newExpense.amount = parseInt(expenseAmount)
     newExpense.category = expenseCategory
-    newExpense.dueDate = Manager.isValid(expenseDueDate) ? moment(expenseDueDate).format(DateFormats.dateForDb) : ''
-    newExpense.dateAdded = Manager.getCurrentDate()
+    newExpense.dueDate = Manager.isValid(expenseDueDate) ? moment(expenseDueDate).format(DatetimeFormats.dateForDb) : ''
+    newExpense.creationDate = Manager.getCurrentDate()
     newExpense.notes = expenseNotes
     newExpense.paidStatus = 'unpaid'
     newExpense.imageName = expenseImage.name ?? ''
     newExpense.payer = payer
-    newExpense.repeatInterval = repeatInterval
+    newExpense.recurringFrequency = recurringFrequency
     newExpense.ownerKey = currentUser?.key
     newExpense.shareWith = DatasetManager.getUniqueArray(shareWith, true)
-    newExpense.isRepeating = isRepeating
+    newExpense.isRecurring = isRecurring
 
     // If expense has image
     if (expenseImage) {
@@ -136,7 +139,7 @@ export default function NewExpenseForm({hideCard, showCard}) {
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
 
     if (Manager.isValid(activeRepeatIntervals) && activeRepeatIntervals.length > 0 && !expenseDueDate) {
-      AlertManager.throwError('If you have chosen a repeat interval, you must also set a due date')
+      AlertManager.throwError('When selecting a recurring frequency, you must also set a due date')
       return false
     }
 
@@ -152,7 +155,7 @@ export default function NewExpenseForm({hideCard, showCard}) {
     // Add to DB
     await DB.add(`${DB.tables.expenses}/${currentUser?.key}`, cleanObject).finally(async () => {
       // Add repeating expense to DB
-      if (repeatInterval.length > 0 && repeatingEndDate.length > 0) {
+      if (recurringFrequency.length > 0 && repeatingEndDate.length > 0) {
         await addRepeatingExpensesToDb()
       }
 
@@ -168,14 +171,13 @@ export default function NewExpenseForm({hideCard, showCard}) {
       }
 
       // Go back to expense screen
-      await resetForm()
+      await resetForm(true)
     })
-    AlertManager.successAlert(`${StringManager.formatTitle(expenseName)} Added`)
   }
 
   const addRepeatingExpensesToDb = async () => {
     let expensesToPush = []
-    let datesToRepeat = CalendarMapper.recurringEvents(repeatInterval, expenseDueDate, repeatingEndDate)
+    let datesToRepeat = CalendarMapper.recurringEvents(recurringFrequency, expenseDueDate, repeatingEndDate)
 
     if (Manager.isValid(datesToRepeat)) {
       datesToRepeat.forEach((date) => {
@@ -186,14 +188,14 @@ export default function NewExpenseForm({hideCard, showCard}) {
         newExpense.amount = expenseAmount
         newExpense.imageName = ''
         newExpense.phone = currentUser?.key
-        newExpense.dueDate = DateManager.dateIsValid(date) ? moment(date).format(DateFormats.dateForDb) : ''
-        newExpense.dateAdded = Manager.getCurrentDate()
+        newExpense.dueDate = DateManager.dateIsValid(date) ? moment(date).format(DatetimeFormats.dateForDb) : ''
+        newExpense.creationDate = Manager.getCurrentDate()
         newExpense.notes = expenseNotes
         newExpense.paidStatus = 'unpaid'
         newExpense.createdBy = currentUser?.name
         newExpense.shareWith = Manager.getUniqueArray(shareWith).flat()
         newExpense.recipientName = StringManager.getFirstNameOnly(currentUser?.name)
-        newExpense.repeating = true
+        newExpense.isRecurring = true
         expensesToPush.push(newExpense)
       })
       await DB_UserScoped.addMultipleExpenses(currentUser, expensesToPush)
@@ -264,11 +266,11 @@ export default function NewExpenseForm({hideCard, showCard}) {
         if (e.toLowerCase().indexOf('monthly') > -1) {
           selection = 'monthly'
         }
-        setRepeatInterval(selection)
+        setRecurringFrequency(selection)
       },
       (e) => {
-        if (repeatInterval.toLowerCase() === e.toLowerCase()) {
-          setRepeatInterval(null)
+        if (recurringFrequency.toLowerCase() === e.toLowerCase()) {
+          setRecurringFrequency(null)
         }
       },
       false
@@ -291,11 +293,12 @@ export default function NewExpenseForm({hideCard, showCard}) {
     setExpenseCategory(category.target.value)
   }
 
-  const addThemeToDatePickers = () => {
-    setTimeout(() => {
-      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
-      datetimeParent.classList.add(currentUser?.settings?.theme)
-    }, 100)
+  const preventDot = (e) => {
+    const key = e.charCode ? e.charCode : e.keyCode
+
+    if (key === 110) {
+      e.preventDefault()
+    }
   }
 
   return (
@@ -304,67 +307,66 @@ export default function NewExpenseForm({hideCard, showCard}) {
       hasDelete={false}
       onSubmit={submitNewExpense}
       submitText={'Submit'}
-      titleIcon={<RiMoneyDollarCircleLine />}
       title={'Create Expense'}
       className="new-expense-card"
       wrapperClass="new-expense-card"
       showCard={creationFormToShow === CreationForms.expense}
       onClose={resetForm}>
       <div className="expenses-wrapper">
+        <Spacer height={5} />
         {/* PAGE CONTAINER */}
         <div id="add-expense-form" className={`${theme} form`}>
           {/* AMOUNT */}
           <div id="amount-input-wrapper">
-            <p id="amount-input">
-              <span className="flex defaults">
-                <span id="dollar-sign" className="pr-5">
-                  <sup>$</sup>
-                </span>
-                <span id="zero" className={expenseAmount.length > 0 ? 'active' : ''}>
-                  {expenseAmount.length > 0 ? expenseAmount : '0'}
-                </span>
-              </span>
-            </p>
+            <span className="flex input-wrapper">
+              <span id="dollar-sign">$</span>
+              <input
+                type="number"
+                id="amount-input"
+                value={expenseAmount}
+                onKeyDown={preventDot}
+                onChange={(e) => setExpenseAmount(e.target.value)}
+                placeholder={`${expenseAmount.length > 0 ? expenseAmount : '0'}`}
+              />
+            </span>
           </div>
 
           {/* DEFAULT EXPENSE AMOUNTS */}
-          <>
-            <div id="default-expense-amounts">
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $10
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $20
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $30
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $40
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $50
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $60
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $70
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $80
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $90
-              </button>
-              <button className="default-amount-button" onClick={(e) => onDefaultAmountPress(e)}>
-                $100
-              </button>
-              <button className="default button reset" onClick={() => setExpenseAmount('')}>
-                Reset
-              </button>
-            </div>
-          </>
+          <div id="default-expense-amounts">
+            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+              $10
+            </button>
+            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+              $20
+            </button>
+            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+              $30
+            </button>
+            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+              $40
+            </button>
+            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+              $50
+            </button>
+            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+              $60
+            </button>
+            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+              $70
+            </button>
+            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+              $80
+            </button>
+            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+              $90
+            </button>
+            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+              $100
+            </button>
+            <button className="default-amount-button reset" onClick={() => setExpenseAmount('')}>
+              Reset
+            </button>
+          </div>
 
           {/* EXPENSE TYPE */}
           <SelectDropdown selectValue={expenseCategory} onChange={handleCategorySelection} labelText={'Category'}>
@@ -380,19 +382,15 @@ export default function NewExpenseForm({hideCard, showCard}) {
           <Spacer height={5} />
 
           {/* EXPENSE NAME */}
-          <InputWrapper onChange={(e) => setExpenseName(e.target.value)} inputType={'input'} labelText={'Name'} required={true}></InputWrapper>
+          <InputWrapper onChange={(e) => setExpenseName(e.target.value)} inputType={InputTypes.text} labelText={'Name'} required={true} />
 
           {/* DUE DATE */}
-          <InputWrapper inputType={'date'} labelText={'Due Date'}>
-            <MobileDatePicker
-              onOpen={addThemeToDatePickers}
-              className="mt-0 w-100"
-              yearsPerRow={4}
-              onChange={(e) => {
-                setExpenseDueDate(moment(e).format('MM/DD/yyyy'))
-              }}
-            />
-          </InputWrapper>
+          <InputWrapper
+            inputType={InputTypes.date}
+            uidClass="new-expense-date"
+            labelText={'Due Date'}
+            onDateOrTimeSelection={(date) => setExpenseDueDate(date)}
+          />
 
           {/* NOTES */}
           <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} labelText={'Notes'} />
@@ -431,33 +429,23 @@ export default function NewExpenseForm({hideCard, showCard}) {
             </div>
           )}
 
-          {/* REPEATING? */}
+          {/* RECURRING? */}
           <div className="share-with-container" id="repeating-container">
             <div className="share-with-container ">
               {Manager.isValid(expenseDueDate, true) && (
                 <div className="flex">
-                  <p>Recurring</p>
-                  <Toggle
-                    icons={{
-                      checked: <MdEventRepeat />,
-                      unchecked: null,
-                    }}
-                    className={'ml-auto reminder-toggle'}
-                    onChange={() => setIsRepeating(!isRepeating)}
-                  />
+                  <Label text={'Recurring'} />
+                  <ToggleButton onCheck={() => setIsRecurring(true)} onUncheck={() => setIsRecurring(false)} />
                 </div>
               )}
-              {isRepeating && (
-                <>
-                  <CheckboxGroup
-                    onCheck={handleRepeatingSelection}
-                    checkboxArray={Manager.buildCheckboxGroup({
-                      currentUser,
-                      labelType: 'recurring-interval',
-                    })}
-                  />
-                  <Spacer height={5} />
-                </>
+              {isRecurring && (
+                <CheckboxGroup
+                  onCheck={handleRepeatingSelection}
+                  checkboxArray={Manager.buildCheckboxGroup({
+                    currentUser,
+                    labelType: 'recurring-intervals',
+                  })}
+                />
               )}
             </div>
           </div>
@@ -466,18 +454,16 @@ export default function NewExpenseForm({hideCard, showCard}) {
           {shareWith.length > 0 && payer.name.length > 0 && expenseName.length > 0 && expenseAmount.length > 0 && (
             <UploadInputs
               uploadType="image"
-              getImages={(files) => {
-                if (files.length === 0) {
+              getImages={(input) => {
+                if (input.target.files.length === 0) {
                   AlertManager.throwError('Please choose an image first')
                 } else {
-                  setExpenseImage(files[0])
+                  setExpenseImage(input.target.files[0])
                 }
               }}
-              onClose={hideCard}
               containerClass={`${theme} new-expense-card`}
               actualUploadButtonText={'Upload'}
               uploadButtonText="Choose"
-              upload={() => {}}
             />
           )}
         </div>

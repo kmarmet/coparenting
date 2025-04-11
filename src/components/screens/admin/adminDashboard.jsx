@@ -1,7 +1,6 @@
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import globalState from '../../../context'
-import moment from 'moment'
-import { child, getDatabase, ref, set, update } from 'firebase/database'
+import {child, getDatabase, ref, set, update} from 'firebase/database'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import InputLabel from '@mui/material/InputLabel'
@@ -9,7 +8,6 @@ import FormControl from '@mui/material/FormControl'
 import AppManager from '/src/managers/appManager'
 import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
-import DateFormats from '/src/constants/dateFormats'
 import CheckboxGroup from '../../shared/checkboxGroup'
 import DateManager from '/src/managers/dateManager'
 import NavBar from '/src/components/navBar'
@@ -18,7 +16,7 @@ import InputWrapper from '../../shared/inputWrapper'
 import Spacer from '../../shared/spacer'
 
 export default function AdminDashboard() {
-  const { state, setState, currentUser } = useContext(globalState)
+  const {state, setState, currentUser} = useContext(globalState)
   const [chatRecoveryRequestEmail, setChatRecoveryRequestEmail] = useState('')
   const [chatRequests, setChatRequests] = useState([])
   const [getUserEmail, setGetUserEmail] = useState('')
@@ -188,7 +186,7 @@ export default function AdminDashboard() {
         return response.json()
       })
       .then((data) => {
-        const { quotaRemaining } = data
+        const {quotaRemaining} = data
         AlertManager.successAlert(`Text Quota Remaining: ${quotaRemaining}`)
         setRemainingTextBeltTexts(quotaRemaining)
       })

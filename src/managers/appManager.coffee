@@ -2,7 +2,7 @@ import Manager from "./manager"
 import DB from "../database/DB"
 import moment from "moment"
 import { child, getDatabase, ref, set } from 'firebase/database'
-import DateFormats from "../constants/dateFormats"
+import DateFormats from "../constants/datetimeFormats"
 import DB_UserScoped from "../database/db_userScoped"
 import CalendarManager from "./calendarManager"
 import FirebaseStorage from "../database/firebaseStorage"

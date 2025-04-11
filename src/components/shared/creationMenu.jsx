@@ -7,6 +7,7 @@ import {MdSwapHorizontalCircle} from 'react-icons/md'
 import {FaDonate, FaFileUpload} from 'react-icons/fa'
 import CreationForms from '../../constants/creationForms'
 import {IoChatbubbles, IoClose} from 'react-icons/io5'
+
 import Overlay from './overlay'
 
 const CreationMenu = () => {
@@ -29,7 +30,7 @@ const CreationMenu = () => {
     <Overlay show={showCreationMenu}>
       <div className={`${showCreationMenu ? 'open' : 'closed'} bottom-menu-wrapper`}>
         <div className="action-items centered">
-          <p className="bottom-menu-title">Select a Resource to Create </p>
+          <p className="bottom-menu-title">What Would You Like to Create?</p>
           {/*<Fade direction={'right'} className={'fade-wrapper'} duration={800} triggerOnce={false} cascade={true} damping={0.2}>*/}
           {/* CALENDAR */}
           <div
@@ -73,6 +74,20 @@ const CreationMenu = () => {
             </div>
           </div>
 
+          {/* SWAPS */}
+          <div
+            className="action-item"
+            onClick={() => {
+              setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.swapRequest})
+            }}>
+            <div className="content">
+              <div className="svg-wrapper swap">
+                <MdSwapHorizontalCircle className={'swap'} />
+              </div>
+              <p className="swap">Swap Request</p>
+            </div>
+          </div>
+
           {/* MEMORY */}
           <div
             className="action-item"
@@ -101,20 +116,6 @@ const CreationMenu = () => {
             </div>
           </div>
 
-          {/* SWAPS */}
-          <div
-            className="action-item"
-            onClick={() => {
-              setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.swapRequest})
-            }}>
-            <div className="content">
-              <div className="svg-wrapper swap">
-                <MdSwapHorizontalCircle className={'swap'} />
-              </div>
-              <p className="swap">Swap Request</p>
-            </div>
-          </div>
-
           {/* DOCS */}
           <div
             className="action-item"
@@ -129,7 +130,9 @@ const CreationMenu = () => {
             </div>
           </div>
           {/*</Fade>*/}
-          <IoClose className={'close-button'} onClick={() => setState({...state, showCreationMenu: false, creationFormToShow: ''})} />
+          <div id="close-icon-wrapper">
+            <IoClose className={'close-button'} onClick={() => setState({...state, showCreationMenu: false, creationFormToShow: ''})} />
+          </div>
         </div>
       </div>
     </Overlay>

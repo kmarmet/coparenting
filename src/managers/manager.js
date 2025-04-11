@@ -82,7 +82,7 @@ const Manager = {
   scrollIntoView(selector, position = 'start') {
     const element = document.querySelector(selector)
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: position })
+      element.scrollIntoView({behavior: 'smooth', block: position})
     }
   },
   getNamesFromPhone: async (phones) => {
@@ -171,6 +171,9 @@ const Manager = {
           input.removeAttribute('disabled')
         }, 100)
       }
+    }
+    if ('virtualKeyboard' in navigator) {
+      navigator.virtualKeyboard.hide()
     }
   },
   validation: (inputs) => {
@@ -279,7 +282,7 @@ const Manager = {
       if (onCheckRemoval) onCheckRemoval(label)
     }
   },
-  buildCheckboxGroup: ({ currentUser, labelType, defaultLabels = [], customLabelArray = [], labelProp, uidProp, predefinedType }) => {
+  buildCheckboxGroup: ({currentUser, labelType, defaultLabels = [], customLabelArray = [], labelProp, uidProp, predefinedType}) => {
     let checkboxLabels = []
     let checkboxGroup = []
 

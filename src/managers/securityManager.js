@@ -10,8 +10,6 @@ import DateManager from "../managers/dateManager";
 
 import _ from "lodash";
 
-import DB_UserScoped from "../database/DB_UserScoped";
-
 SecurityManager = {
   getShareWithItems: async function(currentUser, table) {
     var coparent, coparentAndChildEvents, coparentItems, i, item, j, k, l, len, len1, len2, len3, parent, parentItems, ref, ref1, ref2, ref3;
@@ -135,7 +133,7 @@ SecurityManager = {
     var allRequests, i, len, request, returnRecords, sharedTransfers;
     returnRecords = [];
     allRequests = Manager.convertToArray((await DB.getTable(`${DB.tables.transferChangeRequests}/${currentUser != null ? currentUser.key : void 0}`))).flat();
-    sharedTransfers = (await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests));
+    sharedTransfers = (await SecurityManager.getShareWithItems(currentUser, DB.tables.transferChangeRequests));
     if (Manager.isValid(allRequests)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
@@ -171,7 +169,7 @@ SecurityManager = {
     var allMemories, i, len, memory, returnRecords, sharedMemories;
     returnRecords = [];
     allMemories = Manager.convertToArray((await DB.getTable(`${DB.tables.memories}/${currentUser != null ? currentUser.key : void 0}`))).flat();
-    sharedMemories = (await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests));
+    sharedMemories = (await SecurityManager.getShareWithItems(currentUser, DB.tables.memories));
     if (Manager.isValid(allMemories)) {
       for (i = 0, len = allMemories.length; i < len; i++) {
         memory = allMemories[i];

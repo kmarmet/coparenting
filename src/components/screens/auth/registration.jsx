@@ -1,7 +1,7 @@
 // Path: src\components\screens\auth\registration.jsx
-import { initializeApp } from 'firebase/app'
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth'
-import React, { useContext, useEffect, useState } from 'react'
+import {initializeApp} from 'firebase/app'
+import {createUserWithEmailAndPassword, getAuth} from 'firebase/auth'
+import React, {useContext, useEffect, useState} from 'react'
 import PasswordChecklist from 'react-password-checklist'
 import validator from 'validator'
 import Manager from '../../../managers/manager.js'
@@ -13,9 +13,10 @@ import firebaseConfig from '/src/firebaseConfig'
 import AlertManager from '/src/managers/alertManager'
 import LogManager from '/src/managers/logManager.js'
 import DomManager from '/src/managers/domManager.js'
+import InputTypes from '../../../constants/inputTypes'
 
 export default function Registration() {
-  const { state, setState } = useContext(globalState)
+  const {state, setState} = useContext(globalState)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmedPassword, setConfirmedPassword] = useState('')
@@ -41,7 +42,7 @@ export default function Registration() {
           const user = userCredential.user
           console.log('Signed up as:', user.email)
           AlertManager.successAlert(`Welcome aboard!`)
-          setState({ ...state, currentScreen: ScreenNames.login })
+          setState({...state, currentScreen: ScreenNames.login})
         } catch (error) {
           LogManager.log(error.message, LogManager.logTypes.error)
         }
@@ -72,24 +73,20 @@ export default function Registration() {
       <div id="registration-container" className="page-container form">
         <p className="screen-title">Sign Up</p>
 
+        <Spacer height={15} />
+
         {/* PARENT FORM */}
-        <div className="form mb-20">
+        <div className="form">
+          <InputWrapper inputType={InputTypes.text} required={true} labelText={'Email Address'} onChange={(e) => setEmail(e.target.value)} />
           <InputWrapper
-            inputType={'input'}
-            inputValueType="email"
-            required={true}
-            labelText={'Email Address'}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <InputWrapper
-            inputType={'input'}
+            inputType={InputTypes.password}
             inputValueType="password"
             required={true}
             labelText={'Password'}
             onChange={(e) => setPassword(e.target.value)}
           />
           <InputWrapper
-            inputType={'input'}
+            inputType={InputTypes.password}
             inputValueType="password"
             required={true}
             labelText={'Confirm Password'}
@@ -110,7 +107,7 @@ export default function Registration() {
           />
           <Spacer height={15} />
           <button
-            className="button mt-15 default green"
+            className="button default green"
             onClick={() => {
               if (!validator.isEmail(email)) {
                 AlertManager.throwError('Email address is not valid')
@@ -124,7 +121,7 @@ export default function Registration() {
             }}>
             Submit
           </button>
-          <button id="back-to-login-button" className="button default " onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>
+          <button id="back-to-login-button" className="button default " onClick={() => setState({...state, currentScreen: ScreenNames.login})}>
             Back to Login
           </button>
         </div>

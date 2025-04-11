@@ -6,6 +6,7 @@
   background-color: $lightBg;
   padding: 20px;
   overflow: scroll;
+  max-height: 100vh;
 
   #screen-title-wrapper {
     font-weight: bold;
@@ -45,12 +46,13 @@
       }
 
       .settings-icon {
-        height: 28px;
+        height: 20px;
       }
 
       .step-number {
         font-weight: bold;
         margin-right: 10px;
+        width: 15px;
       }
 
       span {
@@ -68,13 +70,12 @@
   }
 
   #safari-icon {
-    height: 25px;
+    height: 20px;
     margin-left: 8px;
   }
 
   p,
   .emphasize {
-    font-size: 14px;
     font-weight: 400;
 
     &.message {
@@ -82,11 +83,8 @@
     }
 
     &.emphasize {
-      background-color: #f0f0f0;
-      border-radius: 5px;
-      padding: 3px 10px;
       font-weight: bold;
-      font-size: 13px;
+      padding-left: 5px;
     }
 
     &.accordion-header {
@@ -94,7 +92,7 @@
       font-weight: 500;
       margin-bottom: 10px;
       background-color: #2b3881;
-      border-radius: 10px;
+      border-radius: $buttonBorderRadius;
       padding: 10px 0;
       text-align: center;
       text-align-last: center;
@@ -321,6 +319,24 @@
       background: white;
     }
 
+    //    #home-indicator {
+    //      position: fixed;
+    //      bottom: 0;
+    //      width: 100vw;
+    //      height: 34px;
+    //      background: red;
+    //      z-index: $maxZIndex;
+    //    }
+    //
+    //    #status-bar {
+    //      position: fixed;
+    //      top: 0;
+    //      width: 100vw;
+    //      height: 47px;
+    //      background: red;
+    //      z-index: $maxZIndex;
+    //    }
+
     &.disable-scroll {
       overflow: hidden;
     }
@@ -369,6 +385,12 @@
         &.less-margin {
           margin: 20px auto;
         }
+      }
+
+      &.details-hr {
+        border-color: rgba(242, 244, 245, 0.25);
+        width: 70vw;
+        margin: 15px auto;
       }
 
       &.event-hr {
@@ -507,9 +529,13 @@
       color: $green;
     }
 
+    .long-title {
+      line-height: 1.3;
+    }
+
     #overlay {
       z-index: -1;
-      transition: all 0.6s ease-in;
+      transition: all 0.6s ease-out;
       position: fixed;
       top: 0;
       left: 0;
@@ -532,6 +558,14 @@
 
     .bottom-menu-wrapper {
       @include bottomMenuWrapper;
+    }
+
+    #full-menu {
+      @include fullMenu;
+    }
+
+    .card-icon-button {
+      @include cardIconButton;
     }
 
     .toggle-button-wrapper {
@@ -580,7 +614,7 @@
 
       &:focus {
         border-radius: $borderRadius;
-        border: 1px solid $mainBlue;
+        border-top: 2px solid $accent;
 
         &::placeholder {
           opacity: 0;
@@ -1261,17 +1295,18 @@
       justify-content: center;
 
       .instructions {
-        opacity: 0.7;
         font-style: italic;
-        font-weight: 400;
+        font-weight: $fwLight;
         line-height: 1.5;
-        font-size: 16px;
-        max-width: 80%;
+        font-size: 14px;
+        max-width: 90%;
         text-align: center;
         display: flex;
+        color: $darkGrey;
         align-items: center;
         justify-content: center;
         align-self: stretch;
+        text-transform: lowercase;
 
         &.gallery {
           margin-top: 0;

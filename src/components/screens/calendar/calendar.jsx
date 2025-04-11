@@ -5,10 +5,9 @@ import AppManager from '/src/managers/appManager'
 import Modal from '/src/components/shared/modal'
 import DB from '../../../database/DB.js'
 import DatasetManager from '/src/managers/datasetManager'
-import DateFormats from '/src/constants/dateFormats'
+import DatetimeFormats from '/src/constants/datetimeFormats'
 import DateManager from '/src/managers/dateManager'
 import DomManager from '/src/managers/domManager'
-import {TbCalendarSearch} from 'react-icons/tb'
 import EditCalEvent from '/src/components/forms/editCalEvent'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import Manager from '/src/managers/manager'
@@ -28,6 +27,8 @@ import ScreenNames from '../../../constants/screenNames'
 import firebaseConfig from '/src/firebaseConfig.js'
 import {initializeApp} from 'firebase/app'
 import {getAuth} from 'firebase/auth'
+import InputTypes from '../../../constants/inputTypes'
+import Spacer from '../../shared/spacer'
 
 export default function EventCalendar() {
   const {state, setState} = useContext(globalState)
@@ -52,9 +53,7 @@ export default function EventCalendar() {
 
   // GET EVENTS
   const getSecuredEvents = async (activeDay) => {
-    const allUsers = await DB.getTable(DB.tables.users)
-    const user = allUsers.find((x) => x.email === auth.currentUser.email)
-    let securedEvents = await SecurityManager.getCalendarEvents(user)
+    let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
     let _eventsOfDay = []
     setAllEventsFromDb(securedEvents)
     let dateToUse = activeDay
@@ -70,11 +69,11 @@ export default function EventCalendar() {
     securedEvents = DateManager.sortCalendarEvents(securedEvents, 'startDate', 'startTime')
 
     // Set events of day
-    _eventsOfDay = securedEvents.filter((x) => x.startDate === moment(dateToUse).format(DateFormats.dateForDb))
+    _eventsOfDay = securedEvents.filter((x) => x.startDate === moment(dateToUse).format(DatetimeFormats.dateForDb))
 
     // Set Holidays
     const holidaysToLoop = holidays.filter(
-      (x) => moment(x.startDate).format(DateFormats.dateForDb) === moment(dateToUse).format(DateFormats.dateForDb)
+      (x) => moment(x.startDate).format(DatetimeFormats.dateForDb) === moment(dateToUse).format(DatetimeFormats.dateForDb)
     )
     _eventsOfDay = [..._eventsOfDay, ...holidaysToLoop]
     setEventsOfActiveDay(_eventsOfDay)
@@ -97,7 +96,7 @@ export default function EventCalendar() {
     // Iterate day elements
     for (const dayElement of dayElements) {
       const dayAsMs = dayElement.dataset.timestamp
-      let formattedDay = moment(DateManager.msToDate(dayAsMs)).format(DateFormats.dateForDb)
+      let formattedDay = moment(DateManager.msToDate(dayAsMs)).format(DatetimeFormats.dateForDb)
       let daysEventsObject = getEventsFromDate(formattedDay, events)
       const {dotClasses, payEvents} = daysEventsObject
       const dayEvent = events.filter((x) => x?.startDate === formattedDay)[0]
@@ -219,7 +218,7 @@ export default function EventCalendar() {
     setShowHolidaysCard(false)
     setSearchQuery('')
     setShowSearchCard(false)
-    getSecuredEvents(moment().format(DateFormats.dateForDb).toString()).then((r) => r)
+    getSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString()).then((r) => r)
     setState({...state, refreshKey: Manager.getUid()})
   }
 
@@ -272,19 +271,6 @@ export default function EventCalendar() {
     setState({...state, notificationCount: notifications.length, isLoading: false})
   }
 
-  const onTableChange = async () => {
-    const dbRef = ref(getDatabase())
-    await setHolidaysState()
-    onValue(child(dbRef, `${DB.tables.calendarEvents}/${currentUser?.key}`), async () => {
-      const selectedCalendarElement = document.querySelector('.MuiButtonBase-root.MuiPickersDay-root.Mui-selected')
-      if (selectedCalendarElement) {
-        const timestampMs = selectedCalendarElement.dataset.timestamp
-        const asDay = DateManager.msToDate(timestampMs)
-        await getSecuredEvents(asDay)
-      }
-    })
-  }
-
   // Check if parent access is granted -> if not, show request parent access screen
   const redirectChildIfNecessary = async () => {
     const users = await DB.getTable(`${DB.tables.users}`)
@@ -310,6 +296,21 @@ export default function EventCalendar() {
       setShowSearchCard(false)
       setState({...state, refreshKey: Manager.getUid()})
     }
+  }
+
+  const onTableChange = async () => {
+    const dbRef = ref(getDatabase())
+    await setHolidaysState()
+    onValue(child(dbRef, `${DB.tables.calendarEvents}/${currentUser?.key}`), async () => {
+      const selectedCalendarElement = document.querySelector('.MuiButtonBase-root.MuiPickersDay-root.Mui-selected')
+      if (selectedCalendarElement) {
+        const timestampMs = selectedCalendarElement.dataset.timestamp
+        const asDay = DateManager.msToDate(timestampMs)
+        await getSecuredEvents(asDay)
+      } else {
+        await getSecuredEvents()
+      }
+    })
   }
 
   useEffect(() => {
@@ -400,11 +401,17 @@ export default function EventCalendar() {
           className="search-card"
           wrapperClass="search-card"
           title={'Find Events'}
-          titleIcon={<TbCalendarSearch />}
           onClose={viewAllEvents}
           showCard={showSearchCard}
           onSubmit={search}>
-          <InputWrapper labelText="event name" refreshKey={refreshKey} inputValue={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+          <Spacer height={5} />
+          <InputWrapper
+            labelText="Event Name"
+            refreshKey={refreshKey}
+            inputValue={searchQuery}
+            inputType={InputTypes.text}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </Modal>
 
         {/* EDIT EVENT */}
@@ -419,7 +426,7 @@ export default function EventCalendar() {
         <div id="static-calendar" className={theme}>
           <StaticDatePicker
             showDaysOutsideCurrentMonth={true}
-            defaultValue={moment(selectedDate)}
+            defaultValue={moment()}
             views={['month', 'day']}
             minDate={moment(`${moment().year()}-01-01`)}
             maxDate={moment(`${moment().year()}-12-31`)}
@@ -429,6 +436,7 @@ export default function EventCalendar() {
             }}
             onChange={async (day) => {
               setSelectedDate(moment(day).format('YYYY-MM-DD'))
+              setState({...state, dateToEdit: moment(day).format(DatetimeFormats.dateForDb)})
               await getSecuredEvents(day).then((r) => r)
             }}
             slotProps={{
@@ -473,9 +481,9 @@ export default function EventCalendar() {
         {/* HIDE BUTTONS */}
         {showHolidays && (
           <button
-            className="button bottom-right"
+            className="button bottom-right default"
             onClick={async () => {
-              await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+              await getSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
               setShowHolidays(false)
             }}>
             Hide Holidays
@@ -485,7 +493,7 @@ export default function EventCalendar() {
           <button
             className="button default bottom-right with-border"
             onClick={async () => {
-              await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+              await getSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
               setSearchResults([])
               setSearchQuery('')
             }}>
@@ -510,7 +518,7 @@ export default function EventCalendar() {
             <p
               className="item"
               onClick={async () => {
-                await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+                await getSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
                 setShowHolidays(false)
               }}>
               <PiCalendarXDuotone /> Hide Holidays
@@ -539,7 +547,7 @@ export default function EventCalendar() {
               } else {
                 if (inputValue.length === 0) {
                   setShowSearchCard(false)
-                  await getSecuredEvents(moment().format(DateFormats.dateForDb).toString())
+                  await getSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
                   e.target.value = ''
                   setSearchQuery('')
                 }

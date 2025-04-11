@@ -10,7 +10,7 @@
     }
     .event-row {
       width: calc(100vw - 20px);
-      border-radius: 10px;
+      border-radius: $buttonBorderRadius;
       margin: 0 auto 0 auto;
       flex-wrap: wrap;
 

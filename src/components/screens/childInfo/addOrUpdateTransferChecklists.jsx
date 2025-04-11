@@ -2,7 +2,6 @@
 import React, {useContext, useEffect, useState} from 'react'
 import Modal from '../../shared/modal'
 import globalState from '../../../context'
-import ViewSelector from '/src/components/shared/viewSelector'
 import Manager from '/src/managers/manager'
 import {MdOutlineChecklist} from 'react-icons/md'
 import DB from '/src/database/DB'
@@ -62,6 +61,7 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
               existingChecklist.id
             )
           }
+          setState({...state, successAlertMessage: 'Checklist Updated', refreshKey: Manager.getUid()})
         }
       }
       // Add new
@@ -72,10 +72,10 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
           AlertManager.throwError('Please enter at least one item')
           return false
         }
+        setState({...state, successAlertMessage: 'Checklist Created', refreshKey: Manager.getUid()})
       }
       hideCard()
       MyConfetti.fire()
-      AlertManager.successAlert('Done!')
     }
   }
 
@@ -132,6 +132,17 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
     }
     setCheckboxTextList([])
     setChecklists().then((r) => r)
+
+    if (showCard) {
+      const threeButtonAlertConfig = AlertManager.ThreeButtonAlertConfig
+      threeButtonAlertConfig.title = 'Choose Checklist Type'
+      threeButtonAlertConfig.confirmButtonText = 'From Co-Parent'
+      threeButtonAlertConfig.cancelButtonText = 'To Co-Parent'
+      threeButtonAlertConfig.onConfirm = () => setView('from')
+      threeButtonAlertConfig.onCancel = () => setView('to')
+
+      AlertManager.threeButtonAlert(threeButtonAlertConfig)
+    }
   }, [showCard])
 
   return (
@@ -142,22 +153,7 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
       submitText={'DONE'}
       showCard={showCard}
       titleIcon={<PiListChecksFill />}
-      viewSelector={
-        <ViewSelector
-          shouldUpdateStateOnLoad={false}
-          updateState={(text) => {
-            const _view = text.toLowerCase()
-
-            if (Manager.contains(_view, 'to')) {
-              setView('to')
-            } else {
-              setView('from')
-            }
-          }}
-          labels={['From Co-Parent', 'To Co-Parent']}
-        />
-      }
-      subtitle="Add a transfer checklist which will allow you and your child to ensure that nothing is left behind when transferring to or from your co-parent's home."
+      subtitle="Add a transfer checklist which will allow you and your child to ensure that nothing is left behind when transferring to or from your co-parent's home"
       title={'Transfer Checklists'}
       onClose={hideCard}>
       <div id="inputs" key={refreshKey}></div>
@@ -170,7 +166,7 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
           )
         })}
       <button className="button default grey center" onClick={addInput}>
-        New Checklist Item <CgMathPlus />
+        Add Item <CgMathPlus />
       </button>
     </Modal>
   )

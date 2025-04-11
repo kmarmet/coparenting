@@ -1,7 +1,19 @@
 import Swal from "sweetalert2"
 import DomManager from "./domManager"
 
+
 AlertManager = {
+  ThreeButtonAlertConfig: {
+    title: "",
+    onConfirm: () =>,
+    onDeny : () =>,
+    onCancel : () =>,
+    cancelButtonText : "Cancel",
+    confirmButtonText : "Yes",
+    denyButtonText : "Nvm",
+    showThirdButton: false
+  }
+
   throwError: (title ,text) ->
 
     Swal.fire
@@ -123,6 +135,37 @@ AlertManager = {
     .then (result) ->
       if result.isConfirmed
         if onConfirm then onConfirm(result)
+
+  threeButtonAlert : (config) ->
+    Swal.fire
+      showClass:
+        popup: """
+              animate__animated
+              animate__fadeInUp
+              animate__faster
+            """
+      hideClass:
+        popup: """
+              animate__animated
+              animate__fadeOutDown
+              animate__faster
+            """
+      title: config.title
+      showDenyButton: config.showThirdButton
+      showCancelButton: true
+      confirmButtonText: config.confirmButtonText
+      denyButtonText: config.denyButtonText
+      cancelButtonText: config.cancelButtonText
+      confirmButtonColor: '#00b389 !important'
+      allowOutsideClick: false
+
+    .then (result) ->
+      if result.isConfirmed
+        if config.onConfirm then config.onConfirm(result)
+      if result.isDismissed
+        if config.onCancel then config.onCancel(result)
+      if result.isDenied
+        if config.onDeny then config.onDeny(result)
 }
 
 export default AlertManager

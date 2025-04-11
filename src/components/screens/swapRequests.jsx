@@ -9,34 +9,30 @@ import SwapDurations from '/src/constants/swapDurations.js'
 import NotificationManager from '/src/managers/notificationManager'
 import SecurityManager from '/src/managers/securityManager'
 import NavBar from '../navBar'
-import {IoAdd, IoHourglassOutline} from 'react-icons/io5'
+import {IoAdd} from 'react-icons/io5'
 import AlertManager from '/src/managers/alertManager'
 import Modal from '/src/components/shared/modal'
-import {PiCheckBold, PiSwapDuotone, PiUserCircleDuotone} from 'react-icons/pi'
-import {CgDetailsMore} from 'react-icons/cg'
+import {PiCheckBold, PiSwapDuotone} from 'react-icons/pi'
 import {Fade} from 'react-awesome-reveal'
-import {MobileDatePicker} from '@mui/x-date-pickers-pro'
-import DateManager from '/src/managers/dateManager'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import DomManager from '/src/managers/domManager'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import DateFormats from '/src/constants/dateFormats'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import ObjectManager from '/src/managers/objectManager'
 import ModelNames from '/src/models/modelNames'
 import ActivityCategory from '/src/models/activityCategory'
 import StringManager from '/src/managers/stringManager'
-import {FaChildren} from 'react-icons/fa6'
-import {TbCalendarCheck} from 'react-icons/tb'
 import ViewSelector from '../shared/viewSelector'
-import StringAsHtmlElement from '../shared/stringAsHtmlElement'
 import DB_UserScoped from '../../database/db_userScoped.js'
 import Spacer from '../shared/spacer'
 import ToggleButton from '../shared/toggleButton'
+import InputTypes from '../../constants/inputTypes'
+import DetailBlock from '../shared/detailBlock'
+import DatetimeFormats from '../../constants/datetimeFormats'
 
 const Decisions = {
   approved: 'APPROVED',
-  rejected: 'REJECTED',
+  declined: 'DECLINED',
   delete: 'DELETE',
 }
 
@@ -48,22 +44,21 @@ export default function SwapRequests() {
   const [activeRequest, setActiveRequest] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
   const [view, setView] = useState('details')
-  const [reason, setReason] = useState('')
+  const [requestReason, setRequestReason] = useState('')
   const [requestChildren, setRequestChildren] = useState([])
   const [swapDuration, setSwapDuration] = useState('single')
   const [includeChildren, setIncludeChildren] = useState(false)
   const [startDate, setStartDate] = useState('')
-  const [createdBy, setCreatedBy] = useState('')
+  const [declineReason, setDeclineReason] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
 
-  const resetForm = async () => {
+  const resetForm = async (showAlert = false) => {
     Manager.resetForm('swap-request-wrapper')
     setRequestChildren([])
     setSwapDuration('single')
     setIncludeChildren(false)
     setStartDate('')
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({...state, currentUser: updatedCurrentUser, refreshKey: Manager.getUid()})
+    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: showAlert ? 'Swap Request Updated' : null})
   }
 
   const update = async () => {
@@ -72,18 +67,17 @@ export default function SwapRequests() {
     updatedRequest.startDate = startDate
     updatedRequest.responseDueDate = responseDueDate
     updatedRequest.children = requestChildren
-    updatedRequest.reason = reason
+    updatedRequest.requestReason = requestReason
 
     if (Manager.isValid(responseDueDate)) {
-      updatedRequest.responseDueDate = moment(responseDueDate).format(DateFormats.dateForDb)
+      updatedRequest.responseDueDate = moment(responseDueDate).format(DatetimeFormats.dateForDb)
     }
     const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.swapRequest)
     await DB.updateEntireRecord(`${DB.tables.swapRequests}/${currentUser?.key}`, cleanedRequest, cleanedRequest.id)
     await getSecuredRequests()
     setActiveRequest(updatedRequest)
     setShowDetails(false)
-    AlertManager.successAlert('Swap Request Updated')
-    await resetForm()
+    await resetForm(true)
   }
 
   const getSecuredRequests = async () => {
@@ -95,28 +89,29 @@ export default function SwapRequests() {
     const recipient = await DB_UserScoped.getCoparentByKey(activeRequest.recipientKey, currentUser)
     const recipientName = recipient.name
     // Rejected
-    if (decision === Decisions.rejected) {
-      activeRequest.status = 'rejected'
+    if (decision === Decisions.declined) {
+      activeRequest.status = 'declined'
+      activeRequest.declineReason = declineReason
       await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerKey}`, activeRequest, activeRequest.id)
 
-      const notifMessage = NotificationManager.templates.swapRequestRejection(activeRequest, recipientName)
-      NotificationManager.sendNotification('Swap Request Decision', notifMessage, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
+      const message = NotificationManager.templates.swapRequestRejection(activeRequest, recipientName)
+      NotificationManager.sendNotification('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
       setShowDetails(false)
     }
     // Approved
     if (decision === Decisions.approved) {
-      const notifMessage = NotificationManager.templates.swapRequestApproval(activeRequest, recipientName)
+      const message = NotificationManager.templates.swapRequestApproval(activeRequest, recipientName)
       activeRequest.status = 'approved'
       await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerKey}`, activeRequest, activeRequest.id)
 
-      NotificationManager.sendNotification('Swap Request Decision', notifMessage, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
+      NotificationManager.sendNotification('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
       setShowDetails(false)
     }
+
+    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: `Decision Sent to ${recipientName}`})
   }
 
   const setCurrentRequest = async (request) => {
-    const coparent = await DB_UserScoped.getCoparentByKey(request?.ownerKey, currentUser)
-    setCreatedBy(StringManager.getFirstNameOnly(coparent.name))
     setShowDetails(true)
     setActiveRequest(request)
   }
@@ -128,15 +123,8 @@ export default function SwapRequests() {
     })
   }
 
-  const addThemeToDatePickers = () => {
-    setTimeout(() => {
-      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
-      datetimeParent.classList.add(currentUser?.settings?.theme)
-    }, 100)
-  }
-
   const setDefaults = () => {
-    setReason(activeRequest?.reason)
+    setRequestReason(activeRequest?.requestReason)
     setRequestChildren(activeRequest?.children)
     setSwapDuration(activeRequest?.duration)
     setStartDate(activeRequest?.startDate)
@@ -160,17 +148,19 @@ export default function SwapRequests() {
   const deleteRequest = async (action = 'deleted') => {
     if (action === 'deleted') {
       AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
-        await DB.deleteById(`${DB.tables.swapRequests}/${currentUser?.key}`, activeRequest?.id)
-        AlertManager.successAlert(`Swap Request has been deleted`)
+        await DB.deleteById(`${DB.tables.swapRequests}/${activeRequest?.ownerKey}`, activeRequest?.id)
+        setState({...state, refreshKey: Manager.getUid(), successAlertMessage: 'Swap Request Deleted'})
         setShowDetails(false)
       })
     } else {
       if (activeRequest?.ownerKey === currentUser?.key) {
-        await DB.delete(`${DB.tables.swapRequests}/${currentUser?.key}`, activeRequest?.id)
-        AlertManager.successAlert(`Swap Request has been deleted`)
+        await DB.delete(`${DB.tables.swapRequests}/${activeRequest?.ownerKey}`, activeRequest?.id)
+        setState({...state, refreshKey: Manager.getUid(), successAlertMessage: 'Swap Request Deleted'})
       }
       setShowDetails(false)
     }
+
+    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: 'Swap Request Deleted'})
   }
 
   useEffect(() => {
@@ -197,121 +187,66 @@ export default function SwapRequests() {
         onSubmit={() => selectDecision(Decisions.approved)}
         className="swap-requests"
         wrapperClass="swap-requests"
-        onClose={() => {
+        onClose={async () => {
           setShowDetails(false)
           setView('details')
           setActiveRequest(null)
+          await resetForm()
         }}
         viewSelector={<ViewSelector labels={['Details', 'Edit']} visibleLabels={['Details']} updateState={(e) => setView(e.toLowerCase())} />}
         showCard={showDetails}>
         {/* DETAILS */}
         {view === 'details' && (
-          <Fade direction={'up'} duration={600} triggerOnce={true}>
+          <Fade direction={'up'} duration={800} triggerOnce={true}>
             <div id="details" className={`content`}>
-              {/* SWAP DATE */}
-              {Manager.isValid(activeRequest?.startDate) && (
-                <div className="flex">
-                  <b>
-                    <TbCalendarCheck />
-                    Swap Date(s)
-                  </b>
-                  <span>
-                    {moment(activeRequest?.startDate).format(DateFormats.readableMonthAndDay)}
-                    <>{Manager.isValid(activeRequest?.endDate) && ` to ${moment(activeRequest?.endDate).format(DateFormats.readableMonthAndDay)}`}</>
-                  </span>
-                </div>
-              )}
+              <hr className="top" />
+              <Spacer height={5} />
+              <div className="blocks">
+                {/* Swap Date(s) */}
+                <DetailBlock
+                  text={moment(activeRequest?.startDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                  title={Manager.isValid(activeRequest?.endDate) ? 'Swap Dates' : 'Swap Date'}
+                  valueToValidate={activeRequest?.startDate}
+                />
 
-              {/* CREATED BY */}
-              <div className="flex">
-                <b>
-                  <PiUserCircleDuotone />
-                  Created by
-                </b>
-                <span>{createdBy}</span>
-              </div>
+                {/* Respond by */}
+                <DetailBlock
+                  text={moment(activeRequest?.responseDueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                  title={'Respond by'}
+                  valueToValidate={activeRequest?.responseDueDate}
+                />
 
-              {/* RESPOND BY */}
-              {Manager.isValid(activeRequest?.responseDueDate) && (
-                <>
-                  {!Manager.isValid(activeRequest?.endDate) && (
-                    <div className="flex">
-                      <b>
-                        <IoHourglassOutline />
-                        Respond by
-                      </b>
-                      <span>
-                        {DateManager.formatDate(activeRequest?.responseDueDate)},&nbsp;
-                        {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
-                      </span>
-                    </div>
-                  )}
-                  {Manager.isValid(activeRequest?.endDate) && (
-                    <div className="flex">
-                      <b>
-                        <IoHourglassOutline />
-                        Respond by
-                      </b>
-                      <span>
-                        {DateManager.formatDate(activeRequest?.responseDueDate)}&nbsp;to&nbsp;{DateManager.formatDate(activeRequest?.endDate)}&nbsp;,
-                        {moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
-                      </span>
-                    </div>
-                  )}
-                </>
-              )}
+                {/*  Created by */}
+                <DetailBlock text={activeRequest?.ownerName} title={'Created By'} valueToValidate={activeRequest?.ownerName} />
 
-              {/* TIME */}
-              {activeRequest?.fromHour && activeRequest?.fromHour?.length > 0 && (
-                <div className="flex">
-                  <b>Start time </b>
-                  <span>{activeRequest?.fromHour}</span>
-                  <span>&nbsp;to&nbsp;</span>
-                  <b>End time </b>
-                  <span>{activeRequest?.toHour}</span>
-                </div>
-              )}
+                {/* Sent to */}
+                <DetailBlock text={activeRequest?.recipientName} title={'Sent To'} valueToValidate={activeRequest?.recipientName} />
 
-              {/* SENT TO */}
-              {activeRequest?.ownerKey === currentUser?.key && (
-                <div className="flex">
-                  <>
-                    <b>
-                      <PiUserCircleDuotone />
-                      Sent to
-                    </b>
-                    <span>
-                      {StringManager.getFirstNameOnly(currentUser?.coparents?.filter((x) => x?.key === activeRequest?.recipientKey)[0]?.name)}
-                    </span>
-                  </>
-                </div>
-              )}
+                {/* Start time */}
+                <DetailBlock text={activeRequest?.fromHour} title={'Start Time'} valueToValidate={activeRequest?.fromHour} />
 
-              {/* CHILDREN */}
-              {Manager.isValid(activeRequest?.children) && (
-                <div className="flex children">
-                  <b>
-                    <FaChildren />
-                    Children
-                  </b>
-                  <div id="children">
+                {/* End time */}
+                <DetailBlock text={activeRequest?.toHour} title={'End Time'} valueToValidate={activeRequest?.toHour} />
+
+                {/*  Children */}
+                {Manager.isValid(activeRequest?.children) && (
+                  <div className="block">
                     {Manager.isValid(activeRequest?.children) &&
                       activeRequest?.children.map((child, index) => {
-                        return <span key={index}>{child}</span>
+                        return (
+                          <p className="block-text" key={index}>
+                            {child}
+                          </p>
+                        )
                       })}
+                    <p className="block-title">Children</p>
                   </div>
-                </div>
-              )}
-              {/* REASON */}
-              {Manager.isValid(activeRequest?.reason) && (
-                <div className={`flex ${StringManager.addLongTextClass(activeRequest?.reason)}`}>
-                  <b>
-                    <CgDetailsMore />
-                    Reason
-                  </b>
-                  <StringAsHtmlElement text={activeRequest?.reason} />
-                </div>
-              )}
+                )}
+
+                {/*  Reason */}
+                <DetailBlock text={activeRequest?.requestReason} isFullWidth={true} title={'Reason'} valueToValidate={activeRequest?.requestReason} />
+              </div>
+              <hr className="bottom" />
             </div>
           </Fade>
         )}
@@ -320,43 +255,37 @@ export default function SwapRequests() {
         {view === 'edit' && (
           <Fade direction={'up'} duration={600} triggerOnce={true}>
             {/* SINGLE DATE */}
-            {!DomManager.isMobile() && swapDuration === SwapDurations.single && (
-              <InputWrapper inputType={'date'} labelText={'Date'}>
-                <MobileDatePicker
-                  defaultValue={moment(activeRequest?.startDate)}
-                  onOpen={addThemeToDatePickers}
-                  className={`${theme} w-100`}
-                  onChange={(day) => setStartDate(moment(day).format(DateFormats.dateForDb))}
-                />
-              </InputWrapper>
-            )}
-            {swapDuration === SwapDurations.single && DomManager.isMobile() && (
+            {swapDuration === SwapDurations.single && (
               <InputWrapper
-                inputType={'date'}
-                labelText={'Date'}
-                useNativeDate={true}
                 defaultValue={moment(activeRequest?.startDate)}
-                onChange={(day) => setStartDate(moment(day.target.value).format(DateFormats.dateForDb))}
+                inputType={InputTypes.date}
+                labelText={'Date'}
+                uidClass="swap-request-date"
+                wrapperClasses={`${Manager.isValid(activeRequest?.startDate) ? 'show-label' : ''}`}
+                onDateOrTimeSelection={(day) => setStartDate(moment(day).format(DatetimeFormats.dateForDb))}
               />
             )}
 
             {/* RESPONSE DUE DATE */}
-            <InputWrapper inputType={'date'} labelText={'Respond by'}>
-              <MobileDatePicker
-                onOpen={addThemeToDatePickers}
-                className={`${theme}  w-100`}
-                defaultValue={moment(activeRequest?.responseDueDate)}
-                onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
-              />
-            </InputWrapper>
+            <InputWrapper
+              uidClass="response-due-date"
+              wrapperClasses={`${Manager.isValid(activeRequest?.responseDueDate) ? 'show-label' : ''}`}
+              inputType={InputTypes.date}
+              labelText={'Requested Response Date'}
+              defaultValue={moment(activeRequest?.responseDueDate)}
+              onDateOrTimeSelection={(day) => setResponseDueDate(moment(day).format(DatetimeFormats.dateForDb))}
+            />
 
-            <Spacer height={5} />
             {/* INCLUDE CHILDREN */}
             {Manager.isValid(currentUser?.children) && (
               <div className="share-with-container">
                 <div className="flex">
                   <p>Include Child(ren)</p>
-                  <ToggleButton onCheck={() => setIncludeChildren(!includeChildren)} onUncheck={() => setIncludeChildren(!includeChildren)} />
+                  <ToggleButton
+                    isDefaultChecked={Manager.isValid(activeRequest?.children) || includeChildren}
+                    onCheck={() => setIncludeChildren(!includeChildren)}
+                    onUncheck={() => setIncludeChildren(!includeChildren)}
+                  />
                 </div>
                 {(activeRequest?.children?.length > 0 || includeChildren) && (
                   <CheckboxGroup
@@ -370,34 +299,32 @@ export default function SwapRequests() {
                 )}
               </div>
             )}
-
+            <Spacer height={5} />
             {/* BUTTONS */}
             <div className="card-buttons">
-              <>
-                <button className="button default submit center mt-15 mb-10" data-request-id={activeRequest?.id} onClick={update}>
-                  Update Request
+              <button className="button default grey center" data-request-id={activeRequest?.id} onClick={update}>
+                Update Request
+              </button>
+              {activeRequest?.ownerKey !== currentUser?.key && (
+                <button
+                  className="button default red center"
+                  data-request-id={activeRequest?.id}
+                  onClick={async () => {
+                    AlertManager.inputAlert(
+                      'Reason for Declining',
+                      'Please enter a reason for declining this request',
+                      (e) => {
+                        setDeclineReason(e.value)
+                        selectDecision(Decisions.declined)
+                      },
+                      true,
+                      true,
+                      'textarea'
+                    )
+                  }}>
+                  Decline Request
                 </button>
-                {activeRequest?.ownerKey !== currentUser?.key && (
-                  <button
-                    className="button default red center mt-5"
-                    data-request-id={activeRequest?.id}
-                    onClick={async () => {
-                      AlertManager.inputAlert(
-                        'Rejection Reason',
-                        'Please enter a rejection reason.',
-                        () => {
-                          // setRejectionReason(e.value)
-                          selectDecision(Decisions.rejected)
-                        },
-                        true,
-                        true,
-                        'textarea'
-                      )
-                    }}>
-                    Reject Request
-                  </button>
-                )}
-              </>
+              )}
             </div>
           </Fade>
         )}
@@ -417,60 +344,68 @@ export default function SwapRequests() {
 
           {/* LOOP REQUESTS */}
           <div id="swap-requests-container">
-            {Manager.isValid(existingRequests) &&
-              existingRequests.map((request, index) => {
-                return (
-                  <div onClick={() => setCurrentRequest(request)} key={index} className="row">
-                    {/* REQUEST DATE */}
-                    <div id="primary-icon-wrapper" className="mr-10">
-                      <PiSwapDuotone id={'primary-row-icon'} />
-                    </div>
+            <Fade direction={'right'} duration={800} cascade={true} damping={0.2} triggerOnce={true}>
+              {Manager.isValid(existingRequests) &&
+                existingRequests.map((request, index) => {
+                  return (
+                    <div onClick={() => setCurrentRequest(request)} key={index} className="row">
+                      {/* REQUEST DATE */}
+                      <div id="primary-icon-wrapper" className="mr-10">
+                        <PiSwapDuotone id={'primary-row-icon'} />
+                      </div>
 
-                    <div id="content" className={`${request?.reason?.length > 20 ? 'long-text' : ''}`}>
-                      {/* MULTIPLE */}
-                      {request?.duration === SwapDurations.multiple && (
-                        <div className="flex">
-                          <p id="title">
-                            {moment(request?.startDate).format('dddd, MMM Do')} to {moment(request?.endDate).format('dddd, MMM Do')}
-                          </p>
-                          <span className={`${request?.status} status`} id="request-status">
-                            {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
-                          </span>
-                        </div>
-                      )}
-                      {/* SINGLE */}
-                      <div className="flex">
-                        {request?.duration === SwapDurations.single && moment(request?.startDate).format('dddd, MMM Do') && (
-                          <>
-                            <p id="title" className="row-title">
-                              {moment(request?.startDate).format('dddd, MMM Do')}
+                      {/* CONTENT */}
+                      <div id="content" className={`${request?.requestReason?.length > 20 ? 'long-text' : ''}`}>
+                        {/* MULTIPLE */}
+                        {request?.duration === SwapDurations.multiple && (
+                          <div className="flex">
+                            <p id="title">
+                              {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)} to{' '}
+                              {moment(request?.endDate).format(DatetimeFormats.readableMonthAndDay)}
+                              {request?.ownerName === currentUser?.name && <span>Sent to {request?.recipientName}</span>}
+                              {request?.ownerName !== currentUser?.name && <span>from {request?.ownerName}</span>}
                             </p>
                             <span className={`${request?.status} status`} id="request-status">
                               {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
                             </span>
-                          </>
+                          </div>
                         )}
-                        {/* HOURS */}
+                        {/* SINGLE */}
+                        <div className="flex">
+                          {request?.duration === SwapDurations.single && (
+                            <>
+                              <p id="title" className="row-title">
+                                {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)}
+                                {request?.ownerName === currentUser?.name && <span>Sent to {request?.recipientName}</span>}
+                                {request?.ownerName !== currentUser?.name && <span>from {request?.ownerName}</span>}
+                              </p>
+                              <span className={`${request?.status} status`} id="request-status">
+                                {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
+                              </span>
+                            </>
+                          )}
+                          {/* HOURS */}
+                          {request?.duration === SwapDurations.intra && (
+                            <>
+                              <p id="title" className="row-title">
+                                {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)}
+                              </p>
+                              <span className={`${request?.status} status`} id="request-status">
+                                {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
+                              </span>
+                            </>
+                          )}
+                        </div>
                         {request?.duration === SwapDurations.intra && (
-                          <>
-                            <p id="title" className="row-title">
-                              {moment(request?.startDate).format('dddd, MMM Do')}
-                            </p>
-                            <span className={`${request?.status} status`} id="request-status">
-                              {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
-                            </span>
-                          </>
+                          <p id="subtitle">
+                            {request?.fromHour.replace(' ', '')} to {request?.toHour.replace(' ', '')}
+                          </p>
                         )}
                       </div>
-                      {request?.duration === SwapDurations.intra && (
-                        <p id="subtitle">
-                          {request?.fromHour.replace(' ', '')} to {request?.toHour.replace(' ', '')}
-                        </p>
-                      )}
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+            </Fade>
           </div>
         </Fade>
       </div>

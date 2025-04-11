@@ -16,7 +16,7 @@ $bootstrapBgRed2: #fff6f7;
 
 // YELLOW
 $bootstrapYellowBg: #fff3cd;
-$bootstrapYellowBorder: #dcc990;
+$bootstrapYellowBorder: #cebb87;
 $bootstrapYellowColor: #897235;
 $yellow: #fbf5bf;
 $gold: #ffcb6b;
@@ -27,13 +27,15 @@ $lightPurple: #f5f0ff;
 $purple: #856ab8;
 $mediumPurple: #6c73c8;
 $darkPurple: #513596;
-$blurple: #6171ea;
 
 // BLUE
 $lightAccentBlue: #dae5fc;
-$linkColor: #0667f6;
+$lightAccent: rgba(97, 113, 234, 0.22);
+$accent: #6171ea;
+//$accent: #2c4dff;
+$linkColor: $accent;
+//$linkColor: #0667f6;
 $mainBlue: #3d74ec;
-$accent: #2c4dff;
 $lightBlue: #00a2eb;
 /*#endregion  BASE COLORS */
 
@@ -46,6 +48,7 @@ $translucentLightest: rgba(255, 255, 255, 0.09);
 /*#region  GREYS*/
 $darkGrey: #a1a1aa;
 $darkerGrey: #86868f;
+$darkestGrey: #5e5e67;
 $grey: #f3f4f6;
 $lightGrey: #f9fafb;
 /*#endregion  GREYS*/
@@ -76,7 +79,7 @@ $darkBorderColor: #252327;
 /*#endregion DARK THEME*/
 
 /*#region  LIGHT THEME*/
-$lightAccent: #4c75a3;
+//$lightAccent: #4c75a3;
 $lightBg: white;
 $lightBlackLight: #1c1c1c;
 $lightBlueDark: #00319f;

@@ -26,12 +26,12 @@ EmailManager = {
     };
     return config;
   },
-  SendEmail: function(templateName, message, fromName) {
+  SendEmail: function(templateName, message, userEmail) {
     var config;
     config = EmailManager.GetConfig();
     config.template_id = templateName;
     config.message = message;
-    config.from_name = "kmarmet1@gmail.com";
+    config.from_name = userEmail;
     return emailjs.send(config.service_id, config.template_id, config);
   },
   SendEmailToUser: function(templateName, message, userEmail, fromName) {

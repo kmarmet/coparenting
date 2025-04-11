@@ -21,7 +21,7 @@ export default ArchiveManager = {
     }
     // Remove headers the user does not need to see
     headers = headers.filter(function(header) {
-      return header !== "id" && header !== "shareWith" && header !== "imageName" && header !== "ownerKey";
+      return header !== "id" && header !== "isRecurring" && header !== "shareWith" && header !== "imageName" && header !== "ownerKey" && header !== "notificationSent" && header !== "senderKey" && header !== "recipientKey";
     });
     for (k = 0, len2 = headers.length; k < len2; k++) {
       header = headers[k];

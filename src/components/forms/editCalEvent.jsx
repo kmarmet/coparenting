@@ -2,35 +2,19 @@
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import {MobileDatePicker, MobileTimePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
-import {
-  PiBellSimpleRingingDuotone,
-  PiCalendarDotDuotone,
-  PiCalendarDotsDuotone,
-  PiGlobeDuotone,
-  PiNotepadDuotone,
-  PiUserCircleDuotone,
-} from 'react-icons/pi'
 import {BsCalendar2CheckFill} from 'react-icons/bs'
-import {FaChildren} from 'react-icons/fa6'
-import {MdEventRepeat, MdLocalPhone} from 'react-icons/md'
+import {MdEventRepeat} from 'react-icons/md'
 import React, {useContext, useEffect, useState} from 'react'
-import {BiSolidNavigation} from 'react-icons/bi'
-import {IoTimeOutline} from 'react-icons/io5'
-import {LiaMapMarkedAltSolid} from 'react-icons/lia'
-import 'react-toggle/style.css'
 import globalState from '../../context'
-import AddressInput from '../shared/addressInput'
-import Map from '../shared/map.jsx'
 import Spacer from '../shared/spacer.jsx'
-import StringAsHtmlElement from '../shared/stringAsHtmlElement'
+import {Fade} from 'react-awesome-reveal'
 import ViewSelector from '../shared/viewSelector'
 import Modal from '/src/components/shared/modal'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
-import DateFormats from '/src/constants/dateFormats'
+import DatetimeFormats from '/src/constants/datetimeFormats'
 import DB from '/src/database/DB'
 import DB_UserScoped from '/src/database/db_userScoped'
 import AlertManager from '/src/managers/alertManager'
@@ -45,6 +29,9 @@ import {default as CalendarMapper, default as CalMapper} from '/src/mappers/calM
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
 import ToggleButton from '../shared/toggleButton'
+import InputTypes from '../../constants/inputTypes'
+import DetailBlock from '../shared/detailBlock'
+import Map from '../shared/map'
 
 export default function EditCalEvent({event, showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
@@ -78,7 +65,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const [shareWithNames, setShareWithNames] = useState([])
   const [dataIsLoading, setDataIsLoading] = useState(true)
 
-  const resetForm = async (alertMessage) => {
+  const resetForm = async (alertMessage = '') => {
     Manager.resetForm('edit-event-form')
     setEventStartDate('')
     setEventLocation('')
@@ -99,7 +86,15 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setIsVisitation(false)
     setEventIsRecurring(false)
     setEventIsCloned(false)
-    setState({...state, successAlertMessage: alertMessage, dateToEdit: moment().format(DateFormats.dateForDb)})
+    const updatedUser = await DB_UserScoped.getCurrentUser(currentUser?.email)
+
+    setState({
+      ...state,
+      currentUser: updatedUser,
+      successAlertMessage: alertMessage,
+      dateToEdit: moment().format(DatetimeFormats.dateForDb),
+      refreshKey: Manager.getUid(),
+    })
     hideCard()
   }
 
@@ -111,12 +106,12 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     updatedEvent.title = eventName.trim()
     updatedEvent.reminderTimes = eventReminderTimes
     updatedEvent.shareWith = eventShareWith
-    updatedEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
-    updatedEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
+    updatedEvent.startDate = moment(eventStartDate).format(DatetimeFormats.dateForDb)
+    updatedEvent.endDate = moment(eventEndDate).format(DatetimeFormats.dateForDb)
 
     if (Manager.isValid(eventStartTime) && Manager.isValid(eventEndTime)) {
-      updatedEvent.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
-      updatedEvent.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
+      updatedEvent.startTime = moment(eventStartTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
+      updatedEvent.endTime = moment(eventEndTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
     }
 
     // Not Required
@@ -127,7 +122,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     updatedEvent.children = eventChildren
     updatedEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
     updatedEvent.location = eventLocation
-    updatedEvent.phone = eventPhone
+    updatedEvent.phone = StringManager.formatPhone(eventPhone)
     updatedEvent.isDateRange = eventIsDateRange
     updatedEvent.isCloned = eventIsCloned
     updatedEvent.repeatInterval = recurInterval
@@ -153,6 +148,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       }
 
       const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
+      const eventKey = await DB.getSnapshotKey(`${DB.tables.users}/${event?.ownerKey}`, event, 'id')
+      const shareWithWithoutCurrentUser = event.shareWith.filter((x) => x !== currentUser?.key)
+      await DB_UserScoped.updateByPath(`${DB.tables.users}/${event?.ownerKey}/${eventKey}/shareWith`, shareWithWithoutCurrentUser)
 
       // Update dates with multiple dates
       if (event?.isRecurring || event?.isDateRange || event?.isCloned) {
@@ -234,17 +232,17 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     updatedEvent.title = eventName
     updatedEvent.reminderTimes = eventReminderTimes
     updatedEvent.shareWith = eventShareWith
-    updatedEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
-    updatedEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
-    updatedEvent.phone = eventPhone
+    updatedEvent.startDate = moment(eventStartDate).format(DatetimeFormats.dateForDb)
+    updatedEvent.endDate = moment(eventEndDate).format(DatetimeFormats.dateForDb)
+    updatedEvent.phone = StringManager.formatPhone(eventPhone)
     updatedEvent.repeatInterval = recurInterval
     updatedEvent.isDateRange = eventIsDateRange
     updatedEvent.isCloned = eventIsCloned
     updatedEvent.isRecurring = eventIsRecurring
 
     if (Manager.isValid(eventStartTime) || Manager.isValid(eventEndTime)) {
-      updatedEvent.startTime = moment(eventStartTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
-      updatedEvent.endTime = moment(eventEndTime, DateFormats.timeForDb).format(DateFormats.timeForDb)
+      updatedEvent.startTime = moment(eventStartTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
+      updatedEvent.endTime = moment(eventEndTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
     }
 
     // Not Required
@@ -288,8 +286,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         if (!Manager.isValid(existing)) {
           return false
         }
-
-        hideCard()
 
         // Add cloned dates
         if (Manager.isValid(clonedDates)) {
@@ -388,7 +384,11 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       for (let key of event.shareWith) {
         let user = await DB_UserScoped.getCoparentByKey(key, currentUser)
         if (Manager.isValid(user)) {
-          names.push(StringManager.getFirstNameOnly(user.name))
+          if (user.key === currentUser?.key) {
+            names.push('Me')
+          } else {
+            names.push(StringManager.getFirstNameOnly(user.name))
+          }
         }
       }
       setShareWithNames(names)
@@ -405,6 +405,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
     const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
     const eventCount = allEvents.filter((x) => x.title === eventName).length
+
     if (eventCount === 1) {
       await CalendarManager.deleteEvent(currentUser, event.id)
       await resetForm('Event Deleted')
@@ -428,19 +429,14 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     return message
   }
 
-  const getTime = (time) => {
-    if (Manager.isValid(moment(time, 'hh:mma'))) {
-      return moment(time, 'hh:mma')
-    } else {
-      return null
+  const getCreatedBy = () => {
+    if (Manager.isValid(event?.createdBy)) {
+      if (event?.ownerKey === currentUser?.key) {
+        return 'Me'
+      } else {
+        return currentUser?.coparents.find((x) => x.key === event?.ownerKey)?.name
+      }
     }
-  }
-
-  const addThemeToDatePickers = () => {
-    setTimeout(() => {
-      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
-      datetimeParent.classList.add(currentUser?.settings?.theme)
-    }, 100)
   }
 
   // Loading until date/name are loaded
@@ -471,7 +467,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       onClose={async () => {
         await resetForm()
       }}
-      titleIcon={<PiCalendarDotsDuotone />}
       title={StringManager.formatEventTitle(StringManager.uppercaseFirstLetterOfAllWords(event?.title))}
       showCard={showCard}
       deleteButtonText="Delete Event"
@@ -495,169 +490,131 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           <>
             {/* DETAILS */}
             <div id="details" className={view === 'Details' ? 'view-wrapper details active' : 'view-wrapper'}>
-              <Spacer height={0} />
+              <hr className="top" />
+              <Fade direction={'up'} duration={800} triggerOnce={true}>
+                <div className="blocks">
+                  {/*  Date */}
+                  {!event?.isDateRange && (
+                    <DetailBlock
+                      valueToValidate={event?.startDate}
+                      text={moment(event?.startDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                      title={'Date'}
+                    />
+                  )}
 
-              {!event?.isDateRange && DateManager.isValidDate(event?.startDate) && (
-                <div className="flex">
-                  <b>
-                    <PiCalendarDotDuotone /> Date
-                  </b>
-                  <span className="">{moment(event?.startDate).format(DateFormats.readableMonthAndDay)}</span>
-                </div>
-              )}
-              {event?.isDateRange && DateManager.isValidDate(event?.endDate) && (
-                <div className="flex">
-                  <b>Dates</b>
-                  <span className="">
-                    {moment(event?.startDate).format(DateFormats.readableMonthAndDay)}&nbsp;to&nbsp;
-                    {moment(event?.endDate).format(DateFormats.readableMonthAndDay)}
-                  </span>
-                </div>
-              )}
+                  {/*  End Date */}
+                  <DetailBlock valueToValidate={event?.endDate} text={event?.endDate} title={'End Date'} />
 
-              {/* START TIME */}
-              {DateManager.isValidDate(event?.startTime) && DateManager.isValidDate(event?.endTime) && (
-                <div className="flex">
-                  <b>
-                    <IoTimeOutline />
-                    Time
-                  </b>
-                  <span className="">
-                    {event?.startTime} to {event?.endTime}
-                  </span>
-                </div>
-              )}
+                  {/*  Start Time */}
+                  <DetailBlock
+                    valueToValidate={event?.startTime}
+                    text={moment(event?.startTime, DatetimeFormats.timeForDb).format('ha')}
+                    title={'Start Time'}
+                  />
 
-              {/* END TIME */}
-              {DateManager.isValidDate(event?.startTime) && !DateManager.isValidDate(event?.endTime) && (
-                <div className="flex">
-                  <b>
-                    <IoTimeOutline />
-                    Time
-                  </b>
-                  <span className="">{event?.startTime}</span>
-                </div>
-              )}
+                  {/*  End Time */}
+                  <DetailBlock
+                    valueToValidate={event?.endTime}
+                    text={moment(event?.endTime, DatetimeFormats.timeForDb).format('ha')}
+                    title={'End time'}
+                  />
 
-              {/* SHARE WITH */}
-              {Manager.isValid(eventShareWith) && (
-                <div className="flex">
-                  <b>
-                    <PiUserCircleDuotone />
-                    Shared with
-                  </b>
-                  <span className="">{shareWithNames?.join(', ')}</span>
-                </div>
-              )}
+                  {/*  Created By */}
+                  <DetailBlock valueToValidate={event?.createdBy} text={getCreatedBy()} title={'Created By'} />
 
-              {/* REMINDERS */}
-              {Manager.isValid(event?.reminderTimes) && (
-                <div className="flex reminders">
-                  <b>
-                    <PiBellSimpleRingingDuotone />
-                    Reminders
-                  </b>
-                  <div id="reminder-times">
-                    {Manager.isValid(event?.reminderTimes) &&
-                      event?.reminderTimes.map((time, index) => {
-                        time = CalMapper.readableReminderBeforeTimeframes(time)
-                        time = StringManager.uppercaseFirstLetterOfAllWords(time).replaceAll('Of', 'of')
-                        return <span key={index}>{time}</span>
-                      })}
+                  {/*  Shared With */}
+                  <DetailBlock valueToValidate={event?.shareWith} text={shareWithNames?.join(', ')} title={'Shared With'} />
+
+                  {/* Reminders */}
+                  {Manager.isValid(event?.reminderTimes) && (
+                    <div className="block">
+                      {Manager.isValid(event?.reminderTimes) &&
+                        event?.reminderTimes.map((time, index) => {
+                          time = CalMapper.readableReminderBeforeTimeframes(time).replace('before', '')
+                          time = time.replace('At', '')
+                          time = StringManager.uppercaseFirstLetterOfAllWords(time)
+                          return (
+                            <p className="block-text" key={index}>
+                              {time}
+                            </p>
+                          )
+                        })}
+                      <p className="block-title">Reminders</p>
+                    </div>
+                  )}
+
+                  {/* Children */}
+                  {Manager.isValid(event?.children) && (
+                    <div className="block">
+                      {Manager.isValid(event?.children) &&
+                        event?.children.map((child, index) => {
+                          return (
+                            <p className="block-text" key={index}>
+                              {child}
+                            </p>
+                          )
+                        })}
+                      <p className="block-title">Children</p>
+                    </div>
+                  )}
+
+                  {/*  Notes */}
+                  <DetailBlock valueToValidate={event?.notes} text={event?.notes} isFullWidth={true} title={'Notes'} />
+                </div>
+                <hr className="bottom" />
+
+                <div className="blocks">
+                  {/*  Phone */}
+                  <DetailBlock valueToValidate={event?.phone} isPhone={true} text={StringManager.formatPhone(event?.phone)} title={'Call'} />
+
+                  {/*  Website */}
+                  <DetailBlock
+                    valueToValidate={event?.websiteUrl}
+                    linkUrl={event?.websiteUrl}
+                    text={decodeURIComponent(event?.websiteUrl)}
+                    isLink={true}
+                    title={'Website'}
+                  />
+
+                  {/*  Location */}
+                  <DetailBlock valueToValidate={event?.location} isNavLink={true} text={event?.location} linkUrl={event?.location} title={'Go'} />
+                </div>
+
+                {event?.isDateRange && DateManager.isValidDate(event?.endDate) && (
+                  <div className="flex">
+                    <b>Dates</b>
+                    <span>
+                      {moment(event?.startDate).format(DatetimeFormats.readableMonthAndDay)}&nbsp;to&nbsp;
+                      {moment(event?.endDate).format(DatetimeFormats.readableMonthAndDay)}
+                    </span>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* CHILDREN */}
-              {Manager.isValid(event?.children) && (
-                <div className="flex children">
-                  <b>
-                    <FaChildren />
-                    Children
-                  </b>
-                  <div id="children">
-                    {Manager.isValid(event?.children) &&
-                      event?.children.map((child, index) => {
-                        return <span key={index}>{child}</span>
-                      })}
-                  </div>
-                </div>
-              )}
-
-              {/* WEBSITE */}
-              {Manager.isValid(event?.websiteUrl) && (
-                <div className="flex">
-                  <b>
-                    <PiGlobeDuotone />
-                    Website/Link
-                  </b>
-                  <a className="" href={decodeURIComponent(event?.websiteUrl)} target="_blank" rel="noreferrer">
-                    {decodeURIComponent(event?.websiteUrl)}
-                  </a>
-                </div>
-              )}
-
-              {/* PHONE */}
-              {Manager.isValid(event?.phone) && (
-                <div className="flex">
-                  <b>
-                    <MdLocalPhone />
-                    Phone
-                  </b>
-                  <a className="" href={`tel:${event?.phone}`} target="_blank" rel="noreferrer">
-                    {StringManager.getReadablePhoneNumber(event?.phone)}
-                  </a>
-                </div>
-              )}
-
-              {/* NOTES */}
-              {Manager.isValid(event?.notes) && (
-                <div className={`${StringManager.addLongTextClass(event?.notes)} flex`}>
-                  <b>
-                    <PiNotepadDuotone />
-                    Notes
-                  </b>
-                  <StringAsHtmlElement text={event?.notes} />
-                </div>
-              )}
-
-              {/* LOCATION */}
-              {Manager.isValid(event?.location) && (
-                <>
+                {/* Recurring Frequency */}
+                {event?.isRecurring && (
                   <div className="flex">
                     <b>
-                      <LiaMapMarkedAltSolid />
-                      Location
+                      <MdEventRepeat />
+                      DatetimeFormats
                     </b>
-                    <span>{event?.location}</span>
+                    <span>{StringManager.uppercaseFirstLetterOfAllWords(event?.recurringFrequency)}</span>
                   </div>
+                )}
 
-                  <a className=" nav-detail" href={event?.directionsLink} target="_blank" rel="noreferrer">
-                    <BiSolidNavigation /> Navigation
-                  </a>
-                  <Map key={event?.id} locationString={event?.location} />
-                </>
-              )}
-
-              {/* REPEAT INTERVAL */}
-              {event?.isRecurring && (
-                <div className="flex">
-                  <b>
-                    <MdEventRepeat />
-                    Recurrence Interval
-                  </b>
-                  <span className="">{StringManager.uppercaseFirstLetterOfAllWords(event?.recurrenceInterval)}</span>
-                </div>
-              )}
+                {/* Map */}
+                {Manager.isValid(event?.location) && <Map locationString={event?.location} />}
+              </Fade>
             </div>
 
+            {/* EDIT */}
             <div id="edit" className={view === 'Edit' ? 'view-wrapper edit active content' : 'view-wrapper content'}>
               <Spacer height={5} />
               {/* EVENT NAME */}
               <InputWrapper
-                inputType={'input'}
+                inputType={InputTypes.text}
                 labelText={'Event Name'}
                 defaultValue={event?.title}
+                wrapperClasses="show-label"
                 required={true}
                 onChange={async (e) => {
                   const inputValue = e.target.value
@@ -668,58 +625,43 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               />
 
               {/* DATE */}
-              <div className="flex" id={'date-input-container'}>
-                {!eventIsDateRange && (
-                  <InputWrapper labelText={'Date'} required={true} inputType={'date'}>
-                    <MobileDatePicker
-                      value={DateManager.dateOrNull(moment(dateToEdit))}
-                      onOpen={addThemeToDatePickers}
-                      className={`${theme} event-from-date`}
-                      yearsPerRow={4}
-                      onAccept={(e) => {
-                        setEventStartDate(e)
-                      }}
-                    />
-                  </InputWrapper>
-                )}
-              </div>
+              {!eventIsDateRange && (
+                <div className="flex" id={'date-input-container'}>
+                  <InputWrapper
+                    labelText={'Date'}
+                    uidClass="event-from-date"
+                    required={true}
+                    inputType={InputTypes.date}
+                    onDateOrTimeSelection={(date) => setEventStartDate(date)}
+                    defaultValue={DateManager.dateOrNull(moment(dateToEdit))}
+                  />
+                </div>
+              )}
 
               {/* EVENT START/END TIME */}
               {!eventIsDateRange && (
                 <div className="flex gap time-inputs-wrapper">
                   {/* START TIME */}
-                  <InputWrapper wrapperClasses="start-time" labelText={'Start Time'} required={false} inputType={'date'}>
-                    <MobileTimePicker
-                      slotProps={{
-                        actionBar: {
-                          actions: ['clear', 'accept'],
-                        },
-                      }}
-                      onOpen={addThemeToDatePickers}
-                      value={getTime(event?.startTime)}
-                      minutesStep={5}
-                      key={refreshKey}
-                      className={`${theme}`}
-                      onAccept={(e) => setEventStartTime(e)}
-                    />
-                  </InputWrapper>
+                  <InputWrapper
+                    wrapperClasses="start-time"
+                    labelText={'Start Time'}
+                    uidClass="event-start-time"
+                    required={false}
+                    inputType={InputTypes.time}
+                    defaultValue={event?.startTime}
+                    onDateOrTimeSelection={(e) => setEventStartTime(e)}
+                  />
 
                   {/* END TIME */}
-                  <InputWrapper wrapperClasses="end-time" labelText={'End Time'} required={false} inputType={'date'}>
-                    <MobileTimePicker
-                      key={refreshKey}
-                      slotProps={{
-                        actionBar: {
-                          actions: ['clear', 'accept'],
-                        },
-                      }}
-                      onOpen={addThemeToDatePickers}
-                      value={getTime(event?.endTime)}
-                      minutesStep={5}
-                      className={`${theme}`}
-                      onAccept={(e) => setEventEndTime(e)}
-                    />
-                  </InputWrapper>
+                  <InputWrapper
+                    uidClass="event-end-time"
+                    wrapperClasses="end-time"
+                    labelText={'End Time'}
+                    required={false}
+                    defaultValue={event?.endTime}
+                    inputType={InputTypes.time}
+                    onDateOrTimeSelection={(e) => setEventEndTime(e)}
+                  />
                 </div>
               )}
 
@@ -801,30 +743,44 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   </AccordionDetails>
                 </Accordion>
               )}
+
+              <Spacer height={5} />
+
               {/* URL/WEBSITE */}
               <InputWrapper
-                wrapperClasses="mt-15"
                 defaultValue={event?.websiteUrl}
                 labelText={'URL/Website'}
+                wrapperClasses={Manager.isValid(event?.websiteUrl) ? 'show-label' : ''}
                 required={false}
-                inputType={'input'}
+                inputType={InputTypes.url}
                 onChange={(e) => setEventWebsiteUrl(e.target.value)}
               />
-
               {/* LOCATION/ADDRESS */}
-              <InputWrapper defaultValue={event?.location} labelText={'Location'} required={false} inputType={'location'}>
-                <AddressInput defaultValue={event?.location} onSelection={(address) => setEventLocation(address)} />
-              </InputWrapper>
+              <InputWrapper
+                defaultValue={event?.location}
+                wrapperClasses={Manager.isValid(event?.location) ? 'show-label' : ''}
+                labelText={'Location'}
+                required={false}
+                onChange={(address) => setEventLocation(address)}
+                inputType={InputTypes.address}
+              />
 
               {/* PHONE */}
-              <InputWrapper defaultValue={event?.phone} inputValueType="tel" labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
+              <InputWrapper
+                wrapperClasses={Manager.isValid(event?.phone) ? 'show-label' : ''}
+                defaultValue={event?.phone}
+                inputType={InputTypes.phone}
+                labelText={'Phone'}
+                onChange={(e) => setEventPhone(e.target.value)}
+              />
 
               {/* NOTES */}
               <InputWrapper
                 defaultValue={event?.notes}
                 labelText={'Notes'}
                 required={false}
-                inputType={'textarea'}
+                wrapperClasses={Manager.isValid(event?.notes) ? 'show-label textarea' : 'textarea'}
+                inputType={InputTypes.textarea}
                 onChange={(e) => setEventNotes(e.target.value)}
               />
             </div>

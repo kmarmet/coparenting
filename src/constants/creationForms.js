@@ -9,7 +9,8 @@ CreationForms = {
   transferRequest: "new-transfer-request",
   memories: "new-memory",
   documents: "documents",
-  chat: "new-chat"
+  chat: "new-chat",
+  coparent: "new-coparent"
 };
 
 export default CreationForms;

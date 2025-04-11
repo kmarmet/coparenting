@@ -11,8 +11,9 @@
       .due-date {
         font-weight: $fwRegular;
         font-size: 14px;
-
+        white-space: nowrap;
         color: $subtitleText;
+        padding-top: 4px;
 
         &.no-due-date {
           font-style: italic;
@@ -76,33 +77,28 @@
     #default-expense-amounts {
       gap: 8px;
       justify-content: center;
-      display: flex;
-      grid-template-columns: repeat(4, 1fr);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       margin: 15px auto;
       flex-wrap: wrap;
 
-      .reset {
-        font-weight: $fwMedium;
-        background: $accent;
-        color: white;
-        width: 100%;
-      }
-
       button {
-        border-radius: $borderRadius;
-        width: calc(100% / 4);
-        border: 0;
-        color: black;
-        padding: 15px 10px;
+        border-radius: $buttonBorderRadius;
+        //        width: calc(100% / 4);
+        color: $darkestGrey;
+        padding: 20px 20px;
+        height: unset;
         text-align: center;
+        font-size: 18px;
         &.pressed {
           border-radius: $borderRadius;
           transform: scale(1.1);
         }
         &.reset {
           opacity: 1;
-          margin-top: 10px;
-          width: 100%;
+          font-weight: $fwMedium;
+          background: $accent;
+          color: white;
         }
       }
 
@@ -350,6 +346,7 @@
           font-weight: $fwMedium;
           width: 100%;
           display: inline;
+          white-space: nowrap;
         }
       }
 

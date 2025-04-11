@@ -6,6 +6,16 @@ import Swal from "sweetalert2";
 import DomManager from "./domManager";
 
 AlertManager = {
+  ThreeButtonAlertConfig: {
+    title: "",
+    onConfirm: () => {},
+    onDeny: () => {},
+    onCancel: () => {},
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Yes",
+    denyButtonText: "Nvm",
+    showThirdButton: false
+  },
   throwError: function(title, text) {
     Swal.fire({
       title: title,
@@ -131,6 +141,44 @@ animate__faster`
       if (result.isConfirmed) {
         if (onConfirm) {
           return onConfirm(result);
+        }
+      }
+    });
+  },
+  threeButtonAlert: function(config) {
+    return Swal.fire({
+      showClass: {
+        popup: `animate__animated
+animate__fadeInUp
+animate__faster`
+      },
+      hideClass: {
+        popup: `animate__animated
+animate__fadeOutDown
+animate__faster`
+      },
+      title: config.title,
+      showDenyButton: config.showThirdButton,
+      showCancelButton: true,
+      confirmButtonText: config.confirmButtonText,
+      denyButtonText: config.denyButtonText,
+      cancelButtonText: config.cancelButtonText,
+      confirmButtonColor: '#00b389 !important',
+      allowOutsideClick: false
+    }).then(function(result) {
+      if (result.isConfirmed) {
+        if (config.onConfirm) {
+          config.onConfirm(result);
+        }
+      }
+      if (result.isDismissed) {
+        if (config.onCancel) {
+          config.onCancel(result);
+        }
+      }
+      if (result.isDenied) {
+        if (config.onDeny) {
+          return config.onDeny(result);
         }
       }
     });

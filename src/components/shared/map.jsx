@@ -1,14 +1,14 @@
 // Path: src\components\shared\map.jsx
-import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api'
-import { useState, useCallback, useMemo, useEffect, useContext } from 'react'
-import { setKey, fromAddress } from 'react-geocode'
+import {GoogleMap, MarkerF, useJsApiLoader} from '@react-google-maps/api'
+import React, {useCallback, useContext, useEffect, useState} from 'react'
+import {fromAddress, setKey} from 'react-geocode'
 import globalState from '../../context.js'
 import Manager from '../../managers/manager.js'
 import LocationManager from '../../managers/locationManager.js'
 
-export default function Map({ locationString }) {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, refreshKey } = state
+export default function Map({locationString}) {
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, refreshKey} = state
   const [map, setMap] = useState(null)
   const [mapCenter, setMapCenter] = useState(null)
 
@@ -18,22 +18,19 @@ export default function Map({ locationString }) {
     width: '100%',
     height: '350px',
     borderRadius: '15px',
+    border: '2px solid #e5e5e5',
   }
 
   // GoogleMaps loading instructions
-  const { isLoaded } = useJsApiLoader({
+  const {isLoaded} = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     version: 'weekly',
   })
 
-  // onload function for loading the map
-  const onLoad = useCallback(
-    function callback(map) {
-      setMap(map)
-    },
-    [mapCenter]
-  )
+  const onLoad = (map) => {
+    setMap(map)
+  }
 
   const onUnmount = useCallback(function callback(map) {
     setMapCenter(null)
@@ -41,27 +38,31 @@ export default function Map({ locationString }) {
   }, [])
 
   const retrySetMapCenter = () => {
-    fromAddress(locationString).then(({ results }) => {
-      const location = results[0].geometry.location
-      setMapCenter({
-        lat: location.lat,
-        lng: location.lng,
-      })
-    })
-  }
-
-  useEffect(() => {
-    LocationManager.getCoordsFromLocation(locationString)
-      .then(({ results }) => {
+    if (Manager.isValid(locationString, true)) {
+      fromAddress(locationString).then(({results}) => {
         const location = results[0].geometry.location
         setMapCenter({
           lat: location.lat,
           lng: location.lng,
         })
       })
-      .catch(() => {
-        retrySetMapCenter()
-      })
+    }
+  }
+
+  useEffect(() => {
+    if (Manager.isValid(locationString, true)) {
+      LocationManager.getCoordsFromLocation(locationString)
+        .then(({results}) => {
+          const location = results[0].geometry.location
+          setMapCenter({
+            lat: location.lat,
+            lng: location.lng,
+          })
+        })
+        .catch(() => {
+          retrySetMapCenter()
+        })
+    }
   }, [])
 
   // Function executed when a marker is clicked
@@ -88,7 +89,7 @@ export default function Map({ locationString }) {
         zoom={zoom}
         onLoad={onLoad}
         onUnmount={onUnmount}>
-        {Manager.isValid(mapCenter) && <MarkerF position={{ lat: mapCenter.lat, lng: mapCenter.lng }} onClick={markerClicked}></MarkerF>}
+        {Manager.isValid(mapCenter) && <MarkerF position={{lat: mapCenter.lat, lng: mapCenter.lng}} onClick={markerClicked}></MarkerF>}
       </GoogleMap>
     </div>
   ) : (

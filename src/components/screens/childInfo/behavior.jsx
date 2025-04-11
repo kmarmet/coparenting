@@ -12,6 +12,7 @@ import DB from '/src/database/DB'
 import StringManager from '../../../managers/stringManager'
 import {FaBrain, FaMinus, FaPlus} from 'react-icons/fa6'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
+import InputTypes from '../../../constants/inputTypes'
 
 export default function Behavior() {
   const {state, setState} = useContext(globalState)
@@ -108,7 +109,7 @@ export default function Behavior() {
                       <InputWrapper
                         customDebounceDelay={1200}
                         isDebounced={true}
-                        inputType={'input'}
+                        inputType={InputTypes.text}
                         defaultValue={value}
                         labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
                         onChange={async (e) => {

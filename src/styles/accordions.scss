@@ -62,6 +62,9 @@
 
       /*#region  EXPENSES*/
       &#expenses-accordion {
+        #filters {
+          padding: 0 10px 10px 10px;
+        }
         .buttons {
           gap: 8px;
           width: 100%;

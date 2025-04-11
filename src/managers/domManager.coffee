@@ -1,6 +1,17 @@
 import Manager from "./manager"
 
 DomManager = {
+  setDefaultView: () ->
+    activeModal = document.querySelector('#modal.active')
+    if activeModal
+      detailsView = activeModal.querySelector('.view.active')
+      if detailsView
+        allViews = activeModal.querySelectorAll('.view')
+
+        if Manager.isValid(allViews)
+          if detailsView
+            detailsView.click()
+            allViews[0].classList.add('active')
 
   toggleActive: (element) ->
     element.classList.toggle("active")
@@ -23,6 +34,17 @@ DomManager = {
     text = document.getElementById('swal2-html-container')
     if text
       text.style.color = 'white'
+
+  autoExpandingHeight: (e) ->
+    textarea = e.target
+    if Manager.isValid textarea
+      textarea?.style?.height = ''
+      textarea?.style?.height = Math.min(textarea?.scrollHeight, 300) + 'px'
+
+  unsetHeight: (e) ->
+    element = e.target
+    if Manager.isValid element
+      element?.style?.height = 'unset'
 
   isMobile: () -> window.screen.width < 801
 

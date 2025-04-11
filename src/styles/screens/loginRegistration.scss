@@ -1,6 +1,20 @@
 // Path: src\styles\screens\loginRegistration.scss
 @import '../mixins';
 #external-overrides {
+  #back-to-login-button {
+    &.default {
+      @include centerHoriz;
+      border: 0;
+      border-radius: 0;
+      position: fixed;
+      bottom: 0;
+      min-height: 0;
+      background-color: $grey;
+      height: 68px;
+      width: 100%;
+      margin: 0;
+    }
+  }
   // REGISTRATION
   #registration-container {
     position: relative;
@@ -26,20 +40,6 @@
       min-height: 0;
       margin-top: 15px;
       margin-bottom: 30px;
-    }
-
-    #back-to-login-button {
-      @include centerHoriz;
-      border: 0;
-      border-radius: 0;
-      position: fixed;
-      bottom: 0;
-      padding: 15px;
-      min-height: 0;
-      color: $linkColor;
-      background-color: white;
-      width: 100%;
-      margin: 0;
     }
 
     #install-button {
@@ -161,7 +161,7 @@
         }
       }
 
-      button {
+      button:not(#back-to-login-button) {
         display: block;
         margin: 0 auto 10px auto;
         font-size: 16px;
@@ -243,19 +243,17 @@
       justify-content: center;
       font-weight: bold;
       width: 150px;
-      font-size: 12px;
-      margin: 0 auto 0 auto;
+      font-size: 13px;
+      margin: 0 auto;
       min-width: 0;
-      padding: 0 10px;
-      height: 30px;
       z-index: 10000;
       color: white;
-      @include blueGlow();
-      border-radius: 50px;
+      //      @include blueGlow();
+      height: 50px;
       background: $mainBlue;
-      animation: beat 2s infinite;
       text-transform: uppercase;
-
+      border-radius: $buttonBorderRadius;
+      @include shadow;
       @include hover;
     }
 
@@ -283,10 +281,8 @@
       margin: 15px auto 0;
 
       b {
-        font-weight: $fwMedium;
+        font-weight: $fwMediumBold;
         font-style: italic;
-        opacity: 0.8;
-        font-size: 18px;
       }
 
       span {
@@ -307,12 +303,13 @@
         width: 100%;
         text-align: center;
         font-style: italic;
+        color: $primaryText;
 
         &#author {
-          font-size: 16px;
           width: 100%;
           text-align: center;
-          opacity: 0.6;
+          font-size: 14px;
+          color: $darkerGrey;
         }
       }
     }

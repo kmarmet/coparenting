@@ -9,6 +9,8 @@ import _ from 'lodash'
 import AlertManager from '../../../managers/alertManager'
 import InputWrapper from '../../shared/inputWrapper'
 import StringManager from '../../../managers/stringManager.coffee'
+import InputTypes from '../../../constants/inputTypes'
+import Spacer from '../../shared/spacer'
 
 export default function CustomCoparentInfo({hideCard, activeCoparent, showCard}) {
   const {state, setState} = useContext(globalState)
@@ -46,9 +48,15 @@ export default function CustomCoparentInfo({hideCard, activeCoparent, showCard})
       title={'Add Custom Info'}
       showCard={showCard}
       onClose={resetForm}>
+      <Spacer height={8} />
       <div className="custom-coparent-info-wrapper">
-        <InputWrapper inputType={'input'} labelText={'Title/Label*'} onChange={(e) => setTitle(StringManager.removeSpecialChars(e.target.value))} />
-        <InputWrapper inputType={'input'} labelText={'Value*'} onChange={(e) => setValue(e.target.value)} />
+        <InputWrapper
+          inputType={InputTypes.text}
+          required={true}
+          labelText={'Title/Label'}
+          onChange={(e) => setTitle(StringManager.removeSpecialChars(e.target.value))}
+        />
+        <InputWrapper inputType={InputTypes.text} required={true} labelText={'Value'} onChange={(e) => setValue(e.target.value)} />
       </div>
     </Modal>
   )

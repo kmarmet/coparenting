@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React from 'react'
 
-export default function StringAsHtmlElement({ text }) {
-  return <span className={`string-as-html`} dangerouslySetInnerHTML={{ __html: text }}></span>
+export default function StringAsHtmlElement({text, classes = ''}) {
+  return <p className={classes} dangerouslySetInnerHTML={{__html: text}}></p>
 }

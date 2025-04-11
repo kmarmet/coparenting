@@ -1,43 +1,34 @@
 // Path: src\components\screens\home.jsx
-import React, { useContext, useEffect } from 'react'
+import React, {useContext, useEffect} from 'react'
 import globalState from '../../context'
-import { Fade } from 'react-awesome-reveal'
-import { PiCalendarDotsDuotone, PiMoneyWavyDuotone } from 'react-icons/pi'
-import { AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool } from 'react-icons/ai'
+import {Fade} from 'react-awesome-reveal'
+import {PiCalendarDotsDuotone, PiDevicesFill} from 'react-icons/pi'
+import {AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool} from 'react-icons/ai'
 import DomManager from '/src/managers/domManager'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { IoDocumentText } from 'react-icons/io5'
-import { BsFillEnvelopeHeartFill } from 'react-icons/bs'
-import { PiDevicesFill } from 'react-icons/pi'
-import { IoPeopleCircle } from 'react-icons/io5'
+import {getAuth, onAuthStateChanged} from 'firebase/auth'
+import {IoSyncCircle} from 'react-icons/io5'
+import {BsFillEnvelopeHeartFill} from 'react-icons/bs'
 import firebaseConfig from '/src/firebaseConfig'
-import { initializeApp } from 'firebase/app'
-import { MdPeopleAlt } from 'react-icons/md'
-import { TbArrowBadgeRight, TbSunMoon } from 'react-icons/tb'
-import { MdLooksOne } from 'react-icons/md'
-import { IoIosChatbubbles } from 'react-icons/io'
+import {initializeApp} from 'firebase/app'
+import {MdLooksOne, MdPeopleAlt, MdStyle} from 'react-icons/md'
+import {TbSunMoon} from 'react-icons/tb'
+import {IoIosArrowDown, IoIosArrowUp, IoIosChatbubbles} from 'react-icons/io'
 import Logo from '../../img/logo.png'
-import { GiStarFormation } from 'react-icons/md'
-import { IoSyncCircle } from 'react-icons/io5'
-import { FaRegHandshake } from 'react-icons/fa'
-import { MdStyle } from 'react-icons/md'
-import { useLongPress } from 'use-long-press'
+import {useLongPress} from 'use-long-press'
 import ScreenNames from '/src/constants/screenNames'
 import Manager from '/src/managers/manager'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import AppManager from '/src/managers/appManager.js'
 import HomescreenSections from '/src/models/homescreenSections.js'
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
-import { GiStarFormation } from 'react-icons/gi'
-import { LazyLoadImage } from 'react-lazy-load-image-component'
+import {LazyLoadImage} from 'react-lazy-load-image-component'
 import Spacer from '../shared/spacer'
 
 export default function Home() {
-  const { state, setState } = useContext(globalState)
-  const { theme, currentUser } = state
+  const {state, setState} = useContext(globalState)
+  const {theme, currentUser} = state
   const bind = useLongPress((element) => {
-    setState({ ...state, currentScreen: ScreenNames.login })
+    setState({...state, currentScreen: ScreenNames.login})
   })
   // Init Firebase
   const app = initializeApp(firebaseConfig)
@@ -78,7 +69,7 @@ export default function Home() {
     scrollToTopButton.classList.remove('hide')
 
     const header = document.getElementById('home-navbar')
-    header.scrollIntoView({ behavior: 'smooth' })
+    header.scrollIntoView({behavior: 'smooth'})
   }
 
   useEffect(() => {
@@ -101,7 +92,7 @@ export default function Home() {
         // setState({ ...state, isLoading: true })
       } else {
         // No user is signed in.
-        setState({ ...state, isLoading: false })
+        setState({...state, isLoading: false})
       }
     })
 
@@ -110,7 +101,7 @@ export default function Home() {
       const whyUsSection = document.querySelector('.unique-features.section')
       if (queryStringSection === HomescreenSections.whyUs) {
         if (whyUsSection) {
-          whyUsSection.scrollIntoView({ behavior: 'smooth' })
+          whyUsSection.scrollIntoView({behavior: 'smooth'})
         }
       }
     }
@@ -174,7 +165,8 @@ export default function Home() {
         </p>
       </div>
 
-      <hr className="hr" />
+      <Spacer height={10} />
+
       {/* BELOW FOLD */}
       <div id="below-fold-wrapper">
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
@@ -567,7 +559,6 @@ export default function Home() {
         {/* DOCUMENTS */}
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div id="documents" className="section text-box documents">
-            <IoDocumentText />
             <div className="flex text-columns">
               <div className="text-wrapper left">
                 <p className="title">Effortlessly View your Documents</p>
@@ -609,7 +600,6 @@ export default function Home() {
         {/* EXPENSES */}
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
           <div id="expenses-wrapper" className="section expenses">
-            <PiMoneyWavyDuotone />
             <div className="text-wrapper">
               <p className="title">Track Expenses and Share Responsibilities</p>
               <p className="text subtitle">Transparency in Shared Financial Responsibilities</p>

@@ -168,15 +168,17 @@
   }
 }
 @keyframes pulse {
-  0%, 100% {
-    color: "#9d98fc";
+  0%,
+  100% {
+    color: '#9d98fc';
   }
   50% {
     color: #5c8df7;
   }
 }
 @keyframes pulseWhite {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0px 0px 20px 0px white;
   }
   50% {
@@ -273,26 +275,86 @@
 }
 @keyframes topBubbles {
   0% {
-    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%, 40% 90%, 55% 90%, 70% 90%;
+    background-position:
+      5% 90%,
+      10% 90%,
+      10% 90%,
+      15% 90%,
+      25% 90%,
+      25% 90%,
+      40% 90%,
+      55% 90%,
+      70% 90%;
   }
   50% {
-    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%, 50% 50%, 65% 20%, 90% 30%;
+    background-position:
+      0% 80%,
+      0% 20%,
+      10% 40%,
+      20% 0%,
+      30% 30%,
+      22% 50%,
+      50% 50%,
+      65% 20%,
+      90% 30%;
   }
   100% {
-    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%, 50% 40%, 65% 10%, 90% 20%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    background-position:
+      0% 70%,
+      0% 10%,
+      10% 30%,
+      20% -10%,
+      30% 20%,
+      22% 40%,
+      50% 40%,
+      65% 10%,
+      90% 20%;
+    background-size:
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%;
   }
 }
 @keyframes bottomBubbles {
   0% {
-    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%, 70% -10%, 70% 0%;
+    background-position:
+      10% -10%,
+      30% 10%,
+      55% -10%,
+      70% -10%,
+      85% -10%,
+      70% -10%,
+      70% 0%;
   }
   50% {
-    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%, 105% 0%;
+    background-position:
+      0% 80%,
+      20% 80%,
+      45% 60%,
+      60% 100%,
+      75% 70%,
+      95% 60%,
+      105% 0%;
   }
   100% {
-    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%, 110% 10%;
-    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    background-position:
+      0% 90%,
+      20% 90%,
+      45% 70%,
+      60% 110%,
+      75% 80%,
+      95% 70%,
+      110% 10%;
+    background-size:
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%,
+      0% 0%;
   }
 }
 @keyframes rotate {
@@ -349,229 +411,33 @@
 /*#endregion  COMPONENTS*/
 /*#region  MENU*/
 /*#endregion  MENU*/
-#update-contact-info-container button {
-  margin: 0 auto;
-}
-
-#child-info-container #coparent-info .info-section {
-  max-height: 60px;
-  overflow: hidden;
-  margin-bottom: 5px;
-  transition: max-height 0.3s ease-in-out;
-}
-#child-info-container #coparent-info .info-section.active {
-  max-height: 1000px;
-}
-#child-info-container #coparent-info .info-section.active .header {
-  border-bottom: 0;
-}
-#child-info-container #coparent-info .info-section .header {
-  display: flex;
-  justify-content: space-between;
-  display: flex;
-  align-items: center;
-  width: calc(100vw - 30px);
-  position: relative;
-  flex-wrap: wrap;
-  line-height: 1;
-  justify-content: space-between;
-  margin: 0 auto;
-  margin-bottom: 10px;
-  border-bottom: 1px solid rgba(214, 219, 222, 0.45);
-  padding-bottom: 10px;
+#external-overrides #chat-request-container .signature-pad {
   width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  display: flex;
-}
-#child-info-container #coparent-info .info-section .header.active {
-  max-height: 10000px;
-  transition: all 0.3s ease-in-out;
-}
-#child-info-container #coparent-info .info-section .header.chats {
-  padding-bottom: 8px;
-}
-@media screen and (min-width: 650px) {
-  #child-info-container #coparent-info .info-section .header:hover {
-    cursor: pointer;
-  }
-}
-#child-info-container #coparent-info .info-section .header * {
-  line-height: 1;
-}
-#child-info-container #coparent-info .info-section .header .at-symbol {
-  font-size: 12px;
-  position: relative;
-  bottom: 2px;
-}
-#child-info-container #coparent-info .info-section .header .divider {
-  padding: 0 5px;
-  opacity: 0.7;
-  color: black;
-}
-#child-info-container #coparent-info .info-section .header a,
-#child-info-container #coparent-info .info-section .header .notes {
-  width: 100%;
-}
-#child-info-container #coparent-info .info-section .header a.notes,
-#child-info-container #coparent-info .info-section .header .notes.notes {
-  opacity: 0.85;
-}
-#child-info-container #coparent-info .info-section .header .two-column {
-  width: calc(100% - 45px);
-  flex-wrap: wrap;
-}
-#child-info-container #coparent-info .info-section .header .two-column p,
-#child-info-container #coparent-info .info-section .header .two-column a {
-  margin-top: 0;
-  line-height: 1.3;
-}
-#child-info-container #coparent-info .info-section .header .status {
-  margin-left: auto;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 300;
-  display: flex;
-  align-items: center;
-  line-height: 1;
-}
-#child-info-container #coparent-info .info-section .header .status.paid, #child-info-container #coparent-info .info-section .header .status.approved {
-  background-color: rgba(173, 245, 203, 0.65);
-  color: #2ecc71;
-  border: 1px solid #2ecc71;
-}
-#child-info-container #coparent-info .info-section .header .status.pending {
-  background-color: #fbf5bf;
-  color: #e8964a;
-  border: 1px solid #e8964a;
-}
-#child-info-container #coparent-info .info-section .header .status.unpaid, #child-info-container #coparent-info .info-section .header .status.rejected {
-  background-color: #f5e0e1;
-  color: #d57179;
-  border: 1px solid #d57179;
-}
-#child-info-container #coparent-info .info-section .header #subtitle {
-  padding-top: 5px;
-  margin-top: 0;
-  width: 100%;
-  line-height: 1;
-  font-size: 14px;
-  color: black;
-  opacity: 0.9;
-}
-#child-info-container #coparent-info .info-section .header #subtitle.calendar {
-  margin-left: 20px;
-}
-#child-info-container #coparent-info .info-section .header #content {
-  width: calc(100% - 60px);
-  margin: 0;
-}
-#child-info-container #coparent-info .info-section .header #primary-icon-wrapper {
-  background-color: #edf2fd;
-  height: 45px;
-  width: 45px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-#child-info-container #coparent-info .info-section .header #primary-icon-wrapper #primary-row-icon {
-  font-size: 27px;
-  color: #547eff;
-}
-#child-info-container #coparent-info .info-section .header #primary-icon-wrapper span,
-#child-info-container #coparent-info .info-section .header #primary-icon-wrapper p {
-  color: #547eff;
-  font-size: 13px;
-  font-weight: 500;
-}
-#child-info-container #coparent-info .info-section .header .info-row {
-  padding-bottom: 5px;
-  width: 100%;
-}
-#child-info-container #coparent-info .info-section .header .row-title {
-  color: #1c1c1c;
-  font-weight: 400;
-}
-#child-info-container #coparent-info .info-section .header #details {
-  max-height: 0;
-  transition: all 0.3s ease-in-out;
-  transform: scale(0);
-  opacity: 0;
-  display: flex;
-  padding: 0 0 5px 0;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-#child-info-container #coparent-info .info-section .header #details.open {
-  opacity: 1;
-  overflow: auto;
-  width: 100%;
-  max-height: 1000px;
-  transform: scale(1);
-  transition: all 0.5s ease-in-out;
-}
-#child-info-container #coparent-info .info-section .header .details-toggle-arrow {
-  display: none;
-  opacity: 0.4;
-  position: absolute;
-  right: 10px;
-  font-size: 24px;
-}
-#child-info-container #coparent-info .info-section .header .details-toggle-arrow.active {
-  display: inherit;
-}
-#child-info-container #coparent-info .info-section .header svg {
-  font-size: 22px;
-}
-#child-info-container #coparent-info .info-section .header span {
-  font-size: 18px;
-  margin-left: 10px;
-}
-#child-info-container #coparent-info .info-section a span {
-  font-size: 30px;
-}
-#child-info-container #coparent-info .info-section p {
-  font-weight: 400;
-}
-
-#update-contact-info-container .back-button {
-  font-weight: 400;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  color: #0667f6;
-  justify-content: flex-start;
-  width: auto;
-  position: fixed;
-  left: -15px;
-  padding: 0 8px;
   border-radius: 8px;
-  bottom: 90px;
+}
+#external-overrides #chat-request-container #canvas-wrapper {
+  width: calc(100vw - 30px);
+  height: 550px;
+}
+#external-overrides #chat-request-container #canvas-wrapper .conversation-canvas {
+  width: 100%;
+  border-radius: 8px;
+}
+#external-overrides #chat-request-container #image-wrapper img {
+  filter: brightness(0);
+}
+#external-overrides #account-container #user-name {
   font-size: 18px;
-  text-align: left;
+  font-weight: 500;
+  padding-bottom: 8px;
 }
-#update-contact-info-container .back-button span {
-  padding: 0;
-  width: 25px;
-  margin-right: 0;
-  font-size: 45px;
-  margin-right: 5px;
+#external-overrides #account-container #user-name svg {
+  font-size: 20px;
+  color: #547eff;
+  position: relative;
+  top: 3px;
 }
-#update-contact-info-container .add-document-text {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-#update-contact-info-container .form {
-  margin: 0;
-}
-#update-contact-info-container #upload-inputs #upload-input {
-  margin: 0 auto 10px auto;
-  width: 220px;
-}
-#update-contact-info-container .sections .section {
+#external-overrides #account-container .sections .section {
   display: flex;
   align-items: center;
   width: calc(100vw - 30px);
@@ -588,50 +454,51 @@
   justify-content: space-between;
   display: flex;
   justify-content: flex-start;
+  border-bottom: 1px solid rgba(232, 235, 236, 0.47);
 }
-#update-contact-info-container .sections .section.active {
+#external-overrides #account-container .sections .section.active {
   max-height: 10000px;
   transition: all 0.3s ease-in-out;
 }
-#update-contact-info-container .sections .section.chats {
+#external-overrides #account-container .sections .section.chats {
   padding-bottom: 8px;
 }
 @media screen and (min-width: 650px) {
-  #update-contact-info-container .sections .section:hover {
+  #external-overrides #account-container .sections .section:hover {
     cursor: pointer;
   }
 }
-#update-contact-info-container .sections .section * {
+#external-overrides #account-container .sections .section * {
   line-height: 1;
 }
-#update-contact-info-container .sections .section .at-symbol {
+#external-overrides #account-container .sections .section .at-symbol {
   font-size: 12px;
   position: relative;
   bottom: 2px;
 }
-#update-contact-info-container .sections .section .divider {
+#external-overrides #account-container .sections .section .divider {
   padding: 0 5px;
   opacity: 0.7;
   color: black;
 }
-#update-contact-info-container .sections .section a,
-#update-contact-info-container .sections .section .notes {
+#external-overrides #account-container .sections .section a,
+#external-overrides #account-container .sections .section .notes {
   width: 100%;
 }
-#update-contact-info-container .sections .section a.notes,
-#update-contact-info-container .sections .section .notes.notes {
+#external-overrides #account-container .sections .section a.notes,
+#external-overrides #account-container .sections .section .notes.notes {
   opacity: 0.85;
 }
-#update-contact-info-container .sections .section .two-column {
+#external-overrides #account-container .sections .section .two-column {
   width: calc(100% - 45px);
   flex-wrap: wrap;
 }
-#update-contact-info-container .sections .section .two-column p,
-#update-contact-info-container .sections .section .two-column a {
+#external-overrides #account-container .sections .section .two-column p,
+#external-overrides #account-container .sections .section .two-column a {
   margin-top: 0;
   line-height: 1.3;
 }
-#update-contact-info-container .sections .section .status {
+#external-overrides #account-container .sections .section .status {
   margin-left: auto;
   padding: 4px 12px;
   border-radius: 20px;
@@ -641,22 +508,24 @@
   align-items: center;
   line-height: 1;
 }
-#update-contact-info-container .sections .section .status.paid, #update-contact-info-container .sections .section .status.approved {
+#external-overrides #account-container .sections .section .status.paid,
+#external-overrides #account-container .sections .section .status.approved {
   background-color: rgba(173, 245, 203, 0.65);
   color: #2ecc71;
   border: 1px solid #2ecc71;
 }
-#update-contact-info-container .sections .section .status.pending {
+#external-overrides #account-container .sections .section .status.pending {
   background-color: #fbf5bf;
   color: #e8964a;
   border: 1px solid #e8964a;
 }
-#update-contact-info-container .sections .section .status.unpaid, #update-contact-info-container .sections .section .status.rejected {
+#external-overrides #account-container .sections .section .status.unpaid,
+#external-overrides #account-container .sections .section .status.rejected {
   background-color: #f5e0e1;
   color: #d57179;
   border: 1px solid #d57179;
 }
-#update-contact-info-container .sections .section #subtitle {
+#external-overrides #account-container .sections .section #subtitle {
   padding-top: 5px;
   margin-top: 0;
   width: 100%;
@@ -665,14 +534,14 @@
   color: black;
   opacity: 0.9;
 }
-#update-contact-info-container .sections .section #subtitle.calendar {
+#external-overrides #account-container .sections .section #subtitle.calendar {
   margin-left: 20px;
 }
-#update-contact-info-container .sections .section #content {
+#external-overrides #account-container .sections .section #content {
   width: calc(100% - 60px);
   margin: 0;
 }
-#update-contact-info-container .sections .section #primary-icon-wrapper {
+#external-overrides #account-container .sections .section #primary-icon-wrapper {
   background-color: #edf2fd;
   height: 45px;
   width: 45px;
@@ -681,25 +550,25 @@
   align-items: center;
   justify-content: center;
 }
-#update-contact-info-container .sections .section #primary-icon-wrapper #primary-row-icon {
+#external-overrides #account-container .sections .section #primary-icon-wrapper #primary-row-icon {
   font-size: 27px;
   color: #547eff;
 }
-#update-contact-info-container .sections .section #primary-icon-wrapper span,
-#update-contact-info-container .sections .section #primary-icon-wrapper p {
+#external-overrides #account-container .sections .section #primary-icon-wrapper span,
+#external-overrides #account-container .sections .section #primary-icon-wrapper p {
   color: #547eff;
   font-size: 13px;
   font-weight: 500;
 }
-#update-contact-info-container .sections .section .info-row {
+#external-overrides #account-container .sections .section .info-row {
   padding-bottom: 5px;
   width: 100%;
 }
-#update-contact-info-container .sections .section .row-title {
+#external-overrides #account-container .sections .section .row-title {
   color: #1c1c1c;
   font-weight: 400;
 }
-#update-contact-info-container .sections .section #details {
+#external-overrides #account-container .sections .section #details {
   max-height: 0;
   transition: all 0.3s ease-in-out;
   transform: scale(0);
@@ -709,7 +578,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
 }
-#update-contact-info-container .sections .section #details.open {
+#external-overrides #account-container .sections .section #details.open {
   opacity: 1;
   overflow: auto;
   width: 100%;
@@ -717,111 +586,86 @@
   transform: scale(1);
   transition: all 0.5s ease-in-out;
 }
-#update-contact-info-container .sections .section .details-toggle-arrow {
+#external-overrides #account-container .sections .section .details-toggle-arrow {
   display: none;
   opacity: 0.4;
   position: absolute;
   right: 10px;
   font-size: 24px;
 }
-#update-contact-info-container .sections .section .details-toggle-arrow.active {
+#external-overrides #account-container .sections .section .details-toggle-arrow.active {
   display: inherit;
 }
-#update-contact-info-container .sections .section svg {
+#external-overrides #account-container .sections .section svg {
   font-size: 22px;
 }
-#update-contact-info-container .sections .section.notifications {
+@media screen and (min-width: 650px) {
+  #external-overrides #account-container .sections .section:hover {
+    cursor: pointer;
+    color: #547eff;
+    transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    padding-left: 10px;
+  }
+  #external-overrides #account-container .sections .section:hover * {
+    color: #547eff;
+  }
+}
+#external-overrides #account-container .sections .section p {
+  color: black;
+}
+#external-overrides #account-container .sections .section svg {
+  color: #547eff;
+}
+#external-overrides #account-container .sections .section.close-account {
+  color: #d57179;
+}
+#external-overrides #account-container .sections .section.close-account svg {
+  color: #d57179;
+}
+#external-overrides #account-container .sections .section.notifications {
   flex-wrap: nowrap;
   justify-content: space-between;
 }
-#update-contact-info-container .sections .section.notifications span {
+#external-overrides #account-container .sections .section.notifications span {
   line-height: 1.2;
   justify-self: flex-start;
   margin-right: auto;
   margin-left: 0;
 }
-#update-contact-info-container .sections .section.notifications span.accent {
+#external-overrides #account-container .sections .section.notifications span.accent {
   margin-right: 20px;
 }
-#update-contact-info-container .sections .section.notifications #checkbox-group {
+#external-overrides #account-container .sections .section.notifications #checkbox-group {
   display: flex;
   flex-wrap: nowrap;
   margin: 0;
   margin-left: 10px;
 }
-#update-contact-info-container .sections .section.notifications #checkbox-group .flex {
+#external-overrides #account-container .sections .section.notifications #checkbox-group .flex {
   width: auto;
 }
-#update-contact-info-container .sections .section.notifications #checkbox-group .flex:last-child {
+#external-overrides #account-container .sections .section.notifications #checkbox-group .flex:last-child {
   margin: 0;
 }
-#update-contact-info-container .sections .section.theme span {
+#external-overrides #account-container .sections .section.theme span {
   margin: 0;
-  font-size: 25px;
 }
-#update-contact-info-container .sections .section.theme span:nth-child(2) {
+#external-overrides #account-container .sections .section.theme span:nth-child(2) {
   margin-left: 20px;
-  font-size: 20px;
 }
-#update-contact-info-container .sections .section.theme div {
+#external-overrides #account-container .sections .section.theme div {
   margin-left: auto;
 }
-#update-contact-info-container .sections .section.theme div span {
+#external-overrides #account-container .sections .section.theme div span {
   font-size: 20px;
 }
-#update-contact-info-container .sections .section:first-child {
+#external-overrides #account-container .sections .section:first-child {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
-#update-contact-info-container .sections .section:not(.theme) span {
+#external-overrides #account-container .sections .section span {
   font-size: 25px;
   margin-right: 20px;
   opacity: 0.8;
-  color: #b392f0;
-}
-#update-contact-info-container .sections .section:not(.theme) span:nth-child(2) {
-  font-size: 16px;
-  margin-right: 20px;
-  opacity: 0.5;
-}
-#update-contact-info-container .current-value {
-  opacity: 0.6;
-  font-size: 14px;
-  margin-bottom: 5px;
-}
-#update-contact-info-container .instructions.gallery {
-  margin-bottom: 10px;
-  margin-top: 0;
-}
-#update-contact-info-container .gallery {
-  grid-template-columns: auto auto auto;
-  grid-gap: 8px;
-  display: grid;
-}
-#update-contact-info-container .gallery #img-container img {
-  height: auto;
-  width: 100%;
-  border-radius: 8px;
-  display: none;
-}
-#update-contact-info-container .gallery #img-container p {
-  color: #d57179;
-  text-align: center;
-  width: 70px;
-  margin: 5px auto 0 auto;
-  font-weight: 500;
-  border-bottom: 1px solid #d57179;
-  padding-bottom: 1px;
-  display: none;
-}
-#update-contact-info-container .gallery.active #img-container img {
-  display: inline;
-}
-#update-contact-info-container .gallery.active #img-container p {
-  display: block;
-}
-#update-contact-info-container .gallery img {
-  height: auto;
-  display: none;
-  width: 100%;
-  border-radius: 8px;
-}/*# sourceMappingURL=profile.css.map */
+  color: #547eff;
+} /*# sourceMappingURL=profile.css.map */

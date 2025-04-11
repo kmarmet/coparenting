@@ -10,6 +10,7 @@ import AlertManager from '../../managers/alertManager'
 import ScreenNames from '../../constants/screenNames'
 import SecurityManager from '../../managers/securityManager'
 import {BiMessageRoundedAdd} from 'react-icons/bi'
+import Spacer from '../shared/spacer'
 
 const NewChatSelector = () => {
   const {state, setState} = useContext(globalState)
@@ -25,12 +26,12 @@ const NewChatSelector = () => {
   }
 
   const openMessageThread = async (coparent) => {
-    // Check if thread member (coparent) account exists in DB
+    // Check if thread member (coparent) profile exists in DB
     let userCoparent = await DB_UserScoped.getCoparentByKey(coparent?.key, currentUser)
     if (!Manager.isValid(userCoparent)) {
       AlertManager.oneButtonAlert(
-        'Co-Parent or Child Account not Found',
-        'This co-parent may have closed their account, however, you can still view the messages',
+        'Co-Parent or Child Profile not Found',
+        'This co-parent may have closed their profile, however, you can still view the messages',
         null,
         () => {
           setState({...state, currentScreen: ScreenNames.chats, messageRecipient: coparent})
@@ -54,10 +55,13 @@ const NewChatSelector = () => {
       wrapperClass="new-chat"
       onClose={() => setState({...state, showCreationMenu: false, creationFormToShow: null, refreshKey: Manager.getUid()})}
       showCard={creationFormToShow === CreationForms.chat}
-      titleIcon={<BiMessageRoundedAdd />}
-      title={'Create Chat'}>
+      title={`${activeChatKeys.length === currentUser?.coparents?.length ? 'Unable to Create Chat' : 'Create Chat'}`}>
+      <Spacer height={5} />
       {activeChatKeys.length === currentUser?.coparents?.length && (
-        <p className="center-text italic">You have an existing chat with all children and/or co-parents</p>
+        <>
+          <p id="max-chats-text">You already have an existing chat with all children and/or co-parents</p>
+          <Spacer height={5} />
+        </>
       )}
       {/* COPARENTS */}
       {currentUser?.accountType === 'parent' &&

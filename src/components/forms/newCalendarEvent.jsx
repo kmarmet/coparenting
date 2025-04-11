@@ -2,16 +2,13 @@
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import {MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
+import {MobileDatePicker, MobileDateRangePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
 import {Fade} from 'react-awesome-reveal'
-import {BsCalendar2CheckFill} from 'react-icons/bs'
-import {PiCalendarPlusDuotone} from 'react-icons/pi'
 import validator from 'validator'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager.coffee'
-import AddressInput from '../shared/addressInput'
 import Spacer from '../shared/spacer.jsx'
 import ViewSelector from '../shared/viewSelector'
 import Modal from '/src/components/shared/modal'
@@ -19,7 +16,7 @@ import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import MyConfetti from '/src/components/shared/myConfetti.js'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
-import DateFormats from '/src/constants/dateFormats'
+import DatetimeFormats from '/src/constants/datetimeFormats'
 import EventLengths from '/src/constants/eventLengths'
 import AlertManager from '/src/managers/alertManager'
 import DatasetManager from '/src/managers/datasetManager'
@@ -35,6 +32,8 @@ import ModelNames from '/src/models/modelNames'
 import ToggleButton from '../shared/toggleButton'
 import CreationForms from '../../constants/creationForms'
 import Label from '../shared/label'
+import DB_UserScoped from '../../database/db_userScoped'
+import InputTypes from '../../constants/inputTypes'
 
 export default function NewCalendarEvent() {
   // APP STATE
@@ -43,7 +42,7 @@ export default function NewCalendarEvent() {
 
   // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)
-  const [eventStartDate, setEventStartDate] = useState()
+  const [eventStartDate, setEventStartDate] = useState(moment(dateToEdit).format(DatetimeFormats.dateForDb))
   const [eventEndDate, setEventEndDate] = useState('')
   const [eventLocation, setEventLocation] = useState('')
   const [eventTitle, setEventTitle] = useState('')
@@ -83,6 +82,7 @@ export default function NewCalendarEvent() {
     setEventEndTime('')
     setEventShareWith([])
     setClonedDates([])
+    setEventPhone('')
     setEventChildren([])
     setEventReminderTimes([])
     setEventIsDateRange(false)
@@ -91,8 +91,10 @@ export default function NewCalendarEvent() {
     setShowReminders(false)
     setIncludeChildren(false)
     setIsVisitation(false)
+    const updatedUser = await DB_UserScoped.getCurrentUser(currentUser?.email)
     setState({
       ...state,
+      currentUser: updatedUser,
       showBottomMenu: false,
       creationFormToShow: '',
       refreshKey: Manager.getUid(),
@@ -110,13 +112,13 @@ export default function NewCalendarEvent() {
       newEvent.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Visitation`
     }
     if (DomManager.isMobile()) {
-      newEvent.startDate = moment(eventStartDate).format(DateFormats.dateForDb)
+      newEvent.startDate = moment(eventStartDate).format(DatetimeFormats.dateForDb)
     } else {
-      newEvent.startDate = moment(eventEndDate).format(DateFormats.dateForDb)
+      newEvent.startDate = moment(eventEndDate).format(DatetimeFormats.dateForDb)
     }
-    newEvent.endDate = moment(eventEndDate).format(DateFormats.dateForDb)
-    newEvent.startTime = moment(eventStartTime).format(DateFormats.timeForDb)
-    newEvent.endTime = moment(eventEndTime).format(DateFormats.timeForDb)
+    newEvent.endDate = moment(eventEndDate).format(DatetimeFormats.dateForDb)
+    newEvent.startTime = moment(eventStartTime).format(DatetimeFormats.timeForDb)
+    newEvent.endTime = moment(eventEndTime).format(DatetimeFormats.timeForDb)
 
     // Not Required
     newEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
@@ -126,7 +128,7 @@ export default function NewCalendarEvent() {
     newEvent.createdBy = currentUser?.name
     newEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
     newEvent.notes = eventNotes
-    newEvent.phone = eventPhone
+    newEvent.phone = StringManager.formatPhone(eventPhone)
     newEvent.websiteUrl = eventWebsite
     newEvent.reminderTimes = eventReminderTimes
     newEvent.repeatInterval = repeatInterval
@@ -162,7 +164,7 @@ export default function NewCalendarEvent() {
         return false
       }
 
-      if (!Manager.isValid(moment(eventStartDate).format(DateFormats.dateForDb))) {
+      if (!Manager.isValid(moment(eventStartDate).format(DatetimeFormats.dateForDb))) {
         AlertManager.throwError('Please select an event date')
         return false
       }
@@ -180,8 +182,8 @@ export default function NewCalendarEvent() {
           currentUser,
           newEvent,
           'range',
-          moment(eventStartDate).format(DateFormats.dateForDb),
-          moment(eventEndDate).format(DateFormats.dateForDb)
+          moment(eventStartDate).format(DatetimeFormats.dateForDb),
+          moment(eventEndDate).format(DatetimeFormats.dateForDb)
         )
         await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
       }
@@ -192,8 +194,8 @@ export default function NewCalendarEvent() {
           currentUser,
           newEvent,
           'cloned',
-          moment(clonedDates[0]).format(DateFormats.dateForDb),
-          moment(clonedDates[clonedDates.length - 1]).format(DateFormats.dateForDb)
+          moment(clonedDates[0]).format(DatetimeFormats.dateForDb),
+          moment(clonedDates[clonedDates.length - 1]).format(DatetimeFormats.dateForDb)
         )
         await CalendarManager.addMultipleCalEvents(currentUser, dates)
       }
@@ -204,8 +206,8 @@ export default function NewCalendarEvent() {
           currentUser,
           newEvent,
           'recurring',
-          moment(eventStartDate).format(DateFormats.dateForDb),
-          moment(eventEndDate).format(DateFormats.dateForDb)
+          moment(eventStartDate).format(DatetimeFormats.dateForDb),
+          moment(eventEndDate).format(DatetimeFormats.dateForDb)
         )
         await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
       }
@@ -221,8 +223,8 @@ export default function NewCalendarEvent() {
         await NotificationManager.sendToShareWith(
           eventShareWith,
           currentUser,
-          `New Calendar Event`,
-          `${eventTitle} on ${moment(eventStartDate).format(DateFormats.readableMonthAndDay)}`,
+          `New Event 📅`,
+          `${eventTitle} on ${moment(eventStartDate).format(DatetimeFormats.readableMonthAndDay)}`,
           ActivityCategory.calendar
         )
       }
@@ -319,7 +321,7 @@ export default function NewCalendarEvent() {
     removeInputButton.classList.add('remove-cloned-date-button')
 
     input.addEventListener('change', (e) => {
-      const formattedDate = moment(e.target.value).format(DateFormats.dateForDb)
+      const formattedDate = moment(e.target.value).format(DatetimeFormats.dateForDb)
       setClonedDates([...clonedDates, formattedDate])
     })
     wrapper.append(input)
@@ -327,8 +329,8 @@ export default function NewCalendarEvent() {
     // Delete button
     removeInputButton.addEventListener('click', (e) => {
       const inputSibling = e.target.previousSibling
-      const formattedDate = moment(inputSibling.value).format(DateFormats.dateForDb)
-      setClonedDates(clonedDates.filter((x) => x !== moment(formattedDate).format(DateFormats.dateForDb)))
+      const formattedDate = moment(inputSibling.value).format(DatetimeFormats.dateForDb)
+      setClonedDates(clonedDates.filter((x) => x !== moment(formattedDate).format(DatetimeFormats.dateForDb)))
       inputSibling.remove()
       e.target.remove()
     })
@@ -336,19 +338,6 @@ export default function NewCalendarEvent() {
 
     cloneDateWrapper.append(wrapper)
   }
-  //
-  // useEffect(() => {
-  //   if (selectedNewEventDay) {
-  //     setEventStartDate(moment(selectedNewEventDay).format(DateFormats.dateForDb))
-  //   }
-  // }, [selectedNewEventDay])
-  //
-  // useEffect(() => {
-  //   // setState({ ...state, creationFormToShow: '' })
-  //   if (!selectedNewEventDay) {
-  //     setEventStartDate(moment().format(DateFormats.dateForDb))
-  //   }
-  // }, [])
 
   return (
     <>
@@ -358,7 +347,6 @@ export default function NewCalendarEvent() {
         className={`${theme} new-event-form new-calendar-event`}
         onClose={resetForm}
         onSubmit={submit}
-        submitIcon={<BsCalendar2CheckFill />}
         showCard={creationFormToShow === CreationForms.calendar}
         wrapperClass={`new-calendar-event`}
         contentClass={eventLength === EventLengths.single ? 'single-view' : 'multiple-view'}
@@ -375,20 +363,20 @@ export default function NewCalendarEvent() {
               }
             }}
           />
-        }
-        titleIcon={<PiCalendarPlusDuotone />}>
+        }>
         <div id="calendar-event-form-container" className={`form ${theme}`}>
-          <Spacer height={5} />
+          <Spacer height={8} />
           <Fade direction={'up'} duration={600} triggerOnce={true}>
             {/* EVENT NAME */}
             <InputWrapper
               inputClasses="event-title-input"
-              inputType={'input'}
+              inputType={InputTypes.text}
               labelText={'Event Name'}
               defaultValue={eventTitle}
               placeholder="Event Name"
               required={true}
               isDebounced={false}
+              inputValueType="input"
               inputValue={eventTitle}
               onChange={async (e) => {
                 const inputValue = e.target.value
@@ -397,21 +385,16 @@ export default function NewCalendarEvent() {
             />
 
             {/* START DATE */}
-            <div className="flex gap">
-              {eventLength === EventLengths.single && (
-                <InputWrapper labelText={'Date'} inputType={'date'} required={true}>
-                  <MobileDatePicker
-                    defaultValue={moment(dateToEdit)}
-                    showDaysOutsideCurrentMonth={true}
-                    views={['month', 'day']}
-                    className={`${theme} event-from-date mui-input mobile-date-picker`}
-                    onAccept={(e) => {
-                      setEventStartDate(e)
-                    }}
-                  />
-                </InputWrapper>
-              )}
-            </div>
+            {eventLength === EventLengths.single && (
+              <InputWrapper
+                defaultValue={dateToEdit}
+                labelText={'Date'}
+                uidClass="event-start-date"
+                inputType={InputTypes.date}
+                required={true}
+                onDateOrTimeSelection={(e) => setEventStartDate(e)}
+              />
+            )}
 
             {/* DATE RANGE */}
             {eventLength === EventLengths.multiple && (
@@ -424,8 +407,8 @@ export default function NewCalendarEvent() {
                   }}
                   onAccept={(dateArray) => {
                     if (Manager.isValid(dateArray)) {
-                      setEventStartDate(moment(dateArray[0]).format(DateFormats.dateForDb))
-                      setEventEndDate(moment(dateArray[1]).format(DateFormats.dateForDb))
+                      setEventStartDate(moment(dateArray[0]).format(DatetimeFormats.dateForDb))
+                      setEventEndDate(moment(dateArray[1]).format(DatetimeFormats.dateForDb))
                       setEventIsDateRange(true)
                     }
                   }}
@@ -437,32 +420,18 @@ export default function NewCalendarEvent() {
 
             {/* EVENT WITH TIME */}
             <div className={'flex event-times-wrapper'}>
-              <InputWrapper labelText={'Start Time'} wrapperClasses={'start-time'} inputType="date">
-                <MobileTimePicker
-                  slotProps={{
-                    actionBar: {
-                      actions: ['clear', 'accept'],
-                    },
-                  }}
-                  onOpen={addThemeToDatePickers}
-                  minutesStep={5}
-                  key={refreshKey}
-                  onAccept={(e) => setEventStartTime(e)}
-                />
-              </InputWrapper>
-              <InputWrapper labelText={'End Time'} wrapperClasses={`${Manager.isValid(eventEndTime) ? 'has-value' : ''} end-time`} inputType="date">
-                <MobileTimePicker
-                  slotProps={{
-                    actionBar: {
-                      actions: ['clear', 'accept'],
-                    },
-                  }}
-                  key={refreshKey}
-                  onOpen={addThemeToDatePickers}
-                  minutesStep={5}
-                  onAccept={(e) => setEventEndTime(e)}
-                />
-              </InputWrapper>
+              <InputWrapper
+                labelText={'Start Time'}
+                uidClass="event-start-time"
+                inputType={InputTypes.time}
+                onDateOrTimeSelection={(e) => setEventStartTime(e)}
+              />
+              <InputWrapper
+                labelText={'End Time'}
+                uidClass="event-end-time"
+                inputType={InputTypes.time}
+                onDateOrTimeSelection={(e) => setEventEndTime(e)}
+              />
             </div>
             <Spacer height={5} />
 
@@ -497,7 +466,7 @@ export default function NewCalendarEvent() {
             <div>
               <div className="flex">
                 <Label text={'Visitation Event'} />
-                <ToggleButton onCheck={() => setIsVisitation(true)} onUncheck={() => setIsVisitation(false)} />
+                <ToggleButton isDefaultChecked={false} onCheck={() => setIsVisitation(true)} onUncheck={() => setIsVisitation(false)} />
               </div>
             </div>
 
@@ -509,7 +478,11 @@ export default function NewCalendarEvent() {
                 <AccordionSummary>
                   <div className="flex">
                     <Label text={'Include Children'} />
-                    <ToggleButton onCheck={() => setIncludeChildren(!includeChildren)} onUncheck={() => setIncludeChildren(!includeChildren)} />
+                    <ToggleButton
+                      isDefaultChecked={false}
+                      onCheck={() => setIncludeChildren(!includeChildren)}
+                      onUncheck={() => setIncludeChildren(!includeChildren)}
+                    />
                   </div>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -566,6 +539,7 @@ export default function NewCalendarEvent() {
                 <div className="flex">
                   <Label text={'Duplicate'} />
                   <ToggleButton
+                    isDefaultChecked={false}
                     onCheck={() => {
                       setShowCloneInput(true)
                       const dateWrapperElements = document.querySelectorAll('.cloned-date-wrapper input')
@@ -588,28 +562,27 @@ export default function NewCalendarEvent() {
             )}
 
             <Spacer height={5} />
+
             {/* URL/WEBSITE */}
-            <InputWrapper
-              labelText={'Website/Link'}
-              required={false}
-              inputType={'input'}
-              inputValueType="url"
-              onChange={(e) => setEventWebsite(e.target.value)}></InputWrapper>
+            <InputWrapper labelText={'Website/Link'} required={false} inputType={InputTypes.url} onChange={(e) => setEventWebsite(e.target.value)} />
 
             {/* ADDRESS */}
-            <InputWrapper labelText={'Location'} required={false} inputType={'location'}>
-              <AddressInput onSelection={(address) => setEventLocation(address)} />
-            </InputWrapper>
+            <InputWrapper
+              wrapperClasses={Manager.isValid(eventLocation, true) ? 'show-label' : ''}
+              labelText={'Location'}
+              required={false}
+              onChange={(address) => setEventLocation(address)}
+              inputType={InputTypes.address}
+            />
 
             {/* PHONE */}
-            <InputWrapper inputValueType="tel" labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
+            <InputWrapper inputType={InputTypes.phone} labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
 
             {/* NOTES */}
             <InputWrapper
-              wrapperClasses="textarea"
               labelText={'Notes'}
               required={false}
-              inputType={'textarea'}
+              inputType={InputTypes.textarea}
               onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
           </Fade>
         </div>

@@ -11,6 +11,10 @@ const ChatManager = {
   getToneAndSentiment: async (message) => {
     let tone = await ChatManager.getTone(message)
     let sentiment = await ChatManager.getSentiment(message)
+
+    if (!Manager.isValid(tone) || !Manager.isValid(sentiment)) {
+      return false
+    }
     let warningSentiments = ['sad']
 
     const returnTone = tone?.overall[0][1]

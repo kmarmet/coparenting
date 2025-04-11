@@ -1,28 +1,28 @@
-// Path: src\components\screens\account\account.jsx
-import React, { useContext, useState } from 'react'
+// Path: src\components\screens\profile\profile.jsx
+import React, {useContext, useState} from 'react'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
 import Manager from '../../../managers/manager'
-import { Fade } from 'react-awesome-reveal'
-import { PiHandWavingDuotone } from 'react-icons/pi'
-import { MdContactMail, MdOutlinePassword } from 'react-icons/md'
-import { IoIosRemoveCircle } from 'react-icons/io'
+import {Fade} from 'react-awesome-reveal'
+import {PiHandWavingDuotone} from 'react-icons/pi'
+import {MdContactMail, MdOutlinePassword} from 'react-icons/md'
+import {IoIosRemoveCircle} from 'react-icons/io'
 import NavBar from '../../navBar'
 import AlertManager from '../../../managers/alertManager'
 import firebaseConfig from '../../../firebaseConfig'
-import { initializeApp } from 'firebase/app'
+import {initializeApp} from 'firebase/app'
 import DB_UserScoped from '../../../database/db_userScoped'
 import DB from '../../../database/DB'
 import Modal from '../../shared/modal'
 import InputWrapper from '../../shared/inputWrapper'
 import validator from 'validator'
-import { EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail } from 'firebase/auth'
-import { useSwipeable } from 'react-swipeable'
+import {EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail} from 'firebase/auth'
+import {useSwipeable} from 'react-swipeable'
 import NotificationManager from '../../../managers/notificationManager'
 import FirebaseStorage from '../../../database/firebaseStorage'
 import StringManager from '../../../managers/stringManager.coffee'
 
-export default function Account() {
+export default function Profile() {
   const {state, setState} = useContext(globalState)
   const {currentUser, theme} = state
   const [updateType, setUpdateType] = useState('email')
@@ -80,7 +80,7 @@ export default function Account() {
     }
     AlertManager.inputAlert(
       'Enter Your Password',
-      'To update your email, we need to re-authenticate your account for security purposes',
+      'To update your email, we need to re-authenticate your profile for security purposes',
       (e) => {
         const user = auth.currentUser
         const credential = EmailAuthProvider.credential(user.email, e.value)
@@ -95,12 +95,12 @@ export default function Account() {
             logout()
           })
           .catch((error) => {
-            // An error ocurred
+            // An error occurred
             if (Manager.contains(error.message, 'auth/wrong-password')) {
               AlertManager.throwError('Password is incorrect')
             }
             if (Manager.contains(error.message, 'email-already-in-use')) {
-              AlertManager.throwError('Account already exists with this email')
+              AlertManager.throwError('Profile already exists with this email')
             }
             console.log(error.message)
             // ...
@@ -134,7 +134,7 @@ export default function Account() {
   const closeAccount = async () => {
     AlertManager.inputAlert(
       'Enter Your Password',
-      'In order to continue with the account deletion process, you are required to enter your password for security (verification) purposes',
+      'In order to continue with the profile deletion process, you are required to enter your password for security (verification) purposes',
       (e) => {
         const user = auth.currentUser
         const credential = EmailAuthProvider.credential(user.email, e.value)
@@ -230,7 +230,7 @@ export default function Account() {
         }}
         wrapperClass="re-auth-card"
         submitButtonColor="red with-bg"
-        submitText={'Close Account'}
+        submitText={'Close Profile'}
         showCard={showLoginForm}
         title={`Please login to complete account deletion`}>
         <div {...handlers} id="reauthentication-wrapper" className={`${theme} form`}>
@@ -245,7 +245,7 @@ export default function Account() {
 
       {/* PAGE CONTAINER */}
       <div id="account-container" className={`${theme} page-container`}>
-        <p className="screen-title">Account</p>
+        <p className="screen-title">My Profile</p>
         <p id="user-name">
           Hey {StringManager.getFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
         </p>
@@ -271,7 +271,7 @@ export default function Account() {
           </Fade>
         </div>
       </div>
-      {!showUpdateCard && !showLoginForm && <NavBar navbarClass={'account no-add-new-button'}></NavBar>}
+      {!showUpdateCard && !showLoginForm && <NavBar navbarClass={'profile no-add-new-button'}></NavBar>}
     </>
   )
 }

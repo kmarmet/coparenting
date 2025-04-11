@@ -1,20 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 // Path: src\components\screens\childInfo\checklists.jsx
 import Modal from '../../shared/modal'
 import globalState from '../../../context'
 import Spacer from '/src/components/shared/spacer'
 import ViewSelector from '/src/components/shared/viewSelector'
 import Manager from '/src/managers/manager'
-import { MdOutlineChecklist } from 'react-icons/md'
+import {MdOutlineChecklist} from 'react-icons/md'
 import DB from '/src/database/DB'
 import Checklist from '/src/models/checklist.js'
-import { PiListChecksFill, PiTrashSimpleDuotone } from 'react-icons/pi'
+import {PiListChecksFill, PiTrashSimpleDuotone} from 'react-icons/pi'
 import StringManager from '../../../managers/stringManager'
 import DomManager from '../../../managers/domManager'
 
-export default function Checklists({ showCard, hideCard }) {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, activeInfoChild } = state
+export default function Checklists({showCard, hideCard}) {
+  const {state, setState} = useContext(globalState)
+  const {currentUser, activeInfoChild} = state
   const [checkboxTextList, setCheckboxTextList] = useState([])
   const [view, setView] = useState('from')
   const [checklist, setChecklist] = useState(null)
@@ -53,13 +53,13 @@ export default function Checklists({ showCard, hideCard }) {
       const items = activeChecklist.checklistItems
       const text = checklistItem.textContent.toLowerCase()
       const filteredText = items.filter((x) => x.toLowerCase() !== text.toLowerCase())
-      const newChecklist = { ...activeChecklist }
+      const newChecklist = {...activeChecklist}
       newChecklist.checklistItems = filteredText
-      const updated = { ...activeChecklist, ...newChecklist }
+      const updated = {...activeChecklist, ...newChecklist}
 
       if (filteredText.length === 0) {
         await DB.delete(`${path}`, activeChecklist.id)
-        setState({ ...state, refreshKey: Manager.getUid() })
+        setState({...state, refreshKey: Manager.getUid()})
         hideCard()
       } else {
         await DB.updateEntireRecord(`${path}`, updated, activeChecklist.id)
@@ -131,25 +131,26 @@ export default function Checklists({ showCard, hideCard }) {
       showCard={showCard}
       hasSubmitButton={false}
       title={'Checklists'}
-      viewSelector={ <ViewSelector
-        shouldUpdateStateOnLoad={false}
-        updateState={(text) => {
-          const _view = text.toLowerCase()
-          if (Manager.contains(_view, 'to')) {
-            setView('to')
-          } else {
-            setView('from')
-          }
-        }}
-        wrapperClasses={'child-info'}
-        labels={destinationLabels}
-      />}
+      viewSelector={
+        <ViewSelector
+          shouldUpdateStateOnLoad={false}
+          updateState={(text) => {
+            const _view = text.toLowerCase()
+            if (Manager.contains(_view, 'to')) {
+              setView('to')
+            } else {
+              setView('from')
+            }
+          }}
+          wrapperClasses={'child-info'}
+          labels={destinationLabels}
+        />
+      }
       subtitle={`Review transfer checklists to guarantee that all items are accounted for during transitions to or from a co-parent's home.  ${DomManager.tapOrClick(
         true
       )} each item to mark completed. ${DomManager.tapOrClick(true)} the delete icon to remove the item from the checklist permanently.`}
       onClose={hideCard}>
       <Spacer height={5} />
-
 
       {Manager.isValid(checklist) &&
         Manager.isValid(checklist?.checklistItems) &&

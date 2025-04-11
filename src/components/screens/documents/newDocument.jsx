@@ -1,10 +1,8 @@
-// Path: src\components\screens\documents\uploadDocuments.jsx
-import React, { useContext, useState } from 'react'
+// Path: src\components\screens\documents\newDocument.jsx
+import React, {useContext, useState} from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager.js'
 import FirebaseStorage from '/src/database/firebaseStorage'
-import { FaFileUpload } from 'react-icons/fa'
-
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import Doc from '/src/models/doc'
 import NotificationManager from '/src/managers/notificationManager'
@@ -23,41 +21,41 @@ import InputWrapper from '/src/components/shared/inputWrapper'
 import DB from '/src/database/DB'
 import StringManager from '/src/managers/stringManager'
 import DocumentConversionManager from '/src/managers/documentConversionManager.js'
-import { getStorage, ref, uploadString } from 'firebase/storage'
+import {getStorage, ref, uploadString} from 'firebase/storage'
+import InputTypes from '../../../constants/inputTypes'
+import Spacer from '../../shared/spacer'
+import CreationForms from '../../../constants/creationForms'
 
-export default function UploadDocuments({hideCard, showCard}) {
+export default function NewDocument() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
+  const {currentUser, theme, creationFormToShow} = state
   const [shareWith, setShareWith] = useState([])
   const [docType, setDocType] = useState(null)
   const [docName, setDocName] = useState('')
+  const [doc, setDoc] = useState()
 
-  const resetForm = () => {
+  const resetForm = (successMessage = '') => {
     Manager.resetForm('upload-doc-wrapper')
     setShareWith([])
     setDocType(null)
-    setState({...state, refreshKey: Manager.getUid(), isLoading: false, creationFormToShow: ''})
+    setDoc(null)
+    setState({...state, refreshKey: Manager.getUid(), isLoading: false, creationFormToShow: '', successAlertMessage: successMessage})
   }
 
   const upload = async () => {
-    setState({...state, isLoading: true, loadingText: 'Making the magic happen! Your patience is appreciated!'})
-    let files = document.querySelector('#upload-input').files
-    let file = files[0]
-    if (files.length === 0 || !file) {
+    if (!doc) {
       AlertManager.throwError('Please choose a file to upload')
-      setState({...state, isLoading: false})
       return false
     }
-    const fileExtension = StringManager.getFileExtension(file?.name).toString()
+    const fileExtension = StringManager.getFileExtension(doc?.name).toString()
     let docNameToUse = `${docName}.${fileExtension}`
     if (!Manager.isValid(docName, true)) {
-      docNameToUse = file.name
+      docNameToUse = doc.name
     }
 
     //#region VALIDATION
     if (!Manager.isValid(docType)) {
       AlertManager.throwError('Please choose a document type')
-      setState({...state, isLoading: false})
       return false
     }
 
@@ -79,17 +77,21 @@ export default function UploadDocuments({hideCard, showCard}) {
     if (existingDocument) {
       // error
       AlertManager.throwError('Document has already been uploaded')
-      setState({...state, isLoading: false})
       return false
     }
     //#endregion VALIDATION
 
+    setState({...state, isLoading: true, loadingText: 'Making the magic happen! Your patience is appreciated!'})
+
     //#region IMAGE CONVERSION
     if (docType === 'image') {
-      file = await ImageManager.compressImage(file)
+      const compressedDoc = await ImageManager.compressImage(doc)
       let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
       // Upload to Firebase Storage
-      imageUrl = await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`, file)
+      imageUrl = await FirebaseStorage.uploadByPath(
+        `${FirebaseStorage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`,
+        compressedDoc
+      )
       const imageName = FirebaseStorage.getImageNameFromUrl(imageUrl)
       const ocrObject = await DocumentConversionManager.imageToHtml(imageUrl, imageName)
       html = ocrObject?.ParsedResults[0]?.ParsedText
@@ -114,13 +116,13 @@ export default function UploadDocuments({hideCard, showCard}) {
     //#region DOCUMENT CONVERSION
     if (docType === 'document') {
       if (fileExtension === 'pdf') {
-        await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser.key}/${docNameToUse}`, file)
+        await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser.key}/${docNameToUse}`, doc)
         const docHtml = await DocumentConversionManager.pdfToHtml(docNameToUse, currentUser?.key)
         let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
         await storeTextInFirebase(docHtml, firebaseStorageFileName)
       } else {
         // Image
-        await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser.key}/${docNameToUse}`, file)
+        await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser.key}/${docNameToUse}`, doc)
         const docHtml = await DocumentConversionManager.docToHtml(docNameToUse, currentUser?.key)
         let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
         await storeTextInFirebase(docHtml, firebaseStorageFileName)
@@ -156,10 +158,7 @@ export default function UploadDocuments({hideCard, showCard}) {
     }
     //#endregion ADD TO DB / SEND NOTIFICATION
 
-    AlertManager.successAlert('Document Uploaded!')
-    setState({...state, isLoading: false})
-    hideCard()
-    // resetForm()
+    resetForm('Document Uploaded!')
   }
 
   const storeTextInFirebase = async (txt, fileName) => {
@@ -198,16 +197,16 @@ export default function UploadDocuments({hideCard, showCard}) {
       wrapperClass="upload-document-modal"
       onSubmit={upload}
       submitText={'Upload'}
-      showCard={showCard}
+      showCard={creationFormToShow === CreationForms.documents}
       title={'Upload Document'}
-      titleIcon={ <FaFileUpload className={'document'} />}
       onClose={resetForm}>
       <div className="upload-doc-wrapper">
+        <Spacer height={10} />
         {/* PAGE CONTAINER */}
-        <div id="upload-documents-container" className={`${theme} form `}>
+        <div id="upload-documents-container" className={`${theme}`}>
           {/* FORM */}
           <div className="form">
-            <InputWrapper labelText={'Document Name'} onChange={(e) => setDocName(e.target.value)} />
+            <InputWrapper labelText={'Document Name'} inputType={InputTypes.text} onChange={(e) => setDocName(e.target.value)} />
             <CheckboxGroup
               parentLabel={'Document Type'}
               required={true}
@@ -218,12 +217,11 @@ export default function UploadDocuments({hideCard, showCard}) {
           </div>
           {/* UPLOAD BUTTONS */}
           <UploadInputs
-            onClose={hideCard}
             containerClass={`${theme} new-document-card`}
             actualUploadButtonText={'Upload'}
             uploadButtonText={docType === 'document' ? 'Document' : 'Choose'}
             uploadType={docType}
-            upload={() => {}}
+            getImages={(input) => setDoc(input.target.files[0])}
           />
         </div>
       </div>

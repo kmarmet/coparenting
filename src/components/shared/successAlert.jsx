@@ -16,7 +16,7 @@ const SuccessAlert = () => {
           setTimeout(() => {
             setState({...state, successAlertMessage: null})
           }, 500)
-        }, 1100)
+        }, 800)
       }, 700)
     }
   }, [successAlertMessage])

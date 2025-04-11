@@ -8,11 +8,9 @@ import AppManager from '/src/managers/appManager'
 import MyConfetti from '/src/components/shared/myConfetti'
 import Manager from '/src/managers/manager'
 import NotificationManager from '/src/managers/notificationManager'
-import {TbPhotoHeart} from 'react-icons/tb'
-import DateFormats from '/src/constants/dateFormats'
+import DatetimeFormats from '/src/constants/datetimeFormats'
 import moment from 'moment'
 import Memory from '/src/models/memory.js'
-import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import SecurityManager from '/src/managers/securityManager'
 import ModelNames from '/src/models/modelNames'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
@@ -26,6 +24,9 @@ import StringManager from '/src/managers/stringManager'
 import DB_UserScoped from '../../database/db_userScoped'
 import {LuImagePlus} from 'react-icons/lu'
 import creationForms from '../../constants/creationForms'
+import DomManager from '../../managers/domManager'
+import InputTypes from '../../constants/inputTypes'
+import Spacer from '../shared/spacer'
 
 export default function NewMemoryForm() {
   const {state, setState} = useContext(globalState)
@@ -45,19 +46,17 @@ export default function NewMemoryForm() {
   }
 
   const submit = async () => {
-    setState({...state, isLoading: true})
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
     if (validAccounts === 0) {
       AlertManager.throwError(
         'No co-parent to \n share memories with',
-        'You have not connected any co-parents to your profile. It is also possible they have closed their account.'
+        'You have not connected any co-parents to your profile. It is also possible they have closed their profile.'
       )
       return false
     }
 
     if (validAccounts > 0) {
       if (newMemory.shareWith.length === 0) {
-        setState({...state, showAlert: true})
         AlertManager.throwError('Please choose who you would like to share this memory with')
         return false
       }
@@ -73,13 +72,20 @@ export default function NewMemoryForm() {
     })
 
     if (notAnImage) {
-      AlertManager.throwError('Files uploaded MUST be images (.png, .jpg, .jpeg, etc.).')
+      AlertManager.throwError(
+        'Files uploaded MUST be images (.png, .jpg, .jpeg, etc.)',
+        `If you would like to share a document, please ${DomManager.tapOrClick()} the Create navbar item and select 'Document Upload'`
+      )
       return false
     }
 
     let localImages = []
-    for (let img of images) {
-      localImages.push(await ImageManager.compressImage(img))
+    if (Manager.isValid(images)) {
+      for (let img of images) {
+        localImages.push(await ImageManager.compressImage(img))
+      }
+    } else {
+      return false
     }
 
     // Check for existing memory
@@ -96,6 +102,8 @@ export default function NewMemoryForm() {
       AlertManager.throwError('This memory already exists')
       return false
     }
+
+    setState({...state, isLoading: true})
 
     // Upload Image
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser?.key, localImages)
@@ -143,13 +151,6 @@ export default function NewMemoryForm() {
       })
   }
 
-  const addThemeToDatePickers = () => {
-    setTimeout(() => {
-      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
-      datetimeParent.classList.add(currentUser?.settings?.theme)
-    }, 100)
-  }
-
   return (
     <Modal
       onSubmit={submit}
@@ -157,46 +158,46 @@ export default function NewMemoryForm() {
       submitText={'Add Memory'}
       submitIcon={<LuImagePlus />}
       title={'Share Memory'}
-      titleIcon={<TbPhotoHeart className={'fs-24'} />}
       onClose={resetForm}
       showCard={creationFormToShow === creationForms.memories}>
       <div className="new-memory-wrapper">
         <div id="new-memory-form-container" className={`${theme} form`}>
+          <Spacer height={5} />
           <div className="form">
             {/* SHARE WITH */}
             {currentUser && <ShareWithCheckboxes onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />}
 
             {/* TITLE */}
             <InputWrapper
-              refreshKey={refreshKey}
-              inputType={'input'}
+              inputType={InputTypes.text}
               labelText={'Title'}
-              onChange={(e) => setNewMemory((prevMemory) => ({...prevMemory, title: e.target.value}))}></InputWrapper>
+              onChange={(e) => setNewMemory((prevMemory) => ({...prevMemory, title: e.target.value}))}
+            />
 
             {/* DATE */}
-            <InputWrapper labelText={'Memory Capture Date'} inputType={'date'}>
-              <MobileDatePicker
-                onOpen={addThemeToDatePickers}
-                defaultValue={moment()}
-                className={`${theme} m-0 w-100 mui-input`}
-                onAccept={(e) => setNewMemory((prevMemory) => ({...prevMemory, memoryCaptureDate: moment(e).format(DateFormats.dateForDb)}))}
-              />
-            </InputWrapper>
+            <InputWrapper
+              defaultValue={moment()}
+              uidClass="memory-capture-date-uid"
+              labelText={'Capture Date'}
+              inputType={InputTypes.date}
+              onDateOrTimeSelection={(e) =>
+                setNewMemory((prevMemory) => ({...prevMemory, memoryCaptureDate: moment(e).format(DatetimeFormats.dateForDb)}))
+              }
+            />
 
             {/* NOTES */}
             <InputWrapper
-              refreshKey={refreshKey}
               onChange={(e) => setNewMemory((prevMemory) => ({...prevMemory, notes: e.target.value}))}
-              inputType={'textarea'}
-              labelText={'Image Description/Notes'}></InputWrapper>
+              inputType={InputTypes.textarea}
+              labelText={'Notes'}
+            />
             {/* UPLOAD BUTTON */}
             <UploadInputs
-              onClose={() => setState({...state, creationFormToShow: '', showBottomMenu: false})}
               containerClass={`${theme} new-memory-card`}
               uploadType={'image'}
               actualUploadButtonText={'Upload'}
-              getImages={(files) => {
-                setImages(files)
+              getImages={(input) => {
+                setImages(input.target.files)
               }}
               uploadButtonText={`Choose`}
               upload={() => {}}

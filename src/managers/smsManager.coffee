@@ -24,7 +24,7 @@ export default SmsManager =
     dueDateInfo = if expense.dueDate?.length > 0 then "Due date is: #{expense.dueDate}" else ""
     "This is a reminder to pay the #{expense.name} expense. #{dueDateInfo} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getSwapRequestReminderTemplate: (recipient, request) ->
-    "This is a reminder to make a decision for the Swap Request on #{request.startDate} created by #{request.createdBy} on #{request.dateAdded}. #{SmsManager.lineBreak}#{SmsManager.signature}"
+    "This is a reminder to make a decision for the Swap Request on #{request.startDate} created by #{request.createdBy} on #{request.creationDate}. #{SmsManager.lineBreak}#{SmsManager.signature}"
   getTransferRequestTemplate: (request, createdBy) ->
     "A new Child Transfer Request has been created by #{createdBy} for #{request.date} at #{request.time} #{SmsManager.lineBreak}#{SmsManager.signature}"
     ###*
@@ -33,7 +33,7 @@ export default SmsManager =
  * @return {number} Cube of input
  ###
   getParentVerificationTemplate: (childName, verificationCode) ->
-    "#{StringManager.uppercaseFirstLetterOfAllWords(childName)} is registering for an account and requires your permission
+    "#{StringManager.uppercaseFirstLetterOfAllWords(childName)} is registering for an profile and requires your permission
    for access. #{SmsManager.lineBreak}#{SmsManager.lineBreak}If you accept, please share this code with them: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getRegistrationVerificationTemplate: (userName, verificationCode) ->
     "#{userName} ,please enter this code to continue registration: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"

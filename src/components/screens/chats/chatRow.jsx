@@ -16,12 +16,12 @@ export default function ChatRow({chat, index}) {
   const [otherMember, setOtherMember] = useState(null)
 
   const openChat = async () => {
-    // Check if thread member (coparent) account exists in DB
+    // Check if thread member (coparent) profile exists in DB
     let userCoparent = await DB_UserScoped.getCoparentByKey(otherMember?.key, currentUser)
     if (!Manager.isValid(userCoparent)) {
       AlertManager.oneButtonAlert(
-        'Co-Parent Account not Found',
-        'This co-parent may have closed their account, however, you can still view the messages',
+        'Co-Parent Profile not Found',
+        'This co-parent may have closed their profile, however, you can still view the messages',
         null,
         () => {
           setState({...state, currentScreen: ScreenNames.chat, messageRecipient: otherMember})

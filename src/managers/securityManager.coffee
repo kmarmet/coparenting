@@ -2,7 +2,7 @@ import Manager from '../managers/manager'
 import DB from "../database/DB"
 import DateManager from "../managers/dateManager"
 import _ from "lodash"
-import DB_UserScoped from "../database/DB_UserScoped"
+
 SecurityManager =
   getShareWithItems: (currentUser, table) ->
     coparentAndChildEvents  = []
@@ -90,7 +90,7 @@ SecurityManager =
   getTransferChangeRequests: (currentUser) ->
     returnRecords = []
     allRequests = Manager.convertToArray(await DB.getTable("#{DB.tables.transferChangeRequests}/#{currentUser?.key}")).flat()
-    sharedTransfers = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests)
+    sharedTransfers = await SecurityManager.getShareWithItems(currentUser, DB.tables.transferChangeRequests)
 
     if Manager.isValid(allRequests)
       for request in allRequests
@@ -118,7 +118,7 @@ SecurityManager =
   getMemories: (currentUser) ->
     returnRecords = []
     allMemories = Manager.convertToArray(await DB.getTable("#{DB.tables.memories}/#{currentUser?.key}")).flat()
-    sharedMemories = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests)
+    sharedMemories = await SecurityManager.getShareWithItems(currentUser, DB.tables.memories)
 
     if Manager.isValid(allMemories)
       for memory in allMemories

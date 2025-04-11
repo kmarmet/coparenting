@@ -39,7 +39,9 @@ const Chats = () => {
         const otherMemberMessages = chatMessages.filter((message) => message?.senderKey !== currentUser?.key)
         let lastMessage = ''
         if (Manager.isValid(chatMessages)) {
-          lastMessage = otherMemberMessages[otherMemberMessages.length - 1]['message']
+          if (Manager.isValid(otherMemberMessages)) {
+            lastMessage = otherMemberMessages[otherMemberMessages.length - 1]['message']
+          }
         }
         iterableChats.push({
           lastMessage: lastMessage,
@@ -80,7 +82,7 @@ const Chats = () => {
             return false
           }
           EmailManager.SendEmailToUser(EmailManager.Templates.coparentInvitation, '', inviteeEmail, inviteeName)
-          AlertManager.successAlert('Invitation Sent!')
+          setState({...state, successAlertMessage: 'Invitation Sent!'})
           setShowInvitationCard(false)
         }}
         hideCard={() => setShowInvitationCard(false)}>

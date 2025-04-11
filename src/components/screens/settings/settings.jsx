@@ -1,11 +1,11 @@
 // Path: src\components\screens\settings\settings.jsx
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import globalState from '../../../context'
 import moment from 'moment'
 import DB_UserScoped from '/src/database/db_userScoped'
-import { MobileTimePicker } from '@mui/x-date-pickers-pro'
-import DateFormats from '/src/constants/dateFormats'
-import { Fade } from 'react-awesome-reveal'
+import {MobileTimePicker} from '@mui/x-date-pickers-pro'
+import DatetimeFormats from '/src/constants/datetimeFormats'
+import {Fade} from 'react-awesome-reveal'
 import DateManager from '/src/managers/dateManager'
 import NavBar from '/src/components/navBar'
 import AlertManager from '/src/managers/alertManager'
@@ -27,14 +27,14 @@ export default function Settings() {
       await DB_UserScoped.updateUserRecord(
         currentUser?.key,
         'dailySummaries/morningReminderSummaryHour',
-        moment(morningSummaryTime).format(DateFormats.summaryHour)
+        moment(morningSummaryTime).format(DatetimeFormats.summaryHour)
       )
     }
     if (DateManager.dateIsValid(eveningSummaryTime)) {
       await DB_UserScoped.updateUserRecord(
         currentUser?.key,
         'dailySummaries/eveningReminderSummaryHour',
-        moment(eveningSummaryTime).format(DateFormats.summaryHour)
+        moment(eveningSummaryTime).format(DatetimeFormats.summaryHour)
       )
     }
     AlertManager.successAlert('Calendar settings have been updated!')
@@ -101,7 +101,7 @@ export default function Settings() {
                 </button>
               </div>
             )}
-            <hr className="hr less-margin"/>
+            <hr className="hr less-margin" />
             {/*  NOTIFICATIONS */}
             <Label text={'Notifications'} />
             <div className="flex">

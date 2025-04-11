@@ -8,6 +8,7 @@ CreationForms = {
   memories: "new-memory"
   documents: "documents"
   chat: "new-chat"
+  coparent: "new-coparent"
 }
 
 

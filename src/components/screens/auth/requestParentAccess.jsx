@@ -29,7 +29,7 @@ export default function RequestParentAccess() {
       const parent = users.find((x) => x.phone === parentPhone)
 
       if (!parent) {
-        AlertManager.throwError('No parent account found with provided phone number', 'Please check the phone number and enter again')
+        AlertManager.throwError('No parent profile found with provided phone number', 'Please check the phone number and enter again')
         setErrorAlertTextColor()
         return false
       }

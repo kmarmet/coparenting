@@ -32,7 +32,7 @@
         align-items: stretch;
         justify-content: center;
         background: $grey;
-        border-radius: 10px;
+        border-radius: $buttonBorderRadius;
         margin: 20px auto 5px auto;
         padding: 5px 10px;
         border: 1px solid $lightBorderColor;

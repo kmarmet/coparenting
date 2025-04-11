@@ -1,22 +1,21 @@
 // Path: src\components\screens\childInfo\general.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import Accordion from '@mui/material/Accordion'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import AlertManager from '/src/managers/alertManager'
-import { PiIdentificationCardFill, PiTrashSimpleDuotone } from 'react-icons/pi'
+import {PiIdentificationCardFill, PiTrashSimpleDuotone} from 'react-icons/pi'
 import DB from '/src/database/DB'
 import StringManager from '/src/managers/stringManager.coffee'
-import { FaMinus, FaPlus } from 'react-icons/fa6'
+import {FaMinus, FaPlus} from 'react-icons/fa6'
 import DB_UserScoped from '../../../database/db_userScoped'
-import AddressInput from '/src/components/shared/addressInput'
+import InputTypes from '../../../constants/inputTypes'
 
 function General() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activeInfoChild } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, activeInfoChild} = state
   const [generalValues, setGeneralValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
 
@@ -31,7 +30,7 @@ function General() {
       await setSelectedChild()
     } else {
       const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'general', StringManager.formatDbProp(prop))
-      setState({ ...state, activeInfoChild: updatedChild })
+      setState({...state, activeInfoChild: updatedChild})
       await setSelectedChild()
     }
   }
@@ -62,8 +61,8 @@ function General() {
   }
 
   const update = async (prop, value) => {
-    AlertManager.successAlert('Updated!')
     await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', StringManager.formatDbProp(prop), value)
+    setState({...state, successAlertMessage: 'Updated'})
   }
 
   useEffect(() => {
@@ -88,22 +87,22 @@ function General() {
             generalValues.map((prop, index) => {
               let infoLabel = StringManager.spaceBetweenWords(prop[0])
               const value = prop[1]
+
               return (
                 <div key={index} className={`flex input ${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''}`}>
                   {!Manager.contains(prop[0], 'profilePic') && (
                     <>
                       {Manager.contains(infoLabel.toLowerCase(), 'address') && (
-                        <InputWrapper inputType={'location'} labelText={`ADDRESS: ${value.replace(/\d{5}/, '').replaceAll(', USA', '')}`}>
-                          <AddressInput
-                            onSelection={async (place) => {
-                              await update('address', place)
-                            }}
-                          />
-                        </InputWrapper>
+                        <InputWrapper
+                          inputType={'location'}
+                          defaultValue={value}
+                          labelText={`Home Address`}
+                          onChange={(address) => update('address', address)}
+                        />
                       )}
                       {!Manager.contains(infoLabel.toLowerCase(), 'address') && (
                         <InputWrapper
-                          inputType={'input'}
+                          inputType={InputTypes.text}
                           labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
                           defaultValue={value}
                           onChange={async (e) => {

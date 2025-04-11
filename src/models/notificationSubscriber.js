@@ -2,13 +2,11 @@
 var NotificationSubscribers;
 
 export default NotificationSubscribers = class NotificationSubscribers {
-  constructor(id = '', phone = '', key = '', email = '', subscriptionId = '', oneSignalId = '') {
+  constructor(id = '', key = '', email = '', subscriptionId = '') {
     this.id = id;
-    this.phone = phone;
     this.key = key;
     this.email = email;
     this.subscriptionId = subscriptionId;
-    this.oneSignalId = oneSignalId;
   }
 
 };

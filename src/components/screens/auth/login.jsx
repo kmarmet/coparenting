@@ -1,12 +1,10 @@
 // Path: src\components\screens\auth\login.jsx
-import { initializeApp } from 'firebase/app'
-import { browserLocalPersistence, getAuth, sendEmailVerification, setPersistence, signInWithEmailAndPassword } from 'firebase/auth'
-import React, { useContext, useState } from 'react'
-import { Fade } from 'react-awesome-reveal'
-import { GrInstallOption } from 'react-icons/gr'
-import { MdOutlinePassword } from 'react-icons/md'
-import { PiEyeClosedDuotone, PiEyeDuotone } from 'react-icons/pi'
-import { SlLogin } from 'react-icons/sl'
+import {initializeApp} from 'firebase/app'
+import {browserLocalPersistence, getAuth, sendEmailVerification, setPersistence, signInWithEmailAndPassword} from 'firebase/auth'
+import React, {useContext, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import {PiEyeClosedDuotone, PiEyeDuotone} from 'react-icons/pi'
+import {FaArrowCircleDown} from 'react-icons/fa'
 import validator from 'validator'
 import CheckboxGroup from '/src/components/shared/checkboxGroup.jsx'
 import InputWrapper from '/src/components/shared/inputWrapper'
@@ -19,10 +17,11 @@ import Manager from '/src/managers/manager'
 import DB from '../../../database/DB'
 import Spacer from '../../shared/spacer'
 import ReCAPTCHA from 'react-google-recaptcha'
+import InputTypes from '../../../constants/inputTypes'
 
 export default function Login() {
-  const { state, setState } = useContext(globalState)
-  const { theme } = state
+  const {state, setState} = useContext(globalState)
+  const {theme} = state
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [viewPassword, setViewPassword] = useState(false)
@@ -38,12 +37,12 @@ export default function Login() {
     // Validation
     if (!validator.isEmail(email)) {
       AlertManager.throwError('Email address is not valid')
-      setState({ ...state, isLoading: false })
+      setState({...state, isLoading: false})
       return false
     }
     if (email.length === 0 || password.length === 0) {
       AlertManager.throwError('Please fill out all fields')
-      setState({ ...state, isLoading: false })
+      setState({...state, isLoading: false})
       return false
     }
 
@@ -70,7 +69,7 @@ export default function Login() {
                 () => {}
               )
               sendEmailVerification(user)
-              setState({ ...state, isLoading: false })
+              setState({...state, isLoading: false})
             }
 
             // Persistent AND Email is Verified
@@ -84,7 +83,7 @@ export default function Login() {
             }
           })
           .catch((error) => {
-            setState({ ...state, isLoading: false })
+            setState({...state, isLoading: false})
             console.error('Sign in error:', error.message)
             if (Manager.contains(error.message, 'wrong-password')) {
               console.log('found')
@@ -96,7 +95,7 @@ export default function Login() {
 
     // Not Persistent
     else {
-      setState({ ...state, isLoading: false })
+      setState({...state, isLoading: false})
       await firebaseSignIn()
     }
   }
@@ -122,7 +121,7 @@ export default function Login() {
             () => {}
           )
           sendEmailVerification(user)
-          setState({ ...state, isLoading: false })
+          setState({...state, isLoading: false})
         }
 
         // EMAIL IS VERIFIED
@@ -136,7 +135,7 @@ export default function Login() {
         }
       })
       .catch((error) => {
-        setState({ ...state, isLoading: false })
+        setState({...state, isLoading: false})
         console.error('Sign in error:', error.message)
         if (Manager.contains(error.message, 'user-not-found')) {
           AlertManager.throwError(
@@ -172,9 +171,9 @@ export default function Login() {
     <>
       {/* PAGE CONTAINER */}
       <div id="login-container" className={`page-container form login`}>
-        <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
+        <Fade direction={'right'} duration={800} damping={0.2} cascade={true} className={'visitation-fade-wrapper'} triggerOnce={true}>
           <img
-            onClick={() => setState({ ...state, currentScreen: ScreenNames.home })}
+            onClick={() => setState({...state, currentScreen: ScreenNames.home})}
             className="ml-auto mr-auto"
             src={require('../../../img/logo.png')}
             alt="Peaceful coParenting"
@@ -182,7 +181,7 @@ export default function Login() {
           {/* QUOTE CONTAINER */}
           <div id="quote-container">
             <p id="quote">
-              Co-parenting. It&#39;s not a competition between two homes. It&#39;s <b>a collaboration of parents doing what is best for the kids.</b>
+              Co-Parenting. It&#39;s not a competition between two homes. It&#39;s <b>a collaboration of parents doing what is best for the kids.</b>
             </p>
             <p id="author">~ Heather Hetchler</p>
           </div>
@@ -192,9 +191,9 @@ export default function Login() {
             id="install-button"
             className="mb-10 button mt-20"
             onClick={() => {
-              setState({ ...state, menuIsOpen: false, currentScreen: ScreenNames.installApp })
+              setState({...state, menuIsOpen: false, currentScreen: ScreenNames.installApp})
             }}>
-            Install <GrInstallOption className={'fs-16 ml-10'} />
+            Install <FaArrowCircleDown className={'fs-16 ml-10'} />
           </p>
 
           {/* FORM/INPUTS */}
@@ -203,7 +202,7 @@ export default function Login() {
               {/* EMAIL */}
               <InputWrapper
                 inputClasses="email login-input"
-                inputValueType="email"
+                inputType={InputTypes.email}
                 required={true}
                 labelText={'Email Address'}
                 onChange={(e) => setEmail(e.target.value)}
@@ -211,7 +210,7 @@ export default function Login() {
               {/* PASSWORD */}
               <div className="flex inputs">
                 <InputWrapper
-                  inputValueType={viewPassword ? 'text' : 'password'}
+                  inputType={InputTypes.password}
                   required={true}
                   wrapperClasses="password"
                   labelText={'Password'}
@@ -233,7 +232,7 @@ export default function Login() {
                   skipNameFormatting={true}
                 />
                 {/* FORGOT PASSWORD BUTTON */}
-                <p id="forgot-password-link" onClick={() => setState({ ...state, currentScreen: ScreenNames.resetPassword })}>
+                <p id="forgot-password-link" onClick={() => setState({...state, currentScreen: ScreenNames.resetPassword})}>
                   Forgot Password
                 </p>
               </div>
@@ -259,7 +258,7 @@ export default function Login() {
               }}
             />
 
-            <p id="sign-up-link" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>
+            <p id="sign-up-link" onClick={() => setState({...state, currentScreen: ScreenNames.registration})}>
               Don&#39;t have an account? <span>Sign Up</span>
             </p>
           </div>

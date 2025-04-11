@@ -5,7 +5,6 @@ import globalState from '../../context'
 import ScheduleTypes from '/src/constants/scheduleTypes'
 import DB from '/src/database/DB'
 import {Fade} from 'react-awesome-reveal'
-import {FaMinus, FaPlus} from 'react-icons/fa6'
 import CalendarEvent from '/src/models/calendarEvent'
 import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
@@ -17,11 +16,10 @@ import MyConfetti from '/src/components/shared/myConfetti'
 import Note from '/src/components/shared/note'
 import DB_UserScoped from '/src/database/db_userScoped'
 import VisitationMapper from '/src/mappers/visitationMapper'
-import DateFormats from '/src/constants/dateFormats'
+import DateFormats from '/src/constants/datetimeFormats'
 import CalendarMapper from '/src/mappers/calMapper'
 import SecurityManager from '/src/managers/securityManager'
 import NavBar from '../navBar'
-import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import DatasetManager from '/src/managers/datasetManager'
 import AlertManager from '/src/managers/alertManager'
@@ -32,9 +30,9 @@ import FiftyFifty from '/src/components/screens/visitation/fiftyFifty'
 import EveryOtherWeekend from '/src/components/screens/visitation/everyOtherWeekend'
 import CustomWeekends from '/src/components/screens/visitation/customWeekends'
 import DateManager from '/src/managers/dateManager.js'
-import AddressInput from '../../components/shared/addressInput'
 import Spacer from '../shared/spacer'
-import Label from '../shared/label'
+import AccordionTitle from '../shared/accordionTitle'
+import InputTypes from '../../constants/inputTypes'
 
 export default function Visitation() {
   const {state, setState} = useContext(globalState)
@@ -58,6 +56,8 @@ export default function Visitation() {
   const [holidaysFromApi, setHolidaysFromApi] = useState([])
 
   const updateDefaultTransferLocation = async (location, link) => {
+    console.log(`${DB.tables.users}/${currentUser?.key}/visitation/transferNavLink`)
+    console.log(location, link)
     await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/visitation/transferNavLink`, link)
     await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/visitation/transferAddress`, location)
   }
@@ -80,7 +80,7 @@ export default function Visitation() {
       const dateObject = new CalendarEvent()
       // Required
       dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
-      dateObject.startDate = moment(date).format(DateFormats.dateForDb)
+      dateObject.startDate = moment(date).format(DatetimeFormats.dateForDb)
       // Not Required
       dateObject.ownerKey = currentUser?.key
       dateObject.createdBy = currentUser?.name
@@ -107,7 +107,7 @@ export default function Visitation() {
         const holidayName = CalendarMapper.holidayDateToName(moment(holidayDateString).format('MM/DD'))
         // Required
         dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Holiday Visitation`
-        dateObject.startDate = moment(holidayDateString).format(DateFormats.dateForDb)
+        dateObject.startDate = moment(holidayDateString).format(DatetimeFormats.dateForDb)
         dateObject.holidayName = holidayName
         // Not Required
         dateObject.ownerKey = currentUser?.key
@@ -140,7 +140,7 @@ export default function Visitation() {
         const holidayMonth = moment(dataDate).month() + 1
         const currentMonth = moment().month() + 1
         const holidayYear = holidayMonth < currentMonth ? moment().year() + 1 : moment().year()
-        const dateAsString = moment(`${dataDate}/${holidayYear}`, DateFormats.dateForDb).format(DateFormats.dateForDb)
+        const dateAsString = moment(`${dataDate}/${holidayYear}`, DatetimeFormats.dateForDb).format(DatetimeFormats.dateForDb)
         setSelectedHolidayDates([...selectedHolidayDates, dateAsString])
       },
       (e) => {
@@ -148,7 +148,7 @@ export default function Visitation() {
         const holidayMonth = moment(dataDate).month() + 1
         const currentMonth = moment().month() + 1
         const holidayYear = holidayMonth < currentMonth ? moment().year() + 1 : moment().year()
-        const dateAsString = moment(`${dataDate}/${holidayYear}`, DateFormats.dateForDb).format(DateFormats.dateForDb)
+        const dateAsString = moment(`${dataDate}/${holidayYear}`, DatetimeFormats.dateForDb).format(DatetimeFormats.dateForDb)
         let filtered = selectedHolidayDates.filter((x) => x !== dateAsString)
         setSelectedHolidayDates(filtered)
       },
@@ -351,10 +351,11 @@ export default function Visitation() {
               {/*  VISITATION SECTION */}
               <Accordion id={'visitation-section'} expanded={showVisitationSection}>
                 <AccordionSummary id={'visitation-section-accordion-title'}>
-                  <div className="flex accordion-title" onClick={() => setShowVisitationSection(!showVisitationSection)}>
-                    <Label text={'Visitation Schedule & Location'} />
-                    {showVisitationSection ? <FaMinus /> : <FaPlus />}
-                  </div>
+                  <AccordionTitle
+                    titleText={'Schedule & Location'}
+                    onClick={() => setShowVisitationSection(!showVisitationSection)}
+                    toggleState={showVisitationSection}
+                  />
                 </AccordionSummary>
                 <p className="fs-15">Choose a visitation schedule and agreed upon transfer location</p>
                 <AccordionDetails>
@@ -371,20 +372,20 @@ export default function Visitation() {
                     />
                   </div>
 
-                  {/* SHARE WITH */}
-                  <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
-
                   {/* LOCATION */}
-                  <InputWrapper inputType="location" childrenOnly={true} labelText={'Agreed Upon Transfer Location'}>
-                    <AddressInput
-                      defaultValue={currentUser?.defaultTransferLocation}
-                      onSelection={(place) => {
-                        updateDefaultTransferLocation(place, `https://www.google.com/maps?daddr=7${encodeURIComponent(place)}`).then(() =>
-                          AlertManager.successAlert('Preferred Transfer Location Set')
-                        )
-                      }}
-                    />
-                  </InputWrapper>
+                  <InputWrapper
+                    inputType={InputTypes.address}
+                    wrapperClasses="show-label"
+                    labelText={'Agreed Upon Transfer Location'}
+                    onChange={(address) => {
+                      console.log(address)
+                      updateDefaultTransferLocation(address, Manager.getDirectionsLink(address)).then(() =>
+                        setTimeout(() => {
+                          setState({...state, successAlertMessage: 'Preferred Transfer Location Set'})
+                        }, 300)
+                      )
+                    }}
+                  />
                 </AccordionDetails>
               </Accordion>
             </Fade>
@@ -396,10 +397,7 @@ export default function Visitation() {
           {/*  HOLIDAYS */}
           <Accordion id={'visitation-holidays-section'} expanded={showHolidaysSection}>
             <AccordionSummary id={'visitation-holidays-section-accordion-title'}>
-              <div className="flex accordion-title" onClick={() => setShowHolidaysSection(!showHolidaysSection)}>
-                <Label text={'Visitation Holidays'} />
-                {showHolidaysSection ? <FaMinus /> : <FaPlus />}
-              </div>
+              <AccordionTitle titleText={'Holidays'} onClick={() => setShowHolidaysSection(!showHolidaysSection)} toggleState={showHolidaysSection} />
             </AccordionSummary>
             <p className="fs-15">Select the holidays YOU have your child(ren) this year</p>
             <Spacer height={5} />

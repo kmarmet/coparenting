@@ -1,5 +1,5 @@
 // Path: src\components\screens\childInfo\medical.jsx
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager'
 import DB_UserScoped from '/src/database/db_userScoped'
@@ -8,16 +8,16 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
-import { IoCloseOutline } from 'react-icons/io5'
-import { FaBriefcaseMedical } from 'react-icons/fa'
+import {FaBriefcaseMedical} from 'react-icons/fa'
 import DB from '/src/database/DB'
 import StringManager from '../../../managers/stringManager'
-import { FaPlus, FaMinus } from 'react-icons/fa6'
-import { PiIdentificationCardFill, PiTrashSimpleDuotone } from 'react-icons/pi'
+import {FaMinus, FaPlus} from 'react-icons/fa6'
+import {PiTrashSimpleDuotone} from 'react-icons/pi'
+import InputTypes from '../../../constants/inputTypes'
 
 export default function Medical() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme, activeInfoChild } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme, activeInfoChild} = state
   const [medicalValues, setMedicalValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
 
@@ -46,14 +46,14 @@ export default function Medical() {
     // Delete NOT shared
     else {
       const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'medical', StringManager.formatDbProp(prop))
-      setState({ ...state, activeInfoChild: updatedChild })
+      setState({...state, activeInfoChild: updatedChild})
       await setSelectedChild()
     }
   }
 
   const update = async (prop, value) => {
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'medical', StringManager.formatDbProp(prop), value)
-    setState({ ...state, activeInfoChild: updatedChild })
+    setState({...state, activeInfoChild: updatedChild})
     AlertManager.successAlert('Updated!')
   }
 
@@ -113,12 +113,11 @@ export default function Medical() {
                     )}
                     {!infoLabel.toLowerCase().includes('phone') && (
                       <InputWrapper
-                        inputType={'input'}
+                        inputType={InputTypes.text}
                         labelText={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
                           Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''
                         }`}
                         defaultValue={value}
-                        value={value}
                         debounceTimeout={1000}
                         onChange={(e) => {
                           const inputValue = e.target.value

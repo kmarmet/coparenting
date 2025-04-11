@@ -11,7 +11,6 @@ import DomManager from '../../managers/domManager'
 import {MdOutlineIosShare} from 'react-icons/md'
 import Spacer from '../shared/spacer'
 import NavBar from '../navBar'
-import {IoIosArrowBack} from 'react-icons/io'
 import ScreenNames from '../../constants/screenNames'
 
 export default function InstallApp() {
@@ -25,7 +24,6 @@ export default function InstallApp() {
     <>
       <div className="page-container install-app">
         <div id="install-app-wrapper">
-          {!userIsLoggedIn && <IoIosArrowBack className={'back-arrow'} onClick={() => setState({...state, currentScreen: ScreenNames.login})} />}
           <p className="screen-title">Installation Instructions</p>
           <p>Install the app in three steps or less! No App Store or Play Store necessary.</p>
           <Spacer height={10} />
@@ -113,7 +111,7 @@ export default function InstallApp() {
           {/* DESKTOP */}
           <Accordion id={'pc'}>
             <AccordionSummary>
-              <p className="accordion-header desktop" onClick={(e) => setExpandDesktopAccordion(!expandDesktopAccordion)}>
+              <p className="accordion-header desktop" onClick={() => setExpandDesktopAccordion(!expandDesktopAccordion)}>
                 Desktop/Laptop <TbDeviceDesktopDown />{' '}
                 {expandDesktopAccordion ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}
               </p>
@@ -141,6 +139,11 @@ export default function InstallApp() {
           </Accordion>
         </div>
       </div>
+      {!userIsLoggedIn && (
+        <button id="back-to-login-button" className="button default " onClick={() => setState({...state, currentScreen: ScreenNames.login})}>
+          Back to Login
+        </button>
+      )}
       {userIsLoggedIn && <NavBar navbarClass={'child-info no-add-new-button'} />}
     </>
   )

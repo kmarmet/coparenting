@@ -42,33 +42,28 @@ div {
   }
   &:where(.swal2-container) {
     button {
-      &:where(.swal2-styled):where(.swal2-confirm) {
-        @include fontType;
-        background-color: $green !important;
-        color: white !important;
-        margin-bottom: 8px !important;
-      }
-      &:where(.swal2-styled):where(.swal2-deny) {
-        @include fontType;
-        background-color: #e7e5e4 !important;
-        color: #68615c !important;
-      }
     }
   }
 }
 
-.swal2-confirm {
-  * {
-    @include fontType;
-  }
-  &.red {
-    background-color: $red !important;
+// Textarea
+div {
+  &:where(.swal2-container) {
+    #swal2-textarea {
+      @include fontType;
+      margin: 0;
+      border-radius: $borderRadius !important;
+      width: 100% !important;
+      outline: 0 !important;
+      user-select: none !important;
+    }
   }
 }
 
 .swal2-title {
   @include fontType;
-  font-weight: $fwBold !important;
+  font-size: 16px;
+  font-weight: $fwMedium !important;
   line-height: 1.3;
   margin: 0 !important;
   padding: 0;
@@ -88,7 +83,7 @@ div {
 
 .swal2-popup {
   border-radius: 15px;
-  padding: 20px !important;
+  padding: 12px !important;
   margin: 0 !important;
   align-items: center !important;
   animation-duration: 0.8s !important;
@@ -98,30 +93,63 @@ div {
   justify-content: center;
   @include bestShadow;
 
+  &.swal2-icon-error {
+    justify-content: center !important;
+
+    #swal2-title {
+      font-size: 18px;
+    }
+
+    .swal2-actions {
+      button {
+        width: 120px !important;
+        margin: 0 auto !important;
+        height: 38px !important;
+        background: white !important;
+        color: $primaryText !important;
+      }
+    }
+  }
+
   .swal2-actions {
     margin: 0 !important;
     padding: 0 !important;
     gap: 8px !important;
-    justify-content: flex-end !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
 
     button {
       @include fontType;
       background: $grey;
-      color: $disabledText;
-      text-transform: uppercase;
-      width: 120px !important;
-      border-radius: $borderRadius !important;
+      color: $darkestGrey;
+      border-radius: $buttonBorderRadius !important;
       text-align: center;
       margin: 0 !important;
+      white-space: nowrap;
       display: flex;
       align-items: center;
-      height: 45px;
+      min-width: 100px !important;
+      height: 50px;
       justify-content: center;
       font-weight: $fwMedium;
       line-height: 1;
-      padding: 10px 20px !important;
-      border: 0;
-      font-size: 14px;
+      border: 1px solid $lightBorderColor;
+      font-size: 13px;
+      outline: none;
+      user-select: none;
+
+      // CONFIRM
+      &:where(.swal2-styled):where(.swal2-confirm) {
+        background-color: $green !important;
+        color: white !important;
+      }
+
+      // DENY
+      &:where(.swal2-styled):where(.swal2-deny) {
+        background-color: $grey !important;
+        color: $darkestGrey !important;
+        border: 1px solid $lightBorderColor !important;
+      }
     }
   }
 
@@ -134,8 +162,8 @@ div {
 
       .swal2-html-container {
         text-align: center !important;
-        font-weight: $fwMediumBold !important;
-        font-size: 18px !important;
+        font-weight: $fwMedium !important;
+        font-size: 16px !important;
       }
     }
 
@@ -176,7 +204,7 @@ div {
       //      color: $bootstrapYellowColor !important;
     }
     .swal2-deny {
-      background: $grey !important;
+      //      background: $grey !important;
     }
   }
 

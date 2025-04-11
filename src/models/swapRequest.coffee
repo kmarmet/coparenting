@@ -1,5 +1,5 @@
 import Manager from "../managers/manager"
-import DateFormats from "../constants/dateFormats"
+import DateFormats from "../constants/datetimeFormats"
 import moment from "moment"
 
 export default class SwapRequest
@@ -8,15 +8,18 @@ export default class SwapRequest
     @startDate = ''
     @shareWith = []
     @endDate = ''
-    @dateAdded = moment().format(DateFormats.dateForDb)
+    @creationDate = moment().format(DateFormats.dateForDb)
     @recipientKey = ''
-    @reason = ''
+    @requestReason = ''
     @duration = ''
     @ownerKey = ''
+    @recipientName = ''
+    @ownerName = ''
     @children = ''
     @fromHour = ''
     @toHour = ''
     @status = 'pending'
+    @declineReason = ''
     @range = []
     @responseDueDate = ''
   ) ->

@@ -180,8 +180,18 @@
 
       .MuiMonthCalendar-root {
         margin: 0 auto 20px auto !important;
-        background: $lightGrey !important;
-        box-shadow: $boxShadow_bottom_only_dark;
+        background: white !important;
+        border-radius: 20px !important;
+        @include shadow;
+        .MuiPickersMonth-root {
+          button {
+            color: $darkestGrey !important;
+
+            &.Mui-selected {
+              color: $mainBlue !important;
+            }
+          }
+        }
       }
 
       /*#region  BELOW CALENDAR BUTTONS*/
@@ -190,11 +200,10 @@
         width: calc(100vw - 30px);
         margin: 0 auto !important;
         align-items: center;
-        gap: 10px !important;
+        gap: 15px !important;
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         position: relative;
-        z-index: 100000;
         justify-content: center;
         padding: 0 !important;
         left: 0;
@@ -213,15 +222,16 @@
           line-height: 1 !important;
           text-align: center !important;
           position: relative;
-          border-radius: 6px;
           font-weight: $fwMedium !important;
-          color: $darkerGrey !important;
-          height: 28px !important;
           display: flex;
           align-items: center;
           justify-content: center;
           background: $grey;
-          border: 1px solid $lightBorderColor;
+          padding-bottom: 5px;
+          background: transparent;
+          color: rgba(26, 42, 158, 0.81) !important;
+          border-bottom: 1px solid rgba(26, 42, 158, 0.43);
+          border-radius: 0;
         }
 
         .divider {
@@ -232,16 +242,14 @@
         .MuiButtonBase-root {
           font-size: 12px !important;
           text-align: center !important;
-          color: $darkerGrey !important;
-          background: $grey;
+          background: transparent;
           font-weight: $fwMedium !important;
-          height: 28px !important;
-          border-radius: 6px !important;
-          border: 1px solid $lightBorderColor !important;
-
-          @media screen and (max-width: 400px) {
-            font-size: 13px !important;
-          }
+          border: 0 !important;
+          height: auto;
+          padding-bottom: 5px !important;
+          color: rgba(26, 42, 158, 0.81) !important;
+          border-bottom: 1px solid rgba(26, 42, 158, 0.43) !important;
+          border-radius: 0 !important;
         }
       }
       /*#endregion  BELOW CALENDAR BUTTONS*/
@@ -262,7 +270,7 @@
 
           .MuiMonthCalendar-root {
             border: 1px solid $lightBorderColor;
-            border-radius: 10px;
+            border-radius: $buttonBorderRadius;
             .MuiPickersMonth-root {
               button {
                 color: $darkGrey;
@@ -325,7 +333,7 @@
                 &:after {
                   content: '';
                   position: absolute;
-                  top: 5px;
+                  top: 4px;
                   left: 0;
                   width: 35px;
                   @include centerHoriz;
@@ -333,7 +341,7 @@
                   z-index: -1;
                   border: 0;
                   border-radius: 12px;
-                  background: $mainBlue;
+                  background: $accent;
                 }
               }
 

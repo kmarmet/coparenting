@@ -10,7 +10,7 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import {IoCheckmarkDoneOutline} from 'react-icons/io5'
 import DB from '../../database/DB'
 import Manager from '../../managers/manager'
-import DateFormats from '../../constants/dateFormats'
+import DatetimeFormats from '../../constants/datetimeFormats'
 import moment from 'moment'
 import NavBar from '../navBar'
 import DatasetManager from '../../managers/datasetManager'
@@ -87,6 +87,20 @@ export default function Notifications() {
           category: ActivityCategory.expenses,
         }
 
+      case title?.indexOf('transfer') > -1:
+        return {
+          screen: ScreenNames.transferRequests,
+          className: 'transfer',
+          category: ActivityCategory.transferRequest,
+        }
+
+      case title?.indexOf('swap') > -1:
+        return {
+          screen: ScreenNames.swapRequests,
+          className: 'swap',
+          category: ActivityCategory.swapRequest,
+        }
+
       default:
         return {
           screen: ScreenNames.notifications,
@@ -96,7 +110,12 @@ export default function Notifications() {
     }
   }
 
-  const changeScreen = (screenName) => setState({...state, currentScreen: ScreenNames[screenName]})
+  const changeScreen = (screenName, activity) => {
+    clearActivity(activity).then()
+    setTimeout(() => {
+      setState({...state, currentScreen: ScreenNames[screenName]})
+    }, 500)
+  }
 
   useEffect(() => {
     onTableChange().then((r) => r)
@@ -134,6 +153,8 @@ export default function Notifications() {
           </div>
         )}
 
+        <Spacer height={5} />
+
         {/* CLEAR ALL BUTTON */}
         {notifications.length > 0 && (
           <button className="button default bottom-right" onClick={clearAll}>
@@ -146,18 +167,18 @@ export default function Notifications() {
           <div id="activity-cards">
             {Manager.isValid(notifications) &&
               notifications.map((activity, index) => {
-                const {text, title, dateCreated} = activity
+                const {text, title, creationDate} = activity
                 const categoryObject = getCategory(activity)
                 const {screen, category, className} = categoryObject
 
                 return (
                   <div key={index} className="flex" id="row-wrapper">
-                    <div className={`activity-row row ${className}`} onClick={() => changeScreen(screen)}>
+                    <div className={`activity-row row ${className}`} onClick={() => changeScreen(screen, activity)}>
                       <p className={`card-title ${className}`}>
                         {criticalCategories.includes(category) && <PiSealWarningDuotone />} {StringManager.uppercaseFirstLetterOfAllWords(title)}
                       </p>
-                      <p className="text">{StringManager.uppercaseFirstLetterOfAllWords(text)}</p>
-                      <p id="date">{moment(dateCreated, DateFormats.fullDatetime).format(DateFormats.readableDatetime)}</p>
+                      <p className="text">{text}</p>
+                      <p id="date">{moment(creationDate, DatetimeFormats.fullDatetime).format(DatetimeFormats.readableDatetime)}</p>
                     </div>
                     <IoMdCheckmarkCircleOutline className={'row-checkmark'} onClick={() => clearActivity(activity)} />
                   </div>

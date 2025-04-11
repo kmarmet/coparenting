@@ -2,9 +2,11 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import '../src/styles/bundle.scss'
 import App from './App'
-import { ErrorBoundary } from 'react-error-boundary'
-import { getAuth, signOut } from 'firebase/auth'
+import {ErrorBoundary} from 'react-error-boundary'
+import {getAuth, signOut} from 'firebase/auth'
+import {IoEllipsisVerticalSharp} from 'react-icons/io5'
 import AlertManager from './managers/alertManager'
+import Spacer from './components/shared/spacer'
 
 if ('serviceWorker' in navigator) {
   function handleConnection() {
@@ -25,7 +27,7 @@ if ('serviceWorker' in navigator) {
   }
   window.addEventListener('offline', handleConnection)
   // eslint-disable-next-line no-undef
-  const publicUrl = window.location.hostname.indexOf("localhost") > -1 ? "http://localhost:1234" : process.env.REACT_APP_PUBLIC_URL
+  const publicUrl = window.location.hostname.indexOf('localhost') > -1 ? 'http://localhost:1234' : process.env.REACT_APP_PUBLIC_URL
   // console.log(`${publicUrl}/OneSignalSDKWorker.js`)
   navigator.serviceWorker
     .register(`${publicUrl}/OneSignalSDKWorker.js`)
@@ -53,7 +55,7 @@ if ('serviceWorker' in navigator) {
      *   https://google.com/noexist does not throw
      *   https://noexist.com/noexist does throw
      */
-    return fetch(url, { method: 'HEAD', mode: 'no-cors' })
+    return fetch(url, {method: 'HEAD', mode: 'no-cors'})
       .then(function (resp) {
         return resp && (resp.ok || resp.type === 'opaque')
       })
@@ -75,8 +77,8 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('appinstalled', () => {
     // If visible, hide the install promotion
     // Log install to analytics
-    console.log('INSTALL: Success');
-  });
+    console.log('INSTALL: Success')
+  })
 
   if (window.matchMedia('(display-mode: standalone)').matches) {
     // do things here
@@ -118,10 +120,9 @@ root.render(
   <ErrorBoundary
     fallback={
       <div className="active error-boundary" id="error-screen">
-        <p id="screen-title-wrapper" className="mb-15">
-          Oops! It looks like we ran into an issue. But we can help!
-        </p>
-        <div id="text-container" className="mb-20">
+        <p id="screen-title-wrapper">Oops! Something went wrong</p>
+        <Spacer height={5} />
+        <div id="text-container">
           <div className="flex support-email">
             <p>Feel free to send us an email at any time to get help with this issue at </p>
             <a href="mailto:support@peaceful-coparenting.app">support@peaceful-coparenting.app</a>
@@ -130,8 +131,8 @@ root.render(
 
         {/* REFRESH THE APP */}
         <div id="text-container">
-          <p className="heading mb-5">Try this first</p>
-          <div className="flex mb-5" id="steps">
+          <p className="heading">Try this first</p>
+          <div className="flex" id="steps">
             <span className="step-number">1.</span>
             <button
               className="link"
@@ -144,23 +145,23 @@ root.render(
               Refresh the App
             </button>
           </div>
-          <p className="mt-15">
+          <p>
             <b>If that did not resolve the issue, please follow the steps below.</b>
           </p>
         </div>
 
         {/* CLEAR CACHE - IOS */}
-        <div id="text-container" className="mb-15">
-          <p className="heading mb-5">Clear the Cache - iOS</p>
+        <div id="text-container">
+          <p className="heading">Clear the Cache - iOS</p>
 
-          <div className="flex mb-5" id="steps">
+          <div className="flex" id="steps">
             <span className="step-number">1.</span>
             <p>
               Open Settings
               <img className="settings-icon ml-5" src="https://img.icons8.com/?size=100&id=flyFkP7sj07V&format=png&color=000000" alt="" />
             </p>
           </div>
-          <div className="flex mb-5" id="steps">
+          <div className="flex" id="steps">
             <span className="step-number">2.</span>
             <p>
               Search for and tap on Safari <img src={require('../src/img/safari.png')} alt="Safari" id="safari-icon" />
@@ -175,8 +176,8 @@ root.render(
         </div>
 
         {/* FORCE CLOSE - IOS */}
-        <div id="text-container" className="mb-15">
-          <p className="heading mb-5">Force Close App - iOS</p>
+        <div id="text-container">
+          <p className="heading">Force Close App - iOS</p>
 
           <div className="flex" id="steps wrap">
             <p>
@@ -186,17 +187,17 @@ root.render(
         </div>
 
         {/* CLEAR CACHE - ANDROID */}
-        <div id="text-container" className="mb-15">
-          <p className="heading mb-5">Clear the Cache - Android</p>
+        <div id="text-container">
+          <p className="heading">Clear the Cache - Android</p>
 
-          <div className="flex mb-5" id="steps">
+          <div className="flex" id="steps">
             <span className="step-number">1.</span>
             <p>Open the Chrome browser</p>
           </div>
-          <div className="flex mb-5" id="steps">
+          <div className="flex" id="steps">
             <span className="step-number">2.</span>
             <p>
-              Tap more <span className="material-icons">more_vert</span>
+              Tap more <IoEllipsisVerticalSharp />
             </p>
           </div>
           <div className="flex" id="steps">
@@ -208,10 +209,10 @@ root.render(
         </div>
 
         {/* FORCE CLOSE - ANDROID */}
-        <div id="text-container" className="mb-15">
-          <p className="heading mb-5">Force Close App - Android</p>
+        <div id="text-container">
+          <p className="heading">Force Close App - Android</p>
 
-          <div className="flex mb-10" id="steps">
+          <div className="flex" id="steps">
             <span className="step-number">1.</span>
             <p>Tap or long press the Overview button in the lower-left or lower-right corner of your screen</p>
           </div>
@@ -222,10 +223,10 @@ root.render(
         </div>
 
         {/* UNINSTALL/REINSTALL */}
-        <div id="text-container" className="mb-15">
-          <p className="heading mb-5">If the issue continues...</p>
+        <div id="text-container">
+          <p className="heading">If the issue continues...</p>
 
-          <div className="flex mb-10" id="steps">
+          <div className="flex" id="steps">
             <span className="step-number">1.</span>
             <p>Uninstall the app</p>
           </div>

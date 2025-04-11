@@ -1,7 +1,5 @@
 @import '../mixins';
 #swap-requests {
-  @include lengthSelection;
-
   .close {
     margin: 20px auto 10px auto;
     display: block;
@@ -15,10 +13,31 @@
 
   #swap-requests-container {
     margin-top: 15px;
-    #title {
-      max-width: 70%;
-      line-height: 1.5;
+
+    .row {
+      #title {
+        max-width: 70%;
+        display: flex;
+        flex-wrap: wrap;
+        line-height: 1;
+        font-weight: $fwRegular;
+        color: $primaryText;
+
+        span {
+          display: block;
+          width: 100%;
+          font-size: 14px;
+          padding-top: 5px;
+          line-height: 1;
+          color: $darkGrey;
+          font-weight: $fwRegular;
+        }
+      }
+      #request-status {
+        align-self: flex-start;
+      }
     }
+
     .request {
       width: 100%;
       transition: all 0.3s ease-in-out;

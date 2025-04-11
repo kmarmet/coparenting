@@ -1,10 +1,10 @@
 // Path: src\components\shared\uploadInputs.jsx
-import React, { useContext } from 'react'
+import React, {useContext} from 'react'
 import globalState from '../../context'
 
-function UploadInputs({ upload, containerClass = '', getImages = () => {}, uploadType = 'document' }) {
-  const { state, setState } = useContext(globalState)
-  const { currentUser } = state
+function UploadInputs({containerClass = '', getImages = (e) => {}, uploadType = 'document'}) {
+  const {state, setState} = useContext(globalState)
+  const {currentUser} = state
 
   const getUploadType = () => {
     if (uploadType === 'document') {
@@ -17,18 +17,7 @@ function UploadInputs({ upload, containerClass = '', getImages = () => {}, uploa
   return (
     <div id="upload-inputs" className={containerClass}>
       <div className="flex">
-        <input
-          onChange={() => {
-            const files = document.getElementById('upload-input').files
-            upload()
-            getImages(files)
-          }}
-          multiple
-          id="upload-input"
-          name="file-upload"
-          type="file"
-          accept={getUploadType()}
-        />
+        <input onChange={getImages} multiple id="upload-input" name="file-upload" type="file" accept={getUploadType()} />
       </div>
     </div>
   )

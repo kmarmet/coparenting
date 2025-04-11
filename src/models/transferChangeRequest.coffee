@@ -10,7 +10,8 @@ export default class TransferChangeRequest
     @location = ''
     @directionsLink = ''
     @shareWith = []
-    @reason = ''
+    @requestReason = ''
+    @declineReason = ''
     @recipientKey = ''
     @responseDueDate = ''
     @preferredTransferLocation = ''

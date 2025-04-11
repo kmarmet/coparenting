@@ -113,9 +113,9 @@ StringManager = {
     return /\d/.test(input)
 
   capitalizeFirstWord: (str) ->
-    firstWord = str.split(' ')[0]
+    firstWord = str.split(" ")[0].toUpperCase()
     capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1)
-    return capitalizedFirstWord + str.slice(firstWord.length)
+    return firstWord + str.slice(str[1], str.length)
 
   toCamelCase: (str) ->
     str =  str.replace /(?:^\w|[A-Z]|\b\w)/g, (word, index) ->
@@ -164,7 +164,8 @@ StringManager = {
     if uppercase
       title = StringManager.uppercaseFirstLetterOfAllWords(title).trim()
 
-    title = title.replaceAll(" To ", " to ")
+    title = title
+      .replaceAll(" To ", " to ")
       .replaceAll(" A ", " a ")
       .replaceAll(" An ", " an ")
       .replaceAll(" Or ", " or ")
@@ -172,7 +173,7 @@ StringManager = {
       .replaceAll(" With ", " with ")
       .replaceAll(" At ", " at ")
       .replaceAll(" About ", " about ")
-      .replaceAll(" From ", "from")
+      .replaceAll(" From ", " from ")
       .replaceAll(" The ", " the ")
       .replaceAll(" For ", " for ")
       .replaceAll(" Thru ", " thru ")
@@ -181,6 +182,9 @@ StringManager = {
       .replaceAll(" Not ", " not ")
       .replaceAll(" Off ", " off ")
       .replaceAll(" But ", " but ")
+      .replaceAll(" By ", " by ")
+      .replaceAll(" In ", " in ")
+      .replaceAll(" Of ", " of ")
       .replaceAll(" On ", " on ")
       .replaceAll(" Per ", " per ")
       .replaceAll(" Up ", " up ")

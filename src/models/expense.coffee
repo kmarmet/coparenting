@@ -1,6 +1,6 @@
 import Manager from "../managers/manager"
 import moment from "moment"
-import DateFormats from "../constants/dateFormats"
+import DateFormats from "../constants/datetimeFormats"
 
 export default class Expense
   constructor: (
@@ -9,15 +9,15 @@ export default class Expense
     @imageName = '',
     @shareWith = [],
     @amount = 0,
-    @dateAdded = moment().format(DateFormats.dateForDb),
+    @creationDate = moment().format(DateFormats.dateForDb),
     @paidStatus = 'unpaid',
     @children = [],
     @dueDate = '',
     @ownerKey = '',
     @notes = '',
     @recipientName = '',
-    @isRepeating = false,
-    @repeatInterval = ''
+    @isRecurring = false,
+    @recurringFrequency = ''
     @category = '',
     @payer =  {
       phone: '',

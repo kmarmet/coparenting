@@ -1,56 +1,29 @@
 // Path: src\components\shared\inputWrapper.jsx
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext} from 'react'
 import {DebounceInput} from 'react-debounce-input'
 import globalState from '../../context.js'
 import Manager from '../../managers/manager'
+import {MobileDatePicker, MobileTimePicker} from '@mui/x-date-pickers-pro'
 import Label from './label'
-
-const DebounceLengths = {
-  short: 500,
-  medium: 1000,
-  long: 2000,
-}
+import InputTypes from '../../constants/inputTypes'
+import moment from 'moment'
+import DatetimeFormats from '../../constants/datetimeFormats'
+import AddressInput from './addressInput'
 
 function InputWrapper({
   wrapperClasses = '',
-  children,
   labelText,
   inputType = 'input',
   required,
   onChange,
-  defaultValue = '',
+  defaultValue = null,
   inputClasses = '',
-  inputValueType = 'text',
-  childrenOnly = false,
+  onDateOrTimeSelection = (e) => {},
+  uidClass = '',
   isDebounced = true,
-  useNativeDate = false,
-  customDebounceDelay = DebounceLengths.medium,
 }) {
   const {state, setState} = useContext(globalState)
-  const {refreshKey} = state
-  const noInputTypes = ['location', 'textarea', 'date']
-  const [startDate, setStartDate] = useState(new Date())
-
-  // Set the height of the textarea
-  useEffect(() => {
-    const activeModal = document.querySelector('#modal-wrapper.active')
-    if (activeModal) {
-      const inputWrapper = activeModal.querySelector('#input-wrapper.textarea')
-
-      if (inputWrapper) {
-        const textarea = inputWrapper.querySelector('textarea')
-
-        if (textarea) {
-          if (inputWrapper) {
-            inputWrapper.style.height = 'auto'
-            inputWrapper.style.height = `${textarea.scrollHeight + 25}px`
-            textarea.style.height = 'auto'
-            textarea.style.height = `${textarea.scrollHeight}px`
-          }
-        }
-      }
-    }
-  }, [])
+  const {refreshKey, theme} = state
 
   return (
     <div
@@ -60,49 +33,162 @@ function InputWrapper({
           wrapper.classList.add('active')
         }
       }}
-      id="input-wrapper"
       onBlur={(e) => {
         const wrapper = e.currentTarget
         wrapper.classList.remove('active')
-        const activeInputs = e.currentTarget.querySelectorAll('*')
-        activeInputs.forEach((input) => {
-          input.classList.remove('active')
-        })
       }}
-      className={`${wrapperClasses} ${inputType} input-container form`}>
-      {Manager.isValid(labelText) && <Label text={`${labelText}`} required={required} />}
+      id="input-wrapper"
+      className={`${wrapperClasses} ${uidClass} ${inputType} ${Manager.isValid(defaultValue) ? 'show-label' : ''}`}>
+      {/* LABEL */}
+      {Manager.isValid(labelText) && <Label classes={Manager.isValid(defaultValue) ? 'active' : ''} text={`${labelText}`} required={required} />}
 
-      {!noInputTypes.includes(inputType) && (
-        <>
-          <DebounceInput
-            value={defaultValue}
-            element={inputType}
-            minLength={2}
-            className={`${inputClasses} ${defaultValue.length > 0 ? 'mb-0' : ''}`}
-            onChange={onChange}
-            debounceTimeout={isDebounced ? (customDebounceDelay ? customDebounceDelay : DebounceLengths.long) : 0}
-            key={refreshKey}
-            type={inputValueType}
-            pattern={
-              inputValueType && inputValueType === 'tel' ? (
-                <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required />
-              ) : (
-                ''
-              )
-            }
-            maxLength={inputValueType && inputValueType === 'tel' ? 12 : 100}
-          />
-        </>
+      {/* TEXT */}
+      {inputType === InputTypes.text && (
+        <DebounceInput
+          value={Manager.isValid(defaultValue) ? defaultValue : ''}
+          placeholder={labelText}
+          className={`${inputClasses}`}
+          onChange={(e) => {
+            onChange(e)
+          }}
+          debounceTimeout={isDebounced ? 1000 : 0}
+          key={refreshKey}
+        />
       )}
 
-      {/* DATES */}
-      {noInputTypes.includes(inputType) && children}
+      {/* PHONE */}
+      {inputType === InputTypes.phone && (
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          maxLength={16}
+          placeholder={labelText}
+          key={refreshKey}
+          pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+          defaultValue={defaultValue}
+          required={required}
+          onChange={(e) => {
+            onChange(e)
+          }}
+        />
+      )}
 
-      {childrenOnly && <>{children}</>}
+      {/* ADDRESS */}
+      {inputType === InputTypes.address && <AddressInput defaultValue={defaultValue} onSelection={onChange} key={refreshKey} />}
+
+      {/* DATE */}
+      {inputType === InputTypes.date && (
+        <MobileDatePicker
+          showDaysOutsideCurrentMonth={true}
+          label={labelText}
+          views={['month', 'day']}
+          className={`${theme} ${inputClasses}`}
+          defaultValue={Manager.isValid(defaultValue) ? moment(defaultValue) : null}
+          onChange={() => {
+            const inputWrapper = document.querySelector('#modal-wrapper.active')
+
+            if (inputWrapper) {
+              const input = inputWrapper.querySelector(`.${uidClass} .MuiInputBase-input`)
+              const scopedInputWrapper = inputWrapper.querySelector(`.${uidClass}`)
+              const selectedDate = moment(input.value).format('MMMM DD')
+              const today = moment().format('MMMM DD')
+
+              if (selectedDate !== today) {
+                scopedInputWrapper.classList.add('show-label')
+              }
+            }
+          }}
+          key={refreshKey}
+          format={DatetimeFormats.readableMonthAndDay}
+          onAccept={onDateOrTimeSelection}
+        />
+      )}
+
+      {/* TIME */}
+      {inputType === InputTypes.time && (
+        <MobileTimePicker
+          slotProps={{
+            actionBar: {
+              actions: ['clear', 'accept'],
+            },
+          }}
+          value={Manager.isValid(defaultValue) ? moment(defaultValue, DatetimeFormats.timeForDb) : null}
+          label={labelText}
+          minutesStep={5}
+          key={refreshKey}
+          format={DatetimeFormats.timeForDb}
+          onAccept={onDateOrTimeSelection}
+          onChange={(e) => {
+            const inputWrapper = document.querySelector('#modal-wrapper.active')
+            const scopedInputWrapper = inputWrapper.querySelector(`.${uidClass}`)
+            const selectedTime = moment(e).format('hh:mma')
+            const now = moment().format('hh:mma')
+
+            if (selectedTime !== now) {
+              scopedInputWrapper.classList.add('show-label')
+            }
+          }}
+        />
+      )}
+
+      {/* URL */}
+      {inputType === InputTypes.url && (
+        <input
+          type="url"
+          id="url"
+          placeholder={labelText}
+          onChange={(e) => {
+            onChange(e)
+          }}
+          className={inputClasses}
+          defaultValue={defaultValue}
+          key={refreshKey}
+        />
+      )}
+
+      {/* EMAIL */}
+      {inputType === InputTypes.email && (
+        <input
+          type="email"
+          id="email"
+          placeholder={labelText}
+          onChange={(e) => {
+            onChange(e)
+          }}
+          className={inputClasses}
+          defaultValue={defaultValue}
+          key={refreshKey}
+        />
+      )}
+
+      {/* PASSWORD */}
+      {inputType === InputTypes.password && (
+        <input
+          type="password"
+          id="password"
+          placeholder={labelText}
+          onChange={(e) => {
+            onChange(e)
+          }}
+          className={inputClasses}
+          defaultValue={defaultValue}
+          key={refreshKey}
+        />
+      )}
 
       {/* TEXTAREA */}
-      {inputType === 'textarea' && (
-        <textarea id="textarea" placeholder={labelText} onChange={onChange} className={inputClasses} defaultValue={defaultValue} key={refreshKey} />
+      {inputType === InputTypes.textarea && (
+        <textarea
+          id="textarea"
+          placeholder={labelText}
+          onChange={(e) => {
+            onChange(e)
+          }}
+          className={inputClasses}
+          defaultValue={defaultValue}
+          key={refreshKey}
+        />
       )}
     </div>
   )

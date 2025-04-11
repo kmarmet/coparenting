@@ -6,11 +6,9 @@ import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import TransferChangeRequest from '/src/models/transferChangeRequest.js'
 import moment from 'moment'
 import DB from '/src/database/DB'
-import {RiMapPinTimeFill} from 'react-icons/ri'
 import NotificationManager from '/src/managers/notificationManager.js'
 import DB_UserScoped from '/src/database/db_userScoped'
-import {MobileDatePicker, MobileTimePicker} from '@mui/x-date-pickers-pro'
-import DateFormats from '/src/constants/dateFormats'
+import DatetimeFormats from '/src/constants/datetimeFormats'
 import DateManager from '/src/managers/dateManager'
 import Modal from '../shared/modal'
 import InputWrapper from '../shared/inputWrapper'
@@ -18,9 +16,11 @@ import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import AlertManager from '/src/managers/alertManager'
 import StringManager from '/src/managers/stringManager'
 import ActivityCategory from '/src/models/activityCategory'
-import AddressInput from '../shared/addressInput'
 import Spacer from '../shared/spacer'
 import creationForms from '../../constants/creationForms'
+import ToggleButton from '../shared/toggleButton'
+import Label from '../shared/label'
+import InputTypes from '../../constants/inputTypes'
 
 export default function NewTransferChangeRequest() {
   const {state, setState} = useContext(globalState)
@@ -61,7 +61,7 @@ export default function NewTransferChangeRequest() {
     if (validAccounts === 0) {
       AlertManager.throwError(
         'No co-parent to \n assign requests to',
-        'You have not added any co-parents. Or, it is also possible they have closed their account.'
+        'You have not added any co-parents. Or, it is also possible they have closed their profile.'
       )
       return false
     }
@@ -85,14 +85,14 @@ export default function NewTransferChangeRequest() {
     }
     //#endregion VALIDATION
 
-    const requestTimeIsValid = DateManager.dateIsValid(moment(requestTime, DateFormats.timeForDb).format(DateFormats.timeForDb))
+    const requestTimeIsValid = DateManager.dateIsValid(moment(requestTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb))
     let newRequest = new TransferChangeRequest()
-    newRequest.reason = requestReason
+    newRequest.requestReason = requestReason
     newRequest.ownerKey = currentUser?.key
     newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
     newRequest.time = requestTimeIsValid ? requestTime : ''
     newRequest.location = requestLocation
-    newRequest.startDate = moment(requestDate).format(DateFormats.dateForDb)
+    newRequest.startDate = moment(requestDate).format(DatetimeFormats.dateForDb)
     newRequest.directionsLink = Manager.getDirectionsLink(requestLocation)
     newRequest.recipientKey = requestRecipientKey
     newRequest.status = 'pending'
@@ -134,95 +134,58 @@ export default function NewTransferChangeRequest() {
     }
   }
 
-  const handlePreferredLocation = (e) => {
-    Manager.handleCheckboxSelection(
-      e,
-      () => {
-        setPreferredLocation(requestLocation)
-      },
-      () => {
-        setPreferredLocation('')
-      },
-      false
-    )
-  }
-
-  const addThemeToDatePickers = () => {
-    setTimeout(() => {
-      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
-      datetimeParent.classList.add(currentUser?.settings?.theme)
-    }, 100)
-  }
-
   return (
     <Modal
       onSubmit={submit}
       submitText={'Send Request'}
       wrapperClass="new-transfer-request"
       title={'Request Transfer Change '}
-      titleIcon={<RiMapPinTimeFill />}
       showCard={creationFormToShow === creationForms.transferRequest}
       onClose={resetForm}>
       <div className="transfer-request-wrapper">
+        <Spacer height={5} />
         <div id="transfer-change-container" className={`${theme} form`}>
           <Spacer height={5} />
           <div className="form transfer-change">
             <div className="flex gap">
               {/* DAY */}
-              <InputWrapper inputType={'date'} labelText={'Day'} required={true}>
-                <MobileDatePicker
-                  onOpen={addThemeToDatePickers}
-                  className={`${theme}  mt-0 w-100`}
-                  onChange={(e) => setRequestDate(moment(e).format(DateFormats.dateForDb))}
-                />
-              </InputWrapper>
+              <InputWrapper
+                inputType={InputTypes.date}
+                uidClass="transfer-request-date"
+                labelText={'Day'}
+                required={true}
+                onDateOrTimeSelection={(e) => setRequestDate(moment(e).format(DatetimeFormats.dateForDb))}
+              />
 
               {/* TIME */}
-              <InputWrapper inputType={'date'} labelText={'New Time'}>
-                <MobileTimePicker
-                  slotProps={{
-                    actionBar: {
-                      actions: ['clear', 'accept'],
-                    },
-                  }}
-                  onOpen={addThemeToDatePickers}
-                  className={`${theme}  mt-0 w-100`}
-                  onChange={(e) => setRequestTime(moment(e).format(DateFormats.timeForDb))}
-                />
-              </InputWrapper>
+              <InputWrapper
+                inputType={InputTypes.time}
+                labelText={'New Time'}
+                uidClass="transfer-request-time"
+                onDateOrTimeSelection={(e) => setRequestTime(moment(e).format(DatetimeFormats.timeForDb))}
+              />
             </div>
 
             {/* RESPONSE DUE DATE */}
-            <InputWrapper inputType={'date'} labelText={'Respond by'}>
-              <MobileDatePicker
-                onOpen={addThemeToDatePickers}
-                className={`${theme}  w-100`}
-                onChange={(day) => setResponseDueDate(moment(day).format(DateFormats.dateForDb))}
-              />
-            </InputWrapper>
+            <InputWrapper
+              inputType={InputTypes.date}
+              uidClass="transfer-request-response-date"
+              labelText={'Requested Response Date'}
+              required={true}
+              onDateOrTimeSelection={(e) => setResponseDueDate(moment(e).format(DatetimeFormats.dateForDb))}
+            />
 
             {/*  NEW LOCATION*/}
-            <InputWrapper inputType={'location'} labelText={'New Location'}>
-              <AddressInput
-                onSelection={(address) => {
-                  setRequestLocation(address)
-                }}
-              />
-            </InputWrapper>
-
-            <CheckboxGroup
-              skipNameFormatting={true}
-              checkboxArray={Manager.buildCheckboxGroup({
-                currentUser,
-                customLabelArray: ['Set as Preferred Transfer Location'],
-              })}
-              onCheck={handlePreferredLocation}
-            />
+            <InputWrapper inputType={InputTypes.address} labelText={'New Location'} onChange={(address) => setRequestLocation(address)} />
+            <div className="flex">
+              <Label text={'Set as Preferred Transfer Location'} />
+              <ToggleButton onCheck={() => setPreferredLocation(requestLocation)} onUncheck={() => setPreferredLocation('')} />
+            </div>
 
             <Spacer height={5} />
 
             {/* REASON */}
-            <InputWrapper inputType={'textarea'} labelText={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
+            <InputWrapper inputType={InputTypes.textarea} labelText={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
 
             <Spacer height={5} />
 

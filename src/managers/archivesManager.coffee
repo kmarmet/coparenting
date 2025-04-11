@@ -14,7 +14,7 @@ export default ArchiveManager = {
         obj[key] = StringManager.uppercaseFirstLetterOfAllWords(key)
 
     # Remove headers the user does not need to see
-    headers = headers.filter (header) -> header != "id" && header != "shareWith" && header != "imageName" && header != "ownerKey"
+    headers = headers.filter (header) -> header != "id" && header != "isRecurring" && header != "shareWith" && header != "imageName" && header != "ownerKey" && header != "notificationSent" && header != "senderKey" && header != "recipientKey"
 
     for header in headers
       header = StringManager.spaceBetweenWords(header)

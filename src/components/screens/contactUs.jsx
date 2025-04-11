@@ -1,19 +1,19 @@
 // Path: src\components\screens\contactUs.jsx
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import globalState from '../../context'
 import Manager from '../../managers/manager'
 import Modal from '../shared/modal'
 import EmailManager from '../../managers/emailManager'
-import { Fade } from 'react-awesome-reveal'
-import { MdOutlineAppShortcut, MdOutlineEmail } from 'react-icons/md'
-import { VscFeedback } from 'react-icons/vsc'
+import {Fade} from 'react-awesome-reveal'
+import {MdOutlineAppShortcut, MdOutlineEmail} from 'react-icons/md'
+import {VscFeedback} from 'react-icons/vsc'
 import NavBar from '../navBar'
 import InputWrapper from '../shared/inputWrapper'
 import AlertManager from '../../managers/alertManager'
 
 export default function ContactUs() {
-  const { state, setState } = useContext(globalState)
-  const { currentUser, theme } = state
+  const {state, setState} = useContext(globalState)
+  const {currentUser, theme} = state
   const [featureName, setFeatureName] = useState('')
   const [featureDescription, setFeatureDescription] = useState('')
   const [showFeatureRequestCard, setShowFeatureRequestCard] = useState(false)
@@ -46,7 +46,7 @@ export default function ContactUs() {
       return false
     }
 
-    AlertManager.successAlert('We have received your feature request!')
+    setState({...state, successAlertMessage: 'Feature Request Received'})
     EmailManager.SendFeatureRequest(currentUser?.email, `Feature Name: ${featureName} \n Description: ${featureDescription}`)
     setShowFeatureRequestCard(false)
     resetFormFeatureRequestForm()
@@ -58,7 +58,7 @@ export default function ContactUs() {
       return false
     }
 
-    AlertManager.successAlert('Thank you for reporting this issue. We will be in touch soon!')
+    setState({...state, successAlertMessage: 'We will be in touch soon!'})
     EmailManager.SendSupportEmail(currentUser?.email, supportNotes)
     setShowSupportCard(false)
     resetSupportForm()
@@ -69,8 +69,8 @@ export default function ContactUs() {
       AlertManager.throwError('Please enter your feedback')
       return false
     }
+    setState({...state, successAlertMessage: 'Thank you for Your Feedback!'})
 
-    AlertManager.successAlert('Thank you! We have received your app feedback!')
     EmailManager.SendAppFeedback(currentUser?.email, feedback)
     setShowFeedbackCard(false)
     resetFeedbackForm()
@@ -157,10 +157,10 @@ export default function ContactUs() {
 
       {/* CONTACT US */}
       <div id="contact-us-container" className={`${theme} page-container form`}>
-          <p className="screen-title">Get in Touch</p>
-          {/* SECTIONS */}
-          <div className="sections">
-        <Fade direction={'right'} duration={800} damping={.2} className={'contact-us-fade-wrapper'} triggerOnce={true} cascade={true}>
+        <p className="screen-title">Get in Touch</p>
+        {/* SECTIONS */}
+        <div className="sections">
+          <Fade direction={'right'} duration={800} damping={0.2} className={'contact-us-fade-wrapper'} triggerOnce={true} cascade={true}>
             <p className="section" onClick={() => setShowFeatureRequestCard(true)}>
               <MdOutlineAppShortcut />
               Feature Request
@@ -173,8 +173,8 @@ export default function ContactUs() {
               <MdOutlineEmail />
               Contact Support
             </p>
-        </Fade>
-          </div>
+          </Fade>
+        </div>
       </div>
       {!showFeatureRequestCard && !showFeedbackCard && !showSupportCard && <NavBar navbarClass={'no-add-new-button'}></NavBar>}
     </>

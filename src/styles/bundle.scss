@@ -3,7 +3,6 @@
 @import './variables';
 @import './muiOverrides';
 @import './sweetAlertOverrides';
-@import './utilityClasses';
 @import './styles';
 @import './animations.scss';
 @import './accordions';
@@ -14,7 +13,7 @@
 @import './screens/memories';
 @import './screens/chat';
 @import './screens/childInfo';
-@import './screens/account.scss';
+@import 'screens/profile';
 @import './screens/documents.scss';
 @import './screens/coparents';
 @import './screens/settings';
@@ -22,9 +21,9 @@
 @import './screens/loginRegistration';
 @import './screens/adminDashboard';
 @import './screens/visitation';
-@import './screens/records';
+@import './screens/archives';
 @import './screens/contactUs';
-@import './screens/activity';
+@import './screens/notifications';
 @import './screens/home';
 @import './calendar/calendarEvents';
 @import './calendar/calendar';
@@ -33,3 +32,5 @@
 @import './palette';
 @import './darkMode';
 @import './responsive';
+@import './responsive/phone';
+@import './utilityClasses';
