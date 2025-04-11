@@ -360,9 +360,9 @@
     }
 
     a {
-      color: $mainBlue;
+      color: $main;
       text-decoration: none;
-      border-bottom: 1px solid $mainBlue;
+      border-bottom: 1px solid $main;
       line-height: 1;
     }
 
@@ -516,7 +516,7 @@
     // USER DETAILS SCREEN
     #user-details {
       .smiley-icon {
-        color: $mainBlue;
+        color: $main;
         font-size: 22px;
         margin-left: 10px;
       }
@@ -596,7 +596,7 @@
       border-radius: $borderRadius;
       height: 40px;
       max-height: unset;
-      caret-color: $mainBlue;
+      caret-color: $main;
       padding: 0 8px;
 
       &::placeholder {
@@ -891,7 +891,7 @@
         @include deadCenter;
         font-size: 22px;
         font-weight: $fwMedium;
-        color: $mainBlue;
+        color: $main;
         //        background-color: white;
         padding: 20px;
         text-align: center;
@@ -933,7 +933,7 @@
       display: inline-block;
 
       &.blue {
-        color: $mainBlue;
+        color: $main;
       }
     }
 
@@ -994,7 +994,7 @@
     }
 
     .blue {
-      color: $mainBlue;
+      color: $main;
     }
 
     .red {
@@ -1031,7 +1031,7 @@
     }
 
     .rs-tag {
-      background-color: $mainBlue;
+      background-color: $main;
       color: white;
       padding: 0 15px;
       line-height: 1;
@@ -1314,7 +1314,7 @@
         }
 
         svg {
-          color: $mainBlue;
+          color: $main;
         }
       }
     }

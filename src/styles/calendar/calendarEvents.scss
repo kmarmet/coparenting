@@ -26,7 +26,7 @@
       }
 
       .material-icons-round {
-        color: $mainBlue;
+        color: $main;
         font-size: 18px;
         margin-right: 8px;
       }
@@ -81,7 +81,7 @@
             color: #afafb8;
             padding: 0;
             margin: 0;
-            font-size: 16px;
+            font-size: 17px;
           }
         }
 
@@ -109,7 +109,7 @@
               svg {
                 margin-right: 2px;
                 font-size: 16px;
-                color: $mainBlue;
+                color: $main;
                 opacity: 1;
               }
 
@@ -161,11 +161,11 @@
                 }
 
                 &.current-user-event-dot {
-                  background: $mainBlue;
+                  background: $main;
                 }
 
                 &.current-user-visitation {
-                  background: $mainBlue;
+                  background: $main;
                 }
               }
             }

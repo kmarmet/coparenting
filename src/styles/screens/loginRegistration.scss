@@ -35,7 +35,7 @@
     #add-child-button {
       border-radius: 0;
       border: 0;
-      border-bottom: 1px solid $mainBlue;
+      border-bottom: 1px solid $main;
       padding: 3px;
       min-height: 0;
       margin-top: 15px;
@@ -250,7 +250,7 @@
       color: white;
       //      @include blueGlow();
       height: 50px;
-      background: $mainBlue;
+      background: $main;
       text-transform: uppercase;
       border-radius: $buttonBorderRadius;
       @include shadow;

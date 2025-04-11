@@ -69,11 +69,14 @@ export default function FullMenu() {
         <div id="menu-title">Menu</div>
         <div className="menu-items">
           {/* ADMIN DASHBOARD */}
+
           {currentUser?.email === 'kmarmet1@gmail.com' && (
             <div
               className={`menu-item admin ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
               onClick={(e) => changeCurrentScreen(ScreenNames.adminDashboard, e)}>
-              <BiSolidDashboard />
+              <div className="svg-wrapper">
+                <BiSolidDashboard />
+              </div>
               <p>Dashboard</p>
             </div>
           )}
@@ -81,7 +84,9 @@ export default function FullMenu() {
           <div
             className={`menu-item calendar ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
             onClick={(e) => changeCurrentScreen(ScreenNames.calendar, e)}>
-            <BsCalendarWeekFill />
+            <div className="svg-wrapper">
+              <BsCalendarWeekFill />
+            </div>
             <p>Calendar</p>
           </div>
 
@@ -90,7 +95,9 @@ export default function FullMenu() {
             className={`menu-item notifications ${currentScreen === ScreenNames.notifications ? 'active' : ''}`}
             onClick={(e) => changeCurrentScreen(ScreenNames.notifications, e)}>
             {notificationCount > 0 && <div className="badge"></div>}
-            <PiBellFill />
+            <div className="svg-wrapper">
+              <PiBellFill />
+            </div>
             <p>Notifications</p>
           </div>
 
@@ -101,7 +108,9 @@ export default function FullMenu() {
               <div
                 className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
                 onClick={(e) => changeCurrentScreen(ScreenNames.visitation, e)}>
-                <BsFillHousesFill />
+                <div className="svg-wrapper">
+                  <BsFillHousesFill />
+                </div>
                 <p>Visitation</p>
               </div>
 
@@ -109,7 +118,9 @@ export default function FullMenu() {
               <div
                 className={`menu-item chats ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
                 onClick={(e) => changeCurrentScreen(ScreenNames.chats, e)}>
-                <IoChatbubbles />
+                <div className="svg-wrapper">
+                  <IoChatbubbles />
+                </div>
                 <p className="text">Chats</p>
               </div>
 
@@ -117,7 +128,9 @@ export default function FullMenu() {
               <div
                 className={`menu-item expenses ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
                 onClick={(e) => changeCurrentScreen(ScreenNames.expenseTracker, e)}>
-                <FaDonate />
+                <div className="svg-wrapper">
+                  <FaDonate />
+                </div>
                 <p>Expenses</p>
               </div>
 
@@ -125,23 +138,29 @@ export default function FullMenu() {
               <div
                 className={`menu-item swap-request ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
                 onClick={(e) => changeCurrentScreen(ScreenNames.swapRequests, e)}>
-                <MdSwapHorizontalCircle />
-                <p>Swap Requests</p>
+                <div className="svg-wrapper">
+                  <MdSwapHorizontalCircle />
+                </div>
+                <p>Swaps</p>
               </div>
 
               {/* TRANSFER CHANGE */}
               <div
                 className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
                 onClick={(e) => changeCurrentScreen(ScreenNames.transferRequests, e)}>
-                <RiMapPinTimeFill />
-                <p>Transfer Requests</p>
+                <div className="svg-wrapper">
+                  <RiMapPinTimeFill />
+                </div>
+                <p>Transfers</p>
               </div>
 
               {/* DOCUMENTS */}
               <div
                 className={`menu-item documents ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
                 onClick={(e) => changeCurrentScreen(ScreenNames.docsList, e)}>
-                <IoDocuments />
+                <div className="svg-wrapper">
+                  <IoDocuments />
+                </div>
                 <p>Documents</p>
               </div>
             </>
@@ -152,7 +171,9 @@ export default function FullMenu() {
               <div
                 className={`menu-item memories ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
                 onClick={(e) => changeCurrentScreen(ScreenNames.memories, e)}>
-                <IoMdPhotos />
+                <div className="svg-wrapper">
+                  <IoMdPhotos />
+                </div>
                 <p>Memories</p>
               </div>
 
@@ -160,7 +181,9 @@ export default function FullMenu() {
               <div
                 className={`menu-item child-info ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
                 onClick={(e) => changeCurrentScreen(ScreenNames.childInfo, e)}>
-                <BsPersonVcardFill />
+                <div className="svg-wrapper">
+                  <BsPersonVcardFill />
+                </div>
                 <p>Child Info</p>
               </div>
 
@@ -168,7 +191,9 @@ export default function FullMenu() {
               <div
                 className={`menu-item coparents ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
                 onClick={(e) => changeCurrentScreen(ScreenNames.coparents, e)}>
-                <IoPeopleCircleSharp />
+                <div className="svg-wrapper">
+                  <IoPeopleCircleSharp />
+                </div>
                 <p>Co-Parents</p>
               </div>
 
@@ -176,7 +201,9 @@ export default function FullMenu() {
               <div
                 className={`menu-item archives ${currentScreen === ScreenNames.archives ? 'active' : ''}`}
                 onClick={(e) => changeCurrentScreen(ScreenNames.archives, e)}>
-                <RiArchive2Fill />
+                <div className="svg-wrapper">
+                  <RiArchive2Fill />
+                </div>
                 <p>Archives</p>
               </div>
             </>
@@ -186,7 +213,9 @@ export default function FullMenu() {
           <div
             className={`menu-item profile ${currentScreen === ScreenNames.profile ? 'active' : ''}`}
             onClick={(e) => changeCurrentScreen(ScreenNames.profile, e)}>
-            <HiUserCircle />
+            <div className="svg-wrapper">
+              <HiUserCircle />
+            </div>
             <p>My Profile</p>
           </div>
 
@@ -194,17 +223,21 @@ export default function FullMenu() {
           <div
             className={`menu-item settings ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
             onClick={(e) => changeCurrentScreen(ScreenNames.settings, e)}>
-            <MdSettingsSuggest /> <p>Settings</p>
+            <div className="svg-wrapper">
+              <MdSettingsSuggest />
+            </div>
+            <p>Settings</p>
           </div>
 
           {/* CONTACT US */}
           <div
             className={`menu-item contact-us ${currentScreen === ScreenNames.contactUs ? 'active' : ''}`}
             onClick={(e) => changeCurrentScreen(ScreenNames.contactUs, e)}>
-            <BsSendFill />
+            <div className="svg-wrapper">
+              <BsSendFill />
+            </div>
             <p>Contact Us</p>
           </div>
-
           {/* THEME TOGGLE */}
           {currentUser?.settings?.theme === 'dark' && (
             <div className="menu-item theme">
@@ -214,7 +247,9 @@ export default function FullMenu() {
           )}
           {currentUser?.settings?.theme === 'light' && (
             <div onClick={() => changeTheme('dark')} className="menu-item theme">
-              <BsFillMoonStarsFill />
+              <div className="svg-wrapper">
+                <BsFillMoonStarsFill />
+              </div>
               <p>Dark Mode</p>
             </div>
           )}
@@ -222,12 +257,16 @@ export default function FullMenu() {
           <div
             className={`menu-item install-app ${currentScreen === ScreenNames.installApp ? 'active' : ''}`}
             onClick={(e) => changeCurrentScreen(ScreenNames.installApp, e)}>
-            <BsFillArrowDownSquareFill />
+            <div className="svg-wrapper">
+              <BsFillArrowDownSquareFill />
+            </div>
             <p>Install</p>
           </div>
           {/* LOGOUT BUTTON */}
           <div className={`menu-item logout`} onClick={logout}>
-            <BsFillArrowRightCircleFill />
+            <div className="svg-wrapper">
+              <BsFillArrowRightCircleFill />
+            </div>
             <p>Logout</p>
           </div>
         </div>

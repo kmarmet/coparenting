@@ -5,15 +5,10 @@
     // ROW
     .record-row {
       flex-wrap: wrap;
-      border-bottom: 1px solid $lightBorderColor;
-      padding-bottom: 5px;
+      @include row;
 
       * {
         line-height: 1;
-      }
-
-      &.expenses {
-        margin-bottom: 20px;
       }
 
       .date {
@@ -22,6 +17,7 @@
         font-size: 14px;
         color: $darkerGrey;
         padding-top: 5px;
+        width: 100%;
 
         span {
           font-size: 14px;

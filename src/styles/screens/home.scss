@@ -42,7 +42,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: $mainBlue;
+      background: $main;
       @include bestShadow;
       transition: all 0.6s ease-in-out;
 
@@ -82,7 +82,7 @@
     #title {
       font-size: 50px;
       font-weight: $fwMediumBold;
-      color: $mainBlue;
+      color: $main;
       @media screen and (max-width: 600px) {
         font-size: 40px;
         line-height: 1.2;
@@ -166,7 +166,7 @@
       line-height: 1.4;
 
       .emphasize {
-        color: $mainBlue;
+        color: $main;
         font-weight: $fwMediumBold;
         opacity: 1;
       }
@@ -198,8 +198,8 @@
 
       button {
         &#register-button {
-          color: $mainBlue;
-          border: 1px solid $mainBlue;
+          color: $main;
+          border: 1px solid $main;
         }
 
         &#login-button {
@@ -333,7 +333,7 @@
             border-radius: $borderRadius;
 
             h2 {
-              color: $mainBlue;
+              color: $main;
             }
             p {
               color: $primaryText;
@@ -494,7 +494,7 @@
         }
 
         .title {
-          color: $mainBlue;
+          color: $main;
           text-align: center;
         }
 
@@ -691,7 +691,7 @@
         position: absolute;
         top: 8px;
         right: 8px;
-        color: $mainBlue;
+        color: $main;
         font-size: 22px;
       }
 
@@ -747,7 +747,7 @@
           border-radius: $borderRadius;
           width: 100%;
           margin: 0 auto 30px auto;
-          border: 1px solid $mainBlue;
+          border: 1px solid $main;
         }
       }
 
@@ -772,9 +772,9 @@
 
           span {
             font-size: 28px;
-            border-bottom: 2px solid $mainBlue;
+            border-bottom: 2px solid $main;
             font-weight: $fwRegular;
-            color: $mainBlue;
+            color: $main;
           }
 
           @media screen and (max-width: 600px) {
@@ -1226,7 +1226,7 @@
             top: 8px;
             font-size: 22px;
             right: 8px;
-            color: $mainBlue;
+            color: $main;
           }
 
           &.with-bg {

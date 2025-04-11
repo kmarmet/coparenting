@@ -82,7 +82,7 @@
                 &.active {
                   background: $lightAccentBlue !important;
                   border: 0 !important;
-                  color: $mainBlue !important;
+                  color: $main !important;
                 }
               }
             }
@@ -136,7 +136,7 @@
 
             &.general {
               svg {
-                color: $mainBlue;
+                color: $main;
               }
             }
             &.schooling {

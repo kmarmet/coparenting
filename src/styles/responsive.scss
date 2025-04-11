@@ -255,17 +255,17 @@
 
             &:hover {
               opacity: 1;
-              color: $mainBlue;
+              color: $main;
               padding-left: 15px;
               cursor: pointer;
 
               label {
-                color: $mainBlue;
+                color: $main;
                 opacity: 1;
                 cursor: pointer;
 
                 span {
-                  color: $mainBlue;
+                  color: $main;
                 }
               }
             }
@@ -312,7 +312,7 @@
               text-align: center;
               justify-content: center;
               &.currentUser {
-                color: $mainBlue;
+                color: $main;
               }
               &.coparent {
                 color: $purple;
@@ -351,7 +351,7 @@
 
           &:hover {
             opacity: 1;
-            color: $mainBlue;
+            color: $main;
             padding-left: 15px;
             cursor: pointer;
           }
@@ -368,7 +368,7 @@
           &:not(#new-event) {
             @media screen and (min-width: 650px) {
               &:hover {
-                color: $mainBlue;
+                color: $main;
               }
             }
           }
@@ -397,7 +397,7 @@
             @media screen and (min-width: 650px) {
               &.default {
                 &:hover {
-                  background-color: $mainBlue;
+                  background-color: $main;
                   color: white;
                   border: unset;
                 }
@@ -583,7 +583,7 @@
 
                   &#view-visitation-holidays-item {
                     &:hover {
-                      background: $mainBlue;
+                      background: $main;
                       color: white;
 
                       &.blue {
@@ -703,7 +703,7 @@
           }
 
           #user-name {
-            color: $mainBlue;
+            color: $main;
             font-weight: $fwMediumBold;
             font-size: 20px;
             margin: 0 0 15px 0;
@@ -727,7 +727,7 @@
             @media screen and (min-width: 650px) {
               &:hover {
                 cursor: pointer;
-                color: $mainBlue;
+                color: $main;
               }
             }
 

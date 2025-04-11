@@ -64,6 +64,7 @@ export default function Archives() {
     }
 
     setExpensePayers(DatasetManager.getUniqueArray(payerNames, true))
+    allExpenses = DatasetManager.sortByProperty(allExpenses, 'creationDate', 'desc')
     setExpenses(allExpenses)
 
     return allExpenses

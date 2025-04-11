@@ -4,6 +4,7 @@
 #external-overrides {
   #expenses-container {
     margin-top: 15px;
+
     #below-title {
       justify-content: space-between;
       align-items: center;
@@ -194,8 +195,8 @@
 
         .pill {
           @include pillButton;
-          color: $mainBlue;
-          border: 1px solid $mainBlue;
+          color: $main;
+          border: 1px solid $main;
           background: $grey;
           border-radius: 50px;
           text-align: center;
@@ -216,7 +217,7 @@
 
           &.active {
             background: $lightAccentBlue;
-            color: $mainBlue;
+            color: $main;
           }
 
           svg {
@@ -247,10 +248,10 @@
     }
 
     .payment-options-link {
-      color: $mainBlue;
+      color: $main;
       font-weight: 500;
       opacity: 1;
-      border-bottom: 1px solid $mainBlue;
+      border-bottom: 1px solid $main;
       display: inline;
       @include hover;
 
@@ -378,7 +379,7 @@
             }
 
             &:last-child {
-              color: $mainBlue;
+              color: $main;
             }
           }
         }

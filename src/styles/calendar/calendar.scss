@@ -25,7 +25,7 @@
       }
       .current-user-visitation-dot,
       .current-user-event-dot {
-        background-color: $mainBlue;
+        background-color: $main;
       }
 
       .coparent-visitation-dot,
@@ -131,7 +131,7 @@
         }
 
         &.currentUser {
-          color: $mainBlue;
+          color: $main;
         }
       }
 
@@ -164,7 +164,7 @@
 
         &.currentUser {
           left: 3px;
-          background: $mainBlue;
+          background: $main;
         }
       }
     }
@@ -188,7 +188,7 @@
             color: $darkestGrey !important;
 
             &.Mui-selected {
-              color: $mainBlue !important;
+              color: $main !important;
             }
           }
         }
@@ -278,7 +278,7 @@
 
                 &.Mui-selected {
                   background: transparent;
-                  color: $mainBlue;
+                  color: $main;
                 }
               }
             }
@@ -324,7 +324,7 @@
                   height: 18px;
                   z-index: -1;
                   border-radius: 12px;
-                  border: 1px solid $mainBlue;
+                  border: 1px solid $main;
                 }
               }
 

@@ -5,7 +5,6 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import {MobileDatePicker, MobileDateRangePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
-import {Fade} from 'react-awesome-reveal'
 import validator from 'validator'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager.coffee'
@@ -366,225 +365,221 @@ export default function NewCalendarEvent() {
         }>
         <div id="calendar-event-form-container" className={`form ${theme}`}>
           <Spacer height={8} />
-          <Fade direction={'up'} duration={600} triggerOnce={true}>
-            {/* EVENT NAME */}
+          {/* EVENT NAME */}
+          <InputWrapper
+            inputClasses="event-title-input"
+            inputType={InputTypes.text}
+            labelText={'Event Name'}
+            defaultValue={eventTitle}
+            placeholder="Event Name"
+            required={true}
+            isDebounced={false}
+            inputValueType="input"
+            inputValue={eventTitle}
+            onChange={async (e) => {
+              const inputValue = e.target.value
+              setEventTitle(inputValue)
+            }}
+          />
+
+          {/* START DATE */}
+          {eventLength === EventLengths.single && (
             <InputWrapper
-              inputClasses="event-title-input"
-              inputType={InputTypes.text}
-              labelText={'Event Name'}
-              defaultValue={eventTitle}
-              placeholder="Event Name"
+              defaultValue={dateToEdit}
+              labelText={'Date'}
+              uidClass="event-start-date"
+              inputType={InputTypes.date}
               required={true}
-              isDebounced={false}
-              inputValueType="input"
-              inputValue={eventTitle}
-              onChange={async (e) => {
-                const inputValue = e.target.value
-                setEventTitle(inputValue)
-              }}
+              onDateOrTimeSelection={(e) => setEventStartDate(e)}
             />
+          )}
 
-            {/* START DATE */}
-            {eventLength === EventLengths.single && (
-              <InputWrapper
-                defaultValue={dateToEdit}
-                labelText={'Date'}
-                uidClass="event-start-date"
-                inputType={InputTypes.date}
-                required={true}
-                onDateOrTimeSelection={(e) => setEventStartDate(e)}
+          {/* DATE RANGE */}
+          {eventLength === EventLengths.multiple && (
+            <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
+              <MobileDateRangePicker
+                className={''}
+                onOpen={() => {
+                  Manager.hideKeyboard('date-range-input')
+                  addThemeToDatePickers()
+                }}
+                onAccept={(dateArray) => {
+                  if (Manager.isValid(dateArray)) {
+                    setEventStartDate(moment(dateArray[0]).format(DatetimeFormats.dateForDb))
+                    setEventEndDate(moment(dateArray[1]).format(DatetimeFormats.dateForDb))
+                    setEventIsDateRange(true)
+                  }
+                }}
+                slots={{field: SingleInputDateRangeField}}
+                name="allowedRange"
               />
-            )}
+            </InputWrapper>
+          )}
 
-            {/* DATE RANGE */}
-            {eventLength === EventLengths.multiple && (
-              <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
-                <MobileDateRangePicker
-                  className={''}
-                  onOpen={() => {
-                    Manager.hideKeyboard('date-range-input')
-                    addThemeToDatePickers()
-                  }}
-                  onAccept={(dateArray) => {
-                    if (Manager.isValid(dateArray)) {
-                      setEventStartDate(moment(dateArray[0]).format(DatetimeFormats.dateForDb))
-                      setEventEndDate(moment(dateArray[1]).format(DatetimeFormats.dateForDb))
-                      setEventIsDateRange(true)
-                    }
-                  }}
-                  slots={{field: SingleInputDateRangeField}}
-                  name="allowedRange"
-                />
-              </InputWrapper>
-            )}
+          {/* EVENT WITH TIME */}
+          <InputWrapper
+            labelText={'Start Time'}
+            uidClass="event-start-time time"
+            inputType={InputTypes.time}
+            onDateOrTimeSelection={(e) => setEventStartTime(e)}
+          />
+          <InputWrapper
+            labelText={'End Time'}
+            uidClass="event-end-time time"
+            inputType={InputTypes.time}
+            onDateOrTimeSelection={(e) => setEventEndTime(e)}
+          />
+          <Spacer height={5} />
 
-            {/* EVENT WITH TIME */}
-            <div className={'flex event-times-wrapper'}>
-              <InputWrapper
-                labelText={'Start Time'}
-                uidClass="event-start-time"
-                inputType={InputTypes.time}
-                onDateOrTimeSelection={(e) => setEventStartTime(e)}
+          {/* Share with */}
+          <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
+
+          {/* REMINDER */}
+          <Accordion id={'checkboxes'} expanded={showReminders}>
+            <AccordionSummary>
+              <div className="flex">
+                <p className="label">Remind Me</p>
+                <ToggleButton onCheck={() => setShowReminders(true)} onUncheck={() => setShowReminders(false)} />
+              </div>
+            </AccordionSummary>
+            <AccordionDetails>
+              <CheckboxGroup
+                elClass={`${theme} reminder-times`}
+                checkboxArray={Manager.buildCheckboxGroup({
+                  currentUser,
+                  labelType: 'reminder-times',
+                })}
+                containerClass={'reminder-times'}
+                skipNameFormatting={true}
+                onCheck={handleReminderSelection}
               />
-              <InputWrapper
-                labelText={'End Time'}
-                uidClass="event-end-time"
-                inputType={InputTypes.time}
-                onDateOrTimeSelection={(e) => setEventEndTime(e)}
-              />
+            </AccordionDetails>
+          </Accordion>
+
+          <Spacer height={1} />
+
+          {/* IS VISITATION? */}
+          <div>
+            <div className="flex">
+              <Label text={'Visitation Event'} />
+              <ToggleButton isDefaultChecked={false} onCheck={() => setIsVisitation(true)} onUncheck={() => setIsVisitation(false)} />
             </div>
-            <Spacer height={5} />
+          </div>
 
-            {/* Share with */}
-            <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
+          <Spacer height={1} />
 
-            {/* REMINDER */}
-            <Accordion id={'checkboxes'} expanded={showReminders}>
+          {/* INCLUDING WHICH CHILDREN */}
+          {Manager.isValid(currentUser?.children) && (
+            <Accordion id={'checkboxes'} expanded={includeChildren}>
               <AccordionSummary>
                 <div className="flex">
-                  <p className="label">Remind Me</p>
-                  <ToggleButton onCheck={() => setShowReminders(true)} onUncheck={() => setShowReminders(false)} />
+                  <Label text={'Include Children'} />
+                  <ToggleButton
+                    isDefaultChecked={false}
+                    onCheck={() => setIncludeChildren(!includeChildren)}
+                    onUncheck={() => setIncludeChildren(!includeChildren)}
+                  />
                 </div>
               </AccordionSummary>
               <AccordionDetails>
                 <CheckboxGroup
-                  elClass={`${theme} reminder-times`}
+                  elClass={`${theme} children`}
+                  skipNameFormatting={true}
                   checkboxArray={Manager.buildCheckboxGroup({
                     currentUser,
-                    labelType: 'reminder-times',
+                    labelType: 'children',
                   })}
-                  containerClass={'reminder-times'}
-                  skipNameFormatting={true}
-                  onCheck={handleReminderSelection}
+                  onCheck={handleChildSelection}
                 />
               </AccordionDetails>
             </Accordion>
+          )}
 
-            <Spacer height={1} />
-
-            {/* IS VISITATION? */}
-            <div>
-              <div className="flex">
-                <Label text={'Visitation Event'} />
-                <ToggleButton isDefaultChecked={false} onCheck={() => setIsVisitation(true)} onUncheck={() => setIsVisitation(false)} />
-              </div>
-            </div>
-
-            <Spacer height={1} />
-
-            {/* INCLUDING WHICH CHILDREN */}
-            {Manager.isValid(currentUser?.children) && (
-              <Accordion id={'checkboxes'} expanded={includeChildren}>
+          {/* RECURRING/CLONED */}
+          {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
+            <div id="repeating-container">
+              <Accordion id={'checkboxes'} expanded={eventIsRecurring}>
                 <AccordionSummary>
                   <div className="flex">
-                    <Label text={'Include Children'} />
-                    <ToggleButton
-                      isDefaultChecked={false}
-                      onCheck={() => setIncludeChildren(!includeChildren)}
-                      onUncheck={() => setIncludeChildren(!includeChildren)}
-                    />
+                    <p className="label">Recurring</p>
+                    <ToggleButton onCheck={() => setEventIsRecurring(!eventIsRecurring)} onUncheck={() => setEventIsRecurring(!eventIsRecurring)} />
                   </div>
                 </AccordionSummary>
                 <AccordionDetails>
                   <CheckboxGroup
-                    elClass={`${theme} children`}
-                    skipNameFormatting={true}
+                    elClass={`${theme}`}
+                    onCheck={handleRepeatingSelection}
                     checkboxArray={Manager.buildCheckboxGroup({
                       currentUser,
-                      labelType: 'children',
+                      labelType: 'recurring-intervals',
                     })}
-                    onCheck={handleChildSelection}
                   />
+
+                  {Manager.isValid(repeatInterval) && (
+                    <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
+                      <MobileDatePicker
+                        onOpen={addThemeToDatePickers}
+                        className={`${theme}  w-100`}
+                        onChange={(e) => setEventEndDate(moment(e).format('MM-DD-yyyy'))}
+                      />
+                    </InputWrapper>
+                  )}
                 </AccordionDetails>
               </Accordion>
-            )}
+            </div>
+          )}
 
-            {/* RECURRING/CLONED */}
-            {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
-              <div id="repeating-container">
-                <Accordion id={'checkboxes'} expanded={eventIsRecurring}>
-                  <AccordionSummary>
-                    <div className="flex">
-                      <p className="label">Recurring</p>
-                      <ToggleButton onCheck={() => setEventIsRecurring(!eventIsRecurring)} onUncheck={() => setEventIsRecurring(!eventIsRecurring)} />
-                    </div>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <CheckboxGroup
-                      elClass={`${theme}`}
-                      onCheck={handleRepeatingSelection}
-                      checkboxArray={Manager.buildCheckboxGroup({
-                        currentUser,
-                        labelType: 'recurring-intervals',
-                      })}
-                    />
-
-                    {Manager.isValid(repeatInterval) && (
-                      <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
-                        <MobileDatePicker
-                          onOpen={addThemeToDatePickers}
-                          className={`${theme}  w-100`}
-                          onChange={(e) => setEventEndDate(moment(e).format('MM-DD-yyyy'))}
-                        />
-                      </InputWrapper>
-                    )}
-                  </AccordionDetails>
-                </Accordion>
+          {/* CLONE */}
+          {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
+            <>
+              <div className="flex">
+                <Label text={'Duplicate'} />
+                <ToggleButton
+                  isDefaultChecked={false}
+                  onCheck={() => {
+                    setShowCloneInput(true)
+                    const dateWrapperElements = document.querySelectorAll('.cloned-date-wrapper input')
+                    if (showCloneInput && dateWrapperElements.length === 0) {
+                      addDateInput()
+                    }
+                  }}
+                  onUncheck={() => setShowCloneInput(false)}
+                />
               </div>
-            )}
 
-            {/* CLONE */}
-            {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
-              <>
-                <div className="flex">
-                  <Label text={'Duplicate'} />
-                  <ToggleButton
-                    isDefaultChecked={false}
-                    onCheck={() => {
-                      setShowCloneInput(true)
-                      const dateWrapperElements = document.querySelectorAll('.cloned-date-wrapper input')
-                      if (showCloneInput && dateWrapperElements.length === 0) {
-                        addDateInput()
-                      }
-                    }}
-                    onUncheck={() => setShowCloneInput(false)}
-                  />
-                </div>
+              {/* CLONED INPUTS */}
+              <div className={`cloned-date-wrapper form  ${showCloneInput === true ? 'active' : ''}`}></div>
+              {showCloneInput && (
+                <button className="default button" id="add-date-button" onClick={addDateInput}>
+                  Add Date
+                </button>
+              )}
+            </>
+          )}
 
-                {/* CLONED INPUTS */}
-                <div className={`cloned-date-wrapper form  ${showCloneInput === true ? 'active' : ''}`}></div>
-                {showCloneInput && (
-                  <button className="default button" id="add-date-button" onClick={addDateInput}>
-                    Add Date
-                  </button>
-                )}
-              </>
-            )}
+          <Spacer height={5} />
 
-            <Spacer height={5} />
+          {/* URL/WEBSITE */}
+          <InputWrapper labelText={'Website/Link'} required={false} inputType={InputTypes.url} onChange={(e) => setEventWebsite(e.target.value)} />
 
-            {/* URL/WEBSITE */}
-            <InputWrapper labelText={'Website/Link'} required={false} inputType={InputTypes.url} onChange={(e) => setEventWebsite(e.target.value)} />
+          {/* ADDRESS */}
+          <InputWrapper
+            wrapperClasses={Manager.isValid(eventLocation, true) ? 'show-label' : ''}
+            labelText={'Location'}
+            required={false}
+            onChange={(address) => setEventLocation(address)}
+            inputType={InputTypes.address}
+          />
 
-            {/* ADDRESS */}
-            <InputWrapper
-              wrapperClasses={Manager.isValid(eventLocation, true) ? 'show-label' : ''}
-              labelText={'Location'}
-              required={false}
-              onChange={(address) => setEventLocation(address)}
-              inputType={InputTypes.address}
-            />
+          {/* PHONE */}
+          <InputWrapper inputType={InputTypes.phone} labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
 
-            {/* PHONE */}
-            <InputWrapper inputType={InputTypes.phone} labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
-
-            {/* NOTES */}
-            <InputWrapper
-              labelText={'Notes'}
-              required={false}
-              inputType={InputTypes.textarea}
-              onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
-          </Fade>
+          {/* NOTES */}
+          <InputWrapper
+            labelText={'Notes'}
+            required={false}
+            inputType={InputTypes.textarea}
+            onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
         </div>
       </Modal>
     </>
