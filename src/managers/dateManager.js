@@ -12,6 +12,16 @@ const DateManager = {
     oneHour: 'hour',
     halfHour: 'halfHour',
   },
+  convertTime: (time, sourceTimezone, targetTimezone) => {
+    if (!Manager.isValid(sourceTimezone) || !Manager.isValid(targetTimezone)) {
+      console.log('fail')
+      return moment(time).format(DatetimeFormats.timeForDb)
+    }
+    const momentObj = moment.tz(time, 'h:mma', sourceTimezone)
+    console.log(momentObj)
+    const convertedMomentObj = momentObj.tz(targetTimezone)
+    return moment(convertedMomentObj).format(DatetimeFormats.timeForDb)
+  },
   getTodayJsDate: () => {
     const today = new Date()
 

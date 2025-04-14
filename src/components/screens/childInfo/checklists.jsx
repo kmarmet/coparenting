@@ -59,7 +59,6 @@ export default function Checklists({showCard, hideCard}) {
 
       if (filteredText.length === 0) {
         await DB.delete(`${path}`, activeChecklist.id)
-        setState({...state, refreshKey: Manager.getUid()})
         hideCard()
       } else {
         await DB.updateEntireRecord(`${path}`, updated, activeChecklist.id)

@@ -13,7 +13,6 @@ import {MobileDateRangePicker, SingleInputDateRangeField} from '@mui/x-date-pick
 import ModelNames from '/src/models/modelNames'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
-import {MdOutlineSwapHorizontalCircle} from 'react-icons/md'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import ObjectManager from '/src/managers/objectManager'
 import AlertManager from '/src/managers/alertManager'
@@ -173,7 +172,6 @@ export default function NewSwapRequest() {
       wrapperClass="new-swap-request"
       title={'Request Visitation Swap'}
       subtitle="Request for your child(ren) to remain with you during the designated visitation time of your co-parent."
-      titleIcon={<MdOutlineSwapHorizontalCircle />}
       viewSelector={
         <ViewSelector
           labels={['Day', 'Days', 'Hours']}
@@ -207,7 +205,7 @@ export default function NewSwapRequest() {
             />
           )}
 
-          {/* INTRADAY - HOURS */}
+          {/* INTRA DAY - HOURS */}
           {swapDuration === SwapDurations.intra && (
             <>
               <InputWrapper

@@ -7,7 +7,6 @@ import DB_UserScoped from "../database/db_userScoped"
 import CalendarManager from "./calendarManager"
 import FirebaseStorage from "../database/firebaseStorage"
 
-
 export default AppManager =
   getIPAddress: () ->
     ipAddress = ''
@@ -27,7 +26,8 @@ export default AppManager =
       console.error error
     return ipAddress
 
-  getTimezone: (ipAddress) ->
+  getTimezone: () ->
+    ipAddress = await AppManager.getIPAddress()
     timezone = ''
     myHeaders = new Headers()
     myHeaders.append "x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY

@@ -2,7 +2,6 @@ import React from 'react'
 import Autocomplete from 'react-google-autocomplete'
 
 export default function AddressInput({onSelection = () => {}, defaultValue}) {
-  console.log(defaultValue)
   return (
     <Autocomplete
       defaultValue={defaultValue}

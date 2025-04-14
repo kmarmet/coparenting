@@ -983,7 +983,7 @@
   }
 
   .action-items {
-    padding: 20px 20px 100px 20px;
+    padding: 20px 20px 50px 20px;
     transition: all 0.8s ease-out;
     display: flex;
     flex-direction: column;
@@ -993,8 +993,8 @@
     background: white;
     width: 100vw;
     border-radius: 25px 25px 0 0;
-    max-height: calc(100vh - 50px);
     overflow: auto;
+    border-top: 4px solid $accent;
     #menu-content {
       max-width: calc(100% - 20px);
       position: relative;
@@ -1035,7 +1035,7 @@
       @include hover;
       @include row;
       border: 0;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
 
       /*#region  ROW COLORS*/
       &:nth-of-type(1) {
@@ -1156,7 +1156,6 @@
         display: grid;
         align-items: flex-start;
         justify-content: flex-start;
-        margin-bottom: 10px;
         grid-template-columns: auto auto;
 
         svg,
@@ -1204,6 +1203,10 @@
             font-size: 22px;
             display: block;
             white-space: nowrap;
+
+            &.checklist {
+              transform: scale(1.2);
+            }
           }
         }
       }
@@ -1539,7 +1542,7 @@
     font-weight: $fwMedium;
     margin: 0;
     line-height: 1.3;
-    color: $primaryText;
+    color: $labelText;
 
     svg {
       position: relative;
@@ -1568,9 +1571,23 @@
   padding: 10px;
   border-radius: $borderRadius;
 
+  &.active {
+    border-top: 2px solid $accent;
+  }
+
   * {
     line-height: 1 !important;
     background: $grey;
+  }
+
+  &.chat-input-wrapper {
+    padding: 0;
+    textarea {
+      min-height: 0;
+      width: 100%;
+      padding: 8px;
+      height: 40px;
+    }
   }
 
   &.date,
@@ -1591,32 +1608,13 @@
       width: 100%;
       margin-bottom: 10px;
       margin-top: 10px;
+      height: 20px;
     }
 
     &.time {
       #label-wrapper {
         padding-bottom: 6px;
       }
-    }
-  }
-
-  // Active
-  &.active {
-    background: $lightGrey;
-    padding-left: 8px;
-    #label-wrapper {
-      background: $lightGrey;
-      label {
-        color: $darkerGrey;
-        font-weight: $fwMediumBold;
-      }
-    }
-    input,
-    textarea {
-      opacity: 1;
-      caret-color: $accent;
-      color: black;
-      background: $lightGrey;
     }
   }
 
@@ -1637,9 +1635,9 @@
     padding-bottom: 3px;
     label {
       color: $darkerGrey;
-      font-weight: $fwMedium;
+      font-weight: $fwMediumBold;
       text-transform: uppercase;
-      font-size: 10px;
+      font-size: 12px;
       transition: all 0.3s ease-in-out;
       vertical-align: top;
       display: flex;
@@ -1658,12 +1656,11 @@
   textarea {
     outline: 0;
     border-radius: 0;
-    caret-color: black;
+    caret-color: $accent;
     display: flex;
     justify-content: flex-start;
     border: 0;
     align-items: center;
-    font-size: 15px;
     font-weight: $fwRegular;
     color: $primaryText;
     z-index: 9;
@@ -2571,6 +2568,19 @@
         &.send-with-address-toggle {
           border: 0;
           padding-top: 0;
+        }
+      }
+    }
+  }
+  &.add-fifty-fifty-schedule {
+    .MuiPaper-root {
+      .MuiButtonBase-root {
+        width: 100% !important;
+        min-height: 0 !important;
+      }
+      &#fifty-fifty-info {
+        svg {
+          font-size: 18px !important;
         }
       }
     }
@@ -3989,7 +3999,7 @@
   border-top: 6px solid $accent;
   box-shadow: $boxShadow_float;
   bottom: -100%;
-  padding: 30px 0 60px 0;
+  padding: 20px 0 60px 0;
 
   &.open {
     bottom: 0;
@@ -4009,7 +4019,7 @@
     font-size: 24px;
     line-height: 1;
     white-space: nowrap;
-    margin-bottom: 15px;
+    margin-bottom: 25px;
     border-bottom: 1px solid $accent;
     padding-bottom: 2px;
   }
@@ -4047,7 +4057,7 @@
       text-align: right;
       align-items: center;
       position: relative;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       opacity: 0;
       transition: all 0.3s ease-out;
       width: 100%;
@@ -4176,14 +4186,14 @@
       p {
         line-height: 1;
         width: 100%;
-        font-size: 18px;
+        font-size: 20px;
         white-space: nowrap;
         font-weight: $fwLight;
       }
 
       p,
       svg {
-        //        opacity: 0.8;
+        opacity: 0.8;
       }
 
       &.visible {
@@ -4195,8 +4205,6 @@
       &.active {
         position: relative;
         opacity: 1;
-        border-left: 3px solid $lightBorderColor;
-        padding-left: 5px;
 
         p {
           font-weight: $fwBold;

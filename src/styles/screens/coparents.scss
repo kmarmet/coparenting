@@ -87,14 +87,14 @@
     #coparent-name-primary {
       font-size: 22px;
       width: 100%;
-      text-align: center;
+      text-align: left;
       line-height: 1;
     }
 
     #coparent-type-primary {
       font-size: 14px;
       width: 100%;
-      text-align: center;
+      text-align: left;
       margin-bottom: 15px;
       color: $darkerGrey;
     }
@@ -111,73 +111,19 @@
       }
     }
 
-    .row {
-      overflow: hidden;
-      transition: max-height 0.3s ease-in-out;
-      border: 0;
-      padding: 0;
-      margin: 0;
-
-      &.active {
-        max-height: 1000px;
-
-        .header {
-          border-bottom: 0;
-        }
-      }
-
-      .flex {
-        width: 95%;
-        align-items: center;
-        input {
-          margin: 0;
-        }
-
-        &.input {
-          display: flex;
-          justify-content: space-between;
-          width: 100%;
-          align-items: center;
-          gap: 15px;
-          .delete-icon {
-            position: relative;
-            display: block;
-            bottom: 5px;
-            font-size: 20px;
-            color: $red;
-          }
-        }
-      }
-
-      .header {
+    .flex {
+      &.input {
         display: flex;
         justify-content: space-between;
-        @include lineItem;
-
-        span {
-          font-size: 18px;
-          margin-left: 10px;
+        width: 100%;
+        align-items: center;
+        gap: 15px;
+        .delete-icon {
+          position: relative;
+          display: block;
+          font-size: 20px;
+          color: $red;
         }
-      }
-
-      .directions-icon {
-        position: relative;
-        top: -4px;
-        margin-right: 10px;
-      }
-
-      a {
-        span {
-          font-size: 30px;
-        }
-      }
-
-      p {
-        font-weight: 400;
-      }
-
-      button {
-        width: 70%;
       }
     }
   }

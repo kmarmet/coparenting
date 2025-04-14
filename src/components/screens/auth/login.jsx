@@ -212,6 +212,7 @@ export default function Login() {
                 <InputWrapper
                   inputType={InputTypes.password}
                   required={true}
+                  hasBottomSpacer={false}
                   wrapperClasses="password"
                   labelText={'Password'}
                   inputClasses="password login-input"

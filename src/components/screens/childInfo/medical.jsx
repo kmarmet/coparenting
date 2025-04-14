@@ -7,23 +7,23 @@ import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import AlertManager from '/src/managers/alertManager'
 import {FaBriefcaseMedical} from 'react-icons/fa'
 import DB from '/src/database/DB'
 import StringManager from '../../../managers/stringManager'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
+import Spacer from '../../shared/spacer'
 
-export default function Medical() {
+export default function Medical({activeChild, onUpdate = (child) => {}}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, activeInfoChild} = state
+  const {currentUser, theme} = state
   const [medicalValues, setMedicalValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
 
   const deleteProp = async (prop) => {
     const sharedInfoRecords = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
-    const existingPropCount = Object.keys(activeInfoChild?.medical).length
+    const existingPropCount = Object.keys(activeChild?.medical).length
 
     if (existingPropCount <= 1) {
       const accordion = document.querySelector('.medical.info-section')
@@ -40,37 +40,41 @@ export default function Medical() {
     if (Manager.isValid(sharedProps) && sharedProps.includes(formattedProp)) {
       const scopedSharingObject = await DB.find(sharedInfoRecords, ['prop', formattedProp], false)
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, scopedSharingObject, formattedProp, scopedSharingObject?.sharedByOwnerKey)
-      await setSelectedChild()
+      await setChildData()
     }
 
     // Delete NOT shared
     else {
-      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'medical', StringManager.formatDbProp(prop))
-      setState({...state, activeInfoChild: updatedChild})
-      await setSelectedChild()
+      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'medical', StringManager.formatDbProp(prop))
+      setState({...state, activeChild: updatedChild})
+      await setChildData()
     }
+    onUpdate(activeChild)
   }
 
   const update = async (prop, value) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'medical', StringManager.formatDbProp(prop), value)
-    setState({...state, activeInfoChild: updatedChild})
-    AlertManager.successAlert('Updated!')
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'medical', StringManager.formatDbProp(prop), value)
+    onUpdate(updatedChild)
   }
 
-  const setSelectedChild = async () => {
+  const setChildData = async () => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
     let sharedValues = []
     for (let obj of sharing) {
       sharedValues.push([obj.prop, obj.value, obj.sharedByName])
     }
-    if (Manager.isValid(activeInfoChild?.medical)) {
+    if (Manager.isValid(activeChild?.medical)) {
       // Set info
-      let values = Object.entries(activeInfoChild?.medical)
+      let values = Object.entries(activeChild?.medical)
 
       if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
-      setMedicalValues(values)
+      if (values[0][1].length === 0) {
+        setMedicalValues([])
+      } else {
+        setMedicalValues(values)
+      }
     } else {
       if (sharedValues.length > 0) {
         setMedicalValues(sharedValues)
@@ -81,8 +85,14 @@ export default function Medical() {
   }
 
   useEffect(() => {
-    setSelectedChild().then((r) => r)
-  }, [activeInfoChild])
+    if (showInputs) {
+      setChildData().then((r) => r)
+    }
+  }, [showInputs])
+
+  useEffect(() => {
+    setChildData().then((r) => r)
+  }, [activeChild])
 
   return (
     <div className="info-section section medical form">
@@ -93,8 +103,8 @@ export default function Medical() {
           <FaBriefcaseMedical className={'svg medical'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Medical
-            {!Manager.isValid(activeInfoChild?.medical) ? '- no info' : ''}
-            {Manager.isValid(activeInfoChild?.medical) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
+            {!Manager.isValid(medicalValues) ? '- no info' : ''}
+            {Manager.isValid(medicalValues) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>
@@ -105,28 +115,38 @@ export default function Medical() {
 
               return (
                 <div key={index}>
-                  <div className="flex input">
-                    {infoLabel.toLowerCase().includes('phone') && (
-                      <a href={`tel:${StringManager.formatPhone(value).toString()}`}>
-                        {infoLabel}: {value}
-                      </a>
-                    )}
-                    {!infoLabel.toLowerCase().includes('phone') && (
-                      <InputWrapper
-                        inputType={InputTypes.text}
-                        labelText={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
-                          Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''
-                        }`}
-                        defaultValue={value}
-                        debounceTimeout={1000}
-                        onChange={(e) => {
-                          const inputValue = e.target.value
-                          update(infoLabel, `${inputValue}`).then((r) => r)
-                        }}
-                      />
-                    )}
-                    <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
-                  </div>
+                  {infoLabel.toLowerCase().includes('phone') && (
+                    <>
+                      <div className="flex input">
+                        <a href={`tel:${StringManager.formatPhone(value).toString()}`}>
+                          {infoLabel}: {value}
+                        </a>
+                        <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                      </div>
+                      <Spacer height={5} />
+                    </>
+                  )}
+                  {!infoLabel.toLowerCase().includes('phone') && (
+                    <>
+                      <div className="flex input">
+                        <InputWrapper
+                          hasBottomSpacer={false}
+                          inputType={InputTypes.text}
+                          labelText={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
+                            Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''
+                          }`}
+                          defaultValue={value}
+                          debounceTimeout={1000}
+                          onChange={(e) => {
+                            const inputValue = e.target.value
+                            update(infoLabel, `${inputValue}`).then((r) => r)
+                          }}
+                        />
+                        <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                      </div>
+                      <Spacer height={5} />
+                    </>
+                  )}
                 </div>
               )
             })}

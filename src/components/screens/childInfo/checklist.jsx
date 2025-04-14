@@ -12,9 +12,9 @@ import Accordion from '@mui/material/Accordion'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {child, getDatabase, onValue, ref} from 'firebase/database'
 
-export default function Checklist({fromOrTo}) {
+export default function Checklist({fromOrTo, activeChild, onChildUpdate = (child) => {}}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, activeInfoChild, theme, refreshKey} = state
+  const {currentUser, theme, refreshKey} = state
 
   const [checklist, setChecklist] = useState([])
   const [activeItems, setActiveItems] = useState([])
@@ -33,7 +33,7 @@ export default function Checklist({fromOrTo}) {
   const deleteItem = async (el) => {
     const element = el.currentTarget
     const checklistItemWrapper = element.closest('.checklist-item-row')
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
+    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
     const path = `${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`
     const childChecklists = await DB.getTable(path)
     const activeChecklist = childChecklists.filter((x) => x.fromOrTo === fromOrTo)[0]
@@ -48,7 +48,8 @@ export default function Checklist({fromOrTo}) {
 
       if (filteredText.length === 0) {
         await DB.delete(`${path}`, activeChecklist.id)
-        setState({...state, refreshKey: Manager.getUid()})
+        const updatedChild = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`, true)
+        onChildUpdate(updatedChild)
       } else {
         await DB.updateEntireRecord(`${path}`, updated, activeChecklist.id)
       }
@@ -58,8 +59,8 @@ export default function Checklist({fromOrTo}) {
   }
 
   const setActiveChildChecklist = async () => {
-    if (Manager.isValid(activeInfoChild)) {
-      const checklists = activeInfoChild?.checklists?.map((x) => x)
+    if (Manager.isValid(activeChild)) {
+      const checklists = activeChild?.checklists?.map((x) => x)
       if (Manager.isValid(checklists)) {
         const checklist = checklists?.find((x) => x?.fromOrTo === fromOrTo)
         setChecklist(checklist)
@@ -69,12 +70,12 @@ export default function Checklist({fromOrTo}) {
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
+    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
 
     if (childKey) {
       onValue(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children/${childKey}`), async (snapshot) => {
         const updatedChild = snapshot.val()
-        setState({...state, activeInfoChild: updatedChild})
+        setState({...state, activeChild: updatedChild})
         setActiveChildChecklist().then((r) => r)
       })
     }

@@ -28,7 +28,6 @@ import EventCalendar from '/src/components/screens/calendar/calendar.jsx'
 import Chat from '/src/components/screens/chats/chat.jsx'
 import Chats from '/src/components/screens/chats/chats.jsx'
 import ChildInfo from '/src/components/screens/childInfo/childInfo.jsx'
-import ChildSelector from '/src/components/screens/childInfo/childSelector.jsx'
 import NewChildForm from '/src/components/screens/childInfo/newChildForm.jsx'
 import ContactUs from '/src/components/screens/contactUs'
 import Coparents from '/src/components/screens/coparents/coparents.jsx'
@@ -188,8 +187,8 @@ export default function App() {
           } else {
             // Add location details to use record if they do not exist
             if (!Manager.isValid(currentUserFromDb?.location)) {
-              AppManager.getLocationDetails().then((r) => {
-                DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUserFromDb?.key}/location`, r).then((r) => r)
+              AppManager.getLocationDetails().then(async (r) => {
+                await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUserFromDb?.key}/location`, r)
               })
             }
             AppManager.deleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
@@ -315,7 +314,6 @@ export default function App() {
             {currentScreen === ScreenNames.chat && <Chat />}
             {currentScreen === ScreenNames.chats && <Chats />}
             {currentScreen === ScreenNames.visitation && <Visitation />}
-            {currentScreen === ScreenNames.childSelector && <ChildSelector />}
             {currentScreen === ScreenNames.contactUs && <ContactUs />}
           </div>
         </globalState.Provider>

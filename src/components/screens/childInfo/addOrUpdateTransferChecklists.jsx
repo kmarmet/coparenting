@@ -11,11 +11,11 @@ import MyConfetti from '../../shared/myConfetti'
 import AlertManager from '../../../managers/alertManager'
 import {child, getDatabase, onValue, ref} from 'firebase/database'
 import {CgMathPlus} from 'react-icons/cg'
-import {PiListChecksFill} from 'react-icons/pi'
+import Spacer from '../../shared/spacer'
 
-export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
+export default function AddOrUpdateTransferChecklists({showCard, hideCard, activeChild, onChildUpdate = (child) => {}}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, activeInfoChild, refreshKey} = state
+  const {currentUser, refreshKey} = state
   const [checkboxTextList, setCheckboxTextList] = useState([])
   const [view, setView] = useState('from')
   const [existingItems, setExistingItems] = useState([])
@@ -34,8 +34,8 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
   }
 
   const addOrUpdate = async () => {
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
-    const existingChecklist = activeInfoChild?.checklists?.find((x) => x?.fromOrTo === view)
+    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
+    const existingChecklist = activeChild?.checklists?.find((x) => x?.fromOrTo === view)
     const newChecklist = new Checklist()
     newChecklist.checklistItems = DatasetManager.getUniqueArray(checkboxTextList, true)
     newChecklist.fromOrTo = view
@@ -76,13 +76,15 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
       }
       hideCard()
       MyConfetti.fire()
+      const updatedChild = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`, true)
+      onChildUpdate(updatedChild)
     }
   }
 
   const setChecklists = async () => {
-    if (activeInfoChild) {
-      const fromChecklist = activeInfoChild?.checklists?.find((x) => x?.fromOrTo === 'from')
-      const toChecklist = activeInfoChild?.checklists?.find((x) => x?.fromOrTo === 'to')
+    if (activeChild) {
+      const fromChecklist = activeChild?.checklists?.find((x) => x?.fromOrTo === 'from')
+      const toChecklist = activeChild?.checklists?.find((x) => x?.fromOrTo === 'to')
       if (view === 'from') {
         if (fromChecklist) {
           setExistingItems(fromChecklist?.checklistItems)
@@ -102,12 +104,12 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
 
   const onTableChange = async () => {
     const dbRef = ref(getDatabase())
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
+    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
 
     if (childKey) {
       onValue(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children/${childKey}`), async (snapshot) => {
         const updatedChild = snapshot.val()
-        setState({...state, activeInfoChild: updatedChild})
+        setState({...state, activeChild: updatedChild})
         setTimeout(async () => {
           await setChecklists()
         }, 300)
@@ -152,10 +154,10 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard}) {
       submitIcon={<MdOutlineChecklist />}
       submitText={'DONE'}
       showCard={showCard}
-      titleIcon={<PiListChecksFill />}
       subtitle="Add a transfer checklist which will allow you and your child to ensure that nothing is left behind when transferring to or from your co-parent's home"
       title={'Transfer Checklists'}
       onClose={hideCard}>
+      <Spacer height={10} />
       <div id="inputs" key={refreshKey}></div>
       {Manager.isValid(existingItems) &&
         existingItems?.map((item, index) => {

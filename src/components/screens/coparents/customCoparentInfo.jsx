@@ -12,13 +12,13 @@ import StringManager from '../../../managers/stringManager.coffee'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
 
-export default function CustomCoparentInfo({hideCard, activeCoparent, showCard}) {
+export default function CustomCoparentInfo({hideCard, activeCoparent, showCard, onAdd = (coparent) => {}}) {
   const {state, setState} = useContext(globalState)
   const {currentUser, theme, refreshKey} = state
   const [title, setTitle] = useState('')
   const [value, setValue] = useState('')
 
-  const resetForm = (hasMessage = false) => {
+  const ResetForm = (hasMessage = false) => {
     Manager.resetForm('custom-coparent-info-wrapper')
     setTitle('')
     setValue('')
@@ -30,27 +30,29 @@ export default function CustomCoparentInfo({hideCard, activeCoparent, showCard})
     hideCard()
   }
 
-  const add = async () => {
+  const Add = async () => {
     if (_.isEmpty(title) || _.isEmpty(value)) {
       AlertManager.throwError('Both fields are required')
       return false
     }
-    await DB_UserScoped.addCoparentProp(currentUser, activeCoparent, title, value)
-    resetForm(true)
+    const updatedCoparent = await DB_UserScoped.addCoparentProp(currentUser, activeCoparent, title, value)
+    onAdd(updatedCoparent)
+    ResetForm(true)
   }
 
   return (
     <Modal
       submitIcon={<FaWandMagicSparkles />}
       submitText={'Add'}
-      onSubmit={add}
+      onSubmit={Add}
       wrapperClass="custom-coparent-card"
       title={'Add Custom Info'}
       showCard={showCard}
-      onClose={resetForm}>
+      onClose={ResetForm}>
       <Spacer height={8} />
       <div className="custom-coparent-info-wrapper">
         <InputWrapper
+          hasBottomSpacer={true}
           inputType={InputTypes.text}
           required={true}
           labelText={'Title/Label'}

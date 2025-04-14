@@ -2,7 +2,7 @@
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import {MobileDatePicker, MobileDateRangePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
+import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
 import validator from 'validator'
@@ -385,7 +385,7 @@ export default function NewCalendarEvent() {
           {/* START DATE */}
           {eventLength === EventLengths.single && (
             <InputWrapper
-              defaultValue={dateToEdit}
+              defaultValue={moment(dateToEdit, DatetimeFormats.dateForDb).format(DatetimeFormats.dateForDb)}
               labelText={'Date'}
               uidClass="event-start-date"
               inputType={InputTypes.date}
@@ -396,24 +396,19 @@ export default function NewCalendarEvent() {
 
           {/* DATE RANGE */}
           {eventLength === EventLengths.multiple && (
-            <InputWrapper wrapperClasses="date-range-input" labelText={'Date Range'} required={true} inputType={'date'}>
-              <MobileDateRangePicker
-                className={''}
-                onOpen={() => {
-                  Manager.hideKeyboard('date-range-input')
-                  addThemeToDatePickers()
-                }}
-                onAccept={(dateArray) => {
-                  if (Manager.isValid(dateArray)) {
-                    setEventStartDate(moment(dateArray[0]).format(DatetimeFormats.dateForDb))
-                    setEventEndDate(moment(dateArray[1]).format(DatetimeFormats.dateForDb))
-                    setEventIsDateRange(true)
-                  }
-                }}
-                slots={{field: SingleInputDateRangeField}}
-                name="allowedRange"
-              />
-            </InputWrapper>
+            <InputWrapper
+              wrapperClasses="date-range-input"
+              labelText={'Date Range'}
+              required={true}
+              inputType={InputTypes.dateRange}
+              onDateOrTimeSelection={(dateArray) => {
+                if (Manager.isValid(dateArray)) {
+                  setEventStartDate(moment(dateArray[0]).format(DatetimeFormats.dateForDb))
+                  setEventEndDate(moment(dateArray[1]).format(DatetimeFormats.dateForDb))
+                  setEventIsDateRange(true)
+                }
+              }}
+            />
           )}
 
           {/* EVENT WITH TIME */}

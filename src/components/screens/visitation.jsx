@@ -16,7 +16,7 @@ import MyConfetti from '/src/components/shared/myConfetti'
 import Note from '/src/components/shared/note'
 import DB_UserScoped from '/src/database/db_userScoped'
 import VisitationMapper from '/src/mappers/visitationMapper'
-import DateFormats from '/src/constants/datetimeFormats'
+import DatetimeFormats from '/src/constants/datetimeFormats'
 import CalendarMapper from '/src/mappers/calMapper'
 import SecurityManager from '/src/managers/securityManager'
 import NavBar from '../navBar'
@@ -125,11 +125,6 @@ export default function Visitation() {
       await VisitationManager.deleteAllHolidaysForUser(currentUser)
     }
     AlertManager.successAlert('Visitation Holidays Updated!')
-  }
-
-  const handleShareWithSelection = async (e) => {
-    const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
-    setShareWith(updated)
   }
 
   const handleHolidaySelection = async (e) => {

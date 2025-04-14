@@ -2,14 +2,12 @@
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
 import globalState from '../../../context'
-import {TiUserAdd} from 'react-icons/ti'
 
 import Manager from '../../../managers/manager'
 import General from '../../../models/child/general'
 import Child from '../../../models/child/child'
 import CheckboxGroup from '../../../components/shared/checkboxGroup'
 import DB_UserScoped from '../../../database/db_userScoped'
-import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import ModelNames from '../../../models/modelNames'
 import InputWrapper from '../../shared/inputWrapper'
 import Modal from '../../shared/modal'
@@ -19,10 +17,11 @@ import UploadInputs from '../../shared/uploadInputs'
 import ImageManager from '../../../managers/imageManager'
 import FirebaseStorage from '../../../database/firebaseStorage'
 import Label from '../../shared/label'
-import AddressInput from '/src/components/shared/addressInput.jsx'
 import StringManager from '../../../managers/stringManager.js'
 import CalendarManager from '../../../managers/calendarManager'
 import CalendarEvent from '../../../models/calendarEvent'
+import InputTypes from '../../../constants/inputTypes'
+import Spacer from '../../shared/spacer'
 
 const NewChildForm = ({hideCard, showCard}) => {
   const {state, setState} = useContext(globalState)
@@ -36,7 +35,7 @@ const NewChildForm = ({hideCard, showCard}) => {
   const [dateOfBirth, setDateOfBirth] = useState('')
   const [profilePic, setProfilePic] = useState(null)
 
-  const resetForm = async () => {
+  const resetForm = async (successMessage = '') => {
     Manager.resetForm('new-child-wrapper')
     hideCard()
     setGender('male')
@@ -45,7 +44,7 @@ const NewChildForm = ({hideCard, showCard}) => {
     setPhoneNumber('')
     setAddress('')
     setName('')
-    setState({...state, refreshKey: Manager.getUid()})
+    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: successMessage})
   }
 
   const submit = async () => {
@@ -63,8 +62,6 @@ const NewChildForm = ({hideCard, showCard}) => {
       general.dateOfBirth = dateOfBirth
       newChild.general = general
       newChild.general.profilePic = ''
-
-      AlertManager.successAlert(`${StringManager.getFirstNameOnly(StringManager.formatTitle(name, true))} Added!`)
 
       // Add profile pic
       if (Manager.isValid(_profilePic)) {
@@ -89,7 +86,7 @@ const NewChildForm = ({hideCard, showCard}) => {
       // Add child to DB
       await DB_UserScoped.addUserChild(currentUser, cleanChild)
 
-      await resetForm()
+      await resetForm(`${StringManager.getFirstNameOnly(StringManager.formatTitle(name, true))} Added!`)
 
       const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
       setState({...state, currentUser: updatedCurrentUser, activeInfoChild: cleanChild})
@@ -114,23 +111,20 @@ const NewChildForm = ({hideCard, showCard}) => {
       wrapperClass="new-child-card"
       title={`Add ${name.length > 0 ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Child'}`}
       showCard={showCard}
-      titleIcon={<TiUserAdd className={'add-child'} />}
       onClose={resetForm}>
       <div id="new-child-container" className={`${theme}  form`}>
+        <Spacer height={5} />
         <div className="form new-child-form">
           {/* NAME */}
-          <InputWrapper labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
-          <InputWrapper labelText={'Phone Number'} required={false} onChange={(e) => setPhoneNumber(e.target.value)} />
-          <InputWrapper labelText={'Date of Birth'} required={true} inputType={'date'}>
-            <MobileDatePicker onAccept={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))} />
-          </InputWrapper>
-          <InputWrapper labelText={'Home Address'} required={true} inputType={'location'}>
-            <AddressInput
-              onSelection={(place) => {
-                setAddress(place)
-              }}
-            />
-          </InputWrapper>
+          <InputWrapper labelText={'Name'} inputType={InputTypes.text} required={true} onChange={(e) => setName(e.target.value)} />
+          <InputWrapper
+            labelText={'Date of Birth'}
+            required={true}
+            inputType={InputTypes.date}
+            onDateOrTimeSelection={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))}
+          />
+          <InputWrapper labelText={'Home Address'} required={true} inputType={InputTypes.address} onChange={(address) => setAddress(address)} />
+          <InputWrapper labelText={'Phone Number'} inputType={InputTypes.phone} required={false} onChange={(e) => setPhoneNumber(e.target.value)} />
 
           {/* GENDER */}
           <CheckboxGroup

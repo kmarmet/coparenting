@@ -12,10 +12,11 @@ import StringManager from '/src/managers/stringManager.coffee'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import DB_UserScoped from '../../../database/db_userScoped'
 import InputTypes from '../../../constants/inputTypes'
+import Spacer from '../../shared/spacer'
 
-function General() {
+function General({activeChild}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, activeInfoChild} = state
+  const {currentUser, theme} = state
   const [generalValues, setGeneralValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
 
@@ -29,8 +30,8 @@ function General() {
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
       await setSelectedChild()
     } else {
-      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'general', StringManager.formatDbProp(prop))
-      setState({...state, activeInfoChild: updatedChild})
+      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'general', StringManager.formatDbProp(prop))
+      setState({...state, activeChild: updatedChild})
       await setSelectedChild()
     }
   }
@@ -43,14 +44,18 @@ function General() {
         sharedValues.push([obj.prop, obj.value, obj.sharedByName])
       }
     }
-    if (Manager.isValid(activeInfoChild?.general)) {
+    if (Manager.isValid(activeChild?.general)) {
       // Set info
-      let values = Object.entries(activeInfoChild?.general)
+      let values = Object.entries(activeChild?.general)
 
       if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
-      setGeneralValues(values)
+      if (values[0][1].length === 0) {
+        setGeneralValues([])
+      } else {
+        setGeneralValues(values)
+      }
     } else {
       if (sharedValues.length > 0) {
         setGeneralValues(sharedValues)
@@ -61,25 +66,24 @@ function General() {
   }
 
   const update = async (prop, value) => {
-    await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'general', StringManager.formatDbProp(prop), value)
-    setState({...state, successAlertMessage: 'Updated'})
+    await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', StringManager.formatDbProp(prop), value)
   }
 
   useEffect(() => {
     setSelectedChild().then((r) => r)
-  }, [activeInfoChild])
+  }, [activeChild])
 
   return (
-    <div key={activeInfoChild?.id} className="info-section section general form">
+    <div key={activeChild?.id} className="info-section section general form">
       <Accordion className={`${theme} child-info`} expanded={showInputs}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
-          className={!Manager.isValid(activeInfoChild?.general) ? 'disabled header general' : 'header general'}>
+          className={!Manager.isValid(activeChild?.general) ? 'disabled header general' : 'header general'}>
           <PiIdentificationCardFill className={'svg general'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             General
-            {!Manager.isValid(activeInfoChild?.general) ? '- no info' : ''}
-            {Manager.isValid(activeInfoChild?.general) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
+            {!Manager.isValid(generalValues) ? '- no info' : ''}
+            {Manager.isValid(generalValues) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>
@@ -87,31 +91,49 @@ function General() {
             generalValues.map((prop, index) => {
               let infoLabel = StringManager.spaceBetweenWords(prop[0])
               const value = prop[1]
+              const toSkip = ['profilePic']
 
               return (
-                <div key={index} className={`flex input ${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''}`}>
-                  {!Manager.contains(prop[0], 'profilePic') && (
+                <div key={index} className={`${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''}`}>
+                  {!toSkip.includes(prop[0]) && (
                     <>
                       {Manager.contains(infoLabel.toLowerCase(), 'address') && (
-                        <InputWrapper
-                          inputType={'location'}
-                          defaultValue={value}
-                          labelText={`Home Address`}
-                          onChange={(address) => update('address', address)}
-                        />
+                        <>
+                          <div className="flex input">
+                            <InputWrapper
+                              hasBottomSpacer={false}
+                              inputType={InputTypes.address}
+                              defaultValue={value}
+                              labelText={`Home Address`}
+                              onChange={(address) => update('address', address)}
+                            />
+                            {infoLabel.toLowerCase() !== 'name' && (
+                              <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                            )}
+                          </div>
+                          <Spacer height={5} />
+                        </>
                       )}
                       {!Manager.contains(infoLabel.toLowerCase(), 'address') && (
-                        <InputWrapper
-                          inputType={InputTypes.text}
-                          labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
-                          defaultValue={value}
-                          onChange={async (e) => {
-                            const inputValue = e.target.value
-                            await update(infoLabel, inputValue)
-                          }}
-                        />
+                        <>
+                          <div className="flex input">
+                            <InputWrapper
+                              hasBottomSpacer={false}
+                              inputType={InputTypes.text}
+                              labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
+                              defaultValue={value}
+                              onChange={async (e) => {
+                                const inputValue = e.target.value
+                                await update(infoLabel, inputValue)
+                              }}
+                            />
+                            {infoLabel.toLowerCase() !== 'name' && (
+                              <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                            )}
+                          </div>
+                          <Spacer height={5} />
+                        </>
                       )}
-                      {infoLabel.toLowerCase() !== 'name' && <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />}
                     </>
                   )}
                 </div>

@@ -133,7 +133,7 @@ const Chats = () => {
           </AccordionDetails>
         </Accordion>
         <Spacer height={8} />
-        <Fade direction={'up'} duration={800} triggerOnce={true} className={'chats-fade-wrapper'}>
+        <Fade direction={'right'} damping={0.2} duration={800} triggerOnce={true} cascade={true}>
           <></>
           {/* CHAT ROWS */}
           {chats.length > 0 &&

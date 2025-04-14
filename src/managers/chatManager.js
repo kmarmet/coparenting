@@ -49,7 +49,10 @@ const ChatManager = {
         .then((result) => {
           resolve(result.json())
         })
-        .catch((error) => reject(error))
+        .catch((error) => {
+          console.log(error.message)
+          reject(error)
+        })
     }),
   getTone: (message) =>
     new Promise((resolve, reject) => {

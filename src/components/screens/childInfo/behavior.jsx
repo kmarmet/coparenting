@@ -13,17 +13,18 @@ import StringManager from '../../../managers/stringManager'
 import {FaBrain, FaMinus, FaPlus} from 'react-icons/fa6'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
+import Spacer from '../../shared/spacer'
 
-export default function Behavior() {
+export default function Behavior({activeChild}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, activeInfoChild} = state
+  const {currentUser, theme} = state
   const [behaviorValues, setBehaviorValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
 
   const deleteProp = async (prop) => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
 
-    const existingPropCount = Object.keys(activeInfoChild?.behavior).length
+    const existingPropCount = Object.keys(activeChild?.behavior).length
 
     if (existingPropCount <= 1) {
       const accordion = document.querySelector('.behavior.info-section')
@@ -40,15 +41,15 @@ export default function Behavior() {
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
       await setSelectedChild()
     } else {
-      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'behavior', StringManager.formatDbProp(prop))
+      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'behavior', StringManager.formatDbProp(prop))
       await setSelectedChild()
-      setState({...state, activeInfoChild: updatedChild})
+      setState({...state, activeChild: updatedChild})
     }
   }
 
   const update = async (prop, value) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'behavior', StringManager.formatDbProp(prop), value)
-    setState({...state, activeInfoChild: updatedChild})
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'behavior', StringManager.formatDbProp(prop), value)
+    setState({...state, activeChild: updatedChild})
     AlertManager.successAlert('Updated!')
   }
 
@@ -58,14 +59,18 @@ export default function Behavior() {
     for (let obj of sharing) {
       sharedValues.push([obj.prop, obj.value, obj.sharedByName])
     }
-    if (Manager.isValid(activeInfoChild.behavior)) {
+    if (Manager.isValid(activeChild.behavior)) {
       // Set info
-      let values = Object.entries(activeInfoChild.behavior)
+      let values = Object.entries(activeChild.behavior)
 
       if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
-      setBehaviorValues(values)
+      if (values[0][1].length === 0) {
+        setBehaviorValues([])
+      } else {
+        setBehaviorValues(values)
+      }
     } else {
       if (sharedValues.length > 0) {
         setBehaviorValues(sharedValues)
@@ -77,18 +82,18 @@ export default function Behavior() {
 
   useEffect(() => {
     setSelectedChild().then((r) => r)
-  }, [activeInfoChild])
+  }, [activeChild])
 
   return (
     <div className="info-section section behavior">
-      <Accordion className={`${theme} child-info`} disabled={!Manager.isValid(activeInfoChild?.behavior)}>
+      <Accordion className={`${theme} child-info`} disabled={!Manager.isValid(activeChild?.behavior)}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
-          className={!Manager.isValid(activeInfoChild.behavior) ? 'disabled header behavior' : 'header behavior'}>
+          className={!Manager.isValid(activeChild.behavior) ? 'disabled header behavior' : 'header behavior'}>
           <FaBrain className={'svg behavior'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
-            Behavior {!Manager.isValid(activeInfoChild.behavior) ? '- no info' : ''}
-            {Manager.isValid(activeInfoChild?.behavior) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
+            Behavior {!Manager.isValid(behaviorValues) ? '- no info' : ''}
+            {Manager.isValid(behaviorValues) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>
@@ -101,24 +106,35 @@ export default function Behavior() {
                 <div key={index}>
                   <div className="flex input">
                     {infoLabel.toLowerCase().includes('phone') && (
-                      <a href={`tel:${StringManager.formatPhone(value).toString()}`}>
-                        {infoLabel}: {value}
-                      </a>
+                      <>
+                        <div className="flex input">
+                          <a href={`tel:${StringManager.formatPhone(value).toString()}`}>
+                            {infoLabel}: {value}
+                          </a>
+                        </div>
+                        <Spacer height={5} />
+                        <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                      </>
                     )}
                     {!infoLabel.toLowerCase().includes('phone') && (
-                      <InputWrapper
-                        customDebounceDelay={1200}
-                        isDebounced={true}
-                        inputType={InputTypes.text}
-                        defaultValue={value}
-                        labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
-                        onChange={async (e) => {
-                          const inputValue = e.target.value
-                          await update(infoLabel, `${inputValue}`)
-                        }}
-                      />
+                      <>
+                        <div className="flex input">
+                          <InputWrapper
+                            customDebounceDelay={1200}
+                            isDebounced={true}
+                            inputType={InputTypes.text}
+                            defaultValue={value}
+                            labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
+                            onChange={async (e) => {
+                              const inputValue = e.target.value
+                              await update(infoLabel, `${inputValue}`)
+                            }}
+                          />
+                          <Spacer height={5} />
+                        </div>
+                        <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                      </>
                     )}
-                    <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
                   </div>
                 </div>
               )

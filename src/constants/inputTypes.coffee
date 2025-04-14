@@ -6,6 +6,7 @@ InputTypes = {
   email: 'email',
   password: 'password',
   date: 'date',
+  dateRange: 'date-range'
   time: 'time'
   address: 'address'
   textarea: 'textarea'

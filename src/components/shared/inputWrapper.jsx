@@ -3,7 +3,7 @@ import React, {useContext} from 'react'
 import {DebounceInput} from 'react-debounce-input'
 import globalState from '../../context.js'
 import Manager from '../../managers/manager'
-import {MobileDatePicker, MobileTimePicker} from '@mui/x-date-pickers-pro'
+import {MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
 import Label from './label'
 import InputTypes from '../../constants/inputTypes'
 import moment from 'moment'
@@ -19,8 +19,11 @@ function InputWrapper({
   onChange,
   defaultValue = null,
   inputClasses = '',
+  hasBottomSpacer = true,
+  onKeyUp = (e) => {},
   onDateOrTimeSelection = (e) => {},
   isDebounced = true,
+  placeholder = '',
 }) {
   const {state, setState} = useContext(globalState)
   const {refreshKey, theme} = state
@@ -47,7 +50,7 @@ function InputWrapper({
         {inputType === InputTypes.text && (
           <DebounceInput
             value={Manager.isValid(defaultValue) ? defaultValue : ''}
-            placeholder={labelText}
+            placeholder={placeholder}
             className={`${inputClasses}`}
             onChange={onChange}
             debounceTimeout={isDebounced ? 1000 : 0}
@@ -85,6 +88,18 @@ function InputWrapper({
             key={refreshKey}
             format={DatetimeFormats.readableMonthAndDay}
             onAccept={onDateOrTimeSelection}
+          />
+        )}
+
+        {/* DATE RANGE */}
+        {inputType === InputTypes.dateRange && (
+          <MobileDateRangePicker
+            onAccept={onDateOrTimeSelection}
+            defaultValue={Manager.isValid(defaultValue) ? moment(defaultValue) : null}
+            slots={{field: SingleInputDateRangeField}}
+            key={refreshKey}
+            label={labelText}
+            name="allowedRange"
           />
         )}
 
@@ -154,17 +169,18 @@ function InputWrapper({
         {inputType === InputTypes.textarea && (
           <textarea
             id="textarea"
-            placeholder={labelText}
+            placeholder={placeholder}
             onChange={(e) => {
               onChange(e)
             }}
+            onKeyUp={onKeyUp}
             className={inputClasses}
             defaultValue={defaultValue}
             key={refreshKey}
           />
         )}
       </div>
-      <Spacer height={5} />
+      {hasBottomSpacer && <Spacer height={5} />}
     </>
   )
 }

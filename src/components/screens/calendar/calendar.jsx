@@ -70,6 +70,7 @@ export default function EventCalendar() {
 
     // Set events of day
     _eventsOfDay = securedEvents.filter((x) => x.startDate === moment(dateToUse).format(DatetimeFormats.dateForDb))
+    _eventsOfDay = DateManager.sortCalendarEvents(_eventsOfDay, 'startTime', 'asc')
 
     // Set Holidays
     const holidaysToLoop = holidays.filter(
@@ -384,6 +385,7 @@ export default function EventCalendar() {
           onClose={viewAllEvents}
           showCard={showHolidaysCard}
           title={'View Holidays ✨'}>
+          <Spacer height={10} />
           <div id="holiday-card-buttons">
             <button className="default button green" id="view-all-holidays-item" onClick={showAllHolidays}>
               All

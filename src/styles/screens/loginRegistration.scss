@@ -259,7 +259,6 @@
 
     .eye-icon {
       position: relative;
-      top: 5px;
       @include hover;
     }
 
@@ -357,9 +356,6 @@
         }
         .inputs {
           align-items: center;
-          svg {
-            align-self: stretch;
-          }
         }
       }
 

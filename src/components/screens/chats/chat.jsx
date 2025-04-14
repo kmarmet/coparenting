@@ -17,7 +17,6 @@ import {Fade} from 'react-awesome-reveal'
 import Modal from '/src/components/shared/modal'
 import {TbMessageCircleSearch} from 'react-icons/tb'
 import {BsBookmarkPlus, BsFillBookmarksFill, BsFillBookmarkStarFill} from 'react-icons/bs'
-import {DebounceInput} from 'react-debounce-input'
 import {useLongPress} from 'use-long-press'
 import ObjectManager from '/src/managers/objectManager'
 import AlertManager from '/src/managers/alertManager'
@@ -27,6 +26,9 @@ import ActivityCategory from '/src/models/activityCategory'
 import ChatThread from '/src/models/chat/chatThread'
 import StringManager from '/src/managers/stringManager.coffee'
 import DatetimeFormats from '../../../constants/datetimeFormats'
+import AppManager from '../../../managers/appManager'
+import DateManager from '../../../managers/dateManager'
+import InputTypes from '../../../constants/inputTypes'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
@@ -43,6 +45,7 @@ const Chats = () => {
   const [toneObject, setToneObject] = useState()
   const [inSearchMode, setInSearchMode] = useState(false)
   const [inputIsActive, setInputIsActive] = useState()
+  const [messageTimezone, setMessageTimezone] = useState(false)
 
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)
@@ -50,7 +53,6 @@ const Chats = () => {
   })
 
   const toggleMessageBookmark = async (messageObject) => {
-    console.log('here')
     await ChatManager.toggleMessageBookmark(currentUser, messageRecipient, messageObject.id, existingChat?.id).finally(async () => {
       await getExistingMessages()
     })
@@ -70,6 +72,12 @@ const Chats = () => {
     if (!Manager.isValid(messageText, true) || messageText.length === 1) {
       AlertManager.throwError('Please enter a message longer than one character')
       return false
+    }
+
+    // Clear input field
+    const input = document.querySelector('.message-input')
+    if (input) {
+      input.value = ''
     }
 
     // Close Keyboard -> hide message input
@@ -105,12 +113,13 @@ const Chats = () => {
 
     // Message
     chatMessage.senderKey = currentUser?.key
+    chatMessage.senderTimezone = messageTimezone
     chatMessage.id = Manager.getUid()
     chatMessage.timestamp = moment().format(DatetimeFormats.fullDatetime)
     chatMessage.sender = currentUser?.name
     chatMessage.recipient = messageRecipient.name
     chatMessage.recipientKey = messageRecipient.key
-    chatMessage.message = StringManager.capitalizeFirstWord(messageText)
+    chatMessage.message = messageText
     chatMessage.notificationSent = false
 
     const cleanMessage = ObjectManager.cleanObject(chatMessage, ModelNames.chatMessage)
@@ -133,7 +142,7 @@ const Chats = () => {
     if (!existingChat?.isPausedFor?.includes(messageRecipient?.key)) {
       NotificationManager.sendNotification(
         'New Message 🗯️',
-        `You have an unread conversation message from ${StringManager.getFirstNameOnly(StringManager.uppercaseFirstLetterOfAllWords(currentUser.name))}`,
+        `You have an unread message from ${StringManager.getFirstNameOnly(currentUser.name)}`,
         messageRecipient?.key,
         currentUser,
         ActivityCategory.chats
@@ -207,23 +216,22 @@ const Chats = () => {
   }
 
   const handleMessageTyping = () => {
-    const messageInput = document.querySelector('.message-input')
-    const valueLength = messageInput.value?.trim().length
-    const text = messageInput.value
-    if (messageInput && messageInput.value.trim().length > 0) {
-      setTone(text).then((r) => r)
-    } else {
-      setToneObject(null)
-      hideKeyboard()
-    }
-    if (valueLength > 0) {
-      setMessageText(messageInput.value)
+    if (StringManager.wordCount(messageText) % 2 === 0) {
+      setTone(messageText).then((r) => r)
     }
   }
 
   const setTone = async (text) => {
     const toneAndSentiment = await ChatManager.getToneAndSentiment(text)
     setToneObject(toneAndSentiment)
+  }
+
+  const defineMessageTimezone = async () => {
+    let timezone = currentUser?.location?.timezone
+    if (!Manager.isValid(timezone, true)) {
+      timezone = await AppManager.getTimezone()
+    }
+    setMessageTimezone(timezone)
   }
 
   // ON PAGE LOAD
@@ -250,14 +258,17 @@ const Chats = () => {
         setInputIsActive(false)
       })
     }
+    defineMessageTimezone().then((r) => r)
   }, [])
 
   // UNSET DYNAMIC INPUT HEIGHT
   useEffect(() => {
-    if (messageText.length === 1) {
+    if (messageText.length === 1 || messageText.length === 0) {
       const input = document.querySelector('.message-input')
-      input.style.height = 'unset'
+      input.style.height = '40px'
       DomManager.unsetHeight(input)
+      setToneObject(null)
+      hideKeyboard()
     }
   }, [messageText.length])
 
@@ -416,27 +427,30 @@ const Chats = () => {
               {Manager.isValid(messagesToLoop) &&
                 messagesToLoop.map((message, index) => {
                   // Determine bookmark class
-                  let isBookmarked = false
-                  if (bookmarks?.filter((x) => x.id === message.id).length > 0) {
-                    isBookmarked = true
-                  }
-                  let timestamp = moment(message.timestamp, DatetimeFormats.fullDatetime).format('ddd, MMMM Do (h:mma)')
+                  let isBookmarked = Manager.isValid(bookmarks?.find((x) => x.id === message?.id))
+                  const timestampDateOnly = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.dateForDb)
+                  const timestampTimeOnly = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.timeForDb)
+                  let convertedTime = DateManager.convertTime(timestampTimeOnly, message?.senderTimezone, currentUser?.location?.timezone)
+                  let convertedTimestamp = moment(`${timestampDateOnly} ${convertedTime}`, DatetimeFormats.fullDatetime)
+                    .tz(currentUser?.location?.timezone)
+                    .format('ddd, MMMM Do (h:mma)')
+
                   // Message Sent Today
-                  if (moment(message.timestamp, DatetimeFormats.fullDatetime).isSame(moment(), 'day')) {
-                    timestamp = moment(message.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.timeForDb)
+                  if (moment(message?.timestamp, DatetimeFormats.fullDatetime).isSame(moment(), 'day')) {
+                    convertedTimestamp = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.timeForDb)
                   }
                   return (
                     <div key={index} className={'message-fade-wrapper'}>
                       <div className="flex">
-                        <p {...bind()} className={message.senderKey === currentUser?.key ? 'from message' : 'to message'}>
-                          {message.message}
+                        <p {...bind()} className={message?.senderKey === currentUser?.key ? 'from message' : 'to message'}>
+                          {message?.message}
                         </p>
                         {isBookmarked && <BsFillBookmarkStarFill className={'active'} onClick={() => toggleMessageBookmark(message)} />}
                         {!isBookmarked && (
                           <BsBookmarkPlus className={isBookmarked ? 'active' : ''} onClick={() => toggleMessageBookmark(message, false)} />
                         )}
                       </div>
-                      <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{timestamp}</span>
+                      <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{convertedTimestamp}</span>
                     </div>
                   )
                 })}
@@ -451,23 +465,34 @@ const Chats = () => {
                 <span className="icon">{toneObject?.icon}</span>
                 <span className="tone">{StringManager.uppercaseFirstLetterOfAllWords(toneObject?.tone)}</span>
               </div>
-              {/* MESSAGE INPUT */}
+              {/* MESSAGE INPUT & SEND BUTTON */}
               <div className={`${inputIsActive ? 'active' : ''} message-input-wrapper`}>
                 <div className={'flex'} id="message-input-container">
-                  {/* INPUT / SEND BUTTON */}
-                  <DebounceInput
-                    element={'textarea'}
-                    minLength={1}
+                  <InputWrapper
                     placeholder={'Message...'}
-                    className={`message-input`}
+                    inputType={InputTypes.textarea}
+                    isDebounced={false}
+                    inputClasses="message-input"
+                    hasBottomSpacer={false}
+                    wrapperClasses="chat-input-wrapper"
+                    defaultValue={messageText}
+                    onKeyUp={(e) => {
+                      // Backspace
+                      if (e.keyCode === 8) {
+                        DomManager.autoExpandingHeight(e)
+
+                        if (e.target.value === '') {
+                          setMessageText('')
+                        }
+                      }
+                    }}
                     onChange={(e) => {
-                      handleMessageTyping(e)
                       if (e.target.value.length > 1) {
+                        handleMessageTyping(e)
+                        setMessageText(e.target.value)
                         DomManager.autoExpandingHeight(e)
                       }
                     }}
-                    value={messageText}
-                    rows={'1'}
                   />
                   <IoSend className={toneObject?.color} onClick={sendMessage} id="send-button" />
                 </div>

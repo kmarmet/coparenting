@@ -1,6 +1,5 @@
 // Path: src\components\screens\coparents\coparents.jsx
-import {getDatabase, onValue, ref} from 'firebase/database'
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useState} from 'react'
 import globalState from '../../../context'
 import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
@@ -29,68 +28,47 @@ export default function Coparents() {
   const {currentUser, theme} = state
 
   // State
-  const [userCoparents, setUserCoparents] = useState([])
   const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
   const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
-  const [selectedCoparent, setSelectedCoparent] = useState()
+  const [activeCoparent, setActiveCoparent] = useState(currentUser?.coparents[0])
   const [showInvitationForm, setShowInvitationForm] = useState(false)
   const [invitedCoparentName, setInvitedCoparentName] = useState('')
   const [invitedCoparentEmail, setInvitedCoparentEmail] = useState('')
 
   const deleteProp = async (prop) => {
-    await DB_UserScoped.deleteCoparentInfoProp(currentUser, StringManager.formatDbProp(prop), selectedCoparent)
-  }
-
-  const getCoparent = async () => {
-    return await DB.getTable(`${DB.tables.users}/${currentUser.key}/coparents`)
+    const updatedCoparent = await DB_UserScoped.deleteCoparentInfoProp(currentUser, StringManager.formatDbProp(prop), activeCoparent)
+    setActiveCoparent(updatedCoparent)
   }
 
   const update = async (prop, value) => {
-    await DB_UserScoped.updateCoparent(currentUser, selectedCoparent, StringManager.formatDbProp(prop), value).finally(() => {
-      setState({...state, successAlertMessage: 'Updated'})
-    })
+    const updatedCoparent = await DB_UserScoped.updateCoparent(currentUser, activeCoparent, StringManager.formatDbProp(prop), value)
+    setActiveCoparent(updatedCoparent)
+
+    setState({...state, successAlertMessage: 'Updated'})
   }
 
   const deleteCoparent = async () => {
-    const coparent = await getCoparent()
-    await DB_UserScoped.deleteCoparent(currentUser, coparent)
+    await DB_UserScoped.deleteCoparent(currentUser, activeCoparent)
   }
 
-  const onTableChange = async () => {
-    if (currentUser) {
-      const dbRef = getDatabase()
-      const userRef = ref(dbRef, `${DB.tables.users}/${currentUser?.key}/coparents`)
-      onValue(userRef, async (coparents) => {
-        const activeCoparentKey = selectedCoparent?.key
-        const updatedCoparents = coparents.val()
-        console.log(activeCoparentKey)
-        if (Manager.isValid(updatedCoparents)) {
-          if (Manager.isValid(activeCoparentKey)) {
-            const updatedCoparent = updatedCoparents.find((x) => x.key === activeCoparentKey)
-            setSelectedCoparent(updatedCoparent)
-          } else {
-            setSelectedCoparent(updatedCoparents[0])
-          }
-        }
-        setUserCoparents(updatedCoparents)
-      })
+  const setActiveCoparentData = async (coparent) => {
+    const coparentKey = coparent?.key
+    if (Manager.isValid(coparentKey)) {
+      const updatedCoparents = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/coparents`)
+      const updatedCoparent = updatedCoparents.find((x) => x.key === coparentKey)
+      setActiveCoparent(updatedCoparent)
     }
   }
-
-  useEffect(() => {
-    if (selectedCoparent) {
-      console.log(selectedCoparent.key)
-    }
-  }, [selectedCoparent?.key])
-
-  useEffect(() => {
-    onTableChange().then((r) => r)
-  }, [])
 
   return (
     <>
       {/* CUSTOM INFO FORM */}
-      <CustomCoparentInfo hideCard={() => setShowCustomInfoCard(false)} activeCoparent={selectedCoparent} showCard={showCustomInfoCard} />
+      <CustomCoparentInfo
+        hideCard={() => setShowCustomInfoCard(false)}
+        onAdd={(coparent) => setActiveCoparentData(coparent)}
+        activeCoparent={activeCoparent}
+        showCard={showCustomInfoCard}
+      />
 
       {/* NEW COPARENT FORM */}
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
@@ -129,7 +107,7 @@ export default function Coparents() {
             </div>
             <p>
               Add your Own Info
-              <span className="subtitle">Include personalized details about {selectedCoparent?.name}</span>
+              <span className="subtitle">Include personalized details about {activeCoparent?.name}</span>
             </p>
           </div>
         </div>
@@ -139,10 +117,10 @@ export default function Coparents() {
           className="action-item"
           onClick={() => {
             setState({...state, showScreenActions: false})
-            AlertManager.confirmAlert(`Are you sure you would like to remove ${selectedCoparent?.name}`, "I'm Sure", true, async () => {
+            AlertManager.confirmAlert(`Are you sure you would like to remove ${activeCoparent?.name}`, "I'm Sure", true, async () => {
               await deleteCoparent()
               AlertManager.successAlert('Co-Parent Removed')
-              setSelectedCoparent(null)
+              setActiveCoparent(null)
             })
           }}>
           <div className="content">
@@ -151,8 +129,8 @@ export default function Coparents() {
             </div>
 
             <p>
-              Unlink {selectedCoparent?.name} from Your Profile
-              <span className="subtitle">Remove all information about {selectedCoparent?.name} from your profile</span>
+              Unlink {activeCoparent?.name} from Your Profile
+              <span className="subtitle">Remove all information about {activeCoparent?.name} from your profile</span>
             </p>
           </div>
         </div>
@@ -211,7 +189,7 @@ export default function Coparents() {
       </Modal>
 
       {/* COPARENTS CONTAINER */}
-      <div id="coparents-container" className={`${theme} page-container coparents-wrapper form`}>
+      <div id="coparents-container" className={`${theme} page-container coparents-wrapper`}>
         <Fade direction={'up'} duration={1000} className={'coparents-fade-wrapper'} triggerOnce={true}>
           <></>
           <div className="flex" id="screen-title-wrapper">
@@ -221,12 +199,12 @@ export default function Coparents() {
 
           {/* COPARENT ICONS CONTAINER */}
           <div id="coparent-container">
-            {Manager.isValid(userCoparents) &&
-              userCoparents.map((coparent, index) => {
-                const coparentKey = selectedCoparent?.key
+            {Manager.isValid(currentUser?.coparents) &&
+              currentUser?.coparents.map((coparent, index) => {
+                const coparentKey = activeCoparent?.key
                 return (
                   <div
-                    onClick={() => setSelectedCoparent(coparent)}
+                    onClick={() => setActiveCoparentData(coparent)}
                     className={coparentKey && coparentKey === coparent.key ? 'active coparent' : 'coparent'}
                     data-name={coparent.name}
                     data-key={coparent?.key}
@@ -241,58 +219,54 @@ export default function Coparents() {
 
           {/* COPARENT INFO */}
           <div id="coparent-info">
-            <p id="coparent-name-primary">{StringManager.getFirstNameOnly(selectedCoparent?.name)}</p>
-            <p id="coparent-type-primary"> {selectedCoparent?.parentType}</p>
-            <div className="form">
-              <Fade direction={'right'} className={'coparents-info-fade-wrapper'} duration={800} damping={0.08} triggerOnce={false} cascade={true}>
-                <></>
-                {/* ITERATE COPARENT INFO */}
-                {Manager.isValid(selectedCoparent) &&
-                  Object.entries(selectedCoparent).map((propArray, index) => {
-                    let infoLabel = propArray[0]
-                    infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
-                    infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
-                    infoLabel = StringManager.formatTitle(infoLabel, true)
-                    const value = propArray[1]
-                    const inputsToSkip = ['address', 'key']
-                    return (
-                      <div key={index}>
-                        {infoLabel !== 'Id' && (
-                          <div className="row">
-                            <div className="flex input">
-                              {/* LOCATION */}
-                              {infoLabel.toLowerCase().includes('address') && (
-                                <InputWrapper
-                                  defaultValue={value}
-                                  inputType={InputTypes.address}
-                                  labelText={'Home Address'}
-                                  onChange={(address) => update('address', address)}
-                                />
-                              )}
+            <p id="coparent-name-primary">{StringManager.getFirstNameOnly(activeCoparent?.name)}</p>
+            <p id="coparent-type-primary"> {activeCoparent?.parentType}</p>
+            <Fade direction={'right'} className={'coparents-info-fade-wrapper'} duration={800} damping={0.08} triggerOnce={false} cascade={true}>
+              <></>
+              {/* ITERATE COPARENT INFO */}
+              {Manager.isValid(activeCoparent) &&
+                Object.entries(activeCoparent).map((propArray, index) => {
+                  let infoLabel = propArray[0]
+                  infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
+                  infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
+                  infoLabel = StringManager.formatTitle(infoLabel, true)
+                  const value = propArray[1]
+                  const inputsToSkip = ['address', 'key', 'id']
+                  return (
+                    <div key={index}>
+                      {/* LOCATION */}
+                      {infoLabel.toLowerCase().includes('address') && (
+                        <InputWrapper
+                          defaultValue={value}
+                          inputType={InputTypes.address}
+                          labelText={'Home Address'}
+                          onChange={async (address) => await update('address', address)}
+                        />
+                      )}
 
-                              {/* TEXT INPUT */}
-                              {!inputsToSkip.includes(infoLabel.toLowerCase()) && (
-                                <>
-                                  <InputWrapper
-                                    defaultValue={value}
-                                    onChange={async (e) => {
-                                      const inputValue = e.target.value
-                                      await update(infoLabel, `${inputValue}`)
-                                    }}
-                                    inputType={InputTypes.text}
-                                    labelText={StringManager.addSpaceBetweenWords(infoLabel)}
-                                  />
-                                  <PiTrashSimpleDuotone className="delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
-                                </>
-                              )}
-                            </div>
+                      {/* TEXT INPUT */}
+                      {!inputsToSkip.includes(infoLabel.toLowerCase()) && (
+                        <>
+                          <div className="flex input">
+                            <InputWrapper
+                              hasBottomSpacer={false}
+                              defaultValue={value}
+                              onChange={async (e) => {
+                                const inputValue = e.target.value
+                                await update(infoLabel, `${inputValue}`)
+                              }}
+                              inputType={InputTypes.text}
+                              labelText={StringManager.addSpaceBetweenWords(infoLabel)}
+                            />
+                            <PiTrashSimpleDuotone className="delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
                           </div>
-                        )}
-                      </div>
-                    )
-                  })}
-              </Fade>
-            </div>
+                          <Spacer height={5} />
+                        </>
+                      )}
+                    </div>
+                  )
+                })}
+            </Fade>
           </div>
         </Fade>
       </div>

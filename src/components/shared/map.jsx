@@ -4,7 +4,6 @@ import React, {useCallback, useContext, useEffect, useState} from 'react'
 import {fromAddress, setKey} from 'react-geocode'
 import globalState from '../../context.js'
 import Manager from '../../managers/manager.js'
-import LocationManager from '../../managers/locationManager.js'
 
 export default function Map({locationString}) {
   const {state, setState} = useContext(globalState)
@@ -29,6 +28,7 @@ export default function Map({locationString}) {
   })
 
   const onLoad = (map) => {
+    retrySetMapCenter()
     setMap(map)
   }
 
@@ -50,20 +50,8 @@ export default function Map({locationString}) {
   }
 
   useEffect(() => {
-    if (Manager.isValid(locationString, true)) {
-      LocationManager.getCoordsFromLocation(locationString)
-        .then(({results}) => {
-          const location = results[0].geometry.location
-          setMapCenter({
-            lat: location.lat,
-            lng: location.lng,
-          })
-        })
-        .catch(() => {
-          retrySetMapCenter()
-        })
-    }
-  }, [])
+    retrySetMapCenter()
+  }, [locationString])
 
   // Function executed when a marker is clicked
   const markerClicked = (marker) => {

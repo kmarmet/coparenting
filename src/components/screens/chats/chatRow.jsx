@@ -72,7 +72,6 @@ export default function ChatRow({chat, index}) {
       <div className={`flex thread-item wrap`}>
         {/* COPARENT NAME */}
         <div className="flex">
-          {/*{hasIcon && <PiChatCircleTextDuotone className={'chat-bubble'} />}*/}
           <div className="column left">
             <p data-coparent-phone={chat?.member?.phone} className="coparent-name">
               {StringManager.getFirstNameOnly(chat?.member?.name)}

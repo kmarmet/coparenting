@@ -552,8 +552,12 @@
       }
     }
 
+    #upload-image-input {
+      opacity: 0 !important;
+    }
+
     .subtitle-text {
-      color: $subtitleText;
+      color: $darkGrey;
     }
 
     .bottom-menu-wrapper {

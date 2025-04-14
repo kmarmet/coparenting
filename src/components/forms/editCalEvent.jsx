@@ -19,7 +19,6 @@ import DB from '/src/database/DB'
 import DB_UserScoped from '/src/database/db_userScoped'
 import AlertManager from '/src/managers/alertManager'
 import CalendarManager from '/src/managers/calendarManager.js'
-import DateManager from '/src/managers/dateManager'
 import Manager from '/src/managers/manager'
 import NotificationManager from '/src/managers/notificationManager'
 import ObjectManager from '/src/managers/objectManager'
@@ -422,7 +421,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const setLocalConfirmMessage = () => {
     let message = 'Are you sure you want to delete this event?'
 
-    if (event?.isRecurring || event?.isCloned) {
+    if (event?.isRecurring || event?.isCloned || event?.isDateRange) {
       message = 'Are you sure you would like to delete ALL events with these details?'
     }
 
@@ -494,16 +493,18 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               <Fade direction={'up'} duration={800} triggerOnce={true}>
                 <div className="blocks">
                   {/*  Date */}
-                  {!event?.isDateRange && (
-                    <DetailBlock
-                      valueToValidate={event?.startDate}
-                      text={moment(event?.startDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                      title={'Date'}
-                    />
-                  )}
+                  <DetailBlock
+                    valueToValidate={event?.startDate}
+                    text={moment(event?.startDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                    title={event?.isDateRange ? 'Start Date' : 'Date'}
+                  />
 
                   {/*  End Date */}
-                  <DetailBlock valueToValidate={event?.endDate} text={event?.endDate} title={'End Date'} />
+                  <DetailBlock
+                    valueToValidate={event?.endDate}
+                    text={moment(event?.endDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                    title={'End Date'}
+                  />
 
                   {/*  Start Time */}
                   <DetailBlock
@@ -580,16 +581,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   <DetailBlock valueToValidate={event?.location} isNavLink={true} text={event?.location} linkUrl={event?.location} title={'Go'} />
                 </div>
 
-                {event?.isDateRange && DateManager.isValidDate(event?.endDate) && (
-                  <div className="flex">
-                    <b>Dates</b>
-                    <span>
-                      {moment(event?.startDate).format(DatetimeFormats.readableMonthAndDay)}&nbsp;to&nbsp;
-                      {moment(event?.endDate).format(DatetimeFormats.readableMonthAndDay)}
-                    </span>
-                  </div>
-                )}
-
                 {/* Recurring Frequency */}
                 {event?.isRecurring && (
                   <div className="flex">
@@ -626,21 +617,18 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
               {/* DATE */}
               {!eventIsDateRange && (
-                <div className="flex" id={'date-input-container'}>
-                  <InputWrapper
-                    labelText={'Date'}
-                    uidClass="event-from-date"
-                    required={true}
-                    inputType={InputTypes.date}
-                    onDateOrTimeSelection={(date) => setEventStartDate(date)}
-                    defaultValue={DateManager.dateOrNull(moment(dateToEdit))}
-                  />
-                </div>
+                <InputWrapper
+                  labelText={'Date'}
+                  required={true}
+                  inputType={InputTypes.date}
+                  onDateOrTimeSelection={(date) => setEventStartDate(date)}
+                  defaultValue={dateToEdit}
+                />
               )}
 
               {/* EVENT START/END TIME */}
               {!eventIsDateRange && (
-                <div className="flex gap time-inputs-wrapper">
+                <>
                   {/* START TIME */}
                   <InputWrapper
                     wrapperClasses="start-time"
@@ -662,7 +650,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                     inputType={InputTypes.time}
                     onDateOrTimeSelection={(e) => setEventEndTime(e)}
                   />
-                </div>
+                </>
               )}
 
               <Spacer height={5} />

@@ -147,24 +147,22 @@ export default function NewTransferChangeRequest() {
         <div id="transfer-change-container" className={`${theme} form`}>
           <Spacer height={5} />
           <div className="form transfer-change">
-            <div className="flex gap">
-              {/* DAY */}
-              <InputWrapper
-                inputType={InputTypes.date}
-                uidClass="transfer-request-date"
-                labelText={'Day'}
-                required={true}
-                onDateOrTimeSelection={(e) => setRequestDate(moment(e).format(DatetimeFormats.dateForDb))}
-              />
+            {/* DAY */}
+            <InputWrapper
+              inputType={InputTypes.date}
+              uidClass="transfer-request-date"
+              labelText={'Day'}
+              required={true}
+              onDateOrTimeSelection={(e) => setRequestDate(moment(e).format(DatetimeFormats.dateForDb))}
+            />
 
-              {/* TIME */}
-              <InputWrapper
-                inputType={InputTypes.time}
-                labelText={'New Time'}
-                uidClass="transfer-request-time"
-                onDateOrTimeSelection={(e) => setRequestTime(moment(e).format(DatetimeFormats.timeForDb))}
-              />
-            </div>
+            {/* TIME */}
+            <InputWrapper
+              inputType={InputTypes.time}
+              labelText={'New Time'}
+              uidClass="transfer-request-time"
+              onDateOrTimeSelection={(e) => setRequestTime(moment(e).format(DatetimeFormats.timeForDb))}
+            />
 
             {/* RESPONSE DUE DATE */}
             <InputWrapper

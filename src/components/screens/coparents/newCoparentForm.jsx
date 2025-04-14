@@ -10,12 +10,12 @@ import AlertManager from '/src/managers/alertManager'
 import validator from 'validator'
 import StringManager from '../../../managers/stringManager'
 import Spacer from '../../shared/spacer'
-import AddressInput from '../../shared/addressInput'
 import DB from '../../../database/DB'
 import ModelNames from '../../../models/modelNames'
 import ObjectManager from '../../../managers/objectManager'
 import ViewSelector from '../../shared/viewSelector'
 import DB_UserScoped from '../../../database/db_userScoped'
+import InputTypes from '../../../constants/inputTypes'
 
 const NewCoparentForm = ({showCard, hideCard}) => {
   const {state, setState} = useContext(globalState)
@@ -119,8 +119,8 @@ const NewCoparentForm = ({showCard, hideCard}) => {
       showCard={showCard}
       viewSelector={
         <ViewSelector
-          defaultView={'New Co-Parent'}
-          labels={['New Co-Parent', 'Co-Parent with Profile']}
+          defaultView={'New'}
+          labels={['New', 'Already Has Existing Account']}
           updateState={(labelText) => {
             if (Manager.contains(labelText, 'New')) {
               setConnectOrNew('new')
@@ -132,27 +132,30 @@ const NewCoparentForm = ({showCard, hideCard}) => {
       }
       onClose={resetForm}>
       <div className="new-coparent-wrapper">
+        <Spacer height={5} />
         <div id="new-coparent-container" className={`${theme} form`}>
           <div className="form new-coparent-form">
             {connectOrNew === 'new' && (
-              <InputWrapper inputType={'input'} required={true} labelText={'Name'} onChange={(e) => setName(e.target.value)} />
+              <InputWrapper inputType={InputTypes.text} required={true} labelText={'Name'} onChange={(e) => setName(e.target.value)} />
             )}
             <InputWrapper
-              inputType={'input'}
+              inputType={InputTypes.email}
               inputValueType="email"
               required={true}
               labelText={'Email Address'}
               onChange={(e) => setEmail(e.target.value)}
             />
             {connectOrNew === 'new' && (
-              <InputWrapper inputType={'location'} labelText={'Home Address'}>
-                <AddressInput
-                  onSelection={(place) => {
-                    setAddress(place)
-                  }}
-                />
-              </InputWrapper>
+              <InputWrapper
+                inputType={InputTypes.address}
+                labelText={'Home Address'}
+                onChange={(place) => {
+                  setAddress(place)
+                }}
+              />
             )}
+
+            <InputWrapper inputType={InputTypes.text} labelText={'Relationship to Me'} onChange={(e) => setRelationshipType(e.target.value)} />
             <Spacer height={5} />
 
             {/* PARENT TYPE */}
@@ -165,18 +168,6 @@ const NewCoparentForm = ({showCard, hideCard}) => {
                 customLabelArray: ['Biological', 'Step-Parent', 'Guardian', 'Other'],
               })}
               onCheck={handleCoparentType}
-            />
-
-            {/* RELATIONSHIP */}
-            <CheckboxGroup
-              parentLabel={'Relationship to Me'}
-              className="relationship-to-me mt-15"
-              skipNameFormatting={true}
-              checkboxArray={Manager.buildCheckboxGroup({
-                currentUser,
-                customLabelArray: ['Spouse', 'Former Spouse', 'Former Partner of Spouse'],
-              })}
-              onCheck={handleRelationshipType}
             />
           </div>
         </div>

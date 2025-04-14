@@ -10,7 +10,6 @@ import {FaMinus, FaPlus} from 'react-icons/fa6'
 import Manager from '../../../managers/manager'
 import InputWrapper from '../../../components/shared/inputWrapper'
 import DatetimeFormats from '../../../constants/datetimeFormats'
-import {MobileDateRangePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
 import AlertManager from '../../../managers/alertManager'
 import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/calendarEvent'
@@ -20,12 +19,12 @@ import MyConfetti from '../../../components/shared/myConfetti'
 import moment from 'moment'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import Spacer from '../../shared/spacer'
+import InputTypes from '../../../constants/inputTypes'
 
 export default function FiftyFifty({hide, showCard}) {
   const {state, setState} = useContext(globalState)
   const {currentUser, theme} = state
   const [expandFiftyFiftyInfoText, setExpandFiftyFiftyInfoText] = useState(false)
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
   const [firstFFPeriodStart, setFirstFFPeriodStart] = useState('')
   const [firstFFPeriodEnd, setFirstFFPeriodEnd] = useState('')
   const [secondFFPeriodStart, setSecondFFPeriodStart] = useState('')
@@ -37,7 +36,7 @@ export default function FiftyFifty({hide, showCard}) {
   const resetForm = () => {
     Manager.resetForm('add-fifty-fifty-schedule')
     setShareWith([])
-    setRefreshKey(Manager.getUid())
+    setState({...state, refreshKey: Manager.getUid()})
     hide()
   }
 
@@ -83,13 +82,6 @@ export default function FiftyFifty({hide, showCard}) {
     resetForm()
   }
 
-  const addThemeToDatePickers = () => {
-    setTimeout(() => {
-      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
-      datetimeParent.classList.add(currentUser?.settings?.theme)
-    }, 100)
-  }
-
   const handleShareWithSelection = async (e) => {
     const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
@@ -105,6 +97,7 @@ export default function FiftyFifty({hide, showCard}) {
       showCard={showCard}
       onClose={resetForm}>
       <div className="text">
+        <Spacer height={5} />
         <Accordion id={'fifty-fifty-info'} expanded={expandFiftyFiftyInfoText}>
           <AccordionSummary>
             <div className="flex space-between" id="accordion-title" onClick={() => setExpandFiftyFiftyInfoText(!expandFiftyFiftyInfoText)}>
@@ -133,60 +126,48 @@ export default function FiftyFifty({hide, showCard}) {
           </AccordionDetails>
         </Accordion>
         <Spacer height={5} />
-        {/* FIRST PERIOD */}
-        <InputWrapper wrapperClasses="date-range-input" labelText={'First Period'} required={true} inputType={'date'}>
-          <MobileDateRangePicker
-            // onOpen={() => {
-            //   Manager.hideKeyboard('date-range-input')
-            //   addThemeToDatePickers()
-            // }}
-            views={['month', 'day']}
-            onAccept={(dateArray) => {
-              if (Manager.isValid(dateArray)) {
-                setFirstFFPeriodStart(dateArray[0].format(DatetimeFormats.dateForDb))
-                setFirstFFPeriodEnd(moment(dateArray[1].format(DatetimeFormats.dateForDb)))
-              }
-            }}
-            slots={{field: SingleInputDateRangeField}}
-            name="allowedRange"
-          />
-        </InputWrapper>
 
-        {/* SECOND PERIOD */}
-        <InputWrapper wrapperClasses="date-range-input" labelText={'Second Period'} required={true} inputType={'date'}>
-          <MobileDateRangePicker
-            onOpen={() => {
-              Manager.hideKeyboard('date-range-input')
-              addThemeToDatePickers()
-            }}
-            onAccept={(dateArray) => {
-              if (Manager.isValid(dateArray)) {
-                setSecondFFPeriodStart(dateArray[0].format(DatetimeFormats.dateForDb))
-                setSecondFFPeriodEnd(moment(dateArray[1].format(DatetimeFormats.dateForDb)))
-              }
-            }}
-            slots={{field: SingleInputDateRangeField}}
-            name="allowedRange"
-          />
-        </InputWrapper>
+        {/* FIRST PERIOD */}
+        <InputWrapper
+          wrapperClasses="date-range-input"
+          labelText={'First Period'}
+          required={true}
+          inputType={InputTypes.dateRange}
+          onDateOrTimeSelection={(dateArray) => {
+            if (Manager.isValid(dateArray)) {
+              setFirstFFPeriodStart(dateArray[0].format(DatetimeFormats.dateForDb))
+              setFirstFFPeriodEnd(moment(dateArray[1].format(DatetimeFormats.dateForDb)))
+            }
+          }}
+        />
+
+        <InputWrapper
+          wrapperClasses="date-range-input"
+          labelText={'Second Period'}
+          required={true}
+          inputType={InputTypes.dateRange}
+          onDateOrTimeSelection={(dateArray) => {
+            if (Manager.isValid(dateArray)) {
+              setSecondFFPeriodStart(dateArray[0].format(DatetimeFormats.dateForDb))
+              setSecondFFPeriodEnd(moment(dateArray[1].format(DatetimeFormats.dateForDb)))
+            }
+          }}
+        />
 
         {/* THIRD PERIOD */}
-        <InputWrapper wrapperClasses="date-range-input" labelText={'Third Period'} required={false} inputType={'date'}>
-          <MobileDateRangePicker
-            onOpen={() => {
-              Manager.hideKeyboard('date-range-input')
-              addThemeToDatePickers()
-            }}
-            onAccept={(dateArray) => {
-              if (Manager.isValid(dateArray)) {
-                setThirdFFPeriodStart(dateArray[0].format(DatetimeFormats.dateForDb))
-                setThirdFFPeriodEnd(moment(dateArray[1].format(DatetimeFormats.dateForDb)))
-              }
-            }}
-            slots={{field: SingleInputDateRangeField}}
-            name="allowedRange"
-          />
-        </InputWrapper>
+        <InputWrapper
+          wrapperClasses="date-range-input"
+          labelText={'Third Period'}
+          required={true}
+          inputType={InputTypes.dateRange}
+          onDateOrTimeSelection={(dateArray) => {
+            if (Manager.isValid(dateArray)) {
+              setThirdFFPeriodStart(dateArray[0].format(DatetimeFormats.dateForDb))
+              setThirdFFPeriodEnd(moment(dateArray[1].format(DatetimeFormats.dateForDb)))
+            }
+          }}
+        />
+
         {/* SHARE WITH */}
         <ShareWithCheckboxes
           required={false}

@@ -15,10 +15,11 @@ import StringManager from '../../managers/stringManager'
 import ViewSelector from './viewSelector'
 import validator from 'validator'
 import InputTypes from '../../constants/inputTypes'
+import DB from '../../database/DB'
 
-export default function CustomChildInfo({hideCard, showCard}) {
+export default function CustomChildInfo({hideCard, showCard, activeChild, onChildUpdate = (child) => {}}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, activeInfoChild} = state
+  const {currentUser, theme} = state
   const [title, setTitle] = useState('')
   const [value, setValue] = useState('')
   const [infoSection, setInfoSection] = useState('general')
@@ -34,33 +35,29 @@ export default function CustomChildInfo({hideCard, showCard}) {
       AlertManager.throwError('Please enter a valid phone number')
       return false
     }
-    const updatedChild = await DB_UserScoped.addUserChildProp(
-      currentUser,
-      activeInfoChild,
-      infoSection,
-      StringManager.toCamelCase(title),
-      value,
-      shareWith
-    )
+
+    await DB_UserScoped.addUserChildProp(currentUser, activeChild, infoSection, StringManager.toCamelCase(title), value, shareWith)
 
     if (Manager.isValid(shareWith)) {
       await NotificationManager.sendToShareWith(
         shareWith,
         currentUser,
-        `${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Updated for ${activeInfoChild?.general?.name}`,
+        `${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Updated for ${activeChild?.general?.name}`,
         `${title} - ${value}`,
         infoSection
       )
     }
 
-    resetForm(`${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Added!`, updatedChild)
+    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
+    const updatedChild = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`, true)
+    onChildUpdate(updatedChild)
+    resetForm(`${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Added`)
   }
 
   const handleInfoTypeSelection = (e) => {
     Manager.handleCheckboxSelection(
       e,
       (e) => {
-        console.log(e)
         setInfoType(e.toLowerCase())
       },
       (e) => {
@@ -76,13 +73,13 @@ export default function CustomChildInfo({hideCard, showCard}) {
     setShareWith(shareWithNumbers)
   }
 
-  const resetForm = (successMessage, updatedChild) => {
+  const resetForm = (successMessage = '') => {
     Manager.resetForm('custom-child-info-wrapper')
     setTitle('')
     setValue('')
     setInfoSection('')
     hideCard()
-    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: successMessage, activeInfoChild: updatedChild})
+    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: successMessage})
   }
 
   return (

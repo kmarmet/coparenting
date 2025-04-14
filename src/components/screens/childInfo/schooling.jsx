@@ -14,17 +14,18 @@ import StringManager from '../../../managers/stringManager'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
+import Spacer from '../../shared/spacer'
 
-export default function Schooling() {
+export default function Schooling({activeChild}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, activeInfoChild} = state
+  const {currentUser, theme} = state
   const [schoolingValues, setSchoolingValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
 
   const deleteProp = async (prop) => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
 
-    const existingPropCount = Object.keys(activeInfoChild?.schooling).length
+    const existingPropCount = Object.keys(activeChild?.schooling).length
 
     if (existingPropCount <= 1) {
       const accordion = document.querySelector('.schooling.info-section')
@@ -41,34 +42,41 @@ export default function Schooling() {
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
       await setSelectedChild()
     } else {
-      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeInfoChild, 'schooling', StringManager.formatDbProp(prop))
+      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'schooling', StringManager.formatDbProp(prop))
       await setSelectedChild()
-      setState({...state, activeInfoChild: updatedChild})
+      setState({...state, activeChild: updatedChild})
     }
   }
 
   const update = async (prop, value) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeInfoChild, 'schooling', StringManager.formatDbProp(prop), value)
+    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'schooling', StringManager.formatDbProp(prop), value)
     AlertManager.successAlert('Updated!')
-    setState({...state, activeInfoChild: updatedChild})
+    setState({...state, activeChild: updatedChild})
   }
 
   const setSelectedChild = async () => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
     let sharedValues = []
-    for (let obj of sharing) {
-      sharedValues.push([obj.prop, obj.value, obj.sharedByName])
+    if (Manager.isValid(sharing)) {
+      for (let obj of sharing) {
+        sharedValues.push([obj.prop, obj.value, obj.sharedByName])
+      }
     }
-    if (Manager.isValid(activeInfoChild?.schooling)) {
+
+    if (Manager.isValid(activeChild?.schooling)) {
       // Set info
-      let values = Object.entries(activeInfoChild?.schooling)
+      let values = Object.entries(activeChild?.schooling)
 
       if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
-      setSchoolingValues(values)
+      if (values[0][1].length === 0) {
+        setSchoolingValues([])
+      } else {
+        setSchoolingValues(values)
+      }
     } else {
-      if (sharedValues.length > 0) {
+      if (Manager.isValid(sharedValues)) {
         setSchoolingValues(sharedValues)
       } else {
         setSchoolingValues([])
@@ -78,21 +86,19 @@ export default function Schooling() {
 
   useEffect(() => {
     setSelectedChild().then((x) => x)
-  }, [activeInfoChild])
+  }, [activeChild])
 
   return (
     <div className="info-section section schooling">
-      <Accordion className={`${theme} child-info`} disabled={!Manager.isValid(activeInfoChild?.schooling)}>
+      <Accordion className={`${theme} child-info`} disabled={!Manager.isValid(activeChild?.schooling)}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
-          className={!Manager.isValid(activeInfoChild?.schooling) ? 'disabled header schooling' : 'header schooling'}>
+          className={!Manager.isValid(schoolingValues) ? 'disabled header schooling' : 'header schooling'}>
           <IoSchool className={'svg schooling'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Schooling
-            {!Manager.isValid(activeInfoChild?.schooling) ? '- no info' : ''}
-            {Manager.isValid(activeInfoChild?.schooling) && (
-              <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>
-            )}
+            {!Manager.isValid(schoolingValues) ? '- no info' : ''}
+            {Manager.isValid(schoolingValues) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>
@@ -102,22 +108,32 @@ export default function Schooling() {
               const value = prop.flat()[1]
               return (
                 <div key={index}>
-                  <div className="flex input">
-                    {infoLabel.toLowerCase().includes('phone') && (
-                      <a href={`tel:${StringManager.formatPhone(value).toString()}`}>
-                        {infoLabel}: {value}
-                      </a>
-                    )}
-                    {!infoLabel.toLowerCase().includes('phone') && (
-                      <InputWrapper
-                        inputType={InputTypes.text}
-                        labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
-                        defaultValue={value}
-                        onChange={(e) => update(infoLabel, e.target.value)}
-                      />
-                    )}
-                    <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
-                  </div>
+                  {infoLabel.toLowerCase().includes('phone') && (
+                    <>
+                      <div className="flex input">
+                        <a href={`tel:${StringManager.formatPhone(value).toString()}`}>
+                          {infoLabel}: {value}
+                        </a>
+                        <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                      </div>
+                      <Spacer height={5} />
+                    </>
+                  )}
+                  {!infoLabel.toLowerCase().includes('phone') && (
+                    <>
+                      <div className="flex input">
+                        <InputWrapper
+                          hasBottomSpacer={false}
+                          inputType={InputTypes.text}
+                          labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
+                          defaultValue={value}
+                          onChange={(e) => update(infoLabel, e.target.value)}
+                        />
+                        <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                      </div>
+                      <Spacer height={5} />
+                    </>
+                  )}
                 </div>
               )
             })}

@@ -9,7 +9,7 @@
       background-color: transparent;
       border-radius: 0;
       border: 0;
-      gap: 10px;
+      gap: 20px;
       flex-wrap: wrap;
       padding: 20px 0;
 
@@ -41,8 +41,40 @@
           background-size: cover;
           border-radius: 100%;
           position: relative;
-          height: 100px;
-          width: 100px;
+          height: 95px;
+          width: 95px;
+
+          &.no-image {
+            border: 1px solid $lightBorderColor;
+            background: $grey;
+            opacity: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            span {
+              font-size: 14px;
+              color: $darkerGrey;
+              font-style: italic;
+            }
+            .after {
+              background: transparent;
+              width: 100%;
+              right: unset;
+              border: 0;
+              bottom: unset;
+              height: 100%;
+              opacity: 1;
+              svg {
+                color: $accent;
+                transform: scale(1.2);
+                opacity: 1;
+              }
+            }
+
+            p {
+              font-weight: 500;
+            }
+          }
 
           .after {
             position: absolute;
@@ -91,27 +123,6 @@
           color: white;
           font-size: 12px;
           text-align: center;
-        }
-
-        &.no-image {
-          border: 1px solid $lightBorderColor;
-          background: $grey;
-          .after {
-            background: transparent;
-            width: 100%;
-            right: unset;
-            border: 0;
-            bottom: unset;
-            height: 100%;
-            svg {
-              color: $lightDarkGrey;
-              font-size: 30px;
-            }
-          }
-
-          p {
-            font-weight: 500;
-          }
         }
 
         // ACTIVE
@@ -297,6 +308,18 @@
     #child-info {
       overflow: hidden;
 
+      .upload-profile-pic-button {
+        margin-left: 0;
+        position: relative;
+        input {
+          opacity: 1;
+          z-index: 9999;
+          position: absolute;
+          margin-right: 0;
+          height: 50px;
+        }
+      }
+
       .MuiCollapse-root {
         &.MuiCollapse-entered {
         }
@@ -305,173 +328,168 @@
         padding: 0 10px;
       }
 
-      .form {
-        .flex {
-          align-items: center;
-          width: 100%;
-          justify-content: space-between;
-          max-width: 100%;
-          &.input {
-            .delete-icon {
-              color: $red;
-              position: relative;
-              font-size: 24px;
-              margin-left: 10px;
-              bottom: 5px;
-            }
-          }
-        }
-
-        .button-group {
-          flex-wrap: wrap;
-          border-radius: $borderRadius;
-
-          &.stack {
-            label {
-            }
-
-            button,
-            label {
-              height: 40px;
-              width: 60% !important;
-              font-size: 14px;
-              border-radius: $borderRadius;
-              margin-bottom: 5px;
-              line-height: 1;
-
-              &:first-child {
-                margin-right: 5px;
-              }
-            }
-          }
-        }
-
-        .info-section {
-          transition: max-height 0.3s ease-in-out;
-          max-width: calc(100vw - 30px);
-          overflow: hidden;
-
-          @media screen and (min-width: 1000px) {
-            &:hover {
-              margin-bottom: 10px;
-
-              span {
-                padding-left: 10px;
-              }
-            }
-          }
-
-          &.checklist {
-            .checklist-wrapper {
-              padding-left: 4px;
-            }
-            .checklist-item-row {
-              border-bottom: 0;
-              justify-content: space-between;
-              margin-bottom: 5px;
-              height: 40px;
-              overflow: hidden;
-
-              svg {
-                margin-right: 5px;
-                &.checklist-delete-icon {
-                  color: $red;
-                  font-size: 24px;
-                  padding: 0;
-                  position: relative;
-                  margin: 0 0 0 10px;
-                }
-              }
-
-              .checklist-item {
-                width: 100%;
-                background: $grey;
-                padding: 10px;
-                border-radius: $borderRadius;
-                display: flex;
-                line-height: 1;
-                white-space: nowrap;
-                align-items: center;
-                transition: all 0.3s ease-in-out;
-
-                &.active {
-                  background: $green;
-                  transition: all 0.3s ease-in-out;
-                  color: white;
-
-                  svg {
-                    color: white;
-                    font-size: 22px;
-                  }
-                }
-              }
-            }
-          }
-
-          &.active {
-            .header {
-              border-bottom: 0;
-              border-radius: 14px;
-              font-weight: bold;
-            }
-          }
-        }
-
-        button {
-          width: auto;
-          margin: 0 auto;
-
-          span {
+      .flex {
+        align-items: center;
+        width: 100%;
+        justify-content: space-between;
+        max-width: 100%;
+        &.input {
+          .delete-icon {
+            color: $red;
+            position: relative;
+            font-size: 24px;
             margin-left: 10px;
+            bottom: 5px;
+          }
+        }
+      }
+
+      .button-group {
+        flex-wrap: wrap;
+        border-radius: $borderRadius;
+
+        &.stack {
+          label {
+          }
+
+          button,
+          label {
+            height: 40px;
+            width: 60% !important;
+            font-size: 14px;
+            border-radius: $borderRadius;
+            margin-bottom: 5px;
+            line-height: 1;
+
+            &:first-child {
+              margin-right: 5px;
+            }
+          }
+        }
+      }
+
+      .info-section {
+        transition: max-height 0.3s ease-in-out;
+        max-width: calc(100vw - 30px);
+        overflow: hidden;
+
+        @media screen and (min-width: 1000px) {
+          &:hover {
+            margin-bottom: 10px;
+
+            span {
+              padding-left: 10px;
+            }
           }
         }
 
-        .header {
-          display: flex;
-          justify-content: flex-start;
-          border: 0;
-          padding: 10px;
-          overflow: hidden;
-          height: 45px;
-          align-items: center;
-          margin-bottom: 0;
+        // CHECKLIST
+        &.checklist {
+          .checklist-item-row {
+            border-bottom: 0;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            overflow: hidden;
 
-          &.disabled {
-            opacity: 0.5;
+            svg {
+              margin-right: 5px;
+              &.checklist-delete-icon {
+                color: $red;
+                font-size: 24px;
+                padding: 0;
+                position: relative;
+                margin: 0 0 0 10px;
+              }
+            }
+
+            .checklist-item {
+              width: 100%;
+              background: $grey;
+              padding: 12px;
+              border-radius: $buttonBorderRadius;
+              display: flex;
+              line-height: 1;
+              white-space: nowrap;
+              align-items: center;
+              transition: all 0.3s ease-in-out;
+
+              &.active {
+                background: $green;
+                transition: all 0.3s ease-in-out;
+                color: white;
+                padding: 10px;
+
+                svg {
+                  color: white;
+                  font-size: 22px;
+                }
+              }
+            }
           }
+        }
 
-          .plus-minus {
-            font-size: 22px;
+        &.active {
+          .header {
+            border-bottom: 0;
+            font-weight: bold;
           }
+        }
+      }
 
-          .svg {
+      button {
+        width: auto;
+        margin: 0 auto;
+
+        span {
+          margin-left: 10px;
+        }
+      }
+
+      .header {
+        display: flex;
+        justify-content: flex-start;
+        border: 0;
+        padding: 10px;
+        overflow: hidden;
+        height: 45px;
+        align-items: center;
+        margin-bottom: 0;
+
+        &.disabled {
+          opacity: 0.5;
+        }
+
+        .plus-minus {
+          font-size: 22px;
+        }
+
+        .svg {
+          font-size: 30px;
+          margin-left: 0;
+          margin-right: 10px;
+          width: 40px;
+
+          &.from,
+          &.to {
             font-size: 30px;
-            margin-left: 0;
-            margin-right: 10px;
-            width: 40px;
+          }
 
-            &.from,
-            &.to {
-              font-size: 30px;
-            }
+          &.medical {
+            font-size: 26px;
+          }
 
-            &.medical {
-              font-size: 26px;
-            }
+          &.general {
+            font-size: 32px;
+          }
 
-            &.general {
-              font-size: 32px;
-            }
-
-            &.behavior {
-              font-size: 26px;
-            }
+          &.behavior {
+            font-size: 26px;
           }
         }
+      }
 
-        p {
-          font-weight: 400;
-        }
+      p {
+        font-weight: 400;
       }
     }
 

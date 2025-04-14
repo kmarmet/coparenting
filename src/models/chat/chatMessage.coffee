@@ -1,6 +1,6 @@
 import Manager from "../../managers/manager"
 
-export default class ConversationMessage
+export default class ChatMessage
   constructor: (
     @id = Manager.getUid()
     @sender = ''
@@ -9,4 +9,5 @@ export default class ConversationMessage
     @message = ''
     @recipientKey = ''
     @senderKey = ''
+    @senderTimezone = ''
   ) ->
