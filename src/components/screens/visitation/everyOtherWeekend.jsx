@@ -24,8 +24,8 @@ export default function EveryOtherWeekend({hide, showCard}) {
   const [shareWith, setShareWith] = useState([])
   const [firstEveryOtherWeekend, setFirstEveryOtherWeekend] = useState('')
 
-  const resetForm = () => {
-    Manager.resetForm('add-every-other-weekend-schedule')
+  const ResetForm = () => {
+    Manager.ResetForm('add-every-other-weekend-schedule')
     setShareWith([])
     setRefreshKey(Manager.getUid())
     hide()
@@ -53,7 +53,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
       events.push(dateObject)
     })
     MyConfetti.fire()
-    await resetForm()
+    await ResetForm()
     // Upload to DB
     VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
   }
@@ -78,7 +78,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
       onSubmit={addToCalendar}
       title={'Every other Weekend Visitation Schedule'}
       showCard={showCard}
-      onClose={resetForm}>
+      onClose={ResetForm}>
       <Label text={'Please specify the upcoming Friday you would like to use as the starting point for the visitation schedule'} />
       <Spacer height={5} />
       <InputWrapper

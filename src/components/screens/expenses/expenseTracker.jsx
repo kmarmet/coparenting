@@ -451,9 +451,9 @@ export default function ExpenseTracker() {
 
               {/* AMOUNT */}
               <InputWrapper
-                inputType={InputTypes.text}
-                defaultValue={activeExpense?.amount.toString()}
                 labelText={'Amount'}
+                defaultValue={activeExpense?.amount}
+                inputType={InputTypes.number}
                 onChange={(e) => setAmount(e.target.value)}
               />
 

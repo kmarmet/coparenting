@@ -19,7 +19,7 @@ export default function CustomCoparentInfo({hideCard, activeCoparent, showCard, 
   const [value, setValue] = useState('')
 
   const ResetForm = (hasMessage = false) => {
-    Manager.resetForm('custom-coparent-info-wrapper')
+    Manager.ResetForm('custom-coparent-info-wrapper')
     setTitle('')
     setValue('')
     setState({

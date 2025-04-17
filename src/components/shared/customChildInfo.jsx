@@ -51,7 +51,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild, onChil
     const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
     const updatedChild = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`, true)
     onChildUpdate(updatedChild)
-    resetForm(`${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Added`)
+    ResetForm(`${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Added`)
   }
 
   const handleInfoTypeSelection = (e) => {
@@ -73,8 +73,8 @@ export default function CustomChildInfo({hideCard, showCard, activeChild, onChil
     setShareWith(shareWithNumbers)
   }
 
-  const resetForm = (successMessage = '') => {
-    Manager.resetForm('custom-child-info-wrapper')
+  const ResetForm = (successMessage = '') => {
+    Manager.ResetForm('custom-child-info-wrapper')
     setTitle('')
     setValue('')
     setInfoSection('')
@@ -88,7 +88,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild, onChil
       submitText={'Add'}
       className="custom-child-info-wrapper"
       wrapperClass="custom-child-info-card"
-      onClose={resetForm}
+      onClose={ResetForm}
       title={'Add Your Own Info'}
       viewSelector={
         <ViewSelector

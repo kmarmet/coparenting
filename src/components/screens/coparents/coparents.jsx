@@ -15,7 +15,7 @@ import {BsFillSendFill} from 'react-icons/bs'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
-import StringManager from '/src/managers/stringManager.coffee'
+import StringManager from '/src/managers/stringManager'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import Modal from '../../shared/modal'
 import EmailManager from '../../../managers/emailManager'
@@ -35,23 +35,24 @@ export default function Coparents() {
   const [invitedCoparentName, setInvitedCoparentName] = useState('')
   const [invitedCoparentEmail, setInvitedCoparentEmail] = useState('')
 
-  const deleteProp = async (prop) => {
+  const DeleteProp = async (prop) => {
     const updatedCoparent = await DB_UserScoped.deleteCoparentInfoProp(currentUser, StringManager.formatDbProp(prop), activeCoparent)
-    setActiveCoparent(updatedCoparent)
+    await SetActiveCoparentData(updatedCoparent)
   }
 
-  const update = async (prop, value) => {
+  const Update = async (prop, value) => {
     const updatedCoparent = await DB_UserScoped.updateCoparent(currentUser, activeCoparent, StringManager.formatDbProp(prop), value)
-    setActiveCoparent(updatedCoparent)
-
-    setState({...state, successAlertMessage: 'Updated'})
+    setState({...state, successAlertMessage: `${StringManager.formatTitle(prop, true)} has been updated`})
+    await SetActiveCoparentData(updatedCoparent)
   }
 
-  const deleteCoparent = async () => {
+  const DeleteCoparent = async () => {
     await DB_UserScoped.deleteCoparent(currentUser, activeCoparent)
+    setState({...state, successAlertMessage: `${activeCoparent?.name} has been unlinked from your profile`})
+    setActiveCoparent(currentUser?.coparents[0])
   }
 
-  const setActiveCoparentData = async (coparent) => {
+  const SetActiveCoparentData = async (coparent) => {
     const coparentKey = coparent?.key
     if (Manager.isValid(coparentKey)) {
       const updatedCoparents = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/coparents`)
@@ -65,7 +66,7 @@ export default function Coparents() {
       {/* CUSTOM INFO FORM */}
       <CustomCoparentInfo
         hideCard={() => setShowCustomInfoCard(false)}
-        onAdd={(coparent) => setActiveCoparentData(coparent)}
+        onAdd={(coparent) => SetActiveCoparentData(coparent)}
         activeCoparent={activeCoparent}
         showCard={showCustomInfoCard}
       />
@@ -75,7 +76,6 @@ export default function Coparents() {
 
       {/*  SCREEN ACTIONS */}
       <ScreenActionsMenu>
-        {/*<Fade direction={'right'} className={'fade-wrapper'} duration={800} damping={.2} triggerOnce={false} cascade={true}>*/}
         {/* ADD COPARENT */}
         <div
           className="action-item"
@@ -117,11 +117,14 @@ export default function Coparents() {
           className="action-item"
           onClick={() => {
             setState({...state, showScreenActions: false})
-            AlertManager.confirmAlert(`Are you sure you would like to remove ${activeCoparent?.name}`, "I'm Sure", true, async () => {
-              await deleteCoparent()
-              AlertManager.successAlert('Co-Parent Removed')
-              setActiveCoparent(null)
-            })
+            AlertManager.confirmAlert(
+              `Are you sure you would like to unlink ${activeCoparent?.name} from your profile?`,
+              "I'm Sure",
+              true,
+              async () => {
+                await DeleteCoparent()
+              }
+            )
           }}>
           <div className="content">
             <div className="svg-wrapper">
@@ -150,7 +153,6 @@ export default function Coparents() {
             </p>
           </div>
         </div>
-        {/*</Fade>*/}
         <div id="close-icon-wrapper">
           <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
         </div>
@@ -191,38 +193,37 @@ export default function Coparents() {
       {/* COPARENTS CONTAINER */}
       <div id="coparents-container" className={`${theme} page-container coparents-wrapper`}>
         <Fade direction={'up'} duration={1000} className={'coparents-fade-wrapper'} triggerOnce={true}>
-          <></>
           <div className="flex" id="screen-title-wrapper">
-            <p className="screen-title beside-action-button">Co-Parents </p>
+            <p className="screen-title beside-action-button">Co-Parents</p>
           </div>
           <p>Maintain accessible records of important information regarding your co-parent.</p>
+        </Fade>
 
-          {/* COPARENT ICONS CONTAINER */}
-          <div id="coparent-container">
-            {Manager.isValid(currentUser?.coparents) &&
-              currentUser?.coparents.map((coparent, index) => {
-                const coparentKey = activeCoparent?.key
-                return (
-                  <div
-                    onClick={() => setActiveCoparentData(coparent)}
-                    className={coparentKey && coparentKey === coparent.key ? 'active coparent' : 'coparent'}
-                    data-name={coparent.name}
-                    data-key={coparent?.key}
-                    key={index}>
-                    <span className="coparent-name">{StringManager.getFirstNameOnly(coparent.name)[0]}</span>
-                  </div>
-                )
-              })}
-          </div>
+        {/* COPARENT ICONS CONTAINER */}
+        <div id="coparent-container">
+          {Manager.isValid(currentUser?.coparents) &&
+            currentUser?.coparents?.map((coparent, index) => {
+              const coparentKey = activeCoparent?.key
+              return (
+                <div
+                  onClick={() => SetActiveCoparentData(coparent)}
+                  className={coparentKey && coparentKey === coparent.key ? 'active coparent' : 'coparent'}
+                  key={index}>
+                  <span className="coparent-name">{StringManager.getFirstNameOnly(coparent.name)[0]}</span>
+                </div>
+              )
+            })}
+        </div>
 
-          {!Manager.isValid(currentUser?.coparents) && <NoDataFallbackText text={'You have not added any co-parents yet'} />}
+        {/* NO DATA FALLBACK */}
+        {!Manager.isValid(currentUser?.coparents) && <NoDataFallbackText text={'You have not added any co-parents to your profile yet'} />}
 
-          {/* COPARENT INFO */}
-          <div id="coparent-info">
-            <p id="coparent-name-primary">{StringManager.getFirstNameOnly(activeCoparent?.name)}</p>
-            <p id="coparent-type-primary"> {activeCoparent?.parentType}</p>
+        {/* COPARENT INFO */}
+        <div id="coparent-info" key={activeCoparent?.key}>
+          <p id="coparent-name-primary">{StringManager.getFirstNameOnly(activeCoparent?.name)}</p>
+          <p id="coparent-type-primary"> {activeCoparent?.parentType}</p>
+          {Manager.isValid(activeCoparent) && (
             <Fade direction={'right'} className={'coparents-info-fade-wrapper'} duration={800} damping={0.08} triggerOnce={false} cascade={true}>
-              <></>
               {/* ITERATE COPARENT INFO */}
               {Manager.isValid(activeCoparent) &&
                 Object.entries(activeCoparent).map((propArray, index) => {
@@ -232,33 +233,34 @@ export default function Coparents() {
                   infoLabel = StringManager.formatTitle(infoLabel, true)
                   const value = propArray[1]
                   const inputsToSkip = ['address', 'key', 'id']
+
                   return (
                     <div key={index}>
-                      {/* LOCATION */}
+                      {/* ADDRESS */}
                       {infoLabel.toLowerCase().includes('address') && (
                         <InputWrapper
                           defaultValue={value}
                           inputType={InputTypes.address}
                           labelText={'Home Address'}
-                          onChange={async (address) => await update('address', address)}
+                          onChange={(address) => Update('address', address).then((r) => r)}
                         />
                       )}
 
                       {/* TEXT INPUT */}
-                      {!inputsToSkip.includes(infoLabel.toLowerCase()) && (
+                      {!inputsToSkip.includes(infoLabel.toLowerCase()) && !infoLabel.toLowerCase().includes('address') && (
                         <>
                           <div className="flex input">
                             <InputWrapper
                               hasBottomSpacer={false}
                               defaultValue={value}
-                              onChange={async (e) => {
+                              onChange={(e) => {
                                 const inputValue = e.target.value
-                                await update(infoLabel, `${inputValue}`)
+                                Update(infoLabel, `${inputValue}`).then((r) => r)
                               }}
                               inputType={InputTypes.text}
-                              labelText={StringManager.addSpaceBetweenWords(infoLabel)}
+                              labelText={infoLabel}
                             />
-                            <PiTrashSimpleDuotone className="delete-icon fs-24" onClick={() => deleteProp(infoLabel)} />
+                            <PiTrashSimpleDuotone className="delete-icon fs-24" onClick={() => DeleteProp(infoLabel)} />
                           </div>
                           <Spacer height={5} />
                         </>
@@ -267,9 +269,11 @@ export default function Coparents() {
                   )
                 })}
             </Fade>
-          </div>
-        </Fade>
+          )}
+        </div>
       </div>
+
+      {/* NAVBAR */}
       <NavBar navbarClass={'actions'}>
         <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
           <HiDotsHorizontal className={'screen-actions-menu-icon'} />

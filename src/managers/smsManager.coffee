@@ -39,6 +39,20 @@ export default SmsManager =
     "#{userName} ,please enter this code to continue registration: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getPhoneVerificationTemplate: (verificationCode) ->    "Please enter this code for Peaceful coParenting registration #{SmsManager.lineBreak} #{verificationCode}"
 
+  GetRemainingBalance: () ->
+
+    requestOptions =
+      method: 'GET'
+      redirect: 'follow'
+
+    try
+      response = await fetch 'https://peaceful-coparenting.app:5000/messaging/GetTextBalance', requestOptions
+      result = await response.text()
+      console.log result
+      return result;
+    catch error
+      console.error error
+
   send: (phoneNumber, message) ->
       console.log('sent')
       formData = new FormData()

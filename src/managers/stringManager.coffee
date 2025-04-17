@@ -2,6 +2,12 @@ import lzstring from "lz-string"
 import Manager from "./manager"
 
 StringManager = {
+  FormatAsWholeNumber: (number) ->
+    asString = number.toString()
+    if asString.indexOf('.') > -1
+      dotIndex = asString.indexOf('.')
+      return parseInt(asString.substring(0, dotIndex))
+
   getReadablePhoneNumber: (phoneNumber) ->
     formattedPhone = phoneNumber;
     # Remove non-digit characters
@@ -20,6 +26,9 @@ StringManager = {
     return returnString if !returnString  or returnString.length == 0
     returnString = returnString.split(' ')[0]
     StringManager.uppercaseFirstLetterOfAllWords(returnString)
+
+  RemoveAllLetters: (input) ->
+    return input.replace(/[a-zA-Z]/g, '')
 
   isAllUppercase: (input) ->
     return input == input.toUpperCase()

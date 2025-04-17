@@ -3,7 +3,6 @@ import Modal from '../../../components/shared/modal'
 import globalState from '../../../context'
 import React, {useContext, useState} from 'react'
 import Manager from '../../../managers/manager'
-import DateFormats from '../../../constants/datetimeFormats'
 import AlertManager from '../../../managers/alertManager'
 import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/calendarEvent'
@@ -23,8 +22,8 @@ export default function CustomWeekends({hide, showCard}) {
   const [fifthWeekendSelection, setFifthWeekendSelection] = useState('')
   const [defaultSelectedWeekends, setDefaultSelectedWeekends] = useState([])
 
-  const resetForm = () => {
-    Manager.resetForm('custom-weekends-schedule')
+  const ResetForm = () => {
+    Manager.ResetForm('custom-weekends-schedule')
     setShareWith([])
     setRefreshKey(Manager.getUid())
     hide()
@@ -89,7 +88,7 @@ export default function CustomWeekends({hide, showCard}) {
     })
 
     MyConfetti.fire()
-    await resetForm()
+    await ResetForm()
     events = Manager.getUniqueArray(events, 'startDate')
 
     // Upload to DB
@@ -110,7 +109,7 @@ export default function CustomWeekends({hide, showCard}) {
       wrapperClass="custom-weekends-schedule"
       title={'Custom Weekends Schedule'}
       showCard={showCard}
-      onClose={resetForm}>
+      onClose={ResetForm}>
       <>
         <CheckboxGroup
           parentLabel={'Weekend YOU will have the child(ren)'}

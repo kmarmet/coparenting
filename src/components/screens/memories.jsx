@@ -128,51 +128,52 @@ export default function Memories() {
         {memories && memories.length === 0 && <NoDataFallbackText text={'At the moment, there are no memories available'} />}
 
         {/* GALLERY */}
-        <LightGallery elementClassNames={`light-gallery ${theme}`} selector={'.memory-image'}>
-          <Fade direction={'left'} duration={800} className={'memories-fade-wrapper'} triggerOnce={true} cascade={true} damping={0.2}>
-            <></>
-            {Manager.isValid(memories) &&
-              memories.map((imgObj, index) => {
-                return (
-                  <div className="memory" key={index}>
-                    {/* IMAGE */}
-                    <div id="memory-image-wrapper">
-                      {Manager.isValid(imgObj?.title) && <p className="memory-title">{StringManager.formatTitle(imgObj?.title, true)}</p>}
-                      <div
-                        data-sub-html={`${
-                          Manager.isValid(imgObj?.notes, true)
-                            ? `<p class="gallery-title">
+        {Manager.isValid(memories) && (
+          <LightGallery elementClassNames={`light-gallery ${theme}`} selector={'.memory-image'}>
+            <Fade direction={'left'} duration={800} className={'memories-fade-wrapper'} triggerOnce={true} cascade={true} damping={0.2}>
+              {Manager.isValid(memories) &&
+                memories.map((imgObj, index) => {
+                  return (
+                    <div className="memory" key={index}>
+                      {/* IMAGE */}
+                      <div id="memory-image-wrapper">
+                        {Manager.isValid(imgObj?.title) && <p className="memory-title">{StringManager.formatTitle(imgObj?.title, true)}</p>}
+                        <div
+                          data-sub-html={`${
+                            Manager.isValid(imgObj?.notes, true)
+                              ? `<p class="gallery-title">
                                   ${StringManager.formatTitle(StringManager.formatTitle(imgObj?.title, true))}
                                 <span>${imgObj?.notes}</span>
                               </p>`
-                            : ''
-                        }`}
-                        style={{backgroundImage: `url(${imgObj?.url})`}}
-                        className="memory-image"
-                        data-src={imgObj?.url}></div>
-                    </div>
+                              : ''
+                          }`}
+                          style={{backgroundImage: `url(${imgObj?.url})`}}
+                          className="memory-image"
+                          data-src={imgObj?.url}></div>
+                      </div>
 
-                    {/* DATE */}
-                    {DateManager.dateIsValid(imgObj?.memoryCaptureDate) && (
-                      <p className="memory-date">Capture Date: {moment(imgObj?.memoryCaptureDate).format(DatetimeFormats.readableMonthDayYear)}</p>
-                    )}
+                      {/* DATE */}
+                      {DateManager.dateIsValid(imgObj?.memoryCaptureDate) && (
+                        <p className="memory-date">Capture Date: {moment(imgObj?.memoryCaptureDate).format(DatetimeFormats.readableMonthDayYear)}</p>
+                      )}
 
-                    {/* BELOW IMAGE */}
-                    <div id="below-image">
-                      {/* SAVE BUTTON */}
-                      <p onClick={() => deleteMemory(imgObj?.url, imgObj)} id="delete-button">
-                        DELETE
-                      </p>
-                      {/* DOWNLOAD BUTTON */}
-                      <p onClick={(e) => saveMemoryImage(e)} id="download-text">
-                        DOWNLOAD
-                      </p>
+                      {/* BELOW IMAGE */}
+                      <div id="below-image">
+                        {/* SAVE BUTTON */}
+                        <p onClick={() => deleteMemory(imgObj?.url, imgObj)} id="delete-button">
+                          DELETE
+                        </p>
+                        {/* DOWNLOAD BUTTON */}
+                        <p onClick={(e) => saveMemoryImage(e)} id="download-text">
+                          DOWNLOAD
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
-          </Fade>
-        </LightGallery>
+                  )
+                })}
+            </Fade>
+          </LightGallery>
+        )}
       </div>
       <NavBar navbarClass={'memories'} />
     </>

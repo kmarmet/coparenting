@@ -4,15 +4,12 @@ import moment from "moment"
 
 
 StateObj =
-  activeInfoChild: null
-  activeInfoCoparent: [],
   authUser: null
   childAccessGranted: false,
   creationFormToShow: ''
   currentScreen: ScreenNames.home
   currentUser: {}
   docToView: ''
-  firebaseUser: null,
   isLoading: true
   loadingText: 'Preparing your pathway to peace...'
   menuIsOpen: false
@@ -25,13 +22,9 @@ StateObj =
   showCreationMenu: false
   showScreenActions: false
   registrationUserName: ''
-  selectedChild: null
   successAlertMessage: null
-  selectedNewEventDay: null
   setSuccessAlertMessage: (message) ->
   setShowScreenActions: (bool) ->
-  setActiveInfoChild: (child) ->
-  setActiveInfoCoparent: (coparent) ->
   setAuthUser: (user) ->
   setChildAccessGranted: (bool) ->
   setContactInfoToUpdateType: ->
@@ -41,7 +34,6 @@ StateObj =
   setDateToEdit: (date) ->
   setDocToView: (doc) ->
   setEventToEdit: (event) ->
-  setFirebaseUser: (user) ->
   setIsLoading: (bool) ->
   setLoadingText: (text) ->
   setMenuIsOpen: (isOpen) ->
@@ -51,31 +43,12 @@ StateObj =
   setParentAccessGranted: (bool) ->
   setRefreshKey: (num) ->
   setRegistrationUserName: (name) ->
-  setSelectedChild: (child) ->
-  setSelectedNewEventDay: (day) ->
   setShowBottomMenu: (bool) ->
-  setShowCenterNavbarButton: (bool) ->
   setShowOverlay: (bool) ->
-  setSwapRequestToRevise: (request) ->
   setTheme: (theme) ->
-  setTransferRequestToEdit: (request) ->
-  setUnreadMessageCount: (num) ->
   setUserIsLoggedIn: (isLoggedIn) ->
-  setUsers: (users) ->
-  setViewExpenseForm: (show) ->
-  setViewSwapRequestForm: (show) ->
-  setViewTransferRequestForm: (show) ->
   showBottomMenu: false
-  showCenterNavbarButton: true
-  showNavbar: true
-  swapRequestToRevise: null
   theme: 'light'
-  transferRequestToEdit: {}
-  unreadMessageCount: 0
   userIsLoggedIn: false
-  users: []
-  viewExpenseForm: false
-  viewSwapRequestForm: false
-  viewTransferRequestForm: false
 
 export default StateObj

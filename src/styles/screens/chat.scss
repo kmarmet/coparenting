@@ -246,6 +246,71 @@
   display: grid;
   grid-template-rows: auto 2fr auto;
 
+  .longpress-menu {
+    z-index: -1;
+    background: white;
+    border-radius: $bigBorderRadius;
+    box-shadow: $boxShadow_float;
+    opacity: 0;
+    transition: all 0.3s ease-out;
+    min-width: 180px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    &.active {
+      opacity: 1;
+      z-index: 99999;
+      transition: all 0.3s ease-in;
+    }
+
+    button {
+      &#copy,
+      &#bookmark,
+      &#cancel {
+        background: transparent;
+        color: black;
+        border-radius: 0;
+        text-align: center;
+        width: 100%;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 14px;
+        padding: 0 10px;
+
+        svg {
+          transform: scale(1);
+          color: white;
+          opacity: 1;
+          margin-left: 10px;
+
+          &.cancel-icon {
+            color: $darkerGrey;
+            transform: scale(1.2);
+          }
+        }
+
+        &#copy {
+          background: $accent;
+          color: white;
+          border-radius: $bigBorderRadius $bigBorderRadius 0 0;
+        }
+        &#bookmark {
+          background: $green;
+          color: white;
+        }
+        &#cancel {
+          background: $grey;
+          color: $darkerGrey;
+          border-radius: 0 0 $bigBorderRadius $bigBorderRadius;
+        }
+      }
+    }
+  }
+
   .search-results {
     display: none;
 
@@ -287,7 +352,13 @@
         color: $main;
       }
 
-      #conversation-bookmark-icon {
+      #close-search-icon {
+        color: $red;
+      }
+
+      #chat-bookmark-icon {
+        font-size: 24px;
+
         &.active {
           color: $main;
         }
@@ -346,19 +417,18 @@
       width: 100%;
       display: block;
       margin-bottom: 15px;
-      color: #b2b2b2;
+      color: $darkGrey;
       font-size: 12px;
       padding-top: 5px;
-      font-style: italic;
       &.from {
         float: right;
         text-align: right;
-        padding-right: 30px;
+        padding-right: 10px;
       }
       &.to {
         float: left;
         text-align: left;
-        padding-right: 30px;
+        padding-left: 10px;
         margin-right: 0;
       }
     }
@@ -378,31 +448,29 @@
       }
       .flex {
         width: 100%;
-      }
-
-      svg {
-        transition: all 0.3s ease-in-out;
         position: relative;
-        right: -5px;
-        color: $darkestGrey;
-        opacity: 0.55;
-        margin-left: 5px;
-        z-index: 999999;
-        transform: scale(0.7);
-        @include hover;
-        &.active {
-          transition: all 0.3s ease-in-out;
-          color: $accent;
-          opacity: 1;
+        .bookmarked-icon {
+          color: $gold;
+          position: absolute;
+          top: -14px;
+          z-index: 9999;
+
+          transform: scale(0.5);
+
+          &.to {
+            right: unset;
+            left: -5px;
+          }
+
+          &.from {
+            left: unset;
+            right: -5px;
+          }
         }
       }
 
       .message {
         width: 65%;
-        &.animation {
-          position: relative;
-          opacity: 0;
-        }
 
         &.from,
         &.to {
@@ -419,7 +487,7 @@
           &.from {
             z-index: 100;
             margin-left: auto;
-            background-color: #4861f4;
+            background-color: #5260bf;
             color: white;
             display: flex;
             justify-content: space-between;
@@ -434,10 +502,11 @@
               content: '';
               position: absolute;
               bottom: 5px;
-              right: 6px;
+              right: -25px;
               width: 40px;
+              z-index: 99999999;
               height: 25px;
-              background: radial-gradient(30px at top right, #0000 99%, #4861f4 102%);
+              background: radial-gradient(30px at top right, #0000 99%, #5260bf 102%);
             }
           }
 
@@ -452,7 +521,7 @@
               content: '';
               position: absolute;
               bottom: 5px;
-              left: -30px;
+              left: -25px;
               width: 40px;
               height: 25px;
               z-index: -1;
@@ -635,6 +704,7 @@
           overflow: auto;
           transition: all 0.3s ease-in-out;
           border: 0;
+          min-height: 50px;
 
           &::placeholder {
             color: $darkGrey;

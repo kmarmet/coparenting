@@ -20,7 +20,7 @@ import InputTypes from '../../../constants/inputTypes'
 const NewCoparentForm = ({showCard, hideCard}) => {
   const {state, setState} = useContext(globalState)
   const {currentUser, theme, authUser} = state
-  const [connectOrNew, setConnectOrNew] = useState('new')
+  const [linkOrNew, setLinkOrNew] = useState('new')
 
   // State
   const [name, setName] = useState('')
@@ -29,22 +29,22 @@ const NewCoparentForm = ({showCard, hideCard}) => {
   const [parentType, setParentType] = useState('')
   const [relationshipType, setRelationshipType] = useState('')
 
-  const resetForm = async () => {
-    Manager.resetForm('new-coparent-wrapper')
+  const ResetForm = async (successMessage = '') => {
+    Manager.ResetForm('new-coparent-wrapper')
     setName('')
     setAddress('')
     setEmail('')
     setParentType('')
-    setState({...state, refreshKey: Manager.getUid()})
+    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: successMessage})
     hideCard()
   }
 
-  const submit = async () => {
+  const Submit = async () => {
     if (!validator.isEmail(email)) {
       AlertManager.throwError('Email address is not valid')
       return false
     }
-    const invalidInputs = Manager.invalidInputs([email, address, name, parentType])
+    const invalidInputs = Manager.GetInvalidInputsErrorString([email, address, name, parentType])
     let newCoparent = new Coparent()
     if (!invalidInputs) {
       AlertManager.throwError('All fields are required')
@@ -73,19 +73,17 @@ const NewCoparentForm = ({showCard, hideCard}) => {
       }
 
       const cleanCoparent = ObjectManager.cleanObject(newCoparent, ModelNames.coparent)
-      console.log(cleanCoparent)
       try {
         await DB_UserScoped.addCoparent(currentUser, cleanCoparent)
       } catch (error) {
         console.log(error)
         // LogManager.log(error.message, LogManager.logTypes.error)
       }
-      AlertManager.successAlert(`${StringManager.getFirstNameOnly(name)} Added!`)
-      await resetForm()
+      await ResetForm(`${StringManager.getFirstNameOnly(name)} Added!`)
     }
   }
 
-  const handleCoparentType = (e) => {
+  const HandleCoparentType = (e) => {
     const type = e.dataset['key']
     Manager.handleCheckboxSelection(
       e,
@@ -98,21 +96,9 @@ const NewCoparentForm = ({showCard, hideCard}) => {
     )
   }
 
-  const handleRelationshipType = (e) => {
-    Manager.handleCheckboxSelection(
-      e,
-      (e) => {
-        setRelationshipType(e)
-      },
-      () => {
-        setRelationshipType('')
-      }
-    )
-  }
-
   return (
     <Modal
-      onSubmit={submit}
+      onSubmit={Submit}
       submitText={name.length > 0 ? `Add ${StringManager.uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
       title={`Add ${Manager.isValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} to Your Profile`}
       wrapperClass="new-coparent-card"
@@ -120,22 +106,22 @@ const NewCoparentForm = ({showCard, hideCard}) => {
       viewSelector={
         <ViewSelector
           defaultView={'New'}
-          labels={['New', 'Already Has Existing Account']}
+          labels={['New', 'Link Existing Account']}
           updateState={(labelText) => {
             if (Manager.contains(labelText, 'New')) {
-              setConnectOrNew('new')
+              setLinkOrNew('new')
             } else {
-              setConnectOrNew('connect')
+              setLinkOrNew('link')
             }
           }}
         />
       }
-      onClose={resetForm}>
+      onClose={ResetForm}>
       <div className="new-coparent-wrapper">
         <Spacer height={5} />
         <div id="new-coparent-container" className={`${theme} form`}>
           <div className="form new-coparent-form">
-            {connectOrNew === 'new' && (
+            {linkOrNew === 'new' && (
               <InputWrapper inputType={InputTypes.text} required={true} labelText={'Name'} onChange={(e) => setName(e.target.value)} />
             )}
             <InputWrapper
@@ -145,7 +131,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
               labelText={'Email Address'}
               onChange={(e) => setEmail(e.target.value)}
             />
-            {connectOrNew === 'new' && (
+            {linkOrNew === 'new' && (
               <InputWrapper
                 inputType={InputTypes.address}
                 labelText={'Home Address'}
@@ -167,7 +153,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
                 currentUser,
                 customLabelArray: ['Biological', 'Step-Parent', 'Guardian', 'Other'],
               })}
-              onCheck={handleCoparentType}
+              onCheck={HandleCoparentType}
             />
           </div>
         </div>

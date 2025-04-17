@@ -165,18 +165,17 @@ export default function FullMenu() {
               </div>
             </>
           )}
+          {/* MEMORIES */}
+          <div
+            className={`menu-item memories ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
+            onClick={(e) => changeCurrentScreen(ScreenNames.memories, e)}>
+            <div className="svg-wrapper">
+              <IoMdPhotos />
+            </div>
+            <p>Memories</p>
+          </div>
           {AppManager.getAccountType(currentUser) === 'parent' && (
             <>
-              {/* MEMORIES */}
-              <div
-                className={`menu-item memories ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
-                onClick={(e) => changeCurrentScreen(ScreenNames.memories, e)}>
-                <div className="svg-wrapper">
-                  <IoMdPhotos />
-                </div>
-                <p>Memories</p>
-              </div>
-
               {/* CHILD INFO */}
               <div
                 className={`menu-item child-info ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}

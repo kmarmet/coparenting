@@ -12,7 +12,6 @@ const DB = {
     calendarEvents: 'calendarEvents',
     transferChangeRequests: 'transferChangeRequests',
     documents: 'documents',
-    suggestions: 'suggestions',
     memories: 'memories',
     notificationSubscribers: 'notificationSubscribers',
     notifications: 'notifications',

@@ -46,6 +46,17 @@ export default function NavBar({children, navbarClass}) {
               </div>
 
               {/* CHATS */}
+              {currentUser?.accountType === 'child' && (
+                <div
+                  id="memories-menu-item"
+                  onClick={() => changeCurrentScreen(ScreenNames.memories)}
+                  className={`${currentScreen === ScreenNames.memories ? 'active menu-item' : 'menu-item'}`}>
+                  <IoChatbubblesOutline className={'memories'} />
+                  <p>Memories</p>
+                </div>
+              )}
+
+              {/* CHATS */}
               {currentUser && currentUser?.accountType === 'parent' && (
                 <div
                   id="chat-menu-item"

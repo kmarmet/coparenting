@@ -34,8 +34,8 @@ export default function NewDocument() {
   const [docName, setDocName] = useState('')
   const [doc, setDoc] = useState()
 
-  const resetForm = (successMessage = '') => {
-    Manager.resetForm('upload-doc-wrapper')
+  const ResetForm = (successMessage = '') => {
+    Manager.ResetForm('upload-doc-wrapper')
     setShareWith([])
     setDocType(null)
     setDoc(null)
@@ -158,7 +158,7 @@ export default function NewDocument() {
     }
     //#endregion ADD TO DB / SEND NOTIFICATION
 
-    resetForm('Document Uploaded!')
+    ResetForm('Document Uploaded!')
   }
 
   const storeTextInFirebase = async (txt, fileName) => {
@@ -199,7 +199,7 @@ export default function NewDocument() {
       submitText={'Upload'}
       showCard={creationFormToShow === CreationForms.documents}
       title={'Upload Document'}
-      onClose={resetForm}>
+      onClose={ResetForm}>
       <div className="upload-doc-wrapper">
         <Spacer height={10} />
         {/* PAGE CONTAINER */}

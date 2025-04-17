@@ -57,6 +57,22 @@ export default SmsManager = {
   getPhoneVerificationTemplate: function(verificationCode) {
     return `Please enter this code for Peaceful coParenting registration ${SmsManager.lineBreak} ${verificationCode}`;
   },
+  GetRemainingBalance: async function() {
+    var error, requestOptions, response, result;
+    requestOptions = {
+      method: 'GET',
+      redirect: 'follow'
+    };
+    try {
+      response = (await fetch('https://peaceful-coparenting.app:5000/messaging/GetTextBalance', requestOptions));
+      result = (await response.text());
+      console.log(result);
+      return result;
+    } catch (error1) {
+      error = error1;
+      return console.error(error);
+    }
+  },
   send: async function(phoneNumber, message) {
     var error, formData, requestOptions, response, result;
     console.log('sent');

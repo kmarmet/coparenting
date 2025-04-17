@@ -4,7 +4,7 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
-import React, {useContext, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import validator from 'validator'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager.coffee'
@@ -44,11 +44,10 @@ export default function NewCalendarEvent() {
   const [eventStartDate, setEventStartDate] = useState(moment(dateToEdit).format(DatetimeFormats.dateForDb))
   const [eventEndDate, setEventEndDate] = useState('')
   const [eventLocation, setEventLocation] = useState('')
-  const [eventTitle, setEventTitle] = useState('')
+  const [eventName, setEventName] = useState('')
   const [eventWebsite, setEventWebsite] = useState('')
   const [eventNotes, setEventNotes] = useState('')
-  const [recurringEndDate, setRecurringEndDate] = useState('')
-  const [repeatInterval, setRepeatInterval] = useState('')
+  const [recurringFrequency, setRecurringFrequency] = useState('')
   const [eventStartTime, setEventStartTime] = useState('')
   const [eventEndTime, setEventEndTime] = useState('')
   const [eventPhone, setEventPhone] = useState('')
@@ -66,17 +65,16 @@ export default function NewCalendarEvent() {
   const [includeChildren, setIncludeChildren] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
 
-  const resetForm = async (showSuccessAlert = false) => {
-    Manager.resetForm('new-event-form')
+  const ResetForm = async (showSuccessAlert = false) => {
+    Manager.ResetForm('new-event-form')
     setEventLength(EventLengths.single)
     setEventStartDate('')
     setEventEndDate('')
     setEventLocation('')
-    setEventTitle('')
+    setEventName('')
     setEventWebsite('')
     setEventNotes('')
-    setRecurringEndDate('')
-    setRepeatInterval('')
+    setRecurringFrequency('')
     setEventStartTime('')
     setEventEndTime('')
     setEventShareWith([])
@@ -106,7 +104,7 @@ export default function NewCalendarEvent() {
     const newEvent = new CalendarEvent()
 
     // Required
-    newEvent.title = StringManager.formatEventTitle(eventTitle)
+    newEvent.title = StringManager.formatEventTitle(eventName)
     if (isVisitation) {
       newEvent.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Visitation`
     }
@@ -130,7 +128,7 @@ export default function NewCalendarEvent() {
     newEvent.phone = StringManager.formatPhone(eventPhone)
     newEvent.websiteUrl = eventWebsite
     newEvent.reminderTimes = eventReminderTimes
-    newEvent.repeatInterval = repeatInterval
+    newEvent.repeatInterval = recurringFrequency
     newEvent.fromVisitationSchedule = isVisitation
     newEvent.isRecurring = eventIsRecurring
     newEvent.isCloned = Manager.isValid(clonedDates)
@@ -148,23 +146,23 @@ export default function NewCalendarEvent() {
         newEvent.phone = eventPhone
       }
 
-      if (Manager.isValid(eventReminderTimes) && !Manager.isValid(eventStartTime)) {
+      const errorString = Manager.GetInvalidInputsErrorString([
+        {name: 'Event Name', value: eventName},
+        {name: 'Date', value: eventStartDate},
+      ])
+
+      if (Manager.isValid(errorString)) {
+        AlertManager.throwError(errorString)
+        return false
+      }
+
+      if (showReminders && !Manager.isValid(eventStartTime)) {
         AlertManager.throwError('Please select a start time when using reminders')
         return false
       }
 
-      if (Manager.isValid(recurringEndDate) && !Manager.isValid(repeatInterval)) {
-        AlertManager.throwError('If you have chosen to repeat this event, please select an end month')
-        return false
-      }
-
-      if (!Manager.isValid(eventTitle, true)) {
-        AlertManager.throwError('Please enter an event name')
-        return false
-      }
-
-      if (!Manager.isValid(moment(eventStartDate).format(DatetimeFormats.dateForDb))) {
-        AlertManager.throwError('Please select an event date')
+      if (eventIsRecurring && !Manager.isValid(recurringFrequency)) {
+        AlertManager.throwError('If event is recurring, please select a frequency')
         return false
       }
 
@@ -223,12 +221,12 @@ export default function NewCalendarEvent() {
           eventShareWith,
           currentUser,
           `New Event 📅`,
-          `${eventTitle} on ${moment(eventStartDate).format(DatetimeFormats.readableMonthAndDay)}`,
+          `${eventName} on ${moment(eventStartDate).format(DatetimeFormats.readableMonthAndDay)}`,
           ActivityCategory.calendar
         )
       }
       //#endregion SINGLE DATE
-      await resetForm()
+      await ResetForm()
     }
   }
 
@@ -285,26 +283,17 @@ export default function NewCalendarEvent() {
         if (e.toLowerCase()?.indexOf('monthly') > -1) {
           selection = 'monthly'
         }
-        setRepeatInterval(selection)
+        setRecurringFrequency(selection)
         setShowCloneInput(false)
       },
       (e) => {
-        if (repeatInterval.toLowerCase() === e.toLowerCase()) {
-          setRepeatInterval(null)
+        if (recurringFrequency.toLowerCase() === e.toLowerCase()) {
+          setRecurringFrequency(null)
           setShowCloneInput(true)
         }
       },
       false
     )
-  }
-
-  const addThemeToDatePickers = () => {
-    setTimeout(() => {
-      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
-      if (datetimeParent) {
-        datetimeParent.classList.add(currentUser?.settings?.theme)
-      }
-    }, 100)
   }
 
   const addDateInput = () => {
@@ -338,13 +327,19 @@ export default function NewCalendarEvent() {
     cloneDateWrapper.append(wrapper)
   }
 
+  useEffect(() => {
+    if (dateToEdit) {
+      setEventStartDate(moment(dateToEdit).format(DatetimeFormats.dateForDb))
+    }
+  }, [dateToEdit])
+
   return (
     <>
       {/* FORM WRAPPER */}
       <Modal
         submitText={`Create Event`}
         className={`${theme} new-event-form new-calendar-event`}
-        onClose={resetForm}
+        onClose={ResetForm}
         onSubmit={submit}
         showCard={creationFormToShow === CreationForms.calendar}
         wrapperClass={`new-calendar-event`}
@@ -370,22 +365,22 @@ export default function NewCalendarEvent() {
             inputClasses="event-title-input"
             inputType={InputTypes.text}
             labelText={'Event Name'}
-            defaultValue={eventTitle}
+            defaultValue={eventName}
             placeholder="Event Name"
             required={true}
             isDebounced={false}
             inputValueType="input"
-            inputValue={eventTitle}
+            inputValue={eventName}
             onChange={async (e) => {
               const inputValue = e.target.value
-              setEventTitle(inputValue)
+              setEventName(inputValue)
             }}
           />
 
           {/* START DATE */}
           {eventLength === EventLengths.single && (
             <InputWrapper
-              defaultValue={moment(dateToEdit, DatetimeFormats.dateForDb).format(DatetimeFormats.dateForDb)}
+              defaultValue={dateToEdit}
               labelText={'Date'}
               uidClass="event-start-date"
               inputType={InputTypes.date}
@@ -490,67 +485,59 @@ export default function NewCalendarEvent() {
             </Accordion>
           )}
 
-          {/* RECURRING/CLONED */}
-          {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
-            <div id="repeating-container">
-              <Accordion id={'checkboxes'} expanded={eventIsRecurring}>
-                <AccordionSummary>
-                  <div className="flex">
-                    <p className="label">Recurring</p>
-                    <ToggleButton onCheck={() => setEventIsRecurring(!eventIsRecurring)} onUncheck={() => setEventIsRecurring(!eventIsRecurring)} />
-                  </div>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <CheckboxGroup
-                    elClass={`${theme}`}
-                    onCheck={handleRepeatingSelection}
-                    checkboxArray={Manager.buildCheckboxGroup({
-                      currentUser,
-                      labelType: 'recurring-intervals',
-                    })}
-                  />
+          {/* RECURRING */}
+          <div id="repeating-container">
+            <Accordion id={'checkboxes'} expanded={eventIsRecurring}>
+              <AccordionSummary>
+                <div className="flex">
+                  <p className="label">Recurring</p>
+                  <ToggleButton onCheck={() => setEventIsRecurring(true)} onUncheck={() => setEventIsRecurring(false)} />
+                </div>
+              </AccordionSummary>
+              <AccordionDetails>
+                <CheckboxGroup
+                  elClass={`${theme}`}
+                  onCheck={handleRepeatingSelection}
+                  checkboxArray={Manager.buildCheckboxGroup({
+                    currentUser,
+                    labelType: 'recurring-intervals',
+                  })}
+                />
 
-                  {Manager.isValid(repeatInterval) && (
-                    <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
-                      <MobileDatePicker
-                        onOpen={addThemeToDatePickers}
-                        className={`${theme}  w-100`}
-                        onChange={(e) => setEventEndDate(moment(e).format('MM-DD-yyyy'))}
-                      />
-                    </InputWrapper>
-                  )}
-                </AccordionDetails>
-              </Accordion>
-            </div>
-          )}
+                {Manager.isValid(recurringFrequency) && (
+                  <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
+                    <MobileDatePicker className={`${theme}  w-100`} onChange={(e) => setEventEndDate(moment(e).format('MM-DD-yyyy'))} />
+                  </InputWrapper>
+                )}
+              </AccordionDetails>
+            </Accordion>
+          </div>
 
           {/* CLONE */}
-          {(!currentUser?.accountType || currentUser?.accountType === 'parent') && eventLength === 'single' && (
-            <>
-              <div className="flex">
-                <Label text={'Duplicate'} />
-                <ToggleButton
-                  isDefaultChecked={false}
-                  onCheck={() => {
-                    setShowCloneInput(true)
-                    const dateWrapperElements = document.querySelectorAll('.cloned-date-wrapper input')
-                    if (showCloneInput && dateWrapperElements.length === 0) {
-                      addDateInput()
-                    }
-                  }}
-                  onUncheck={() => setShowCloneInput(false)}
-                />
-              </div>
+          <>
+            <div className="flex">
+              <Label text={'Duplicate'} />
+              <ToggleButton
+                isDefaultChecked={false}
+                onCheck={() => {
+                  setShowCloneInput(true)
+                  const dateWrapperElements = document.querySelectorAll('.cloned-date-wrapper input')
+                  if (showCloneInput && dateWrapperElements.length === 0) {
+                    addDateInput()
+                  }
+                }}
+                onUncheck={() => setShowCloneInput(false)}
+              />
+            </div>
 
-              {/* CLONED INPUTS */}
-              <div className={`cloned-date-wrapper form  ${showCloneInput === true ? 'active' : ''}`}></div>
-              {showCloneInput && (
-                <button className="default button" id="add-date-button" onClick={addDateInput}>
-                  Add Date
-                </button>
-              )}
-            </>
-          )}
+            {/* CLONED INPUTS */}
+            <div className={`cloned-date-wrapper form  ${showCloneInput === true ? 'active' : ''}`}></div>
+            {showCloneInput && (
+              <button className="default button" id="add-date-button" onClick={addDateInput}>
+                Add Date
+              </button>
+            )}
+          </>
 
           <Spacer height={5} />
 

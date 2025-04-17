@@ -199,7 +199,7 @@ const DB_UserScoped = {
     } else {
       updatedCoparents = [newCoparent]
     }
-    await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/coparents`), updatedCoparents)
+    await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/coparents/`), updatedCoparents)
   },
   addUserChild: async (currentUser, newChild) => {
     const dbRef = ref(getDatabase())
@@ -317,9 +317,11 @@ const DB_UserScoped = {
   },
   updateCoparent: async (currentUser, coparent, prop, value) => {
     const dbRef = ref(getDatabase())
+    console.log(coparent.name)
     let key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/coparents`, coparent, 'key')
     await set(child(dbRef, `users/${currentUser?.key}/coparents/${key}/${StringManager.formatDbProp(prop)}`), value)
-    return await DB.getTable(`users/${currentUser?.key}/coparents/${key}`, true)
+    const updatedCoparent = await DB.getTable(`users/${currentUser?.key}/coparents/${key}`, true)
+    return updatedCoparent
   },
   updateUserRecord: async (keyOrUid, propPath, value) => {
     const dbRef = ref(getDatabase())

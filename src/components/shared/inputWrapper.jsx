@@ -23,7 +23,10 @@ function InputWrapper({
   onKeyUp = (e) => {},
   onDateOrTimeSelection = (e) => {},
   isDebounced = true,
+  timeViews = ['hours', 'minutes'],
+  dateViews = ['month', 'day'],
   placeholder = '',
+  dateFormat = DatetimeFormats.readableMonthAndDay,
 }) {
   const {state, setState} = useContext(globalState)
   const {refreshKey, theme} = state
@@ -42,7 +45,7 @@ function InputWrapper({
           wrapper.classList.remove('active')
         }}
         id="input-wrapper"
-        className={`${wrapperClasses}  ${inputType} ${Manager.isValid(defaultValue) ? 'show-label' : ''}`}>
+        className={`${wrapperClasses} ${inputType} ${Manager.isValid(defaultValue) ? 'show-label' : ''}`}>
         {/* LABEL */}
         {Manager.isValid(labelText) && <Label classes={Manager.isValid(defaultValue) ? 'active' : ''} text={`${labelText}`} required={required} />}
 
@@ -55,6 +58,21 @@ function InputWrapper({
             onChange={onChange}
             debounceTimeout={isDebounced ? 1000 : 0}
             key={refreshKey}
+          />
+        )}
+
+        {/* NUMBER */}
+        {inputType === InputTypes.number && (
+          <input
+            type="tel"
+            id="number"
+            name="number"
+            placeholder={labelText}
+            key={refreshKey}
+            pattern="[0-9]"
+            defaultValue={defaultValue}
+            required={required}
+            onChange={onChange}
           />
         )}
 
@@ -75,18 +93,18 @@ function InputWrapper({
         )}
 
         {/* ADDRESS */}
-        {inputType === InputTypes.address && <AddressInput defaultValue={defaultValue} onSelection={onChange} key={refreshKey} />}
+        {inputType === InputTypes.address && <AddressInput defaultValue={defaultValue} onSelection={onChange} />}
 
         {/* DATE */}
         {inputType === InputTypes.date && (
           <MobileDatePicker
             showDaysOutsideCurrentMonth={true}
             label={labelText}
-            views={['month', 'day']}
+            views={dateViews}
             className={`${theme} ${inputClasses}`}
-            defaultValue={Manager.isValid(defaultValue) ? moment(defaultValue) : null}
+            value={Manager.isValid(defaultValue) ? moment(defaultValue) : null}
             key={refreshKey}
-            format={DatetimeFormats.readableMonthAndDay}
+            format={dateFormat}
             onAccept={onDateOrTimeSelection}
           />
         )}
@@ -111,6 +129,7 @@ function InputWrapper({
                 actions: ['clear', 'accept'],
               },
             }}
+            views={timeViews}
             value={Manager.isValid(defaultValue) ? moment(defaultValue, DatetimeFormats.timeForDb) : null}
             label={labelText}
             minutesStep={5}

@@ -6,7 +6,6 @@ import globalState from '../../context'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import UploadInputs from '/src/components/shared/uploadInputs'
-import DateFormats from '/src/constants/datetimeFormats'
 import ExpenseCategories from '/src/constants/expenseCategories.js'
 import DB from '../../database/DB'
 import DB_UserScoped from '../../database/db_userScoped'
@@ -14,6 +13,7 @@ import FirebaseStorage from '/src/database/firebaseStorage'
 import AlertManager from '/src/managers/alertManager'
 import DateManager from '/src/managers/dateManager'
 import ImageManager from '/src/managers/imageManager'
+import {GrPowerReset} from 'react-icons/gr'
 import NotificationManager from '/src/managers/notificationManager'
 import Manager from '../../managers/manager'
 import ObjectManager from '/src/managers/objectManager'
@@ -31,8 +31,9 @@ import CreationForms from '../../constants/creationForms'
 import ToggleButton from '../shared/toggleButton'
 import Label from '../shared/label'
 import InputTypes from '../../constants/inputTypes'
+import DatetimeFormats from '../../constants/datetimeFormats'
 
-export default function NewExpenseForm({hideCard}) {
+export default function NewExpenseForm() {
   const {state, setState} = useContext(globalState)
   const {currentUser, theme, refreshKey, authUser, creationFormToShow} = state
   const [expenseName, setExpenseName] = useState('')
@@ -50,10 +51,10 @@ export default function NewExpenseForm({hideCard}) {
   const [shareWith, setShareWith] = useState([])
   const [recurringFrequency, setRecurringFrequency] = useState('')
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
-  const [expenseAmount, setExpenseAmount] = useState('')
+  const [expenseAmount, setExpenseAmount] = useState(0)
 
-  const resetForm = async (showAlert) => {
-    Manager.resetForm('expenses-wrapper')
+  const ResetForm = async (showAlert) => {
+    Manager.ResetForm('expenses-wrapper')
     setExpenseName('')
     setExpenseChildren([])
     setExpenseDueDate('')
@@ -80,7 +81,7 @@ export default function NewExpenseForm({hideCard}) {
     })
   }
 
-  const submitNewExpense = async () => {
+  const SubmitNewExpense = async () => {
     //#region VALIDATION
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
     if (validAccounts === 0) {
@@ -114,7 +115,7 @@ export default function NewExpenseForm({hideCard}) {
     const newExpense = new Expense()
     newExpense.name = expenseName
     newExpense.children = expenseChildren
-    newExpense.amount = parseInt(expenseAmount)
+    newExpense.amount = StringManager.FormatAsWholeNumber(expenseAmount)
     newExpense.category = expenseCategory
     newExpense.dueDate = Manager.isValid(expenseDueDate) ? moment(expenseDueDate).format(DatetimeFormats.dateForDb) : ''
     newExpense.creationDate = Manager.getCurrentDate()
@@ -156,7 +157,7 @@ export default function NewExpenseForm({hideCard}) {
     await DB.add(`${DB.tables.expenses}/${currentUser?.key}`, cleanObject).finally(async () => {
       // Add repeating expense to DB
       if (recurringFrequency.length > 0 && repeatingEndDate.length > 0) {
-        await addRepeatingExpensesToDb()
+        await AddRepeatingExpensesToDb()
       }
 
       // Send notification
@@ -171,11 +172,11 @@ export default function NewExpenseForm({hideCard}) {
       }
 
       // Go back to expense screen
-      await resetForm(true)
+      await ResetForm(true)
     })
   }
 
-  const addRepeatingExpensesToDb = async () => {
+  const AddRepeatingExpensesToDb = async () => {
     let expensesToPush = []
     let datesToRepeat = CalendarMapper.recurringEvents(recurringFrequency, expenseDueDate, repeatingEndDate)
 
@@ -202,7 +203,7 @@ export default function NewExpenseForm({hideCard}) {
     }
   }
 
-  const handleChildSelection = (e) => {
+  const HandleChildSelection = (e) => {
     const childName = e.getAttribute('data-label')
     Manager.handleCheckboxSelection(
       e,
@@ -216,12 +217,12 @@ export default function NewExpenseForm({hideCard}) {
     )
   }
 
-  const handleShareWithSelection = async (e) => {
+  const HandleShareWithSelection = async (e) => {
     const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 
-  const handlePayerSelection = async (e) => {
+  const HandlePayerSelection = async (e) => {
     Manager.handleCheckboxSelection(
       e,
       async () => {
@@ -244,7 +245,7 @@ export default function NewExpenseForm({hideCard}) {
     )
   }
 
-  const handleRepeatingSelection = async (e) => {
+  const HandleRecurringSelection = async (e) => {
     const repeatingWrapper = document.getElementById('repeating-container')
     const checkboxWrappers = repeatingWrapper.querySelectorAll('#checkbox-wrapper, #label-wrapper')
     checkboxWrappers.forEach((wrapper) => {
@@ -277,41 +278,36 @@ export default function NewExpenseForm({hideCard}) {
     )
   }
 
-  const onDefaultAmountPress = (e) => {
+  const OnDefaultAmountPress = (e) => {
     const numberButton = e.target
-    const number = parseInt(e.target.textContent.replace('$', ''))
+    const asNumber = parseInt(e.target.textContent.replace('$', ''))
     const currentNumber = parseInt(expenseAmount || 0)
-    const total = number + currentNumber
-    setExpenseAmount(() => total.toString())
+    const total = asNumber + currentNumber
+    setExpenseAmount(() => total)
+    const inputWrapper = document.querySelector('.input-wrapper')
+    const amountInput = inputWrapper.querySelector('input')
+    amountInput.value = total
     numberButton.classList.add('pressed', 'animate', 'active')
     setTimeout(() => {
       numberButton.classList.remove('pressed')
     }, 50)
   }
 
-  const handleCategorySelection = async (category) => {
+  const HandleCategorySelection = async (category) => {
     setExpenseCategory(category.target.value)
-  }
-
-  const preventDot = (e) => {
-    const key = e.charCode ? e.charCode : e.keyCode
-
-    if (key === 110) {
-      e.preventDefault()
-    }
   }
 
   return (
     <Modal
       refreshKey={refreshKey}
       hasDelete={false}
-      onSubmit={submitNewExpense}
-      submitText={'Submit'}
+      onSubmit={SubmitNewExpense}
+      submitText={'Create'}
       title={'Create Expense'}
       className="new-expense-card"
       wrapperClass="new-expense-card"
       showCard={creationFormToShow === CreationForms.expense}
-      onClose={resetForm}>
+      onClose={ResetForm}>
       <div className="expenses-wrapper">
         <Spacer height={5} />
         {/* PAGE CONTAINER */}
@@ -320,56 +316,69 @@ export default function NewExpenseForm({hideCard}) {
           <div id="amount-input-wrapper">
             <span className="flex input-wrapper">
               <span id="dollar-sign">$</span>
-              <input
-                type="number"
+              <InputWrapper
                 id="amount-input"
-                value={expenseAmount}
-                onKeyDown={preventDot}
-                onChange={(e) => setExpenseAmount(e.target.value)}
-                placeholder={`${expenseAmount.length > 0 ? expenseAmount : '0'}`}
+                hasBottomSpacer={false}
+                inputType={InputTypes.number}
+                onChange={(e) => {
+                  const numbersOnly = StringManager.RemoveAllLetters(e.target.value).replaceAll('.', '')
+                  e.target.value = numbersOnly
+                  setExpenseAmount(numbersOnly)
+                }}
+                defaultValue={0}
               />
             </span>
           </div>
 
           {/* DEFAULT EXPENSE AMOUNTS */}
           <div id="default-expense-amounts">
-            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
+              $5
+            </button>
+            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
               $10
             </button>
-            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
               $20
             </button>
-            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
               $30
             </button>
-            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
               $40
             </button>
-            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
               $50
             </button>
-            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
               $60
             </button>
-            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
               $70
             </button>
-            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
               $80
             </button>
-            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
               $90
             </button>
-            <button className="default-amount-button default grey button" onClick={(e) => onDefaultAmountPress(e)}>
+            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
               $100
             </button>
-            <button className="default-amount-button reset" onClick={() => setExpenseAmount('')}>
-              Reset
+            <button
+              className="default-amount-button reset"
+              onClick={() => {
+                const inputWrapper = document.getElementById('amount-input-wrapper')
+                const amountInput = inputWrapper.querySelector('input')
+                amountInput.value = 0
+                setExpenseAmount(0)
+              }}>
+              Reset <GrPowerReset />
             </button>
           </div>
 
-          {/* EXPENSE TYPE */}
-          <SelectDropdown selectValue={expenseCategory} onChange={handleCategorySelection} labelText={'Category'}>
+          {/* CATEGORY */}
+          <SelectDropdown selectValue={expenseCategory} onChange={HandleCategorySelection} labelText={'Category'}>
             {Object.keys(ExpenseCategories).map((type, index) => {
               return (
                 <MenuItem key={index} value={type}>
@@ -404,11 +413,11 @@ export default function NewExpenseForm({hideCard}) {
               currentUser,
               predefinedType: 'coparents',
             })}
-            onCheck={handlePayerSelection}
+            onCheck={HandlePayerSelection}
           />
 
           {/* SHARE WITH */}
-          <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
+          <ShareWithCheckboxes onCheck={HandleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {currentUser && currentUser?.children !== undefined && (
@@ -423,32 +432,26 @@ export default function NewExpenseForm({hideCard}) {
                     currentUser,
                     labelType: 'children',
                   })}
-                  onCheck={handleChildSelection}
+                  onCheck={HandleChildSelection}
                 />
               )}
             </div>
           )}
 
           {/* RECURRING? */}
-          <div className="share-with-container" id="repeating-container">
-            <div className="share-with-container ">
-              {Manager.isValid(expenseDueDate, true) && (
-                <div className="flex">
-                  <Label text={'Recurring'} />
-                  <ToggleButton onCheck={() => setIsRecurring(true)} onUncheck={() => setIsRecurring(false)} />
-                </div>
-              )}
-              {isRecurring && (
-                <CheckboxGroup
-                  onCheck={handleRepeatingSelection}
-                  checkboxArray={Manager.buildCheckboxGroup({
-                    currentUser,
-                    labelType: 'recurring-intervals',
-                  })}
-                />
-              )}
-            </div>
+          <div className="flex">
+            <Label text={'Recurring'} />
+            <ToggleButton onCheck={() => setIsRecurring(true)} onUncheck={() => setIsRecurring(false)} />
           </div>
+          {isRecurring && (
+            <CheckboxGroup
+              onCheck={HandleRecurringSelection}
+              checkboxArray={Manager.buildCheckboxGroup({
+                currentUser,
+                labelType: 'recurring-intervals',
+              })}
+            />
+          )}
 
           {/* UPLOAD INPUTS */}
           {shareWith.length > 0 && payer.name.length > 0 && expenseName.length > 0 && expenseAmount.length > 0 && (
@@ -466,6 +469,8 @@ export default function NewExpenseForm({hideCard}) {
               uploadButtonText="Choose"
             />
           )}
+
+          <Spacer height={20} />
         </div>
       </div>
     </Modal>

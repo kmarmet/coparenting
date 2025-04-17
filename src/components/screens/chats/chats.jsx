@@ -20,6 +20,7 @@ import InputWrapper from '../../shared/inputWrapper'
 import NavBar from '../../navBar'
 import Label from '../../shared/label'
 import ChatManager from '../../../managers/chatManager'
+import InputTypes from '../../../constants/inputTypes'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
@@ -87,8 +88,8 @@ const Chats = () => {
         }}
         hideCard={() => setShowInvitationCard(false)}>
         <Spacer height={5} />
-        <InputWrapper labelText={'Name'} required={true} onChange={(e) => setInviteeName(e.target.value)} />
-        <InputWrapper labelText={'Email Address'} required={true} onChange={(e) => setInviteeEmail(e.target.value)} />
+        <InputWrapper inputType={InputTypes.text} labelText={'Name'} required={true} onChange={(e) => setInviteeName(e.target.value)} />
+        <InputWrapper inputType={InputTypes.email} labelText={'Email Address'} required={true} onChange={(e) => setInviteeEmail(e.target.value)} />
       </Modal>
 
       {/* PAGE CONTAINER */}
@@ -133,14 +134,15 @@ const Chats = () => {
           </AccordionDetails>
         </Accordion>
         <Spacer height={8} />
-        <Fade direction={'right'} damping={0.2} duration={800} triggerOnce={true} cascade={true}>
-          <></>
-          {/* CHAT ROWS */}
-          {chats.length > 0 &&
-            chats.map((chat, index) => {
-              return <ChatRow key={index} chat={chat} index={index} />
-            })}
-        </Fade>
+        {Manager.isValid(chats) && (
+          <Fade direction={'right'} damping={0.2} duration={800} triggerOnce={true} cascade={true}>
+            {/* CHAT ROWS */}
+            {chats.length > 0 &&
+              chats.map((chat, index) => {
+                return <ChatRow key={index} chat={chat} index={index} />
+              })}
+          </Fade>
+        )}
         <NavBar />
       </div>
     </>

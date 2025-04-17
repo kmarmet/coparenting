@@ -1,13 +1,10 @@
-ScreenNames =
-  profile: 'profile'
-  notifications: 'notifications'
+ScreenNames = {
   adminDashboard: 'adminDashboard'
+  archives: "archives"
   calendar: 'calendar'
   chat: 'chat'
   chats: 'chats'
   childInfo: 'childInfo'
-  childSelector: 'childSelector'
-  contactSupport: 'contactSupport'
   contactUs: 'contactUs'
   coparentVerification: 'coparentVerification'
   coparents: 'coparents'
@@ -34,12 +31,13 @@ ScreenNames =
   newMemory: 'newMemory'
   newSwapRequest: 'newSwapRequest'
   newTransferRequest: 'newTransferRequest'
-  archives: "archives"
+  notifications: 'notifications'
+  profile: 'profile'
   registration: 'registration'
+  requestParentAccess: "requestParentAccess"
   resetEmail: 'resetEmail'
   resetPassword: 'resetPassword'
   reviseTransferRequest: 'reviseTransferRequest'
-  requestParentAccess: "requestParentAccess"
   settings: 'settings'
   swapRequests: 'swapRequests'
   transferRequests: 'transferRequests'
@@ -49,4 +47,6 @@ ScreenNames =
   uploadDocuments: 'uploadDocuments'
   userDetails: 'userDetails'
   visitation: 'visitation'
+}
+
 export default ScreenNames

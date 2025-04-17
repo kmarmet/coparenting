@@ -148,7 +148,7 @@ export default NotificationManager =
     newNotification.category = category
 
     await DB.add "#{DB.tables.notifications}/#{recipientKey}", newNotification
-
+    console.log("Sent to #{recipientKey}")
     # Do not send notification in dev
     if !window.location.href.includes("localhost")
       fetch "https://api.onesignal.com/notifications", requestOptions

@@ -6,6 +6,14 @@ import lzstring from "lz-string";
 import Manager from "./manager";
 
 StringManager = {
+  FormatAsWholeNumber: function(number) {
+    var asString, dotIndex;
+    asString = number.toString();
+    if (asString.indexOf('.') > -1) {
+      dotIndex = asString.indexOf('.');
+      return parseInt(asString.substring(0, dotIndex));
+    }
+  },
   getReadablePhoneNumber: function(phoneNumber) {
     var cleaned, formattedPhone, match;
     formattedPhone = phoneNumber;
@@ -28,6 +36,9 @@ StringManager = {
     }
     returnString = returnString.split(' ')[0];
     return StringManager.uppercaseFirstLetterOfAllWords(returnString);
+  },
+  RemoveAllLetters: function(input) {
+    return input.replace(/[a-zA-Z]/g, '');
   },
   isAllUppercase: function(input) {
     return input === input.toUpperCase();

@@ -39,8 +39,7 @@ export default function UserDetails() {
       key: authUser?.uid,
     }
     const newUser = await DB_UserScoped.createAndInsertUser(userObject)
-    AlertManager.successAlert('Success!')
-    setState({...state, currentScreen: ScreenNames.calendar, currentUser: newUser})
+    setState({...state, currentScreen: ScreenNames.calendar, currentUser: newUser, successAlertMessage: 'Success'})
   }
 
   const handleAccountType = (type) => {

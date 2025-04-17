@@ -7,6 +7,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      justify-content: center;
 
       button {
         display: flex;
@@ -14,10 +15,8 @@
         justify-content: center;
         background-color: $accent;
         color: white;
-        padding: 8px 15px;
         border-radius: $borderRadius;
         font-size: 16px;
-        min-width: 50%;
         text-align: center;
         border: 0;
 
@@ -50,18 +49,21 @@
       grid-template-columns: repeat(4, 1fr);
       .tool-box {
         padding: 20px;
-        background: $grey;
         border-radius: $borderRadius;
         width: 100%;
         margin-bottom: 15px;
         height: 100%;
+        border: 1px solid $lightBorderColor;
 
         #code-block {
-          background: #282a37;
+          background: #272822;
+
           padding: 20px;
           border-radius: $borderRadius;
           color: white;
           margin-top: 15px;
+          white-space: wrap;
+          max-width: 100%;
 
           code {
             -ms-word-wrap: break-word;

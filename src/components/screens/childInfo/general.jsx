@@ -51,7 +51,8 @@ function General({activeChild}) {
       if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
-      if (values[0][1].length === 0) {
+      const valuesArr = values.filter((x) => x[1].length === 0).map((x) => x[1])
+      if (valuesArr.length === values.length) {
         setGeneralValues([])
       } else {
         setGeneralValues(values)

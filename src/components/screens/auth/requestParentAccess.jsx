@@ -10,6 +10,7 @@ import validator from 'validator'
 import DB from '../../../database/DB'
 import StringManager from '../../../managers/stringManager'
 import ScreenNames from '../../../constants/screenNames'
+import InputTypes from '../../../constants/inputTypes'
 
 export default function RequestParentAccess() {
   const {state, setState} = useContext(globalState)
@@ -19,23 +20,34 @@ export default function RequestParentAccess() {
   const [enteredCode, setEnteredCode] = useState(0)
   const [verificationCode, setVerificationCode] = useState('')
   const [userName, setUserName] = useState('')
+  const [parentEmail, setParentEmail] = useState('')
   // SEND VERIFICATION CODE
   const sendPhoneVerificationCode = async (codeResent = false) => {
+    const errorString = Manager.GetInvalidInputsErrorString([
+      {name: 'Your Name', value: userName},
+      {name: 'Parent Email', value: parentEmail},
+      {name: 'Parent Phone', value: parentPhone},
+    ])
+
+    if (Manager.isValid(errorString)) {
+      AlertManager.throwError(errorString)
+      return false
+    }
     if ((!parentPhone || !validator.isMobilePhone(parentPhone)) && !codeResent) {
       AlertManager.throwError('Phone number is not valid')
       return false
     } else {
-      const users = await DB.getTable(`${DB.tables.users}`)
-      const parent = users.find((x) => x.phone === parentPhone)
+      const parent = await DB.find(DB.tables.users, ['email', parentEmail], true)
 
       if (!parent) {
-        AlertManager.throwError('No parent profile found with provided phone number', 'Please check the phone number and enter again')
-        setErrorAlertTextColor()
+        AlertManager.throwError(
+          'No Parent Profile Found',
+          'Please check the email and enter again or let your parent know they will need to register an account'
+        )
         return false
       }
       if (parentPhone === currentUser?.phone) {
         AlertManager.throwError('Unable to request access', "Your parent's phone number cannot be your phone number")
-        setErrorAlertTextColor()
         return false
       }
       const phoneCode = Manager.getUid().slice(0, 6)
@@ -55,32 +67,24 @@ export default function RequestParentAccess() {
 
     // Access granted
     if (enteredCode === verificationCode) {
-      const childAccount = {
-        key: currentUser?.key,
-        phone: currentUser?.phone,
-        name: StringManager.getFirstNameOnly(StringManager.uppercaseFirstLetterOfAllWords(userName)),
-      }
-      const allUsers = await DB.getTable(DB.tables.users)
-      const parent = allUsers.find((x) => x.phone === parentPhone)
+      const parent = await DB.find(DB.tables.users, ['email', parentEmail], true)
 
       if (parent) {
-        await DB.add(`${DB.tables.users}/${parent?.key}/childAccounts`, childAccount)
-        await DB.add(`${DB.tables.users}/${currentUser?.key}/parents`, {name: parent?.name, phone: parent?.phone, key: parent?.key})
+        await DB.add(`${DB.tables.users}/${currentUser?.key}/parents`, {name: parent?.name, phone: parent?.phone, linkedKey: parent?.key})
         await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/parentAccessGranted`, true)
         await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/name`, StringManager.uppercaseFirstLetterOfAllWords(userName))
-        AlertManager.successAlert('Access Granted!')
-        setState({...state, currentScreen: ScreenNames.calendar})
+        setState({...state, currentScreen: ScreenNames.calendar, successAlertMessage: 'Access Granted'})
+      } else {
+        AlertManager.throwError(
+          'No parent profile found with provided email',
+          'Please check the email and enter again or let your parent know they will need to register an account'
+        )
+        return false
       }
     } else {
       AlertManager.throwError('Security code is incorrect, please try again')
-      setErrorAlertTextColor()
       return false
     }
-  }
-
-  const setErrorAlertTextColor = () => {
-    const text = document.getElementById('swal2-html-container')
-    text.style.color = 'white'
   }
 
   return (
@@ -88,25 +92,35 @@ export default function RequestParentAccess() {
       <p className="screen-title">Request Access from Parent</p>
       <p className="mb-10">For privacy and security, your parent must provide a code to give you access.</p>
       <p className="mb-10">
-        When you enter your parent&#39;s phone number and {DomManager.tapOrClick()} the Request Access button, a text message with the will be sent to
-        your parent.
+        When you enter your parent&#39;s phone number and {DomManager.tapOrClick()} the Request Access button, a text message with the code will be
+        sent to your parent.
       </p>
-      <p className="mb-10">That parent will receive a security code. Ask them to provide it to you and enter it below.</p>
+      <p className="mb-10">Ask them to provide it to you and enter it below.</p>
 
       {/* NAME */}
-      {!readyToVerify && <InputWrapper inputType={'input'} required={true} labelText={'Your Name'} onChange={(e) => setUserName(e.target.value)} />}
+      {!readyToVerify && (
+        <InputWrapper inputType={InputTypes.text} required={true} labelText={'Your Name'} onChange={(e) => setUserName(e.target.value)} />
+      )}
+
+      {!readyToVerify && (
+        <InputWrapper
+          inputType={InputTypes.email}
+          required={true}
+          labelText={'Parent Email Address'}
+          onChange={(e) => setParentEmail(e.target.value)}
+        />
+      )}
 
       {/* PARENT PHONE */}
       {!readyToVerify && (
         <InputWrapper
-          inputType={'input'}
-          inputValueType="number"
+          inputType={InputTypes.phone}
           required={true}
           labelText={'Parent Phone Number'}
           onChange={(e) => setParentPhone(e.target.value)}
         />
       )}
-      {readyToVerify && <InputWrapper labelText={'Access Code'} onChange={(e) => setEnteredCode(e.target.value)} />}
+      {readyToVerify && <InputWrapper labelText={'Access Code'} inputType={InputTypes.text} onChange={(e) => setEnteredCode(e.target.value)} />}
       {!readyToVerify && (
         <button className="button default green center mt-30" onClick={sendPhoneVerificationCode}>
           Request Access

@@ -34,8 +34,8 @@ export default function NewTransferChangeRequest() {
   const [preferredLocation, setPreferredLocation] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
 
-  const resetForm = async (showSuccessAlert = false) => {
-    Manager.resetForm('transfer-request-wrapper')
+  const ResetForm = async (showSuccessAlert = false) => {
+    Manager.ResetForm('transfer-request-wrapper')
     setRequestReason('')
     setShareWith([])
     setRequestTime('')
@@ -117,7 +117,7 @@ export default function NewTransferChangeRequest() {
       ActivityCategory.transferRequest
     )
 
-    await resetForm(true)
+    await ResetForm(true)
   }
 
   const handleShareWithSelection = async (e) => {
@@ -141,7 +141,7 @@ export default function NewTransferChangeRequest() {
       wrapperClass="new-transfer-request"
       title={'Request Transfer Change '}
       showCard={creationFormToShow === creationForms.transferRequest}
-      onClose={resetForm}>
+      onClose={ResetForm}>
       <div className="transfer-request-wrapper">
         <Spacer height={5} />
         <div id="transfer-change-container" className={`${theme} form`}>

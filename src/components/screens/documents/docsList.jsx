@@ -56,35 +56,36 @@ export default function DocsList() {
 
         {!Manager.isValid(selectedDoc) && (
           <div className="sections">
-            <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={0.2}>
-              <></>
-              {Manager.isValid(docs) &&
-                docs.map((doc, index) => {
-                  const documentExts = ['doc', 'docx', 'pdf', 'txt', 'odt']
-                  const fileType = documentExts.includes(StringManager.getFileExtension(doc.name).toString()) ? 'Document' : 'Image'
-                  return (
-                    <div
-                      className="row"
-                      key={index}
-                      onClick={(e) => {
-                        if (!Manager.contains(e.target.classList, 'delete')) {
-                          setSelectedDoc(doc)
-                          setState({...state, docToView: doc, currentScreen: ScreenNames.docViewer})
-                        }
-                      }}>
-                      <div className="flex section">
-                        <p data-id={doc.id}>
-                          {fileType === 'Document' ? <HiDocumentText className={'file-type'} /> : <FaFileImage className={'file-type'} />}
-                          {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
-                        </p>
-                        <div className={`checkbox delete`} onClick={deleteDoc}>
-                          <HiDocumentRemove className={'delete-icon'} />
+            {Manager.isValid(docs) && (
+              <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={0.2}>
+                {Manager.isValid(docs) &&
+                  docs.map((doc, index) => {
+                    const documentExts = ['doc', 'docx', 'pdf', 'txt', 'odt']
+                    const fileType = documentExts.includes(StringManager.getFileExtension(doc.name).toString()) ? 'Document' : 'Image'
+                    return (
+                      <div
+                        className="row"
+                        key={index}
+                        onClick={(e) => {
+                          if (!Manager.contains(e.target.classList, 'delete')) {
+                            setSelectedDoc(doc)
+                            setState({...state, docToView: doc, currentScreen: ScreenNames.docViewer})
+                          }
+                        }}>
+                        <div className="flex section">
+                          <p data-id={doc.id}>
+                            {fileType === 'Document' ? <HiDocumentText className={'file-type'} /> : <FaFileImage className={'file-type'} />}
+                            {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
+                          </p>
+                          <div className={`checkbox delete`} onClick={deleteDoc}>
+                            <HiDocumentRemove className={'delete-icon'} />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )
-                })}
-            </Fade>
+                    )
+                  })}
+              </Fade>
+            )}
           </div>
         )}
       </div>

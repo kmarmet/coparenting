@@ -10,6 +10,7 @@ export default ArchiveManager = {
     csvRows = [];
     formattedHeaders = [];
     headers = Object.keys(data[0]);
+    console.log(data);
     formattedData = [];
     for (i = 0, len = data.length; i < len; i++) {
       obj = data[i];

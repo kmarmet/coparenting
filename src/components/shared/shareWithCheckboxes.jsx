@@ -1,12 +1,11 @@
 // Path: src\components\shared\shareWithCheckboxes.jsx
 import Manager from '../../managers/manager'
-import React, { useContext, useEffect, useState } from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../context'
 import Label from './label'
 import DB from '../../database/DB'
 import StringManager from '../../managers/stringManager.coffee'
 import Checkbox from './checkbox.jsx'
-import DB_UserScoped from '../../database/db_userScoped'
 
 export default function ShareWithCheckboxes({
   defaultKeys = [],
@@ -16,42 +15,46 @@ export default function ShareWithCheckboxes({
   required = true,
   labelText = '',
 }) {
-  const { state, setState } = useContext(globalState)
-  const { theme, currentUser, menuIsOpen, creationFormToShow } = state
+  const {state, setState} = useContext(globalState)
+  const {theme, currentUser, creationFormToShow} = state
   const [shareWith, setShareWith] = useState([])
 
   const setShareWithUsers = async () => {
-    let people = []
+    let accounts = []
+    const childAccounts = currentUser?.children?.filter((x) => x.linkedKey)
+    const parentAccounts = currentUser?.parents?.filter((x) => x.linkedKey)
+
     if (Manager.isValid(currentUser)) {
       // COPARENTS
       if (Manager.isValid(currentUser?.coparents)) {
-        people = [...people, [...currentUser.coparents]].filter((x) => x)
+        accounts = [...accounts, ...currentUser.coparents].filter((x) => x)
       }
 
       // PARENTS
       if (Manager.isValid(currentUser?.parents)) {
-        people = [...people, [...currentUser.parents]].filter((x) => x)
-      }
-
-      // CHILDREN
-      if (Manager.isValid(currentUser?.childAccounts)) {
-        let childrenAccounts = []
-        for (let child of currentUser.childAccounts) {
-          childrenAccounts.push(child)
-        }
-        people = [...people, [...childrenAccounts]].filter((x) => x)
-      }
-
-      let peopleWithAccounts = []
-      if (Manager.isValid(people)) {
-        for (let person of people.flat()) {
-          const account = await DB.find(DB.tables.users, ['key', person?.key], true)
-          if (account) {
-            peopleWithAccounts.push(account)
+        let parentsAccounts = []
+        for (let parent of parentAccounts) {
+          const parentAccount = await DB.find(DB.tables.users, ['key', parent?.linkedKey], true)
+          if (Manager.isValid(parentAccount)) {
+            parentsAccounts.push(parentAccount)
           }
         }
-        setShareWith(Manager.convertToArray(peopleWithAccounts).flat())
+        accounts = [...accounts, ...parentsAccounts].filter((x) => x)
       }
+
+      // CHILD ACCOUNTS
+      if (Manager.isValid(childAccounts)) {
+        let childrenAccounts = []
+        for (let child of childAccounts) {
+          const childAccount = await DB.find(DB.tables.users, ['key', child?.linkedKey], true)
+          if (Manager.isValid(childAccount)) {
+            childrenAccounts.push(childAccount)
+          }
+        }
+        accounts = [...accounts, ...childrenAccounts]
+      }
+
+      setShareWith(Manager.convertToArray(accounts).flat())
     }
   }
 

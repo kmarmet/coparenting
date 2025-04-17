@@ -483,6 +483,7 @@
     margin-top: 0 !important;
     padding-left: 15px !important;
     padding-top: 20px !important;
+
     .MuiPickersArrowSwitcher-root {
       .MuiPickersArrowSwitcher-spacer {
         display: none;
@@ -500,6 +501,11 @@
     }
   }
   /*#endregion  PICKER ARROWS*/
+
+  .MuiYearCalendar-root {
+    margin: 0 auto;
+    border: 2px solid $lightBorderColor !important;
+  }
 
   /*#region  PICKER INPUTS*/
   .MuiFormControl-root {

@@ -16,8 +16,8 @@ import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
 import DB from '../../../database/DB'
 import Spacer from '../../shared/spacer'
-import ReCAPTCHA from 'react-google-recaptcha'
 import InputTypes from '../../../constants/inputTypes'
+import Turnstile, {useTurnstile} from 'react-turnstile'
 
 export default function Login() {
   const {state, setState} = useContext(globalState)
@@ -26,14 +26,13 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [viewPassword, setViewPassword] = useState(false)
   const [isPersistent, setIsPersistent] = useState(false)
-  const [recaptchaVerified, setRecaptchaVerified] = useState(false)
-  const [recaptchaSitekey, setRecaptchaSitekey] = useState(process.env.REACT_APP_RECAPTCHA_SITE_KEY)
-  const recaptchaRef = React.createRef()
+  const [challengeSolved, setChallengeSolved] = useState(false)
+  const turnstile = useTurnstile()
   // Init Firebase
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
-  const signIn = async () => {
+  const SignIn = async () => {
     // Validation
     if (!validator.isEmail(email)) {
       AlertManager.throwError('Email address is not valid')
@@ -56,7 +55,7 @@ export default function Login() {
             const dbUser = users?.find((u) => u?.email === user?.email)
             let nextScreen = dbUser ? ScreenNames.calendar : ScreenNames.userDetails
             if (dbUser?.accountType === 'child') {
-              if (dbUser?.parentAccessGranted === false) {
+              if (Manager.isValid(dbUser?.parentAccessGranted) || dbUser?.parentAccessGranted === false) {
                 nextScreen = ScreenNames.requestParentAccess
               }
             }
@@ -96,11 +95,11 @@ export default function Login() {
     // Not Persistent
     else {
       setState({...state, isLoading: false})
-      await firebaseSignIn()
+      await FirebaseSignIn()
     }
   }
 
-  const firebaseSignIn = async () => {
+  const FirebaseSignIn = async () => {
     signInWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         const user = userCredential.user
@@ -108,7 +107,7 @@ export default function Login() {
         const dbUser = users?.find((u) => u?.email === user?.email)
         let nextScreen = dbUser ? ScreenNames.calendar : ScreenNames.userDetails
         if (dbUser?.accountType === 'child') {
-          if (dbUser?.parentAccessGranted === false) {
+          if (!Manager.isValid(dbUser?.parentAccessGranted) || dbUser?.parentAccessGranted === false) {
             nextScreen = ScreenNames.requestParentAccess
           }
         }
@@ -142,19 +141,13 @@ export default function Login() {
             `No account with email ${email} found.`,
             `If you have forgotten your password, please ${DomManager.tapOrClick()} Reset Password`
           )
-          setErrorAlertTextColor()
         } else {
           AlertManager.throwError(`Incorrect password`, `Please ${DomManager.tapOrClick()} Reset Password.`)
         }
       })
   }
 
-  const setErrorAlertTextColor = () => {
-    const text = document.getElementById('swal2-html-container')
-    text.style.color = 'white'
-  }
-
-  const togglePersistence = (e) => {
+  const TogglePersistence = (e) => {
     const clickedEl = e.currentTarget
     if (clickedEl) {
       if (clickedEl.classList.contains('active')) {
@@ -171,7 +164,23 @@ export default function Login() {
     <>
       {/* PAGE CONTAINER */}
       <div id="login-container" className={`page-container form login`}>
-        <Fade direction={'right'} duration={800} damping={0.2} cascade={true} className={'visitation-fade-wrapper'} triggerOnce={true}>
+        <Turnstile
+          sitekey={process.env.REACT_APP_CLOUDFARE_CAPTCHA_SITE_KEY}
+          onSuccess={() => {
+            console.log(`Captcha Challenge Solved`)
+            setChallengeSolved(true)
+          }}
+          onFail={() => {
+            setState({...state, successAlertMessage: 'Pre-Authentication Failed. Please close and reopen the app again.'})
+          }}
+          onError={(error) => {
+            console.log(`Captcha Error: ${error}`)
+          }}
+          onExpire={() => {
+            console.log('Captcha Expired')
+          }}
+        />
+        <Fade direction={'right'} duration={800} damping={0.2} cascade={true} triggerOnce={true}>
           <img
             onClick={() => setState({...state, currentScreen: ScreenNames.home})}
             className="ml-auto mr-auto"
@@ -210,9 +219,10 @@ export default function Login() {
               {/* PASSWORD */}
               <div className="flex inputs">
                 <InputWrapper
-                  inputType={InputTypes.password}
+                  inputType={viewPassword ? InputTypes.text : InputTypes.password}
                   required={true}
                   hasBottomSpacer={false}
+                  defaultValue={password}
                   wrapperClasses="password"
                   labelText={'Password'}
                   inputClasses="password login-input"
@@ -226,7 +236,7 @@ export default function Login() {
                 {/* REMEMBER ME */}
                 <CheckboxGroup
                   elClass={'light'}
-                  onCheck={togglePersistence}
+                  onCheck={TogglePersistence}
                   checkboxArray={Manager.buildCheckboxGroup({
                     customLabelArray: ['Remember Me'],
                   })}
@@ -241,23 +251,13 @@ export default function Login() {
               <Spacer height={10} />
 
               {/* LOGIN BUTTONS */}
-              {recaptchaVerified && (
-                <button className="button default green" id="login-button" onClick={signIn}>
+              {challengeSolved && (
+                <button className="button default green" id="login-button" onClick={SignIn}>
                   Login
                 </button>
               )}
+              {!challengeSolved && <p id="captcha-loading-text">Pre-Authentication in Progress...</p>}
             </div>
-
-            {/* RECAPTCHA */}
-            <ReCAPTCHA
-              ref={recaptchaRef}
-              sitekey={recaptchaSitekey}
-              onChange={(e) => {
-                if (Manager.isValid(e, true)) {
-                  setRecaptchaVerified(true)
-                }
-              }}
-            />
 
             <p id="sign-up-link" onClick={() => setState({...state, currentScreen: ScreenNames.registration})}>
               Don&#39;t have an account? <span>Sign Up</span>

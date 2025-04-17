@@ -39,7 +39,6 @@ import ExpenseTracker from '/src/components/screens/expenses/expenseTracker.jsx'
 import Home from '/src/components/screens/home'
 import InstallApp from '/src/components/screens/installApp.jsx'
 import Memories from '/src/components/screens/memories.jsx'
-
 import Archives from '/src/components/screens/archives.jsx'
 import Settings from '/src/components/screens/settings/settings.jsx'
 import SwapRequests from '/src/components/screens/swapRequests.jsx'
@@ -48,20 +47,20 @@ import Visitation from '/src/components/screens/visitation.jsx'
 import BrandBar from '/src/components/shared/brandBar'
 import Loading from '/src/components/shared/loading'
 import DesktopLeftSidebar from '/src/components/shared/desktopLeftSidebar'
+import CreationMenu from './components/shared/creationMenu'
+import NewChat from './components/forms/newChat'
+import SuccessAlert from './components/shared/successAlert'
 import ScreenNames from '/src/constants/screenNames'
-import StateObj from '/src/constants/stateObj' // Menus
+import StateObj from '/src/constants/stateObj'
 import DB_UserScoped from '/src/database/db_userScoped'
 import firebaseConfig from '/src/firebaseConfig.js'
 import AppManager from '/src/managers/appManager.js'
 import DomManager from '/src/managers/domManager'
-
 import Manager from '/src/managers/manager'
 import DB from './database/DB'
 import NotificationManager from './managers/notificationManager'
-import CreationMenu from './components/shared/creationMenu'
 import CreationForms from './constants/creationForms'
-import NewChat from './components/forms/newChat'
-import SuccessAlert from './components/shared/successAlert'
+import AlertManager from './managers/alertManager'
 
 export default function App() {
   // Initialize Firebase
@@ -132,7 +131,7 @@ export default function App() {
 
   useEffect(() => {
     // Check if user needs to link co-parent
-    if (Manager.isValid(currentUser) && currentUser?.showInitialLoginAlert === true) {
+    if (Manager.isValid(currentUser) && currentUser?.showInitialLoginAlert === true && currentUser?.accountType === 'parent') {
       const config = AlertManager.ThreeButtonAlertConfig
       config.title = 'To communicate essential information and messages with a co-parent, you must link them to your profile'
       config.confirmButtonText = 'Link Co-Parent'
@@ -177,11 +176,17 @@ export default function App() {
         // User Exists
         if (currentUserFromDb) {
           const body = document.getElementById('external-overrides')
-          body.classList.add(currentUserFromDb?.settings?.theme)
+          const navbar = document.getElementById('navbar')
+          if (Manager.isValid(navbar)) {
+            navbar.setAttribute('account-type', currentUserFromDb?.accountType)
+          }
+          if (body) {
+            body.classList.add(currentUserFromDb?.settings?.theme)
+          }
 
           // Check if child profile and if parent access is granted
           if (currentUserFromDb?.accountType === 'child') {
-            if (!Manager.isValid(currentUserFromDb?.parentAccessGranted) && currentUserFromDb?.parentAccessGranted === false) {
+            if (!Manager.isValid(currentUserFromDb?.parentAccessGranted) || currentUserFromDb?.parentAccessGranted === false) {
               screenToNavigateTo = ScreenNames.requestParentAccess
             }
           } else {
@@ -194,8 +199,10 @@ export default function App() {
             AppManager.deleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
             AppManager.deleteExpiredMemories(currentUserFromDb).then((r) => r)
           }
-          NotificationManager.init(currentUserFromDb)
-          notifications = await DB.getTable(`${DB.tables.notifications}/${currentUserFromDb?.key}`)
+          if (!window.location.href.includes('localhost')) {
+            NotificationManager.init(currentUserFromDb)
+            notifications = await DB.getTable(`${DB.tables.notifications}/${currentUserFromDb?.key}`)
+          }
         }
 
         if (user?.emailVerified) {

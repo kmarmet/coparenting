@@ -23,19 +23,19 @@ export default function ContactUs() {
   const [showSupportCard, setShowSupportCard] = useState(false)
 
   const resetFormFeatureRequestForm = () => {
-    Manager.resetForm('feature-request-wrapper')
+    Manager.ResetForm('feature-request-wrapper')
     setFeatureName('')
     setFeatureDescription('')
   }
 
   const resetFeedbackForm = () => {
-    Manager.resetForm('feedback-wrapper')
+    Manager.ResetForm('feedback-wrapper')
     setFeatureName('')
     setFeatureDescription('')
   }
 
   const resetSupportForm = () => {
-    Manager.resetForm('support-wrapper')
+    Manager.ResetForm('support-wrapper')
     setFeatureName('')
     setFeatureDescription('')
   }

@@ -13,4 +13,5 @@ export default class Child
     @behavior = new Behavior()
     @sharing = []
     @checklists = []
+    @linkedKey = ''
   ) ->

@@ -21,6 +21,8 @@ import {useSwipeable} from 'react-swipeable'
 import NotificationManager from '../../../managers/notificationManager'
 import FirebaseStorage from '../../../database/firebaseStorage'
 import StringManager from '../../../managers/stringManager.coffee'
+import InputTypes from '../../../constants/inputTypes'
+import Spacer from '../../shared/spacer'
 
 export default function Profile() {
   const {state, setState} = useContext(globalState)
@@ -211,10 +213,15 @@ export default function Profile() {
         wrapperClass="update-card"
         showCard={showUpdateCard}
         title={`Update your ${StringManager.uppercaseFirstLetterOfAllWords(updateType)}`}>
-        <div {...handlers} id="update-contact-info-container" className={`${theme}  form`}>
+        <div {...handlers} id="update-contact-info-container" className={`${theme}`}>
+          <Spacer height={8} />
           <div className="form">
             {updateType === 'email' && (
-              <InputWrapper onChange={(e) => setEmail(e.target.value)} labelText={'New Email Address'} required={true}></InputWrapper>
+              <InputWrapper
+                inputType={InputTypes.email}
+                onChange={(e) => setEmail(e.target.value)}
+                labelText={'New Email Address'}
+                required={true}></InputWrapper>
             )}
           </div>
         </div>

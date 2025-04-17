@@ -35,10 +35,10 @@ export default function ChildInfo() {
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
-  const [activeChild, setActiveChild] = useState()
+  const [activeChild, setActiveChild] = useState(currentUser?.children?.[0])
   const [children, setChildren] = useState(currentUser?.children)
 
-  const uploadProfilePic = async (fromButton = false, childId = activeChild?.id) => {
+  const UploadProfilePic = async (fromButton = false, childId = activeChild?.id) => {
     const uploadIcon = document.querySelector(`[data-id="${childId}" ]`)
     const uploadButton = document.querySelector('#upload-image-input.from-button')
     let imgFiles = uploadIcon?.files
@@ -56,23 +56,21 @@ export default function ChildInfo() {
       async (url) => {
         const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', 'profilePic', url)
         setActiveChild(updatedChild)
-        await setUpdatedChildren()
+        await SetUpdatedChildren()
       }
     )
   }
 
-  const setUpdatedChildren = async () => {
+  const SetUpdatedChildren = async () => {
     const updatedChildren = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children`)
     setChildren(updatedChildren)
   }
 
-  const setDefaults = () => {
-    setUpdatedChildren().then((r) => r)
-
-    setActiveChild(currentUser?.children?.[0])
+  const SetDefaults = () => {
+    SetUpdatedChildren().then((r) => r)
   }
 
-  const deleteChild = async () => {
+  const DeleteChild = async () => {
     AlertManager.confirmAlert(
       `Are you sure you want to unlink ${StringManager.getFirstNameOnly(activeChild?.general?.name)} from your profile?`,
       `I'm Sure`,
@@ -81,24 +79,23 @@ export default function ChildInfo() {
         const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
         if (Manager.isValid(childKey)) {
           await DB.deleteByPath(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`)
-          setDefaults()
+          SetDefaults()
         }
       }
     )
   }
 
-  const setActiveChildData = async (child) => {
+  const SetActiveChildData = async (child) => {
     const childId = child?.id
     if (Manager.isValid(childId)) {
       const updatedChildren = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children`)
       const updatedChild = updatedChildren.find((x) => x.id === childId)
-      console.log(updatedChild)
       setActiveChild(updatedChild)
     }
   }
 
   useEffect(() => {
-    setDefaults()
+    SetDefaults()
   }, [])
 
   return (
@@ -107,7 +104,7 @@ export default function ChildInfo() {
         <>
           {/* CUSTOM INFO FORM */}
           <CustomChildInfo
-            onChildUpdate={(child) => setActiveChildData(child)}
+            onChildUpdate={(child) => SetActiveChildData(child)}
             showCard={showInfoCard}
             activeChild={activeChild}
             hideCard={() => setShowInfoCard(false)}
@@ -115,7 +112,7 @@ export default function ChildInfo() {
 
           {/* NEW CHECKLIST */}
           <AddOrUpdateTransferChecklists
-            onChildUpdate={(child) => setActiveChildData(child)}
+            onChildUpdate={(child) => SetActiveChildData(child)}
             activeChild={activeChild}
             showCard={showNewChecklistCard}
             hideCard={() => setShowNewChecklistCard(false)}
@@ -177,7 +174,7 @@ export default function ChildInfo() {
               <PiListChecksFill className={'checklist'} />
             </div>
             <p>
-              Configure Checklists <p className="subtitle">Add or edit checklists for transferring to or from a co-parent&#39;s home</p>
+              Configure Checklists <span className="subtitle">Add or edit checklists for transferring to or from a co-parent&#39;s home</span>
             </p>
           </div>
         </div>
@@ -186,7 +183,7 @@ export default function ChildInfo() {
         <div
           className="action-item"
           onClick={async () => {
-            await deleteChild()
+            await DeleteChild()
             setState({...state, showScreenActions: false})
           }}>
           <div className="content">
@@ -237,7 +234,7 @@ export default function ChildInfo() {
                 <div key={index}>
                   {/* PROFILE PIC */}
                   {Manager.isValid(child?.general?.profilePic) && (
-                    <div onClick={() => setActiveChildData(child)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
+                    <div onClick={() => SetActiveChildData(child)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
                       <div className="child-image" style={{backgroundImage: `url(${child?.general?.profilePic})`}}>
                         <div className="after">
                           <input
@@ -247,7 +244,7 @@ export default function ChildInfo() {
                             placeholder=""
                             data-id={child.id}
                             accept="image/*"
-                            onChange={() => uploadProfilePic(false, child.id)}
+                            onChange={() => UploadProfilePic(false, child.id)}
                           />
                           <FaCameraRotate />
                         </div>
@@ -259,7 +256,7 @@ export default function ChildInfo() {
 
                   {/* NO IMAGE */}
                   {!Manager.isValid(child?.general?.profilePic, true) && (
-                    <div onClick={() => setActiveChildData(child)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
+                    <div onClick={() => SetActiveChildData(child)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
                       <div className="child-image no-image">
                         <span>No Image</span>
                       </div>
@@ -283,21 +280,22 @@ export default function ChildInfo() {
                 id="upload-image-input"
                 className="from-button"
                 accept="image/*"
-                onChange={() => uploadProfilePic(true)}
+                onChange={() => UploadProfilePic(true)}
               />
             </button>
           )}
+          <p id="child-name-primary">{activeChild?.general?.name}</p>
           {activeChild && (
             <Fade direction={'right'} duration={800} cascade={true} damping={0.2} triggerOnce={true}>
-              <General activeChild={activeChild} onUpdate={(child) => setActiveChildData(child)} />
-              <Medical activeChild={activeChild} onUpdate={(child) => setActiveChildData(child)} />
-              <Schooling activeChild={activeChild} onUpdate={(child) => setActiveChildData(child)} />
-              <Behavior activeChild={activeChild} onUpdate={(child) => setActiveChildData(child)} />
+              <General activeChild={activeChild} onUpdate={(child) => SetActiveChildData(child)} />
+              <Medical activeChild={activeChild} onUpdate={(child) => SetActiveChildData(child)} />
+              <Schooling activeChild={activeChild} onUpdate={(child) => SetActiveChildData(child)} />
+              <Behavior activeChild={activeChild} onUpdate={(child) => SetActiveChildData(child)} />
               {activeChild?.checklists?.find((x) => x?.fromOrTo === 'from') && (
-                <Checklist activeChild={activeChild} fromOrTo={'from'} onChildUpdate={(child) => setActiveChildData(child)} />
+                <Checklist activeChild={activeChild} fromOrTo={'from'} onChildUpdate={(child) => SetActiveChildData(child)} />
               )}
               {activeChild?.checklists?.find((x) => x?.fromOrTo === 'to') && (
-                <Checklist activeChild={activeChild} fromOrTo={'to'} onChildUpdate={(child) => setActiveChildData(child)} />
+                <Checklist activeChild={activeChild} fromOrTo={'to'} onChildUpdate={(child) => SetActiveChildData(child)} />
               )}
             </Fade>
           )}

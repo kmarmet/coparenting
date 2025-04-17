@@ -70,7 +70,9 @@ export default function Medical({activeChild, onUpdate = (child) => {}}) {
       if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
-      if (values[0][1].length === 0) {
+
+      const valuesArr = values.filter((x) => x[1].length === 0).map((x) => x[1])
+      if (values.length === valuesArr.length) {
         setMedicalValues([])
       } else {
         setMedicalValues(values)

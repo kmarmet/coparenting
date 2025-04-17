@@ -1,43 +1,43 @@
 // Path: src\components\screens\settings\settings.jsx
-import React, {useContext, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../../context'
 import moment from 'moment'
 import DB_UserScoped from '/src/database/db_userScoped'
-import {MobileTimePicker} from '@mui/x-date-pickers-pro'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import {Fade} from 'react-awesome-reveal'
 import DateManager from '/src/managers/dateManager'
 import NavBar from '/src/components/navBar'
-import AlertManager from '/src/managers/alertManager'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import Label from '/src/components/shared/label'
 import DB from '/src/database/DB'
 import NotificationManager from '/src/managers/notificationManager.js'
 import ToggleButton from '../../shared/toggleButton'
+import InputTypes from '../../../constants/inputTypes'
 
 export default function Settings() {
   const {state, setState} = useContext(globalState)
   const {currentUser, theme, authUser} = state
-  const [morningSummaryTime, setMorningSummaryTime] = useState('')
-  const [eveningSummaryTime, setEveningSummaryTime] = useState('')
+  const [morningSummaryHour, setMorningSummaryHour] = useState(currentUser?.dailySummaries?.morningReminderSummaryHour)
+  const [eveningSummaryHour, setEveningSummaryHour] = useState(currentUser?.dailySummaries?.eveningReminderSummaryHour)
   const [notificationsToggled, setNotificationsToggled] = useState(0)
+  const [showSummaryUpdateButton, setShowSummaryUpdateButton] = useState(false)
 
   const submitCalendarSettings = async () => {
-    if (DateManager.dateIsValid(morningSummaryTime)) {
+    if (DateManager.dateIsValid(morningSummaryHour)) {
       await DB_UserScoped.updateUserRecord(
         currentUser?.key,
         'dailySummaries/morningReminderSummaryHour',
-        moment(morningSummaryTime).format(DatetimeFormats.summaryHour)
+        moment(morningSummaryHour).format(DatetimeFormats.summaryHour)
       )
     }
-    if (DateManager.dateIsValid(eveningSummaryTime)) {
+    if (DateManager.dateIsValid(eveningSummaryHour)) {
       await DB_UserScoped.updateUserRecord(
         currentUser?.key,
         'dailySummaries/eveningReminderSummaryHour',
-        moment(eveningSummaryTime).format(DatetimeFormats.summaryHour)
+        moment(eveningSummaryHour).format(DatetimeFormats.summaryHour)
       )
     }
-    AlertManager.successAlert('Calendar settings have been updated!')
+    setState({...state, successAlertMessage: 'Summary Times Updated'})
   }
 
   const toggleNotifications = async () => {
@@ -55,6 +55,17 @@ export default function Settings() {
     }
   }
 
+  useEffect(() => {
+    if (
+      morningSummaryHour !== currentUser?.dailySummaries?.morningReminderSummaryHour ||
+      eveningSummaryHour !== currentUser?.dailySummaries?.eveningReminderSummaryHour
+    ) {
+      setShowSummaryUpdateButton(true)
+    } else {
+      setShowSummaryUpdateButton(false)
+    }
+  }, [morningSummaryHour, eveningSummaryHour])
+
   return (
     <>
       <div id="settings-container" className={`${theme} page-container form`}>
@@ -66,35 +77,24 @@ export default function Settings() {
             <div className="section summary">
               <p className="pb-10">The summaries for the current and following day will be provided during the morning and evening summary hours.</p>
               {/* MORNING SUMMARY */}
-              <InputWrapper labelText={'Morning Hour'} inputType={'date'}>
-                <MobileTimePicker
-                  slotProps={{
-                    actionBar: {
-                      actions: ['clear', 'accept'],
-                    },
-                  }}
-                  className={`${theme}`}
-                  views={['hours']}
-                  onAccept={(e) => setMorningSummaryTime(e)}
-                  defaultValue={moment(currentUser?.dailySummaries?.morningReminderSummaryHour, 'hh:mma')}
-                />
-              </InputWrapper>
+              <InputWrapper
+                defaultValue={moment(currentUser?.dailySummaries?.morningReminderSummaryHour, 'h:mma')}
+                labelText={'Morning Hour'}
+                timeViews={['hours']}
+                inputType={InputTypes.time}
+                onDateOrTimeSelection={(e) => setMorningSummaryHour(e)}
+              />
               {/* EVENING SUMMARY */}
-              <InputWrapper labelText={'Evening Hour'} inputType={'date'} onChange={(e) => setEveningSummaryTime(e.target.value)}>
-                <MobileTimePicker
-                  defaultValue={moment(currentUser?.dailySummaries?.eveningReminderSummaryHour, 'hh:mma')}
-                  slotProps={{
-                    actionBar: {
-                      actions: ['clear', 'accept'],
-                    },
-                  }}
-                  className={`${theme}`}
-                  views={['hours']}
-                  onAccept={(e) => setEveningSummaryTime(e)}
-                />
-              </InputWrapper>
+              <InputWrapper
+                defaultValue={moment(currentUser?.dailySummaries?.eveningReminderSummaryHour, 'h:mma')}
+                labelText={'Evening Hour'}
+                timeViews={['hours']}
+                inputType={InputTypes.time}
+                onChange={(e) => setEveningSummaryHour(e.target.value)}
+                onDateOrTimeSelection={(e) => setEveningSummaryHour(e)}
+              />
             </div>
-            {currentUser && (
+            {currentUser && showSummaryUpdateButton && (
               <div className="mt-15">
                 <button onClick={submitCalendarSettings} className="button default submit green center mb-10">
                   Update Summary Times

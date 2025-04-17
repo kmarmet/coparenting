@@ -13,12 +13,8 @@
         font-weight: $fwRegular;
         font-size: 14px;
         white-space: nowrap;
-        color: $subtitleText;
+        color: $darkerGrey;
         padding-top: 4px;
-
-        &.no-due-date {
-          font-style: italic;
-        }
       }
     }
   }

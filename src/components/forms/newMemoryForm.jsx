@@ -34,8 +34,8 @@ export default function NewMemoryForm() {
   const [images, setImages] = useState([])
   const [newMemory, setNewMemory] = useState(new Memory())
 
-  const resetForm = async () => {
-    Manager.resetForm('new-memory-wrapper')
+  const ResetForm = async () => {
+    Manager.ResetForm('new-memory-wrapper')
     const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     setState({...state, currentUser: updatedCurrentUser, isLoading: false, refreshKey: Manager.getUid(), creationFormToShow: ''})
   }
@@ -145,7 +145,7 @@ export default function NewMemoryForm() {
           })
           .finally(async () => {
             MyConfetti.fire()
-            await resetForm()
+            await ResetForm()
           })
         AppManager.setAppBadge(1)
       })
@@ -158,7 +158,7 @@ export default function NewMemoryForm() {
       submitText={'Add Memory'}
       submitIcon={<LuImagePlus />}
       title={'Share Memory'}
-      onClose={resetForm}
+      onClose={ResetForm}
       showCard={creationFormToShow === creationForms.memories}>
       <div className="new-memory-wrapper">
         <div id="new-memory-form-container" className={`${theme} form`}>

@@ -64,8 +64,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const [shareWithNames, setShareWithNames] = useState([])
   const [dataIsLoading, setDataIsLoading] = useState(true)
 
-  const resetForm = async (alertMessage = '') => {
-    Manager.resetForm('edit-event-form')
+  const ResetForm = async (alertMessage = '') => {
+    Manager.ResetForm('edit-event-form')
     setEventStartDate('')
     setEventLocation('')
     setEventName('')
@@ -210,7 +210,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       }
     }
 
-    await resetForm('Event Updated')
+    await ResetForm('Event Updated')
   }
 
   const editNonOwnerEvent = async (dbPath, newEvent) => {
@@ -312,7 +312,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       }
     }
 
-    await resetForm('Event Updated')
+    await ResetForm('Event Updated')
   }
 
   // CHECKBOX HANDLERS
@@ -407,13 +407,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
     if (eventCount === 1) {
       await CalendarManager.deleteEvent(currentUser, event.id)
-      await resetForm('Event Deleted')
+      await ResetForm('Event Deleted')
     } else {
       let clonedEvents = await DB.getTable(`${dbPath}`)
       if (Manager.isValid(clonedEvents)) {
         clonedEvents = clonedEvents.filter((x) => x.title === event?.title)
         await CalendarManager.deleteMultipleEvents(clonedEvents, currentUser)
-        await resetForm('Event Deleted')
+        await ResetForm('Event Deleted')
       }
     }
   }
@@ -464,7 +464,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       submitIcon={<BsCalendar2CheckFill className={'edit-calendar-icon'} />}
       hasSubmitButton={view === 'Edit'}
       onClose={async () => {
-        await resetForm()
+        await ResetForm()
       }}
       title={StringManager.formatEventTitle(StringManager.uppercaseFirstLetterOfAllWords(event?.title))}
       showCard={showCard}
@@ -509,14 +509,14 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   {/*  Start Time */}
                   <DetailBlock
                     valueToValidate={event?.startTime}
-                    text={moment(event?.startTime, DatetimeFormats.timeForDb).format('ha')}
+                    text={moment(event?.startTime, DatetimeFormats.timeForDb).format('h:mma')}
                     title={'Start Time'}
                   />
 
                   {/*  End Time */}
                   <DetailBlock
                     valueToValidate={event?.endTime}
-                    text={moment(event?.endTime, DatetimeFormats.timeForDb).format('ha')}
+                    text={moment(event?.endTime, DatetimeFormats.timeForDb).format('h:mma')}
                     title={'End time'}
                   />
 

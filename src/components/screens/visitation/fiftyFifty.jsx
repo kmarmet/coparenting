@@ -33,8 +33,8 @@ export default function FiftyFifty({hide, showCard}) {
   const [thirdFFPeriodEnd, setThirdFFPeriodEnd] = useState('')
   const [shareWith, setShareWith] = useState([])
 
-  const resetForm = () => {
-    Manager.resetForm('add-fifty-fifty-schedule')
+  const ResetForm = () => {
+    Manager.ResetForm('add-fifty-fifty-schedule')
     setShareWith([])
     setState({...state, refreshKey: Manager.getUid()})
     hide()
@@ -79,7 +79,7 @@ export default function FiftyFifty({hide, showCard}) {
     MyConfetti.fire()
     // Upload to DB
     await VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
-    resetForm()
+    ResetForm()
   }
 
   const handleShareWithSelection = async (e) => {
@@ -95,7 +95,7 @@ export default function FiftyFifty({hide, showCard}) {
       wrapperClass="add-fifty-fifty-schedule"
       title={'50/50 Visitation Schedule'}
       showCard={showCard}
-      onClose={resetForm}>
+      onClose={ResetForm}>
       <div className="text">
         <Spacer height={5} />
         <Accordion id={'fifty-fifty-info'} expanded={expandFiftyFiftyInfoText}>

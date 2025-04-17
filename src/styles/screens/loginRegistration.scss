@@ -331,6 +331,11 @@
         text-align: center;
         font-weight: bold;
         font-size: 25px;
+
+        &#captcha-loading-text {
+          font-size: 18px;
+          color: $green;
+        }
       }
 
       #login-button {

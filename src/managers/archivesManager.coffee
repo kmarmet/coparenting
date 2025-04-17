@@ -7,6 +7,8 @@ export default ArchiveManager = {
     formattedHeaders = []
     headers = Object.keys(data[0])
 
+    console.log(data);
+
     formattedData  = []
     for obj in data
       for key in obj

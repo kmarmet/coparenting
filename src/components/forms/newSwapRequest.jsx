@@ -42,8 +42,8 @@ export default function NewSwapRequest() {
   const [recipientKey, setRecipientKey] = useState('')
   const [recipientName, setRecipientName] = useState()
 
-  const resetForm = async (showSuccessAlert = false) => {
-    Manager.resetForm('swap-request-wrapper')
+  const ResetForm = async (showSuccessAlert = false) => {
+    Manager.ResetForm('swap-request-wrapper')
     setRequestReason('')
     setRequestChildren([])
     setShareWith([])
@@ -63,7 +63,7 @@ export default function NewSwapRequest() {
   }
 
   const submit = async () => {
-    const invalidInputs = Manager.invalidInputs([startDate, recipientKey])
+    const invalidInputs = Manager.GetInvalidInputsErrorString([startDate, recipientKey])
     const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
 
     //#region VALIDATION
@@ -116,7 +116,7 @@ export default function NewSwapRequest() {
       setSwapDuration(SwapDurations.single)
     })
 
-    await resetForm(true)
+    await ResetForm(true)
   }
 
   const handleChildSelection = (e) => {
@@ -189,7 +189,7 @@ export default function NewSwapRequest() {
         />
       }
       showCard={creationFormToShow === creationForms.swapRequest}
-      onClose={resetForm}>
+      onClose={ResetForm}>
       <div id="new-swap-request-container" className={`${theme} form`}>
         <Spacer height={5} />
         {/* FORM */}

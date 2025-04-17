@@ -12,14 +12,14 @@ import {MdOutlineIosShare} from 'react-icons/md'
 import Spacer from '../shared/spacer'
 import NavBar from '../navBar'
 import ScreenNames from '../../constants/screenNames'
+import Manager from '../../managers/manager'
 
 export default function InstallApp() {
   const {state, setState} = useContext(globalState)
-  const {userIsLoggedIn} = state
+  const {currentUser} = state
   const [expandAppleAccordion, setExpandAppleAccordion] = useState(false)
   const [expandAndroidAccordion, setExpandAndroidAccordion] = useState(false)
   const [expandDesktopAccordion, setExpandDesktopAccordion] = useState(false)
-
   return (
     <>
       <div className="page-container install-app">
@@ -139,12 +139,12 @@ export default function InstallApp() {
           </Accordion>
         </div>
       </div>
-      {!userIsLoggedIn && (
+      {!Manager.isValid(currentUser) && (
         <button id="back-to-login-button" className="button default " onClick={() => setState({...state, currentScreen: ScreenNames.login})}>
           Back to Login
         </button>
       )}
-      {userIsLoggedIn && <NavBar navbarClass={'child-info no-add-new-button'} />}
+      {Manager.isValid(currentUser) && <NavBar navbarClass={'child-info no-add-new-button'} />}
     </>
   )
 }

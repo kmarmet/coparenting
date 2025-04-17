@@ -53,9 +53,9 @@ export default function TransferRequests() {
   const [responseDueDate, setResponseDueDate] = useState('')
   const [sendWithAddress, setSendWithAddress] = useState(false)
   const [requestReason, setRequestReason] = useState('')
-
-  const resetForm = async (successMessage = '') => {
-    Manager.resetForm('edit-event-form')
+  const [requestTimeRemaining, setRequestTimeRemaining] = useState(false)
+  const ResetForm = async (successMessage = '') => {
+    Manager.ResetForm('edit-event-form')
     setRequestTime('')
     setRequestLocation('')
     setRequestDate('')
@@ -65,7 +65,7 @@ export default function TransferRequests() {
     setState({...state, refreshKey: Manager.getUid(), successAlertMessage: successMessage})
   }
 
-  const update = async () => {
+  const Update = async () => {
     // Fill -> overwrite
     let updatedRequest = {...activeRequest}
     updatedRequest.time = requestTime
@@ -81,18 +81,18 @@ export default function TransferRequests() {
     }
     const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.transferChangeRequest)
     await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, cleanedRequest, activeRequest.id)
-    await getSecuredRequests()
+    await GetSecuredRequests()
     setActiveRequest(updatedRequest)
     setShowDetails(false)
-    await resetForm('Transfer Request Updated')
+    await ResetForm('Transfer Request Updated')
   }
 
-  const getSecuredRequests = async () => {
+  const GetSecuredRequests = async () => {
     let allRequests = await SecurityManager.getTransferChangeRequests(currentUser)
     setExistingRequests(allRequests)
   }
 
-  const deleteRequest = async (action = 'deleted') => {
+  const DeleteRequest = async (action = 'deleted') => {
     if (action === 'deleted') {
       AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
         await DB.deleteById(`${DB.tables.transferChangeRequests}/${currentUser.key}`, activeRequest?.id)
@@ -102,7 +102,7 @@ export default function TransferRequests() {
     }
   }
 
-  const selectDecision = async (decision) => {
+  const SelectDecision = async (decision) => {
     const recipient = await DB_UserScoped.getCoparentByKey(activeRequest.recipientKey, currentUser)
     const recipientName = recipient.name
     // Rejected
@@ -139,20 +139,20 @@ export default function TransferRequests() {
     setState({...state, refreshKey: Manager.getUid(), successAlertMessage: `Decision Sent to ${recipientName}`})
   }
 
-  const onTableChange = async () => {
+  const OnTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, DB.tables.transferChangeRequests), async () => {
-      await getSecuredRequests().then((r) => r)
+      await GetSecuredRequests().then((r) => r)
     })
   }
 
-  const checkIn = async () => {
+  const CheckIn = async () => {
     setShowDetails(false)
     let notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser.name))} at ${
       activeRequest?.location
     }`
     if (!sendWithAddress) {
-      notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser.name))} has Arrived`
+      notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser.name))} has arrived at the transfer destination`
     }
     const recipientKey = activeRequest?.ownerKey === currentUser.key ? activeRequest.recipientKey : currentUser.key
     await NotificationManager.sendNotification(
@@ -165,7 +165,7 @@ export default function TransferRequests() {
     setState({...state, successAlertMessage: 'Arrival Notification Sent'})
   }
 
-  const getFromOrToName = (key) => {
+  const GetFromOrToName = (key) => {
     if (key === currentUser.key) {
       return 'Me'
     } else {
@@ -173,13 +173,13 @@ export default function TransferRequests() {
     }
   }
 
-  const getCurrentUserAddress = async () => {
+  const GetCurrentUserAddress = async () => {
     // const address = await LocationManager.getAddress()
   }
 
   useEffect(() => {
-    onTableChange().then((r) => r)
-    getCurrentUserAddress().then((r) => r)
+    OnTableChange().then((r) => r)
+    GetCurrentUserAddress().then((r) => r)
     // eslint-disable-next-line no-undef
     setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY)
   }, [])
@@ -187,6 +187,7 @@ export default function TransferRequests() {
   useEffect(() => {
     if (showDetails) {
       DomManager.setDefaultView()
+      setRequestTimeRemaining(moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString())
     }
   }, [showDetails])
 
@@ -195,16 +196,16 @@ export default function TransferRequests() {
       {/* DETAILS CARD */}
       <Modal
         submitText={'Approve'}
-        onDelete={() => deleteRequest('deleted')}
+        onDelete={() => DeleteRequest('deleted')}
         title={'Request Details'}
         hasDelete={activeRequest?.ownerKey === currentUser?.key && view === 'edit'}
         hasSubmitButton={activeRequest?.ownerKey !== currentUser?.key}
-        onSubmit={() => selectDecision(Decisions.approved)}
+        onSubmit={() => SelectDecision(Decisions.approved)}
         wrapperClass="transfer-change"
         submitIcon={<PiCheckBold />}
         viewSelector={<ViewSelector labels={['details', 'edit']} updateState={(e) => setView(e)} />}
         className="transfer-change"
-        onClose={resetForm}
+        onClose={ResetForm}
         showCard={showDetails}>
         <div id="details" className={`content ${activeRequest?.requestReason?.length > 20 ? 'long-text' : ''}`}>
           <hr className="top" />
@@ -244,15 +245,15 @@ export default function TransferRequests() {
 
                 {/*  Time Remaining */}
                 <DetailBlock
-                  classes={moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString().includes('ago') ? 'red' : 'green'}
+                  classes={requestTimeRemaining.toString().includes('ago') ? 'red' : 'green'}
                   title={'Response Time Remaining'}
-                  text={`${moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}`}
-                  valueToValidate={moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString()}
+                  text={`${requestTimeRemaining}`}
+                  valueToValidate={requestTimeRemaining}
                 />
 
                 {/* FROM/TO */}
-                <DetailBlock title={'From'} valueToValidate={'From'} text={getFromOrToName(activeRequest?.ownerKey)} />
-                <DetailBlock title={'To'} valueToValidate={'To'} text={getFromOrToName(activeRequest?.recipientKey)} />
+                <DetailBlock title={'From'} valueToValidate={'From'} text={GetFromOrToName(activeRequest?.ownerKey)} />
+                <DetailBlock title={'To'} valueToValidate={'To'} text={GetFromOrToName(activeRequest?.recipientKey)} />
 
                 {/* REASON */}
                 <DetailBlock
@@ -277,7 +278,7 @@ export default function TransferRequests() {
 
                 {/*  CHECK IN */}
                 <DetailBlock title={'Check In'} valueToValidate={'Check In'} isCustom={true}>
-                  <div className="card-icon-button" onClick={checkIn}>
+                  <div className="card-icon-button" onClick={CheckIn}>
                     <MdPersonPinCircle />
                   </div>
                   <Spacer height={2} />
@@ -345,7 +346,7 @@ export default function TransferRequests() {
 
               {/* BUTTONS */}
               <div className="card-buttons">
-                <button className="button default grey center" data-request-id={activeRequest?.id} onClick={update}>
+                <button className="button default grey center" data-request-id={activeRequest?.id} onClick={Update}>
                   Update Request
                 </button>
                 {activeRequest?.ownerKey !== currentUser?.key && (
@@ -357,8 +358,13 @@ export default function TransferRequests() {
                         'Reason for Declining Request',
                         'Please enter the reason for declining this request',
                         (e) => {
-                          setDeclineReason(e.value)
-                          selectDecision(Decisions.declined).then(resetForm)
+                          if (e.value.length === 0) {
+                            AlertManager.throwError('Reason for declining is required')
+                            return false
+                          } else {
+                            SelectDecision(Decisions.declined).then(ResetForm)
+                            setDeclineReason(e.value)
+                          }
                         },
                         true,
                         true,

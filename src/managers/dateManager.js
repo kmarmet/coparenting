@@ -95,6 +95,7 @@ const DateManager = {
     }
   },
   getValidDate: (date) => {
+    console.log(date)
     if (!Manager.isValid(date)) {
       return null
     }
@@ -103,6 +104,7 @@ const DateManager = {
     if (Manager.contains(asMoment, 'Invalid')) {
       return null
     }
+    console.log(asMoment)
     return asMoment
   },
   msToDate: (ms) => {

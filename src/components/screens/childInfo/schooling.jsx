@@ -70,7 +70,9 @@ export default function Schooling({activeChild}) {
       if (Manager.isValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
-      if (values[0][1].length === 0) {
+
+      const valuesArr = values.filter((x) => x[1].length === 0).map((x) => x[1])
+      if (values.length === valuesArr.length) {
         setSchoolingValues([])
       } else {
         setSchoolingValues(values)

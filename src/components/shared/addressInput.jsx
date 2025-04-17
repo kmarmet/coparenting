@@ -1,7 +1,10 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import Autocomplete from 'react-google-autocomplete'
+import globalState from '../../context'
 
-export default function AddressInput({onSelection = () => {}, defaultValue}) {
+export default function AddressInput({onSelection = (e) => {}, defaultValue}) {
+  const {state, setState} = useContext(globalState)
+  const {refreshKey, theme} = state
   return (
     <Autocomplete
       defaultValue={defaultValue}
@@ -10,18 +13,7 @@ export default function AddressInput({onSelection = () => {}, defaultValue}) {
         types: ['geocode', 'establishment'],
         componentRestrictions: {country: 'usa'},
       }}
-      onChange={(e) => {
-        const parent = e.target.parentElement
-        const input = e.target
-        const value = input.value
-
-        if (value < 1) {
-          parent.classList.remove('active', 'show-label')
-        } else {
-          parent.classList.add('show-label')
-        }
-      }}
-      placeholder={'Location'}
+      // key={refreshKey}
       onPlaceSelected={(place) => onSelection(place.formatted_address)}
     />
   )

@@ -52,8 +52,8 @@ export default function SwapRequests() {
   const [declineReason, setDeclineReason] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
 
-  const resetForm = async (showAlert = false) => {
-    Manager.resetForm('swap-request-wrapper')
+  const ResetForm = async (showAlert = false) => {
+    Manager.ResetForm('swap-request-wrapper')
     setRequestChildren([])
     setSwapDuration('single')
     setIncludeChildren(false)
@@ -61,7 +61,7 @@ export default function SwapRequests() {
     setState({...state, refreshKey: Manager.getUid(), successAlertMessage: showAlert ? 'Swap Request Updated' : null})
   }
 
-  const update = async () => {
+  const Update = async () => {
     // Fill -> overwrite
     let updatedRequest = {...activeRequest}
     updatedRequest.startDate = startDate
@@ -74,18 +74,18 @@ export default function SwapRequests() {
     }
     const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.swapRequest)
     await DB.updateEntireRecord(`${DB.tables.swapRequests}/${currentUser?.key}`, cleanedRequest, cleanedRequest.id)
-    await getSecuredRequests()
+    await GetSecuredRequests()
     setActiveRequest(updatedRequest)
     setShowDetails(false)
-    await resetForm(true)
+    await ResetForm(true)
   }
 
-  const getSecuredRequests = async () => {
+  const GetSecuredRequests = async () => {
     let allRequests = await SecurityManager.getSwapRequests(currentUser)
     setExistingRequests(allRequests)
   }
 
-  const selectDecision = async (decision) => {
+  const SelectDecision = async (decision) => {
     const recipient = await DB_UserScoped.getCoparentByKey(activeRequest.recipientKey, currentUser)
     const recipientName = recipient.name
     // Rejected
@@ -111,26 +111,26 @@ export default function SwapRequests() {
     setState({...state, refreshKey: Manager.getUid(), successAlertMessage: `Decision Sent to ${recipientName}`})
   }
 
-  const setCurrentRequest = async (request) => {
+  const SetCurrentRequest = async (request) => {
     setShowDetails(true)
     setActiveRequest(request)
   }
 
-  const onTableChange = async () => {
+  const OnTableChange = async () => {
     const dbRef = ref(getDatabase())
     onValue(child(dbRef, `${DB.tables.swapRequests}/${currentUser?.key}`), async () => {
-      await getSecuredRequests()
+      await GetSecuredRequests()
     })
   }
 
-  const setDefaults = () => {
+  const SetDefaults = () => {
     setRequestReason(activeRequest?.requestReason)
     setRequestChildren(activeRequest?.children)
     setSwapDuration(activeRequest?.duration)
     setStartDate(activeRequest?.startDate)
   }
 
-  const handleChildSelection = (e) => {
+  const HandleChildSelection = (e) => {
     let childrenArr = []
     Manager.handleCheckboxSelection(
       e,
@@ -145,7 +145,7 @@ export default function SwapRequests() {
     setRequestChildren(childrenArr)
   }
 
-  const deleteRequest = async (action = 'deleted') => {
+  const DeleteRequest = async (action = 'deleted') => {
     if (action === 'deleted') {
       AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
         await DB.deleteById(`${DB.tables.swapRequests}/${activeRequest?.ownerKey}`, activeRequest?.id)
@@ -165,12 +165,12 @@ export default function SwapRequests() {
 
   useEffect(() => {
     if (activeRequest) {
-      setDefaults()
+      SetDefaults()
     }
   }, [activeRequest])
 
   useEffect(() => {
-    onTableChange().then((r) => r)
+    OnTableChange().then((r) => r)
     setView('details')
   }, [])
 
@@ -178,20 +178,20 @@ export default function SwapRequests() {
     <>
       {/* DETAILS CARD */}
       <Modal
-        onDelete={deleteRequest}
+        onDelete={DeleteRequest}
         hasDelete={activeRequest?.ownerKey === currentUser?.key && view === 'edit'}
         hasSubmitButton={activeRequest?.ownerKey !== currentUser?.key}
         submitText={'Approve'}
         submitIcon={<PiCheckBold />}
         title={'Request Details'}
-        onSubmit={() => selectDecision(Decisions.approved)}
+        onSubmit={() => SelectDecision(Decisions.approved)}
         className="swap-requests"
         wrapperClass="swap-requests"
         onClose={async () => {
           setShowDetails(false)
           setView('details')
           setActiveRequest(null)
-          await resetForm()
+          await ResetForm()
         }}
         viewSelector={<ViewSelector labels={['Details', 'Edit']} visibleLabels={['Details']} updateState={(e) => setView(e.toLowerCase())} />}
         showCard={showDetails}>
@@ -294,7 +294,7 @@ export default function SwapRequests() {
                       defaultLabels: activeRequest?.children,
                       labelType: 'children',
                     })}
-                    onCheck={handleChildSelection}
+                    onCheck={HandleChildSelection}
                   />
                 )}
               </div>
@@ -302,7 +302,7 @@ export default function SwapRequests() {
             <Spacer height={5} />
             {/* BUTTONS */}
             <div className="card-buttons">
-              <button className="button default grey center" data-request-id={activeRequest?.id} onClick={update}>
+              <button className="button default grey center" data-request-id={activeRequest?.id} onClick={Update}>
                 Update Request
               </button>
               {activeRequest?.ownerKey !== currentUser?.key && (
@@ -314,8 +314,13 @@ export default function SwapRequests() {
                       'Reason for Declining',
                       'Please enter a reason for declining this request',
                       (e) => {
-                        setDeclineReason(e.value)
-                        selectDecision(Decisions.declined)
+                        if (e.value.length === 0) {
+                          AlertManager.throwError('Reason for declining is required')
+                          return false
+                        } else {
+                          SelectDecision(Decisions.declined).then(ResetForm)
+                          setDeclineReason(e.value)
+                        }
                       },
                       true,
                       true,
@@ -348,7 +353,7 @@ export default function SwapRequests() {
               {Manager.isValid(existingRequests) &&
                 existingRequests.map((request, index) => {
                   return (
-                    <div onClick={() => setCurrentRequest(request)} key={index} className="row">
+                    <div onClick={() => SetCurrentRequest(request)} key={index} className="row">
                       {/* REQUEST DATE */}
                       <div id="primary-icon-wrapper" className="mr-10">
                         <PiSwapDuotone id={'primary-row-icon'} />

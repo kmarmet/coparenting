@@ -64,7 +64,7 @@ export default function Archives() {
     }
 
     setExpensePayers(DatasetManager.getUniqueArray(payerNames, true))
-    allExpenses = DatasetManager.sortByProperty(allExpenses, 'creationDate', 'desc')
+    allExpenses = allExpenses.sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse()
     setExpenses(allExpenses)
 
     return allExpenses
@@ -256,7 +256,14 @@ export default function Archives() {
           <CheckboxGroup
             onCheck={(e) => {
               const chatKey = e.dataset.key
-              getAndSetMessages(chatKey).then((r) => r)
+              Manager.handleCheckboxSelection(
+                e,
+                (e) => {
+                  getAndSetMessages(chatKey).then((r) => r)
+                },
+                (e) => {},
+                false
+              )
             }}
             parentLabel="Select which chat you would like to export"
             checkboxArray={Manager.buildCheckboxGroup({

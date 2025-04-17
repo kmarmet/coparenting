@@ -7,14 +7,34 @@ import DomManager from './domManager'
 import DB_UserScoped from '../database/db_userScoped'
 
 const Manager = {
-  invalidInputs: (requiredInputs) => {
-    const invalidInputs = requiredInputs.filter((x) => !Manager.isValid(x) || x?.value?.length === 0 || x.length == 0)
-    if (invalidInputs.length > 0) {
-      return invalidInputs
+  GetInvalidInputsErrorString: (requiredInputs) => {
+    let invalidInputNames = []
+    let areOrIs = 'are'
+    if (Manager.isValid(requiredInputs)) {
+      for (let input of requiredInputs) {
+        if (Manager.isValid(input.name) && !Manager.isValid(input.value, true)) {
+          invalidInputNames.push(input?.name)
+        }
+      }
+
+      if (invalidInputNames.length > 1) {
+        invalidInputNames.splice(invalidInputNames.length - 1, 0, 'and')
+      }
+      invalidInputNames = invalidInputNames.filter((x) => Manager.isValid(x))
+
+      if (invalidInputNames.length === 1) {
+        areOrIs = 'is'
+      }
+      invalidInputNames = invalidInputNames.join(', ')
+      invalidInputNames = invalidInputNames.replace('and,', 'and')
+
+      if (Manager.isValid(invalidInputNames, true)) {
+        return `${invalidInputNames} ${areOrIs} required`
+      }
     }
-    return []
+    return ''
   },
-  resetForm: (parentClass) => {
+  ResetForm: (parentClass) => {
     const inputWrappers = document.querySelectorAll('.input-container')
 
     const parentClassInputs = document.querySelector(`.${parentClass}`)?.querySelectorAll('input, textarea')
@@ -338,7 +358,7 @@ const Manager = {
         }
         checkboxGroup.push({
           label: label,
-          key: label.replaceAll(' ', ''),
+          key: label?.replaceAll(' ', ''),
           isActive,
         })
       }

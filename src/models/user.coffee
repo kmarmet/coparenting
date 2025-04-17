@@ -11,7 +11,6 @@ export default class User
     @showInitialLoginAlert = true
     @phone = ''
     @children = []
-    @childAccounts = []
     @coparents = []
     @parentType = ''
     @accountType = ''

@@ -3,20 +3,21 @@ import React, {useContext, useEffect, useState} from 'react'
 import {child, getDatabase, onValue, ref} from 'firebase/database'
 import moment from 'moment-timezone'
 import ScreenNames from '/src/constants/screenNames'
+import {FaStar} from 'react-icons/fa'
 import globalState from '/src/context.js'
 import DB from '/src/database/DB'
+import {IoChevronBack, IoCopy, IoSend} from 'react-icons/io5'
 import ChatMessage from '/src/models/chat/chatMessage'
-import {IoChevronBack, IoSend} from 'react-icons/io5'
-import {MdOutlineSearchOff} from 'react-icons/md'
+import {MdCancel, MdOutlineSearchOff} from 'react-icons/md'
 import Manager from '/src/managers/manager'
 import NotificationManager from '/src/managers/notificationManager'
 import ChatManager from '/src/managers/chatManager.js'
 import {PiBookmarksSimpleDuotone} from 'react-icons/pi'
 import ModelNames from '/src/models/modelNames'
+import {BsBookmarkDashFill, BsBookmarkStarFill, BsFillBookmarksFill} from 'react-icons/bs'
 import {Fade} from 'react-awesome-reveal'
 import Modal from '/src/components/shared/modal'
 import {TbMessageCircleSearch} from 'react-icons/tb'
-import {BsBookmarkPlus, BsFillBookmarksFill, BsFillBookmarkStarFill} from 'react-icons/bs'
 import {useLongPress} from 'use-long-press'
 import ObjectManager from '/src/managers/objectManager'
 import AlertManager from '/src/managers/alertManager'
@@ -29,6 +30,7 @@ import DatetimeFormats from '../../../constants/datetimeFormats'
 import AppManager from '../../../managers/appManager'
 import DateManager from '../../../managers/dateManager'
 import InputTypes from '../../../constants/inputTypes'
+import Spacer from '../../shared/spacer'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
@@ -49,7 +51,12 @@ const Chats = () => {
 
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)
-    setState({...state, successAlertMessage: 'Message Copied'})
+    // setState({...state, successAlertMessage: 'Message Copied'})
+    const longpressMenu = element.target.parentNode.previousSibling
+    console.log(element.target.parentNode.previousSibling)
+    // console.log(longpressMenu)
+
+    longpressMenu.classList.add('active')
   })
 
   const toggleMessageBookmark = async (messageObject) => {
@@ -265,10 +272,12 @@ const Chats = () => {
   useEffect(() => {
     if (messageText.length === 1 || messageText.length === 0) {
       const input = document.querySelector('.message-input')
-      input.style.height = '40px'
-      DomManager.unsetHeight(input)
-      setToneObject(null)
-      hideKeyboard()
+      if (input) {
+        input.style.height = '40px'
+        DomManager.unsetHeight(input)
+        setToneObject(null)
+        hideKeyboard()
+      }
     }
   }, [messageText.length])
 
@@ -319,9 +328,10 @@ const Chats = () => {
           setSearchResults([])
           scrollToLatestMessage()
         }}>
+        <Spacer height={8} />
         <InputWrapper
           labelText="Find a message..."
-          inputType={'input'}
+          inputType={InputTypes.text}
           onChange={(e) => {
             if (e.target.value.length > 2) {
               setSearchInputQuery(e.target.value)
@@ -349,6 +359,7 @@ const Chats = () => {
             <div id="right-side" className="flex">
               {inSearchMode ? (
                 <MdOutlineSearchOff
+                  id={'close-search-icon'}
                   onClick={() => {
                     setShowSearchInput(false)
                     setShowSearchCard(false)
@@ -363,7 +374,7 @@ const Chats = () => {
 
               {bookmarks.length > 0 && (
                 <BsFillBookmarksFill
-                  id="conversation-bookmark-icon"
+                  id="chat-bookmark-icon"
                   className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
                   onClick={viewBookmarks}
                 />
@@ -406,10 +417,39 @@ const Chats = () => {
                 sender = StringManager.getFirstNameOnly(bookmark.sender)
               }
               return (
-                <div key={index} className={'message-fade-wrapper'}>
+                <div {...bind()} key={index} className={'message-fade-wrapper'}>
+                  {/* LONGPRESS MENU */}
+                  <div className="longpress-menu">
+                    <button
+                      id="copy"
+                      onClick={(e) => {
+                        const message = e.target.parentNode.parentNode.querySelector('.message')
+                        navigator.clipboard.writeText(message.textContent)
+                        e.target.parentNode.classList.remove('active')
+                      }}>
+                      Copy <IoCopy />
+                    </button>
+                    <button
+                      id="bookmark"
+                      onClick={(e) => {
+                        e.target.parentNode.classList.remove('active')
+
+                        toggleMessageBookmark(bookmark).then((r) => r)
+                      }}>
+                      Remove Bookmark
+                      <BsBookmarkDashFill className={'active'} />
+                    </button>
+
+                    <button
+                      id="cancel"
+                      onClick={(e) => {
+                        e.target.parentNode.classList.remove('active')
+                      }}>
+                      Cancel <MdCancel className={'cancel-icon'} />
+                    </button>
+                  </div>
                   <div className="flex">
                     <p className={bookmark.sender === currentUser?.name ? 'message from' : 'to message'}>{bookmark.message}</p>
-                    <BsFillBookmarkStarFill className={'active'} onClick={() => toggleMessageBookmark(bookmark)} />
                   </div>
                   <span className={bookmark.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
                     From {sender} on&nbsp; {moment(bookmark.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD (hh:mma)')}
@@ -440,14 +480,54 @@ const Chats = () => {
                     convertedTimestamp = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.timeForDb)
                   }
                   return (
-                    <div key={index} className={'message-fade-wrapper'}>
-                      <div className="flex">
-                        <p {...bind()} className={message?.senderKey === currentUser?.key ? 'from message' : 'to message'}>
-                          {message?.message}
-                        </p>
-                        {isBookmarked && <BsFillBookmarkStarFill className={'active'} onClick={() => toggleMessageBookmark(message)} />}
+                    <div {...bind()} key={index} className={'message-fade-wrapper'}>
+                      {/* LONGPRESS MENU */}
+                      <div className="longpress-menu">
+                        <button
+                          id="copy"
+                          onClick={(e) => {
+                            const message = e.target.parentNode.parentNode.querySelector('.message')
+                            navigator.clipboard.writeText(message.textContent)
+                            e.target.parentNode.classList.remove('active')
+                          }}>
+                          Copy <IoCopy />
+                        </button>
+                        {isBookmarked && (
+                          <button
+                            id="bookmark"
+                            onClick={(e) => {
+                              e.target.parentNode.classList.remove('active')
+
+                              toggleMessageBookmark(message).then((r) => r)
+                            }}>
+                            Remove Bookmark
+                            <BsBookmarkDashFill className={'active'} />
+                          </button>
+                        )}
+
                         {!isBookmarked && (
-                          <BsBookmarkPlus className={isBookmarked ? 'active' : ''} onClick={() => toggleMessageBookmark(message, false)} />
+                          <button
+                            id="bookmark"
+                            onClick={(e) => {
+                              e.target.parentNode.classList.remove('active')
+                              toggleMessageBookmark(message, false).then((r) => r)
+                            }}>
+                            Bookmark <BsBookmarkStarFill />
+                          </button>
+                        )}
+
+                        <button
+                          id="cancel"
+                          onClick={(e) => {
+                            e.target.parentNode.classList.remove('active')
+                          }}>
+                          Cancel <MdCancel className={'cancel-icon'} />
+                        </button>
+                      </div>
+                      <div className="flex">
+                        <p className={message?.senderKey === currentUser?.key ? 'from message' : 'to message'}>{message?.message}</p>
+                        {isBookmarked && (
+                          <FaStar className={message?.senderKey === currentUser?.key ? 'from bookmarked-icon' : 'to bookmarked-icon'} />
                         )}
                       </div>
                       <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{convertedTimestamp}</span>
@@ -509,7 +589,7 @@ const Chats = () => {
             <p id="user-name">{StringManager.getFirstNameOnly(messageRecipient.name)}</p>
             <p id="view-bookmarks" className="item menu-item" onClick={(e) => viewBookmarks(e)}>
               <PiBookmarksSimpleDuotone
-                id="conversation-bookmark-icon"
+                id="chat-bookmark-icon"
                 className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
               />
               {showBookmarks && <p>Hide Bookmarks</p>}
