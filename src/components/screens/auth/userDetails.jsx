@@ -18,19 +18,21 @@ export default function UserDetails() {
   const [name, setName] = useState('')
   const [userPhone, setUserPhone] = useState('')
 
-  const submit = async () => {
+  const Submit = async () => {
     if (!validator.isMobilePhone(userPhone)) {
       AlertManager.throwError('Phone number is not valid')
       return false
     }
-    if (accountType === '') {
-      AlertManager.throwError('Please select an profile type')
+    const errorString = Manager.GetInvalidInputsErrorString([
+      {name: 'Your Name', value: name},
+      {name: 'Your Phone Number', value: userPhone},
+      {name: 'Profile Type', value: accountType},
+    ])
+    if (errorString !== '') {
+      AlertManager.throwError(errorString)
       return false
     }
-    if (userPhone === '') {
-      AlertManager.throwError('Please enter a phone number')
-      return false
-    }
+
     const userObject = {
       phone: userPhone,
       email: authUser?.email,
@@ -39,10 +41,15 @@ export default function UserDetails() {
       key: authUser?.uid,
     }
     const newUser = await DB_UserScoped.createAndInsertUser(userObject)
-    setState({...state, currentScreen: ScreenNames.calendar, currentUser: newUser, successAlertMessage: 'Success'})
+    setState({
+      ...state,
+      currentScreen: accountType === 'parent' ? ScreenNames.calendar : ScreenNames.requestParentAccess,
+      currentUser: newUser,
+      successAlertMessage: 'Success',
+    })
   }
 
-  const handleAccountType = (type) => {
+  const HandleAccountType = (type) => {
     Manager.handleCheckboxSelection(
       type,
       (type) => {
@@ -68,7 +75,7 @@ export default function UserDetails() {
       <InputWrapper inputType={InputTypes.phone} required={true} labelText={'Phone Number'} onChange={(e) => setUserPhone(e.target.value)} />
 
       <CheckboxGroup
-        onCheck={handleAccountType}
+        onCheck={HandleAccountType}
         parentLabel="Profile Type (cannot be changed later)"
         labelText="Profile Type"
         checkboxArray={Manager.buildCheckboxGroup({
@@ -83,7 +90,7 @@ export default function UserDetails() {
       <button
         className="button default green center"
         onClick={() => {
-          AlertManager.confirmAlert('Are the details you provided correct?', 'Yes', 'No', submit)
+          AlertManager.confirmAlert('Are the details you provided correct?', 'Yes', 'No', Submit)
         }}>
         Let&apos;s Go!
       </button>

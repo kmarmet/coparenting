@@ -170,6 +170,8 @@ StringManager = {
       return title
 
   formatTitle: (title, uppercase = true) ->
+    if !Manager.isValid(title)
+      return title
     if uppercase
       title = StringManager.uppercaseFirstLetterOfAllWords(title).trim()
 
@@ -186,6 +188,7 @@ StringManager = {
       .replaceAll(" The ", " the ")
       .replaceAll(" For ", " for ")
       .replaceAll(" Thru ", " thru ")
+      .replaceAll(" Has ", " has ")
       .replaceAll(" And ", " and ")
       .replaceAll(" Is ", " is ")
       .replaceAll(" Not ", " not ")

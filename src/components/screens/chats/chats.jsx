@@ -21,6 +21,7 @@ import NavBar from '../../navBar'
 import Label from '../../shared/label'
 import ChatManager from '../../../managers/chatManager'
 import InputTypes from '../../../constants/inputTypes'
+import DB_UserScoped from '../../../database/db_userScoped'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
@@ -30,6 +31,7 @@ const Chats = () => {
   const [showInvitationCard, setShowInvitationCard] = useState(false)
   const [inviteeName, setInviteeName] = useState('')
   const [inviteeEmail, setInviteeEmail] = useState('')
+  const [linkedAccounts, setLinkedAccounts] = useState(false)
 
   const getSecuredChats = async () => {
     const chats = await SecurityManager.getChats(currentUser)
@@ -63,8 +65,15 @@ const Chats = () => {
     })
   }
 
+  const DefineLinkedAccounts = async () => {
+    const accounts = await DB_UserScoped.getValidAccountsCountForUser(currentUser)
+    console.log(accounts)
+    setLinkedAccounts(accounts)
+  }
+
   useEffect(() => {
     onTableChange().then((r) => r)
+    DefineLinkedAccounts().then((r) => r)
   }, [])
 
   return (
@@ -117,9 +126,8 @@ const Chats = () => {
           <Spacer height={5} />
           <AccordionDetails>
             <p>
-              Right now, your account is connected to {currentUser?.coparents?.length} {currentUser?.coparents?.length > 1 ? 'members' : 'member'}{' '}
-              (children with accounts and co-parents are both considered members). If you’d like to chat with another co-parent or child, go ahead and
-              send them an invite.
+              Right now, your account is connected to {linkedAccounts} {linkedAccounts > 1 ? 'members' : 'member'} (children with accounts and
+              co-parents are both considered members). If you’d like to chat with another co-parent or child, go ahead and send them an invite.
             </p>
 
             <button

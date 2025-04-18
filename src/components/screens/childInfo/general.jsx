@@ -13,14 +13,16 @@ import {FaMinus, FaPlus} from 'react-icons/fa6'
 import DB_UserScoped from '../../../database/db_userScoped'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 function General({activeChild}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
-  const [generalValues, setGeneralValues] = useState([])
+  const {theme} = state
+  const {currentUser} = useCurrentUser()
+  const [generalValues, setGeneralValues] = useState(Object.entries(activeChild?.general))
   const [showInputs, setShowInputs] = useState(false)
 
-  const deleteProp = async (prop) => {
+  const DeleteProp = async (prop) => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
 
     // Delete Shared
@@ -28,15 +30,15 @@ function General({activeChild}) {
     if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
       const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
-      await setSelectedChild()
+      await SetSelectedChild()
     } else {
       const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'general', StringManager.formatDbProp(prop))
       setState({...state, activeChild: updatedChild})
-      await setSelectedChild()
+      await SetSelectedChild()
     }
   }
 
-  const setSelectedChild = async () => {
+  const SetSelectedChild = async () => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
     let sharedValues = []
     if (Manager.isValid(sharing)) {
@@ -66,16 +68,16 @@ function General({activeChild}) {
     }
   }
 
-  const update = async (prop, value) => {
+  const Update = async (prop, value) => {
     await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', StringManager.formatDbProp(prop), value)
   }
 
   useEffect(() => {
-    setSelectedChild().then((r) => r)
+    SetSelectedChild().then((r) => r)
   }, [activeChild])
 
   return (
-    <div key={activeChild?.id} className="info-section section general form">
+    <div className="info-section section general form">
       <Accordion className={`${theme} child-info`} expanded={showInputs}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
@@ -106,10 +108,10 @@ function General({activeChild}) {
                               inputType={InputTypes.address}
                               defaultValue={value}
                               labelText={`Home Address`}
-                              onChange={(address) => update('address', address)}
+                              onChange={(address) => Update('address', address)}
                             />
                             {infoLabel.toLowerCase() !== 'name' && (
-                              <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                              <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
                             )}
                           </div>
                           <Spacer height={5} />
@@ -125,11 +127,11 @@ function General({activeChild}) {
                               defaultValue={value}
                               onChange={async (e) => {
                                 const inputValue = e.target.value
-                                await update(infoLabel, inputValue)
+                                await Update(infoLabel, inputValue)
                               }}
                             />
                             {infoLabel.toLowerCase() !== 'name' && (
-                              <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
+                              <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
                             )}
                           </div>
                           <Spacer height={5} />

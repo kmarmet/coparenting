@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../context'
 import Manager from '../../managers/manager'
 import {IoClose} from 'react-icons/io5'
+import StringManager from '../../managers/stringManager'
 
 const SuccessAlert = () => {
   const {state, setState} = useContext(globalState)
@@ -22,9 +23,9 @@ const SuccessAlert = () => {
     }
   }, [successAlertMessage])
   return (
-    <div id="success-alert-wrapper" className={showAlert ? 'active blur-bg' : 'blur-bg'}>
-      <p id="success-alert">{successAlertMessage}</p>
-      <IoClose className={'alert-close-icon'} onClick={() => setShowAlert(false)} />
+    <div id="success-alert-wrapper" onClick={() => setShowAlert(false)} className={showAlert ? 'active blur-bg' : 'blur-bg'}>
+      <p id="success-alert">{StringManager.formatTitle(successAlertMessage)}</p>
+      <IoClose className={'alert-close-icon'} />
     </div>
   )
 }

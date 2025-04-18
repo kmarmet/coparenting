@@ -61,6 +61,7 @@ import DB from './database/DB'
 import NotificationManager from './managers/notificationManager'
 import CreationForms from './constants/creationForms'
 import AlertManager from './managers/alertManager'
+import Parents from './components/screens/parents/parents'
 
 export default function App() {
   // Initialize Firebase
@@ -94,7 +95,7 @@ export default function App() {
   })
 
   // State to include in App.js
-  const {isLoading, currentScreen, menuIsOpen, currentUser, loadingText, theme, authUser, creationFormToShow} = state
+  const {isLoading, currentScreen, menuIsOpen, loadingText, currentUser, theme, authUser, creationFormToShow} = state
 
   const deleteMenuAnimation = () => {
     document.querySelectorAll('#full-menu .menu-item').forEach((menuItem) => {
@@ -110,22 +111,10 @@ export default function App() {
     })
   }
 
-  const updateCurrentUser = async () => {
-    const _currentUser = await DB_UserScoped.getCurrentUser(auth.currentUser?.email)
-    setState({...state, currentUser: _currentUser, isLoading: false})
-  }
-
   // ON SCREEN CHANGE
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
       window.navigator.clearAppBadge().then((r) => r)
-    }
-    const allModals = document.querySelectorAll('#modal')
-    for (let modal of allModals) {
-      modal.classList.remove('animate__fadeInUp')
-    }
-    if (Manager.isValid(currentUser) && currentScreen !== ScreenNames.calendar) {
-      updateCurrentUser().then((r) => r)
     }
   }, [currentScreen])
 
@@ -159,22 +148,18 @@ export default function App() {
 
     // FIREBASE AUTH
     onAuthStateChanged(auth, async (user) => {
+      // USER LOGGED IN FROM PERSISTED STATE
       if (user) {
         const user = auth.currentUser
         await AppManager.clearAppBadge()
 
-        const users = await DB.getTable(`${DB.tables.users}`)
         let notifications = []
         let currentUserFromDb
-        let screenToNavigateTo = ScreenNames.calendar
+        const users = await DB.getTable(DB.tables.users)
         currentUserFromDb = users?.find((u) => u?.email === user?.email)
-
-        if (!currentUserFromDb) {
-          screenToNavigateTo = ScreenNames.home
-        }
-
         // User Exists
         if (currentUserFromDb) {
+          let screenToNavigateTo = ScreenNames.calendar
           const body = document.getElementById('external-overrides')
           const navbar = document.getElementById('navbar')
           if (Manager.isValid(navbar)) {
@@ -196,6 +181,8 @@ export default function App() {
                 await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUserFromDb?.key}/location`, r)
               })
             }
+
+            // Delete expired items
             AppManager.deleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
             AppManager.deleteExpiredMemories(currentUserFromDb).then((r) => r)
           }
@@ -203,9 +190,9 @@ export default function App() {
             NotificationManager.init(currentUserFromDb)
             notifications = await DB.getTable(`${DB.tables.notifications}/${currentUserFromDb?.key}`)
           }
-        }
-
-        if (user?.emailVerified) {
+          if (!user?.emailVerified) {
+            screenToNavigateTo = ScreenNames.login
+          }
           setState({
             ...state,
             authUser: user,
@@ -217,12 +204,17 @@ export default function App() {
             isLoading: false,
             notificationCount: notifications?.length,
           })
-        } else {
-          setState({...state, isLoading: false, authUser: user, currentScreen: ScreenNames.login})
         }
       } else {
-        setState({...state, isLoading: false})
-        console.log('signed out or user doesnt exist')
+        setState({
+          ...state,
+          authUser: user,
+          currentScreen: ScreenNames.home,
+          userIsLoggedIn: false,
+          loadingText: '',
+          isLoading: false,
+        })
+        console.log('user signed out or user does not exist')
       }
     })
     // eslint-disable-next-line no-undef
@@ -318,6 +310,7 @@ export default function App() {
             {currentScreen === ScreenNames.memories && <Memories />}
             {currentScreen === ScreenNames.childInfo && <ChildInfo />}
             {currentScreen === ScreenNames.coparents && <Coparents />}
+            {currentScreen === ScreenNames.parents && <Parents />}
             {currentScreen === ScreenNames.chat && <Chat />}
             {currentScreen === ScreenNames.chats && <Chats />}
             {currentScreen === ScreenNames.visitation && <Visitation />}

@@ -10,6 +10,7 @@ EmailManager =
     customerSupport: 'customerSupport'
     emailVerification: 'emailVerification'
     coparentInvitation: 'coparent-invitation'
+    parentInvitation: 'parent-invitation'
   GetConfig: (message, templateName, fromName) ->
     config =
       service_id: 'service_ml9j8d3'

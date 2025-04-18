@@ -32,6 +32,7 @@ ScreenNames = {
   newSwapRequest: 'newSwapRequest'
   newTransferRequest: 'newTransferRequest'
   notifications: 'notifications'
+  parents: 'parents'
   profile: 'profile'
   registration: 'registration'
   requestParentAccess: "requestParentAccess"

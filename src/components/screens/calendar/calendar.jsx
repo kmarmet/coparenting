@@ -23,16 +23,16 @@ import {BsStars} from 'react-icons/bs'
 import CalendarEvents from './calendarEvents.jsx'
 import CalendarLegend from './calendarLegend.jsx'
 import DesktopLegend from './desktopLegend.jsx'
-import ScreenNames from '../../../constants/screenNames'
 import firebaseConfig from '/src/firebaseConfig.js'
 import {initializeApp} from 'firebase/app'
 import {getAuth} from 'firebase/auth'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 export default function EventCalendar() {
   const {state, setState} = useContext(globalState)
-  const {theme, currentUser, authUser, refreshKey} = state
+  const {theme, authUser, refreshKey} = state
   const [eventsOfActiveDay, setEventsOfActiveDay] = useState([])
   const [allEventsFromDb, setAllEventsFromDb] = useState([])
   const [searchResults, setSearchResults] = useState([])
@@ -50,6 +50,7 @@ export default function EventCalendar() {
   const [currentMonth, setCurrentMonth] = useState(null)
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
+  const {currentUser} = useCurrentUser()
 
   // GET EVENTS
   const getSecuredEvents = async (activeDay) => {
@@ -65,6 +66,7 @@ export default function EventCalendar() {
     if (!activeDay) {
       dateToUse = selectedDate
     }
+
     // All secured events
     securedEvents = DateManager.sortCalendarEvents(securedEvents, 'startDate', 'startTime')
 
@@ -272,15 +274,6 @@ export default function EventCalendar() {
     setState({...state, notificationCount: notifications.length, isLoading: false})
   }
 
-  // Check if parent access is granted -> if not, show request parent access screen
-  const redirectChildIfNecessary = async () => {
-    const users = await DB.getTable(`${DB.tables.users}`)
-    const user = users.find((x) => x.email === authUser?.email)
-    if (user && user.accountType === 'child' && !user.parentAccessGranted) {
-      setState({...state, currentScreen: ScreenNames.requestParentAccess, currentUser: user})
-    }
-  }
-
   // SEARCH
   const search = async () => {
     if (searchQuery.length === 0) {
@@ -315,7 +308,6 @@ export default function EventCalendar() {
   }
 
   useEffect(() => {
-    redirectChildIfNecessary().then((r) => r)
     // eslint-disable-next-line no-prototype-builtins
     if (!loadingDisabled && currentUser?.hasOwnProperty('email')) {
       setLoadingDisabled(true)

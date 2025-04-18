@@ -1,5 +1,5 @@
 // Path: src\components\screens\auth\requestParentAccess.jsx
-import React, {useContext, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../../context'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import DomManager from '/src/managers/domManager'
@@ -8,21 +8,23 @@ import Manager from '../../../managers/manager'
 import SmsManager from '/src/managers/smsManager.js'
 import validator from 'validator'
 import DB from '../../../database/DB'
-import StringManager from '../../../managers/stringManager'
-import ScreenNames from '../../../constants/screenNames'
 import InputTypes from '../../../constants/inputTypes'
+import ScreenNames from '../../../constants/screenNames'
+import StringManager from '../../../managers/stringManager'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 export default function RequestParentAccess() {
   const {state, setState} = useContext(globalState)
-  const {currentUser} = state
+  const {currentUser} = useCurrentUser()
   const [readyToVerify, setReadyToVerify] = useState(false)
   const [parentPhone, setParentPhone] = useState(null)
   const [enteredCode, setEnteredCode] = useState(0)
   const [verificationCode, setVerificationCode] = useState('')
   const [userName, setUserName] = useState('')
   const [parentEmail, setParentEmail] = useState('')
+
   // SEND VERIFICATION CODE
-  const sendPhoneVerificationCode = async (codeResent = false) => {
+  const SendPhoneVerificationCode = async (codeResent = false) => {
     const errorString = Manager.GetInvalidInputsErrorString([
       {name: 'Your Name', value: userName},
       {name: 'Parent Email', value: parentEmail},
@@ -42,7 +44,7 @@ export default function RequestParentAccess() {
       if (!parent) {
         AlertManager.throwError(
           'No Parent Profile Found',
-          'Please check the email and enter again or let your parent know they will need to register an account'
+          'Please check the email and enter again, or let your parent know they will need to register an account'
         )
         return false
       }
@@ -59,7 +61,7 @@ export default function RequestParentAccess() {
     }
   }
 
-  const verifyPhoneCode = async () => {
+  const VerifyPhoneCode = async () => {
     if (enteredCode.length === 0) {
       AlertManager.throwError('Access code is required')
       return false
@@ -70,7 +72,7 @@ export default function RequestParentAccess() {
       const parent = await DB.find(DB.tables.users, ['email', parentEmail], true)
 
       if (parent) {
-        await DB.add(`${DB.tables.users}/${currentUser?.key}/parents`, {name: parent?.name, phone: parent?.phone, linkedKey: parent?.key})
+        await DB.add(`${DB.tables.users}/${currentUser?.key}/parents`, {name: parent?.name, phone: parent?.phone, userKey: parent?.key})
         await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/parentAccessGranted`, true)
         await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/name`, StringManager.uppercaseFirstLetterOfAllWords(userName))
         setState({...state, currentScreen: ScreenNames.calendar, successAlertMessage: 'Access Granted'})
@@ -86,6 +88,15 @@ export default function RequestParentAccess() {
       return false
     }
   }
+
+  useEffect(() => {
+    if (Manager.isValid(currentUser)) {
+      console.log(currentUser)
+      if (Manager.isValid(currentUser?.parentAccessGranted) && currentUser?.parentAccessGranted === true) {
+        setState({...state, currentScreen: ScreenNames.calendar})
+      }
+    }
+  }, [currentUser])
 
   return (
     <div className="page-container parent-access">
@@ -122,12 +133,12 @@ export default function RequestParentAccess() {
       )}
       {readyToVerify && <InputWrapper labelText={'Access Code'} inputType={InputTypes.text} onChange={(e) => setEnteredCode(e.target.value)} />}
       {!readyToVerify && (
-        <button className="button default green center mt-30" onClick={sendPhoneVerificationCode}>
+        <button className="button default green center mt-30" onClick={SendPhoneVerificationCode}>
           Request Access
         </button>
       )}
       {readyToVerify && (
-        <button className="button default green center mt-30" onClick={verifyPhoneCode}>
+        <button className="button default green center mt-30" onClick={VerifyPhoneCode}>
           Verify Code
         </button>
       )}
@@ -139,7 +150,7 @@ export default function RequestParentAccess() {
             setParentPhone('')
             setEnteredCode('')
             setVerificationCode('')
-            await sendPhoneVerificationCode(true)
+            await SendPhoneVerificationCode(true)
           }}>
           Resend
         </button>

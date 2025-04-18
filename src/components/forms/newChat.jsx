@@ -70,7 +70,7 @@ const NewChatSelector = () => {
           return (
             <div key={index}>
               {!activeChatKeys.includes(coparent?.key) && (
-                <div id="users-wrapper">
+                <div id="currentUser-wrapper">
                   <div className="user-wrapper">
                     <FaUserCircle />
                     <p
@@ -90,25 +90,27 @@ const NewChatSelector = () => {
       {/* CHILDREN */}
       {currentUser?.accountType === 'child' &&
         Manager.isValid(currentUser?.parents) &&
-        currentUser?.parents?.map((parent, index) => {
-          return (
-            <div key={index} className="flex" id="users-wrapper">
-              {!activeChatKeys.includes(parent?.key) && (
-                <div className="user-wrapper">
-                  <BiMessageRoundedAdd />
-                  <p
-                    className="coparent-name new-thread-coparent-name"
-                    onClick={() => {
-                      openMessageThread(parent?.key).then((r) => r)
-                    }}>
-                    {parent?.name}
-                  </p>
-                </div>
-              )}
-              {activeChatKeys.includes(parent?.key) && <p>All available co-parents already have an open conversation with you. </p>}
-            </div>
-          )
-        })}
+        currentUser?.parents
+          ?.filter((x) => x)
+          .map((parent, index) => {
+            return (
+              <div key={index} className="flex" id="currentUser-wrapper">
+                {!activeChatKeys.includes(parent?.key) && (
+                  <div className="user-wrapper">
+                    <BiMessageRoundedAdd />
+                    <p
+                      className="coparent-name new-thread-coparent-name"
+                      onClick={() => {
+                        openMessageThread(parent?.key).then((r) => r)
+                      }}>
+                      {parent?.name}
+                    </p>
+                  </div>
+                )}
+                {activeChatKeys.includes(parent?.key) && <p>All available parents already have an open conversation with you. </p>}
+              </div>
+            )
+          })}
     </Modal>
   )
 }

@@ -46,7 +46,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const [eventEndDate, setEventEndDate] = useState('')
   const [eventEndTime, setEventEndTime] = useState('')
   const [eventPhone, setEventPhone] = useState('')
-  const [eventChildren, setEventChildren] = useState(event?.children || [])
+  const [eventChildren, setEventChildren] = useState(event?.chatMessages || [])
   const [eventReminderTimes, setEventReminderTimes] = useState([])
   const [eventShareWith, setEventShareWith] = useState(event?.shareWith || [])
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
@@ -74,7 +74,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setEventNotes('')
     setEventEndDate('')
     setEventEndTime('')
-    setEventChildren(event?.children || [])
+    setEventChildren(event?.chatMessages || [])
     setEventReminderTimes([])
     setEventShareWith(event?.shareWith || [])
     setEventIsDateRange(false)
@@ -118,7 +118,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     updatedEvent.createdBy = currentUser?.name
     updatedEvent.notes = eventNotes
     updatedEvent.reminderTimes = eventReminderTimes || []
-    updatedEvent.children = eventChildren
+    updatedEvent.chatMessages = eventChildren
     updatedEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
     updatedEvent.location = eventLocation
     updatedEvent.phone = StringManager.formatPhone(eventPhone)
@@ -249,7 +249,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     updatedEvent.createdBy = currentUser?.name
     updatedEvent.notes = eventNotes
     updatedEvent.reminderTimes = eventReminderTimes || []
-    updatedEvent.children = eventChildren
+    updatedEvent.chatMessages = eventChildren
     updatedEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
     updatedEvent.location = eventLocation
 
@@ -375,7 +375,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setRecurInterval(event?.repeatInterval)
     setEventIsDateRange(event?.isDateRange)
     setEventWebsiteUrl(event?.websiteUrl)
-    setIncludeChildren(Manager.isValid(event?.children))
+    setIncludeChildren(Manager.isValid(event?.chatMessages))
     setShowReminders(Manager.isValid(event?.reminderTimes))
 
     if (Manager.isValid(event?.shareWith)) {
@@ -545,10 +545,10 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   )}
 
                   {/* Children */}
-                  {Manager.isValid(event?.children) && (
+                  {Manager.isValid(event?.chatMessages) && (
                     <div className="block">
-                      {Manager.isValid(event?.children) &&
-                        event?.children.map((child, index) => {
+                      {Manager.isValid(event?.chatMessages) &&
+                        event?.chatMessages.map((child, index) => {
                           return (
                             <p className="block-text" key={index}>
                               {child}
@@ -706,25 +706,25 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               {currentUser?.accountType === 'parent' && (
                 <Accordion expanded={includeChildren} id={'checkboxes'}>
                   <AccordionSummary>
-                    <div className="flex children-toggle">
+                    <div className="flex chatMessages-toggle">
                       <p className="label">Include Children</p>
                       <ToggleButton
-                        isDefaultChecked={event?.children?.length > 0}
+                        isDefaultChecked={event?.chatMessages?.length > 0}
                         onCheck={() => setIncludeChildren(!includeChildren)}
                         onUncheck={() => setIncludeChildren(!includeChildren)}
                       />
                     </div>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <div id="include-children-checkbox-container">
+                    <div id="include-chatMessages-checkbox-container">
                       <CheckboxGroup
                         checkboxArray={Manager.buildCheckboxGroup({
                           currentUser,
-                          labelType: 'children',
-                          defaultLabels: event?.children,
+                          labelType: 'chatMessages',
+                          defaultLabels: event?.chatMessages,
                         })}
                         elClass={`${theme} `}
-                        containerClass={'include-children-checkbox-container'}
+                        containerClass={'include-chatMessages-checkbox-container'}
                         onCheck={handleChildSelection}
                       />
                     </div>

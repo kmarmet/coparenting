@@ -10,17 +10,17 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import Accordion from '@mui/material/Accordion'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
-import {child, getDatabase, onValue, ref} from 'firebase/database'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
-export default function Checklist({fromOrTo, activeChild, onChildUpdate = (child) => {}}) {
+export default function Checklist({fromOrTo, activeChild}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, refreshKey} = state
-
+  const {theme, refreshKey} = state
+  const {currentUser} = useCurrentUser()
   const [checklist, setChecklist] = useState([])
   const [activeItems, setActiveItems] = useState([])
   const [showChecklist, setShowChecklist] = useState(false)
 
-  const toggleActive = (el) => {
+  const ToggleActive = (el) => {
     const filtered = activeItems.filter((x) => x !== el.target.textContent.toLowerCase())
     if (el.target.classList.contains('active')) {
       setActiveItems(filtered)
@@ -30,7 +30,7 @@ export default function Checklist({fromOrTo, activeChild, onChildUpdate = (child
     DomManager.toggleActive(el.target)
   }
 
-  const deleteItem = async (el) => {
+  const DeleteItem = async (el) => {
     const element = el.currentTarget
     const checklistItemWrapper = element.closest('.checklist-item-row')
     const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
@@ -48,8 +48,6 @@ export default function Checklist({fromOrTo, activeChild, onChildUpdate = (child
 
       if (filteredText.length === 0) {
         await DB.delete(`${path}`, activeChecklist.id)
-        const updatedChild = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`, true)
-        onChildUpdate(updatedChild)
       } else {
         await DB.updateEntireRecord(`${path}`, updated, activeChecklist.id)
       }
@@ -58,37 +56,14 @@ export default function Checklist({fromOrTo, activeChild, onChildUpdate = (child
     }
   }
 
-  const setActiveChildChecklist = async () => {
-    if (Manager.isValid(activeChild)) {
-      const checklists = activeChild?.checklists?.map((x) => x)
-      if (Manager.isValid(checklists)) {
-        const checklist = checklists?.find((x) => x?.fromOrTo === fromOrTo)
-        setChecklist(checklist)
-      }
-    }
-  }
-
-  const onTableChange = async () => {
-    const dbRef = ref(getDatabase())
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
-
-    if (childKey) {
-      onValue(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children/${childKey}`), async (snapshot) => {
-        const updatedChild = snapshot.val()
-        setState({...state, activeChild: updatedChild})
-        setActiveChildChecklist().then((r) => r)
-      })
-    }
+  const SetSelectedChild = async () => {
+    const activeChecklist = activeChild?.checklists?.find((x) => x?.fromOrTo === fromOrTo)
+    setChecklist(activeChecklist)
+    setActiveItems(activeChecklist?.checklistItems)
   }
 
   useEffect(() => {
-    if (showChecklist) {
-      onTableChange().then((r) => r)
-    }
-  }, [showChecklist])
-
-  useEffect(() => {
-    onTableChange().then((r) => r)
+    SetSelectedChild().then((r) => r)
   }, [])
 
   return (
@@ -107,11 +82,11 @@ export default function Checklist({fromOrTo, activeChild, onChildUpdate = (child
             checklist?.checklistItems?.map((item, index) => {
               return (
                 <div key={index} className="flex checklist-item-row">
-                  <p onClick={toggleActive} className="checklist-item">
+                  <p onClick={ToggleActive} className="checklist-item">
                     {activeItems.includes(item.toLowerCase()) && <IoCheckmarkCircleSharp className={'checkmark'} />}
                     {StringManager.uppercaseFirstLetterOfAllWords(item)}
                   </p>
-                  <PiTrashSimpleDuotone className={'checklist-delete-icon'} onClick={deleteItem} />
+                  <PiTrashSimpleDuotone className={'checklist-delete-icon'} onClick={DeleteItem} />
                 </div>
               )
             })}

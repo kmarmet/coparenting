@@ -1,7 +1,9 @@
 @import '../mixins';
 
-#coparents-container {
-  #coparent-container {
+#coparents-container,
+#parents-container {
+  #coparent-container,
+  #parent-container {
     display: flex;
     width: 100%;
     overflow: auto;
@@ -11,7 +13,8 @@
     margin: 15px 0 0 0;
     gap: 0 15px;
 
-    .coparent {
+    .coparent,
+    .parent {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -35,13 +38,15 @@
         color: $darkerGrey;
       }
 
-      .coparent-type {
+      .coparent-type,
+      .parent-type {
         padding-bottom: 5px;
         color: $darkerGrey;
         font-size: 11px;
       }
 
-      .coparent-name {
+      .coparent-name,
+      .parent-name {
         font-size: 15px;
         font-weight: $fwRegular;
         border: 0;
@@ -63,13 +68,15 @@
           opacity: 1;
         }
 
-        .coparent-name {
+        .coparent-name,
+        .parent-name {
           opacity: 1;
           font-size: 16px;
           font-weight: $fwBold;
         }
 
-        .coparent-type {
+        .coparent-type,
+        .parent-type {
           opacity: 0.7;
           font-size: 12px;
         }
@@ -81,17 +88,20 @@
     }
   }
 
-  #coparent-info {
+  #coparent-info,
+  #parent-info {
     margin-top: 20px;
 
-    #coparent-name-primary {
+    #coparent-name-primary,
+    #parent-name-primary {
       font-size: 22px;
       width: 100%;
       text-align: left;
       line-height: 1;
     }
 
-    #coparent-type-primary {
+    #coparent-type-primary,
+    #parent-type-primary {
       font-size: 14px;
       width: 100%;
       text-align: left;

@@ -12,7 +12,8 @@ EmailManager = {
     appFeedback: 'appFeedback',
     customerSupport: 'customerSupport',
     emailVerification: 'emailVerification',
-    coparentInvitation: 'coparent-invitation'
+    coparentInvitation: 'coparent-invitation',
+    parentInvitation: 'parent-invitation'
   },
   GetConfig: function(message, templateName, fromName) {
     var config;

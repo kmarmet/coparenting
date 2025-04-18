@@ -156,7 +156,7 @@ export default NotificationManager = {
     newNotification.category = category;
     await DB.add(`${DB.tables.notifications}/${recipientKey}`, newNotification);
     console.log(`Sent to ${recipientKey}`);
-    if (!window.location.href.includes("localhost")) {
+    if (!window.location.href.includes("localhosssst")) {
       return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
         return response.text();
       }).then(function(result) {

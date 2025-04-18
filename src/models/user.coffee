@@ -14,6 +14,7 @@ export default class User
     @coparents = []
     @parentType = ''
     @accountType = ''
+    @homeAddress = ''
     @location = {
       country: ''
       city: ''

@@ -23,6 +23,10 @@ StateObj =
   showScreenActions: false
   registrationUserName: ''
   successAlertMessage: null
+  users: []
+  activeChatId: ''
+  setActiveChatId: (id) ->
+  setUsers: (users) ->
   setSuccessAlertMessage: (message) ->
   setShowScreenActions: (bool) ->
   setAuthUser: (user) ->

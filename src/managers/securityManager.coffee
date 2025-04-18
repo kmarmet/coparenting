@@ -5,28 +5,37 @@ import _ from "lodash"
 
 SecurityManager =
   getShareWithItems: (currentUser, table) ->
-    coparentAndChildEvents  = []
+    sharedItems  = []
 
-#   PARENT ACCOUNTS
+#   COPARENT ACCOUNTS
     if Manager.isValid(currentUser) && Manager.isValid(currentUser?.coparents)
       for coparent in currentUser?.coparents
-        coparentItems = await DB.getTable("#{table}/#{coparent?.key}")
+        coparentItems = await DB.getTable("#{table}/#{coparent?.userKey}")
         for item in coparentItems
           if Manager.isValid(item?.shareWith)
             if item?.shareWith?.includes currentUser?.key
-              coparentAndChildEvents.push(item)
+              sharedItems.push(item)
 
-#   CHILD ACCOUNTS
+#   PARENT ACCOUNTS
     if Manager.isValid(currentUser) && Manager.isValid(currentUser?.parents)
       for parent in currentUser?.parents
-        parentItems = await DB.getTable("#{table}/#{parent?.key}")
+        parentItems = await DB.getTable("#{table}/#{parent?.userKey}")
         for item in parentItems
           if Manager.isValid(item?.shareWith)
             if item?.shareWith?.includes currentUser?.key
-              coparentAndChildEvents.push(item)
+              sharedItems.push(item)
 
-    coparentAndChildEvents = _.flattenDeep(coparentAndChildEvents)
-    coparentAndChildEvents
+    #   CHILD ACCOUNTS
+    if Manager.isValid(currentUser) && Manager.isValid(currentUser?.children)
+      for child in currentUser?.children
+        childItems = await DB.getTable("#{table}/#{child?.userKey}")
+        for item in childItems
+          if Manager.isValid(item?.shareWith)
+            if item?.shareWith?.includes currentUser?.key
+              sharedItems.push(item)
+
+    sharedItems = _.flattenDeep(sharedItems)
+    sharedItems
 
   getCalendarEvents: (currentUser) ->
     users = await DB.getTable(DB.tables.users)

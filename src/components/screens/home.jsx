@@ -5,7 +5,7 @@ import {Fade} from 'react-awesome-reveal'
 import {PiCalendarDotsDuotone, PiDevicesFill} from 'react-icons/pi'
 import {AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool} from 'react-icons/ai'
 import DomManager from '/src/managers/domManager'
-import {getAuth, onAuthStateChanged} from 'firebase/auth'
+import {getAuth} from 'firebase/auth'
 import {IoSyncCircle} from 'react-icons/io5'
 import {BsFillEnvelopeHeartFill} from 'react-icons/bs'
 import firebaseConfig from '/src/firebaseConfig'
@@ -21,12 +21,11 @@ import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import AppManager from '/src/managers/appManager.js'
 import HomescreenSections from '/src/models/homescreenSections.js'
-import {LazyLoadImage} from 'react-lazy-load-image-component'
 import Spacer from '../shared/spacer'
 
 export default function Home() {
   const {state, setState} = useContext(globalState)
-  const {theme, currentUser} = state
+  const {theme, currentScreen} = state
   const bind = useLongPress((element) => {
     setState({...state, currentScreen: ScreenNames.login})
   })
@@ -34,7 +33,7 @@ export default function Home() {
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
-  const toggleFeature = (feature) => {
+  const ToggleFeature = (feature) => {
     const featureName = feature.currentTarget.dataset.name
     const clickedFeatureElement = document.querySelector(`[data-name='${featureName}']`)
     const allFeatureElements = document.querySelectorAll(`[data-name]`)
@@ -53,7 +52,7 @@ export default function Home() {
     }
   }
 
-  const handleScroll = () => {
+  const HandleScroll = () => {
     const firstViewableBox = document.querySelector('#first-scroll-button-candidate')
     const scrollWrapper = document.querySelector('#wrapper')
     const scrollToTopButton = document.querySelector('#scroll-to-top-button-wrapper')
@@ -64,7 +63,7 @@ export default function Home() {
     }
   }
 
-  const scrollToTop = () => {
+  const ScrollToTop = () => {
     const scrollToTopButton = document.querySelector('#scroll-to-top-button-wrapper')
     scrollToTopButton.classList.remove('hide')
 
@@ -85,16 +84,6 @@ export default function Home() {
         })
       })
     }
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // console.log(user)
-        // User is signed in.
-        // setState({ ...state, isLoading: true })
-      } else {
-        // No user is signed in.
-        setState({...state, isLoading: false})
-      }
-    })
 
     const queryStringSection = AppManager.getQueryStringParams('section')
     if (Manager.isValid(queryStringSection)) {
@@ -113,9 +102,9 @@ export default function Home() {
   }, [])
 
   return (
-    <div id="wrapper" onScroll={handleScroll}>
+    <div id="wrapper" onScroll={HandleScroll}>
       {/* ABOVE FOLD WRAPPER */}
-      <div id="scroll-to-top-button-wrapper" className="hide" onClick={scrollToTop}>
+      <div id="scroll-to-top-button-wrapper" className="hide" onClick={ScrollToTop}>
         <IoIosArrowUp id={'scroll-to-top-button'} />
       </div>
       <div id="scroll-down-button-wrapper">
@@ -147,11 +136,26 @@ export default function Home() {
             <p id="title">Peaceful Co-Parenting</p>
             <p id="subtitle">Built for Families - Focused on Peace</p>
           </div>
-          <LightGallery elementClassNames={`light-gallery home ${theme}`} speed={500} selector={'.image'}>
+          <LightGallery mode={'fade'} elementClassNames={`light-gallery home ${theme}`} selector={'.image'} speed={500}>
             <div className="flex" id="images">
-              <img className={'image'} src={require('/src/img/homepage/memories.png')} alt="Memories" />
-              <img className={'image'} src={require('/src/img/homepage/calendar.png')} alt="Calendar" />
-              <img className={'image'} src={require('/src/img/homepage/child-info.png')} alt="Child Info" />
+              <img
+                data-src={require('/src/img/homepage/memories.png')}
+                className={'image'}
+                src={require('/src/img/homepage/memories.png')}
+                alt="Memories"
+              />
+              <img
+                data-src={require('/src/img/homepage/calendar.png')}
+                className={'image'}
+                src={require('/src/img/homepage/calendar.png')}
+                alt="Calendar"
+              />
+              <img
+                data-src={require('/src/img/homepage/child-info.png')}
+                className={'image'}
+                src={require('/src/img/homepage/child-info.png')}
+                alt="Child Info"
+              />
             </div>
           </LightGallery>
         </Fade>
@@ -191,13 +195,7 @@ export default function Home() {
                   Effective communication with a foundation of respect is crucial for successful co-parenting. The Emotion Meter plays a vital role in
                   facilitating this essential aspect.
                 </p>
-                <LazyLoadImage
-                  id="emotion-meter-gif"
-                  src={require('../../img/homepage/emotion-meter.gif')}
-                  alt="Emotion Meter"
-                  effect="blur"
-                  delay={1000}
-                />
+                <img id="emotion-meter-gif" src={require('../../img/homepage/emotion-meter.gif')} alt="Emotion Meter" />
               </div>
             </div>
           </div>
@@ -221,7 +219,7 @@ export default function Home() {
             {/* FEATURE GRID */}
             <div id="feature-grid">
               {/* ANY DEVICE */}
-              <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'any-device'}>
+              <div className="feature" onClick={(e) => ToggleFeature(e)} data-name={'any-device'}>
                 <div className="star-wrapper"></div>
                 <div className="feature-title-wrapper">
                   <p className="feature-title">Available on Any Device</p>
@@ -281,7 +279,7 @@ export default function Home() {
               </div>
 
               {/* ONE SUBSCRIPTION */}
-              <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'one-subscription'}>
+              <div className="feature" onClick={(e) => ToggleFeature(e)} data-name={'one-subscription'}>
                 <div className="feature-title-wrapper">
                   <p className="feature-title">One Subscription = ALL Features</p>
                   <MdLooksOne className={'star'} />
@@ -334,7 +332,7 @@ export default function Home() {
               </div>
 
               {/* UI DESIGN */}
-              <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'ui'}>
+              <div className="feature" onClick={(e) => ToggleFeature(e)} data-name={'ui'}>
                 <div className="feature-title-wrapper">
                   <p className="feature-title">Designed with You in Mind</p>
                   <MdStyle className={'star'} />
@@ -378,7 +376,7 @@ export default function Home() {
               </div>
 
               {/* REALTIME ENGAGEMENT */}
-              <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'realtime'}>
+              <div className="feature" onClick={(e) => ToggleFeature(e)} data-name={'realtime'}>
                 <div className="feature-title-wrapper">
                   <p className="feature-title">Realtime Engagement</p>
                   <IoSyncCircle className={'star'} />
@@ -407,7 +405,7 @@ export default function Home() {
               </div>
 
               {/* MULTIPLE COPARENTS */}
-              <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'multiple-coparents'}>
+              <div className="feature" onClick={(e) => ToggleFeature(e)} data-name={'multiple-coparents'}>
                 <div className="feature-title-wrapper">
                   <p className="feature-title">Multiple Co-Parent Support</p>
                   <MdPeopleAlt className={'star'} />
@@ -449,7 +447,7 @@ export default function Home() {
               </div>
 
               {/* MESSAGING */}
-              <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'messaging'}>
+              <div className="feature" onClick={(e) => ToggleFeature(e)} data-name={'messaging'}>
                 <div className="feature-title-wrapper">
                   <p className="feature-title">Messaging/Communication</p>
                   <IoIosChatbubbles className={'star'} />
@@ -482,10 +480,10 @@ export default function Home() {
               </div>
 
               {/* SUPPORT */}
-              <div className="feature" onClick={(e) => toggleFeature(e)} data-name={'support'}>
+              <div className="feature" onClick={(e) => ToggleFeature(e)} data-name={'support'}>
                 <div className="feature-title-wrapper">
                   <p className="feature-title">Support Team that Truly Cares</p>
-                  <BsFillEnvelopeHeartFill classname={'star'} />
+                  <BsFillEnvelopeHeartFill className={'star'} />
                 </div>
                 <p className="feature-subtitle">
                   It&#39;s frustrating when you contact customer support and have to wait days for a response, only to receive a generic answer that
@@ -588,12 +586,14 @@ export default function Home() {
               </div>
             </div>
             <p className="light-gallery-instructions">{DomManager.tapOrClick()} an image to enlarge</p>
-            <Fade direction={'up'} duration={1000} triggerOnce={true}>
-              <LightGallery elementClassNames={`images no-wrap ${theme}`} speed={500} selector={'.image'}>
-                <img className={'image'} src={require('/src/img/homepage/tableOfContents.png')} alt="Table of Contents" />
-                <img className={'image'} src={require('/src/img/homepage/customDocHeaders.gif')} alt="Custom Headers" />
-              </LightGallery>
-            </Fade>
+            {currentScreen === ScreenNames.home && (
+              <Fade direction={'up'} duration={1000} triggerOnce={true}>
+                <LightGallery mode={'fade'} elementClassNames={`images no-wrap ${theme}`} speed={500} selector={'.image'}>
+                  <img className={'image'} src={require('/src/img/homepage/tableOfContents.png')} alt="Table of Contents" />
+                  <img className={'image'} src={require('/src/img/homepage/customDocHeaders.gif')} alt="Custom Headers" />
+                </LightGallery>
+              </Fade>
+            )}
           </div>
         </Fade>
         <hr className="hr" />
@@ -608,8 +608,8 @@ export default function Home() {
                 costs and avoid conflicts over money.
               </p>
             </div>
-            <LightGallery elementClassNames={`images expense-tracker no-wrap ${theme}`} speed={500} selector={'.image'}>
-              <LazyLoadImage className={'image'} src={require('/src/img/homepage/expense-tracker.png')} alt="Expenses" effect="blur" delay={1000} />
+            <LightGallery mode={'fade'} elementClassNames={`images expense-tracker no-wrap ${theme}`} speed={500} selector={'.image'}>
+              <img className={'image'} src={require('/src/img/homepage/expense-tracker.png')} alt="Expenses" />
             </LightGallery>
           </div>
         </Fade>
@@ -635,8 +635,8 @@ export default function Home() {
                 environment for your children.
               </p>
             </div>
-            <LightGallery elementClassNames={`images expense-tracker no-wrap ${theme}`} speed={500} selector={'.image'}>
-              <LazyLoadImage className={'image'} src={require('/src/img/homepage/menu.png')} alt="Menu" effect="blur" delay={1000} />
+            <LightGallery mode={'fade'} elementClassNames={`images expense-tracker no-wrap ${theme}`} speed={500} selector={'.image'}>
+              <img className={'image'} src={require('/src/img/homepage/menu.png')} alt="Menu" />
             </LightGallery>
           </div>
         </Fade>
@@ -688,15 +688,30 @@ export default function Home() {
               </span>
             </div>
 
-            <div className="flex images mt-15">
-              <LightGallery elementClassNames={`images no-wrap ${theme}`} speed={500} selector={'.image'}>
-                <LazyLoadImage className={'image'} src={require('/src/img/homepage/devices/phone.png')} alt="Phone" effect="blur" delay={1000} />
-
-                <LazyLoadImage className={'image'} src={require('/src/img/homepage/devices/laptop.png')} alt="Computer" effect="blur" delay={1000} />
-
-                <LazyLoadImage className={'image'} src={require('/src/img/homepage/devices/tablet.png')} alt="Tablet" effect="blur" delay={1000} />
-              </LightGallery>
-            </div>
+            {currentScreen === ScreenNames.home && (
+              <div className="flex images mt-15">
+                <LightGallery mode={'fade'} elementClassNames={`images no-wrap ${theme}`} speed={500} selector={'.image'}>
+                  <img
+                    data-src={'/src/img/homepage/devices/phone.png'}
+                    className={'image'}
+                    src={require('/src/img/homepage/devices/phone.png')}
+                    alt="Phone"
+                  />
+                  <img
+                    className={'image'}
+                    data-src={'/src/img/homepage/devices/laptop.png'}
+                    src={require('/src/img/homepage/devices/laptop.png')}
+                    alt="Computer"
+                  />
+                  <img
+                    className={'image'}
+                    data-src={'/src/img/homepage/devices/tablet.png'}
+                    src={require('/src/img/homepage/devices/tablet.png')}
+                    alt="Tablet"
+                  />
+                </LightGallery>
+              </div>
+            )}
 
             <p className="subtitle mt-25 mb-0" id="multiple-device-usage">
               You can use the application across multiple devices and all of your data will be kept in sync across them all!

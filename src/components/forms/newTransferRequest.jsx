@@ -55,7 +55,7 @@ export default function NewTransferChangeRequest() {
   }
 
   const submit = async () => {
-    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+    const validAccounts = await DB_UserScoped.getValidAccountsCountForUser(currentUser)
 
     //#region VALIDATION
     if (validAccounts === 0) {

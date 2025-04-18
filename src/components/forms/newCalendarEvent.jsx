@@ -247,6 +247,7 @@ export default function NewCalendarEvent() {
 
   const handleShareWithSelection = (e) => {
     const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
+    console.log(shareWithNumbers)
     setEventShareWith(shareWithNumbers)
   }
 

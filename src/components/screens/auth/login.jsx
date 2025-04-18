@@ -6,7 +6,6 @@ import {Fade} from 'react-awesome-reveal'
 import {PiEyeClosedDuotone, PiEyeDuotone} from 'react-icons/pi'
 import {FaArrowCircleDown} from 'react-icons/fa'
 import validator from 'validator'
-import CheckboxGroup from '/src/components/shared/checkboxGroup.jsx'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import ScreenNames from '/src/constants/screenNames'
 import globalState from '/src/context.js'
@@ -18,6 +17,7 @@ import DB from '../../../database/DB'
 import Spacer from '../../shared/spacer'
 import InputTypes from '../../../constants/inputTypes'
 import Turnstile, {useTurnstile} from 'react-turnstile'
+import Checkbox from '../../shared/checkbox'
 
 export default function Login() {
   const {state, setState} = useContext(globalState)
@@ -28,79 +28,40 @@ export default function Login() {
   const [isPersistent, setIsPersistent] = useState(false)
   const [challengeSolved, setChallengeSolved] = useState(false)
   const turnstile = useTurnstile()
+
   // Init Firebase
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
-  const SignIn = async () => {
+  const ManualLogin = async () => {
     // Validation
     if (!validator.isEmail(email)) {
       AlertManager.throwError('Email address is not valid')
       setState({...state, isLoading: false})
       return false
     }
-    if (email.length === 0 || password.length === 0) {
-      AlertManager.throwError('Please fill out all fields')
+    const errorString = Manager.GetInvalidInputsErrorString([
+      {name: 'Email', value: email},
+      {name: 'Password', value: password},
+    ])
+
+    if (Manager.isValid(errorString, true)) {
+      AlertManager.throwError(errorString)
       setState({...state, isLoading: false})
       return false
     }
 
-    // Is Persistent
     if (isPersistent) {
       setPersistence(auth, browserLocalPersistence).then(async () => {
-        return signInWithEmailAndPassword(auth, email, password)
-          .then(async (userCredential) => {
-            const user = userCredential.user
-            const users = await DB.getTable(DB.tables.users)
-            const dbUser = users?.find((u) => u?.email === user?.email)
-            let nextScreen = dbUser ? ScreenNames.calendar : ScreenNames.userDetails
-            if (dbUser?.accountType === 'child') {
-              if (Manager.isValid(dbUser?.parentAccessGranted) || dbUser?.parentAccessGranted === false) {
-                nextScreen = ScreenNames.requestParentAccess
-              }
-            }
-            // USER NEEDS TO VERIFY EMAIL
-            if (!user.emailVerified) {
-              AlertManager.oneButtonAlert(
-                'Email Address Verification Needed',
-                `For security purposes, we need to verify ${user.email}. Please ${DomManager.tapOrClick()} the link sent to your email and login.`,
-                'info',
-                () => {}
-              )
-              sendEmailVerification(user)
-              setState({...state, isLoading: false})
-            }
-
-            // Persistent AND Email is Verified
-            else {
-              setState({
-                ...state,
-                userIsLoggedIn: true,
-                isLoading: false,
-                currentScreen: nextScreen,
-              })
-            }
-          })
-          .catch((error) => {
-            setState({...state, isLoading: false})
-            console.error('Sign in error:', error.message)
-            if (Manager.contains(error.message, 'wrong-password')) {
-              console.log('found')
-              AlertManager.throwError(`Incorrect Password`, `Please ${DomManager.tapOrClick(true)} Reset Password below`)
-            }
-          })
+        await SignInWithEmailAndPassword()
       })
-    }
-
-    // Not Persistent
-    else {
-      setState({...state, isLoading: false})
-      await FirebaseSignIn()
+    } else {
+      await SignInWithEmailAndPassword()
     }
   }
 
-  const FirebaseSignIn = async () => {
-    signInWithEmailAndPassword(auth, email, password)
+  const SignInWithEmailAndPassword = () => {
+    return signInWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         const user = userCredential.user
         const users = await DB.getTable(DB.tables.users)
@@ -111,6 +72,7 @@ export default function Login() {
             nextScreen = ScreenNames.requestParentAccess
           }
         }
+
         // USER NEEDS TO VERIFY EMAIL
         if (!user.emailVerified) {
           AlertManager.oneButtonAlert(
@@ -128,6 +90,8 @@ export default function Login() {
           setState({
             ...state,
             userIsLoggedIn: true,
+            currentUser: dbUser,
+            authUser: user,
             isLoading: false,
             currentScreen: nextScreen,
           })
@@ -147,23 +111,10 @@ export default function Login() {
       })
   }
 
-  const TogglePersistence = (e) => {
-    const clickedEl = e.currentTarget
-    if (clickedEl) {
-      if (clickedEl.classList.contains('active')) {
-        clickedEl.classList.remove('active')
-        setIsPersistent(false)
-      } else {
-        clickedEl.classList.add('active')
-        setIsPersistent(true)
-      }
-    }
-  }
-
   return (
     <>
       {/* PAGE CONTAINER */}
-      <div id="login-container" className={`page-container form login`}>
+      <div id="login-container" className={`page-container login`}>
         <Turnstile
           sitekey={process.env.REACT_APP_CLOUDFARE_CAPTCHA_SITE_KEY}
           onSuccess={() => {
@@ -171,9 +122,10 @@ export default function Login() {
             setChallengeSolved(true)
           }}
           onFail={() => {
-            setState({...state, successAlertMessage: 'Pre-Authentication Failed. Please close and reopen the app again.'})
+            setState({...state, successAlertMessage: 'Pre-Authentication Failed. Please close and reopen the app again'})
           }}
           onError={(error) => {
+            setState({...state, successAlertMessage: 'Pre-Authentication Failed. Please close and reopen the app again'})
             console.log(`Captcha Error: ${error}`)
           }}
           onExpire={() => {
@@ -234,14 +186,7 @@ export default function Login() {
 
               <div id="below-inputs-wrapper" className="flex space-between align-center">
                 {/* REMEMBER ME */}
-                <CheckboxGroup
-                  elClass={'light'}
-                  onCheck={TogglePersistence}
-                  checkboxArray={Manager.buildCheckboxGroup({
-                    customLabelArray: ['Remember Me'],
-                  })}
-                  skipNameFormatting={true}
-                />
+                <Checkbox text={'Remember Me'} onCheck={() => setIsPersistent(!isPersistent)} />
                 {/* FORGOT PASSWORD BUTTON */}
                 <p id="forgot-password-link" onClick={() => setState({...state, currentScreen: ScreenNames.resetPassword})}>
                   Forgot Password
@@ -251,11 +196,11 @@ export default function Login() {
               <Spacer height={10} />
 
               {/* LOGIN BUTTONS */}
-              {challengeSolved && (
-                <button className="button default green" id="login-button" onClick={SignIn}>
-                  Login
-                </button>
-              )}
+              {/*{challengeSolved && (*/}
+              <button className="button default green" id="login-button" onClick={ManualLogin}>
+                Login
+              </button>
+              {/*)}*/}
               {!challengeSolved && <p id="captcha-loading-text">Pre-Authentication in Progress...</p>}
             </div>
 

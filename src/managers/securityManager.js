@@ -12,42 +12,58 @@ import _ from "lodash";
 
 SecurityManager = {
   getShareWithItems: async function(currentUser, table) {
-    var coparent, coparentAndChildEvents, coparentItems, i, item, j, k, l, len, len1, len2, len3, parent, parentItems, ref, ref1, ref2, ref3;
-    coparentAndChildEvents = [];
-    //   PARENT ACCOUNTS
+    var child, childItems, coparent, coparentItems, i, item, j, k, l, len, len1, len2, len3, len4, len5, m, n, parent, parentItems, ref, ref1, ref2, ref3, ref4, ref5, sharedItems;
+    sharedItems = [];
+    //   COPARENT ACCOUNTS
     if (Manager.isValid(currentUser) && Manager.isValid(currentUser != null ? currentUser.coparents : void 0)) {
       ref = currentUser != null ? currentUser.coparents : void 0;
       for (i = 0, len = ref.length; i < len; i++) {
         coparent = ref[i];
-        coparentItems = (await DB.getTable(`${table}/${coparent != null ? coparent.key : void 0}`));
+        coparentItems = (await DB.getTable(`${table}/${coparent != null ? coparent.userKey : void 0}`));
         for (j = 0, len1 = coparentItems.length; j < len1; j++) {
           item = coparentItems[j];
           if (Manager.isValid(item != null ? item.shareWith : void 0)) {
             if (item != null ? (ref1 = item.shareWith) != null ? ref1.includes(currentUser != null ? currentUser.key : void 0) : void 0 : void 0) {
-              coparentAndChildEvents.push(item);
+              sharedItems.push(item);
+            }
+          }
+        }
+      }
+    }
+    //   PARENT ACCOUNTS
+    if (Manager.isValid(currentUser) && Manager.isValid(currentUser != null ? currentUser.parents : void 0)) {
+      ref2 = currentUser != null ? currentUser.parents : void 0;
+      for (k = 0, len2 = ref2.length; k < len2; k++) {
+        parent = ref2[k];
+        parentItems = (await DB.getTable(`${table}/${parent != null ? parent.userKey : void 0}`));
+        for (l = 0, len3 = parentItems.length; l < len3; l++) {
+          item = parentItems[l];
+          if (Manager.isValid(item != null ? item.shareWith : void 0)) {
+            if (item != null ? (ref3 = item.shareWith) != null ? ref3.includes(currentUser != null ? currentUser.key : void 0) : void 0 : void 0) {
+              sharedItems.push(item);
             }
           }
         }
       }
     }
     //   CHILD ACCOUNTS
-    if (Manager.isValid(currentUser) && Manager.isValid(currentUser != null ? currentUser.parents : void 0)) {
-      ref2 = currentUser != null ? currentUser.parents : void 0;
-      for (k = 0, len2 = ref2.length; k < len2; k++) {
-        parent = ref2[k];
-        parentItems = (await DB.getTable(`${table}/${parent != null ? parent.key : void 0}`));
-        for (l = 0, len3 = parentItems.length; l < len3; l++) {
-          item = parentItems[l];
+    if (Manager.isValid(currentUser) && Manager.isValid(currentUser != null ? currentUser.children : void 0)) {
+      ref4 = currentUser != null ? currentUser.children : void 0;
+      for (m = 0, len4 = ref4.length; m < len4; m++) {
+        child = ref4[m];
+        childItems = (await DB.getTable(`${table}/${child != null ? child.userKey : void 0}`));
+        for (n = 0, len5 = childItems.length; n < len5; n++) {
+          item = childItems[n];
           if (Manager.isValid(item != null ? item.shareWith : void 0)) {
-            if (item != null ? (ref3 = item.shareWith) != null ? ref3.includes(currentUser != null ? currentUser.key : void 0) : void 0 : void 0) {
-              coparentAndChildEvents.push(item);
+            if (item != null ? (ref5 = item.shareWith) != null ? ref5.includes(currentUser != null ? currentUser.key : void 0) : void 0 : void 0) {
+              sharedItems.push(item);
             }
           }
         }
       }
     }
-    coparentAndChildEvents = _.flattenDeep(coparentAndChildEvents);
-    return coparentAndChildEvents;
+    sharedItems = _.flattenDeep(sharedItems);
+    return sharedItems;
   },
   getCalendarEvents: async function(currentUser) {
     var allEvents, event, i, len, returnRecords, sharedEvents, users;

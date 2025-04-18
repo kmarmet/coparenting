@@ -1,7 +1,6 @@
-// Path: src\components\screens\coparents\newCoparentForm.jsx
+// Path: src\components\screens\parents\newParentForm.jsx
 import React, {useContext, useState} from 'react'
 import globalState from '../../../context'
-import Coparent from '/src/models/coparent'
 import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import InputWrapper from '/src/components/shared/inputWrapper'
@@ -16,8 +15,9 @@ import ObjectManager from '../../../managers/objectManager'
 import ViewSelector from '../../shared/viewSelector'
 import DB_UserScoped from '../../../database/db_userScoped'
 import InputTypes from '../../../constants/inputTypes'
+import Parent from '../../../models/parent'
 
-const NewCoparentForm = ({showCard, hideCard}) => {
+const NewParentForm = ({showCard, hideCard}) => {
   const {state, setState} = useContext(globalState)
   const {currentUser, theme, authUser} = state
   const [linkOrNew, setLinkOrNew] = useState('new')
@@ -30,7 +30,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
   const [relationshipType, setRelationshipType] = useState('')
 
   const ResetForm = async (successMessage = '') => {
-    Manager.ResetForm('new-coparent-wrapper')
+    Manager.ResetForm('new-parent-wrapper')
     setName('')
     setAddress('')
     setEmail('')
@@ -44,46 +44,56 @@ const NewCoparentForm = ({showCard, hideCard}) => {
       AlertManager.throwError('Email address is not valid')
       return false
     }
-    const invalidInputs = Manager.GetInvalidInputsErrorString([email, address, name, parentType])
-    let newCoparent = new Coparent()
-    if (!invalidInputs) {
-      AlertManager.throwError('All fields are required')
-    } else {
-      const users = await DB.getTable(`${DB.tables.users}`)
-      const coparent = users.find((x) => x.email === email)
-
-      // Link coparent with an existing user/profile
-      if (Manager.isValid(coparent)) {
-        newCoparent.id = Manager.getUid()
-        newCoparent.userKey = coparent?.key
-        newCoparent.address = address
-        newCoparent.name = StringManager.uppercaseFirstLetterOfAllWords(coparent?.name.trim())
-        newCoparent.parentType = parentType
-        newCoparent.relationshipToMe = relationshipType
-        newCoparent.phone = coparent?.phone
-      }
-      // Create new coparent
-      else {
-        newCoparent.id = Manager.getUid()
-        newCoparent.key = Manager.getUid()
-        newCoparent.address = address
-        newCoparent.name = StringManager.uppercaseFirstLetterOfAllWords(name.trim())
-        newCoparent.parentType = parentType
-        newCoparent.relationshipToMe = relationshipType
-      }
-
-      const cleanCoparent = ObjectManager.cleanObject(newCoparent, ModelNames.coparent)
-      try {
-        await DB_UserScoped.addCoparent(currentUser, cleanCoparent)
-      } catch (error) {
-        console.log(error)
-        // LogManager.log(error.message, LogManager.logTypes.error)
-      }
-      await ResetForm(`${StringManager.getFirstNameOnly(name)} Added!`)
+    const errorString = Manager.GetInvalidInputsErrorString([
+      {
+        name: 'Name',
+        value: name,
+      },
+      {
+        name: 'Email',
+        value: email,
+      },
+    ])
+    if (Manager.isValid(errorString, true)) {
+      AlertManager.throwError(errorString)
+      return false
     }
+    let newParent = new Parent()
+    const users = await DB.getTable(`${DB.tables.users}`)
+    const parent = users.find((x) => x.email === email)
+
+    // Link parent with an existing user/profile
+    if (Manager.isValid(parent)) {
+      newParent.id = Manager.getUid()
+      newParent.userKey = parent?.key
+      newParent.address = address
+      newParent.name = StringManager.uppercaseFirstLetterOfAllWords(parent?.name.trim())
+      newParent.parentType = parentType
+      newParent.relationshipToMe = relationshipType
+      newParent.phone = parent?.phone
+      newParent.email = parent?.email
+    }
+    // Create new parent
+    else {
+      newParent.email = email
+      newParent.id = Manager.getUid()
+      newParent.key = Manager.getUid()
+      newParent.address = address
+      newParent.name = StringManager.uppercaseFirstLetterOfAllWords(name.trim())
+      newParent.parentType = parentType
+      newParent.relationshipToMe = relationshipType
+    }
+    const cleanParent = ObjectManager.cleanObject(newParent, ModelNames.parent)
+    try {
+      await DB_UserScoped.addParent(currentUser, cleanParent)
+    } catch (error) {
+      console.log(error)
+      // LogManager.log(error.message, LogManager.logTypes.error)
+    }
+    await ResetForm(`${StringManager.getFirstNameOnly(name)} Added!`)
   }
 
-  const HandleCoparentType = (e) => {
+  const HandleParentType = (e) => {
     const type = e.dataset['key']
     Manager.handleCheckboxSelection(
       e,
@@ -101,7 +111,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
       onSubmit={Submit}
       submitText={name.length > 0 ? `Add ${StringManager.uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
       title={`Add ${Manager.isValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} to Your Profile`}
-      wrapperClass="new-coparent-card"
+      wrapperClass="new-parent-card"
       showCard={showCard}
       viewSelector={
         <ViewSelector
@@ -117,13 +127,11 @@ const NewCoparentForm = ({showCard, hideCard}) => {
         />
       }
       onClose={ResetForm}>
-      <div className="new-coparent-wrapper">
+      <div className="new-parent-wrapper">
         <Spacer height={5} />
-        <div id="new-coparent-container" className={`${theme} form`}>
-          <div className="form new-coparent-form">
-            {linkOrNew === 'new' && (
-              <InputWrapper inputType={InputTypes.text} required={true} labelText={'Name'} onChange={(e) => setName(e.target.value)} />
-            )}
+        <div id="new-parent-container" className={`${theme} form`}>
+          <div className="form new-parent-form">
+            <InputWrapper inputType={InputTypes.text} required={true} labelText={'Name'} onChange={(e) => setName(e.target.value)} />
             <InputWrapper
               inputType={InputTypes.email}
               inputValueType="email"
@@ -141,19 +149,18 @@ const NewCoparentForm = ({showCard, hideCard}) => {
               />
             )}
 
-            <InputWrapper inputType={InputTypes.text} labelText={'Relationship to Me'} onChange={(e) => setRelationshipType(e.target.value)} />
             <Spacer height={5} />
 
             {/* PARENT TYPE */}
             <CheckboxGroup
               parentLabel={'Parent Type'}
-              className="coparent-type"
+              className="parent-type"
               skipNameFormatting={true}
               checkboxArray={Manager.buildCheckboxGroup({
                 currentUser,
                 customLabelArray: ['Biological', 'Step-Parent', 'Guardian', 'Other'],
               })}
-              onCheck={HandleCoparentType}
+              onCheck={HandleParentType}
             />
           </div>
         </div>
@@ -162,4 +169,4 @@ const NewCoparentForm = ({showCard, hideCard}) => {
   )
 }
 
-export default NewCoparentForm
+export default NewParentForm

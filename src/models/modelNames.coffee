@@ -14,6 +14,7 @@ ModelNames =
   childUser: 'childUser'
   doc:'doc'
   child: 'child'
+  parent: 'parent'
 
 
 export default ModelNames

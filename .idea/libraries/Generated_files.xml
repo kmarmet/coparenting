@@ -4,7 +4,6 @@
       <sourceFilesUrls>
         <item url="file://$PROJECT_DIR$/src/constants/allMenuItems.js" />
         <item url="file://$PROJECT_DIR$/src/constants/creationForms.js" />
-        <item url="file://$PROJECT_DIR$/src/constants/dateFormats.js" />
         <item url="file://$PROJECT_DIR$/src/constants/datetimePickerViews.js" />
         <item url="file://$PROJECT_DIR$/src/constants/eventLengths.js" />
         <item url="file://$PROJECT_DIR$/src/constants/expenseCategories.js" />
@@ -58,6 +57,7 @@
         <item url="file://$PROJECT_DIR$/src/models/modelNames.js" />
         <item url="file://$PROJECT_DIR$/src/models/notification.js" />
         <item url="file://$PROJECT_DIR$/src/models/notificationSubscriber.js" />
+        <item url="file://$PROJECT_DIR$/src/models/parent.js" />
         <item url="file://$PROJECT_DIR$/src/models/parentPermissionCode.js" />
         <item url="file://$PROJECT_DIR$/src/models/shortcut.js" />
         <item url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
@@ -69,6 +69,7 @@
     <CLASSES>
       <root url="file://$PROJECT_DIR$/src/constants/allMenuItems.js" />
       <root url="file://$PROJECT_DIR$/src/constants/creationForms.js" />
+      <root url="file://$PROJECT_DIR$/src/constants/datetimeFormats.js" />
       <root url="file://$PROJECT_DIR$/src/constants/datetimePickerViews.js" />
       <root url="file://$PROJECT_DIR$/src/constants/eventLengths.js" />
       <root url="file://$PROJECT_DIR$/src/constants/expenseCategories.js" />
@@ -122,13 +123,13 @@
       <root url="file://$PROJECT_DIR$/src/models/modelNames.js" />
       <root url="file://$PROJECT_DIR$/src/models/notification.js" />
       <root url="file://$PROJECT_DIR$/src/models/notificationSubscriber.js" />
+      <root url="file://$PROJECT_DIR$/src/models/parent.js" />
       <root url="file://$PROJECT_DIR$/src/models/parentPermissionCode.js" />
       <root url="file://$PROJECT_DIR$/src/models/shortcut.js" />
       <root url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />
       <root url="file://$PROJECT_DIR$/src/models/userKey.js" />
-      <root url="file://$PROJECT_DIR$/src/constants/datetimeFormats.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

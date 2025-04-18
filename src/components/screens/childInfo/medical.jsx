@@ -15,7 +15,7 @@ import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
 
-export default function Medical({activeChild, onUpdate = (child) => {}}) {
+export default function Medical({activeChild}) {
   const {state, setState} = useContext(globalState)
   const {currentUser, theme} = state
   const [medicalValues, setMedicalValues] = useState([])
@@ -49,12 +49,10 @@ export default function Medical({activeChild, onUpdate = (child) => {}}) {
       setState({...state, activeChild: updatedChild})
       await setChildData()
     }
-    onUpdate(activeChild)
   }
 
   const update = async (prop, value) => {
     const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'medical', StringManager.formatDbProp(prop), value)
-    onUpdate(updatedChild)
   }
 
   const setChildData = async () => {

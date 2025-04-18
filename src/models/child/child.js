@@ -12,7 +12,7 @@ import Schooling from './schooling';
 import Behavior from './behavior';
 
 export default Child = class Child {
-  constructor(id = Manager.getUid(), general = new General(), medical = new Medical(), schooling = new Schooling(), behavior = new Behavior(), sharing = [], checklists = [], linkedKey = '') {
+  constructor(id = Manager.getUid(), general = new General(), medical = new Medical(), schooling = new Schooling(), behavior = new Behavior(), sharing = [], checklists = [], userKey = '') {
     this.id = id;
     this.general = general;
     this.medical = medical;
@@ -20,7 +20,7 @@ export default Child = class Child {
     this.behavior = behavior;
     this.sharing = sharing;
     this.checklists = checklists;
-    this.linkedKey = linkedKey;
+    this.userKey = userKey;
   }
 
 };

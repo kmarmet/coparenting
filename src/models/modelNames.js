@@ -15,7 +15,10 @@ ModelNames = {
   chatThread: "chatThread",
   childUser: 'childUser',
   doc: 'doc',
-  child: 'child'
+  child: 'child',
+  parent: 'parent'
 };
 
 export default ModelNames;
+
+//# sourceMappingURL=modelNames.js.map

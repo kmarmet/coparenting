@@ -1,16 +1,13 @@
 // Path: src\components\screens\chats\chat.jsx
 import React, {useContext, useEffect, useState} from 'react'
-import {child, getDatabase, onValue, ref} from 'firebase/database'
 import moment from 'moment-timezone'
 import ScreenNames from '/src/constants/screenNames'
 import {FaStar} from 'react-icons/fa'
 import globalState from '/src/context.js'
-import DB from '/src/database/DB'
 import {IoChevronBack, IoCopy, IoSend} from 'react-icons/io5'
 import ChatMessage from '/src/models/chat/chatMessage'
 import {MdCancel, MdOutlineSearchOff} from 'react-icons/md'
 import Manager from '/src/managers/manager'
-import NotificationManager from '/src/managers/notificationManager'
 import ChatManager from '/src/managers/chatManager.js'
 import {PiBookmarksSimpleDuotone} from 'react-icons/pi'
 import ModelNames from '/src/models/modelNames'
@@ -23,7 +20,6 @@ import ObjectManager from '/src/managers/objectManager'
 import AlertManager from '/src/managers/alertManager'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import DomManager from '/src/managers/domManager'
-import ActivityCategory from '/src/models/activityCategory'
 import ChatThread from '/src/models/chat/chatThread'
 import StringManager from '/src/managers/stringManager.coffee'
 import DatetimeFormats from '../../../constants/datetimeFormats'
@@ -31,12 +27,18 @@ import AppManager from '../../../managers/appManager'
 import DateManager from '../../../managers/dateManager'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
+import useChat from '../../hooks/useChat'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import DB from '../../../database/DB'
+import NotificationManager from '../../../managers/notificationManager'
+import ActivityCategory from '../../../models/activityCategory'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, messageRecipient, refreshKey} = state
-  const [existingChat, setExistingChat] = useState(null)
-  const [messagesToLoop, setMessagesToLoop] = useState(null)
+  const {theme, messageRecipient, refreshKey} = state
+  const {currentUser} = useCurrentUser()
+  const {chat, chatMessages} = useChat()
+  const [messagesToLoop, setMessagesToLoop] = useState(chatMessages)
   const [searchResults, setSearchResults] = useState([])
   const [showSearchInput, setShowSearchInput] = useState(false)
   const [bookmarks, setBookmarks] = useState([])
@@ -49,23 +51,25 @@ const Chats = () => {
   const [inputIsActive, setInputIsActive] = useState()
   const [messageTimezone, setMessageTimezone] = useState(false)
 
+  useEffect(() => {
+    if (Manager.isValid(chatMessages) && Manager.isValid(chat)) {
+      setMessagesToLoop(chatMessages)
+    }
+  }, [chatMessages])
+
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)
-    // setState({...state, successAlertMessage: 'Message Copied'})
     const longpressMenu = element.target.parentNode.previousSibling
-    console.log(element.target.parentNode.previousSibling)
-    // console.log(longpressMenu)
-
     longpressMenu.classList.add('active')
   })
 
-  const toggleMessageBookmark = async (messageObject) => {
-    await ChatManager.toggleMessageBookmark(currentUser, messageRecipient, messageObject.id, existingChat?.id).finally(async () => {
-      await getExistingMessages()
+  const ToggleBookmark = async (messageObject) => {
+    await ChatManager.toggleMessageBookmark(currentUser, messageRecipient, messageObject.id, chat?.id).finally(async () => {
+      await DefineBookmarks()
     })
   }
 
-  const hideKeyboard = () => {
+  const HideKeyboard = () => {
     const messageInputForm = document.querySelector('.message-input-wrapper')
     messageInputForm.classList.remove('active')
     Manager.hideKeyboard('message-input-wrapper')
@@ -75,7 +79,7 @@ const Chats = () => {
     }
   }
 
-  const sendMessage = async () => {
+  const SendMessage = async () => {
     if (!Manager.isValid(messageText, true) || messageText.length === 1) {
       AlertManager.throwError('Please enter a message longer than one character')
       return false
@@ -88,31 +92,31 @@ const Chats = () => {
     }
 
     // Close Keyboard -> hide message input
-    hideKeyboard()
+    HideKeyboard()
 
     //#region FILL MODELS
-    const chat = new ChatThread()
+    const _chat = new ChatThread()
     const chatMessage = new ChatMessage()
     const uid = Manager.getUid()
 
     // Chats
-    const memberTwo = {
+    const sender = {
       name: currentUser.name,
       key: currentUser.key,
       id: currentUser.id,
     }
-    const memberOne = {
+    const recipient = {
       name: messageRecipient.name,
       id: messageRecipient.id,
       key: messageRecipient.key,
     }
-    chat.id = uid
-    chat.members = [memberOne, memberTwo]
-    chat.creationTimestamp = moment().format(DatetimeFormats.fullDatetime)
-    chat.ownerKey = currentUser?.key
-    chat.isPausedFor = []
+    _chat.id = uid
+    _chat.members = [recipient, sender]
+    _chat.creationTimestamp = moment().format(DatetimeFormats.fullDatetime)
+    _chat.ownerKey = currentUser?.key
+    _chat.isPausedFor = []
 
-    const cleanedChat = ObjectManager.cleanObject(chat, ModelNames.chatThread)
+    const cleanedChat = ObjectManager.cleanObject(_chat, ModelNames.chatThread)
     cleanedChat.isPausedFor = []
     let cleanedRecipientChat = {...cleanedChat}
     cleanedRecipientChat.isPausedFor = []
@@ -134,8 +138,8 @@ const Chats = () => {
 
     //#region ADD TO DB
     // Existing chat
-    if (Manager.isValid(existingChat)) {
-      await ChatManager.addChatMessage(`${DB.tables.chatMessages}/${existingChat.id}`, cleanMessage)
+    if (Manager.isValid(chat)) {
+      await ChatManager.addChatMessage(`${DB.tables.chatMessages}/${chat.id}`, cleanMessage)
     }
     // Create new chat (for each member, if one doesn't exist between members)
     else {
@@ -146,7 +150,7 @@ const Chats = () => {
     //#endregion ADD TO DB
 
     // SEND NOTIFICATION - Only send if it is not paused for the recipient
-    if (!existingChat?.isPausedFor?.includes(messageRecipient?.key)) {
+    if (!chat?.isPausedFor?.includes(messageRecipient?.key)) {
       NotificationManager.sendNotification(
         'New Message 🗯️',
         `You have an unread message from ${StringManager.getFirstNameOnly(currentUser.name)}`,
@@ -156,49 +160,36 @@ const Chats = () => {
       )
     }
 
-    await getExistingMessages()
     setMessageText('')
     setTimeout(() => {
       setToneObject(null)
     }, 300)
   }
 
-  const viewBookmarks = () => {
+  const ViewBookmarks = () => {
     if (bookmarks.length > 0) {
       setShowBookmarks(!showBookmarks)
-      scrollToLatestMessage()
+      ScrollToLatestMessage()
     }
   }
 
-  const getExistingMessages = async () => {
-    let chat = await ChatManager.getScopedChat(currentUser, messageRecipient?.key)
-
+  const DefineBookmarks = async () => {
     let bookmarkRecords = await ChatManager.getBookmarks(chat?.id)
     let bookmarkedRecordIds = bookmarkRecords.map((x) => x.messageId)
-    let messages = []
-
-    // Set chat/messages
-    if (Manager.isValid(chat)) {
-      setExistingChat(chat)
-      messages = await ChatManager.getMessages(chat.id)
-      if (Manager.isValid(messages)) {
-        setMessagesToLoop(messages)
-      }
-    }
 
     // Set bookmarks
     if (Manager.isValid(bookmarkRecords)) {
-      let bookmarksToLoop = messages.filter((x) => bookmarkedRecordIds.includes(x.id))
+      let bookmarksToLoop = chatMessages.filter((x) => bookmarkedRecordIds.includes(x.id))
 
       setBookmarks(bookmarksToLoop)
     } else {
       setShowBookmarks(false)
       setBookmarks([])
     }
-    scrollToLatestMessage()
+    ScrollToLatestMessage()
   }
 
-  const scrollToLatestMessage = () => {
+  const ScrollToLatestMessage = () => {
     setTimeout(() => {
       const messageWrapper = document.getElementById('default-messages')
       if (messageWrapper) {
@@ -207,33 +198,18 @@ const Chats = () => {
     }, 100)
   }
 
-  const onTableChange = async () => {
-    const dbRef = ref(getDatabase())
-    const userChats = await DB.getTable(`${DB.tables.chats}/${currentUser?.key}`)
-    const thisChat = userChats.filter(
-      (x) => x.members.map((x) => x?.key).includes(currentUser.key) && x.members.map((x) => x?.key).includes(messageRecipient.key)
-    )[0]
-
-    if (thisChat) {
-      const chatId = thisChat.id
-      onValue(child(dbRef, `${DB.tables.chatMessages}/${chatId}`), async () => {
-        await getExistingMessages().then((r) => r)
-      })
-    }
-  }
-
-  const handleMessageTyping = () => {
+  const HandleMessageTyping = () => {
     if (StringManager.wordCount(messageText) % 2 === 0) {
-      setTone(messageText).then((r) => r)
+      SetTone(messageText).then((r) => r)
     }
   }
 
-  const setTone = async (text) => {
+  const SetTone = async (text) => {
     const toneAndSentiment = await ChatManager.getToneAndSentiment(text)
     setToneObject(toneAndSentiment)
   }
 
-  const defineMessageTimezone = async () => {
+  const DefineMessageTimezone = async () => {
     let timezone = currentUser?.location?.timezone
     if (!Manager.isValid(timezone, true)) {
       timezone = await AppManager.getTimezone()
@@ -243,8 +219,6 @@ const Chats = () => {
 
   // ON PAGE LOAD
   useEffect(() => {
-    onTableChange().then((r) => r)
-
     const appContainer = document.querySelector('.App')
     const appContent = document.getElementById('app-content-with-sidebar')
 
@@ -265,7 +239,8 @@ const Chats = () => {
         setInputIsActive(false)
       })
     }
-    defineMessageTimezone().then((r) => r)
+    DefineMessageTimezone().then((r) => r)
+    ScrollToLatestMessage()
   }, [])
 
   // UNSET DYNAMIC INPUT HEIGHT
@@ -276,7 +251,7 @@ const Chats = () => {
         input.style.height = '40px'
         DomManager.unsetHeight(input)
         setToneObject(null)
-        hideKeyboard()
+        HideKeyboard()
       }
     }
   }, [messageText.length])
@@ -315,7 +290,7 @@ const Chats = () => {
             AlertManager.throwError('Please enter a search value')
             return false
           }
-          const results = messagesToLoop.filter((x) => x.message.toLowerCase().indexOf(searchInputQuery.toLowerCase()) > -1)
+          const results = messagesToLoop?.filter((x) => x.message.toLowerCase().indexOf(searchInputQuery.toLowerCase()) > -1)
           setBookmarks([])
           setSearchResults(results)
           setSearchInputQuery('')
@@ -326,7 +301,7 @@ const Chats = () => {
           setShowSearchCard(false)
           setInSearchMode(false)
           setSearchResults([])
-          scrollToLatestMessage()
+          ScrollToLatestMessage()
         }}>
         <Spacer height={8} />
         <InputWrapper
@@ -365,7 +340,7 @@ const Chats = () => {
                     setShowSearchCard(false)
                     setInSearchMode(false)
                     setSearchResults([])
-                    scrollToLatestMessage()
+                    ScrollToLatestMessage()
                   }}
                 />
               ) : (
@@ -376,7 +351,7 @@ const Chats = () => {
                 <BsFillBookmarksFill
                   id="chat-bookmark-icon"
                   className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
-                  onClick={viewBookmarks}
+                  onClick={ViewBookmarks}
                 />
               )}
             </div>
@@ -385,7 +360,7 @@ const Chats = () => {
 
         {/* SEARCH RESULTS */}
         {bookmarks.length === 0 && searchResults.length > 0 && (
-          <div id="messages" className="search-results">
+          <div id="chatMessages" className="search-results">
             {Manager.isValid(searchResults) &&
               searchResults.map((messageObj, index) => {
                 let sender
@@ -434,7 +409,7 @@ const Chats = () => {
                       onClick={(e) => {
                         e.target.parentNode.classList.remove('active')
 
-                        toggleMessageBookmark(bookmark).then((r) => r)
+                        ToggleBookmark(bookmark).then((r) => r)
                       }}>
                       Remove Bookmark
                       <BsBookmarkDashFill className={'active'} />
@@ -498,7 +473,7 @@ const Chats = () => {
                             onClick={(e) => {
                               e.target.parentNode.classList.remove('active')
 
-                              toggleMessageBookmark(message).then((r) => r)
+                              ToggleBookmark(message).then((r) => r)
                             }}>
                             Remove Bookmark
                             <BsBookmarkDashFill className={'active'} />
@@ -510,7 +485,7 @@ const Chats = () => {
                             id="bookmark"
                             onClick={(e) => {
                               e.target.parentNode.classList.remove('active')
-                              toggleMessageBookmark(message, false).then((r) => r)
+                              ToggleBookmark(message, false).then((r) => r)
                             }}>
                             Bookmark <BsBookmarkStarFill />
                           </button>
@@ -568,13 +543,13 @@ const Chats = () => {
                     }}
                     onChange={(e) => {
                       if (e.target.value.length > 1) {
-                        handleMessageTyping(e)
+                        HandleMessageTyping(e)
                         setMessageText(e.target.value)
                         DomManager.autoExpandingHeight(e)
                       }
                     }}
                   />
-                  <IoSend className={toneObject?.color} onClick={sendMessage} id="send-button" />
+                  <IoSend className={toneObject?.color} onClick={SendMessage} id="send-button" />
                 </div>
               </div>
             </div>
@@ -587,7 +562,7 @@ const Chats = () => {
         <Fade direction={'up'} duration={1000} className={'conversation-sidebar-fade-wrapper chats-desktop-sidebar'} triggerOnce={true}>
           <div className="top-buttons top">
             <p id="user-name">{StringManager.getFirstNameOnly(messageRecipient.name)}</p>
-            <p id="view-bookmarks" className="item menu-item" onClick={(e) => viewBookmarks(e)}>
+            <p id="view-bookmarks" className="item menu-item" onClick={(e) => ViewBookmarks(e)}>
               <PiBookmarksSimpleDuotone
                 id="chat-bookmark-icon"
                 className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
@@ -603,7 +578,7 @@ const Chats = () => {
                 const inputValue = e.target.value
                 if (inputValue.length === 0) {
                   setSearchResults([])
-                  await getExistingMessages()
+                  await DefineBookmarks()
                 }
                 if (inputValue.length > 2) {
                   setSearchInputQuery(inputValue)

@@ -17,33 +17,27 @@ import Modal from '../../shared/modal'
 import InputWrapper from '../../shared/inputWrapper'
 import validator from 'validator'
 import {EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail} from 'firebase/auth'
-import {useSwipeable} from 'react-swipeable'
 import NotificationManager from '../../../managers/notificationManager'
 import FirebaseStorage from '../../../database/firebaseStorage'
 import StringManager from '../../../managers/stringManager.coffee'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 export default function Profile() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
+  const {theme} = state
   const [updateType, setUpdateType] = useState('email')
   const [showUpdateCard, setShowUpdateCard] = useState(false)
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [showLoginForm, setShowLoginForm] = useState(false)
+  const {currentUser} = useCurrentUser()
 
   // Init Firebase
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
   const firebaseUser = auth.currentUser
-
-  const handlers = useSwipeable({
-    onSwipedRight: (eventData) => {
-      console.log('User Swiped!', eventData)
-      setState({...state, currentScreen: ScreenNames.account})
-    },
-  })
 
   const logout = () => {
     signOut(auth)
@@ -195,6 +189,12 @@ export default function Profile() {
     )
   }
 
+  const SetHomeAddress = async (address) => {
+    console.log(currentUser)
+    await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/location/homeAddress`, address)
+    setState({...state, successAlertMessage: 'Home address has been updated'})
+  }
+
   return (
     <>
       {/* UPDATE CARD */}
@@ -213,7 +213,7 @@ export default function Profile() {
         wrapperClass="update-card"
         showCard={showUpdateCard}
         title={`Update your ${StringManager.uppercaseFirstLetterOfAllWords(updateType)}`}>
-        <div {...handlers} id="update-contact-info-container" className={`${theme}`}>
+        <div id="update-contact-info-container" className={`${theme}`}>
           <Spacer height={8} />
           <div className="form">
             {updateType === 'email' && (
@@ -240,13 +240,14 @@ export default function Profile() {
         submitText={'Close Profile'}
         showCard={showLoginForm}
         title={`Please login to complete account deletion`}>
-        <div {...handlers} id="reauthentication-wrapper" className={`${theme} form`}>
-          <InputWrapper onChange={(e) => setEmail(e?.currentTarget?.value)} labelText={'Email Address'} required={true}></InputWrapper>
+        <div id="reauthentication-wrapper" className={`${theme}`}>
           <InputWrapper
-            onChange={(e) => setPhone(e?.currentTarget?.value)}
-            labelText={'Password'}
-            inputValueType="password"
-            required={true}></InputWrapper>
+            onChange={(e) => setEmail(e?.currentTarget?.value)}
+            labelText={'Email Address'}
+            inputType={InputTypes.email}
+            required={true}
+          />
+          <InputWrapper onChange={(e) => setPhone(e?.currentTarget?.value)} labelText={'Password'} inputType={InputTypes.password} required={true} />
         </div>
       </Modal>
 
@@ -258,6 +259,16 @@ export default function Profile() {
         </p>
         <div className="sections">
           <Fade direction={'right'} duration={800} className={'visitation-fade-wrapper'} triggerOnce={true} damping={0.2} cascade={true}>
+            {/* HOME ADDRESS */}
+            {Manager.isValid(currentUser) && (
+              <InputWrapper
+                defaultValue={currentUser?.homeAddress}
+                inputType={InputTypes.address}
+                labelText={'Home Address'}
+                onChange={(address) => SetHomeAddress(address)}
+              />
+            )}
+
             <p className="section" onClick={() => setState({...state, currentScreen: ScreenNames.resetPassword})}>
               <MdOutlinePassword />
               Reset Password

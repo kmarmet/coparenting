@@ -8,10 +8,12 @@ import {LuCalendarDays} from 'react-icons/lu'
 import {HiOutlineMenu} from 'react-icons/hi'
 import {PiPlusBold} from 'react-icons/pi'
 import Manager from '../managers/manager'
+import useCurrentUser from './hooks/useCurrentUser'
 
 export default function NavBar({children, navbarClass}) {
   const {state, setState} = useContext(globalState)
-  const {currentScreen, currentUser, menuIsOpen, theme, notificationCount} = state
+  const {currentScreen, menuIsOpen, theme, notificationCount} = state
+  const {currentUser} = useCurrentUser()
 
   const changeCurrentScreen = async (screen) => {
     setState({

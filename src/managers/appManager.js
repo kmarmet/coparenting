@@ -36,15 +36,15 @@ export default AppManager = {
       response = (await fetch("https://api.ipify.org", requestOptions));
       result = (await response.text());
       ipAddress = result;
-      console.log(result);
     } catch (error1) {
+      //      console.log result
       error = error1;
       console.error(error);
     }
     return ipAddress;
   },
   getTimezone: async function() {
-    var error, ipAddress, myHeaders, ref1, ref2, requestOptions, response, result, timezone;
+    var error, ipAddress, myHeaders, ref1, requestOptions, response, result, timezone;
     ipAddress = (await AppManager.getIPAddress());
     timezone = '';
     myHeaders = new Headers();
@@ -58,8 +58,8 @@ export default AppManager = {
       response = (await fetch(`https://api.manyapis.com/v1-get-ip-detail?ip=${ipAddress}`, requestOptions));
       result = (await response.json());
       timezone = result != null ? (ref1 = result.city) != null ? ref1.timezone : void 0 : void 0;
-      console.log(result != null ? (ref2 = result.city) != null ? ref2.timezone : void 0 : void 0);
     } catch (error1) {
+      //      console.log result?.city?.timezone
       error = error1;
       console.error(error);
     }

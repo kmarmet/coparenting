@@ -64,7 +64,7 @@ export default function NewSwapRequest() {
 
   const submit = async () => {
     const invalidInputs = Manager.GetInvalidInputsErrorString([startDate, recipientKey])
-    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+    const validAccounts = await DB_UserScoped.getValidAccountsCountForUser(currentUser)
 
     //#region VALIDATION
     if (validAccounts === 0) {

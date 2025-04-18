@@ -15,7 +15,7 @@ export default function ChatRow({chat, index}) {
   const {currentUser, theme} = state
   const [otherMember, setOtherMember] = useState(null)
 
-  const openChat = async () => {
+  const OpenChat = async () => {
     // Check if thread member (coparent) profile exists in DB
     let userCoparent = await DB_UserScoped.getCoparentByKey(otherMember?.key, currentUser)
     if (!Manager.isValid(userCoparent)) {
@@ -32,27 +32,27 @@ export default function ChatRow({chat, index}) {
     }
   }
 
-  const pauseChat = async () => {
+  const PauseChat = async () => {
     if (Manager.isValid(otherMember)) {
       await ChatManager.pauseChat(currentUser, otherMember?.key)
       setState({...state, currentScreen: ScreenNames.chats, successAlertMessage: 'Chat Paused'})
     }
   }
 
-  const unpauseChat = async () => {
+  const UnpauseChat = async () => {
     if (Manager.isValid(otherMember)) {
       await ChatManager.unpauseChat(currentUser, otherMember?.key)
       setState({...state, currentScreen: ScreenNames.chats, successAlertMessage: 'Chat Resumed'})
     }
   }
 
-  const setDefaultOtherMember = async () => {
+  const SetDefaultOtherMember = async () => {
     const coparent = await DB_UserScoped.getCoparentByKey(chat?.member?.key, currentUser)
     setOtherMember(coparent)
   }
 
   useEffect(() => {
-    setDefaultOtherMember().then((r) => r)
+    SetDefaultOtherMember().then((r) => r)
   }, [])
 
   return (
@@ -61,7 +61,7 @@ export default function ChatRow({chat, index}) {
         e.stopPropagation()
         if (e.target.tagName === 'path' || e.target.tagName === 'svg') return false
         if (e.currentTarget.classList.contains('row')) {
-          openChat().then((r) => r)
+          OpenChat().then((r) => r)
         }
         if (e.target !== e.currentTarget) return false
       }}
@@ -90,7 +90,7 @@ export default function ChatRow({chat, index}) {
                       "I'm Sure",
                       true,
                       async () => {
-                        await pauseChat()
+                        await PauseChat()
                       }
                     )
                   }}
@@ -101,7 +101,7 @@ export default function ChatRow({chat, index}) {
             {/* PLAY CHAT BUTTON */}
             {chat?.isPausedFor?.includes(currentUser?.key) && (
               <div id="play-wrapper">
-                <FaPlay className={'play-icon'} onClick={() => unpauseChat()} />
+                <FaPlay className={'play-icon'} onClick={() => UnpauseChat()} />
               </div>
             )}
           </div>

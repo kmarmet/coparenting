@@ -31,6 +31,8 @@ import Child from "../models/child/child";
 
 import _ from "lodash";
 
+import Parent from "../models/parent";
+
 ObjectManager = {
   cleanObject: function(object, modelName) {
     var prop, ref, ref1, returnObject;
@@ -60,6 +62,8 @@ ObjectManager = {
           return new ChildUser();
         case ModelNames.child:
           return new Child();
+        case ModelNames.parent:
+          return new Parent();
         case ModelNames.doc:
           return new Doc();
       }
@@ -87,3 +91,5 @@ ObjectManager = {
 };
 
 export default ObjectManager;
+
+//# sourceMappingURL=objectManager.js.map

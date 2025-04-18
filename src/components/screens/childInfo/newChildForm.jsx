@@ -75,7 +75,7 @@ const NewChildForm = ({hideCard, showCard}) => {
 
     // Link to existing account
     if (Manager.isValid(existingChildRecord)) {
-      newChild.linkedKey = existingChildRecord.key
+      newChild.userKey = existingChildRecord.key
     }
 
     // Add profile pic

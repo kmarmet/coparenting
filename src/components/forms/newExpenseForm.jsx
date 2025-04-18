@@ -83,7 +83,7 @@ export default function NewExpenseForm() {
 
   const SubmitNewExpense = async () => {
     //#region VALIDATION
-    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+    const validAccounts = await DB_UserScoped.getValidAccountsCountForUser(currentUser)
     if (validAccounts === 0) {
       AlertManager.throwError(
         'No co-parent to \n assign expenses to',

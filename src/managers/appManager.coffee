@@ -21,7 +21,7 @@ export default AppManager =
       response = await fetch "https://api.ipify.org", requestOptions
       result = await response.text()
       ipAddress = result
-      console.log result
+#      console.log result
     catch error
       console.error error
     return ipAddress
@@ -41,7 +41,7 @@ export default AppManager =
       response = await fetch "https://api.manyapis.com/v1-get-ip-detail?ip=#{ipAddress}", requestOptions
       result = await response.json()
       timezone = result?.city?.timezone
-      console.log result?.city?.timezone
+#      console.log result?.city?.timezone
     catch error
       console.error error
 

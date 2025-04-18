@@ -15,9 +15,8 @@ import StringManager from '../../managers/stringManager'
 import ViewSelector from './viewSelector'
 import validator from 'validator'
 import InputTypes from '../../constants/inputTypes'
-import DB from '../../database/DB'
 
-export default function CustomChildInfo({hideCard, showCard, activeChild, onChildUpdate = (child) => {}}) {
+export default function CustomChildInfo({hideCard, showCard, activeChild}) {
   const {state, setState} = useContext(globalState)
   const {currentUser, theme} = state
   const [title, setTitle] = useState('')
@@ -26,7 +25,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild, onChil
   const [infoType, setInfoType] = useState('text')
   const [shareWith, setShareWith] = useState([])
 
-  const add = async () => {
+  const Add = async () => {
     if (title.length === 0 || value.length === 0) {
       AlertManager.throwError('Please fill/select required fields')
       return false
@@ -48,13 +47,10 @@ export default function CustomChildInfo({hideCard, showCard, activeChild, onChil
       )
     }
 
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
-    const updatedChild = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`, true)
-    onChildUpdate(updatedChild)
     ResetForm(`${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Added`)
   }
 
-  const handleInfoTypeSelection = (e) => {
+  const HandleInfoTypeSelection = (e) => {
     Manager.handleCheckboxSelection(
       e,
       (e) => {
@@ -68,7 +64,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild, onChil
     )
   }
 
-  const handleShareWithSelection = (e) => {
+  const HandleShareWithSelection = (e) => {
     const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, shareWith)
     setShareWith(shareWithNumbers)
   }
@@ -84,7 +80,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild, onChil
 
   return (
     <Modal
-      onSubmit={add}
+      onSubmit={Add}
       submitText={'Add'}
       className="custom-child-info-wrapper"
       wrapperClass="custom-child-info-card"
@@ -100,7 +96,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild, onChil
       }
       showCard={showCard}>
       <div className="form">
-        <ShareWithCheckboxes onCheck={handleShareWithSelection} labelText="Share with" required={false} />
+        <ShareWithCheckboxes onCheck={HandleShareWithSelection} labelText="Share with" required={false} />
 
         {/* INFO TYPE */}
         <CheckboxGroup
@@ -111,7 +107,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild, onChil
             defaultLabels: ['Text'],
             customLabelArray: ['Text', 'Location', 'Date', 'Phone'],
           })}
-          onCheck={handleInfoTypeSelection}
+          onCheck={HandleInfoTypeSelection}
         />
 
         {/* INPUTS */}

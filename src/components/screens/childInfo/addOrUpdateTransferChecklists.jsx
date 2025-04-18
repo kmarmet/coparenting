@@ -13,7 +13,7 @@ import {child, getDatabase, onValue, ref} from 'firebase/database'
 import {CgMathPlus} from 'react-icons/cg'
 import Spacer from '../../shared/spacer'
 
-export default function AddOrUpdateTransferChecklists({showCard, hideCard, activeChild, onChildUpdate = (child) => {}}) {
+export default function AddOrUpdateTransferChecklists({showCard, hideCard, activeChild}) {
   const {state, setState} = useContext(globalState)
   const {currentUser, refreshKey} = state
   const [checkboxTextList, setCheckboxTextList] = useState([])
@@ -76,8 +76,6 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
       }
       hideCard()
       MyConfetti.fire()
-      const updatedChild = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`, true)
-      onChildUpdate(updatedChild)
     }
   }
 

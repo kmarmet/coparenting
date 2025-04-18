@@ -4,7 +4,7 @@ var ChildUser;
 import Manager from '../../managers/manager.js';
 
 export default ChildUser = class ChildUser {
-  constructor(parents = [], name = '', email = '', accountType = '', notificationsEnabled = true, id = Manager.getUid(), settings = {
+  constructor(parents = [], name = '', email = '', accountType = 'child', phone = '', notificationsEnabled = true, id = Manager.getUid(), settings = {
       theme: 'light'
     }, dailySummaries = {
       morningSentDate: '',
@@ -16,6 +16,7 @@ export default ChildUser = class ChildUser {
     this.name = name;
     this.email = email;
     this.accountType = accountType;
+    this.phone = phone;
     this.notificationsEnabled = notificationsEnabled;
     this.id = id;
     this.settings = settings;
@@ -24,3 +25,5 @@ export default ChildUser = class ChildUser {
   }
 
 };
+
+//# sourceMappingURL=childUser.js.map

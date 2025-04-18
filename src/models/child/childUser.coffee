@@ -5,7 +5,8 @@ export default class ChildUser
     @parents = []
     @name = ''
     @email = ''
-    @accountType = ''
+    @accountType = 'child'
+    @phone = ''
     @notificationsEnabled = true
     @id = Manager.getUid()
     @settings = {

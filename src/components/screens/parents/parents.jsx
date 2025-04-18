@@ -1,11 +1,12 @@
-// Path: src\components\screens\coparents\coparents.jsx
-import React, {useContext, useEffect, useState} from 'react'
+// Path: src\components\screens\parents\parents.jsx
+import React, {useContext, useState} from 'react'
 import globalState from '../../../context'
+import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
 import DB_UserScoped from '/src/database/db_userScoped'
-import CustomCoparentInfo from './customCoparentInfo'
+import CustomParentInfo from './customParentInfo'
 import {HiDotsHorizontal} from 'react-icons/hi'
-import NewCoparentForm from './newCoparentForm'
+import NewParentForm from './newParentForm'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import {Fade} from 'react-awesome-reveal'
@@ -21,59 +22,65 @@ import EmailManager from '../../../managers/emailManager'
 import Spacer from '../../shared/spacer'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import InputTypes from '../../../constants/inputTypes'
-import useCoparents from '../../hooks/useCoparents'
-import useCurrentUser from '../../hooks/useCurrentUser'
 
-export default function Coparents() {
+export default function Parents() {
   const {state, setState} = useContext(globalState)
-  const {theme} = state
-  const {currentUser} = useCurrentUser()
-  const {coparents} = useCoparents()
+  const {currentUser, theme} = state
 
   // State
   const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
-  const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
-  const [activeCoparent, setActiveCoparent] = useState(coparents?.[0])
+  const [showNewParentFormCard, setShowNewParentFormCard] = useState(false)
+  const [activeParent, setActiveParent] = useState(currentUser?.parents?.[0])
   const [showInvitationForm, setShowInvitationForm] = useState(false)
-  const [invitedCoparentName, setInvitedCoparentName] = useState('')
-  const [invitedCoparentEmail, setInvitedCoparentEmail] = useState('')
+  const [invitedParentName, setInvitedParentName] = useState('')
+  const [invitedParentEmail, setInvitedParentEmail] = useState('')
 
-  const DeleteProp = async (prop) => await DB_UserScoped.deleteCoparentInfoProp(currentUser, StringManager.formatDbProp(prop), activeCoparent)
-
-  const Update = async (prop, value) => await DB_UserScoped.updateCoparent(currentUser, activeCoparent, StringManager.formatDbProp(prop), value)
-
-  const DeleteCoparent = async () => {
-    await DB_UserScoped.deleteCoparent(currentUser, activeCoparent)
-    setState({...state, successAlertMessage: `${activeCoparent?.name} has been unlinked from your profile`})
-    setActiveCoparent(coparents?.[0])
+  const DeleteProp = async (prop) => {
+    const updatedCoparent = await DB_UserScoped.deleteParentInfoProp(currentUser, StringManager.formatDbProp(prop), activeParent)
+    await SetActiveParentData(updatedCoparent)
   }
 
-  useEffect(() => {
-    if (Manager.isValid(coparents) && !Manager.isValid(activeCoparent)) {
-      setActiveCoparent(coparents?.[0])
+  const Update = async (prop, value) => {
+    const updatedCoparent = await DB_UserScoped.updateParent(currentUser, activeParent, StringManager.formatDbProp(prop), value)
+    setState({...state, successAlertMessage: `${StringManager.formatTitle(prop, true)} has been updated`})
+    await SetActiveParentData(updatedCoparent)
+  }
+
+  const DeleteCoparent = async () => {
+    await DB_UserScoped.deleteParent(currentUser, activeParent)
+    setState({...state, successAlertMessage: `${activeParent?.name} has been unlinked from your profile`})
+    setActiveParent(currentUser?.parents[0])
+  }
+
+  const SetActiveParentData = async (parent) => {
+    const parentKey = parent?.userKey
+    if (Manager.isValid(parentKey)) {
+      const updatedParents = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/parents`)
+      const updatedParent = updatedParents.find((x) => x.userKey === parentKey)
+      setActiveParent(updatedParent)
     }
-  }, [coparents])
+  }
 
   return (
     <>
       {/* CUSTOM INFO FORM */}
-      <CustomCoparentInfo
+      <CustomParentInfo
         hideCard={() => setShowCustomInfoCard(false)}
-        onAdd={(coparent) => setActiveCoparent(coparent)}
-        activeCoparent={activeCoparent}
+        onAdd={(parent) => SetActiveParentData(parent)}
+        activeCoparent={activeParent}
         showCard={showCustomInfoCard}
       />
 
-      {/* NEW COPARENT FORM */}
-      <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
+      {/* NEW PARENT FORM */}
+      <NewParentForm showCard={showNewParentFormCard} hideCard={() => setShowNewParentFormCard(false)} />
 
       {/*  SCREEN ACTIONS */}
       <ScreenActionsMenu>
-        {/* ADD COPARENT */}
+        {/* ADD PARENT */}
         <div
           className="action-item"
           onClick={() => {
-            setShowNewCoparentFormCard(true)
+            setShowNewParentFormCard(true)
             setState({...state, showScreenActions: false})
           }}>
           <div className="content">
@@ -81,8 +88,8 @@ export default function Coparents() {
               <IoPersonAdd className={'add-child fs-22'} />
             </div>
             <p>
-              Add Co-Parent to Your Profile
-              <span className="subtitle">Include a co-parent in your profile to save their details and facilitate information sharing with them</span>
+              Add Parent to Your Profile
+              <span className="subtitle">Include a parent in your profile to save their details and facilitate information sharing with them</span>
             </p>
           </div>
         </div>
@@ -100,18 +107,18 @@ export default function Coparents() {
             </div>
             <p>
               Add your Own Info
-              <span className="subtitle">Include personalized details about {activeCoparent?.name}</span>
+              <span className="subtitle">Include personalized details about {activeParent?.name}</span>
             </p>
           </div>
         </div>
 
-        {/*  REMOVE COPARENT */}
+        {/*  REMOVE PARENT */}
         <div
           className="action-item"
           onClick={() => {
             setState({...state, showScreenActions: false})
             AlertManager.confirmAlert(
-              `Are you sure you would like to unlink ${activeCoparent?.name} from your profile?`,
+              `Are you sure you would like to unlink ${activeParent?.name} from your profile?`,
               "I'm Sure",
               true,
               async () => {
@@ -125,8 +132,8 @@ export default function Coparents() {
             </div>
 
             <p>
-              Unlink {activeCoparent?.name} from Your Profile
-              <span className="subtitle">Remove all information about {activeCoparent?.name} from your profile</span>
+              Unlink {activeParent?.name} from Your Profile
+              <span className="subtitle">Remove all information about {activeParent?.name} from your profile</span>
             </p>
           </div>
         </div>
@@ -138,11 +145,11 @@ export default function Coparents() {
             setState({...state, showScreenActions: false})
           }}>
           <div className="content">
-            <div className="svg-wrapper invite-coparent">
+            <div className="svg-wrapper invite-parent">
               <BsFillSendFill className={'paper-airplane'} />
             </div>
             <p>
-              Invite Co-Parent <span className="subtitle">Send invitation to a co-parent you would like to share essential information with</span>
+              Invite Parent <span className="subtitle">Send invitation to a parent you would like to share information with</span>
             </p>
           </div>
         </div>
@@ -153,79 +160,74 @@ export default function Coparents() {
 
       <Modal
         submitText={'Send Invitation'}
-        wrapperClass="invite-coparent-card"
-        title={'Invite Co-Parent'}
-        subtitle="Extend an invitation to a co-parent to facilitate the sharing of essential information with them"
+        wrapperClass="invite-parent-card"
+        title={'Invite Parent'}
+        subtitle="Extend an invitation to a parent to facilitate the sharing of essential information with them"
         onClose={() => setShowInvitationForm(false)}
         showCard={showInvitationForm}
         onSubmit={() => {
-          if (!Manager.isValid(invitedCoparentEmail) || !Manager.isValid(invitedCoparentName)) {
+          if (!Manager.isValid(invitedParentEmail) || !Manager.isValid(invitedParentName)) {
             AlertManager.throwError('Please fill out all fields')
             return false
           }
-          EmailManager.SendEmailToUser(EmailManager.Templates.coparentInvitation, '', invitedCoparentEmail, invitedCoparentName)
+          EmailManager.SendEmailToUser(EmailManager.Templates.parentInvitation, '', invitedParentEmail, invitedParentName)
           AlertManager.successAlert('Invitation Sent!')
           setShowInvitationForm(false)
         }}
         hideCard={() => setShowInvitationForm(false)}>
         <Spacer height={5} />
+        <InputWrapper inputType={InputTypes.text} labelText={'Parent Name'} required={true} onChange={(e) => setInvitedParentName(e.target.value)} />
         <InputWrapper
           inputType={InputTypes.text}
-          labelText={'Co-Parent Name'}
+          labelText={'Parent Email Address'}
           required={true}
-          onChange={(e) => setInvitedCoparentName(e.target.value)}
-        />
-        <InputWrapper
-          inputType={InputTypes.text}
-          labelText={'Co-Parent Email Address'}
-          required={true}
-          onChange={(e) => setInvitedCoparentEmail(e.target.value)}
+          onChange={(e) => setInvitedParentEmail(e.target.value)}
         />
       </Modal>
 
       {/* COPARENTS CONTAINER */}
-      <div id="coparents-container" className={`${theme} page-container coparents-wrapper`}>
-        <Fade direction={'up'} duration={1000} className={'coparents-fade-wrapper'} triggerOnce={true}>
+      <div id="parents-container" className={`${theme} page-container parents-wrapper`}>
+        <Fade direction={'up'} duration={1000} className={'parents-fade-wrapper'} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
-            <p className="screen-title beside-action-button">Co-Parents</p>
+            <p className="screen-title beside-action-button">Parents</p>
           </div>
-          <p>Maintain accessible records of important information regarding your co-parent.</p>
+          <p>Maintain accessible records of important information regarding your parent(s).</p>
         </Fade>
 
-        {/* COPARENT ICONS CONTAINER */}
-        <div id="coparent-container">
-          {Manager.isValid(coparents) &&
-            coparents?.map((coparent, index) => {
-              const coparentKey = activeCoparent?.userKey
+        {/* PARENT ICONS CONTAINER */}
+        <div id="parent-container">
+          {Manager.isValid(currentUser?.parents) &&
+            currentUser?.parents?.map((parent, index) => {
+              const parentKey = activeParent?.userKey
               return (
                 <div
-                  onClick={() => setActiveCoparent(coparent)}
-                  className={coparentKey && coparentKey === coparent?.userKey ? 'active coparent' : 'coparent'}
+                  onClick={() => SetActiveParentData(parent)}
+                  className={parentKey && parentKey === parent.userKey ? 'active parent' : 'parent'}
                   key={index}>
-                  <span className="coparent-name">{StringManager.getFirstNameOnly(coparent?.name)?.[0]}</span>
+                  <span className="parent-name">{StringManager.getFirstNameOnly(parent.name)[0]}</span>
                 </div>
               )
             })}
         </div>
 
         {/* NO DATA FALLBACK */}
-        {!Manager.isValid(coparents) && <NoDataFallbackText text={'You have not added any co-parents to your profile yet'} />}
+        {!Manager.isValid(currentUser?.parents) && <NoDataFallbackText text={'You have not added or linked any parents to your profile yet'} />}
 
-        {/* COPARENT INFO */}
-        <div id="coparent-info" key={activeCoparent?.key}>
-          <p id="coparent-name-primary">{StringManager.getFirstNameOnly(activeCoparent?.name)}</p>
-          <p id="coparent-type-primary"> {activeCoparent?.parentType}</p>
-          {Manager.isValid(activeCoparent) && (
-            <Fade direction={'right'} className={'coparents-info-fade-wrapper'} duration={800} damping={0.08} triggerOnce={false} cascade={true}>
-              {/* ITERATE COPARENT INFO */}
-              {Manager.isValid(activeCoparent) &&
-                Object.entries(activeCoparent).map((propArray, index) => {
+        {/* PARENT INFO */}
+        <div id="parent-info" key={activeParent?.key}>
+          <p id="parent-name-primary">{StringManager.getFirstNameOnly(activeParent?.name)}</p>
+          <p id="parent-type-primary"> {activeParent?.parentType}</p>
+          {Manager.isValid(activeParent) && (
+            <Fade direction={'right'} className={'parents-info-fade-wrapper'} duration={800} damping={0.08} triggerOnce={false} cascade={true}>
+              {/* ITERATE PARENT INFO */}
+              {Manager.isValid(activeParent) &&
+                Object.entries(activeParent).map((propArray, index) => {
                   let infoLabel = propArray[0]
                   infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
                   infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
                   infoLabel = StringManager.formatTitle(infoLabel, true)
                   const value = propArray[1]
-                  const inputsToSkip = ['address', 'key', 'id', 'user key']
+                  const inputsToSkip = ['address', 'key', 'id', 'linked key']
 
                   return (
                     <div key={index}>

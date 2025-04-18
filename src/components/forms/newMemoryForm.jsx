@@ -40,17 +40,17 @@ export default function NewMemoryForm() {
     setState({...state, currentUser: updatedCurrentUser, isLoading: false, refreshKey: Manager.getUid(), creationFormToShow: ''})
   }
 
-  const handleShareWithSelection = async (e) => {
+  const HandleShareWithSelection = async (e) => {
     const updated = await Manager.handleShareWithSelection(e, currentUser, newMemory.shareWith)
     setNewMemory((prevMemory) => ({...prevMemory, shareWith: updated}))
   }
 
-  const submit = async () => {
-    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+  const Submit = async () => {
+    const validAccounts = await DB_UserScoped.getValidAccountsCountForUser(currentUser)
     if (validAccounts === 0) {
       AlertManager.throwError(
-        'No co-parent to \n share memories with',
-        'You have not connected any co-parents to your profile. It is also possible they have closed their profile.'
+        `No ${currentUser?.accountType === 'parent' ? 'co-parents or children' : 'parents'} to \n share memories with`,
+        `You have not connected any ${currentUser?.accountType === 'parent' ? 'co-parents or children' : 'parents'} to your profile. It is also possible they have closed their profile.`
       )
       return false
     }
@@ -153,7 +153,7 @@ export default function NewMemoryForm() {
 
   return (
     <Modal
-      onSubmit={submit}
+      onSubmit={Submit}
       wrapperClass="new-memory"
       submitText={'Add Memory'}
       submitIcon={<LuImagePlus />}
@@ -165,7 +165,7 @@ export default function NewMemoryForm() {
           <Spacer height={5} />
           <div className="form">
             {/* SHARE WITH */}
-            {currentUser && <ShareWithCheckboxes onCheck={handleShareWithSelection} containerClass={'share-with-coparents'} />}
+            {currentUser && <ShareWithCheckboxes onCheck={HandleShareWithSelection} containerClass={'share-with-coparents'} />}
 
             {/* TITLE */}
             <InputWrapper

@@ -14,7 +14,7 @@
 
 *.map
 
-.parcel-cache/data.mdb
+.parcel-cache/currentUser.mdb
 
 App Repo/
 Business/
@@ -279,7 +279,7 @@ ServiceFabricBackup/
 *.ndf
 
 # Business Intelligence projects
-*.rdl.data
+*.rdl.currentUser
 *.bim.layout
 *.bim_*.settings
 *.rptproj.rsuser

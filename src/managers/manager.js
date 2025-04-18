@@ -256,7 +256,7 @@ const Manager = {
   },
   convertToArray: (object) => {
     if (!Array.isArray(object)) {
-      object = DB.convertKeyObjectToArray(object)
+      object = DB.convertKeyObjectToArray(object).filter((x) => x)
     }
 
     return object

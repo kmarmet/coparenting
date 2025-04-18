@@ -14,7 +14,6 @@ import {FaCameraRotate, FaWandMagicSparkles} from 'react-icons/fa6'
 import {Fade} from 'react-awesome-reveal'
 import NewChildForm from '/src/components/screens/childInfo/newChildForm'
 import {IoClose, IoPersonAdd, IoPersonAddOutline, IoPersonRemove} from 'react-icons/io5'
-import DB_UserScoped from '/src/database/db_userScoped'
 import NavBar from '/src/components/navBar'
 import AlertManager from '/src/managers/alertManager'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
@@ -26,17 +25,20 @@ import Spacer from '../../shared/spacer'
 import {PiListChecksFill} from 'react-icons/pi'
 import Checklist from './checklist'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
+import useChildren from '../../hooks/useChildren'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 export default function ChildInfo() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
-  const imgRef = useRef()
+  const {theme} = state
+  const {currentUser} = useCurrentUser()
   const [showInfoCard, setShowInfoCard] = useState(false)
+  const {children} = useChildren()
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
-  const [activeChild, setActiveChild] = useState(currentUser?.children?.[0])
-  const [children, setChildren] = useState(currentUser?.children)
+  const [activeChild, setActiveChild] = useState(children?.[0])
+  const imgRef = useRef()
 
   const UploadProfilePic = async (fromButton = false, childId = activeChild?.id) => {
     const uploadIcon = document.querySelector(`[data-id="${childId}" ]`)
@@ -52,22 +54,7 @@ export default function ChildInfo() {
     }
 
     // Upload -> Set child/general/profilePic
-    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, `${currentUser?.key}/${activeChild?.id}`, imgFiles[0], 'profilePic').then(
-      async (url) => {
-        const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', 'profilePic', url)
-        setActiveChild(updatedChild)
-        await SetUpdatedChildren()
-      }
-    )
-  }
-
-  const SetUpdatedChildren = async () => {
-    const updatedChildren = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children`)
-    setChildren(updatedChildren)
-  }
-
-  const SetDefaults = () => {
-    SetUpdatedChildren().then((r) => r)
+    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, `${currentUser?.key}/${activeChild?.id}`, imgFiles[0], 'profilePic')
   }
 
   const DeleteChild = async () => {
@@ -79,44 +66,27 @@ export default function ChildInfo() {
         const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
         if (Manager.isValid(childKey)) {
           await DB.deleteByPath(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`)
-          SetDefaults()
         }
       }
     )
   }
 
-  const SetActiveChildData = async (child) => {
-    const childId = child?.id
-    if (Manager.isValid(childId)) {
-      const updatedChildren = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children`)
-      const updatedChild = updatedChildren.find((x) => x.id === childId)
-      setActiveChild(updatedChild)
-    }
-  }
-
+  // Set active child on page load
   useEffect(() => {
-    SetDefaults()
-  }, [])
+    if (children?.length > 0 && !activeChild) {
+      setActiveChild(children?.[0])
+    }
+  }, [children])
 
   return (
     <>
       {Manager.isValid(activeChild) && (
         <>
           {/* CUSTOM INFO FORM */}
-          <CustomChildInfo
-            onChildUpdate={(child) => SetActiveChildData(child)}
-            showCard={showInfoCard}
-            activeChild={activeChild}
-            hideCard={() => setShowInfoCard(false)}
-          />
+          <CustomChildInfo showCard={showInfoCard} activeChild={activeChild} hideCard={() => setShowInfoCard(false)} />
 
           {/* NEW CHECKLIST */}
-          <AddOrUpdateTransferChecklists
-            onChildUpdate={(child) => SetActiveChildData(child)}
-            activeChild={activeChild}
-            showCard={showNewChecklistCard}
-            hideCard={() => setShowNewChecklistCard(false)}
-          />
+          <AddOrUpdateTransferChecklists activeChild={activeChild} showCard={showNewChecklistCard} hideCard={() => setShowNewChecklistCard(false)} />
 
           {/* VIEW CHECKLISTS */}
           <Checklists showCard={showChecklistsCard} hideCard={() => setShowChecklistsCard(false)} activeChild={activeChild} />
@@ -234,7 +204,7 @@ export default function ChildInfo() {
                 <div key={index}>
                   {/* PROFILE PIC */}
                   {Manager.isValid(child?.general?.profilePic) && (
-                    <div onClick={() => SetActiveChildData(child)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
+                    <div onClick={() => setActiveChild(child)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
                       <div className="child-image" style={{backgroundImage: `url(${child?.general?.profilePic})`}}>
                         <div className="after">
                           <input
@@ -256,7 +226,7 @@ export default function ChildInfo() {
 
                   {/* NO IMAGE */}
                   {!Manager.isValid(child?.general?.profilePic, true) && (
-                    <div onClick={() => SetActiveChildData(child)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
+                    <div onClick={() => setActiveChild(child)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
                       <div className="child-image no-image">
                         <span>No Image</span>
                       </div>
@@ -287,16 +257,12 @@ export default function ChildInfo() {
           <p id="child-name-primary">{activeChild?.general?.name}</p>
           {activeChild && (
             <Fade direction={'right'} duration={800} cascade={true} damping={0.2} triggerOnce={true}>
-              <General activeChild={activeChild} onUpdate={(child) => SetActiveChildData(child)} />
-              <Medical activeChild={activeChild} onUpdate={(child) => SetActiveChildData(child)} />
-              <Schooling activeChild={activeChild} onUpdate={(child) => SetActiveChildData(child)} />
-              <Behavior activeChild={activeChild} onUpdate={(child) => SetActiveChildData(child)} />
-              {activeChild?.checklists?.find((x) => x?.fromOrTo === 'from') && (
-                <Checklist activeChild={activeChild} fromOrTo={'from'} onChildUpdate={(child) => SetActiveChildData(child)} />
-              )}
-              {activeChild?.checklists?.find((x) => x?.fromOrTo === 'to') && (
-                <Checklist activeChild={activeChild} fromOrTo={'to'} onChildUpdate={(child) => SetActiveChildData(child)} />
-              )}
+              <General activeChild={activeChild} />
+              <Medical activeChild={activeChild} />
+              <Schooling activeChild={activeChild} />
+              <Behavior activeChild={activeChild} />
+              {activeChild?.checklists?.find((x) => x?.fromOrTo === 'from') && <Checklist activeChild={activeChild} fromOrTo={'from'} />}
+              {activeChild?.checklists?.find((x) => x?.fromOrTo === 'to') && <Checklist activeChild={activeChild} fromOrTo={'to'} />}
             </Fade>
           )}
         </div>

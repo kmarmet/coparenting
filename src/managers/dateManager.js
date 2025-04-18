@@ -14,11 +14,9 @@ const DateManager = {
   },
   convertTime: (time, sourceTimezone, targetTimezone) => {
     if (!Manager.isValid(sourceTimezone) || !Manager.isValid(targetTimezone)) {
-      console.log('fail')
       return moment(time).format(DatetimeFormats.timeForDb)
     }
     const momentObj = moment.tz(time, 'h:mma', sourceTimezone)
-    console.log(momentObj)
     const convertedMomentObj = momentObj.tz(targetTimezone)
     return moment(convertedMomentObj).format(DatetimeFormats.timeForDb)
   },
@@ -95,7 +93,6 @@ const DateManager = {
     }
   },
   getValidDate: (date) => {
-    console.log(date)
     if (!Manager.isValid(date)) {
       return null
     }

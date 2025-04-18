@@ -13,6 +13,8 @@ import ChildUser from "../models/child/childUser"
 import Doc from "../models/doc"
 import Child from "../models/child/child"
 import _ from "lodash"
+import Parent from "../models/parent"
+
 ObjectManager = {
   cleanObject: (object, modelName) ->
     returnObject = switch modelName
@@ -28,6 +30,7 @@ ObjectManager = {
       when ModelNames.chatMessage then new ChatMessage()
       when ModelNames.childUser then new ChildUser()
       when ModelNames.child then new Child()
+      when ModelNames.parent then new Parent()
       when ModelNames.doc then new Doc()
     for prop of object
       if Array.isArray(object[prop])
