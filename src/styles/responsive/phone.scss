@@ -60,7 +60,7 @@
         //        padding-bottom: $homeIndicatorHeight;
       }
       #success-alert-wrapper {
-        top: -$homeIndicatorHeight;
+        //        top: -$homeIndicatorHeight;
       }
       #modal-wrapper {
         top: $statusbarHeight;
@@ -76,7 +76,7 @@
                     //                    width: calc(100% / 2);
                     p {
                       &.block-text {
-                        font-size: 18px;
+                        //                        font-size: 18px;
                       }
                     }
                   }

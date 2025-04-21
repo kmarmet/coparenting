@@ -1,13 +1,11 @@
-// Path: src\components\screens\swapRequests.jsx
+// Path: src\components\screens\swapRequests?.jsx
 import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../context.js'
 import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
 import moment from 'moment'
-import {child, getDatabase, onValue, ref} from 'firebase/database'
 import SwapDurations from '/src/constants/swapDurations.js'
 import NotificationManager from '/src/managers/notificationManager'
-import SecurityManager from '/src/managers/securityManager'
 import NavBar from '../navBar'
 import {IoAdd} from 'react-icons/io5'
 import AlertManager from '/src/managers/alertManager'
@@ -29,6 +27,8 @@ import ToggleButton from '../shared/toggleButton'
 import InputTypes from '../../constants/inputTypes'
 import DetailBlock from '../shared/detailBlock'
 import DatetimeFormats from '../../constants/datetimeFormats'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useSwapRequests from '../../hooks/useSwapRequests'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -38,8 +38,7 @@ const Decisions = {
 
 export default function SwapRequests() {
   const {state, setState} = useContext(globalState)
-  const [existingRequests, setExistingRequests] = useState([])
-  const {currentUser, theme, authUser} = state
+  const {theme, authUser} = state
   const [showCard, setShowCard] = useState(false)
   const [activeRequest, setActiveRequest] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
@@ -51,6 +50,9 @@ export default function SwapRequests() {
   const [startDate, setStartDate] = useState('')
   const [declineReason, setDeclineReason] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
+  const [requestTimeRemaining, setRequestTimeRemaining] = useState(0)
+  const {currentUser} = useCurrentUser()
+  const {swapRequests} = useSwapRequests()
 
   const ResetForm = async (showAlert = false) => {
     Manager.ResetForm('swap-request-wrapper')
@@ -74,15 +76,9 @@ export default function SwapRequests() {
     }
     const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.swapRequest)
     await DB.updateEntireRecord(`${DB.tables.swapRequests}/${currentUser?.key}`, cleanedRequest, cleanedRequest.id)
-    await GetSecuredRequests()
     setActiveRequest(updatedRequest)
     setShowDetails(false)
     await ResetForm(true)
-  }
-
-  const GetSecuredRequests = async () => {
-    let allRequests = await SecurityManager.getSwapRequests(currentUser)
-    setExistingRequests(allRequests)
   }
 
   const SelectDecision = async (decision) => {
@@ -114,13 +110,6 @@ export default function SwapRequests() {
   const SetCurrentRequest = async (request) => {
     setShowDetails(true)
     setActiveRequest(request)
-  }
-
-  const OnTableChange = async () => {
-    const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.swapRequests}/${currentUser?.key}`), async () => {
-      await GetSecuredRequests()
-    })
   }
 
   const SetDefaults = () => {
@@ -170,9 +159,15 @@ export default function SwapRequests() {
   }, [activeRequest])
 
   useEffect(() => {
-    OnTableChange().then((r) => r)
     setView('details')
   }, [])
+
+  useEffect(() => {
+    if (showDetails) {
+      DomManager.setDefaultView()
+      setRequestTimeRemaining(moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString())
+    }
+  }, [showDetails])
 
   return (
     <>
@@ -212,15 +207,30 @@ export default function SwapRequests() {
                 {/* Respond by */}
                 <DetailBlock
                   text={moment(activeRequest?.responseDueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                  title={'Respond by'}
+                  title={'Requested Response Date'}
                   valueToValidate={activeRequest?.responseDueDate}
                 />
 
-                {/*  Created by */}
-                <DetailBlock text={activeRequest?.ownerName} title={'Created By'} valueToValidate={activeRequest?.ownerName} />
+                {/*  Time Remaining */}
+                <DetailBlock
+                  classes={requestTimeRemaining.toString().includes('ago') ? 'red' : 'green'}
+                  title={'Response Time Remaining'}
+                  text={`${requestTimeRemaining}`}
+                  valueToValidate={requestTimeRemaining}
+                />
 
+                {/*  Created by */}
+                <DetailBlock
+                  text={activeRequest?.ownerName === currentUser?.name ? 'Me' : activeRequest?.ownerName}
+                  title={'Created By'}
+                  valueToValidate={activeRequest?.ownerName}
+                />
                 {/* Sent to */}
-                <DetailBlock text={activeRequest?.recipientName} title={'Sent To'} valueToValidate={activeRequest?.recipientName} />
+                <DetailBlock
+                  text={activeRequest?.recipientName === currentUser?.name ? 'Me' : activeRequest?.recipientName}
+                  title={'Sent To'}
+                  valueToValidate={activeRequest?.recipientName}
+                />
 
                 {/* Start time */}
                 <DetailBlock text={activeRequest?.fromHour} title={'Start Time'} valueToValidate={activeRequest?.fromHour} />
@@ -244,7 +254,13 @@ export default function SwapRequests() {
                 )}
 
                 {/*  Reason */}
-                <DetailBlock text={activeRequest?.requestReason} isFullWidth={true} title={'Reason'} valueToValidate={activeRequest?.requestReason} />
+                <DetailBlock
+                  text={activeRequest?.requestReason}
+                  isFullWidth={true}
+                  classes="long-text"
+                  title={'Reason'}
+                  valueToValidate={activeRequest?.requestReason}
+                />
               </div>
               <hr className="bottom" />
             </div>
@@ -337,7 +353,7 @@ export default function SwapRequests() {
 
       {/* PAGE CONTAINER */}
       <div id="swap-requests" className={`${theme} page-container form`}>
-        {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
+        {swapRequests?.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
         <Fade direction={'up'} duration={1000} triggerOnce={true} className={'swap-requests-fade-wrapper'}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title">Swap Requests </p>
@@ -350,8 +366,8 @@ export default function SwapRequests() {
           {/* LOOP REQUESTS */}
           <div id="swap-requests-container">
             <Fade direction={'right'} duration={800} cascade={true} damping={0.2} triggerOnce={true}>
-              {Manager.isValid(existingRequests) &&
-                existingRequests.map((request, index) => {
+              {Manager.isValid(swapRequests) &&
+                swapRequests?.map((request, index) => {
                   return (
                     <div onClick={() => SetCurrentRequest(request)} key={index} className="row">
                       {/* REQUEST DATE */}

@@ -12,29 +12,26 @@ import EditCalEvent from '/src/components/forms/editCalEvent'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import Manager from '/src/managers/manager'
 import NavBar from '/src/components/navBar.jsx'
-import SecurityManager from '/src/managers/securityManager'
 import globalState from '/src/context.js'
 import moment from 'moment'
 import {LuCalendarSearch} from 'react-icons/lu'
 import {PiCalendarPlusDuotone, PiCalendarXDuotone} from 'react-icons/pi'
 import {StaticDatePicker} from '@mui/x-date-pickers-pro'
-import {child, getDatabase, onValue, ref} from 'firebase/database'
 import {BsStars} from 'react-icons/bs'
 import CalendarEvents from './calendarEvents.jsx'
 import CalendarLegend from './calendarLegend.jsx'
 import DesktopLegend from './desktopLegend.jsx'
 import firebaseConfig from '/src/firebaseConfig.js'
 import {initializeApp} from 'firebase/app'
-import {getAuth} from 'firebase/auth'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
-import useCurrentUser from '../../hooks/useCurrentUser'
+import useCurrentUser from '../../../hooks/useCurrentUser'
+import useCalendarEvents from '../../../hooks/useCalendarEvents'
 
 export default function EventCalendar() {
   const {state, setState} = useContext(globalState)
   const {theme, authUser, refreshKey} = state
   const [eventsOfActiveDay, setEventsOfActiveDay] = useState([])
-  const [allEventsFromDb, setAllEventsFromDb] = useState([])
   const [searchResults, setSearchResults] = useState([])
   const [holidays, setHolidays] = useState([])
   const [selectedDate, setSelectedDate] = useState()
@@ -45,18 +42,14 @@ export default function EventCalendar() {
   const [showHolidaysCard, setShowHolidaysCard] = useState(false)
   const [showSearchCard, setShowSearchCard] = useState(false)
   const [showHolidays, setShowHolidays] = useState(false)
-  const [loadingDisabled, setLoadingDisabled] = useState(false)
-  const [eventsSetOnPageLoad, setEventsSetOnPageLoad] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(null)
   const app = initializeApp(firebaseConfig)
-  const auth = getAuth(app)
   const {currentUser} = useCurrentUser()
+  const {calendarEvents} = useCalendarEvents()
 
   // GET EVENTS
   const getSecuredEvents = async (activeDay) => {
-    let securedEvents = await SecurityManager.getCalendarEvents(currentUser)
     let _eventsOfDay = []
-    setAllEventsFromDb(securedEvents)
     let dateToUse = activeDay
 
     if (!Manager.isValid(currentMonth)) {
@@ -68,10 +61,10 @@ export default function EventCalendar() {
     }
 
     // All secured events
-    securedEvents = DateManager.sortCalendarEvents(securedEvents, 'startDate', 'startTime')
+    const sortedEvents = DateManager.sortCalendarEvents(calendarEvents, 'startDate', 'startTime')
 
     // Set events of day
-    _eventsOfDay = securedEvents.filter((x) => x.startDate === moment(dateToUse).format(DatetimeFormats.dateForDb))
+    _eventsOfDay = sortedEvents.filter((x) => x.startDate === moment(dateToUse).format(DatetimeFormats.dateForDb))
     _eventsOfDay = DateManager.sortCalendarEvents(_eventsOfDay, 'startTime', 'asc')
 
     // Set Holidays
@@ -82,7 +75,7 @@ export default function EventCalendar() {
     setEventsOfActiveDay(_eventsOfDay)
 
     // ADD DAY INDICATORS
-    await addDayIndicators([...securedEvents, ...holidays])
+    await addDayIndicators([...sortedEvents, ...holidays])
   }
 
   const addDayIndicators = async (events) => {
@@ -280,7 +273,7 @@ export default function EventCalendar() {
       AlertManager.throwError('Please enter a search value')
       return false
     }
-    const searchResults = allEventsFromDb.filter((x) => x.title.toLowerCase().trim().indexOf(searchQuery.toLowerCase().trim()) > -1)
+    const searchResults = calendarEvents.filter((x) => x.title.toLowerCase().trim().indexOf(searchQuery.toLowerCase().trim()) > -1)
     if (searchResults.length === 0) {
       AlertManager.throwError('No events found')
       return false
@@ -292,29 +285,15 @@ export default function EventCalendar() {
     }
   }
 
-  const onTableChange = async () => {
-    const dbRef = ref(getDatabase())
-    await setHolidaysState()
-    onValue(child(dbRef, `${DB.tables.calendarEvents}/${currentUser?.key}`), async () => {
-      const selectedCalendarElement = document.querySelector('.MuiButtonBase-root.MuiPickersDay-root.Mui-selected')
-      if (selectedCalendarElement) {
-        const timestampMs = selectedCalendarElement.dataset.timestamp
-        const asDay = DateManager.msToDate(timestampMs)
-        await getSecuredEvents(asDay)
-      } else {
-        await getSecuredEvents()
-      }
-    })
-  }
+  useEffect(() => {
+    if (Manager.isValid(calendarEvents)) {
+      getSecuredEvents().then((r) => r)
+    }
+  }, [calendarEvents])
 
   useEffect(() => {
     // eslint-disable-next-line no-prototype-builtins
-    if (!loadingDisabled && currentUser?.hasOwnProperty('email')) {
-      setLoadingDisabled(true)
-      if (!eventsSetOnPageLoad) {
-        getSecuredEvents().then((r) => r)
-        setEventsSetOnPageLoad(true)
-      }
+    if (currentUser?.hasOwnProperty('email')) {
       setInitialActivities().then((r) => r)
     }
   }, [currentUser])
@@ -350,8 +329,6 @@ export default function EventCalendar() {
       })
     }
 
-    onTableChange().then((r) => r)
-
     const legendButton = document.getElementById('legend-button')
     if (legendButton) {
       legendButton.addEventListener('click', () => {
@@ -363,6 +340,7 @@ export default function EventCalendar() {
     if (pageContainer) {
       pageContainer.style.maxHeight = `${screenHeight}px`
     }
+    setHolidaysState().then((r) => r)
   }, [])
 
   return (
@@ -532,8 +510,8 @@ export default function EventCalendar() {
               if (inputValue.length > 3) {
                 setSearchQuery(inputValue)
                 let results = []
-                if (Manager.isValid(allEventsFromDb)) {
-                  results = allEventsFromDb.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
+                if (Manager.isValid(calendarEvents)) {
+                  results = calendarEvents.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
                 }
                 if (results.length > 0) {
                   setEventsOfActiveDay(results)

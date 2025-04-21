@@ -16,7 +16,10 @@ import {RiFileExcel2Fill} from 'react-icons/ri'
 import globalState from '../../context'
 import NavBar from '../navBar'
 import Spacer from '../shared/spacer'
-import DB from '../../database/DB'
+import useExpenses from '../../hooks/useExpenses'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useCoparents from '../../hooks/useCoparents'
+import useChat from '../../hooks/useChat'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -34,19 +37,21 @@ const RecordTypes = {
 
 export default function Archives() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
+  const {theme} = state
   const [recordType, setRecordType] = useState(RecordTypes.Expenses)
-  const [expenses, setExpenses] = useState([])
   const [sortMethod, setSortMethod] = useState(SortByTypes.recentlyAdded)
   const [activeChats, setActiveChats] = useState([])
   const [expensePayers, setExpensePayers] = useState([])
-  const [messagesToExport, setMessagesToExport] = useState([])
+  const [sortedExpenses, setSortedExpenses] = useState(false)
+  const [selectedChatId, setSelectedChatId] = useState()
+  const {expenses} = useExpenses()
+  const {currentUser} = useCurrentUser()
+  const {coparents} = useCoparents()
+  const {chats, chatMessages} = useChat(selectedChatId)
 
-  const getExpenses = async () => {
-    let allExpenses = await SecurityManager.getExpenses(currentUser)
-    allExpenses = DatasetManager.getUniqueArray(allExpenses, 'id')
+  const GetExpenses = async () => {
     let payers = []
-    for (const expense of allExpenses) {
+    for (const expense of expenses) {
       if (expense.payer.key === currentUser.key) {
         payers.push('Me')
       } else {
@@ -58,19 +63,19 @@ export default function Archives() {
       if (payerKey === 'Me') {
         payerNames.push('Me')
       } else {
-        const coparent = currentUser?.coparents?.find((x) => x.key === payerKey)
-        payerNames.push(coparent.name)
+        const coparent = coparents?.find((x) => x.userKey === payerKey)
+        payerNames.push(coparent?.name)
       }
     }
 
     setExpensePayers(DatasetManager.getUniqueArray(payerNames, true))
-    allExpenses = allExpenses.sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse()
-    setExpenses(allExpenses)
+    const _sortedExpenses = expenses.sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse()
+    setSortedExpenses(_sortedExpenses)
 
-    return allExpenses
+    return expenses
   }
 
-  const handleRecordTypeSelection = (e) => {
+  const HandleRecordTypeSelection = (e) => {
     Manager.handleCheckboxSelection(
       e,
       (e) => {
@@ -83,7 +88,7 @@ export default function Archives() {
     )
   }
 
-  const handlePayerSelection = (e) => {
+  const HandlePayerSelection = (e) => {
     Manager.handleCheckboxSelection(
       e,
       async (e) => {
@@ -97,55 +102,54 @@ export default function Archives() {
         }
 
         if (Manager.isValid(filteredExpenses)) {
-          setExpenses(filteredExpenses)
+          setSortedExpenses(filteredExpenses)
         } else {
-          setExpenses([])
+          setSortedExpenses([])
         }
       },
       async () => {
         let allExpenses = await SecurityManager.getExpenses(currentUser)
-        setExpenses(allExpenses)
+        setSortedExpenses(allExpenses)
       },
       false
     )
   }
 
-  const handleSortBySelection = (e) => {
+  const HandleSortBySelection = (e) => {
     const sortByName = e.target.value
     const expensesAsNumbers = expenses.map((expense) => {
       expense.amount = parseInt(expense?.amount)
       return expense
     })
     if (sortByName === SortByTypes.recentlyAdded) {
-      setExpenses(expenses.sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse())
+      setSortedExpenses(expenses.sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse())
       setSortMethod(SortByTypes.recentlyAdded)
     }
     // High -> Low
     if (sortByName === SortByTypes.amountDesc) {
       const sortByAmountDesc = DatasetManager.sortByProperty(expensesAsNumbers, 'amount', 'desc')
-      setExpenses(sortByAmountDesc)
+      setSortedExpenses(sortByAmountDesc)
       setSortMethod(SortByTypes.amountDesc)
     }
     // Low -> High
     if (sortByName === SortByTypes.amountAsc) {
       const sortedByAmountAsc = DatasetManager.sortByProperty(expensesAsNumbers, 'amount', 'asc')
-      setExpenses(sortedByAmountAsc)
+      setSortedExpenses(sortedByAmountAsc)
       setSortMethod(SortByTypes.amountAsc)
     }
   }
 
-  const exportExpenses = () => ArchivesManager.createCSV(expenses, 'Peaceful_coParenting_Exported_Expenses', 'expenses')
+  const ExportExpenses = () => ArchivesManager.createCSV(expenses, 'Peaceful_coParenting_Exported_Expenses', 'expenses')
 
-  const exportChat = () => ArchivesManager.createCSV(messagesToExport, 'Peaceful_coParenting_Exported_Chat', 'chat')
+  const ExportChat = () => ArchivesManager.createCSV(chatMessages, 'Peaceful_coParenting_Exported_Chat', 'chat')
 
-  const getChats = async () => {
-    const allChats = await SecurityManager.getChats(currentUser)
+  const DefineChatCheckboxes = async () => {
     let activeChats = []
-    if (Manager.isValid(allChats)) {
-      for (const chat of allChats) {
+    if (Manager.isValid(chats)) {
+      for (const chat of chats) {
         let coparent = chat.members.find((x) => x.key !== currentUser?.key)
         activeChats.push({
-          name: StringManager.getFirstNameOnly(coparent.name),
+          name: StringManager.getFirstNameOnly(coparent?.name),
           id: chat.id,
         })
       }
@@ -153,15 +157,12 @@ export default function Archives() {
     }
   }
 
-  const getAndSetMessages = async (chatKey) => {
-    const allMessages = await DB.getTable(`${DB.tables.chatMessages}/${chatKey}`)
-    setMessagesToExport(allMessages)
-  }
-
   useEffect(() => {
-    getExpenses().then((r) => r)
-    getChats().then((r) => r)
-  }, [])
+    if (Manager.isValid(expenses)) {
+      GetExpenses().then((r) => r)
+    }
+    DefineChatCheckboxes().then((r) => r)
+  }, [expenses])
 
   return (
     <>
@@ -184,11 +185,11 @@ export default function Archives() {
             labelType: 'record-types',
             defaultLabels: ['Expenses'],
           })}
-          onCheck={handleRecordTypeSelection}
+          onCheck={HandleRecordTypeSelection}
         />
 
         {/* PAYERS */}
-        {currentUser?.coparents?.length > 1 && (
+        {coparents?.length > 1 && recordType === RecordTypes.Expenses && (
           <>
             <Spacer height={5} />
             <CheckboxGroup
@@ -199,7 +200,7 @@ export default function Archives() {
                 currentUser,
                 customLabelArray: expensePayers,
               })}
-              onCheck={handlePayerSelection}
+              onCheck={HandlePayerSelection}
             />
           </>
         )}
@@ -208,7 +209,7 @@ export default function Archives() {
         {recordType === RecordTypes.Expenses && Manager.isValid(expenses) && (
           <div id="sorting-wrapper">
             <Label text={'Sorting'} />
-            <SelectDropdown id={'sorting-dropdown'} wrapperClasses={'sorting-dropdown'} selectValue={sortMethod} onChange={handleSortBySelection}>
+            <SelectDropdown id={'sorting-dropdown'} wrapperClasses={'sorting-dropdown'} selectValue={sortMethod} onChange={HandleSortBySelection}>
               <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
               <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
               <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
@@ -220,47 +221,45 @@ export default function Archives() {
 
         {/* EXPENSES EXPORT BUTTON */}
         {recordType === RecordTypes.Expenses && Manager.isValid(expenses) && (
-          <p id="export-button" onClick={exportExpenses}>
+          <p id="export-button" onClick={ExportExpenses}>
             Export <RiFileExcel2Fill />
           </p>
         )}
 
         {/* CHATS EXPORT BUTTON */}
-        {recordType === RecordTypes.Chats && Manager.isValid(messagesToExport) && (
-          <p id="export-button" onClick={exportChat}>
+        {recordType === RecordTypes.Chats && Manager.isValid(chatMessages) && (
+          <p id="export-button" onClick={ExportChat}>
             Export <RiFileExcel2Fill />
           </p>
         )}
 
         {/* EXPENSES */}
-        <Fade direction={'right'} duration={800} damping={0.2} cascade={true} className={'activity-fade-wrapper'} triggerOnce={true}>
-          <></>
-          {recordType === RecordTypes.Expenses &&
-            Manager.isValid(expenses) &&
-            expenses.map((expense, index) => {
-              return (
-                <div key={index} className={`${recordType.toLowerCase()} record-row`}>
-                  <p className="title">
-                    {StringManager.formatTitle(expense?.name)} <span>${expense?.amount}</span>
-                  </p>
-                  <p className="date">
-                    Date Created <span>{moment(expense?.creationDate).format(DatetimeFormats.monthDayYear)}</span>
-                  </p>
-                </div>
-              )
-            })}
-        </Fade>
-
+        {Manager.isValid(sortedExpenses) && recordType === RecordTypes.Expenses && (
+          <Fade direction={'right'} duration={800} damping={0.2} cascade={true} className={'activity-fade-wrapper'} triggerOnce={true}>
+            {Manager.isValid(sortedExpenses) &&
+              sortedExpenses.map((expense, index) => {
+                return (
+                  <div key={index} className={`${recordType.toLowerCase()} record-row`}>
+                    <p className="title">
+                      {StringManager.FormatTitle(expense?.name)} <span>${expense?.amount}</span>
+                    </p>
+                    <p className="date">
+                      Date Created <span>{moment(expense?.creationDate).format(DatetimeFormats.monthDayYear)}</span>
+                    </p>
+                  </div>
+                )
+              })}
+          </Fade>
+        )}
         {/* CHATS */}
         {recordType === RecordTypes.Chats && (
           <CheckboxGroup
             onCheck={(e) => {
               const chatKey = e.dataset.key
+              // setSelectedChatId(chatKey)
               Manager.handleCheckboxSelection(
                 e,
-                (e) => {
-                  getAndSetMessages(chatKey).then((r) => r)
-                },
+                (e) => setSelectedChatId(chatKey),
                 (e) => {},
                 false
               )

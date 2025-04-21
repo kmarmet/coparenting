@@ -21,10 +21,11 @@ import creationForms from '../../constants/creationForms'
 import ToggleButton from '../shared/toggleButton'
 import Label from '../shared/label'
 import InputTypes from '../../constants/inputTypes'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 export default function NewTransferChangeRequest() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, authUser, creationFormToShow} = state
+  const {theme, authUser, creationFormToShow} = state
   const [requestReason, setRequestReason] = useState('')
   const [shareWith, setShareWith] = useState([])
   const [requestTime, setRequestTime] = useState('')
@@ -33,6 +34,7 @@ export default function NewTransferChangeRequest() {
   const [requestRecipientKey, setRequestRecipientKey] = useState('')
   const [preferredLocation, setPreferredLocation] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
+  const {currentUser} = useCurrentUser()
 
   const ResetForm = async (showSuccessAlert = false) => {
     Manager.ResetForm('transfer-request-wrapper')
@@ -55,7 +57,7 @@ export default function NewTransferChangeRequest() {
   }
 
   const submit = async () => {
-    const validAccounts = await DB_UserScoped.getValidAccountsCountForUser(currentUser)
+    const validAccounts = currentUser?.sharedDataUsers
 
     //#region VALIDATION
     if (validAccounts === 0) {

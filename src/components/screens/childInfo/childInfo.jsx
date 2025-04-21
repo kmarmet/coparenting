@@ -1,7 +1,6 @@
 // Path: src\components\screens\childInfo\childInfo.jsx
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import globalState from '../../../context'
-import DB from '/src/database/DB'
 import FirebaseStorage from '/src/database/firebaseStorage'
 import Manager from '/src/managers/manager'
 import CustomChildInfo from '../../shared/customChildInfo'
@@ -25,15 +24,16 @@ import Spacer from '../../shared/spacer'
 import {PiListChecksFill} from 'react-icons/pi'
 import Checklist from './checklist'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
-import useChildren from '../../hooks/useChildren'
-import useCurrentUser from '../../hooks/useCurrentUser'
+import useChildren from '../../../hooks/useChildren'
+import useCurrentUser from '../../../hooks/useCurrentUser'
+import DB_UserScoped from '../../../database/db_userScoped'
 
 export default function ChildInfo() {
   const {state, setState} = useContext(globalState)
   const {theme} = state
   const {currentUser} = useCurrentUser()
-  const [showInfoCard, setShowInfoCard] = useState(false)
   const {children} = useChildren()
+  const [showInfoCard, setShowInfoCard] = useState(false)
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
@@ -63,10 +63,7 @@ export default function ChildInfo() {
       `I'm Sure`,
       true,
       async () => {
-        const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
-        if (Manager.isValid(childKey)) {
-          await DB.deleteByPath(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`)
-        }
+        await DB_UserScoped.deleteChild(currentUser, activeChild)
       }
     )
   }
@@ -110,63 +107,70 @@ export default function ChildInfo() {
               <IoPersonAdd className={'add-child'} />
             </div>
             <p>
-              Add Child to Your Profile
-              <span className="subtitle">Store information about a child that has not been added to your profile yet</span>
+              Enable Sharing & Info Storage
+              <span className="subtitle">
+                Store information and provide sharing permissions <b>for a child that has not been added to your profile</b> yet
+              </span>
             </p>
           </div>
         </div>
-        {/* CUSTOM INFO */}
-        <div
-          className="action-item"
-          onClick={() => {
-            setShowInfoCard(true)
-            setState({...state, showScreenActions: false})
-          }}>
-          <div className="content">
-            <div className="svg-wrapper">
-              <FaWandMagicSparkles className={'magic'} />
+        {Manager.isValid(children) && (
+          <>
+            {/* CUSTOM INFO */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setShowInfoCard(true)
+                setState({...state, showScreenActions: false})
+              }}>
+              <div className="content">
+                <div className="svg-wrapper">
+                  <FaWandMagicSparkles className={'magic'} />
+                </div>
+                <p>
+                  Add your Own Info<span className="subtitle">Include personalized details about your child</span>
+                </p>
+              </div>
             </div>
-            <p>
-              Add your Own Info<span className="subtitle">Include personalized details about your child</span>
-            </p>
-          </div>
-        </div>
 
-        {/* EDIT/ADD CHECKLIST */}
-        <div
-          className="action-item"
-          onClick={() => {
-            setShowNewChecklistCard(true)
-            setState({...state, showScreenActions: false})
-          }}>
-          <div className="content">
-            <div className="svg-wrapper">
-              <PiListChecksFill className={'checklist'} />
+            {/* EDIT/ADD CHECKLIST */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setShowNewChecklistCard(true)
+                setState({...state, showScreenActions: false})
+              }}>
+              <div className="content">
+                <div className="svg-wrapper">
+                  <PiListChecksFill className={'checklist'} />
+                </div>
+                <p>
+                  Configure Checklists <span className="subtitle">Add or edit checklists for transferring to or from a co-parent&#39;s home</span>
+                </p>
+              </div>
             </div>
-            <p>
-              Configure Checklists <span className="subtitle">Add or edit checklists for transferring to or from a co-parent&#39;s home</span>
-            </p>
-          </div>
-        </div>
 
-        {/*  UNLINK CHILD */}
-        <div
-          className="action-item"
-          onClick={async () => {
-            await DeleteChild()
-            setState({...state, showScreenActions: false})
-          }}>
-          <div className="content">
-            <div className="svg-wrapper add-child">
-              <IoPersonRemove className={'remove-child'} />
+            {/*  UNLINK CHILD */}
+            <div
+              className="action-item"
+              onClick={async () => {
+                await DeleteChild()
+                setState({...state, showScreenActions: false})
+              }}>
+              <div className="content">
+                <div className="svg-wrapper add-child">
+                  <IoPersonRemove className={'remove-child'} />
+                </div>
+                <p>
+                  Unlink {activeChild?.general?.name} from Your Profile
+                  <span className="subtitle">
+                    Remove sharing permissions for {activeChild?.general?.name} along with the information stored about them
+                  </span>
+                </p>
+              </div>
             </div>
-            <p>
-              Unlink {activeChild?.general?.name} from Your Profile
-              <span className="subtitle">Remove all information about {activeChild?.general?.name}</span>
-            </p>
-          </div>
-        </div>
-
+          </>
+        )}
         {/*</Fade>*/}
 
         <div id="close-icon-wrapper">

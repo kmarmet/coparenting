@@ -1,16 +1,13 @@
-// Path: src\components\screens\chats\chats.jsx
-import React, {useContext, useEffect, useState} from 'react'
+// Path: src\components\screens\chats\chats?.jsx
+import React, {useContext, useState} from 'react'
 import Manager from '/src/managers/manager'
 import globalState from '../../../context.js'
 import {Fade} from 'react-awesome-reveal'
 import Modal from '../../shared/modal'
-import SecurityManager from '/src/managers/securityManager'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import AlertManager from '/src/managers/alertManager'
 import ChatRow from './chatRow.jsx'
 import Spacer from '../../shared/spacer'
-import DB from '../../../database/DB'
-import {child, getDatabase, onValue, ref} from 'firebase/database'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -19,62 +16,20 @@ import EmailManager from '../../../managers/emailManager'
 import InputWrapper from '../../shared/inputWrapper'
 import NavBar from '../../navBar'
 import Label from '../../shared/label'
-import ChatManager from '../../../managers/chatManager'
 import InputTypes from '../../../constants/inputTypes'
-import DB_UserScoped from '../../../database/db_userScoped'
+import useCurrentUser from '../../../hooks/useCurrentUser'
+import useChat from '../../../hooks/useChat'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, creationFormToShow} = state
-  const [chats, setChats] = useState([])
+  const {theme, creationFormToShow} = state
+  // const [chats, setChats] = useState([])
   const [showInfo, setShowInfo] = useState(false)
   const [showInvitationCard, setShowInvitationCard] = useState(false)
   const [inviteeName, setInviteeName] = useState('')
   const [inviteeEmail, setInviteeEmail] = useState('')
-  const [linkedAccounts, setLinkedAccounts] = useState(false)
-
-  const getSecuredChats = async () => {
-    const chats = await SecurityManager.getChats(currentUser)
-    const iterableChats = []
-    if (Manager.isValid(chats)) {
-      for (let chat of chats) {
-        const chatMessages = await ChatManager.getMessages(chat.id)
-        const otherMemberMessages = chatMessages.filter((message) => message?.senderKey !== currentUser?.key)
-        let lastMessage = ''
-        if (Manager.isValid(chatMessages)) {
-          if (Manager.isValid(otherMemberMessages)) {
-            lastMessage = otherMemberMessages[otherMemberMessages.length - 1]['message']
-          }
-        }
-        iterableChats.push({
-          lastMessage: lastMessage,
-          member: chat.members.find((member) => member?.key !== currentUser.key),
-          id: chat.id,
-          isPausedFor: chat?.isPausedFor,
-        })
-      }
-    }
-    setChats(iterableChats)
-  }
-
-  const onTableChange = async () => {
-    const dbRef = ref(getDatabase())
-
-    onValue(child(dbRef, `${DB.tables.chats}/${currentUser?.key}`), async () => {
-      getSecuredChats().then((r) => r)
-    })
-  }
-
-  const DefineLinkedAccounts = async () => {
-    const accounts = await DB_UserScoped.getValidAccountsCountForUser(currentUser)
-    console.log(accounts)
-    setLinkedAccounts(accounts)
-  }
-
-  useEffect(() => {
-    onTableChange().then((r) => r)
-    DefineLinkedAccounts().then((r) => r)
-  }, [])
+  const {currentUser} = useCurrentUser()
+  const {chats} = useChat()
 
   return (
     <>
@@ -82,8 +37,8 @@ const Chats = () => {
       <Modal
         submitText={'Send Invitation'}
         wrapperClass="invite-coparent-card"
-        title={'Invite Co-Parent or Child'}
-        subtitle="Extend an invitation to a co-parent or child to facilitate the sharing of essential information with them"
+        title={'Invite Co-Parent'}
+        subtitle="Extend an invitation to a co-parent sto facilitate the sharing of essential information with them"
         onClose={() => setShowInvitationCard(false)}
         showCard={showInvitationCard}
         onSubmit={() => {
@@ -97,19 +52,24 @@ const Chats = () => {
         }}
         hideCard={() => setShowInvitationCard(false)}>
         <Spacer height={5} />
-        <InputWrapper inputType={InputTypes.text} labelText={'Name'} required={true} onChange={(e) => setInviteeName(e.target.value)} />
-        <InputWrapper inputType={InputTypes.email} labelText={'Email Address'} required={true} onChange={(e) => setInviteeEmail(e.target.value)} />
+        <InputWrapper inputType={InputTypes.text} labelText={'Co-Parent Name'} required={true} onChange={(e) => setInviteeName(e.target.value)} />
+        <InputWrapper
+          inputType={InputTypes.email}
+          labelText={'Co-Parent Email Address'}
+          required={true}
+          onChange={(e) => setInviteeEmail(e.target.value)}
+        />
       </Modal>
 
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
         {/*<VideoCall />*/}
 
-        {chats.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
+        {chats?.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
         <div className="flex" id="screen-title-wrapper">
           <p className="screen-title">Chats</p>
         </div>
-        <p>
+        <p className="screen-intro-text">
           Your space to peacefully chat with your co-parent and pass along any important info they need to know, or to seek clarification on
           information that is unfamiliar to you.
         </p>
@@ -120,14 +80,14 @@ const Chats = () => {
           <AccordionSummary>
             <button className="button default grey" onClick={() => setShowInfo(!showInfo)}>
               <div id="circle" className="circle"></div>
-              <Label text={'Invite Co-Parent or Child'} /> {showInfo ? <LuMinus /> : <LuPlus />}
+              <Label text={'Invite Co-Parent'} /> {showInfo ? <LuMinus /> : <LuPlus />}
             </button>
           </AccordionSummary>
           <Spacer height={5} />
           <AccordionDetails>
             <p>
-              Right now, your account is connected to {linkedAccounts} {linkedAccounts > 1 ? 'members' : 'member'} (children with accounts and
-              co-parents are both considered members). If you’d like to chat with another co-parent or child, go ahead and send them an invite.
+              Currently, your account is linked to {currentUser?.coparents?.length} {currentUser?.coparents?.length > 1 ? 'co-parents' : 'co-parent'}.
+              If you wish to communicate with another co-parent, feel free to send them an invitation.
             </p>
 
             <button
@@ -145,9 +105,9 @@ const Chats = () => {
         {Manager.isValid(chats) && (
           <Fade direction={'right'} damping={0.2} duration={800} triggerOnce={true} cascade={true}>
             {/* CHAT ROWS */}
-            {chats.length > 0 &&
-              chats.map((chat, index) => {
-                return <ChatRow key={index} chat={chat} index={index} />
+            {chats?.length > 0 &&
+              chats?.map((chat, index) => {
+                return <ChatRow chat={chat} key={index} />
               })}
           </Fade>
         )}

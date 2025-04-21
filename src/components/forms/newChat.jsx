@@ -5,33 +5,39 @@ import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import globalState from '../../context'
 import DB_UserScoped from '../../database/db_userScoped'
-import {FaUserCircle} from 'react-icons/fa'
 import AlertManager from '../../managers/alertManager'
 import ScreenNames from '../../constants/screenNames'
-import SecurityManager from '../../managers/securityManager'
-import {BiMessageRoundedAdd} from 'react-icons/bi'
 import Spacer from '../shared/spacer'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useChat from '../../hooks/useChat'
+import DatasetManager from '../../managers/datasetManager'
 
 const NewChatSelector = () => {
   const {state, setState} = useContext(globalState)
-  const {currentUser, creationFormToShow} = state
+  const {creationFormToShow} = state
   const [activeChatKeys, setActiveChatKeys] = useState([])
+  const {currentUser} = useCurrentUser()
+  const {chats} = useChat()
 
-  const getSecuredChats = async () => {
-    let securedChats = await SecurityManager.getChats(currentUser)
-    const members = securedChats.map((x) => x.members).flat()
-    const activeChats = members.filter((x) => x?.key && x?.key !== currentUser?.key)
-    const activeChatKeys = activeChats.map((x) => x?.key)
-    setActiveChatKeys(activeChatKeys)
+  const GetSecuredChats = async () => {
+    const members = DatasetManager.getUniqueArray(
+      chats.map((x) => x.members),
+      true
+    )
+    const memberKeys = DatasetManager.getUniqueArray(
+      members.map((x) => x?.key),
+      true
+    )
+    setActiveChatKeys(memberKeys)
   }
 
-  const openMessageThread = async (coparent) => {
+  const OpenMessageThread = async (coparent) => {
     // Check if thread member (coparent) profile exists in DB
-    let userCoparent = await DB_UserScoped.getCoparentByKey(coparent?.key, currentUser)
+    let userCoparent = await DB_UserScoped.getCoparentByKey(coparent?.userKey, currentUser)
     if (!Manager.isValid(userCoparent)) {
       AlertManager.oneButtonAlert(
-        'Co-Parent or Child Profile not Found',
-        'This co-parent may have closed their profile, however, you can still view the messages',
+        'Co-Parent Profile not Found',
+        'This co-parent may have deactivated their profile, however, you can still view the messages',
         null,
         () => {
           setState({...state, currentScreen: ScreenNames.chats, messageRecipient: coparent})
@@ -43,10 +49,10 @@ const NewChatSelector = () => {
   }
 
   useEffect(() => {
-    if (Manager.isValid(currentUser) && creationFormToShow === CreationForms.chat) {
-      getSecuredChats().then((r) => r)
+    if (Manager.isValid(currentUser) && creationFormToShow === CreationForms.chat && Manager.isValid(chats)) {
+      GetSecuredChats().then((r) => r)
     }
-  }, [creationFormToShow])
+  }, [creationFormToShow, chats])
 
   return (
     <Modal
@@ -64,53 +70,23 @@ const NewChatSelector = () => {
         </>
       )}
       {/* COPARENTS */}
-      {currentUser?.accountType === 'parent' &&
+      {Manager.isValid(activeChatKeys) &&
         Manager.isValid(currentUser?.coparents) &&
         currentUser?.coparents?.map((coparent, index) => {
           return (
-            <div key={index}>
-              {!activeChatKeys.includes(coparent?.key) && (
-                <div id="currentUser-wrapper">
-                  <div className="user-wrapper">
-                    <FaUserCircle />
-                    <p
-                      className="coparent-name new-thread-coparent-name"
-                      onClick={() => {
-                        openMessageThread(coparent).then((r) => r)
-                      }}>
-                      {StringManager.getFirstNameOnly(coparent?.name)}
-                    </p>
-                  </div>
+            <div key={index} id="coparent-names">
+              {!activeChatKeys.includes(coparent?.userKey) && (
+                <div
+                  className="coparent-name"
+                  onClick={() => {
+                    OpenMessageThread(coparent).then((r) => r)
+                  }}>
+                  {StringManager.getFirstNameOnly(coparent?.name)}
                 </div>
               )}
             </div>
           )
         })}
-
-      {/* CHILDREN */}
-      {currentUser?.accountType === 'child' &&
-        Manager.isValid(currentUser?.parents) &&
-        currentUser?.parents
-          ?.filter((x) => x)
-          .map((parent, index) => {
-            return (
-              <div key={index} className="flex" id="currentUser-wrapper">
-                {!activeChatKeys.includes(parent?.key) && (
-                  <div className="user-wrapper">
-                    <BiMessageRoundedAdd />
-                    <p
-                      className="coparent-name new-thread-coparent-name"
-                      onClick={() => {
-                        openMessageThread(parent?.key).then((r) => r)
-                      }}>
-                      {parent?.name}
-                    </p>
-                  </div>
-                )}
-                {activeChatKeys.includes(parent?.key) && <p>All available parents already have an open conversation with you. </p>}
-              </div>
-            )
-          })}
     </Modal>
   )
 }

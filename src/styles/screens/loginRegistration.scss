@@ -1,20 +1,6 @@
 // Path: src\styles\screens\loginRegistration.scss
 @import '../mixins';
 #external-overrides {
-  #back-to-login-button {
-    &.default {
-      @include centerHoriz;
-      border: 0;
-      border-radius: 0;
-      position: fixed;
-      bottom: 0;
-      min-height: 0;
-      background-color: $grey;
-      height: 68px;
-      width: 100%;
-      margin: 0;
-    }
-  }
   // REGISTRATION
   #registration-container {
     position: relative;
@@ -161,7 +147,7 @@
         }
       }
 
-      button:not(#back-to-login-button) {
+      button:not(.back-to-login-button) {
         display: block;
         margin: 0 auto 10px auto;
         font-size: 16px;

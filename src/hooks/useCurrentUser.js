@@ -1,19 +1,19 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useContext, useEffect, useState} from 'react'
-import Manager from '../../managers/manager'
-import DB from '../../database/DB'
+import Manager from '../managers/manager'
+import globalState from '../context'
+import DB from '../database/DB'
 import useUsers from './useUsers'
-import globalState from '../../context'
 
-const useCoparents = () => {
+const useCurrentUser = () => {
   const {state, setState} = useContext(globalState)
-  const {authUser} = state
+  const {theme, creationFormToShow, authUser} = state
   const {users} = useUsers()
+  const [currentUser, setCurrentUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [coparents, setCoparents] = useState([])
   const [error, setError] = useState(null)
   const dbUser = users?.find((u) => u?.email === authUser?.email)
-  const path = `${DB.tables.users}/${dbUser?.key}/coparents`
+  const path = `${DB.tables.users}/${dbUser?.key}`
   const queryKey = ['realtime', path]
 
   useEffect(() => {
@@ -23,17 +23,14 @@ const useCoparents = () => {
     const listener = onValue(
       dataRef,
       (snapshot) => {
-        // console.log('Children Updated')
-        const formattedCoparents = Manager.convertToArray(snapshot.val())
-        if (Manager.isValid(dbUser) && Manager.isValid(formattedCoparents)) {
-          setCoparents(formattedCoparents)
-          setIsLoading(false)
+        if (Manager.isValid(snapshot.val())) {
+          setCurrentUser(snapshot.val())
         } else {
-          setCoparents([])
+          setCurrentUser([])
         }
+        setIsLoading(false)
       },
       (err) => {
-        console.log(`useCoparents Error: ${err}`)
         setError(err)
         setIsLoading(false)
       }
@@ -42,14 +39,14 @@ const useCoparents = () => {
     return () => {
       off(dataRef, 'value', listener)
     }
-  }, [path, dbUser])
+  }, [path])
 
   return {
-    coparents,
+    currentUser,
     isLoading,
     error,
     queryKey,
   }
 }
 
-export default useCoparents
+export default useCurrentUser

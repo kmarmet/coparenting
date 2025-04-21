@@ -8,7 +8,7 @@ import moment from 'moment';
 import DateFormats from '../constants/datetimeFormats';
 
 export default User = class User {
-  constructor(id = Manager.getUid(), key = '', name = '', email = '', showInitialLoginAlert = true, phone = '', children = [], coparents = [], parentType = '', accountType = '', homeAddress = '', location = {
+  constructor(id = Manager.getUid(), key = '', name = '', email = '', showInitialLoginAlert = true, phone = '', children = [], coparents = [], sharedDataUsers = [], parentType = '', accountType = '', homeAddress = '', location = {
       country: '',
       city: '',
       state: '',
@@ -37,6 +37,7 @@ export default User = class User {
     this.phone = phone;
     this.children = children;
     this.coparents = coparents;
+    this.sharedDataUsers = sharedDataUsers;
     this.parentType = parentType;
     this.accountType = accountType;
     this.homeAddress = homeAddress;

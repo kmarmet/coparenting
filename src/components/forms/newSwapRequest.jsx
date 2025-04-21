@@ -9,14 +9,12 @@ import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import NotificationManager from '/src/managers/notificationManager'
 import Modal from '/src/components/shared/modal'
-import {MobileDateRangePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
 import ModelNames from '/src/models/modelNames'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import ObjectManager from '/src/managers/objectManager'
 import AlertManager from '/src/managers/alertManager'
-import DB_UserScoped from '/src/database/db_userScoped'
 import StringManager from '/src/managers/stringManager'
 import ActivityCategory from '/src/models/activityCategory'
 import ViewSelector from '../shared/viewSelector'
@@ -25,10 +23,11 @@ import creationForms from '../../constants/creationForms'
 import ToggleButton from '../shared/toggleButton'
 import Label from '../shared/label'
 import InputTypes from '../../constants/inputTypes'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 export default function NewSwapRequest() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, authUser, refreshKey, creationFormToShow} = state
+  const {theme, creationFormToShow} = state
   const [requestReason, setRequestReason] = useState('')
   const [requestChildren, setRequestChildren] = useState([])
   const [shareWith, setShareWith] = useState([])
@@ -41,6 +40,7 @@ export default function NewSwapRequest() {
   const [responseDueDate, setResponseDueDate] = useState('')
   const [recipientKey, setRecipientKey] = useState('')
   const [recipientName, setRecipientName] = useState()
+  const {currentUser} = useCurrentUser()
 
   const ResetForm = async (showSuccessAlert = false) => {
     Manager.ResetForm('swap-request-wrapper')
@@ -62,12 +62,33 @@ export default function NewSwapRequest() {
     })
   }
 
-  const submit = async () => {
-    const invalidInputs = Manager.GetInvalidInputsErrorString([startDate, recipientKey])
-    const validAccounts = await DB_UserScoped.getValidAccountsCountForUser(currentUser)
+  const Submit = async () => {
+    const errorString = Manager.GetInvalidInputsErrorString([
+      {
+        value: requestReason,
+        name: 'Request Reason',
+      },
+      {
+        value: startDate,
+        name: 'Date',
+      },
+      {
+        value: responseDueDate,
+        name: 'Requested Response  Date',
+      },
+      {
+        value: recipientName,
+        name: 'Request Recipient',
+      },
+    ])
+    if (Manager.isValid(errorString, true)) {
+      AlertManager.throwError(errorString)
+      return false
+    }
+    const validAccounts = currentUser?.sharedDataUsers
 
     //#region VALIDATION
-    if (validAccounts === 0) {
+    if (validAccounts.length === 0) {
       AlertManager.throwError(
         'No co-parent to \n assign requests to',
         'It appears that you have not created any co-parents, or it is possible that they may have deactivated their profile.'
@@ -75,15 +96,11 @@ export default function NewSwapRequest() {
       return false
     }
 
-    if (validAccounts > 0) {
+    if (validAccounts.length > 0) {
       if (!Manager.isValid(shareWith)) {
         AlertManager.throwError('Please choose who you would like to share this request with')
         return false
       }
-    }
-    if (invalidInputs.length > 0) {
-      AlertManager.throwError('Please fill out required fields')
-      return false
     }
     //#endregion VALIDATION
 
@@ -119,7 +136,7 @@ export default function NewSwapRequest() {
     await ResetForm(true)
   }
 
-  const handleChildSelection = (e) => {
+  const HandleChildSelection = (e) => {
     const selectedValue = e.getAttribute('data-label')
     Manager.handleCheckboxSelection(
       e,
@@ -134,12 +151,12 @@ export default function NewSwapRequest() {
     )
   }
 
-  const handleShareWithSelection = async (e) => {
+  const HandleShareWithSelection = async (e) => {
     const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 
-  const handleRecipientSelection = (e) => {
+  const HandleRecipientSelection = (e) => {
     const coparentKey = e.getAttribute('data-key')
     Manager.handleCheckboxSelection(
       e,
@@ -155,20 +172,12 @@ export default function NewSwapRequest() {
     )
   }
 
-  const changeSwapDuration = (duration) => setSwapDuration(duration)
-
-  const addThemeToDatePickers = () => {
-    setTimeout(() => {
-      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
-      datetimeParent.classList.add(currentUser?.settings?.theme)
-    }, 100)
-  }
+  const ChangeSwapDuration = (duration) => setSwapDuration(duration)
 
   return (
     <Modal
       submitText={'Send Request'}
-      refreshKey={refreshKey}
-      onSubmit={submit}
+      onSubmit={Submit}
       wrapperClass="new-swap-request"
       title={'Request Visitation Swap'}
       subtitle="Request for your child(ren) to remain with you during the designated visitation time of your co-parent."
@@ -177,13 +186,13 @@ export default function NewSwapRequest() {
           labels={['Day', 'Days', 'Hours']}
           updateState={(e) => {
             if (e === 'Day') {
-              changeSwapDuration(SwapDurations.single)
+              ChangeSwapDuration(SwapDurations.single)
             }
             if (e === 'Days') {
-              changeSwapDuration(SwapDurations.multiple)
+              ChangeSwapDuration(SwapDurations.multiple)
             }
             if (e === 'Hours') {
-              changeSwapDuration(SwapDurations.intra)
+              ChangeSwapDuration(SwapDurations.intra)
             }
           }}
         />
@@ -191,7 +200,7 @@ export default function NewSwapRequest() {
       showCard={creationFormToShow === creationForms.swapRequest}
       onClose={ResetForm}>
       <div id="new-swap-request-container" className={`${theme} form`}>
-        <Spacer height={5} />
+        <Spacer height={8} />
         {/* FORM */}
         <div id="request-form" className="form single">
           {/* SINGLE DATE */}
@@ -217,40 +226,36 @@ export default function NewSwapRequest() {
               />
 
               {/* TIMES */}
-              <div className="flex gap">
-                <InputWrapper
-                  inputType={InputTypes.time}
-                  uidClass="swap-request-from-hour"
-                  labelText={'Start Time'}
-                  onDateOrTimeSelection={(e) => setRequestFromHour(moment(e).format('ha'))}
-                />
+              <InputWrapper
+                inputType={InputTypes.time}
+                uidClass="swap-request-from-hour"
+                labelText={'Start Time'}
+                onDateOrTimeSelection={(e) => setRequestFromHour(moment(e).format('ha'))}
+              />
 
-                <InputWrapper
-                  inputType={InputTypes.time}
-                  uidClass="swap-request-to-hour"
-                  labelText={'End Time'}
-                  onDateOrTimeSelection={(e) => setRequestToHour(moment(e).format('ha'))}
-                />
-              </div>
+              <InputWrapper
+                inputType={InputTypes.time}
+                uidClass="swap-request-to-hour"
+                labelText={'End Time'}
+                onDateOrTimeSelection={(e) => setRequestToHour(moment(e).format('ha'))}
+              />
             </>
           )}
 
           {/* MULTIPLE DAYS */}
           {swapDuration === SwapDurations.multiple && (
-            <InputWrapper useNativeDate={true} labelText={'Date Range'} required={true} inputType={'date'}>
-              <MobileDateRangePicker
-                onOpen={addThemeToDatePickers}
-                className={'w-100'}
-                onAccept={(dateArray) => {
-                  if (Manager.isValid(dateArray)) {
-                    setStartDate(moment(dateArray[0]).format(DatetimeFormats.dateForDb))
-                    setEndDate(moment(dateArray[1]).format(DatetimeFormats.dateForDb))
-                  }
-                }}
-                slots={{field: SingleInputDateRangeField}}
-                name="allowedRange"
-              />
-            </InputWrapper>
+            <InputWrapper
+              onDateOrTimeSelection={(dateArray) => {
+                if (Manager.isValid(dateArray)) {
+                  setStartDate(moment(dateArray[0]).format(DatetimeFormats.dateForDb))
+                  setEndDate(moment(dateArray[1]).format(DatetimeFormats.dateForDb))
+                }
+              }}
+              useNativeDate={true}
+              labelText={'Date Range'}
+              required={true}
+              inputType={InputTypes.dateRange}
+            />
           )}
 
           {/* RESPONSE DUE DATE */}
@@ -273,12 +278,12 @@ export default function NewSwapRequest() {
               predefinedType: 'coparents',
             })}
             onCheck={(e) => {
-              handleRecipientSelection(e)
+              HandleRecipientSelection(e)
             }}
           />
 
           {/* WHO SHOULD SEE IT? */}
-          <ShareWithCheckboxes required={true} onCheck={handleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
+          <ShareWithCheckboxes required={true} onCheck={HandleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
 
           {/* INCLUDE CHILDREN */}
           {Manager.isValid(currentUser?.children) && (
@@ -293,7 +298,7 @@ export default function NewSwapRequest() {
                     currentUser,
                     labelType: 'children',
                   })}
-                  onCheck={handleChildSelection}
+                  onCheck={HandleChildSelection}
                 />
               )}
             </div>

@@ -22,7 +22,7 @@ import FirebaseStorage from '../../../database/firebaseStorage'
 import StringManager from '../../../managers/stringManager.coffee'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
-import useCurrentUser from '../../hooks/useCurrentUser'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function Profile() {
   const {state, setState} = useContext(globalState)

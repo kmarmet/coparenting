@@ -599,13 +599,13 @@ export default function Home() {
         <hr className="hr" />
         {/* EXPENSES */}
         <Fade direction={'up'} duration={1000} triggerOnce={true}>
-          <div id="expenses-wrapper" className="section expenses">
+          <div id="calendarEvents-wrapper" className="section calendarEvents">
             <div className="text-wrapper">
               <p className="title">Track Expenses and Share Responsibilities</p>
               <p className="text subtitle">Transparency in Shared Financial Responsibilities</p>
               <p className="text">
-                Manage shared expenses like childcare, education, and extracurricular costs with our expense tracking feature, making it easy to split
-                costs and avoid conflicts over money.
+                Manage shared calendarEvents like childcare, education, and extracurricular costs with our expense tracking feature, making it easy to
+                split costs and avoid conflicts over money.
               </p>
             </div>
             <LightGallery mode={'fade'} elementClassNames={`images expense-tracker no-wrap ${theme}`} speed={500} selector={'.image'}>
@@ -649,8 +649,8 @@ export default function Home() {
               <p className="title">Security & Privacy</p>
               <p className="text subtitle center">Transparency in Shared Financial Responsibilities</p>
               <p className="text">
-                <b>Custom Sharing: </b> Keep control over what co-parents see by selecting the &#34;share with&#34; checkbox for events, expenses ,
-                and important information.
+                <b>Custom Sharing: </b> Keep control over what co-parents see by selecting the &#34;share with&#34; checkbox for events,
+                calendarEvents , and important information.
               </p>
               <p className="text">
                 <b>Enhanced Protection: </b> Enjoy peace of mind with SMS code verification for password recovery, and secure registration for both
@@ -732,7 +732,7 @@ export default function Home() {
                 reminders.
               </p>
               <p className="text">
-                <b>Expense Tracker:</b> Stay on top of shared costs by uploading receipts, tracking expenses with live due date countdowns, and
+                <b>Expense Tracker:</b> Stay on top of shared costs by uploading receipts, tracking calendarEvents with live due date countdowns, and
                 sending reminders to the responsible co-parent.
               </p>
             </div>

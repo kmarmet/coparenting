@@ -1,7 +1,6 @@
 // Path: src\components\screens\parents\parents.jsx
-import React, {useContext, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../../context'
-import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
 import DB_UserScoped from '/src/database/db_userScoped'
 import CustomParentInfo from './customParentInfo'
@@ -22,51 +21,47 @@ import EmailManager from '../../../managers/emailManager'
 import Spacer from '../../shared/spacer'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import InputTypes from '../../../constants/inputTypes'
+import useParents from '../../../hooks/useParents'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function Parents() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
+  const {theme} = state
+  const {parents} = useParents()
+  const {currentUser} = useCurrentUser()
 
   // State
   const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
   const [showNewParentFormCard, setShowNewParentFormCard] = useState(false)
-  const [activeParent, setActiveParent] = useState(currentUser?.parents?.[0])
+  const [activeParent, setActiveParent] = useState(parents?.[0])
   const [showInvitationForm, setShowInvitationForm] = useState(false)
   const [invitedParentName, setInvitedParentName] = useState('')
   const [invitedParentEmail, setInvitedParentEmail] = useState('')
 
-  const DeleteProp = async (prop) => {
-    const updatedCoparent = await DB_UserScoped.deleteParentInfoProp(currentUser, StringManager.formatDbProp(prop), activeParent)
-    await SetActiveParentData(updatedCoparent)
-  }
+  const DeleteProp = async (prop) => await DB_UserScoped.deleteParentInfoProp(currentUser, StringManager.formatDbProp(prop), activeParent)
 
   const Update = async (prop, value) => {
-    const updatedCoparent = await DB_UserScoped.updateParent(currentUser, activeParent, StringManager.formatDbProp(prop), value)
-    setState({...state, successAlertMessage: `${StringManager.formatTitle(prop, true)} has been updated`})
-    await SetActiveParentData(updatedCoparent)
+    await DB_UserScoped.updateParent(currentUser, activeParent, StringManager.formatDbProp(prop), value)
+    setState({...state, successAlertMessage: `${StringManager.FormatTitle(prop, true)} has been updated`})
   }
 
   const DeleteCoparent = async () => {
     await DB_UserScoped.deleteParent(currentUser, activeParent)
-    setState({...state, successAlertMessage: `${activeParent?.name} has been unlinked from your profile`})
-    setActiveParent(currentUser?.parents[0])
+    setState({...state, successAlertMessage: `${activeParent?.name} has been unlinked from your profile`, showScreenActions: false})
+    setActiveParent(parents[0])
   }
-
-  const SetActiveParentData = async (parent) => {
-    const parentKey = parent?.userKey
-    if (Manager.isValid(parentKey)) {
-      const updatedParents = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/parents`)
-      const updatedParent = updatedParents.find((x) => x.userKey === parentKey)
-      setActiveParent(updatedParent)
+  useEffect(() => {
+    if (Manager.isValid(parents)) {
+      setActiveParent(parents[0])
     }
-  }
+  }, [parents])
 
   return (
     <>
       {/* CUSTOM INFO FORM */}
       <CustomParentInfo
         hideCard={() => setShowCustomInfoCard(false)}
-        onAdd={(parent) => SetActiveParentData(parent)}
+        onAdd={(parent) => setActiveParent(parent)}
         activeCoparent={activeParent}
         showCard={showCustomInfoCard}
       />
@@ -88,56 +83,62 @@ export default function Parents() {
               <IoPersonAdd className={'add-child fs-22'} />
             </div>
             <p>
-              Add Parent to Your Profile
-              <span className="subtitle">Include a parent in your profile to save their details and facilitate information sharing with them</span>
+              Enable Sharing & Info Storage
+              <span className="subtitle">
+                Store information and provide sharing permissions <b>for a parent who that has not been added to your profile</b> yet
+              </span>
             </p>
           </div>
         </div>
 
-        {/*  ADD CUSTOM INFO */}
-        <div
-          className="action-item"
-          onClick={() => {
-            setState({...state, showScreenActions: false})
-            setShowCustomInfoCard(true)
-          }}>
-          <div className="content">
-            <div className="svg-wrapper">
-              <FaWandMagicSparkles className={'magic'} />
+        {Manager.isValid(parents) && (
+          <>
+            {/*  REMOVE PARENT */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setState({...state, showScreenActions: false})
+                AlertManager.confirmAlert(
+                  `Are you sure you would like to unlink ${activeParent?.name} from your profile?`,
+                  "I'm Sure",
+                  true,
+                  async () => {
+                    await DeleteCoparent()
+                  }
+                )
+              }}>
+              <div className="content">
+                <div className="svg-wrapper">
+                  <IoPersonRemove className={'remove-user'} />
+                </div>
+
+                <p>
+                  Unlink {activeParent?.name} from Your Profile
+                  <span className="subtitle">Remove sharing permissions for {activeParent?.name} along with the information stored about them</span>
+                </p>
+              </div>
             </div>
-            <p>
-              Add your Own Info
-              <span className="subtitle">Include personalized details about {activeParent?.name}</span>
-            </p>
-          </div>
-        </div>
-
-        {/*  REMOVE PARENT */}
-        <div
-          className="action-item"
-          onClick={() => {
-            setState({...state, showScreenActions: false})
-            AlertManager.confirmAlert(
-              `Are you sure you would like to unlink ${activeParent?.name} from your profile?`,
-              "I'm Sure",
-              true,
-              async () => {
-                await DeleteCoparent()
-              }
-            )
-          }}>
-          <div className="content">
-            <div className="svg-wrapper">
-              <IoPersonRemove className={'remove-user'} />
+            {/*  ADD CUSTOM INFO */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setState({...state, showScreenActions: false})
+                setShowCustomInfoCard(true)
+              }}>
+              <div className="content">
+                <div className="svg-wrapper">
+                  <FaWandMagicSparkles className={'magic'} />
+                </div>
+                <p>
+                  Add your Own Info
+                  <span className="subtitle">Include personalized details about {activeParent?.name}</span>
+                </p>
+              </div>
             </div>
+          </>
+        )}
 
-            <p>
-              Unlink {activeParent?.name} from Your Profile
-              <span className="subtitle">Remove all information about {activeParent?.name} from your profile</span>
-            </p>
-          </div>
-        </div>
-
+        {/* INVITE */}
         <div
           className="action-item"
           onClick={() => {
@@ -171,7 +172,7 @@ export default function Parents() {
             return false
           }
           EmailManager.SendEmailToUser(EmailManager.Templates.parentInvitation, '', invitedParentEmail, invitedParentName)
-          AlertManager.successAlert('Invitation Sent!')
+          setState({...state, successAlertMessage: `Invitation has been sent to ${invitedParentName}`})
           setShowInvitationForm(false)
         }}
         hideCard={() => setShowInvitationForm(false)}>
@@ -196,12 +197,12 @@ export default function Parents() {
 
         {/* PARENT ICONS CONTAINER */}
         <div id="parent-container">
-          {Manager.isValid(currentUser?.parents) &&
-            currentUser?.parents?.map((parent, index) => {
+          {Manager.isValid(parents) &&
+            parents?.map((parent, index) => {
               const parentKey = activeParent?.userKey
               return (
                 <div
-                  onClick={() => SetActiveParentData(parent)}
+                  onClick={() => setActiveParent(parent)}
                   className={parentKey && parentKey === parent.userKey ? 'active parent' : 'parent'}
                   key={index}>
                   <span className="parent-name">{StringManager.getFirstNameOnly(parent.name)[0]}</span>
@@ -211,7 +212,7 @@ export default function Parents() {
         </div>
 
         {/* NO DATA FALLBACK */}
-        {!Manager.isValid(currentUser?.parents) && <NoDataFallbackText text={'You have not added or linked any parents to your profile yet'} />}
+        {!Manager.isValid(parents) && <NoDataFallbackText text={'You have not added or linked any parents to your profile yet'} />}
 
         {/* PARENT INFO */}
         <div id="parent-info" key={activeParent?.key}>
@@ -225,9 +226,9 @@ export default function Parents() {
                   let infoLabel = propArray[0]
                   infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
                   infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
-                  infoLabel = StringManager.formatTitle(infoLabel, true)
+                  infoLabel = StringManager.FormatTitle(infoLabel, true)
                   const value = propArray[1]
-                  const inputsToSkip = ['address', 'key', 'id', 'linked key']
+                  const inputsToSkip = ['address', 'key', 'id', 'user key']
 
                   return (
                     <div key={index}>

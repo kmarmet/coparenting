@@ -242,7 +242,7 @@
   background: white;
   height: 100vh;
   justify-content: flex-start;
-  padding-top: 35px;
+  padding-top: 45px;
   display: grid;
   grid-template-rows: auto 2fr auto;
 
@@ -434,7 +434,7 @@
     }
 
     // MESSAGE WRAPPER
-    .message-fade-wrapper {
+    .message-wrapper {
       width: 100%;
       transition: all 0.2s ease-in-out;
       -webkit-user-select: none;
@@ -590,8 +590,10 @@
 
   #emotion-and-input-wrapper {
     max-width: 100vw;
-
     #tone-wrapper {
+      width: calc(100vw - 60px);
+      bottom: 25px;
+      z-index: 999;
       background: transparent;
       text-align: center;
       transition: all 0.3s ease-out;
@@ -601,9 +603,9 @@
       justify-content: center;
       margin: 0 auto;
       border-radius: $borderRadius;
+      position: relative;
 
       &.active {
-        margin-bottom: 10px;
         transition: all 0.3s ease-in;
         z-index: 999999;
         opacity: 1;

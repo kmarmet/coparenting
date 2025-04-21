@@ -2,8 +2,24 @@ import Manager from '../managers/manager'
 import DB from "../database/DB"
 import DateManager from "../managers/dateManager"
 import _ from "lodash"
+import DB_UserScoped from "../database/db_userScoped"
 
 SecurityManager =
+  getSharedItems: (currentUser,  table) ->
+    linkedAccounts= await  DB_UserScoped.getLinkedAccounts(currentUser)
+    linkedAccountKeys = linkedAccounts.accountKeys
+    sharedItems  = []
+
+    if Manager.isValid(currentUser) && Manager.isValid(linkedAccountKeys)
+      for accountKey in linkedAccountKeys
+        userAccountItems = await DB.getTable("#{table}/#{accountKey}")
+        for item in userAccountItems
+          if Manager.isValid(item?.shareWith)
+            if item?.shareWith?.includes currentUser?.key
+              sharedItems.push(item)
+
+    sharedItems
+
   getShareWithItems: (currentUser, table) ->
     sharedItems  = []
 

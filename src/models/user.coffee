@@ -12,6 +12,7 @@ export default class User
     @phone = ''
     @children = []
     @coparents = []
+    @sharedDataUsers = []
     @parentType = ''
     @accountType = ''
     @homeAddress = ''

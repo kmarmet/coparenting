@@ -109,7 +109,7 @@ StringManager = {
     return input.toString().replace(/([a-z])([A-Z])/g, '$1 $2');
   },
   addLongTextClass: function(text) {
-    if (StringManager.wordCount(text) > 10) {
+    if (StringManager.GetWordCount(text) > 10) {
       return "long-text";
     } else {
       return '';
@@ -124,9 +124,13 @@ StringManager = {
   removeFileExtension: function(input) {
     return input.replace(/\.[^\/.]+$/, '');
   },
-  wordCount: function(input) {
+  GetWordCount: function(input) {
     var ref, ref1;
-    return input != null ? (ref = input.trim()) != null ? (ref1 = ref.split(/\s+/)) != null ? ref1.length : void 0 : void 0 : void 0;
+    if (Manager.isValid(input, true)) {
+      return input != null ? (ref = input.trim()) != null ? (ref1 = ref.split(/\s+/)) != null ? ref1.length : void 0 : void 0 : void 0;
+    } else {
+      return 0;
+    }
   },
   stringHasNumbers: function(input) {
     return /\d/.test(input);
@@ -164,6 +168,9 @@ StringManager = {
   },
   uppercaseFirstLetterOfAllWords: function(input) {
     var words;
+    if (!Manager.isValid(input, true)) {
+      return input;
+    }
     words = input != null ? input.toString() : void 0;
     if (words && words !== void 0) {
       if ((words != null ? words.indexOf('-') : void 0) > -1) {
@@ -186,18 +193,21 @@ StringManager = {
   formatEventTitle: function(title) {
     if (title && title.length > 0) {
       title = StringManager.uppercaseFirstLetterOfAllWords(title);
-      title = StringManager.formatTitle(title);
+      title = StringManager.FormatTitle(title);
       return title;
     }
   },
-  formatTitle: function(title, uppercase = true) {
-    if (!Manager.isValid(title)) {
+  FormatTitle: function(title, uppercase = true) {
+    if (!title || (title != null ? title.length : void 0) === 0) {
+      return title;
+    }
+    if (!Manager.isValid(title, true)) {
       return title;
     }
     if (uppercase) {
-      title = StringManager.uppercaseFirstLetterOfAllWords(title).trim();
+      title = StringManager.uppercaseFirstLetterOfAllWords(title);
     }
-    title = title.replaceAll(" To ", " to ").replaceAll(" A ", " a ").replaceAll(" An ", " an ").replaceAll(" Or ", " or ").replaceAll(" Vs ", " vs ").replaceAll(" With ", " with ").replaceAll(" At ", " at ").replaceAll(" About ", " about ").replaceAll(" From ", " from ").replaceAll(" The ", " the ").replaceAll(" For ", " for ").replaceAll(" Thru ", " thru ").replaceAll(" Has ", " has ").replaceAll(" And ", " and ").replaceAll(" Is ", " is ").replaceAll(" Not ", " not ").replaceAll(" Off ", " off ").replaceAll(" But ", " but ").replaceAll(" By ", " by ").replaceAll(" In ", " in ").replaceAll(" Of ", " of ").replaceAll(" On ", " on ").replaceAll(" Per ", " per ").replaceAll(" Up ", " up ").replaceAll(" Via ", " via ");
+    title = title.toString().replaceAll(" To ", " to ").replaceAll(" A ", " a ").replaceAll(" An ", " an ").replaceAll(" Or ", " or ").replaceAll(" Vs ", " vs ").replaceAll(" With ", " with ").replaceAll(" At ", " at ").replaceAll(" About ", " about ").replaceAll(" From ", " from ").replaceAll(" The ", " the ").replaceAll(" For ", " for ").replaceAll(" Thru ", " thru ").replaceAll(" Has ", " has ").replaceAll(" And ", " and ").replaceAll(" Is ", " is ").replaceAll(" Not ", " not ").replaceAll(" Off ", " off ").replaceAll(" But ", " but ").replaceAll(" By ", " by ").replaceAll(" In ", " in ").replaceAll(" Of ", " of ").replaceAll(" On ", " on ").replaceAll(" Per ", " per ").replaceAll(" Up ", " up ").replaceAll(" Via ", " via ");
     title = StringManager.removeSpecialChars(title);
     return title;
   }

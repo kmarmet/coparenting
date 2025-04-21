@@ -11,12 +11,14 @@ import InputWrapper from '../../shared/inputWrapper'
 import StringManager from '../../../managers/stringManager.coffee'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
-export default function CustomParentInfo({hideCard, activeCoparent, showCard, onAdd = (parent) => {}}) {
+export default function CustomParentInfo({hideCard, activeCoparent, showCard}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, refreshKey} = state
+  const {theme, refreshKey} = state
   const [title, setTitle] = useState('')
   const [value, setValue] = useState('')
+  const {currentUser} = useCurrentUser()
 
   const ResetForm = (hasMessage = false) => {
     Manager.ResetForm('custom-coparent-info-wrapper')
@@ -35,8 +37,7 @@ export default function CustomParentInfo({hideCard, activeCoparent, showCard, on
       AlertManager.throwError('Both fields are required')
       return false
     }
-    const updatedCoparent = await DB_UserScoped.addCoparentProp(currentUser, activeCoparent, title, value)
-    onAdd(updatedCoparent)
+    await DB_UserScoped.addParentProp(currentUser, activeCoparent, title, value)
     ResetForm(true)
   }
 

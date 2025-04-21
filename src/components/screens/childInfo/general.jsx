@@ -13,7 +13,7 @@ import {FaMinus, FaPlus} from 'react-icons/fa6'
 import DB_UserScoped from '../../../database/db_userScoped'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
-import useCurrentUser from '../../hooks/useCurrentUser'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 function General({activeChild}) {
   const {state, setState} = useContext(globalState)

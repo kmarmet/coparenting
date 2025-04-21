@@ -1,6 +1,5 @@
 // Path: src\components\screens\installApp.jsx
 import React, {useContext, useState} from 'react'
-import globalState from '../../context'
 import {FaApple, FaMinus, FaPlus} from 'react-icons/fa6'
 import {BsAndroid2} from 'react-icons/bs'
 import {TbDeviceDesktopDown} from 'react-icons/tb'
@@ -13,10 +12,13 @@ import Spacer from '../shared/spacer'
 import NavBar from '../navBar'
 import ScreenNames from '../../constants/screenNames'
 import Manager from '../../managers/manager'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import globalState from '../../context'
 
 export default function InstallApp() {
   const {state, setState} = useContext(globalState)
-  const {currentUser} = state
+
+  const {currentUser} = useCurrentUser()
   const [expandAppleAccordion, setExpandAppleAccordion] = useState(false)
   const [expandAndroidAccordion, setExpandAndroidAccordion] = useState(false)
   const [expandDesktopAccordion, setExpandDesktopAccordion] = useState(false)
@@ -24,8 +26,12 @@ export default function InstallApp() {
     <>
       <div className="page-container install-app">
         <div id="install-app-wrapper">
-          <p className="screen-title">Installation Instructions</p>
-          <p>Install the app in three steps or less! No App Store or Play Store necessary.</p>
+          <p className="screen-title">Follow the Steps Below</p>
+          <p className="screen-intro-text">Install the app in three steps or less! No App Store or Play Store necessary.</p>
+          <Spacer height={5} />
+          <p className="screen-intro-text">
+            {DomManager.tapOrClick(true)} an option below to select the type of device you would like to install the app on
+          </p>
           <Spacer height={10} />
           {/* IOS */}
           <Accordion id={'ios'}>
@@ -61,8 +67,8 @@ export default function InstallApp() {
                   </div>
 
                   <p className="emphasize no-bold more-padding mb-10">
-                    If you don’t see Add to Home Screen, you can add it. Scroll down to the bottom of the list, tap Edit Actions, then tap Add to Home
-                    Screen.
+                    If you don’t see <b className="accent">Add to Home Screen</b>, you can add it. Scroll down to the bottom of the list, tap &nbsp;
+                    <b className="accent">Edit Actions</b>, then tap <b className="accent">Add to Home Screen</b>.
                   </p>
                 </div>
               </div>
@@ -80,7 +86,7 @@ export default function InstallApp() {
             <Spacer height={5} />
             <AccordionDetails expanded={expandAndroidAccordion.toString()}>
               <div className="os-container android">
-                <p className="while-viewing">While viewing the website in Chrome (in default web browser)...</p>
+                <p className="while-viewing">While viewing the website in Chrome (your phone&#39;s default web browser)...</p>
                 <div className="flex steps">
                   <div className="flex">
                     <span className="step-number">1.</span>
@@ -140,7 +146,7 @@ export default function InstallApp() {
         </div>
       </div>
       {!Manager.isValid(currentUser) && (
-        <button id="back-to-login-button" className="button default " onClick={() => setState({...state, currentScreen: ScreenNames.login})}>
+        <button className="button default back-to-login-button" onClick={() => setState({...state, currentScreen: ScreenNames.login})}>
           Back to Login
         </button>
       )}

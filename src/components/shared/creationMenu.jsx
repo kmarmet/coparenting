@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {IoMdPhotos} from 'react-icons/io'
 import globalState from '../../context'
 import {BsCalendarWeekFill} from 'react-icons/bs'
@@ -7,12 +7,32 @@ import {MdSwapHorizontalCircle} from 'react-icons/md'
 import {FaDonate, FaFileUpload} from 'react-icons/fa'
 import CreationForms from '../../constants/creationForms'
 import {IoChatbubbles, IoClose} from 'react-icons/io5'
-
 import Overlay from './overlay'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useChat from '../../hooks/useChat'
+import DB_UserScoped from '../../database/db_userScoped'
+import Manager from '../../managers/manager'
 
 const CreationMenu = () => {
   const {state, setState} = useContext(globalState)
-  const {currentUser, dateToEdit, showCreationMenu} = state
+  const {dateToEdit, showCreationMenu} = state
+  const {currentUser} = useCurrentUser()
+  const {chats} = useChat()
+  const [showChatAction, setShowChatAction] = useState(false)
+
+  const CheckIfChatsShouldBeShown = async () => {
+    const activeChatCount = chats?.length
+    await DB_UserScoped.getValidAccountsForUser(currentUser).then((obj) => {
+      const coparentOnlyAccounts = obj.filter((x) => Manager.isValid(x?.accountType) && x?.accountType === 'parent')
+      if (activeChatCount < coparentOnlyAccounts.length) {
+        setShowChatAction(true)
+      }
+    })
+  }
+
+  useEffect(() => {
+    CheckIfChatsShouldBeShown().then((r) => r)
+  }, [chats])
 
   useEffect(() => {
     const pageContainer = document.querySelector('.page-container')
@@ -108,18 +128,20 @@ const CreationMenu = () => {
           {currentUser?.accountType === 'parent' && (
             <>
               {/* CHAT */}
-              <div
-                className="action-item"
-                onClick={() => {
-                  setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.chat})
-                }}>
-                <div className="content">
-                  <div className="svg-wrapper chat">
-                    <IoChatbubbles className={'chat'} />
+              {showChatAction === true && (
+                <div
+                  className="action-item"
+                  onClick={() => {
+                    setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.chat})
+                  }}>
+                  <div className="content">
+                    <div className="svg-wrapper chat">
+                      <IoChatbubbles className={'chat'} />
+                    </div>
+                    <p className="chat">Chat</p>
                   </div>
-                  <p className="chat">Chat</p>
                 </div>
-              </div>
+              )}
 
               {/* DOCS */}
               <div

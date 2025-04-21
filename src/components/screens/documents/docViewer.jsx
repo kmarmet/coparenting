@@ -96,7 +96,7 @@ export default function DocViewer() {
           headerTextElement = header.textContent.trim()
         } else {
           headerTextElement = headerTextElement.textContent.trim()
-          if (!_.isEmpty(headerTextElement) && StringManager.wordCount(headerTextElement) <= 10) {
+          if (!_.isEmpty(headerTextElement) && StringManager.GetWordCount(headerTextElement) <= 10) {
             // Add header to headersInDocument
             if (!headersInDocument.includes(headerTextElement)) {
               headersInDocument.push(Manager.generateHash(headerTextElement))

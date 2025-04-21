@@ -33,11 +33,12 @@ import CreationForms from '../../constants/creationForms'
 import Label from '../shared/label'
 import DB_UserScoped from '../../database/db_userScoped'
 import InputTypes from '../../constants/inputTypes'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 export default function NewCalendarEvent() {
   // APP STATE
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, refreshKey, creationFormToShow, dateToEdit} = state
+  const {theme, creationFormToShow, dateToEdit} = state
 
   // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)
@@ -58,6 +59,7 @@ export default function NewCalendarEvent() {
   const [eventIsRecurring, setEventIsRecurring] = useState(false)
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
   const [eventIsCloned, setEventIsCloned] = useState(false)
+  const {currentUser} = useCurrentUser()
 
   // COMPONENT STATE
   const [showCloneInput, setShowCloneInput] = useState(false)
@@ -102,6 +104,7 @@ export default function NewCalendarEvent() {
   const submit = async () => {
     //#region FILL NEW EVENT
     const newEvent = new CalendarEvent()
+    newEvent.id = Manager.getUid()
 
     // Required
     newEvent.title = StringManager.formatEventTitle(eventName)
@@ -212,7 +215,6 @@ export default function NewCalendarEvent() {
       //#endregion MULTIPLE DATES
 
       //#region SINGLE DATE
-
       if (!eventIsRecurring && !eventIsDateRange && !eventIsCloned) {
         await CalendarManager.addCalendarEvent(currentUser, cleanedObject)
 
@@ -367,7 +369,6 @@ export default function NewCalendarEvent() {
             inputType={InputTypes.text}
             labelText={'Event Name'}
             defaultValue={eventName}
-            placeholder="Event Name"
             required={true}
             isDebounced={false}
             inputValueType="input"

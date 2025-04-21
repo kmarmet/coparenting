@@ -2,13 +2,15 @@
 var General;
 
 export default General = class General {
-  constructor(dateOfBirth = '', address = '', phone = '', name = '', gender = '', profilePic = '') {
+  constructor(dateOfBirth = '', address = '', phone = '', name = '', profilePic = '', email = '') {
     this.dateOfBirth = dateOfBirth;
     this.address = address;
     this.phone = phone;
     this.name = name;
-    this.gender = gender;
     this.profilePic = profilePic;
+    this.email = email;
   }
 
 };
+
+//# sourceMappingURL=general.js.map

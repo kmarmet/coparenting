@@ -31,7 +31,9 @@ const DetailBlock = ({
           {!isCustom && (
             <>
               {/* TEXT */}
-              {!isLink && !isPhone && !isNavLink && <p className={StringManager.wordCount(text) < 10 ? 'block-text center' : 'block-text'}>{text}</p>}
+              {!isLink && !isPhone && !isNavLink && (
+                <p className={StringManager.GetWordCount(text) < 10 ? 'block-text center' : 'block-text'}>{text}</p>
+              )}
 
               {/*  LINK */}
               {isLink && (

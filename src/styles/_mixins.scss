@@ -341,6 +341,22 @@
       color: white;
     }
 
+    &.back-to-login-button {
+      border: 0;
+      border-radius: 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      min-height: 0;
+      background-color: $grey;
+      height: 68px;
+      width: 100vw;
+      margin: 0;
+      color: $darkestGrey;
+      border-top: 1px solid $lightBorderColor;
+    }
+
     &#upload-button {
       color: white;
     }
@@ -711,7 +727,6 @@
   backdrop-filter: blur(3px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   width: 80vw;
-  border-radius: $bigBorderRadius;
   @include centerHoriz;
   border-radius: 90px;
   z-index: -1;
@@ -747,11 +762,12 @@
   right: 5vw;
   height: max-content;
   width: max-content;
+
   &.active {
     z-index: $maxZIndex;
     transition: all 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
     opacity: 1;
-    bottom: 100px;
+    bottom: 150px;
   }
 
   .alert-close-icon {
@@ -1215,22 +1231,24 @@
             width: 100%;
             display: block;
             text-align: left;
-            font-size: 13px;
             font-weight: $fwRegular;
             padding-top: 2px;
             line-height: 1.3;
             color: $darkerGrey;
+            font-size: 14.5px;
+            max-width: 90%;
+
+            b {
+              color: $primaryText;
+              font-weight: $fwMedium;
+              font-size: 14.5px;
+            }
           }
         }
 
         p {
           display: inline;
           font-size: 18px;
-
-          .subtitle {
-            font-size: 14.5px;
-            max-width: 90%;
-          }
         }
 
         .svg-wrapper {
@@ -1251,6 +1269,11 @@
             display: block;
             white-space: nowrap;
 
+            &.transfer {
+              transform: scale(1.1);
+            }
+            &.memory,
+            &.swap,
             &.checklist {
               transform: scale(1.2);
             }
@@ -1718,7 +1741,7 @@
     padding: 0;
 
     &::placeholder {
-      opacity: 0;
+      //      opacity: 0;
     }
   }
 
@@ -2334,7 +2357,6 @@
       border-radius: 5px;
       padding: 3px 10px;
       font-weight: $fwBold;
-      font-size: 14px;
 
       &.no-bold {
         font-weight: 400;
@@ -2713,6 +2735,7 @@
 
       #subtitle {
         font-size: 15px;
+        color: $darkestGrey;
       }
 
       #modal-title-and-text {
@@ -2796,24 +2819,22 @@
 
   &.new-chat {
     #content {
-      #users-wrapper {
-        @include row;
-        border: 0;
-
-        .user-wrapper {
+      #coparent-names {
+        flex-wrap: wrap;
+        gap: 20px;
+        width: 100%;
+        display: flex;
+        overflow: auto;
+        .coparent-name {
+          height: 60px;
+          width: 60px;
+          border-radius: 100%;
+          background: $green;
           display: flex;
           align-items: center;
-
-          svg {
-            color: $green;
-            margin-right: 10px;
-          }
-
-          p {
-            font-size: 18px;
-            color: $primaryText;
-            font-weight: $fwMedium;
-          }
+          justify-content: center;
+          color: white;
+          font-weight: $fwMediumBold;
         }
       }
     }
@@ -2899,7 +2920,7 @@
                   max-width: 100%;
                   line-height: 1.3;
                   text-align: left;
-                  font-weight: $fwMedium;
+                  font-weight: $fwRegular;
                   font-size: 16px;
 
                   &.center {
@@ -4060,7 +4081,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 35px 35px 0 0;
-  border-top: 6px solid $accent;
+  border-top: 5px solid $accent;
   box-shadow: $boxShadow_float;
   bottom: -100%;
   padding: 20px 0 60px 0;
@@ -4110,8 +4131,7 @@
     display: grid;
     grid-template-columns: auto auto;
     justify-content: space-between;
-    width: 82%;
-    gap: 0 20px;
+    width: 85%;
 
     .menu-item {
       background-color: transparent;
@@ -4121,7 +4141,7 @@
       text-align: right;
       align-items: center;
       position: relative;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
       opacity: 0;
       transition: all 0.3s ease-out;
       width: 100%;
@@ -4200,33 +4220,34 @@
           width: 100%;
         }
       }
-      &.visitation,
-      &.chats,
-      &.calendar,
-      &.admin,
-      &.notifications,
-      &.expenses,
-      &.swap-request {
+      &:nth-child(0),
+      &:nth-child(1),
+      &:nth-child(2),
+      &:nth-child(3),
+      &:nth-child(4),
+      &:nth-child(5),
+      &:nth-child(6),
+      &:nth-child(7) {
         * {
           color: $main;
         }
       }
-      &.transfer-change,
-      &.documents,
-      &.memories,
-      &.child-info,
-      &.archives,
-      &.coparents {
+      &:nth-child(8),
+      &:nth-child(9),
+      &:nth-child(10),
+      &:nth-child(11),
+      &:nth-child(12),
+      &:nth-child(13) {
         * {
           color: #cb6789;
         }
       }
-      &.profile,
-      &.settings,
-      &.contact-us,
-      &.theme,
-      &.logout,
-      &.install-app {
+      &:nth-child(14),
+      &:nth-child(15),
+      &:nth-child(16),
+      &:nth-child(17),
+      &:nth-child(18),
+      &:nth-child(19) {
         * {
           color: $accent;
         }
@@ -4252,7 +4273,7 @@
         width: 100%;
         font-size: 20px;
         white-space: nowrap;
-        font-weight: $fwLight;
+        font-weight: $fwRegular;
       }
 
       p,
@@ -4398,6 +4419,7 @@
 
       &.notifications {
         left: 5px;
+
         .badge {
           background: $red;
           color: white;
@@ -4410,7 +4432,7 @@
           font-size: 0.7em;
           position: absolute;
           top: 2px;
-          right: 32px;
+          right: 5px;
         }
       }
 

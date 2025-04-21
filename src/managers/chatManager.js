@@ -68,6 +68,7 @@ const ChatManager = {
       })
         .then((response) => response)
         .then((result) => {
+          console.log(result)
           resolve(result.json())
         })
         .catch((error) => {

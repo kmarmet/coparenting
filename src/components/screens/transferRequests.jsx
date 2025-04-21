@@ -1,14 +1,12 @@
-// Path: src\components\screens\transferRequests.jsx
+// Path: src\components\screens\transferRequests?.jsx
 import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../context.js'
 import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
 import {MdPersonPinCircle} from 'react-icons/md'
-import {child, getDatabase, onValue, ref} from 'firebase/database'
 import NotificationManager from '/src/managers/notificationManager.js'
 import DB_UserScoped from '../../database/db_userScoped.js'
 import {IoAdd} from 'react-icons/io5'
-import SecurityManager from '/src/managers/securityManager'
 import {PiCarProfileDuotone, PiCheckBold} from 'react-icons/pi'
 import {Fade} from 'react-awesome-reveal'
 import moment from 'moment'
@@ -31,6 +29,8 @@ import NavBar from '../navBar'
 import ToggleButton from '../shared/toggleButton'
 import DetailBlock from '../shared/detailBlock'
 import InputTypes from '../../constants/inputTypes'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useTransferRequests from '../../hooks/useTransferRequests'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -40,8 +40,8 @@ const Decisions = {
 
 export default function TransferRequests() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, refreshKey, authUser} = state
-  const [existingRequests, setExistingRequests] = useState([])
+  const {theme} = state
+  // const [existingRequests, setExistingRequests] = useState([])
   const [declineReason, setDeclineReason] = useState('')
   const [showNewRequestCard, setShowNewRequestCard] = useState(false)
   const [activeRequest, setActiveRequest] = useState(null)
@@ -54,6 +54,9 @@ export default function TransferRequests() {
   const [sendWithAddress, setSendWithAddress] = useState(false)
   const [requestReason, setRequestReason] = useState('')
   const [requestTimeRemaining, setRequestTimeRemaining] = useState(false)
+  const {transferRequests} = useTransferRequests()
+  const {currentUser} = useCurrentUser()
+
   const ResetForm = async (successMessage = '') => {
     Manager.ResetForm('edit-event-form')
     setRequestTime('')
@@ -81,21 +84,15 @@ export default function TransferRequests() {
     }
     const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.transferChangeRequest)
     await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, cleanedRequest, activeRequest.id)
-    await GetSecuredRequests()
     setActiveRequest(updatedRequest)
     setShowDetails(false)
     await ResetForm('Transfer Request Updated')
   }
 
-  const GetSecuredRequests = async () => {
-    let allRequests = await SecurityManager.getTransferChangeRequests(currentUser)
-    setExistingRequests(allRequests)
-  }
-
   const DeleteRequest = async (action = 'deleted') => {
     if (action === 'deleted') {
       AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
-        await DB.deleteById(`${DB.tables.transferChangeRequests}/${currentUser.key}`, activeRequest?.id)
+        await DB.deleteById(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, activeRequest?.id)
         setState({...state, successAlertMessage: 'Transfer Change Request Deleted', refreshKey: Manager.getUid()})
         setShowDetails(false)
       })
@@ -139,22 +136,15 @@ export default function TransferRequests() {
     setState({...state, refreshKey: Manager.getUid(), successAlertMessage: `Decision Sent to ${recipientName}`})
   }
 
-  const OnTableChange = async () => {
-    const dbRef = ref(getDatabase())
-    onValue(child(dbRef, DB.tables.transferChangeRequests), async () => {
-      await GetSecuredRequests().then((r) => r)
-    })
-  }
-
   const CheckIn = async () => {
     setShowDetails(false)
-    let notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser.name))} at ${
+    let notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser?.name))} at ${
       activeRequest?.location
     }`
     if (!sendWithAddress) {
-      notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser.name))} has arrived at the transfer destination`
+      notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
     }
-    const recipientKey = activeRequest?.ownerKey === currentUser.key ? activeRequest.recipientKey : currentUser.key
+    const recipientKey = activeRequest?.ownerKey === currentUser?.key ? activeRequest.recipientKey : currentUser?.key
     await NotificationManager.sendNotification(
       'Transfer Destination Arrival',
       notificationMessage,
@@ -166,10 +156,10 @@ export default function TransferRequests() {
   }
 
   const GetFromOrToName = (key) => {
-    if (key === currentUser.key) {
+    if (key === currentUser?.key) {
       return 'Me'
     } else {
-      return currentUser?.coparents.find((c) => c.key === key)?.name
+      return currentUser?.coparents.find((c) => c.userKey === key)?.name
     }
   }
 
@@ -178,7 +168,6 @@ export default function TransferRequests() {
   }
 
   useEffect(() => {
-    OnTableChange().then((r) => r)
     GetCurrentUserAddress().then((r) => r)
     // eslint-disable-next-line no-undef
     setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY)
@@ -381,7 +370,7 @@ export default function TransferRequests() {
       </Modal>
 
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
-        {existingRequests.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
+        {transferRequests?.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
 
         <div className="flex" id="screen-title-wrapper">
           <p className="screen-title">Transfer Change Requests</p>
@@ -389,46 +378,48 @@ export default function TransferRequests() {
         </div>
         <p className="text-screen-intro">A proposal to modify the time and/or location for the child exchange on a designated day.</p>
         <Spacer height={10} />
+
         {/* LOOP REQUESTS */}
         {!showNewRequestCard && (
           <div id="all-transfer-requests-container">
-            <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={0.2}>
-              <></>
-              {Manager.isValid(existingRequests) &&
-                existingRequests.map((request, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className="flex row"
-                      onClick={() => {
-                        setActiveRequest(request)
-                        setShowDetails(true)
-                      }}>
-                      <div id="primary-icon-wrapper">
-                        <PiCarProfileDuotone id={'primary-row-icon'} />
-                      </div>
-                      <div data-request-id={request.id} className="request " id="content">
-                        {/* DATE */}
-                        <p id="title" className="flex date row-title">
-                          {moment(request.startDate).format(DatetimeFormats.readableMonthAndDay)}
-                          <span className={`${request.status} status`} id="request-status">
-                            {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
-                          </span>
-                        </p>
-                        {request?.recipientKey === currentUser.key && (
-                          <p id="subtitle">from {currentUser?.coparents.find((x) => x.key === request.ownerKey)?.name}</p>
-                        )}
-                        {request?.recipientKey !== currentUser.key && (
-                          <p id="subtitle">
-                            to&nbsp;
-                            {StringManager.getFirstNameOnly(currentUser?.coparents?.filter((x) => x?.key === request?.recipientKey)[0]?.name)}
+            {Manager.isValid(transferRequests) && (
+              <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={0.2}>
+                {Manager.isValid(transferRequests) &&
+                  transferRequests?.map((request, index) => {
+                    return (
+                      <div
+                        key={index}
+                        className="flex row"
+                        onClick={() => {
+                          setActiveRequest(request)
+                          setShowDetails(true)
+                        }}>
+                        <div id="primary-icon-wrapper">
+                          <PiCarProfileDuotone id={'primary-row-icon'} />
+                        </div>
+                        <div data-request-id={request.id} className="request " id="content">
+                          {/* DATE */}
+                          <p id="title" className="flex date row-title">
+                            {moment(request.startDate).format(DatetimeFormats.readableMonthAndDay)}
+                            <span className={`${request.status} status`} id="request-status">
+                              {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
+                            </span>
                           </p>
-                        )}
+                          {request?.recipientKey === currentUser?.key && (
+                            <p id="subtitle">from {currentUser?.coparents.find((x) => x.key === request.ownerKey)?.name}</p>
+                          )}
+                          {request?.recipientKey !== currentUser?.key && (
+                            <p id="subtitle">
+                              to&nbsp;
+                              {StringManager.getFirstNameOnly(currentUser?.coparents?.find((x) => x?.userKey === request?.recipientKey)?.name)}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )
-                })}
-            </Fade>
+                    )
+                  })}
+              </Fade>
+            )}
           </div>
         )}
         <NavBar />

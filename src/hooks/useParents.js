@@ -1,19 +1,19 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useContext, useEffect, useState} from 'react'
-import Manager from '../../managers/manager'
-import DB from '../../database/DB'
+import Manager from '../managers/manager'
+import DB from '../database/DB'
 import useUsers from './useUsers'
-import globalState from '../../context'
+import globalState from '../context'
 
-const useChildren = () => {
+const useParents = () => {
   const {state, setState} = useContext(globalState)
   const {authUser} = state
   const {users} = useUsers()
   const [isLoading, setIsLoading] = useState(true)
-  const [children, setChildren] = useState([])
+  const [parents, setParents] = useState([])
   const [error, setError] = useState(null)
   const dbUser = users?.find((u) => u?.email === authUser?.email)
-  const path = `${DB.tables.users}/${dbUser?.key}/children`
+  const path = `${DB.tables.users}/${dbUser?.key}/parents`
   const queryKey = ['realtime', path]
 
   useEffect(() => {
@@ -23,17 +23,17 @@ const useChildren = () => {
     const listener = onValue(
       dataRef,
       (snapshot) => {
-        console.log('Children Updated')
-        const formattedChildren = Manager.convertToArray(snapshot.val())
-        if (Manager.isValid(dbUser) && Manager.isValid(formattedChildren)) {
-          setChildren(formattedChildren)
+        // console.log('Children Updated')
+        const formattedParents = Manager.convertToArray(snapshot.val()?.filter((x) => x))
+        if (Manager.isValid(dbUser) && Manager.isValid(formattedParents)) {
+          setParents(formattedParents)
           setIsLoading(false)
         } else {
-          setChildren([])
+          setParents([])
         }
       },
       (err) => {
-        console.log(`useChildren Error: ${err}`)
+        console.log(`useParents Error: ${err}`)
         setError(err)
         setIsLoading(false)
       }
@@ -42,14 +42,14 @@ const useChildren = () => {
     return () => {
       off(dataRef, 'value', listener)
     }
-  }, [path])
+  }, [path, dbUser])
 
   return {
-    children,
+    parents,
     isLoading,
     error,
     queryKey,
   }
 }
 
-export default useChildren
+export default useParents

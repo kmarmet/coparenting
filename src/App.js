@@ -62,6 +62,7 @@ import NotificationManager from './managers/notificationManager'
 import CreationForms from './constants/creationForms'
 import AlertManager from './managers/alertManager'
 import Parents from './components/screens/parents/parents'
+import Onboarding from './components/screens/onboarding'
 
 export default function App() {
   // Initialize Firebase
@@ -149,6 +150,7 @@ export default function App() {
     // FIREBASE AUTH
     onAuthStateChanged(auth, async (user) => {
       // USER LOGGED IN FROM PERSISTED STATE
+      console.log(user)
       if (user) {
         const user = auth.currentUser
         await AppManager.clearAppBadge()
@@ -171,7 +173,7 @@ export default function App() {
 
           // Check if child profile and if parent access is granted
           if (currentUserFromDb?.accountType === 'child') {
-            if (!Manager.isValid(currentUserFromDb?.parentAccessGranted) || currentUserFromDb?.parentAccessGranted === false) {
+            if (currentUserFromDb?.parentAccessGranted === false) {
               screenToNavigateTo = ScreenNames.requestParentAccess
             }
           } else {
@@ -315,6 +317,7 @@ export default function App() {
             {currentScreen === ScreenNames.chats && <Chats />}
             {currentScreen === ScreenNames.visitation && <Visitation />}
             {currentScreen === ScreenNames.contactUs && <ContactUs />}
+            {currentScreen === ScreenNames.onboarding && <Onboarding />}
           </div>
         </globalState.Provider>
       </div>

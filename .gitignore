@@ -14,7 +14,7 @@
 
 *.map
 
-.parcel-cache/currentUser.mdb
+.parcel-cache/calendarEvents.mdb
 
 App Repo/
 Business/
@@ -279,7 +279,7 @@ ServiceFabricBackup/
 *.ndf
 
 # Business Intelligence projects
-*.rdl.currentUser
+*.rdl.calendarEvents
 *.bim.layout
 *.bim_*.settings
 *.rptproj.rsuser

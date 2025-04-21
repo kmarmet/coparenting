@@ -1,7 +1,7 @@
 // Path: src\components\screens\auth\registration.jsx
 import {initializeApp} from 'firebase/app'
 import {createUserWithEmailAndPassword, getAuth} from 'firebase/auth'
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useState} from 'react'
 import PasswordChecklist from 'react-password-checklist'
 import validator from 'validator'
 import Manager from '../../../managers/manager.js'
@@ -26,7 +26,7 @@ export default function Registration() {
   const auth = getAuth(app)
 
   // SUBMIT
-  const submit = async () => {
+  const Submit = async () => {
     if (!validator.isEmail(email)) {
       AlertManager.throwError('Email address is not valid')
       return false
@@ -55,17 +55,6 @@ export default function Registration() {
         }
       })
   }
-
-  useEffect(() => {
-    Manager.showPageContainer()
-    setTimeout(() => {
-      setState({
-        ...state,
-        currentScreen: ScreenNames.registration,
-        isLoading: false,
-      })
-    }, 500)
-  }, [])
 
   return (
     <>
@@ -117,11 +106,14 @@ export default function Registration() {
                 AlertManager.throwError('Please enter a password')
                 return false
               }
-              AlertManager.confirmAlert('Are the details you provided correct?', 'Yes', 'No', submit)
+              AlertManager.confirmAlert('Are the details you provided correct?', 'Yes', 'No', Submit)
             }}>
             Submit
           </button>
-          <button id="back-to-login-button" className="button default " onClick={() => setState({...state, currentScreen: ScreenNames.login})}>
+          <button
+            id="registration-screen"
+            className="button default back-to-login-button"
+            onClick={() => setState({...state, currentScreen: ScreenNames.login})}>
             Back to Login
           </button>
         </div>

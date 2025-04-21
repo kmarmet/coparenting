@@ -3,7 +3,6 @@ import React, {useContext} from 'react'
 import globalState from '../context'
 import ScreenNames from '../constants/screenNames'
 import Manager from '../managers/manager'
-import AppManager from '../managers/appManager'
 import {getAuth, signOut} from 'firebase/auth'
 import {
   BsCalendarWeekFill,
@@ -24,13 +23,12 @@ import {HiUserCircle} from 'react-icons/hi2'
 import {FaDonate} from 'react-icons/fa'
 import DB_UserScoped from '../database/db_userScoped'
 import Overlay from './shared/overlay'
-import useCurrentUser from './hooks/useCurrentUser'
+import useCurrentUser from '../hooks/useCurrentUser'
 
 export default function FullMenu() {
   const {state, setState} = useContext(globalState)
   const {currentScreen, menuIsOpen, theme, notificationCount} = state
   const {currentUser} = useCurrentUser()
-
   const auth = getAuth()
 
   const ChangeCurrentScreen = async (screen) => setState({...state, currentScreen: screen, refreshKey: Manager.getUid(), menuIsOpen: false})
@@ -62,6 +60,13 @@ export default function FullMenu() {
       <div id="full-menu" className={`${theme} ${menuIsOpen ? 'open' : 'closed'}`}>
         <div id="menu-title">Menu</div>
         <div className="menu-items">
+          {currentUser?.email === 'kmarmet1@gmail.com' && (
+            <div
+              className={`menu-item admin ${currentScreen === ScreenNames.onboarding ? 'active' : ''}`}
+              onClick={(e) => ChangeCurrentScreen(ScreenNames.onboarding, e)}>
+              <p>Onboarding</p>
+            </div>
+          )}
           {/* ADMIN DASHBOARD */}
           {currentUser?.email === 'kmarmet1@gmail.com' && (
             <div
@@ -95,7 +100,7 @@ export default function FullMenu() {
           </div>
 
           {/* PARENTS ONLY */}
-          {AppManager.getAccountType(currentUser) === 'parent' && (
+          {currentUser?.accountType === 'parent' && (
             <>
               {/* VISITATION */}
               <div
@@ -168,8 +173,8 @@ export default function FullMenu() {
             <p>Memories</p>
           </div>
 
-          {/* COPARENTS */}
-          {AppManager.getAccountType(currentUser) === 'child' && (
+          {/* PARENTS */}
+          {currentUser?.accountType === 'child' && (
             <div
               className={`menu-item parents ${currentScreen === ScreenNames.parents ? 'active' : ''}`}
               onClick={(e) => ChangeCurrentScreen(ScreenNames.parents, e)}>
@@ -180,7 +185,7 @@ export default function FullMenu() {
             </div>
           )}
 
-          {AppManager.getAccountType(currentUser) === 'parent' && (
+          {currentUser?.accountType === 'parent' && (
             <>
               {/* CHILD INFO */}
               <div

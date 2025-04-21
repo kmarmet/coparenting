@@ -44,18 +44,14 @@ export default function ResetPassword() {
       <div id="forgot-password-container" className="page-container light form">
         <p className="screen-title ">Reset Password</p>
         <Spacer height={10} />
-        <div className="form" autoComplete="off">
-          <InputWrapper labelText={'Email Address'} required={true} inputType={InputTypes.email} onChange={(e) => setEmail(e.target.value)} />
-          <div className="flex gap">
-            <button className="button default green" onClick={sendResetLink}>
-              Send Reset Link
-            </button>
-            <button className="button default grey" onClick={() => setState({...state, currentScreen: ScreenNames.login})}>
-              Nevermind
-            </button>
-          </div>
-        </div>
+        <InputWrapper labelText={'Email Address'} required={true} inputType={InputTypes.email} onChange={(e) => setEmail(e.target.value)} />
+        <button className="button default green w-100" onClick={sendResetLink}>
+          Send Reset Link
+        </button>
       </div>
+      <button className="button default back-to-login-button" onClick={() => setState({...state, currentScreen: ScreenNames.login})}>
+        Back to Login
+      </button>
     </>
   )
 }

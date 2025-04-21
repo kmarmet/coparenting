@@ -2,7 +2,6 @@
 import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../../context'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import DomManager from '/src/managers/domManager'
 import AlertManager from '/src/managers/alertManager'
 import Manager from '../../../managers/manager'
 import SmsManager from '/src/managers/smsManager.js'
@@ -11,17 +10,24 @@ import DB from '../../../database/DB'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
 import StringManager from '../../../managers/stringManager'
-import useCurrentUser from '../../hooks/useCurrentUser'
+import useCurrentUser from '../../../hooks/useCurrentUser'
+import Spacer from '../../shared/spacer'
+import DomManager from '../../../managers/domManager'
+import Child from '../../../models/child/child'
+import General from '../../../models/child/general'
+import DB_UserScoped from '../../../database/db_userScoped'
+import ObjectManager from '../../../managers/objectManager'
+import ModelNames from '../../../models/modelNames'
 
 export default function RequestParentAccess() {
   const {state, setState} = useContext(globalState)
-  const {currentUser} = useCurrentUser()
   const [readyToVerify, setReadyToVerify] = useState(false)
   const [parentPhone, setParentPhone] = useState(null)
   const [enteredCode, setEnteredCode] = useState(0)
   const [verificationCode, setVerificationCode] = useState('')
   const [userName, setUserName] = useState('')
   const [parentEmail, setParentEmail] = useState('')
+  const {currentUser} = useCurrentUser()
 
   // SEND VERIFICATION CODE
   const SendPhoneVerificationCode = async (codeResent = false) => {
@@ -48,10 +54,10 @@ export default function RequestParentAccess() {
         )
         return false
       }
-      if (parentPhone === currentUser?.phone) {
-        AlertManager.throwError('Unable to request access', "Your parent's phone number cannot be your phone number")
-        return false
-      }
+      // if (parentPhone === currentUser?.phone) {
+      //   AlertManager.throwError('Unable to request access', "Your parent's phone number cannot be your phone number")
+      //   return false
+      // }
       const phoneCode = Manager.getUid().slice(0, 6)
       setVerificationCode(phoneCode)
       setState({...state, isLoading: true, loadingText: 'Sending security code...'})
@@ -72,10 +78,41 @@ export default function RequestParentAccess() {
       const parent = await DB.find(DB.tables.users, ['email', parentEmail], true)
 
       if (parent) {
-        await DB.add(`${DB.tables.users}/${currentUser?.key}/parents`, {name: parent?.name, phone: parent?.phone, userKey: parent?.key})
+        const existingChild = parent?.children?.find((x) => x?.general?.phone === currentUser?.phone || x?.general?.email === currentUser?.email)
+
+        // ADD OR UPDATE CHILD RECORD UNDER PARENT
+        // -> Add
+        if (!Manager.isValid(existingChild)) {
+          const childToAdd = new Child()
+          const general = new General()
+          general.phone = currentUser?.phone
+          general.name = StringManager.uppercaseFirstLetterOfAllWords(userName)
+          childToAdd.general = general
+          childToAdd.userKey = currentUser?.key
+          const cleanChild = ObjectManager.cleanObject(childToAdd, ModelNames.child)
+          await DB_UserScoped.addUserChild(parent, cleanChild)
+        }
+
+        // -> Update
+        else {
+          const existingChildKey = await DB.getSnapshotKey(`${DB.tables.users}/${parent?.key}/children`, existingChild, 'id')
+
+          if (Manager.isValid(existingChildKey)) {
+            existingChild.userKey = currentUser?.key
+            await DB.updateByPath(`${DB.tables.users}/${parent?.key}/children/${existingChildKey}`, existingChild)
+          }
+        }
+
+        // Add parent
+        await DB.add(`${DB.tables.users}/${currentUser?.key}/parents`, {
+          name: parent?.name,
+          phone: parent?.phone,
+          userKey: parent?.key,
+          email: parent?.email,
+        })
         await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/parentAccessGranted`, true)
         await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/name`, StringManager.uppercaseFirstLetterOfAllWords(userName))
-        setState({...state, currentScreen: ScreenNames.calendar, successAlertMessage: 'Access Granted'})
+        setState({...state, currentScreen: ScreenNames.onboarding, successAlertMessage: 'Access Granted'})
       } else {
         AlertManager.throwError(
           'No parent profile found with provided email',
@@ -91,7 +128,6 @@ export default function RequestParentAccess() {
 
   useEffect(() => {
     if (Manager.isValid(currentUser)) {
-      console.log(currentUser)
       if (Manager.isValid(currentUser?.parentAccessGranted) && currentUser?.parentAccessGranted === true) {
         setState({...state, currentScreen: ScreenNames.calendar})
       }
@@ -101,13 +137,16 @@ export default function RequestParentAccess() {
   return (
     <div className="page-container parent-access">
       <p className="screen-title">Request Access from Parent</p>
-      <p className="mb-10">For privacy and security, your parent must provide a code to give you access.</p>
-      <p className="mb-10">
-        When you enter your parent&#39;s phone number and {DomManager.tapOrClick()} the Request Access button, a text message with the code will be
-        sent to your parent.
+      <Spacer height={5} />
+      <p>To ensure privacy and security, your parent needs to provide a code for you to gain access.</p>
+      <Spacer height={5} />
+      <p>
+        When you enter your parent&#39;s phone number and {DomManager.tapOrClick()} the <b>Request Access</b> button, a text message containing the
+        code will be sent to them.
       </p>
-      <p className="mb-10">Ask them to provide it to you and enter it below.</p>
-
+      <Spacer height={5} />
+      <p>Please ask your parent for the code and enter it below.</p>
+      <Spacer height={10} />
       {/* NAME */}
       {!readyToVerify && (
         <InputWrapper inputType={InputTypes.text} required={true} labelText={'Your Name'} onChange={(e) => setUserName(e.target.value)} />
@@ -131,20 +170,25 @@ export default function RequestParentAccess() {
           onChange={(e) => setParentPhone(e.target.value)}
         />
       )}
-      {readyToVerify && <InputWrapper labelText={'Access Code'} inputType={InputTypes.text} onChange={(e) => setEnteredCode(e.target.value)} />}
+      <Spacer height={10} />
+      {readyToVerify && (
+        <InputWrapper labelText={'Access Code'} inputType={InputTypes.text} required={true} onChange={(e) => setEnteredCode(e.target.value)} />
+      )}
       {!readyToVerify && (
-        <button className="button default green center mt-30" onClick={SendPhoneVerificationCode}>
+        <button className="button default green center" onClick={SendPhoneVerificationCode}>
           Request Access
         </button>
       )}
+      <Spacer height={10} />
       {readyToVerify && (
-        <button className="button default green center mt-30" onClick={VerifyPhoneCode}>
+        <button className="button default green center" onClick={VerifyPhoneCode}>
           Verify Code
         </button>
       )}
+      <Spacer height={10} />
       {readyToVerify && (
         <button
-          className="button default submit center mt-10"
+          className="button default submit center"
           onClick={async () => {
             setReadyToVerify(false)
             setParentPhone('')
@@ -155,6 +199,12 @@ export default function RequestParentAccess() {
           Resend
         </button>
       )}
+      <button
+        id="request-access-screen"
+        className="button default back-to-login-button"
+        onClick={() => setState({...state, currentScreen: ScreenNames.login})}>
+        Back to Login
+      </button>
     </div>
   )
 }

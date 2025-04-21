@@ -5,6 +5,7 @@ import Manager from '/src/managers/manager.js'
 import StringManager from '../../managers/stringManager'
 import {IoClose} from 'react-icons/io5'
 import Overlay from './overlay'
+import Spacer from './spacer'
 
 export default function Modal({
   submitText,
@@ -25,7 +26,7 @@ export default function Modal({
   const {state, setState} = useContext(globalState)
   const {theme, authUser, creationFormToShow} = state
 
-  const hideCard = () => {
+  const HideCard = () => {
     const modalWrapper = document.querySelector(`.${wrapperClass}#modal-wrapper`)
 
     if (modalWrapper) {
@@ -58,7 +59,7 @@ export default function Modal({
     }
   }
 
-  const scrollToTop = () => {
+  const ScrollToTop = () => {
     const header = document.getElementById('modal-title')
     header.scrollIntoView({behavior: 'smooth', block: 'end'})
   }
@@ -75,7 +76,7 @@ export default function Modal({
       const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
       const pageContainer = document.querySelector('.page-container')
 
-      if (modalWrapper && StringManager.wordCount(title) >= 4) {
+      if (modalWrapper && StringManager.GetWordCount(title) >= 4) {
         const title = modalWrapper.querySelector('#modal-title')
         if (title) {
           title.classList.add('long-title')
@@ -87,7 +88,7 @@ export default function Modal({
         // show card
 
         if (showCard) {
-          scrollToTop()
+          ScrollToTop()
           const checkboxes = modalWrapper.querySelectorAll('.checkbox')
           if (Manager.isValid(checkboxes)) {
             for (let checkbox of checkboxes) {
@@ -125,6 +126,17 @@ export default function Modal({
         endTimeInput.placeholder = 'End time'
       }
     }
+    if (!showCard) {
+      const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
+      const pageContainer = document.querySelector('.page-container')
+      document.body.classList.remove('disable-scroll')
+      if (appContentWithSidebar) {
+        appContentWithSidebar.classList.remove('disable-scroll')
+      }
+      if (pageContainer) {
+        pageContainer.classList.remove('disable-scroll')
+      }
+    }
   }, [showCard])
 
   return (
@@ -138,6 +150,7 @@ export default function Modal({
                 {title}
                 {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
               </p>
+              <Spacer height={3} />
               {Manager.isValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}
             </div>
             <div id="relative-wrapper">
@@ -162,7 +175,7 @@ export default function Modal({
             id="close-icon-bg"
             onClick={() => {
               onClose()
-              hideCard()
+              HideCard()
             }}>
             <IoClose className={'close-icon'} />
           </div>

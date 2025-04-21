@@ -18,10 +18,10 @@ const DB = {
     sharedChildInfo: 'sharedChildInfo',
     chatBookmarks: 'chatBookmarks',
     chats: 'chats',
-    chatRecoveryRequests: 'chatRecoveryRequests',
     chatMessages: 'chatMessages',
     holidayEvents: 'holidayEvents',
     documentHeaders: 'documentHeaders',
+    mapper: 'mapper',
   },
   find: async (arrayOrTable, matchArray, isFromDb = true, filterFunction = null) => {
     if (filterFunction) {

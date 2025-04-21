@@ -27,12 +27,14 @@ import creationForms from '../../constants/creationForms'
 import DomManager from '../../managers/domManager'
 import InputTypes from '../../constants/inputTypes'
 import Spacer from '../shared/spacer'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 export default function NewMemoryForm() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, authUser, refreshKey, theme, creationFormToShow} = state
+  const {authUser, refreshKey, theme, creationFormToShow} = state
   const [images, setImages] = useState([])
   const [newMemory, setNewMemory] = useState(new Memory())
+  const {currentUser} = useCurrentUser()
 
   const ResetForm = async () => {
     Manager.ResetForm('new-memory-wrapper')
@@ -46,7 +48,7 @@ export default function NewMemoryForm() {
   }
 
   const Submit = async () => {
-    const validAccounts = await DB_UserScoped.getValidAccountsCountForUser(currentUser)
+    const validAccounts = currentUser?.sharedDataUsers
     if (validAccounts === 0) {
       AlertManager.throwError(
         `No ${currentUser?.accountType === 'parent' ? 'co-parents or children' : 'parents'} to \n share memories with`,
@@ -165,7 +167,7 @@ export default function NewMemoryForm() {
           <Spacer height={5} />
           <div className="form">
             {/* SHARE WITH */}
-            {currentUser && <ShareWithCheckboxes onCheck={HandleShareWithSelection} containerClass={'share-with-coparents'} />}
+            <ShareWithCheckboxes onCheck={HandleShareWithSelection} containerClass={'share-with-coparents'} />
 
             {/* TITLE */}
             <InputWrapper
@@ -176,7 +178,6 @@ export default function NewMemoryForm() {
 
             {/* DATE */}
             <InputWrapper
-              defaultValue={moment()}
               uidClass="memory-capture-date-uid"
               labelText={'Capture Date'}
               inputType={InputTypes.date}

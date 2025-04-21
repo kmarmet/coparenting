@@ -6,25 +6,23 @@ import StringManager from '../../managers/stringManager'
 
 const SuccessAlert = () => {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, successAlertMessage} = state
+  const {successAlertMessage} = state
   const [showAlert, setShowAlert] = useState(false)
 
   useEffect(() => {
     if (Manager.isValid(successAlertMessage, true)) {
       setShowAlert(true)
       setTimeout(() => {
+        setShowAlert(false)
         setTimeout(() => {
-          setShowAlert(false)
-          setTimeout(() => {
-            setState({...state, successAlertMessage: null})
-          }, 500)
-        }, 800)
-      }, 1800)
+          setState({...state, successAlertMessage: null})
+        }, 1000)
+      }, 2200)
     }
   }, [successAlertMessage])
   return (
-    <div id="success-alert-wrapper" onClick={() => setShowAlert(false)} className={showAlert ? 'active blur-bg' : 'blur-bg'}>
-      <p id="success-alert">{StringManager.formatTitle(successAlertMessage)}</p>
+    <div id="success-alert-wrapper" onClick={() => setShowAlert(false)} className={showAlert ? 'active' : ''}>
+      <p id="success-alert">{StringManager.FormatTitle(successAlertMessage)}</p>
       <IoClose className={'alert-close-icon'} />
     </div>
   )

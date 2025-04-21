@@ -1,4 +1,5 @@
 // Path: src\components\navBar.jsx
+import {IoMdImages} from 'react-icons/io'
 import React, {useContext, useEffect} from 'react'
 import globalState from '../context'
 import ScreenNames from '../constants/screenNames'
@@ -8,7 +9,7 @@ import {LuCalendarDays} from 'react-icons/lu'
 import {HiOutlineMenu} from 'react-icons/hi'
 import {PiPlusBold} from 'react-icons/pi'
 import Manager from '../managers/manager'
-import useCurrentUser from './hooks/useCurrentUser'
+import useCurrentUser from '../hooks/useCurrentUser'
 
 export default function NavBar({children, navbarClass}) {
   const {state, setState} = useContext(globalState)
@@ -47,13 +48,13 @@ export default function NavBar({children, navbarClass}) {
                 <p>Calendar</p>
               </div>
 
-              {/* CHATS */}
+              {/* MEMORIES */}
               {currentUser?.accountType === 'child' && (
                 <div
                   id="memories-menu-item"
                   onClick={() => changeCurrentScreen(ScreenNames.memories)}
                   className={`${currentScreen === ScreenNames.memories ? 'active menu-item' : 'menu-item'}`}>
-                  <IoChatbubblesOutline className={'memories'} />
+                  <IoMdImages />
                   <p>Memories</p>
                 </div>
               )}

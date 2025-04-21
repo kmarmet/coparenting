@@ -27,18 +27,18 @@ import AppManager from '../../../managers/appManager'
 import DateManager from '../../../managers/dateManager'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
-import useChat from '../../hooks/useChat'
-import useCurrentUser from '../../hooks/useCurrentUser'
+import useChat from '../../../hooks/useChat'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 import DB from '../../../database/DB'
 import NotificationManager from '../../../managers/notificationManager'
 import ActivityCategory from '../../../models/activityCategory'
+import useChatMessages from '../../../hooks/useChatMessages'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
   const {theme, messageRecipient, refreshKey} = state
   const {currentUser} = useCurrentUser()
-  const {chat, chatMessages} = useChat()
-  const [messagesToLoop, setMessagesToLoop] = useState(chatMessages)
+  const {chat} = useChat()
   const [searchResults, setSearchResults] = useState([])
   const [showSearchInput, setShowSearchInput] = useState(false)
   const [bookmarks, setBookmarks] = useState([])
@@ -50,12 +50,22 @@ const Chats = () => {
   const [inSearchMode, setInSearchMode] = useState(false)
   const [inputIsActive, setInputIsActive] = useState()
   const [messageTimezone, setMessageTimezone] = useState(false)
+  const [chatId, setChatId] = useState(null)
+  const {chatMessages} = useChatMessages(chatId)
+  const [messagesToLoop, setMessagesToLoop] = useState(chatMessages)
 
   useEffect(() => {
-    if (Manager.isValid(chatMessages) && Manager.isValid(chat)) {
+    if (Manager.isValid(chatMessages)) {
       setMessagesToLoop(chatMessages)
     }
   }, [chatMessages])
+
+  useEffect(() => {
+    if (Manager.isValid(chat) && Manager.isValid(chat?.id)) {
+      console.log(chat?.id)
+      setChatId(chat?.id)
+    }
+  }, [chat])
 
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)
@@ -192,6 +202,7 @@ const Chats = () => {
   const ScrollToLatestMessage = () => {
     setTimeout(() => {
       const messageWrapper = document.getElementById('default-messages')
+
       if (messageWrapper) {
         messageWrapper.scrollTop = messageWrapper.scrollHeight
       }
@@ -199,7 +210,7 @@ const Chats = () => {
   }
 
   const HandleMessageTyping = () => {
-    if (StringManager.wordCount(messageText) % 2 === 0) {
+    if (StringManager.GetWordCount(messageText) % 2 === 0 && messageText.indexOf(' ') > -1) {
       SetTone(messageText).then((r) => r)
     }
   }
@@ -439,76 +450,80 @@ const Chats = () => {
           <>
             {/* ITERATE DEFAULT MESSAGES */}
             <div id="default-messages">
-              {Manager.isValid(messagesToLoop) &&
-                messagesToLoop.map((message, index) => {
-                  // Determine bookmark class
-                  let isBookmarked = Manager.isValid(bookmarks?.find((x) => x.id === message?.id))
-                  const timestampDateOnly = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.dateForDb)
-                  const timestampTimeOnly = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.timeForDb)
-                  let convertedTime = DateManager.convertTime(timestampTimeOnly, message?.senderTimezone, currentUser?.location?.timezone)
-                  let convertedTimestamp = moment(`${timestampDateOnly} ${convertedTime}`, DatetimeFormats.fullDatetime)
-                    .tz(currentUser?.location?.timezone)
-                    .format('ddd, MMMM Do (h:mma)')
+              {Manager.isValid(messagesToLoop) && (
+                <Fade duration={800} triggerOnce={true} direction={'up'}>
+                  {Manager.isValid(messagesToLoop) &&
+                    messagesToLoop.map((message, index) => {
+                      // Determine bookmark class
+                      let isBookmarked = Manager.isValid(bookmarks?.find((x) => x.id === message?.id))
+                      const timestampDateOnly = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.dateForDb)
+                      const timestampTimeOnly = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.timeForDb)
+                      let convertedTime = DateManager.convertTime(timestampTimeOnly, message?.senderTimezone, currentUser?.location?.timezone)
+                      let convertedTimestamp = moment(`${timestampDateOnly} ${convertedTime}`, DatetimeFormats.fullDatetime)
+                        .tz(currentUser?.location?.timezone)
+                        .format('ddd, MMMM Do (h:mma)')
 
-                  // Message Sent Today
-                  if (moment(message?.timestamp, DatetimeFormats.fullDatetime).isSame(moment(), 'day')) {
-                    convertedTimestamp = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.timeForDb)
-                  }
-                  return (
-                    <div {...bind()} key={index} className={'message-fade-wrapper'}>
-                      {/* LONGPRESS MENU */}
-                      <div className="longpress-menu">
-                        <button
-                          id="copy"
-                          onClick={(e) => {
-                            const message = e.target.parentNode.parentNode.querySelector('.message')
-                            navigator.clipboard.writeText(message.textContent)
-                            e.target.parentNode.classList.remove('active')
-                          }}>
-                          Copy <IoCopy />
-                        </button>
-                        {isBookmarked && (
-                          <button
-                            id="bookmark"
-                            onClick={(e) => {
-                              e.target.parentNode.classList.remove('active')
+                      // Message Sent Today
+                      if (moment(message?.timestamp, DatetimeFormats.fullDatetime).isSame(moment(), 'day')) {
+                        convertedTimestamp = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.timeForDb)
+                      }
+                      return (
+                        <div {...bind()} key={index} className={'message-wrapper'}>
+                          {/* LONGPRESS MENU */}
+                          <div className="longpress-menu">
+                            <button
+                              id="copy"
+                              onClick={(e) => {
+                                const message = e.target.parentNode.parentNode.querySelector('.message')
+                                navigator.clipboard.writeText(message.textContent)
+                                e.target.parentNode.classList.remove('active')
+                              }}>
+                              Copy <IoCopy />
+                            </button>
+                            {isBookmarked && (
+                              <button
+                                id="bookmark"
+                                onClick={(e) => {
+                                  e.target.parentNode.classList.remove('active')
 
-                              ToggleBookmark(message).then((r) => r)
-                            }}>
-                            Remove Bookmark
-                            <BsBookmarkDashFill className={'active'} />
-                          </button>
-                        )}
+                                  ToggleBookmark(message).then((r) => r)
+                                }}>
+                                Remove Bookmark
+                                <BsBookmarkDashFill className={'active'} />
+                              </button>
+                            )}
 
-                        {!isBookmarked && (
-                          <button
-                            id="bookmark"
-                            onClick={(e) => {
-                              e.target.parentNode.classList.remove('active')
-                              ToggleBookmark(message, false).then((r) => r)
-                            }}>
-                            Bookmark <BsBookmarkStarFill />
-                          </button>
-                        )}
+                            {!isBookmarked && (
+                              <button
+                                id="bookmark"
+                                onClick={(e) => {
+                                  e.target.parentNode.classList.remove('active')
+                                  ToggleBookmark(message, false).then((r) => r)
+                                }}>
+                                Bookmark <BsBookmarkStarFill />
+                              </button>
+                            )}
 
-                        <button
-                          id="cancel"
-                          onClick={(e) => {
-                            e.target.parentNode.classList.remove('active')
-                          }}>
-                          Cancel <MdCancel className={'cancel-icon'} />
-                        </button>
-                      </div>
-                      <div className="flex">
-                        <p className={message?.senderKey === currentUser?.key ? 'from message' : 'to message'}>{message?.message}</p>
-                        {isBookmarked && (
-                          <FaStar className={message?.senderKey === currentUser?.key ? 'from bookmarked-icon' : 'to bookmarked-icon'} />
-                        )}
-                      </div>
-                      <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{convertedTimestamp}</span>
-                    </div>
-                  )
-                })}
+                            <button
+                              id="cancel"
+                              onClick={(e) => {
+                                e.target.parentNode.classList.remove('active')
+                              }}>
+                              Cancel <MdCancel className={'cancel-icon'} />
+                            </button>
+                          </div>
+                          <div className="flex">
+                            <p className={message?.senderKey === currentUser?.key ? 'from message' : 'to message'}>{message?.message}</p>
+                            {isBookmarked && (
+                              <FaStar className={message?.senderKey === currentUser?.key ? 'from bookmarked-icon' : 'to bookmarked-icon'} />
+                            )}
+                          </div>
+                          <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{convertedTimestamp}</span>
+                        </div>
+                      )
+                    })}
+                </Fade>
+              )}
             </div>
 
             <div id="emotion-and-input-wrapper">

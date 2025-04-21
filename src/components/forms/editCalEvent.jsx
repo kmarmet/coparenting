@@ -31,10 +31,12 @@ import ToggleButton from '../shared/toggleButton'
 import InputTypes from '../../constants/inputTypes'
 import DetailBlock from '../shared/detailBlock'
 import Map from '../shared/map'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 export default function EditCalEvent({event, showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, refreshKey, dateToEdit} = state
+  const {theme, refreshKey, dateToEdit} = state
+  const {currentUser} = useCurrentUser()
 
   // Event Details
   const [eventStartDate, setEventStartDate] = useState('')
@@ -85,11 +87,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setIsVisitation(false)
     setEventIsRecurring(false)
     setEventIsCloned(false)
-    const updatedUser = await DB_UserScoped.getCurrentUser(currentUser?.email)
 
     setState({
       ...state,
-      currentUser: updatedUser,
       successAlertMessage: alertMessage,
       dateToEdit: moment().format(DatetimeFormats.dateForDb),
       refreshKey: Manager.getUid(),
@@ -97,7 +97,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     hideCard()
   }
 
-  const nonOwnerSubmit = async () => {
+  const NonOwnerSubmit = async () => {
     // Fill/overwrite
     // Required
     const updatedEvent = {...event}
@@ -194,7 +194,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       else {
         // If event is shared with you AND you are not the owner of the event
         const cleanedEvent = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
-        await editNonOwnerEvent(dbPath, cleanedEvent)
+        await EditNonOwnerEvent(dbPath, cleanedEvent)
         if (Manager.isValid(eventShareWith)) {
           NotificationManager.sendToShareWith(
             eventShareWith,
@@ -213,7 +213,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     await ResetForm('Event Updated')
   }
 
-  const editNonOwnerEvent = async (dbPath, newEvent) => {
+  const EditNonOwnerEvent = async (dbPath, newEvent) => {
     if (Manager.isValid(event?.shareWith)) {
       // Add cloned event for currentUser
       await CalendarManager.addCalendarEvent(currentUser, newEvent)
@@ -223,7 +223,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   }
 
   // SUBMIT
-  const submit = async () => {
+  const Submit = async () => {
     // Set new event values
     const updatedEvent = {...event}
 
@@ -310,13 +310,16 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       else {
         await DB.updateEntireRecord(`${dbPath}`, cleanedEvent, updatedEvent.id)
       }
+      if (Manager.isValid(eventShareWith)) {
+        NotificationManager.sendToShareWith(eventShareWith, currentUser, 'Event Updated', `${eventName} has been updated`, ActivityCategory.calendar)
+      }
     }
 
     await ResetForm('Event Updated')
   }
 
   // CHECKBOX HANDLERS
-  const handleChildSelection = (e) => {
+  const HandleChildSelection = (e) => {
     let childrenArr = []
     Manager.handleCheckboxSelection(
       e,
@@ -332,12 +335,12 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     )
   }
 
-  const handleShareWithSelection = async (e) => {
+  const HandleShareWithSelection = async (e) => {
     const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
     setEventShareWith(shareWithNumbers)
   }
 
-  const handleReminderSelection = async (e) => {
+  const HandleReminderSelection = async (e) => {
     Manager.handleCheckboxSelection(
       e,
       (e) => {
@@ -359,7 +362,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     )
   }
 
-  const setDefaultValues = async () => {
+  const SetDefaultValues = async () => {
     setView('Details')
     setEventName(event?.title)
     setEventStartDate(event?.startDate)
@@ -399,7 +402,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     }
   }
 
-  const deleteEvent = async () => {
+  const DeleteEvent = async () => {
     const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
 
     const allEvents = await SecurityManager.getCalendarEvents(currentUser).then((r) => r)
@@ -418,7 +421,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     }
   }
 
-  const setLocalConfirmMessage = () => {
+  const SetLocalConfirmMessage = () => {
     let message = 'Are you sure you want to delete this event?'
 
     if (event?.isRecurring || event?.isCloned || event?.isDateRange) {
@@ -428,12 +431,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     return message
   }
 
-  const getCreatedBy = () => {
+  const GetCreatedBy = () => {
     if (Manager.isValid(event?.createdBy)) {
+      console.log(event?.ownerKey)
       if (event?.ownerKey === currentUser?.key) {
         return 'Me'
       } else {
-        return currentUser?.coparents.find((x) => x.key === event?.ownerKey)?.name
+        return StringManager.getFirstNameOnly(event?.createdBy)
       }
     }
   }
@@ -447,19 +451,19 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
   useEffect(() => {
     if (Manager.isValid(event)) {
-      setDefaultValues().then((r) => r)
+      SetDefaultValues().then((r) => r)
     }
   }, [event])
 
   return (
     <Modal
       onDelete={() => {
-        AlertManager.confirmAlert(setLocalConfirmMessage(), "I'm Sure", true, async () => {
-          await deleteEvent()
+        AlertManager.confirmAlert(SetLocalConfirmMessage(), "I'm Sure", true, async () => {
+          await DeleteEvent()
         })
       }}
       hasDelete={currentUser?.key === event?.ownerKey}
-      onSubmit={currentUser?.key === event?.ownerKey ? submit : nonOwnerSubmit}
+      onSubmit={currentUser?.key === event?.ownerKey ? Submit : NonOwnerSubmit}
       submitText={'Update Event'}
       submitIcon={<BsCalendar2CheckFill className={'edit-calendar-icon'} />}
       hasSubmitButton={view === 'Edit'}
@@ -471,20 +475,16 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       deleteButtonText="Delete Event"
       className="edit-calendar-event"
       viewSelector={
-        <>
-          {currentUser?.accountType !== 'child' && (
-            <ViewSelector
-              key={refreshKey}
-              labels={['Details', 'Edit']}
-              updateState={(labelText) => {
-                setView(labelText)
-              }}
-            />
-          )}
-        </>
+        <ViewSelector
+          key={refreshKey}
+          labels={['Details', 'Edit']}
+          updateState={(labelText) => {
+            setView(labelText)
+          }}
+        />
       }
       wrapperClass={`edit-calendar-event`}>
-      <div id="edit-cal-event-container" className={`${theme} form edit-event-form'`}>
+      <div id="edit-cal-event-container" className={`${theme} edit-event-form'`}>
         {!dataIsLoading && (
           <>
             {/* DETAILS */}
@@ -521,7 +521,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   />
 
                   {/*  Created By */}
-                  <DetailBlock valueToValidate={event?.createdBy} text={getCreatedBy()} title={'Created By'} />
+                  <DetailBlock valueToValidate={event?.createdBy} text={GetCreatedBy()} title={'Created By'} />
 
                   {/*  Shared With */}
                   <DetailBlock valueToValidate={event?.shareWith} text={shareWithNames?.join(', ')} title={'Shared With'} />
@@ -545,10 +545,10 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   )}
 
                   {/* Children */}
-                  {Manager.isValid(event?.chatMessages) && (
+                  {Manager.isValid(event?.children) && (
                     <div className="block">
-                      {Manager.isValid(event?.chatMessages) &&
-                        event?.chatMessages.map((child, index) => {
+                      {Manager.isValid(event?.children) &&
+                        event?.children.map((child, index) => {
                           return (
                             <p className="block-text" key={index}>
                               {child}
@@ -656,14 +656,12 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               <Spacer height={5} />
 
               {/* Share with */}
-              {Manager.isValid(currentUser?.coparents) && currentUser?.accountType === 'parent' && (
-                <ShareWithCheckboxes
-                  defaultKeys={event?.shareWith}
-                  required={false}
-                  onCheck={handleShareWithSelection}
-                  containerClass={`share-with-coparents`}
-                />
-              )}
+              <ShareWithCheckboxes
+                defaultKeys={event?.shareWith}
+                required={false}
+                onCheck={HandleShareWithSelection}
+                containerClass={`share-with-parents`}
+              />
 
               {/* REMINDER */}
               <Accordion expanded={showReminders} id={'checkboxes'}>
@@ -687,7 +685,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                     elClass={`${theme}`}
                     containerClass={'reminder-times'}
                     skipNameFormatting={true}
-                    onCheck={handleReminderSelection}
+                    onCheck={HandleReminderSelection}
                   />
                 </AccordionDetails>
               </Accordion>
@@ -725,7 +723,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                         })}
                         elClass={`${theme} `}
                         containerClass={'include-chatMessages-checkbox-container'}
-                        onCheck={handleChildSelection}
+                        onCheck={HandleChildSelection}
                       />
                     </div>
                   </AccordionDetails>

@@ -1,12 +1,11 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useContext, useEffect, useState} from 'react'
-import Manager from '../../managers/manager'
-import DB from '../../database/DB'
-import globalState from '../../context'
+import Manager from '../managers/manager'
+import DB from '../database/DB'
+import globalState from '../context'
 import useUsers from './useUsers'
-import useChatMessages from './useChatMessages'
 
-const useChat = () => {
+const useChat = (chatIdInput) => {
   const {state, setState} = useContext(globalState)
   const {messageRecipient, authUser} = state
   const {users} = useUsers()
@@ -15,9 +14,8 @@ const useChat = () => {
   const [error, setError] = useState(null)
   const [path, setPath] = useState(`${DB.tables.chats}/${currentUser?.key}`)
   const queryKey = ['realtime', path]
+  const [chats, setChats] = useState([])
   const [chat, setChat] = useState()
-  const [chatId, setChatId] = useState(false)
-  const {chatMessages} = useChatMessages(chatId)
 
   // Get current user and set path
   useEffect(() => {
@@ -36,11 +34,11 @@ const useChat = () => {
       dataRef,
       async (snapshot) => {
         const chats = snapshot.val()
+        setChats(chats)
         if (Manager.isValid(chats)) {
           for (let _chat of chats) {
             const memberKeys = _chat?.members?.map((x) => x?.key)
             if (Manager.isValid(memberKeys) && memberKeys.includes(messageRecipient?.key) && memberKeys.includes(currentUser?.key)) {
-              setChatId(_chat?.id)
               setChat(_chat)
             }
           }
@@ -61,8 +59,8 @@ const useChat = () => {
   }, [path, currentUser, messageRecipient])
 
   return {
-    chatMessages,
     chat,
+    chats,
     isLoading,
     error,
     queryKey,

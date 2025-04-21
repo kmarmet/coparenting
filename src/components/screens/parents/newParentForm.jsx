@@ -9,25 +9,28 @@ import AlertManager from '/src/managers/alertManager'
 import validator from 'validator'
 import StringManager from '../../../managers/stringManager'
 import Spacer from '../../shared/spacer'
-import DB from '../../../database/DB'
 import ModelNames from '../../../models/modelNames'
 import ObjectManager from '../../../managers/objectManager'
-import ViewSelector from '../../shared/viewSelector'
 import DB_UserScoped from '../../../database/db_userScoped'
 import InputTypes from '../../../constants/inputTypes'
 import Parent from '../../../models/parent'
+import useCurrentUser from '../../../hooks/useCurrentUser'
+import useUsers from '../../../hooks/useUsers'
+import ToggleButton from '../../shared/toggleButton'
+import Label from '../../shared/label'
 
 const NewParentForm = ({showCard, hideCard}) => {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, authUser} = state
-  const [linkOrNew, setLinkOrNew] = useState('new')
+  const {theme} = state
+  const {users} = useUsers()
+  const {currentUser} = useCurrentUser()
+  const [parentHasAccount, setParentHasAccount] = useState(false)
 
   // State
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
   const [email, setEmail] = useState('')
   const [parentType, setParentType] = useState('')
-  const [relationshipType, setRelationshipType] = useState('')
 
   const ResetForm = async (successMessage = '') => {
     Manager.ResetForm('new-parent-wrapper')
@@ -58,31 +61,33 @@ const NewParentForm = ({showCard, hideCard}) => {
       AlertManager.throwError(errorString)
       return false
     }
+    if (parentHasAccount && !Manager.isValid(email)) {
+      AlertManager.throwError('If the parent has an account with us, their email is required')
+      return false
+    }
+    const existingParent = users.find((x) => x?.email === email)
     let newParent = new Parent()
-    const users = await DB.getTable(`${DB.tables.users}`)
-    const parent = users.find((x) => x.email === email)
+
+    newParent.email = email
+    newParent.id = Manager.getUid()
+    newParent.address = address
+    newParent.name = StringManager.uppercaseFirstLetterOfAllWords(name.trim())
+    newParent.parentType = parentType
+    newParent.userKey = Manager.getUid()
 
     // Link parent with an existing user/profile
-    if (Manager.isValid(parent)) {
+    if (Manager.isValid(existingParent)) {
       newParent.id = Manager.getUid()
-      newParent.userKey = parent?.key
-      newParent.address = address
-      newParent.name = StringManager.uppercaseFirstLetterOfAllWords(parent?.name.trim())
-      newParent.parentType = parentType
-      newParent.relationshipToMe = relationshipType
-      newParent.phone = parent?.phone
-      newParent.email = parent?.email
+      newParent.userKey = existingParent?.key
+      newParent.phone = existingParent?.phone
+      newParent.email = existingParent?.email
+      await DB_UserScoped.addSharedDataUser(currentUser, existingParent.key)
     }
     // Create new parent
     else {
-      newParent.email = email
-      newParent.id = Manager.getUid()
-      newParent.key = Manager.getUid()
-      newParent.address = address
-      newParent.name = StringManager.uppercaseFirstLetterOfAllWords(name.trim())
-      newParent.parentType = parentType
-      newParent.relationshipToMe = relationshipType
+      await DB_UserScoped.addSharedDataUser(currentUser, newParent.userKey)
     }
+
     const cleanParent = ObjectManager.cleanObject(newParent, ModelNames.parent)
     try {
       await DB_UserScoped.addParent(currentUser, cleanParent)
@@ -98,6 +103,7 @@ const NewParentForm = ({showCard, hideCard}) => {
     Manager.handleCheckboxSelection(
       e,
       () => {
+        console.log(type)
         setParentType(type)
       },
       () => {
@@ -113,19 +119,6 @@ const NewParentForm = ({showCard, hideCard}) => {
       title={`Add ${Manager.isValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} to Your Profile`}
       wrapperClass="new-parent-card"
       showCard={showCard}
-      viewSelector={
-        <ViewSelector
-          defaultView={'New'}
-          labels={['New', 'Link Existing Account']}
-          updateState={(labelText) => {
-            if (Manager.contains(labelText, 'New')) {
-              setLinkOrNew('new')
-            } else {
-              setLinkOrNew('link')
-            }
-          }}
-        />
-      }
       onClose={ResetForm}>
       <div className="new-parent-wrapper">
         <Spacer height={5} />
@@ -135,19 +128,22 @@ const NewParentForm = ({showCard, hideCard}) => {
             <InputWrapper
               inputType={InputTypes.email}
               inputValueType="email"
-              required={true}
+              required={parentHasAccount}
               labelText={'Email Address'}
               onChange={(e) => setEmail(e.target.value)}
             />
-            {linkOrNew === 'new' && (
-              <InputWrapper
-                inputType={InputTypes.address}
-                labelText={'Home Address'}
-                onChange={(place) => {
-                  setAddress(place)
-                }}
-              />
-            )}
+            <InputWrapper
+              inputType={InputTypes.address}
+              labelText={'Home Address'}
+              onChange={(place) => {
+                setAddress(place)
+              }}
+            />
+
+            <div className="flex">
+              <Label text={'Parent has an Account with Us'} />
+              <ToggleButton onCheck={() => setParentHasAccount(true)} onUncheck={() => setParentHasAccount(false)} />
+            </div>
 
             <Spacer height={5} />
 
@@ -158,7 +154,7 @@ const NewParentForm = ({showCard, hideCard}) => {
               skipNameFormatting={true}
               checkboxArray={Manager.buildCheckboxGroup({
                 currentUser,
-                customLabelArray: ['Biological', 'Step-Parent', 'Guardian', 'Other'],
+                customLabelArray: ['Biological', 'Step-Parent', 'Guardian', 'Foster', 'Adoptive'],
               })}
               onCheck={HandleParentType}
             />

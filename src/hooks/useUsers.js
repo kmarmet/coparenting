@@ -1,7 +1,7 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useEffect, useState} from 'react'
-import Manager from '../../managers/manager'
-import DB from '../../database/DB'
+import Manager from '../managers/manager'
+import DB from '../database/DB'
 
 const useUsers = () => {
   const [users, setUsers] = useState(null)

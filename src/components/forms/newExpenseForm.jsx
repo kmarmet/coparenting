@@ -32,10 +32,11 @@ import ToggleButton from '../shared/toggleButton'
 import Label from '../shared/label'
 import InputTypes from '../../constants/inputTypes'
 import DatetimeFormats from '../../constants/datetimeFormats'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 export default function NewExpenseForm() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, refreshKey, authUser, creationFormToShow} = state
+  const {theme, refreshKey, authUser, creationFormToShow} = state
   const [expenseName, setExpenseName] = useState('')
   const [expenseChildren, setExpenseChildren] = useState([])
   const [expenseDueDate, setExpenseDueDate] = useState('')
@@ -52,9 +53,10 @@ export default function NewExpenseForm() {
   const [recurringFrequency, setRecurringFrequency] = useState('')
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
   const [expenseAmount, setExpenseAmount] = useState(0)
+  const {currentUser} = useCurrentUser()
 
   const ResetForm = async (showAlert) => {
-    Manager.ResetForm('expenses-wrapper')
+    Manager.ResetForm('calendarEvents-wrapper')
     setExpenseName('')
     setExpenseChildren([])
     setExpenseDueDate('')
@@ -77,16 +79,16 @@ export default function NewExpenseForm() {
       currentUser: updatedCurrentUser,
       refreshKey: Manager.getUid(),
       creationFormToShow: '',
-      successAlertMessage: showAlert ? `${StringManager.formatTitle(expenseName)} Added` : null,
+      successAlertMessage: showAlert ? `${StringManager.FormatTitle(expenseName)} Added` : null,
     })
   }
 
   const SubmitNewExpense = async () => {
     //#region VALIDATION
-    const validAccounts = await DB_UserScoped.getValidAccountsCountForUser(currentUser)
+    const validAccounts = currentUser?.sharedDataUsers
     if (validAccounts === 0) {
       AlertManager.throwError(
-        'No co-parent to \n assign expenses to',
+        'No co-parent to \n assign calendarEvents to',
         'You have not added any co-parents. Or, it is also possible they have closed their profile.'
       )
       return false
@@ -154,7 +156,7 @@ export default function NewExpenseForm() {
     const cleanObject = ObjectManager.cleanObject(newExpense, ModelNames.expense)
 
     // Add to DB
-    await DB.add(`${DB.tables.expenses}/${currentUser?.key}`, cleanObject).finally(async () => {
+    await DB.add(`${DB.tables.calendarEvents}/${currentUser?.key}`, cleanObject).finally(async () => {
       // Add repeating expense to DB
       if (recurringFrequency.length > 0 && repeatingEndDate.length > 0) {
         await AddRepeatingExpensesToDb()
@@ -167,7 +169,7 @@ export default function NewExpenseForm() {
           currentUser,
           `${StringManager.getFirstNameOnly(currentUser?.name)} has created a new expense`,
           `${expenseName} - $${expenseAmount}`,
-          ActivityCategory.expenses
+          ActivityCategory.calendarEvents
         )
       }
 
@@ -308,7 +310,7 @@ export default function NewExpenseForm() {
       wrapperClass="new-expense-card"
       showCard={creationFormToShow === CreationForms.expense}
       onClose={ResetForm}>
-      <div className="expenses-wrapper">
+      <div className="calendarEvents-wrapper">
         <Spacer height={5} />
         {/* PAGE CONTAINER */}
         <div id="add-expense-form" className={`${theme} form`}>
@@ -325,7 +327,7 @@ export default function NewExpenseForm() {
                   e.target.value = numbersOnly
                   setExpenseAmount(numbersOnly)
                 }}
-                defaultValue={0}
+                placeholder={'0'}
               />
             </span>
           </div>
@@ -370,7 +372,7 @@ export default function NewExpenseForm() {
               onClick={() => {
                 const inputWrapper = document.getElementById('amount-input-wrapper')
                 const amountInput = inputWrapper.querySelector('input')
-                amountInput.value = 0
+                amountInput.value = null
                 setExpenseAmount(0)
               }}>
               Reset <GrPowerReset />

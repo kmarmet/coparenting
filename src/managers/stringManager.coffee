@@ -101,7 +101,7 @@ StringManager = {
     input.toString().replace(/([a-z])([A-Z])/g, '$1 $2')
 
   addLongTextClass: (text) ->
-     if StringManager.wordCount(text) > 10
+     if StringManager.GetWordCount(text) > 10
        return "long-text"
      else
       return ''
@@ -115,8 +115,11 @@ StringManager = {
   removeFileExtension: (input) ->
     input.replace(/\.[^/.]+$/, '')
 
-  wordCount: (input) ->
-    input?.trim()?.split(/\s+/)?.length
+  GetWordCount: (input) ->
+    if Manager.isValid input, true
+      return input?.trim()?.split(/\s+/)?.length
+    else
+      return 0
 
   stringHasNumbers: (input) ->
     return /\d/.test(input)
@@ -152,6 +155,8 @@ StringManager = {
     input.toString().replace(/ .*/, '')
 
   uppercaseFirstLetterOfAllWords: (input) ->
+    if !Manager.isValid(input, true)
+      return input
     words = input?.toString()
     if words and words != undefined
       if words?.indexOf('-') > -1
@@ -166,16 +171,20 @@ StringManager = {
   formatEventTitle: (title) ->
     if title and title.length > 0
       title = StringManager.uppercaseFirstLetterOfAllWords(title)
-      title = StringManager.formatTitle(title)
+      title = StringManager.FormatTitle(title)
       return title
 
-  formatTitle: (title, uppercase = true) ->
-    if !Manager.isValid(title)
+  FormatTitle: (title, uppercase = true) ->
+    if !title || title?.length == 0
       return title
+
+    if !Manager.isValid(title, true)
+      return title
+
     if uppercase
-      title = StringManager.uppercaseFirstLetterOfAllWords(title).trim()
+      title = StringManager.uppercaseFirstLetterOfAllWords(title)
 
-    title = title
+    title = title.toString()
       .replaceAll(" To ", " to ")
       .replaceAll(" A ", " a ")
       .replaceAll(" An ", " an ")

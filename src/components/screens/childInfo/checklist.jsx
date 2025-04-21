@@ -10,7 +10,7 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import Accordion from '@mui/material/Accordion'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
-import useCurrentUser from '../../hooks/useCurrentUser'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function Checklist({fromOrTo, activeChild}) {
   const {state, setState} = useContext(globalState)

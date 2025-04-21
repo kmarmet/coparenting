@@ -43,7 +43,7 @@ export default function UserDetails() {
     const newUser = await DB_UserScoped.createAndInsertUser(userObject)
     setState({
       ...state,
-      currentScreen: accountType === 'parent' ? ScreenNames.calendar : ScreenNames.requestParentAccess,
+      currentScreen: accountType === 'parent' ? ScreenNames.onboarding : ScreenNames.requestParentAccess,
       currentUser: newUser,
       successAlertMessage: 'Success',
     })

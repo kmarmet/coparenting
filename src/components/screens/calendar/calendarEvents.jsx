@@ -122,8 +122,8 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
                     <div className="flex space-between" id="title-wrapper">
                       <p className="title flex" id="title" data-event-id={event?.id}>
                         <span className={`${dotObject.className} event-type-dot`}></span>
-                        {isBirthdayEvent && `${StringManager.formatTitle(event?.title)} 🎂`}
-                        {!isBirthdayEvent && StringManager.formatTitle(event?.title)}
+                        {isBirthdayEvent && `${StringManager.FormatTitle(event?.title)} 🎂`}
+                        {!isBirthdayEvent && StringManager.FormatTitle(event?.title)}
                       </p>
                     </div>
 

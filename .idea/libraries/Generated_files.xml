@@ -2,16 +2,15 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/src/constants/allMenuItems.js" />
         <item url="file://$PROJECT_DIR$/src/constants/creationForms.js" />
-        <item url="file://$PROJECT_DIR$/src/constants/datetimePickerViews.js" />
+        <item url="file://$PROJECT_DIR$/src/constants/datetimeFormats.js" />
         <item url="file://$PROJECT_DIR$/src/constants/eventLengths.js" />
         <item url="file://$PROJECT_DIR$/src/constants/expenseCategories.js" />
         <item url="file://$PROJECT_DIR$/src/constants/inputTypes.js" />
+        <item url="file://$PROJECT_DIR$/src/constants/mapperTables.js" />
         <item url="file://$PROJECT_DIR$/src/constants/reminderTimes.js" />
         <item url="file://$PROJECT_DIR$/src/constants/scheduleTypes.js" />
         <item url="file://$PROJECT_DIR$/src/constants/screenNames.js" />
-        <item url="file://$PROJECT_DIR$/src/constants/screensToHideCenterNavbarButton.js" />
         <item url="file://$PROJECT_DIR$/src/constants/stateObj.js" />
         <item url="file://$PROJECT_DIR$/src/constants/swapDurations.js" />
         <item url="file://$PROJECT_DIR$/src/managers/alertManager.js" />
@@ -33,7 +32,6 @@
         <item url="file://$PROJECT_DIR$/src/managers/stringManager.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/menuMapper.js" />
-        <item url="file://$PROJECT_DIR$/src/mappers/userMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
         <item url="file://$PROJECT_DIR$/src/models/activityCategory.js" />
         <item url="file://$PROJECT_DIR$/src/models/calendarEvent.js" />
@@ -63,21 +61,18 @@
         <item url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
         <item url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
         <item url="file://$PROJECT_DIR$/src/models/user.js" />
-        <item url="file://$PROJECT_DIR$/src/models/userKey.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/src/constants/allMenuItems.js" />
       <root url="file://$PROJECT_DIR$/src/constants/creationForms.js" />
       <root url="file://$PROJECT_DIR$/src/constants/datetimeFormats.js" />
-      <root url="file://$PROJECT_DIR$/src/constants/datetimePickerViews.js" />
       <root url="file://$PROJECT_DIR$/src/constants/eventLengths.js" />
       <root url="file://$PROJECT_DIR$/src/constants/expenseCategories.js" />
       <root url="file://$PROJECT_DIR$/src/constants/inputTypes.js" />
+      <root url="file://$PROJECT_DIR$/src/constants/mapperTables.js" />
       <root url="file://$PROJECT_DIR$/src/constants/reminderTimes.js" />
       <root url="file://$PROJECT_DIR$/src/constants/scheduleTypes.js" />
       <root url="file://$PROJECT_DIR$/src/constants/screenNames.js" />
-      <root url="file://$PROJECT_DIR$/src/constants/screensToHideCenterNavbarButton.js" />
       <root url="file://$PROJECT_DIR$/src/constants/stateObj.js" />
       <root url="file://$PROJECT_DIR$/src/constants/swapDurations.js" />
       <root url="file://$PROJECT_DIR$/src/managers/alertManager.js" />
@@ -99,7 +94,6 @@
       <root url="file://$PROJECT_DIR$/src/managers/stringManager.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/menuMapper.js" />
-      <root url="file://$PROJECT_DIR$/src/mappers/userMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
       <root url="file://$PROJECT_DIR$/src/models/activityCategory.js" />
       <root url="file://$PROJECT_DIR$/src/models/calendarEvent.js" />
@@ -129,7 +123,6 @@
       <root url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />
-      <root url="file://$PROJECT_DIR$/src/models/userKey.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

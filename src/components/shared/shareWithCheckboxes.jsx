@@ -5,8 +5,8 @@ import globalState from '../../context'
 import Label from './label'
 import StringManager from '../../managers/stringManager.coffee'
 import Checkbox from './checkbox.jsx'
-import DB_UserScoped from '../../database/db_userScoped'
-import useCurrentUser from '../hooks/useCurrentUser'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useUsers from '../../hooks/useUsers'
 
 export default function ShareWithCheckboxes({
   defaultKeys = [],
@@ -17,60 +17,22 @@ export default function ShareWithCheckboxes({
   labelText = '',
 }) {
   const {state, setState} = useContext(globalState)
-  const {theme, creationFormToShow, users} = state
+  const {theme} = state
   const [shareWith, setShareWith] = useState([])
   const {currentUser} = useCurrentUser()
+  const {users} = useUsers()
 
-  const setShareWithUsers = async () => {
-    let accounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-    // const childAccounts = currentUser?.children?.filter((x) => x.userKey)
-    // const parentAccounts = currentUser?.parents?.filter((x) => x.userKey)
-    // const coparentAccounts = currentUser?.coparents?.filter((x) => x.userKey)
-    //
-    // if (Manager.isValid(currentUser)) {
-    //   // COPARENTS
-    //   if (Manager.isValid(currentUser?.coparents)) {
-    //     let coparentAccounts = []
-    //     for (let coparent of parentAccounts) {
-    //       const coparentAccount = await DB.find(DB.tables.users, ['key', coparent?.userKey], true)
-    //       if (Manager.isValid(coparentAccount)) {
-    //         coparentAccounts.push(coparentAccount)
-    //       }
-    //     }
-    //     accounts = [...accounts, ...coparentAccounts].filter((x) => x)
-    //   }
-    //
-    //   // PARENTS
-    //   if (Manager.isValid(currentUser?.parents)) {
-    //     let parentsAccounts = []
-    //     for (let parent of parentAccounts) {
-    //       const parentAccount = await DB.find(DB.tables.users, ['key', parent?.userKey], true)
-    //       if (Manager.isValid(parentAccount)) {
-    //         parentsAccounts.push(parentAccount)
-    //       }
-    //     }
-    //     accounts = [...accounts, ...parentsAccounts].filter((x) => x)
-    //   }
-    //
-    //   // CHILD ACCOUNTS
-    //   if (Manager.isValid(childAccounts)) {
-    //     let childrenAccounts = []
-    //     for (let child of childAccounts) {
-    //       const childAccount = await DB.find(DB.tables.users, ['key', child?.userKey], true)
-    //       if (Manager.isValid(childAccount)) {
-    //         childrenAccounts.push(childAccount)
-    //       }
-    //     }
-    //     accounts = [...accounts, ...childrenAccounts]
-    //   }
-
-    setShareWith(Manager.convertToArray(accounts).flat())
-    // }
+  const SetShareWithUsers = async () => {
+    const sharedDataUsers = currentUser?.sharedDataUsers
+    const sharedDataUsersAccounts = users?.filter((x) => sharedDataUsers?.includes(x.key))
+    setShareWith(Manager.convertToArray(sharedDataUsersAccounts).flat())
   }
 
   useEffect(() => {
-    setShareWithUsers().then((r) => r)
-  }, [creationFormToShow])
+    if (Manager.isValid(currentUser) && Manager.isValid(users)) {
+      SetShareWithUsers().then((r) => r)
+    }
+  }, [currentUser, users])
 
   return (
     <>
@@ -85,6 +47,10 @@ export default function ShareWithCheckboxes({
 
                 if (!Manager.isValid(key)) {
                   key = user?.userKey
+                }
+
+                if (!Manager.isValid(name)) {
+                  name = user?.general?.name
                 }
 
                 return (

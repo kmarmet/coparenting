@@ -13,7 +13,7 @@ import Spacer from './spacer'
 
 function InputWrapper({
   wrapperClasses = '',
-  labelText,
+  labelText = '',
   inputType = 'input',
   required,
   onChange,
@@ -47,7 +47,9 @@ function InputWrapper({
         id="input-wrapper"
         className={`${wrapperClasses} ${inputType} ${Manager.isValid(defaultValue) ? 'show-label' : ''}`}>
         {/* LABEL */}
-        {Manager.isValid(labelText) && <Label classes={Manager.isValid(defaultValue) ? 'active' : ''} text={`${labelText}`} required={required} />}
+        {Manager.isValid(labelText, true) && (
+          <Label classes={Manager.isValid(defaultValue) ? 'active' : ''} text={`${labelText}`} required={required} />
+        )}
 
         {/* TEXT */}
         {inputType === InputTypes.text && (
@@ -67,7 +69,7 @@ function InputWrapper({
             type="tel"
             id="number"
             name="number"
-            placeholder={labelText}
+            placeholder={placeholder}
             key={refreshKey}
             pattern="[0-9]"
             defaultValue={defaultValue}
@@ -83,7 +85,7 @@ function InputWrapper({
             id="phone"
             name="phone"
             maxLength={16}
-            placeholder={labelText}
+            placeholder={placeholder}
             key={refreshKey}
             pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
             defaultValue={defaultValue}
@@ -144,7 +146,7 @@ function InputWrapper({
           <input
             type="url"
             id="url"
-            placeholder={labelText}
+            placeholder={placeholder}
             onChange={(e) => {
               onChange(e)
             }}
@@ -159,7 +161,7 @@ function InputWrapper({
           <input
             type="email"
             id="email"
-            placeholder={labelText}
+            placeholder={placeholder}
             onChange={(e) => {
               onChange(e)
             }}
@@ -174,7 +176,7 @@ function InputWrapper({
           <input
             type="password"
             id="password"
-            placeholder={labelText}
+            placeholder={placeholder}
             onChange={(e) => {
               onChange(e)
             }}

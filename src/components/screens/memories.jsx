@@ -1,11 +1,9 @@
-// Path: src\components\screens\memories.jsx
-import React, {useContext, useEffect, useState} from 'react'
+// Path: src\components\screens\memories?.jsx
+import React, {useContext, useState} from 'react'
 import DB from '../../database/DB'
 import FirebaseStorage from '../../database/firebaseStorage'
-import {child, getDatabase, onValue, ref} from 'firebase/database'
 import Manager from '../../managers/manager'
 import globalState from '../../context'
-import SecurityManager from '../../managers/securityManager'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
 import moment from 'moment'
@@ -24,38 +22,24 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Spacer from '../shared/spacer'
 import Label from '../shared/label'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useMemories from '../../hooks/useMemories'
+import useCoparents from '../../hooks/useCoparents'
+import useParents from '../../hooks/useParents'
+import useChildren from '../../hooks/useChildren'
 
 export default function Memories() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
-  const [memories, setMemories] = useState([])
+  const {theme} = state
+  const {currentUser} = useCurrentUser()
+  const {memories} = useMemories()
+  const {coparents} = useCoparents()
+  const {parents} = useParents()
   const [showNewMemoryCard, setShowNewMemoryCard] = useState(false)
   const [showDisclaimer, setShowDisclaimer] = useState(false)
-  const dbRef = ref(getDatabase())
+  const {children} = useChildren()
 
-  const getSecuredMemories = async () => {
-    let all = await SecurityManager.getMemories(currentUser)
-    if (Manager.isValid(all)) {
-      let validImages = []
-      for (const memory of all) {
-        if (Manager.isValid(memory.url)) {
-          validImages.push(memory)
-        }
-      }
-      validImages = validImages.filter((x) => x)
-      if (currentUser) {
-        if (Manager.isValid(validImages)) {
-          setMemories(validImages)
-        } else {
-          setMemories([])
-        }
-      }
-    } else {
-      setMemories([])
-    }
-  }
-
-  const deleteMemory = async (firebaseImagePath, record) => {
+  const DeleteMemory = async (firebaseImagePath, record) => {
     const imageName = FirebaseStorage.getImageNameFromUrl(firebaseImagePath)
 
     // Current user is record owner
@@ -74,9 +58,10 @@ export default function Memories() {
         await DB.updateByPath(`${DB.tables.memories}/${record?.ownerKey}/${memoryKey}/shareWith`, updatedShareWith)
       }
     }
+    setState({...state, successAlertMessage: 'Memory Deleted', refreshKey: Manager.getUid()})
   }
 
-  const saveMemoryImage = (e) => {
+  const SaveMemoryImage = (e) => {
     const memoryImage = e.target.parentNode.previousSibling
     if (Manager.isValid(memoryImage)) {
       const src = memoryImage.querySelector('.memory-image').getAttribute('data-src')
@@ -86,15 +71,27 @@ export default function Memories() {
     }
   }
 
-  const onTableChange = async () => {
-    onValue(child(dbRef, `${DB.tables.memories}/${currentUser?.key}`), async () => {
-      await getSecuredMemories(currentUser)
-    })
-  }
+  const GetOwnerName = (key) => {
+    if (key === currentUser?.key) return ''
 
-  useEffect(() => {
-    onTableChange().then((r) => r)
-  }, [])
+    // Parent
+    if (currentUser?.accountType === 'parent') {
+      // Child name
+      let name = children?.find((x) => x.userKey === key)?.general?.name
+
+      // Co-parent name
+      if (!Manager.isValid(name)) {
+        name = coparents?.find((x) => x.userKey === key)?.name
+      }
+      return `Shared by: ${name}`
+    }
+
+    // Child
+    else {
+      const name = parents?.find((x) => x.userKey === key)?.name
+      return `Shared by: ${name}`
+    }
+  }
 
   return (
     <>
@@ -104,6 +101,7 @@ export default function Memories() {
           <p className="screen-title">Memories</p>
           {!DomManager.isMobile() && <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />}
         </div>
+        <Spacer height={2} />
         <p id="happy-subtitle" className={`${theme}`}>
           Share photos of unforgettable memories that deserve to be seen! <IoHeart className={'heart'} />
         </p>
@@ -111,8 +109,7 @@ export default function Memories() {
         <Accordion className={'memories-accordion'} expanded={showDisclaimer}>
           <AccordionSummary>
             <button className="button default grey" onClick={() => setShowDisclaimer(!showDisclaimer)}>
-              <div id="circle" className="circle"></div>
-              <Label text={'Memory Retention'} /> {showDisclaimer ? <LuMinus /> : <LuPlus />}
+              <Label text={'Memory Expiration'} /> {showDisclaimer ? <LuMinus /> : <LuPlus />}
             </button>
           </AccordionSummary>
           <Spacer height={5} />
@@ -125,28 +122,29 @@ export default function Memories() {
         </Accordion>
 
         {/* NO DATA FALLBACK TEXT */}
-        {memories && memories.length === 0 && <NoDataFallbackText text={'At the moment, there are no memories available'} />}
+        {memories && memories?.length === 0 && <NoDataFallbackText text={'At the moment, there are no memories to view'} />}
 
         {/* GALLERY */}
         {Manager.isValid(memories) && (
           <LightGallery elementClassNames={`light-gallery ${theme}`} selector={'.memory-image'}>
-            <Fade direction={'left'} duration={800} className={'memories-fade-wrapper'} triggerOnce={true} cascade={true} damping={0.2}>
+            <Fade direction={'right'} duration={800} className={'memories-fade-wrapper'} triggerOnce={true} cascade={true} damping={0.2}>
               {Manager.isValid(memories) &&
-                memories.map((imgObj, index) => {
+                memories?.map((imgObj, index) => {
                   return (
                     <div className="memory" key={index}>
                       {/* IMAGE */}
                       <div id="memory-image-wrapper">
-                        {Manager.isValid(imgObj?.title) && <p className="memory-title">{StringManager.formatTitle(imgObj?.title, true)}</p>}
+                        {Manager.isValid(imgObj?.title, true) && <p className="memory-title">{StringManager.FormatTitle(imgObj?.title, true)}</p>}
                         <div
                           data-sub-html={`${
                             Manager.isValid(imgObj?.notes, true)
                               ? `<p class="gallery-title">
-                                  ${StringManager.formatTitle(StringManager.formatTitle(imgObj?.title, true))}
+                                  ${StringManager.FormatTitle(imgObj?.title, true)}
                                 <span>${imgObj?.notes}</span>
+                                <span>Shared by {imgObj?.ownerKey}</span>
                               </p>`
                               : ''
-                          }`}
+                          } ${GetOwnerName(imgObj?.ownerKey)}`}
                           style={{backgroundImage: `url(${imgObj?.url})`}}
                           className="memory-image"
                           data-src={imgObj?.url}></div>
@@ -160,11 +158,11 @@ export default function Memories() {
                       {/* BELOW IMAGE */}
                       <div id="below-image">
                         {/* SAVE BUTTON */}
-                        <p onClick={() => deleteMemory(imgObj?.url, imgObj)} id="delete-button">
+                        <p onClick={() => DeleteMemory(imgObj?.url, imgObj)} id="delete-button">
                           DELETE
                         </p>
                         {/* DOWNLOAD BUTTON */}
-                        <p onClick={(e) => saveMemoryImage(e)} id="download-text">
+                        <p onClick={(e) => SaveMemoryImage(e)} id="download-text">
                           DOWNLOAD
                         </p>
                       </div>

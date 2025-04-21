@@ -1,8 +1,7 @@
-// Path: src\components\screens\notifications.jsx
+// Path: src\components\screens\notifications?.jsx
 import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../context'
 import {Fade} from 'react-awesome-reveal'
-import {child, getDatabase, onValue, ref} from 'firebase/database'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
@@ -23,39 +22,33 @@ import {IoMdCheckmarkCircleOutline} from 'react-icons/io'
 import Spacer from '../shared/spacer'
 import Label from '../shared/label'
 import NoDataFallbackText from '../shared/noDataFallbackText'
+import useNotifications from '../../hooks/useNotifications'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 export default function Notifications() {
   const {state, setState} = useContext(globalState)
-
-  const {currentUser, theme, notificationCount, authUser} = state
-  const [notifications, setActivities] = useState([])
+  const {theme, notificationCount} = state
   const [legendIsExpanded, setLegendIsExpanded] = useState(false)
+  const {currentUser} = useCurrentUser()
+  const {notifications} = useNotifications()
+  const criticalCategories = [ActivityCategory.expenses, ActivityCategory.childInfo.medical]
 
-  const getActivities = async () => {
-    const all = await DB.getTable(`${DB.tables.notifications}/${currentUser?.key}`)
-    const toReturn = DatasetManager.sortDates(all).reverse()
+  const GetActivities = async () => {
+    const toReturn = DatasetManager.sortDates(notifications).reverse()
     await AppManager.setAppBadge(notificationCount)
     setState({...state, notificationCount: toReturn.length})
-    setActivities(toReturn)
   }
 
-  const clearAll = async () => await DB.deleteByPath(`${DB.tables.notifications}/${currentUser?.key}`)
+  const ClearAll = async () => await DB.deleteByPath(`${DB.tables.notifications}/${currentUser?.key}`)
 
-  const onTableChange = async () => {
-    const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.notifications}/${currentUser?.key}`), async () => {
-      await getActivities().then((r) => r)
-    })
-  }
-
-  const clearActivity = async (activity) => {
+  const ClearActivity = async (activity) => {
     const key = await DB.getSnapshotKey(`${DB.tables.notifications}/${currentUser?.key}`, activity, 'id')
     if (Manager.isValid(key)) {
       await DB.deleteByPath(`${DB.tables.notifications}/${currentUser?.key}/${key}`)
     }
   }
 
-  const getCategory = (activity) => {
+  const GetCategory = (activity) => {
     const title = activity?.title?.toLowerCase()
     const message = activity?.message?.toLowerCase()
     switch (true) {
@@ -110,27 +103,28 @@ export default function Notifications() {
     }
   }
 
-  const changeScreen = (screenName, activity) => {
-    clearActivity(activity).then()
+  const ChangeScreen = (screenName, activity) => {
+    ClearActivity(activity).then()
     setTimeout(() => {
       setState({...state, currentScreen: ScreenNames[screenName]})
     }, 500)
   }
 
   useEffect(() => {
-    onTableChange().then((r) => r)
-  }, [])
-
-  const criticalCategories = [ActivityCategory.expenses, ActivityCategory.childInfo.medical]
+    if (Manager.isValid(notifications)) {
+      GetActivities().then()
+    }
+  }, [notifications])
 
   return (
     <>
       <div id="activity-wrapper" className={`${theme} page-container`}>
         <p className="screen-title">Notifications</p>
-        <p className="intro-text">Stay updated with all developments and notifications as they happen.</p>
-        {/* LEGENDS */}
+        <p className="screen-intro-text">Stay updated with all developments and notifications as they happen.</p>
+
+        {/* LEGEND */}
         <Spacer height={5} />
-        {currentUser?.accountType === 'parent' && (
+        {Manager.isValid(currentUser?.accountType) && currentUser?.accountType === 'parent' && (
           <div className="flex">
             <Accordion id={'legend'} expanded={legendIsExpanded}>
               <AccordionSummary>
@@ -156,8 +150,8 @@ export default function Notifications() {
         <Spacer height={5} />
 
         {/* CLEAR ALL BUTTON */}
-        {notifications.length > 0 && (
-          <button className="button default bottom-right" onClick={clearAll}>
+        {notifications?.length > 0 && (
+          <button className="button default bottom-right" onClick={ClearAll}>
             Clear All <IoCheckmarkDoneOutline className={'ml-5'} />
           </button>
         )}
@@ -166,28 +160,28 @@ export default function Notifications() {
 
           <div id="activity-cards">
             {Manager.isValid(notifications) &&
-              notifications.map((activity, index) => {
+              notifications?.map((activity, index) => {
                 const {text, title, creationDate} = activity
-                const categoryObject = getCategory(activity)
+                const categoryObject = GetCategory(activity)
                 const {screen, category, className} = categoryObject
 
                 return (
                   <div key={index} className="flex" id="row-wrapper">
-                    <div className={`activity-row row ${className}`} onClick={() => changeScreen(screen, activity)}>
+                    <div className={`activity-row row ${className}`} onClick={() => ChangeScreen(screen, activity)}>
                       <p className={`card-title ${className}`}>
                         {criticalCategories.includes(category) && <PiSealWarningDuotone />} {StringManager.uppercaseFirstLetterOfAllWords(title)}
                       </p>
                       <p className="text">{text}</p>
                       <p id="date">{moment(creationDate, DatetimeFormats.fullDatetime).format(DatetimeFormats.readableDatetime)}</p>
                     </div>
-                    <IoMdCheckmarkCircleOutline className={'row-checkmark'} onClick={() => clearActivity(activity)} />
+                    <IoMdCheckmarkCircleOutline className={'row-checkmark'} onClick={() => ClearActivity(activity)} />
                   </div>
                 )
               })}
           </div>
-          {notifications.length === 0 && <NoDataFallbackText text={'You have no notifications awaiting your attention'} />}
         </Fade>
       </div>
+      {notifications?.length === 0 && <NoDataFallbackText text={'You have no notifications awaiting your attention'} />}
       <NavBar navbarClass={'activity no-add-new-button'}></NavBar>
     </>
   )

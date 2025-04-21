@@ -197,10 +197,14 @@ export default function Login() {
 
               {/* LOGIN BUTTONS */}
               {/*{challengeSolved && (*/}
+              {/*  <button className="button default green" id="login-button" onClick={ManualLogin}>*/}
+              {/*    Login*/}
+              {/*  </button>*/}
+              {/*)}*/}
               <button className="button default green" id="login-button" onClick={ManualLogin}>
                 Login
               </button>
-              {/*)}*/}
+
               {!challengeSolved && <p id="captcha-loading-text">Pre-Authentication in Progress...</p>}
             </div>
 

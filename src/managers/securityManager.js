@@ -10,7 +10,30 @@ import DateManager from "../managers/dateManager";
 
 import _ from "lodash";
 
+import DB_UserScoped from "../database/db_userScoped";
+
 SecurityManager = {
+  getSharedItems: async function(currentUser, table) {
+    var accountKey, i, item, j, len, len1, linkedAccountKeys, linkedAccounts, ref, sharedItems, userAccountItems;
+    linkedAccounts = (await DB_UserScoped.getLinkedAccounts(currentUser));
+    linkedAccountKeys = linkedAccounts.accountKeys;
+    sharedItems = [];
+    if (Manager.isValid(currentUser) && Manager.isValid(linkedAccountKeys)) {
+      for (i = 0, len = linkedAccountKeys.length; i < len; i++) {
+        accountKey = linkedAccountKeys[i];
+        userAccountItems = (await DB.getTable(`${table}/${accountKey}`));
+        for (j = 0, len1 = userAccountItems.length; j < len1; j++) {
+          item = userAccountItems[j];
+          if (Manager.isValid(item != null ? item.shareWith : void 0)) {
+            if (item != null ? (ref = item.shareWith) != null ? ref.includes(currentUser != null ? currentUser.key : void 0) : void 0 : void 0) {
+              sharedItems.push(item);
+            }
+          }
+        }
+      }
+    }
+    return sharedItems;
+  },
   getShareWithItems: async function(currentUser, table) {
     var child, childItems, coparent, coparentItems, i, item, j, k, l, len, len1, len2, len3, len4, len5, m, n, parent, parentItems, ref, ref1, ref2, ref3, ref4, ref5, sharedItems;
     sharedItems = [];

@@ -9,6 +9,7 @@ export default function AddressInput({onSelection = (e) => {}, defaultValue}) {
     <Autocomplete
       defaultValue={defaultValue}
       apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
+      placeholder={''}
       options={{
         types: ['geocode', 'establishment'],
         componentRestrictions: {country: 'usa'},

@@ -4,7 +4,6 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import MenuItem from '@mui/material/MenuItem'
-import {child, getDatabase, onValue, ref} from 'firebase/database'
 import 'lightgallery/css/lightgallery.css'
 import LightGallery from 'lightgallery/react'
 import moment from 'moment'
@@ -32,7 +31,6 @@ import ExpenseManager from '/src/managers/expenseManager.js'
 import Manager from '/src/managers/manager'
 import NotificationManager from '/src/managers/notificationManager'
 import ObjectManager from '/src/managers/objectManager'
-import SecurityManager from '/src/managers/securityManager'
 import StringManager from '/src/managers/stringManager'
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
@@ -40,6 +38,7 @@ import ViewSelector from '../../shared/viewSelector.jsx'
 import AccordionTitle from '../../shared/accordionTitle'
 import DetailBlock from '../../shared/detailBlock'
 import InputTypes from '../../../constants/inputTypes'
+import useExpenses from '../../../hooks/useExpenses'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -51,14 +50,13 @@ const SortByTypes = {
 export default function ExpenseTracker() {
   const {state, setState} = useContext(globalState)
   const {currentUser, theme} = state
-  const [expenses, setExpenses] = useState([])
   const [showPaymentOptionsCard, setShowPaymentOptionsCard] = useState(false)
   const [showNewExpenseCard, setShowNewExpenseCard] = useState(false)
   const [categoriesInUse, setCategoriesInUse] = useState([])
   const [activeExpense, setActiveExpense] = useState(null)
   const [showDetails, setShowDetails] = useState(false)
   const [view, setView] = useState('details')
-  const [category, setCategory] = useState('')
+  const [category, setCategory] = useState(activeExpense?.category)
   const [amount, setAmount] = useState('')
   const [payer, setPayer] = useState('')
   const [notes, setNotes] = useState('')
@@ -73,8 +71,10 @@ export default function ExpenseTracker() {
   const [categoriesAsArray, setCategoriesAsArray] = useState([])
   const [expenseDateType, setExpenseDateType] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
+  const {expenses} = useExpenses()
+  const [sortedExpenses, setSortedExpenses] = useState([])
 
-  const update = async () => {
+  const Update = async () => {
     // Fill/overwrite
     let updatedExpense = {...activeExpense}
     updatedExpense.category = category
@@ -95,12 +95,12 @@ export default function ExpenseTracker() {
     const cleanedExpense = ObjectManager.cleanObject(updatedExpense, ModelNames.expense)
     cleanedExpense.ownerKey = activeExpense.ownerKey
     await ExpenseManager.updateExpense(currentUser, cleanedExpense, cleanedExpense.id)
-    await getSecuredExpenses()
+    await GetSecuredExpenses()
     setActiveExpense(updatedExpense)
     setShowDetails(false)
   }
 
-  const togglePaidStatus = async () => {
+  const TogglePaidStatus = async () => {
     const updatedStatus = activeExpense.paidStatus === 'paid' ? 'unpaid' : 'paid'
     setPaidStatus(updatedStatus)
     activeExpense.paidStatus = updatedStatus
@@ -119,17 +119,15 @@ export default function ExpenseTracker() {
     })
   }
 
-  const getSecuredExpenses = async () => {
-    let allExpenses = await SecurityManager.getExpenses(currentUser)
-    allExpenses = DatasetManager.getUniqueArray(allExpenses, 'id')
-    let categories = allExpenses.map((x) => x.category).filter((x) => x !== '')
+  const GetSecuredExpenses = async () => {
+    let categories = expenses.map((x) => x.category).filter((x) => x !== '')
     categories.unshift('None')
     setCategoriesInUse(categories)
-    setExpenses(allExpenses)
-    return allExpenses
+    setSortedExpenses(expenses)
+    return expenses
   }
 
-  const sendReminder = async (expense) => {
+  const SendReminder = async (expense) => {
     const message = `This is a reminder to pay the ${expense?.name} expense?.  ${
       Manager.isValid(expense?.dueDate) ? 'Due date is: ' + expense?.dueDate : ''
     }`
@@ -138,76 +136,65 @@ export default function ExpenseTracker() {
     setShowDetails(false)
   }
 
-  const onTableChange = async () => {
-    const dbRef = ref(getDatabase())
-
-    onValue(child(dbRef, `${DB.tables.expenses}/${currentUser?.key}`), async () => {
-      await getSecuredExpenses()
-    })
-  }
-
-  const handleExpenseTypeSelection = async (selectionType) => {
-    const allExpenses = await getSecuredExpenses()
-
+  const HandleExpenseTypeSelection = async (selectionType) => {
     if (selectionType === 'single') {
-      setExpenses(allExpenses.filter((x) => x.isRecurring === false))
+      setSortedExpenses(expenses.filter((x) => x.isRecurring === false))
       setExpenseDateType('single')
     }
     if (selectionType === 'recurring') {
-      setExpenses(allExpenses.filter((x) => x.isRecurring === true))
+      setSortedExpenses(expenses.filter((x) => x.isRecurring === true))
       setExpenseDateType('recurring')
     }
     if (selectionType === 'all') {
-      setExpenses(allExpenses)
+      setSortedExpenses(expenses)
       setExpenseDateType('all')
     }
   }
 
-  const handlePaidStatusSelection = async (status) => {
-    const allExpenses = await getSecuredExpenses()
+  const HandlePaidStatusSelection = async (status) => {
     if (status === 'all') {
-      setExpenses(allExpenses)
+      setSortedExpenses(expenses)
       setPaidStatus('all')
     } else {
       setPaidStatus(status)
-      setExpenses(allExpenses.filter((x) => x.paidStatus === status))
+      setSortedExpenses(expenses.filter((x) => x.paidStatus === status))
     }
   }
 
-  const handleSortBySelection = (e) => {
+  const HandleSortBySelection = (e) => {
     const sortByName = e.target.value
     const expensesAsNumbers = expenses.map((expense) => {
       expense.amount = parseInt(expense?.amount)
       return expense
     })
     if (sortByName === SortByTypes.recentlyAdded) {
-      setExpenses(expenses.sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse())
+      setSortedExpenses(expenses.sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse())
       setSortMethod(SortByTypes.recentlyAdded)
     }
     if (sortByName === SortByTypes.recentlyAdded) {
       const sortedByDateAsc = DatasetManager.sortByProperty(expenses, 'creationDate', 'asc', true)
-      setExpenses(sortedByDateAsc)
+      setSortedExpenses(sortedByDateAsc)
     }
     if (sortByName === SortByTypes.nearestDueDate) {
       const sortedByDueDateDesc = DatasetManager.sortByProperty(expenses, 'dueDate', 'desc', true)
-      setExpenses(sortedByDueDateDesc)
+      setSortedExpenses(sortedByDueDateDesc)
     }
     // High -> Low
     if (sortByName === SortByTypes.amountDesc) {
       const sortByAmountDesc = DatasetManager.sortByProperty(expensesAsNumbers, 'amount', 'desc')
-      setExpenses(sortByAmountDesc)
+      setSortedExpenses(sortByAmountDesc)
       setSortMethod(SortByTypes.amountDesc)
     }
     // Low -> High
     if (sortByName === SortByTypes.amountAsc) {
       const sortedByAmountAsc = DatasetManager.sortByProperty(expensesAsNumbers, 'amount', 'asc')
-      setExpenses(sortedByAmountAsc)
+      setSortedExpenses(sortedByAmountAsc)
       setSortMethod(SortByTypes.amountAsc)
     }
   }
 
-  const handleCategorySelection = async (element) => {
-    const allExpenses = await getSecuredExpenses()
+  const HandleCategorySelection = async (element) => {
+    const allExpenses = await GetSecuredExpenses()
     const category = element.target.textContent
     let expensesByCategory = allExpenses.filter((x) => x.category === category)
     if (element.target.classList.contains('active')) {
@@ -215,14 +202,14 @@ export default function ExpenseTracker() {
     }
     DomManager.toggleActive(element.target)
     if (category === 'None') {
-      setExpenses(allExpenses)
+      setSortedExpenses(allExpenses)
     } else {
-      setExpenses(expensesByCategory)
+      setSortedExpenses(expensesByCategory)
     }
     setCategory(category)
   }
 
-  const setDefaults = () => {
+  const SetDefaults = () => {
     setCategory(activeExpense?.category)
     setAmount(activeExpense?.amount)
     setName(activeExpense?.name)
@@ -236,11 +223,9 @@ export default function ExpenseTracker() {
     setRecipientName(activeExpense?.recipientName)
   }
 
-  const deleteExpense = async () => {
-    await DB.deleteById(`${DB.tables.expenses}/${currentUser?.key}`, activeExpense?.id)
-  }
+  const DeleteExpense = async () => await DB.deleteById(`${DB.tables.expenses}/${currentUser?.key}`, activeExpense?.id)
 
-  const getRecurringDateText = (expense) => {
+  const GetRecurringDateText = (expense) => {
     switch (expense?.recurringFrequency) {
       case 'daily':
         return 'Every Day'
@@ -253,7 +238,7 @@ export default function ExpenseTracker() {
     }
   }
 
-  const getShortRecurringDateText = () => {
+  const GetShortRecurringDateText = () => {
     switch (activeExpense?.recurringFrequency) {
       case 'daily':
         return 'Every Day'
@@ -266,23 +251,9 @@ export default function ExpenseTracker() {
     }
   }
 
-  useEffect(() => {
-    if (activeExpense) {
-      setDefaults()
-    }
-  }, [activeExpense])
-
-  useEffect(() => {
-    onTableChange().then((r) => r)
-    setView('details')
-    const catsAsArray = Object.keys(ExpenseCategories)
-    catsAsArray.unshift('None')
-    setCategoriesAsArray(catsAsArray)
-  }, [])
-
-  const getDetailsDueDate = () => {
+  const GetDetailsDueDate = () => {
     if (activeExpense?.dueDate) {
-      const text = getShortRecurringDateText(activeExpense)
+      const text = GetShortRecurringDateText(activeExpense)
 
       switch (text) {
         case 'Every Day':
@@ -297,6 +268,20 @@ export default function ExpenseTracker() {
     }
   }
 
+  useEffect(() => {
+    setView('details')
+    const catsAsArray = Object.keys(ExpenseCategories)
+    catsAsArray.unshift('None')
+    setCategoriesAsArray(catsAsArray)
+    SetDefaults()
+  }, [])
+
+  useEffect(() => {
+    if (Manager.isValid(expenses)) {
+      setSortedExpenses(expenses)
+    }
+  }, [expenses])
+
   return (
     <>
       {/* NEW EXPENSE FORM */}
@@ -310,7 +295,7 @@ export default function ExpenseTracker() {
         submitText={'Update'}
         title={`${StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.name || '')}`}
         submitIcon={<RxUpdate className={'fs-16'} />}
-        onSubmit={update}
+        onSubmit={Update}
         hasSubmitButton={view === 'edit'}
         className="expense-tracker form"
         wrapperClass="expense-tracker"
@@ -319,7 +304,7 @@ export default function ExpenseTracker() {
           setShowDetails(false)
           setState({...state, refreshKey: Manager.getUid()})
         }}
-        onDelete={deleteExpense}
+        onDelete={DeleteExpense}
         viewSelector={<ViewSelector labels={['Details', 'Edit']} updateState={(e) => setView(e.toLowerCase())} />}
         showCard={showDetails}>
         <div id="details" className={`content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
@@ -342,7 +327,7 @@ export default function ExpenseTracker() {
                 {activeExpense?.isRecurring && (
                   <DetailBlock
                     title={'Due Date'}
-                    text={getDetailsDueDate(activeExpense)}
+                    text={GetDetailsDueDate(activeExpense)}
                     valueToValidate={moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
                   />
                 )}
@@ -357,7 +342,7 @@ export default function ExpenseTracker() {
                 {/*  Frequency */}
                 <DetailBlock
                   title={'Frequency'}
-                  text={getShortRecurringDateText(activeExpense)}
+                  text={GetShortRecurringDateText(activeExpense)}
                   valueToValidate={activeExpense?.recurringFrequency}
                 />
 
@@ -381,10 +366,8 @@ export default function ExpenseTracker() {
                 {/*  Payer */}
                 <DetailBlock
                   title={'Payer'}
-                  text={StringManager.getFirstNameOnly(currentUser?.coparents?.filter((x) => x?.key === activeExpense?.payer?.key)[0]?.name)}
-                  valueToValidate={StringManager.getFirstNameOnly(
-                    currentUser?.coparents?.filter((x) => x?.key === activeExpense?.payer?.key)[0]?.name
-                  )}
+                  text={StringManager.getFirstNameOnly(payer?.name)}
+                  valueToValidate={StringManager.getFirstNameOnly(payer?.name)}
                 />
 
                 {/*  Recurring */}
@@ -494,18 +477,18 @@ export default function ExpenseTracker() {
               {/* BUTTONS */}
               <div className="action-buttons">
                 {activeExpense?.paidStatus === 'unpaid' && (
-                  <button className="button green default" onClick={togglePaidStatus}>
+                  <button className="button green default" onClick={TogglePaidStatus}>
                     Mark Paid
                   </button>
                 )}
 
                 {activeExpense?.paidStatus === 'paid' && (
-                  <button className="button red default" onClick={togglePaidStatus}>
+                  <button className="button red default" onClick={TogglePaidStatus}>
                     Mark Unpaid
                   </button>
                 )}
 
-                <button className="button default grey center" onClick={sendReminder}>
+                <button className="button default grey center" onClick={SendReminder}>
                   Send Reminder
                 </button>
               </div>
@@ -516,7 +499,6 @@ export default function ExpenseTracker() {
 
       {/* PAGE CONTAINER */}
       <div id="expense-tracker" className={`${theme} page-container form`}>
-        {expenses.length === 0 && <NoDataFallbackText text={'There are currently no expenses'} />}
         <div className="flex" id="screen-title-wrapper">
           <p className="screen-title">Expense Tracker </p>
           {!DomManager.isMobile() && <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)} id={'add-new-button'} />}
@@ -543,17 +525,17 @@ export default function ExpenseTracker() {
               <div className="filter-row">
                 <Label isBold={true} text={'Type'} classes="mb-5"></Label>
                 <div className="buttons flex type">
-                  <button className={`${expenseDateType === 'all' ? 'active' : ''} button default`} onClick={() => handleExpenseTypeSelection('all')}>
+                  <button className={`${expenseDateType === 'all' ? 'active' : ''} button default`} onClick={() => HandleExpenseTypeSelection('all')}>
                     All
                   </button>
                   <button
                     className={`${expenseDateType === 'single' ? 'active' : ''} button default`}
-                    onClick={() => handleExpenseTypeSelection('single')}>
+                    onClick={() => HandleExpenseTypeSelection('single')}>
                     One-time
                   </button>
                   <button
                     className={`${expenseDateType === 'recurring' ? 'active' : ''} button default`}
-                    onClick={() => handleExpenseTypeSelection('recurring')}>
+                    onClick={() => HandleExpenseTypeSelection('recurring')}>
                     Recurring
                   </button>
                 </div>
@@ -563,17 +545,17 @@ export default function ExpenseTracker() {
                 <div className="buttons type flex">
                   <button
                     className={paidStatus === 'all' ? 'active button default' : 'button default'}
-                    onClick={() => handlePaidStatusSelection('all')}>
+                    onClick={() => HandlePaidStatusSelection('all')}>
                     All
                   </button>
                   <button
                     className={paidStatus === 'unpaid' ? 'active button default' : 'button default'}
-                    onClick={() => handlePaidStatusSelection('unpaid')}>
+                    onClick={() => HandlePaidStatusSelection('unpaid')}>
                     Unpaid
                   </button>
                   <button
                     className={paidStatus === 'paid' ? 'active button default' : 'button default'}
-                    onClick={() => handlePaidStatusSelection('paid')}>
+                    onClick={() => HandlePaidStatusSelection('paid')}>
                     Paid
                   </button>
                 </div>
@@ -583,14 +565,14 @@ export default function ExpenseTracker() {
               {/* CATEGORIES */}
               {Manager.isValid(categoriesInUse) && (
                 <div className="filter-row">
-                  <div className="buttons flex category">
+                  <div className="buttons category">
                     {categoriesAsArray.map((cat, index) => {
                       return (
                         <>
                           {categoriesInUse.includes(cat) && Manager.isValid(cat, true) && (
                             <button
                               key={index}
-                              onClick={handleCategorySelection}
+                              onClick={HandleCategorySelection}
                               className={category === cat ? 'button default active' : 'button default'}>
                               {cat}
                             </button>
@@ -602,7 +584,7 @@ export default function ExpenseTracker() {
                 </div>
               )}
               <Label text={''} classes="sorting" />
-              <SelectDropdown wrapperClasses={'sorting-accordion'} selectValue={sortMethod} labelText={'Sort by'} onChange={handleSortBySelection}>
+              <SelectDropdown wrapperClasses={'sorting-accordion'} selectValue={sortMethod} labelText={'Sort by'} onChange={HandleSortBySelection}>
                 <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
                 <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
                 <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
@@ -615,76 +597,78 @@ export default function ExpenseTracker() {
 
         {/* LOOP EXPENSES */}
         <div id="expenses-container">
-          <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={0.2}>
-            <></>
-            {Manager.isValid(expenses) &&
-              expenses.map((expense) => {
-                let dueDate = moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay) ?? ''
-                const readableDueDate = moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()
-                const isPastDue = readableDueDate.toString().includes('ago')
-                const dueInADay = readableDueDate.toString().includes('in a day')
-                const dueInHours = readableDueDate.toString().includes('hours')
+          {Manager.isValid(sortedExpenses) && (
+            <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={0.2}>
+              {Manager.isValid(sortedExpenses) &&
+                sortedExpenses.map((expense, index) => {
+                  let dueDate = moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay) ?? ''
+                  const readableDueDate = moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()
+                  const isPastDue = readableDueDate.toString().includes('ago')
+                  const dueInADay = readableDueDate.toString().includes('in a day')
+                  const dueInHours = readableDueDate.toString().includes('hours')
 
-                if (!Manager.isValid(dueDate)) {
-                  dueDate = ''
-                }
-                return (
-                  <div
-                    key={expense?.id}
-                    className="row"
-                    onClick={() => {
-                      setActiveExpense(expense)
-                      setShowDetails(true)
-                    }}>
-                    <div id="primary-icon-wrapper">
-                      <span className="amount">${expense?.amount}</span>
-                    </div>
+                  if (!Manager.isValid(dueDate)) {
+                    dueDate = ''
+                  }
+                  return (
+                    <div
+                      key={index}
+                      className="row"
+                      onClick={() => {
+                        setActiveExpense(expense)
+                        setShowDetails(true)
+                      }}>
+                      <div id="primary-icon-wrapper">
+                        <span className="amount">${expense?.amount}</span>
+                      </div>
 
-                    <div id="content" data-expense-id={expense?.id} className={`expense wrap`}>
-                      {/* EXPENSE NAME */}
-                      <div id="name-wrapper" className="flex align-center">
-                        <p className="name row-title">{StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}</p>
+                      <div id="content" data-expense-id={expense?.id} className={`expense wrap`}>
+                        {/* EXPENSE NAME */}
+                        <div id="name-wrapper" className="flex align-center">
+                          <p className="name row-title">{StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}</p>
 
-                        {/*  STATUS */}
-                        {!expense?.isRecurring && (
-                          <>
-                            {!dueInADay && !dueInHours && (
-                              <span className={`${expense?.paidStatus} status`} id="request-status">
-                                {isPastDue ? 'PAST DUE' : StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
-                              </span>
-                            )}
-                            {dueInADay ||
-                              (dueInHours && (
-                                <span className={`status soon`} id="request-status">
-                                  Soon
+                          {/*  STATUS */}
+                          {!expense?.isRecurring && (
+                            <>
+                              {!dueInADay && !dueInHours && (
+                                <span className={`${expense?.paidStatus} status`} id="request-status">
+                                  {isPastDue ? 'PAST DUE' : StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
                                 </span>
-                              ))}
-                          </>
-                        )}
-                      </div>
+                              )}
+                              {dueInADay ||
+                                (dueInHours && (
+                                  <span className={`status soon`} id="request-status">
+                                    Soon
+                                  </span>
+                                ))}
+                            </>
+                          )}
+                        </div>
 
-                      {/* DATE */}
-                      <div className="flex" id="below-title">
-                        {Manager.isValid(dueDate, true) && (
-                          <>
-                            {!expense?.isRecurring && (
-                              <p className={`due-date`}>
-                                {DateManager.formatDate(expense?.dueDate)} ({readableDueDate.toString()})
-                              </p>
-                            )}
-                            {expense?.isRecurring && <p className={`due-date`}>{getRecurringDateText(expense)}</p>}
-                          </>
-                        )}
-                        {!Manager.isValid(dueDate, true) && <p className="due-date no-due-date">no due date</p>}
+                        {/* DATE */}
+                        <div className="flex" id="below-title">
+                          {Manager.isValid(dueDate, true) && (
+                            <>
+                              {!expense?.isRecurring && (
+                                <p className={`due-date`}>
+                                  {DateManager.formatDate(expense?.dueDate)} ({readableDueDate.toString()})
+                                </p>
+                              )}
+                              {expense?.isRecurring && <p className={`due-date`}>{GetRecurringDateText(expense)}</p>}
+                            </>
+                          )}
+                          {!Manager.isValid(dueDate, true) && <p className="due-date no-due-date">no due date</p>}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )
-              })}
-          </Fade>
+                  )
+                })}
+            </Fade>
+          )}
         </div>
       </div>
-      <NavBar navbarClass={'child-info'} />
+      <NavBar navbarClass={'expenses'} />
+      {expenses?.length === 0 && <NoDataFallbackText text={'There are currently no expenses'} />}
     </>
   )
 }

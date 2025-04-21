@@ -1,4 +1,4 @@
-// Path: src\components\screens\coparents\coparents.jsx
+// Path: src\components\screens\parents\parents.jsx
 import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../../context'
 import Manager from '/src/managers/manager'
@@ -21,8 +21,8 @@ import EmailManager from '../../../managers/emailManager'
 import Spacer from '../../shared/spacer'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import InputTypes from '../../../constants/inputTypes'
-import useCoparents from '../../hooks/useCoparents'
-import useCurrentUser from '../../hooks/useCurrentUser'
+import useCoparents from '../../../hooks/useCoparents'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function Coparents() {
   const {state, setState} = useContext(globalState)
@@ -40,7 +40,10 @@ export default function Coparents() {
 
   const DeleteProp = async (prop) => await DB_UserScoped.deleteCoparentInfoProp(currentUser, StringManager.formatDbProp(prop), activeCoparent)
 
-  const Update = async (prop, value) => await DB_UserScoped.updateCoparent(currentUser, activeCoparent, StringManager.formatDbProp(prop), value)
+  const Update = async (prop, value) => {
+    await DB_UserScoped.updateCoparent(currentUser, activeCoparent, StringManager.formatDbProp(prop), value)
+    setState({...state, successAlertMessage: `${StringManager.FormatTitle(prop, true)} has been updated`})
+  }
 
   const DeleteCoparent = async () => {
     await DB_UserScoped.deleteCoparent(currentUser, activeCoparent)
@@ -78,58 +81,65 @@ export default function Coparents() {
           }}>
           <div className="content">
             <div className="svg-wrapper">
-              <IoPersonAdd className={'add-child fs-22'} />
+              <IoPersonAdd className={'add-coparent fs-22'} />
             </div>
             <p>
-              Add Co-Parent to Your Profile
-              <span className="subtitle">Include a co-parent in your profile to save their details and facilitate information sharing with them</span>
+              Enable Sharing & Info Storage
+              <span className="subtitle">
+                Store information and provide sharing permissions <b>for a co-parent who that has not been added to your profile</b> yet
+              </span>
             </p>
           </div>
         </div>
 
-        {/*  ADD CUSTOM INFO */}
-        <div
-          className="action-item"
-          onClick={() => {
-            setState({...state, showScreenActions: false})
-            setShowCustomInfoCard(true)
-          }}>
-          <div className="content">
-            <div className="svg-wrapper">
-              <FaWandMagicSparkles className={'magic'} />
-            </div>
-            <p>
-              Add your Own Info
-              <span className="subtitle">Include personalized details about {activeCoparent?.name}</span>
-            </p>
-          </div>
-        </div>
-
-        {/*  REMOVE COPARENT */}
-        <div
-          className="action-item"
-          onClick={() => {
-            setState({...state, showScreenActions: false})
-            AlertManager.confirmAlert(
-              `Are you sure you would like to unlink ${activeCoparent?.name} from your profile?`,
-              "I'm Sure",
-              true,
-              async () => {
-                await DeleteCoparent()
-              }
-            )
-          }}>
-          <div className="content">
-            <div className="svg-wrapper">
-              <IoPersonRemove className={'remove-user'} />
+        {/* ONLY SHOW IF THERE ARE CO-PARENTS  */}
+        {Manager.isValid(coparents) && (
+          <>
+            {/*  ADD CUSTOM INFO */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setState({...state, showScreenActions: false})
+                setShowCustomInfoCard(true)
+              }}>
+              <div className="content">
+                <div className="svg-wrapper">
+                  <FaWandMagicSparkles className={'magic'} />
+                </div>
+                <p>
+                  Add your Own Info
+                  <span className="subtitle">Include personalized details about {activeCoparent?.name}</span>
+                </p>
+              </div>
             </div>
 
-            <p>
-              Unlink {activeCoparent?.name} from Your Profile
-              <span className="subtitle">Remove all information about {activeCoparent?.name} from your profile</span>
-            </p>
-          </div>
-        </div>
+            {/*  REMOVE COPARENT */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setState({...state, showScreenActions: false})
+                AlertManager.confirmAlert(
+                  `Are you sure you would like to unlink ${activeCoparent?.name} from your profile?`,
+                  "I'm Sure",
+                  true,
+                  async () => {
+                    await DeleteCoparent()
+                  }
+                )
+              }}>
+              <div className="content">
+                <div className="svg-wrapper">
+                  <IoPersonRemove className={'remove-user'} />
+                </div>
+
+                <p>
+                  Unlink {activeCoparent?.name} from Your Profile
+                  <span className="subtitle">Remove sharing permissions for {activeCoparent?.name} along with the information stored about them</span>
+                </p>
+              </div>
+            </div>
+          </>
+        )}
 
         <div
           className="action-item"
@@ -184,8 +194,8 @@ export default function Coparents() {
       </Modal>
 
       {/* COPARENTS CONTAINER */}
-      <div id="coparents-container" className={`${theme} page-container coparents-wrapper`}>
-        <Fade direction={'up'} duration={1000} className={'coparents-fade-wrapper'} triggerOnce={true}>
+      <div id="parents-container" className={`${theme} page-container parents-wrapper`}>
+        <Fade direction={'up'} duration={1000} className={'parents-fade-wrapper'} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title beside-action-button">Co-Parents</p>
           </div>
@@ -216,14 +226,14 @@ export default function Coparents() {
           <p id="coparent-name-primary">{StringManager.getFirstNameOnly(activeCoparent?.name)}</p>
           <p id="coparent-type-primary"> {activeCoparent?.parentType}</p>
           {Manager.isValid(activeCoparent) && (
-            <Fade direction={'right'} className={'coparents-info-fade-wrapper'} duration={800} damping={0.08} triggerOnce={false} cascade={true}>
+            <Fade direction={'right'} className={'parents-info-fade-wrapper'} duration={800} damping={0.08} triggerOnce={false} cascade={true}>
               {/* ITERATE COPARENT INFO */}
               {Manager.isValid(activeCoparent) &&
                 Object.entries(activeCoparent).map((propArray, index) => {
                   let infoLabel = propArray[0]
                   infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
                   infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
-                  infoLabel = StringManager.formatTitle(infoLabel, true)
+                  infoLabel = StringManager.FormatTitle(infoLabel, true)
                   const value = propArray[1]
                   const inputsToSkip = ['address', 'key', 'id', 'user key']
 

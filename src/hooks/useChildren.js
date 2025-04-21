@@ -1,19 +1,19 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useContext, useEffect, useState} from 'react'
-import Manager from '../../managers/manager'
-import globalState from '../../context'
-import DB from '../../database/DB'
+import Manager from '../managers/manager'
+import DB from '../database/DB'
 import useUsers from './useUsers'
+import globalState from '../context'
 
-const useCurrentUser = () => {
+const useChildren = () => {
   const {state, setState} = useContext(globalState)
-  const {theme, creationFormToShow, authUser} = state
+  const {authUser} = state
   const {users} = useUsers()
-  const [currentUser, setCurrentUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [children, setChildren] = useState([])
   const [error, setError] = useState(null)
   const dbUser = users?.find((u) => u?.email === authUser?.email)
-  const path = `${DB.tables.users}/${dbUser?.key}`
+  const path = `${DB.tables.users}/${dbUser?.key}/children`
   const queryKey = ['realtime', path]
 
   useEffect(() => {
@@ -23,14 +23,17 @@ const useCurrentUser = () => {
     const listener = onValue(
       dataRef,
       (snapshot) => {
-        if (Manager.isValid(snapshot.val())) {
-          setCurrentUser(snapshot.val())
+        console.log('Children Updated')
+        const formattedChildren = Manager.convertToArray(snapshot.val()?.filter((x) => x))
+        if (Manager.isValid(dbUser) && Manager.isValid(formattedChildren)) {
+          setChildren(formattedChildren)
+          setIsLoading(false)
         } else {
-          setCurrentUser([])
+          setChildren([])
         }
-        setIsLoading(false)
       },
       (err) => {
+        console.log(`useChildren Error: ${err}`)
         setError(err)
         setIsLoading(false)
       }
@@ -42,11 +45,11 @@ const useCurrentUser = () => {
   }, [path])
 
   return {
-    currentUser,
+    children,
     isLoading,
     error,
     queryKey,
   }
 }
 
-export default useCurrentUser
+export default useChildren
