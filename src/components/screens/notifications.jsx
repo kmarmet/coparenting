@@ -126,7 +126,7 @@ export default function Notifications() {
         <Spacer height={5} />
         {Manager.isValid(currentUser?.accountType) && currentUser?.accountType === 'parent' && (
           <div className="flex">
-            <Accordion id={'legend'} expanded={legendIsExpanded}>
+            <Accordion id={'legend'} expanded={legendIsExpanded} className={`${theme} accordion`}>
               <AccordionSummary>
                 <button className="button default grey" onClick={() => setLegendIsExpanded(!legendIsExpanded)}>
                   <Label text={'Legend'} /> {legendIsExpanded ? <FaMinus /> : <FaPlus />}

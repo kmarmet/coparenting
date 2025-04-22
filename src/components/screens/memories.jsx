@@ -106,7 +106,7 @@ export default function Memories() {
           Share photos of unforgettable memories that deserve to be seen! <IoHeart className={'heart'} />
         </p>
         <Spacer height={10} />
-        <Accordion className={'memories-accordion'} expanded={showDisclaimer}>
+        <Accordion className={`${theme} memories-accordion accordion`} expanded={showDisclaimer}>
           <AccordionSummary>
             <button className="button default grey" onClick={() => setShowDisclaimer(!showDisclaimer)}>
               <Label text={'Memory Expiration'} /> {showDisclaimer ? <LuMinus /> : <LuPlus />}

@@ -255,6 +255,7 @@
         .MuiAccordionSummary-root {
           overflow: hidden !important;
           min-height: 0 !important;
+          padding: 0 !important;
           button {
             &.button {
               height: 40px !important;
@@ -281,7 +282,6 @@
 
             #label-wrapper {
               label {
-                font-size: 15px;
                 white-space: nowrap;
               }
             }

@@ -48,6 +48,7 @@ export default function NewCalendarEvent() {
   const [eventName, setEventName] = useState('')
   const [eventWebsite, setEventWebsite] = useState('')
   const [eventNotes, setEventNotes] = useState('')
+
   const [recurringFrequency, setRecurringFrequency] = useState('')
   const [eventStartTime, setEventStartTime] = useState('')
   const [eventEndTime, setEventEndTime] = useState('')

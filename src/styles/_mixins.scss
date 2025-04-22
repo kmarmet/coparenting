@@ -1669,7 +1669,7 @@
     align-items: flex-start;
     flex-wrap: wrap;
     justify-content: flex-start;
-
+    user-select: none !important;
     #label-wrapper {
       padding-top: 10px;
       padding-bottom: 3px;
@@ -1679,9 +1679,11 @@
       margin-bottom: 10px;
       margin-top: 10px;
       height: 20px;
+      user-select: none !important;
     }
 
     &.time {
+      user-select: none !important;
       #label-wrapper {
         padding-bottom: 6px;
       }
@@ -3451,6 +3453,7 @@
               border: 0;
               border-bottom: 1px solid $lightBorderColor;
               background: transparent;
+              color: $darkestGrey !important;
             }
           }
         }

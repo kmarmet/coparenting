@@ -1,6 +1,14 @@
 import Manager from "./manager"
 
 DomManager = {
+  AddThemeToDatePickers: (currentUser) ->
+    setTimeout ->
+      datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
+      if Manager.isValid(datetimeParent)
+        datetimeParent.classList.add(currentUser?.settings?.theme)
+    , 100
+
+
   setDefaultView: () ->
     activeModal = document.querySelector('#modal.active')
     if activeModal

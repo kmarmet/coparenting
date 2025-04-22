@@ -3,213 +3,88 @@
 @import './palette';
 
 #external-overrides {
-  // MUI OVERRIDES
-  .MuiFormControl-root {
+  #memories-container {
     &.dark {
-      .MuiInputBase-root {
-        svg {
-          color: $darkText !important;
+      .MuiAccordionDetails-root {
+        background: $bootstrapYellowColor;
+        border: 0;
+        * {
+          color: $bootstrapYellowBg !important;
         }
-        .MuiOutlinedInput-input {
-          color: $darkText !important;
-          border-radius: 0 !important;
-          padding: 3px 8px !important;
-
-          &:focus {
-            background: $darkGrey !important;
+      }
+    }
+  }
+  #swap-requests {
+    &.dark {
+      .row {
+        #title {
+          color: $darkText;
+        }
+      }
+    }
+  }
+  #chat-wrapper {
+    &.dark {
+      #emotion-and-input-wrapper {
+        .message-input-wrapper {
+          .message-input {
+            color: $darkText;
           }
         }
       }
     }
   }
-
-  #static-calendar {
+  #coparents-container {
     &.dark {
-      #legend-wrapper {
-        &#legend-wrapper {
-          border-bottom: 1px solid $darkMainBlue;
-        }
-      }
-      .MuiPickersMonth-monthButton {
-        color: $darkText;
-      }
-      .MuiDialogActions-root {
-        p,
-        button {
-          background: transparent !important;
-          color: $darkMainBlue !important;
-          border-color: $darkMainBlue !important;
-        }
-      }
-      .MuiPickersLayout-root {
-        background: $darkBg !important;
-        .MuiPickersCalendarHeader-label {
-          color: $darkText !important;
-        }
-        svg {
-          color: $darkText !important;
-        }
-
-        .MuiDateCalendar-root {
-          .MuiDayCalendar-weekDayLabel {
-            color: $darkText !important;
-          }
-          .MuiPickersDay-root {
-            color: $darkText !important;
-
-            &:hover {
-              background: $darkBorderColor !important;
-            }
-
-            &.Mui-selected {
-              background: unset !important;
-              border: 1px solid $darkBlueMedium;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .MuiDialog-root {
-    &.dark {
-      .MuiDateCalendar-root {
-        .MuiDayCalendar-weekDayLabel {
-          color: $darkText !important;
-        }
-      }
-      .MuiPickersLayout-root,
-      .MuiButtonBase-root {
-        color: $darkText;
-      }
-      .MuiPaper-root {
-        background: $darkBg;
-
-        .MuiClockNumber-root {
-          color: $darkText !important;
-        }
-
-        .MuiTimePickerToolbar-ampmSelection {
-          span {
-            color: $darkBorderColor !important;
-
-            &.Mui-selected {
-              color: $darkMainBlue !important;
-            }
-          }
-        }
-
-        .MuiTimePickerToolbar-hourMinuteLabel {
-          button {
-            border: 1px solid $darkBorderColor !important;
-          }
-          span {
-            color: $darkText !important;
-          }
-        }
-
-        .MuiPickersLayout-root {
-          background: $darkBg !important;
-        }
-      }
-    }
-  }
-
-  #records-wrapper {
-    &.dark {
-      #record-row {
-        table {
-          thead {
-            background: transparent;
-            th {
-              background: transparent;
-              color: $darkText;
-              line-height: 1.2;
-            }
-          }
-          td {
-            color: $darkGreyText;
-          }
-        }
-        .title {
-          font-weight: $fwRegular;
-          background: $darkGreyLight;
+      #coparent-container {
+        .coparent {
           border: 0;
+          background: $translucentLightest;
+          &.active {
+            background: $accent;
+          }
         }
-        &.expenses {
-          background: $darkGrey;
-          border: 0;
+      }
+      #coparent-info {
+        #coparent-name-primary {
+          color: $accent;
+          font-weight: $fwMediumBold;
         }
       }
     }
   }
-
   #activity-wrapper {
     &.dark {
       #activity-cards {
         #row-wrapper {
           .activity-row {
+            .text {
+              color: $darkText;
+            }
             #date {
-              color: $darkText;
+              color: $translucentLightest;
+              opacity: 0.6;
             }
           }
         }
       }
     }
   }
-
-  // FULL MENU
-  .full-menu {
+  #child-info-container {
     &.dark {
-      #full-menu {
-        .menu-item {
-          background: $darkGrey;
-          border: 0;
-
-          &.visitation,
-          &.chats,
-          &.calendar,
-          &.admin,
-          &.activity,
-          &.expenses,
-          &.swap-request,
-          &.transfer-change,
-          &.documents,
-          &.memories,
-          &.child-info,
-          &.records,
-          &.coparents,
-          &.account,
-          &.settings,
-          &.contact-us,
-          &.theme,
-          &.logout,
-          &.install-app {
-            * {
-              color: $darkGreyText;
-            }
-
-            &.active {
-              background: $darkMainBlue;
-              p {
-                color: white !important;
-              }
-              * {
-                color: white;
-              }
-            }
-          }
-          &.visible {
-            svg {
-              opacity: 1;
-              color: $darkText;
+      #child-wrapper {
+        .child {
+          .child-image {
+            &.no-image {
+              background: $translucentLightest;
+              border: 0;
             }
           }
         }
       }
     }
   }
-
+  // APP CONTAINER
   #app-container {
     &.dark {
       background: $darkBg;
@@ -218,14 +93,52 @@
         user-select: none;
       }
 
+      p {
+        &.screen-intro-text {
+          color: $darkText;
+        }
+      }
+
+      .bottom-menu-wrapper {
+        .bottom-menu-title {
+          background: transparent;
+        }
+        .action-items {
+          background: $darkGreyLight;
+        }
+      }
+
+      #full-menu {
+        background: $darkGreyLight;
+      }
+
       #page-overlay {
         background-color: unset;
       }
 
-      b,
-      span,
-      p {
-        color: $darkText;
+      .views-wrapper {
+        .view {
+          background: $darkGreyLight;
+          color: $darkText;
+        }
+      }
+
+      .toggle-button-wrapper {
+        .layer {
+          background: $translucentLightest;
+        }
+        #toggle-button {
+          .knobs {
+            span {
+              &::after {
+                background: #cccccc;
+              }
+            }
+            &::before {
+              color: $darkGrey;
+            }
+          }
+        }
       }
 
       a {
@@ -284,6 +197,7 @@
 
         #menu-items {
           box-shadow: none;
+          background: $darkBg;
         }
       }
 
@@ -337,25 +251,6 @@
           .timestamp {
             opacity: 1;
             color: $darkGreyText;
-          }
-
-          .message {
-            color: white;
-            &.from {
-              background: $accent;
-              &:after {
-                background: radial-gradient(30px at 0 0, #0000 99%, $accent 102%);
-              }
-            }
-            &.to {
-              background: white;
-              font-weight: $fwMedium;
-              color: $accent;
-
-              &:after {
-                background: radial-gradient(30px at 100% 0, #0000 99%, white 102%);
-              }
-            }
           }
 
           .message-fade-wrapper {
@@ -475,6 +370,14 @@
           opacity: 1;
         }
 
+        &.active {
+          background: $bootstrapGreenColor;
+
+          p {
+            color: white;
+          }
+        }
+
         label {
           @include hover;
         }
@@ -526,20 +429,6 @@
             svg {
               color: #fff;
               opacity: 0.7;
-            }
-          }
-        }
-      }
-
-      // MUI OVERRIDES
-      .MuiPaper-root {
-        background: unset;
-      }
-      .MuiAccordion-root {
-        .MuiAccordion-heading {
-          .MuiButtonBase-root {
-            .MuiAccordionSummary-content {
-              color: $darkText;
             }
           }
         }
@@ -640,8 +529,6 @@
           }
         }
         .thread-item {
-          border-bottom: 1px solid $translucentLightest;
-
           #close-thread-actions-icon {
             color: $darkText;
             opacity: 0.7;
@@ -789,7 +676,6 @@
           background: $darkBg;
         }
         #svg-wrapper {
-          background: $darkGreen;
           border: 0;
         }
 
@@ -873,14 +759,36 @@
         }
       }
 
+      // LABEL WRAPPER
+      #label-wrapper {
+        background: transparent;
+        label {
+          color: $darkText;
+          background: transparent;
+
+          .asterisk {
+            background: transparent;
+          }
+        }
+      }
+
       // INPUT WRAPPER
       #input-wrapper {
-        border: 1px solid $darkBorderColor;
+        background: $translucentLightest;
 
+        * {
+          background: unset;
+        }
         // LABEL WRAPPER
         #label-wrapper {
+          background: transparent;
           label {
             color: $darkText;
+            background: transparent;
+
+            .asterisk {
+              background: transparent;
+            }
           }
         }
         input,
@@ -889,7 +797,6 @@
           border: 0;
           color: $darkText;
           opacity: 0.9;
-          border-bottom: 1px solid $darkBorderColor;
 
           &.rs-date-range-input {
             background: transparent !important;
@@ -902,10 +809,8 @@
           &:focus {
             outline: none;
             border: unset;
-            background: $darkGrey;
+            background: transparent;
             border-radius: 0;
-            padding: 3px 8px;
-            //            padding: 10px;
           }
         }
 
@@ -940,12 +845,23 @@
       // CHILD INFO
       #child-info-container {
         #child-info {
-          .form {
-            .flex {
-              &.input {
-                .delete-icon {
-                  color: $red;
-                }
+          .MuiPaper-root {
+            &.MuiAccordion-root {
+              background: transparent !important;
+            }
+          }
+          #child-name-primary {
+            color: $accent;
+          }
+        }
+        #child-wrapper {
+          .child {
+            .child-name {
+              color: $darkText;
+            }
+            &.active {
+              .child-name {
+                color: $accent;
               }
             }
           }
@@ -961,7 +877,10 @@
           }
         }
         .child-name {
-          color: $darkMainBlue;
+          color: $darkText;
+          &.active {
+            color: $accent;
+          }
         }
         .profile-pic-container {
           &.no-image {
@@ -972,51 +891,6 @@
           .profile-pic-container {
             border: unset;
           }
-        }
-      }
-
-      // FORM
-      .form {
-        input {
-          border: 0;
-          background: $translucentLightest;
-        }
-        label {
-          color: $darkText;
-
-          span {
-            color: $darkText;
-            opacity: 0.9;
-          }
-        }
-      }
-
-      // REACT TOGGLE
-
-      .react-toggle {
-        overflow: hidden;
-        * {
-          user-select: none !important;
-          outline: 0 !important;
-        }
-        &.react-toggle--checked {
-          background: $darkBg !important;
-          user-select: none;
-          .react-toggle-track-check,
-          .react-toggle-track {
-            overflow: hidden;
-            background: $darkMainBlue !important;
-
-            .react-toggle-track-check {
-              height: 10px;
-              transform: scale(0.7);
-              top: -2px;
-            }
-          }
-        }
-        .react-toggle-track {
-          background: transparent !important;
-          border: 1px solid $darkBorderColor;
         }
       }
 
@@ -1031,181 +905,182 @@
       }
 
       // BOTTOM CARD
-      #modal {
-        background: $darkBg;
-        border-top: 1px solid $darkBorderColor;
-
-        #large-title {
-          color: $darkMainBlue;
-          font-weight: $fwMedium;
-        }
-
-        #details {
-          a {
-            &.nav-detail {
-              color: $darkMainBlue;
-              opacity: 1;
-              svg {
-                color: $darkMainBlue;
-              }
-
-              &:visited {
-                color: $darkMainBlue;
+      #modal-wrapper {
+        #relative-wrapper {
+          #content {
+            #details {
+              hr {
+                &.top,
+                &.bottom {
+                  background-color: $darkestGrey;
+                }
               }
             }
           }
-          .flex {
-            border-bottom: 1px solid $darkBorderColor;
-            a {
+        }
+        #modal-content {
+          #modal {
+            background: $darkGreyLight;
+
+            #large-title {
               color: $darkMainBlue;
-              opacity: 1;
+              font-weight: $fwMedium;
             }
-          }
-        }
 
-        p {
-          color: $darkText;
-
-          &.view {
-            color: $darkGreyText;
-
-            &.active {
-              color: $darkText;
+            #modal-title-and-text {
+              background-color: $darkGreyLight;
+              #modal-title {
+                color: $accent;
+              }
             }
-          }
-        }
 
-        hr {
-          border-color: $translucentLightest;
-        }
+            #details {
+              a {
+                &.nav-detail {
+                  color: $darkMainBlue;
+                  opacity: 1;
+                  svg {
+                    color: $darkMainBlue;
+                  }
 
-        &.custom-child-info-wrapper {
-          #info-type {
-            background: $darkBorderColor;
+                  &:visited {
+                    color: $darkMainBlue;
+                  }
+                }
+              }
+              .flex {
+                border-bottom: 1px solid $darkBorderColor;
+                a {
+                  color: $darkMainBlue;
+                  opacity: 1;
+                }
+              }
+            }
 
-            .item {
+            p:not(.checkbox-text) {
               color: $darkText;
-              opacity: 0.65;
 
-              &.active {
+              &.view {
+                color: $darkGreyText;
+
+                &.active {
+                  color: $darkText;
+                }
+              }
+            }
+
+            &.custom-child-info-wrapper {
+              #info-type {
+                background: $darkBorderColor;
+
+                .item {
+                  color: $darkText;
+                  opacity: 0.65;
+
+                  &.active {
+                    opacity: 1;
+                  }
+                }
+              }
+            }
+
+            &.payment-options-card {
+              #relative-wrapper {
+                a {
+                  color: $darkMainBlue;
+                }
+              }
+            }
+
+            &.expense-tracker {
+              #relative-wrapper {
+                .buttons {
+                  .card-button {
+                    &.submit {
+                      svg {
+                        color: $darkText;
+                      }
+                    }
+                  }
+                }
+              }
+              #title {
+                color: $main;
                 opacity: 1;
               }
             }
-          }
-        }
 
-        &.payment-options-card {
-          #relative-wrapper {
-            a {
-              color: $darkMainBlue;
-            }
-          }
-        }
-
-        &.expense-tracker {
-          #relative-wrapper {
-            .buttons {
-              .card-button {
-                &.submit {
-                  svg {
+            &.new-expense-card {
+              #add-expense-form {
+                #default-expense-amounts {
+                  button {
+                    background: $darkBorderColor;
                     color: $darkText;
                   }
                 }
               }
             }
-          }
-          #title {
-            color: $main;
-            opacity: 1;
-          }
-        }
 
-        &.new-expense-card {
-          #add-expense-form {
-            #default-expense-amounts {
-              button {
-                background: $darkBorderColor;
-                color: $darkText;
-              }
-            }
-          }
-        }
-
-        // ACTION PILLS
-        .action-pills {
-          .duration-option {
-            p,
-            svg {
-              color: $darkText;
-            }
-            &.active {
-              p,
-              svg {
-                color: $darkMainBlue;
-                opacity: 1;
-              }
-            }
-          }
-        }
-
-        #relative-wrapper {
-          #holiday-card-buttons {
-            button {
-              &#view-visitation-holidays-item,
-              &#view-all-holidays-item {
-                background: $darkBg;
-              }
-            }
-          }
-          #title-wrapper {
-            background: $darkBg;
-            .close-icon {
-              background: $darkBorderColor;
-              color: $darkText;
-            }
-          }
-        }
-
-        &.full-menu {
-          #title-wrapper {
-            background: $darkBg !important;
-          }
-
-          #full-menu {
-            .menu-item {
-              &.active {
+            // ACTION PILLS
+            .action-pills {
+              .duration-option {
                 p,
                 svg {
-                  opacity: 1;
+                  color: $darkText;
+                }
+                &.active {
+                  p,
+                  svg {
+                    color: $darkMainBlue;
+                    opacity: 1;
+                  }
                 }
               }
             }
-          }
-        }
 
-        #title {
-          color: $darkPurple;
-        }
+            #relative-wrapper {
+              #holiday-card-buttons {
+                button {
+                  &#view-visitation-holidays-item,
+                  &#view-all-holidays-item {
+                    background: $darkBg;
+                  }
+                }
+              }
+              #title-wrapper {
+                background: $darkBg;
+                .close-icon {
+                  background: $darkBorderColor;
+                  color: $darkText;
+                }
+              }
+            }
 
-        .buttons {
-          background: $darkBg;
-          #blur {
-            filter: blur(5px);
-            background: $darkBg;
-            width: 100vw;
-            padding-top: 15px;
-            bottom: 10px;
-          }
+            #title {
+              color: $darkPurple;
+            }
 
-          .delete-icon {
-            opacity: 1;
-          }
-          button {
-            &.card-button {
-              background: $darkMainBlue;
-              color: white;
-              svg {
-                color: white;
+            .buttons {
+              background: $darkBg;
+              #blur {
+                filter: blur(5px);
+                background: $darkBg;
+                width: 100vw;
+                padding-top: 15px;
+                bottom: 10px;
+              }
+
+              .delete-icon {
+                opacity: 1;
+              }
+              button {
+                &.card-button {
+                  background: $darkMainBlue;
+                  color: white;
+                  svg {
+                    color: white;
+                  }
+                }
               }
             }
           }
@@ -1258,7 +1133,6 @@
         .events {
           background: $darkBg;
           .event-row {
-            border-bottom: 1px solid $darkBorderColor;
             .text {
               * {
                 font-weight: $fwRegular;
@@ -1297,6 +1171,319 @@
               &.reminder-times {
                 color: $darkGreyText;
               }
+            }
+          }
+        }
+      }
+    }
+  }
+  // MUI OVERRIDES
+  #chats-container {
+    &.dark {
+      .MuiAccordionDetails-root {
+        background: $bootstrapGreenColor !important;
+
+        p,
+        button {
+          color: $bootstrapBgGreen !important;
+        }
+
+        button {
+          border: 1px solid $bootstrapBgGreen !important;
+        }
+      }
+    }
+  }
+  .MuiPaper-root {
+    &.dark {
+      &.MuiAccordion-root {
+        background: $translucentLightest !important;
+        border: 0 !important;
+
+        &.child-info {
+          .MuiAccordion-heading {
+            .MuiButtonBase-root {
+              .MuiAccordionSummary-content {
+                background: transparent !important;
+              }
+            }
+          }
+        }
+
+        .MuiAccordion-heading {
+          .MuiAccordionSummary-root {
+            button {
+              background: $translucentLightest !important;
+            }
+          }
+        }
+      }
+    }
+  }
+  .MuiDialog-root {
+    &.dark {
+      .MuiPaper-root:not(.MuiAccordion-root) {
+        background: transparent;
+        .MuiClockNumber-root {
+          color: $darkText !important;
+        }
+        .MuiTimeClock-root {
+          .MuiClock-clock {
+            background: $translucentLightest !important;
+            border: 0 !important;
+          }
+        }
+
+        .MuiTimePickerToolbar-ampmSelection {
+          span {
+            color: $darkestGrey !important;
+
+            &.Mui-selected {
+              color: $darkMainBlue !important;
+            }
+          }
+        }
+
+        .MuiTimePickerToolbar-hourMinuteLabel {
+          button {
+            border: 1px solid $darkBorderColor !important;
+          }
+          span {
+            color: $darkText !important;
+          }
+        }
+
+        .MuiPickersLayout-root {
+          background: $darkGreyLight !important;
+        }
+        .MuiDialogActions-root {
+          .MuiButton-root {
+            &.MuiButton-text {
+              background: $darkGrey !important;
+              border: 0 !important;
+              color: $lightBlack !important;
+
+              &:nth-child(2) {
+                background: $green !important;
+                color: white !important;
+              }
+            }
+          }
+        }
+        .MuiDialogContent-root {
+          .MuiDateCalendar-root {
+            .MuiDateCalendar-viewTransitionContainer {
+              .MuiMonthCalendar-root {
+                background: $darkestGrey !important;
+
+                .MuiPickersMonth-monthButton {
+                  color: $lightBorderColor !important;
+
+                  &.Mui-selected {
+                    background: $accent !important;
+                  }
+                }
+              }
+            }
+            .MuiDayCalendar-weekDayLabel {
+              color: $darkText !important;
+            }
+            .MuiPickersDay-root {
+              color: white !important;
+            }
+          }
+        }
+        background: unset;
+      }
+      .MuiAccordion-root {
+        .MuiAccordion-heading {
+          .MuiButtonBase-root {
+            .MuiAccordionSummary-content {
+              color: $darkText;
+            }
+          }
+        }
+      }
+    }
+  }
+  .MuiFormControl-root {
+    &.dark {
+      background: transparent !important;
+      * {
+        background: transparent !important;
+      }
+      .MuiOutlinedInput-notchedOutline {
+      }
+      .MuiFormLabel-root {
+        background: transparent !important;
+      }
+      legend {
+        background: transparent !important;
+        border: 0 !important;
+      }
+
+      .MuiInputBase-root {
+        background: transparent !important;
+        svg {
+          color: $darkText !important;
+        }
+        fieldset {
+          background: transparent !important;
+        }
+        .MuiOutlinedInput-input {
+          color: $darkText !important;
+          border-radius: 0 !important;
+        }
+      }
+    }
+  }
+
+  #calendar-container {
+    #static-calendar {
+      &.dark {
+        #legend-wrapper {
+          &#legend-wrapper {
+            border-bottom: 1px solid $darkMainBlue;
+          }
+        }
+        .MuiPickersMonth-monthButton {
+          color: $darkText;
+        }
+        .MuiDialogActions-root {
+          p,
+          button {
+            background: transparent !important;
+            color: $darkMainBlue !important;
+            border-color: $darkMainBlue !important;
+          }
+        }
+        .MuiPickersLayout-root {
+          background: $darkBg !important;
+
+          .MuiDateCalendar-root {
+            [role='row'] {
+              .MuiPickersDay-root {
+                color: $darkText !important;
+              }
+            }
+          }
+
+          .MuiPickersCalendarHeader-label {
+            color: $darkText !important;
+          }
+          svg {
+            color: $darkText !important;
+          }
+
+          .MuiDateCalendar-root {
+            .MuiDayCalendar-weekDayLabel {
+              color: $darkText !important;
+            }
+            .MuiPickersDay-root {
+              color: $darkText !important;
+
+              &:hover {
+                background: $darkBorderColor !important;
+              }
+
+              &.Mui-selected {
+                background: unset !important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  #records-wrapper {
+    &.dark {
+      #record-row {
+        table {
+          thead {
+            background: transparent;
+            th {
+              background: transparent;
+              color: $darkText;
+              line-height: 1.2;
+            }
+          }
+          td {
+            color: $darkGreyText;
+          }
+        }
+        .title {
+          font-weight: $fwRegular;
+          background: $darkGreyLight;
+          border: 0;
+        }
+        &.expenses {
+          background: $darkGrey;
+          border: 0;
+        }
+      }
+    }
+  }
+
+  #activity-wrapper {
+    &.dark {
+      #activity-cards {
+        #row-wrapper {
+          .activity-row {
+            #date {
+              color: $darkText;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // FULL MENU
+  .full-menu {
+    &.dark {
+      #full-menu {
+        .menu-item {
+          background: $darkGrey;
+          border: 0;
+
+          &.visitation,
+          &.chats,
+          &.calendar,
+          &.admin,
+          &.activity,
+          &.expenses,
+          &.swap-request,
+          &.transfer-change,
+          &.documents,
+          &.memories,
+          &.child-info,
+          &.records,
+          &.coparents,
+          &.account,
+          &.settings,
+          &.contact-us,
+          &.theme,
+          &.logout,
+          &.install-app {
+            * {
+              color: $darkGreyText;
+            }
+
+            &.active {
+              background: $darkMainBlue;
+              p {
+                color: white !important;
+              }
+              * {
+                color: white;
+              }
+            }
+          }
+          &.visible {
+            svg {
+              opacity: 1;
+              color: $darkText;
             }
           }
         }

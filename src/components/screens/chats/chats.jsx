@@ -76,7 +76,7 @@ const Chats = () => {
 
         <Spacer height={8} />
         {/* INVITE BUTTON */}
-        <Accordion expanded={showInfo} className={'invite-accordion'}>
+        <Accordion expanded={showInfo} className={`${theme} invite-accordion accordion`}>
           <AccordionSummary>
             <button className="button default grey" onClick={() => setShowInfo(!showInfo)}>
               <div id="circle" className="circle"></div>

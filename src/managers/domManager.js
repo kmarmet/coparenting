@@ -4,6 +4,15 @@ var DomManager;
 import Manager from "./manager";
 
 DomManager = {
+  AddThemeToDatePickers: function(currentUser) {
+    return setTimeout(function() {
+      var datetimeParent, ref;
+      datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root');
+      if (Manager.isValid(datetimeParent)) {
+        return datetimeParent.classList.add(currentUser != null ? (ref = currentUser.settings) != null ? ref.theme : void 0 : void 0);
+      }
+    }, 100);
+  },
   setDefaultView: function() {
     var activeModal, allViews, detailsView;
     activeModal = document.querySelector('#modal.active');

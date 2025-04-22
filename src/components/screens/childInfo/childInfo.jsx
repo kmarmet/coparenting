@@ -187,14 +187,14 @@ export default function ChildInfo() {
           {!DomManager.isMobile() && <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />}
         </div>
 
-        <p>
+        <p className="screen-intro-text">
           You can store and access all relevant information about your child, particularly essential details that you may need to retrieve at any
           moment.
         </p>
 
         <Spacer height={10} />
 
-        {!Manager.isValid(currentUser?.children) && (
+        {!Manager.isValid(children) && (
           <NoDataFallbackText
             text={'Currently, no children have been added. To share events with your children or to store their information, please add them here.'}
           />

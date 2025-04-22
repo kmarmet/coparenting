@@ -21,6 +21,7 @@ export default function NavBar({children, navbarClass}) {
       ...state,
       currentScreen: screen,
       activeInfoChild: null,
+      notificationCount: 0,
     })
   }
 

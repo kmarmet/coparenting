@@ -12,6 +12,7 @@ const Onboarding = () => {
         <img src={require('../../img/onboarding/welcome.gif')} alt="" />
 
         <div className="text-content">
+          <Spacer height={10} />
           <p className="title">You Have Arrived!</p>
           <Spacer height={3} />
           <p className="text">
@@ -30,6 +31,7 @@ const Onboarding = () => {
         <img src={require('../../img/onboarding/calendar.gif')} alt="" />
 
         <div className="text-content">
+          <Spacer height={10} />
           <p className="title">So How Does it Work?</p>
           <Spacer height={5} />
           <p className="text">In order to share with a co-parent or child you will need to add them to your profile.</p>

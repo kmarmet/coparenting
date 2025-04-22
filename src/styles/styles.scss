@@ -197,6 +197,7 @@
   }
 
   #onboarding {
+    height: 100vh;
     .title {
       font-weight: $fwBold;
       font-size: 24px;
@@ -222,16 +223,10 @@
     }
 
     button {
-      position: fixed;
-      bottom: 5vh;
-      width: calc(100% - 40px);
+      width: calc(100vw - 40px);
+      margin-top: 30px;
       background: $green;
       color: white;
-    }
-
-    img {
-      position: relative;
-      top: -30px;
     }
 
     .screen {
@@ -243,12 +238,11 @@
       visibility: hidden;
       right: 0;
       bottom: 0;
-      max-height: 90vh;
       overflow: auto;
+      background: white;
 
       .text-content {
         position: relative;
-        top: -50px;
       }
 
       &.active {

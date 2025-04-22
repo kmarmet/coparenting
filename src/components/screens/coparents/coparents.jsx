@@ -194,12 +194,12 @@ export default function Coparents() {
       </Modal>
 
       {/* COPARENTS CONTAINER */}
-      <div id="parents-container" className={`${theme} page-container parents-wrapper`}>
+      <div id="coparents-container" className={`${theme} page-container parents-wrapper`}>
         <Fade direction={'up'} duration={1000} className={'parents-fade-wrapper'} triggerOnce={true}>
           <div className="flex" id="screen-title-wrapper">
             <p className="screen-title beside-action-button">Co-Parents</p>
           </div>
-          <p>Maintain accessible records of important information regarding your co-parent.</p>
+          <p className="screen-intro-text">Maintain accessible records of important information regarding your co-parent.</p>
         </Fade>
 
         {/* COPARENT ICONS CONTAINER */}

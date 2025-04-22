@@ -1,5 +1,5 @@
 // Path: src\components\shared\inputWrapper.jsx
-import React, {useContext} from 'react'
+import React, {useContext, useEffect} from 'react'
 import {DebounceInput} from 'react-debounce-input'
 import globalState from '../../context.js'
 import Manager from '../../managers/manager'
@@ -10,6 +10,8 @@ import moment from 'moment'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import AddressInput from './addressInput'
 import Spacer from './spacer'
+import DomManager from '../../managers/domManager'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 function InputWrapper({
   wrapperClasses = '',
@@ -30,6 +32,10 @@ function InputWrapper({
 }) {
   const {state, setState} = useContext(globalState)
   const {refreshKey, theme} = state
+  const {currentUser} = useCurrentUser()
+  useEffect(() => {
+    DomManager.AddThemeToDatePickers(currentUser)
+  }, [refreshKey])
 
   return (
     <>
@@ -102,8 +108,9 @@ function InputWrapper({
           <MobileDatePicker
             showDaysOutsideCurrentMonth={true}
             label={labelText}
+            onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
             views={dateViews}
-            className={`${theme} ${inputClasses}`}
+            class={`${theme} ${inputClasses}`}
             value={Manager.isValid(defaultValue) ? moment(defaultValue) : null}
             key={refreshKey}
             format={dateFormat}
@@ -118,6 +125,7 @@ function InputWrapper({
             defaultValue={Manager.isValid(defaultValue) ? moment(defaultValue) : null}
             slots={{field: SingleInputDateRangeField}}
             key={refreshKey}
+            onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
             label={labelText}
             name="allowedRange"
           />
@@ -135,6 +143,7 @@ function InputWrapper({
             value={Manager.isValid(defaultValue) ? moment(defaultValue, DatetimeFormats.timeForDb) : null}
             label={labelText}
             minutesStep={5}
+            onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
             key={refreshKey}
             format={DatetimeFormats.timeForDb}
             onAccept={onDateOrTimeSelection}
