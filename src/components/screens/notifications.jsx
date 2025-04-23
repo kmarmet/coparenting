@@ -132,6 +132,7 @@ export default function Notifications() {
                   <Label text={'Legend'} /> {legendIsExpanded ? <FaMinus /> : <FaPlus />}
                 </button>
               </AccordionSummary>
+              <Spacer height={5} />
               <AccordionDetails>
                 <div className="flex">
                   <div className="box medical"></div>

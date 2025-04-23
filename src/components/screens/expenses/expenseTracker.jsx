@@ -516,7 +516,7 @@ export default function ExpenseTracker() {
         <Spacer height={8} />
 
         {/* FILTERS */}
-        <Accordion expanded={showFilters} id={'expenses-accordion'} className={showFilters ? 'open' : 'closed'}>
+        <Accordion expanded={showFilters} id={'expenses-accordion'} className={`${showFilters ? 'open' : 'closed'} ${theme}`}>
           <AccordionSummary onClick={() => setShowFilters(!showFilters)} className={showFilters ? 'open' : 'closed'}>
             <AccordionTitle titleText={'Filters'} toggleState={showFilters} onClick={() => setShowFilters(!showFilters)} />
           </AccordionSummary>

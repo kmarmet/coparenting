@@ -55,7 +55,7 @@ animate__faster`
       }
     });
   },
-  confirmAlert: function(title, confirmButtonText = "I'm Sure", showNevermindButton = true, onConfirm, onDeny) {
+  confirmAlert: function(title, confirmButtonText = "I'm Sure", showDenyButton = true, onConfirm, onDeny, theme = 'light') {
     return Swal.fire({
       showClass: {
         popup: `animate__animated
@@ -68,13 +68,17 @@ animate__fadeOutDown
 animate__faster`
       },
       title: title,
-      showDenyButton: showNevermindButton,
+      grow: true,
+      showDenyButton: showDenyButton,
       showCancelButton: false,
       confirmButtonText: confirmButtonText,
       denyButtonText: "Nevermind",
       background: "#fff3cd !important",
       confirmButtonColor: '#00b389 !important',
-      customClass: 'confirm-alert'
+      customClass: {
+        container: `${theme} confirm-alert`,
+        popup: "KEVIN"
+      }
     }).then(function(result) {
       if (result.isConfirmed) {
         if (onConfirm) {

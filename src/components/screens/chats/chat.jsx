@@ -54,23 +54,13 @@ const Chats = () => {
   const {chatMessages} = useChatMessages(chatId)
   const [messagesToLoop, setMessagesToLoop] = useState(chatMessages)
 
-  useEffect(() => {
-    if (Manager.isValid(chatMessages)) {
-      setMessagesToLoop(chatMessages)
-    }
-  }, [chatMessages])
-
-  useEffect(() => {
-    if (Manager.isValid(chat) && Manager.isValid(chat?.id)) {
-      console.log(chat?.id)
-      setChatId(chat?.id)
-    }
-  }, [chat])
-
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)
     const longpressMenu = element.target.parentNode.previousSibling
-    longpressMenu.classList.add('active')
+
+    if (Manager.isValid(longpressMenu)) {
+      longpressMenu.classList.add('active')
+    }
   })
 
   const ToggleBookmark = async (messageObject) => {
@@ -286,6 +276,18 @@ const Chats = () => {
     }
   }, [showSearchCard])
 
+  useEffect(() => {
+    if (Manager.isValid(chatMessages)) {
+      setMessagesToLoop(chatMessages)
+    }
+  }, [chatMessages])
+
+  useEffect(() => {
+    if (Manager.isValid(chat) && Manager.isValid(chat?.id)) {
+      setChatId(chat?.id)
+    }
+  }, [chat])
+
   return (
     <>
       <Modal
@@ -371,7 +373,7 @@ const Chats = () => {
 
         {/* SEARCH RESULTS */}
         {bookmarks.length === 0 && searchResults.length > 0 && (
-          <div id="chatMessages" className="search-results">
+          <div id="messages" className="search-results">
             {Manager.isValid(searchResults) &&
               searchResults.map((messageObj, index) => {
                 let sender
@@ -381,7 +383,7 @@ const Chats = () => {
                   sender = StringManager.getFirstNameOnly(messageObj.sender)
                 }
                 return (
-                  <div className="message-fade-wrapper search" key={index}>
+                  <div className="message-wrapper search" key={index}>
                     <p className={messageObj.sender === currentUser?.name ? 'message from' : 'to message'}>{messageObj.message}</p>
                     <span className={messageObj.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
                       From {sender} on&nbsp;{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD (hh:mma)')}
@@ -403,12 +405,13 @@ const Chats = () => {
                 sender = StringManager.getFirstNameOnly(bookmark.sender)
               }
               return (
-                <div {...bind()} key={index} className={'message-fade-wrapper'}>
+                <div {...bind()} key={index} className={'message-wrapper'}>
                   {/* LONGPRESS MENU */}
                   <div className="longpress-menu">
                     <button
                       id="copy"
                       onClick={(e) => {
+                        setState({...state, successAlertMessage: 'Message Copied'})
                         const message = e.target.parentNode.parentNode.querySelector('.message')
                         navigator.clipboard.writeText(message.textContent)
                         e.target.parentNode.classList.remove('active')
@@ -477,6 +480,7 @@ const Chats = () => {
                                 const message = e.target.parentNode.parentNode.querySelector('.message')
                                 navigator.clipboard.writeText(message.textContent)
                                 e.target.parentNode.classList.remove('active')
+                                setState({...state, successAlertMessage: 'Message Copied'})
                               }}>
                               Copy <IoCopy />
                             </button>

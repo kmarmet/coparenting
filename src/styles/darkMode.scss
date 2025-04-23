@@ -25,7 +25,38 @@
   }
   #chat-wrapper {
     &.dark {
+      #default-messages,
+      #messages,
+      #bookmark-messages {
+        background: $darkBg;
+
+        .message-wrapper {
+          .message {
+            &.to {
+              background: #1a1a1a;
+              color: $darkText;
+              &::after {
+                background: radial-gradient(30px at top left, black 99%, #1a1a1a 102%);
+              }
+            }
+          }
+        }
+      }
       #emotion-and-input-wrapper {
+        #tone-wrapper {
+          &.green {
+            background: $darkGreen;
+            * {
+              color: white;
+            }
+          }
+          &.red {
+            background: $bootstrapRedColor;
+            * {
+              color: white;
+            }
+          }
+        }
         .message-input-wrapper {
           .message-input {
             color: $darkText;
@@ -98,6 +129,18 @@
           color: $darkText;
         }
       }
+      a {
+        color: $main;
+      }
+      button {
+        &.default {
+          &.green {
+            background: transparent;
+            color: $darkGreenButtonText;
+            border: 1px solid $darkGreen;
+          }
+        }
+      }
 
       .bottom-menu-wrapper {
         .bottom-menu-title {
@@ -105,11 +148,33 @@
         }
         .action-items {
           background: $darkGreyLight;
+
+          #close-icon-wrapper {
+            .close-button {
+              background: $translucentLightest;
+              border: 0;
+            }
+          }
+
+          .action-item {
+            .content {
+              .svg-wrapper {
+                background: $translucentLightest;
+              }
+            }
+          }
         }
       }
 
       #full-menu {
         background: $darkGreyLight;
+
+        #close-icon-wrapper {
+          #close-icon {
+            background: $translucentLightest;
+            border: 0;
+          }
+        }
       }
 
       #page-overlay {
@@ -141,10 +206,6 @@
         }
       }
 
-      a {
-        color: $darkMainBlue;
-      }
-
       #instructions-wrapper {
         .instructions {
           color: $darkGreyText;
@@ -170,7 +231,7 @@
       #install-app-wrapper {
         .os-container {
           .emphasize {
-            background: $darkMainBlue;
+            background: $main;
             color: white;
 
             &.more-padding {
@@ -211,16 +272,16 @@
 
         #user-info {
           svg {
-            color: $darkMainBlue;
+            color: $main;
           }
           #user-name {
-            color: $darkMainBlue;
+            color: $main;
           }
         }
         .top-buttons {
           border: 0;
           svg {
-            color: $darkMainBlue;
+            color: $main;
           }
         }
 
@@ -296,7 +357,7 @@
       #memories-container {
         #below-image {
           p {
-            color: $darkMainBlue;
+            color: $main;
           }
         }
         .light-gallery {
@@ -352,8 +413,6 @@
       }
 
       .views-wrapper {
-        border-bottom: 1px solid $darkBorderColor;
-
         .view {
           &.active {
             &:after {
@@ -399,7 +458,7 @@
 
       // SCREEN TITLE
       .screen-title {
-        color: $darkMainBlue;
+        color: $main;
         opacity: 1;
         font-weight: $fwMediumBold;
       }
@@ -435,7 +494,8 @@
       }
 
       hr {
-        border-color: $translucentLightest;
+        border-color: $darkBorderColor;
+        background-color: $darkBorderColor;
       }
 
       #disclaimer {
@@ -490,7 +550,7 @@
           }
         }
         .payment-options-link {
-          color: $darkMainBlue;
+          color: $main;
         }
         .expense {
           #name-wrapper {
@@ -576,7 +636,7 @@
 
           .message-input {
             background: transparent;
-            border-bottom: 1px solid $darkMainBlue;
+            border-bottom: 1px solid $main;
             color: $darkText;
 
             &:focus {
@@ -589,7 +649,7 @@
           }
 
           #send-button {
-            background: $darkMainBlue;
+            background: $main;
           }
         }
 
@@ -612,7 +672,7 @@
             }
 
             &.to {
-              background: $darkMainBlue;
+              background: $main;
               &:after {
                 display: none;
               }
@@ -663,7 +723,7 @@
             &.active {
               svg {
                 opacity: 1;
-                color: $darkMainBlue;
+                color: $main;
               }
             }
           }
@@ -683,7 +743,7 @@
           .menu-item {
             color: $darkIconGrey;
             &.active:not(#add-new-button) {
-              color: $darkMainBlue;
+              color: $main;
             }
           }
         }
@@ -715,7 +775,7 @@
               &.active {
                 border: unset;
                 #inner-circle {
-                  background: $darkMainBlue;
+                  background: $main;
                   border: unset;
                 }
               }
@@ -750,7 +810,7 @@
               &.active {
                 border: unset;
                 #inner-circle {
-                  background: $darkMainBlue;
+                  background: $main;
                   border: unset;
                 }
               }
@@ -798,19 +858,16 @@
           color: $darkText;
           opacity: 0.9;
 
-          &.rs-date-range-input {
-            background: transparent !important;
-            border: 0 !important;
-            color: $darkText !important;
-            opacity: 0.9 !important;
-            border-bottom: 1px solid $darkBorderColor !important;
-          }
-
           &:focus {
             outline: none;
             border: unset;
             background: transparent;
             border-radius: 0;
+          }
+
+          &::placeholder {
+            color: $darkText;
+            opacity: 0.6;
           }
         }
 
@@ -906,53 +963,106 @@
 
       // BOTTOM CARD
       #modal-wrapper {
+        .buttons {
+          #close-icon-bg {
+            background: transparent;
+            color: $darkText;
+            border: 1px solid $darkText;
+            @include blurredBg;
+          }
+          .card-button {
+            @include blurredBg;
+            &.submit {
+              background: transparent;
+              border: 1px solid $darkGreen;
+              color: $darkGreen;
+            }
+            &.warning {
+              border: 1px solid $darkYellow;
+              background: transparent;
+              color: $darkYellow;
+            }
+          }
+        }
+        &.new-expense-card {
+          #add-expense-form {
+            #amount-input-wrapper {
+              .input-wrapper {
+                #input-wrapper {
+                  input {
+                    border-bottom: 1px solid $translucentLightest;
+                  }
+                }
+              }
+            }
+            #default-expense-amounts {
+              button {
+                background: $translucentLightest;
+                border: 0;
+                color: $darkText;
+              }
+            }
+          }
+        }
         #relative-wrapper {
           #content {
             #details {
               hr {
                 &.top,
                 &.bottom {
-                  background-color: $darkestGrey;
+                  background-color: $darkBorderColor;
                 }
               }
             }
           }
         }
         #modal-content {
+          background: transparent;
           #modal {
             background: $darkGreyLight;
 
             #large-title {
-              color: $darkMainBlue;
+              color: $main;
               font-weight: $fwMedium;
             }
 
             #modal-title-and-text {
               background-color: $darkGreyLight;
-              #modal-title {
-                color: $accent;
-              }
             }
 
-            #details {
-              a {
-                &.nav-detail {
-                  color: $darkMainBlue;
-                  opacity: 1;
-                  svg {
-                    color: $darkMainBlue;
+            #relative-wrapper {
+              #content {
+                #details {
+                  .blocks {
+                    .block {
+                      a {
+                        &.nav-link {
+                          background: $translucentLightest;
+                          border: 0;
+                        }
+                      }
+                    }
                   }
+                  a {
+                    &.nav-detail {
+                      color: $main;
+                      opacity: 1;
+                      svg {
+                        color: $main;
+                      }
 
-                  &:visited {
-                    color: $darkMainBlue;
+                      &:visited {
+                        color: $main;
+                      }
+                    }
                   }
-                }
-              }
-              .flex {
-                border-bottom: 1px solid $darkBorderColor;
-                a {
-                  color: $darkMainBlue;
-                  opacity: 1;
+                  .flex {
+                    border-bottom: 1px solid $darkBorderColor;
+                    a {
+                      color: $main;
+                      opacity: 1;
+                    }
+                  }
                 }
               }
             }
@@ -987,7 +1097,7 @@
             &.payment-options-card {
               #relative-wrapper {
                 a {
-                  color: $darkMainBlue;
+                  color: $main;
                 }
               }
             }
@@ -1031,7 +1141,7 @@
                 &.active {
                   p,
                   svg {
-                    color: $darkMainBlue;
+                    color: $main;
                     opacity: 1;
                   }
                 }
@@ -1041,9 +1151,15 @@
             #relative-wrapper {
               #holiday-card-buttons {
                 button {
-                  &#view-visitation-holidays-item,
+                  &#view-visitation-holidays-item {
+                    background: transparent;
+                    color: $darkGreen;
+                    border: 1px solid $darkGreen;
+                  }
                   &#view-all-holidays-item {
-                    background: $darkBg;
+                    background: transparent;
+                    color: $accent;
+                    border: 1px solid $accent;
                   }
                 }
               }
@@ -1075,7 +1191,7 @@
               }
               button {
                 &.card-button {
-                  background: $darkMainBlue;
+                  background: $main;
                   color: white;
                   svg {
                     color: white;
@@ -1200,6 +1316,16 @@
         background: $translucentLightest !important;
         border: 0 !important;
 
+        .MuiAccordion-heading {
+          .MuiAccordionSummary-root {
+            .MuiAccordionSummary-content {
+              button {
+                background: transparent !important;
+              }
+            }
+          }
+        }
+
         &.child-info {
           .MuiAccordion-heading {
             .MuiButtonBase-root {
@@ -1213,7 +1339,7 @@
         .MuiAccordion-heading {
           .MuiAccordionSummary-root {
             button {
-              background: $translucentLightest !important;
+              background: #171717 !important;
             }
           }
         }
@@ -1239,7 +1365,7 @@
             color: $darkestGrey !important;
 
             &.Mui-selected {
-              color: $darkMainBlue !important;
+              color: $main !important;
             }
           }
         }
@@ -1343,7 +1469,7 @@
       &.dark {
         #legend-wrapper {
           &#legend-wrapper {
-            border-bottom: 1px solid $darkMainBlue;
+            border-bottom: 1px solid $main;
           }
         }
         .MuiPickersMonth-monthButton {
@@ -1353,8 +1479,8 @@
           p,
           button {
             background: transparent !important;
-            color: $darkMainBlue !important;
-            border-color: $darkMainBlue !important;
+            color: $main !important;
+            border-color: $main !important;
           }
         }
         .MuiPickersLayout-root {
@@ -1431,58 +1557,6 @@
         #row-wrapper {
           .activity-row {
             #date {
-              color: $darkText;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // FULL MENU
-  .full-menu {
-    &.dark {
-      #full-menu {
-        .menu-item {
-          background: $darkGrey;
-          border: 0;
-
-          &.visitation,
-          &.chats,
-          &.calendar,
-          &.admin,
-          &.activity,
-          &.expenses,
-          &.swap-request,
-          &.transfer-change,
-          &.documents,
-          &.memories,
-          &.child-info,
-          &.records,
-          &.coparents,
-          &.account,
-          &.settings,
-          &.contact-us,
-          &.theme,
-          &.logout,
-          &.install-app {
-            * {
-              color: $darkGreyText;
-            }
-
-            &.active {
-              background: $darkMainBlue;
-              p {
-                color: white !important;
-              }
-              * {
-                color: white;
-              }
-            }
-          }
-          &.visible {
-            svg {
-              opacity: 1;
               color: $darkText;
             }
           }

@@ -118,7 +118,7 @@ export default function Medical({activeChild}) {
                   {infoLabel.toLowerCase().includes('phone') && (
                     <>
                       <div className="flex input">
-                        <a href={`tel:${StringManager.formatPhone(value).toString()}`}>
+                        <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
                           {infoLabel}: {value}
                         </a>
                         <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />

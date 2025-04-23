@@ -13,10 +13,16 @@ import DB from '/src/database/DB'
 import NotificationManager from '/src/managers/notificationManager.js'
 import ToggleButton from '../../shared/toggleButton'
 import InputTypes from '../../../constants/inputTypes'
+import CheckboxGroup from '../../shared/checkboxGroup'
+import Manager from '../../../managers/manager'
+import Spacer from '../../shared/spacer'
+import StringManager from '../../../managers/stringManager'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function Settings() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, authUser} = state
+  const {authUser} = state
+  const {currentUser} = useCurrentUser()
   const [morningSummaryHour, setMorningSummaryHour] = useState(currentUser?.dailySummaries?.morningReminderSummaryHour)
   const [eveningSummaryHour, setEveningSummaryHour] = useState(currentUser?.dailySummaries?.eveningReminderSummaryHour)
   const [notificationsToggled, setNotificationsToggled] = useState(0)
@@ -55,6 +61,17 @@ export default function Settings() {
     }
   }
 
+  const ChangeTheme = async () => {
+    const newTheme = currentUser?.settings?.theme === 'light' ? 'dark' : 'light'
+    if (newTheme === 'dark') {
+      document.querySelector("[data-key='Light']").classList.remove('active')
+    } else {
+      document.querySelector("[data-key='Dark']").classList.remove('active')
+    }
+    await DB_UserScoped.updateUserRecord(currentUser?.key, `settings/theme`, newTheme)
+    window.location.reload()
+  }
+
   useEffect(() => {
     if (
       morningSummaryHour !== currentUser?.dailySummaries?.morningReminderSummaryHour ||
@@ -68,14 +85,18 @@ export default function Settings() {
 
   return (
     <>
-      <div id="settings-container" className={`${theme} page-container form`}>
+      <div id="settings-container" className={`${currentUser?.settings?.theme} page-container form`}>
         <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
           <p className="screen-title">Settings</p>
+          <Spacer height={10} />
           {/* CALENDAR SETTINGS */}
-          <Label text={'Calendar'} />
+          <Label text={'Calendar'} classes="settings-section-title" />
           <div className="calendar-settings form">
             <div className="section summary">
-              <p className="pb-10">The summaries for the current and following day will be provided during the morning and evening summary hours.</p>
+              <p className="screen-intro-text">
+                The summaries for the current and following day will be provided during the morning and evening summary hours.
+              </p>
+              <Spacer height={8} />
               {/* MORNING SUMMARY */}
               <InputWrapper
                 defaultValue={moment(currentUser?.dailySummaries?.morningReminderSummaryHour, 'h:mma')}
@@ -102,16 +123,46 @@ export default function Settings() {
               </div>
             )}
             <hr className="hr less-margin" />
+
             {/*  NOTIFICATIONS */}
-            <Label text={'Notifications'} />
+            <Label text={'Notifications'} classes="settings-section-title" />
             <div className="flex">
-              <p>Enabled</p>
+              <Label text={'Enabled'} />
               <ToggleButton
                 isDefaultChecked={currentUser?.settings?.notificationsEnabled}
                 onCheck={toggleNotifications}
                 onUncheck={toggleNotifications}
               />
             </div>
+            <hr className="hr less-margin" />
+
+            {/* THEME */}
+            <Label text={'Theme'} />
+            <CheckboxGroup
+              checkboxArray={Manager.buildCheckboxGroup({
+                currentUser,
+                customLabelArray: ['Light', 'Dark'],
+                defaultLabels: [StringManager.uppercaseFirstLetterOfAllWords(currentUser?.settings?.theme)],
+              })}
+              isDefaultChecked={currentUser?.settings?.theme === 'dark'}
+              elClass={`${currentUser?.settings?.theme}`}
+              skipNameFormatting={true}
+              onCheck={ChangeTheme}
+            />
+            {/*{currentUser?.settings?.theme === 'dark' && (*/}
+            {/*  <div className="menu-item theme">*/}
+            {/*    <PiSunDuotone />*/}
+            {/*    <p onClick={() => ChangeTheme('light')}>Light Mode</p>*/}
+            {/*  </div>*/}
+            {/*)}*/}
+            {/*{currentUser?.settings?.theme === 'light' && (*/}
+            {/*  <div onClick={() => ChangeTheme('dark')} className="menu-item theme">*/}
+            {/*    <div className="svg-wrapper">*/}
+            {/*      <BsFillMoonStarsFill />*/}
+            {/*    </div>*/}
+            {/*    <p>Dark Mode</p>*/}
+            {/*  </div>*/}
+            {/*)}*/}
           </div>
         </Fade>
       </div>

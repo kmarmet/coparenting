@@ -125,7 +125,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
               inputValueType="tel"
               labelText={'Phone Number'}
               required={true}
-              onChange={(e) => setValue(StringManager.formatPhone(e.target.value))}
+              onChange={(e) => setValue(StringManager.FormatPhone(e.target.value))}
             />
           </>
         )}

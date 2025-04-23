@@ -743,6 +743,7 @@
     bottom: 100px;
   }
 }
+
 @mixin successAlert {
   position: fixed;
   opacity: 0;
@@ -767,7 +768,7 @@
     z-index: $maxZIndex;
     transition: all 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
     opacity: 1;
-    bottom: 150px;
+    bottom: 100px;
   }
 
   .alert-close-icon {
@@ -1304,6 +1305,7 @@
   overflow: auto;
   overscroll-behavior: none;
   min-height: 50px;
+  margin-bottom: 10px;
 
   &.child-info {
     padding-left: 80px;
@@ -2604,34 +2606,64 @@
 
 @mixin modal {
   overflow: hidden;
-  position: absolute;
+  position: fixed;
   height: 100vh;
   width: 100vw;
   align-items: center;
   left: 0;
   right: 0;
+  top: 0;
   z-index: -1;
   overscroll-behavior: none;
   opacity: 0;
   transition: all 0.6s ease-out;
-  padding: 0 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 5px;
   align-self: center;
-  max-height: 80vh;
-  top: 100vh;
-  margin-top: 50px;
+  padding: 10vh 10px;
 
   &.active {
-    top: 5vh;
+    opacity: 1;
+    z-index: 9999999;
+    transition: all 0.6s ease-in;
     #modal-content {
-      top: 0;
       z-index: 999;
       opacity: 1;
+      transition: all 0.8s ease-in;
+      max-height: 80vh;
     }
   }
+
+  &.owner {
+    #modal-content {
+      border-top: 4px solid $main;
+
+      #modal {
+        #modal-title-and-text {
+          #modal-title {
+            color: $main;
+          }
+        }
+      }
+    }
+  }
+
+  &.non-owner {
+    #modal-content {
+      border-top: 4px solid $coparentPurple;
+
+      #modal {
+        #modal-title-and-text {
+          #modal-title {
+            color: $coparentPurple;
+          }
+        }
+      }
+    }
+  }
+
   /*#region  SPECIFIC MODALS*/
   &.transfer-change {
     #details {
@@ -2713,8 +2745,9 @@
     opacity: 0;
     position: relative;
     z-index: -1;
-    top: 100%;
-    transition: all 0.8s ease-out;
+    top: 0;
+    max-height: 0;
+    transition: all 1s ease-out;
     border-radius: 20px;
     align-self: center;
     overflow: hidden;
@@ -2722,14 +2755,12 @@
     width: calc(100vw - 20px);
     box-shadow: $boxShadow_bottom_only_dark;
     background: white;
-    border-top: 5px solid #8592ff;
 
     /*#region  MODAL*/
     #modal {
       overflow: auto;
       overscroll-behavior: none;
       position: relative;
-      transition: all 0.6s ease-out;
       display: flex;
       align-items: stretch;
       flex-direction: column;
@@ -2789,24 +2820,6 @@
       }
     }
     /*#endregion  MODAL*/
-  }
-
-  &.active {
-    opacity: 1;
-    z-index: 9999999;
-    transition: all 0.6s ease-in;
-    .modal-fade-wrapper {
-      z-index: 999999999999;
-      position: relative;
-      transition: all 0.6s ease-in;
-      margin: 0;
-      width: calc(100vw - 20px);
-      #modal {
-        transition: all 0.6s ease-in;
-        opacity: 1;
-        z-index: 999999999999;
-      }
-    }
   }
 
   &.full-menu {
@@ -3216,7 +3229,6 @@
   // BUTTONS
   .buttons {
     display: flex;
-    grid-template-columns: repeat(2, 1fr);
     bottom: 0;
     border: 0;
     width: 100%;
@@ -3239,7 +3251,6 @@
     &.has-delete {
       padding: 10px 10px 0 10px;
     }
-
     #close-icon-bg {
       position: relative;
       bottom: 0;
@@ -3248,16 +3259,14 @@
       align-items: center;
       z-index: 99999999999;
       background: white;
-      height: 50px;
-      margin-left: 10px;
-      width: 50px;
-      border-radius: 50%;
       white-space: nowrap;
       right: 0;
-
-      .close-icon {
-        color: $darkerGrey;
-      }
+      justify-self: flex-end;
+      color: $darkerGrey;
+      float: right;
+      font-weight: $fwBold;
+      font-size: 14px;
+      width: 100%;
     }
 
     .card-button {
@@ -3278,6 +3287,7 @@
       line-height: 1;
       font-weight: $fwBold;
       font-size: 14px;
+      width: 100%;
 
       svg {
         color: white;
@@ -4087,7 +4097,7 @@
   border-top: 5px solid $accent;
   box-shadow: $boxShadow_float;
   bottom: -100%;
-  padding: 20px 0 60px 0;
+  padding: 30px 0 60px 0;
 
   &.open {
     bottom: 0;
@@ -4112,6 +4122,11 @@
     padding-bottom: 2px;
   }
 
+  hr {
+    margin: 10px 0 15px 0;
+    width: 85%;
+  }
+
   #close-icon-wrapper {
     display: flex;
     justify-content: center;
@@ -4130,11 +4145,70 @@
     }
   }
 
-  .menu-items {
-    display: grid;
-    grid-template-columns: auto auto;
-    justify-content: space-between;
+  .menu-title {
+    color: $darkText;
+    text-align: left;
+    font-weight: $fwMediumBold;
+    font-size: 22px;
+    margin-bottom: 5px;
     width: 85%;
+    line-height: 1;
+    &.sharing {
+      color: $main;
+    }
+
+    &.info-storage {
+      color: #cb6789;
+    }
+
+    &.admin {
+      color: $yellow;
+    }
+
+    &.coparenting {
+      color: $accent;
+    }
+
+    &.profile-settings-support {
+      color: #0076bf;
+    }
+  }
+
+  .menu-items {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    width: 85%;
+
+    &.sharing {
+      * {
+        color: $main;
+      }
+    }
+
+    &.info-storage {
+      * {
+        color: #cb6789;
+      }
+    }
+
+    &.admin {
+      * {
+        color: $yellow;
+      }
+    }
+
+    &.coparenting {
+      * {
+        color: $accent;
+      }
+    }
+
+    &.profile-settings-support {
+      * {
+        color: #0076bf;
+      }
+    }
 
     .menu-item {
       background-color: transparent;
@@ -4144,11 +4218,16 @@
       text-align: right;
       align-items: center;
       position: relative;
-      margin-bottom: 22px;
       opacity: 0;
       transition: all 0.3s ease-out;
-      width: 100%;
+      width: 45%;
       gap: 5px;
+      padding-bottom: 8px;
+
+      &:nth-child(1),
+      &:nth-child(2) {
+        //        margin-bottom: 8px;
+      }
 
       /*#region  SVG TRANSFORMS */
       // .8
@@ -4204,7 +4283,6 @@
 
       /*#endregion  SVG TRANSFORMS */
 
-      /*#region  CUSTOM BOX STYLES*/
       &.notifications {
         .badge {
           height: 8px;
@@ -4223,47 +4301,11 @@
           width: 100%;
         }
       }
-      &:nth-child(0),
-      &:nth-child(1),
-      &:nth-child(2),
-      &:nth-child(3),
-      &:nth-child(4),
-      &:nth-child(5),
-      &:nth-child(6),
-      &:nth-child(7) {
-        * {
-          color: $main;
-        }
-      }
-      &:nth-child(8),
-      &:nth-child(9),
-      &:nth-child(10),
-      &:nth-child(11),
-      &:nth-child(12),
-      &:nth-child(13) {
-        * {
-          color: #cb6789;
-        }
-      }
-      &:nth-child(14),
-      &:nth-child(15),
-      &:nth-child(16),
-      &:nth-child(17),
-      &:nth-child(18),
-      &:nth-child(19) {
-        * {
-          color: $accent;
-        }
-      }
-
-      /*#endregion  CUSTOM BOX STYLES*/
 
       .svg-wrapper {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 25px;
-        width: 25px;
 
         svg {
           height: 100%;
@@ -4281,7 +4323,7 @@
 
       p,
       svg {
-        opacity: 0.8;
+        opacity: 0.6;
       }
 
       &.visible {

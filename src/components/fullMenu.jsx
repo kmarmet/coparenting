@@ -9,19 +9,17 @@ import {
   BsFillArrowDownSquareFill,
   BsFillArrowRightCircleFill,
   BsFillHousesFill,
-  BsFillMoonStarsFill,
   BsPersonVcardFill,
   BsSendFill,
 } from 'react-icons/bs'
 import {IoChatbubbles, IoClose, IoDocuments, IoPeopleCircleSharp} from 'react-icons/io5'
-import {PiBellFill, PiSunDuotone} from 'react-icons/pi'
+import {PiBellFill} from 'react-icons/pi'
+import {GrUserAdmin} from 'react-icons/gr'
 import {IoMdPhotos} from 'react-icons/io'
 import {RiArchive2Fill, RiMapPinTimeFill} from 'react-icons/ri'
 import {MdSettingsSuggest, MdSwapHorizontalCircle} from 'react-icons/md'
-import {BiSolidDashboard} from 'react-icons/bi'
 import {HiUserCircle} from 'react-icons/hi2'
 import {FaDonate} from 'react-icons/fa'
-import DB_UserScoped from '../database/db_userScoped'
 import Overlay from './shared/overlay'
 import useCurrentUser from '../hooks/useCurrentUser'
 
@@ -32,11 +30,6 @@ export default function FullMenu() {
   const auth = getAuth()
 
   const ChangeCurrentScreen = async (screen) => setState({...state, currentScreen: screen, refreshKey: Manager.getUid(), menuIsOpen: false})
-
-  const ChangeTheme = async (theme) => {
-    await DB_UserScoped.updateUserRecord(currentUser?.key, `settings/theme`, theme)
-    window.location.reload()
-  }
 
   const Logout = () => {
     const pageOverlay = document.getElementById('page-overlay')
@@ -58,8 +51,8 @@ export default function FullMenu() {
   return (
     <Overlay show={menuIsOpen}>
       <div id="full-menu" className={`${theme} ${menuIsOpen ? 'open' : 'closed'}`}>
-        <div id="menu-title">Menu</div>
-        <div className="menu-items">
+        <p className="menu-title mt-0 admin">Admin</p>
+        <div className="menu-items admin">
           {currentUser?.email === 'kmarmet1@gmail.com' && (
             <div
               className={`menu-item admin ${currentScreen === ScreenNames.onboarding ? 'active' : ''}`}
@@ -73,11 +66,18 @@ export default function FullMenu() {
               className={`menu-item admin ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
               onClick={(e) => ChangeCurrentScreen(ScreenNames.adminDashboard, e)}>
               <div className="svg-wrapper">
-                <BiSolidDashboard />
+                <GrUserAdmin />
               </div>
               <p>Dashboard</p>
             </div>
           )}
+        </div>
+
+        <hr />
+
+        {/* SHARING */}
+        <p className="menu-title sharing">Sharing</p>
+        <div className="menu-items sharing">
           {/* CALENDAR */}
           <div
             className={`menu-item calendar ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
@@ -87,6 +87,27 @@ export default function FullMenu() {
             </div>
             <p>Calendar</p>
           </div>
+          {/* MEMORIES */}
+          <div
+            className={`menu-item memories ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
+            onClick={(e) => ChangeCurrentScreen(ScreenNames.memories, e)}>
+            <div className="svg-wrapper">
+              <IoMdPhotos />
+            </div>
+            <p>Memories</p>
+          </div>
+
+          {/* DOCUMENTS */}
+          {currentUser?.accountType === 'parent' && (
+            <div
+              className={`menu-item documents ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
+              onClick={(e) => ChangeCurrentScreen(ScreenNames.docsList, e)}>
+              <div className="svg-wrapper">
+                <IoDocuments />
+              </div>
+              <p>Documents</p>
+            </div>
+          )}
 
           {/* NOTIFICATIONS */}
           <div
@@ -98,82 +119,12 @@ export default function FullMenu() {
             </div>
             <p>Notifications</p>
           </div>
-
-          {/* PARENTS ONLY */}
-          {currentUser?.accountType === 'parent' && (
-            <>
-              {/* VISITATION */}
-              <div
-                className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.visitation, e)}>
-                <div className="svg-wrapper">
-                  <BsFillHousesFill />
-                </div>
-                <p>Visitation</p>
-              </div>
-
-              {/* CHATS */}
-              <div
-                className={`menu-item chats ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.chats, e)}>
-                <div className="svg-wrapper">
-                  <IoChatbubbles />
-                </div>
-                <p className="text">Chats</p>
-              </div>
-
-              {/* EXPENSES */}
-              <div
-                className={`menu-item expenses ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.expenseTracker, e)}>
-                <div className="svg-wrapper">
-                  <FaDonate />
-                </div>
-                <p>Expenses</p>
-              </div>
-
-              {/* SWAP REQUESTS */}
-              <div
-                className={`menu-item swap-request ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.swapRequests, e)}>
-                <div className="svg-wrapper">
-                  <MdSwapHorizontalCircle />
-                </div>
-                <p>Swaps</p>
-              </div>
-
-              {/* TRANSFER CHANGE */}
-              <div
-                className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.transferRequests, e)}>
-                <div className="svg-wrapper">
-                  <RiMapPinTimeFill />
-                </div>
-                <p>Transfers</p>
-              </div>
-
-              {/* DOCUMENTS */}
-              <div
-                className={`menu-item documents ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.docsList, e)}>
-                <div className="svg-wrapper">
-                  <IoDocuments />
-                </div>
-                <p>Documents</p>
-              </div>
-            </>
-          )}
-          {/* MEMORIES */}
-          <div
-            className={`menu-item memories ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
-            onClick={(e) => ChangeCurrentScreen(ScreenNames.memories, e)}>
-            <div className="svg-wrapper">
-              <IoMdPhotos />
-            </div>
-            <p>Memories</p>
-          </div>
-
-          {/* PARENTS */}
+        </div>
+        <hr />
+        {/* INFO STORAGE */}
+        <p className="menu-title info-storage">Info Storage</p>
+        <div className="menu-items info-storage">
+          {/* CHILD - PARENTS */}
           {currentUser?.accountType === 'child' && (
             <div
               className={`menu-item parents ${currentScreen === ScreenNames.parents ? 'active' : ''}`}
@@ -185,6 +136,7 @@ export default function FullMenu() {
             </div>
           )}
 
+          {/* PARENTS ONLY */}
           {currentUser?.accountType === 'parent' && (
             <>
               {/* CHILD INFO */}
@@ -207,6 +159,16 @@ export default function FullMenu() {
                 <p>Co-Parents</p>
               </div>
 
+              {/* VISITATION */}
+              <div
+                className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
+                onClick={(e) => ChangeCurrentScreen(ScreenNames.visitation, e)}>
+                <div className="svg-wrapper">
+                  <BsFillHousesFill />
+                </div>
+                <p>Visitation</p>
+              </div>
+
               {/* ARCHIVES */}
               <div
                 className={`menu-item archives ${currentScreen === ScreenNames.archives ? 'active' : ''}`}
@@ -218,7 +180,55 @@ export default function FullMenu() {
               </div>
             </>
           )}
+        </div>
+        <hr />
+        {/* CO-PARENTING */}
+        <p className="menu-title coparenting">Co-Parenting</p>
+        <div className="menu-items coparenting">
+          {/* CHATS */}
+          <div
+            className={`menu-item chats ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
+            onClick={(e) => ChangeCurrentScreen(ScreenNames.chats, e)}>
+            <div className="svg-wrapper">
+              <IoChatbubbles />
+            </div>
+            <p className="text">Chats</p>
+          </div>
 
+          {/* EXPENSES */}
+          <div
+            className={`menu-item expenses ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
+            onClick={(e) => ChangeCurrentScreen(ScreenNames.expenseTracker, e)}>
+            <div className="svg-wrapper">
+              <FaDonate />
+            </div>
+            <p>Expenses</p>
+          </div>
+
+          {/* SWAP REQUESTS */}
+          <div
+            className={`menu-item swap-request ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
+            onClick={(e) => ChangeCurrentScreen(ScreenNames.swapRequests, e)}>
+            <div className="svg-wrapper">
+              <MdSwapHorizontalCircle />
+            </div>
+            <p>Swaps</p>
+          </div>
+
+          {/* TRANSFER CHANGE */}
+          <div
+            className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
+            onClick={(e) => ChangeCurrentScreen(ScreenNames.transferRequests, e)}>
+            <div className="svg-wrapper">
+              <RiMapPinTimeFill />
+            </div>
+            <p>Transfers</p>
+          </div>
+        </div>
+        <hr />
+        {/* PROFILE SETTINGS & SUPPORT */}
+        <p className="menu-title profile-settings-support">Profile, Settings & Support</p>
+        <div className="menu-items profile-settings-support">
           {/* PROFILE */}
           <div
             className={`menu-item profile ${currentScreen === ScreenNames.profile ? 'active' : ''}`}
@@ -248,21 +258,7 @@ export default function FullMenu() {
             </div>
             <p>Contact Us</p>
           </div>
-          {/* THEME TOGGLE */}
-          {currentUser?.settings?.theme === 'dark' && (
-            <div className="menu-item theme">
-              <PiSunDuotone />
-              <p onClick={() => ChangeTheme('light')}>Light Mode</p>
-            </div>
-          )}
-          {currentUser?.settings?.theme === 'light' && (
-            <div onClick={() => ChangeTheme('dark')} className="menu-item theme">
-              <div className="svg-wrapper">
-                <BsFillMoonStarsFill />
-              </div>
-              <p>Dark Mode</p>
-            </div>
-          )}
+
           {/* INSTALL APP BUTTON */}
           <div
             className={`menu-item install-app ${currentScreen === ScreenNames.installApp ? 'active' : ''}`}

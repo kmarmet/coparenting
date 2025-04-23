@@ -24,6 +24,7 @@ import ToggleButton from '../shared/toggleButton'
 import Label from '../shared/label'
 import InputTypes from '../../constants/inputTypes'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import useChildren from '../../hooks/useChildren'
 
 export default function NewSwapRequest() {
   const {state, setState} = useContext(globalState)
@@ -41,6 +42,7 @@ export default function NewSwapRequest() {
   const [recipientKey, setRecipientKey] = useState('')
   const [recipientName, setRecipientName] = useState()
   const {currentUser} = useCurrentUser()
+  const {children} = useChildren()
 
   const ResetForm = async (showSuccessAlert = false) => {
     Manager.ResetForm('swap-request-wrapper')
@@ -286,7 +288,7 @@ export default function NewSwapRequest() {
           <ShareWithCheckboxes required={true} onCheck={HandleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
 
           {/* INCLUDE CHILDREN */}
-          {Manager.isValid(currentUser?.children) && (
+          {Manager.isValid(children) && (
             <div className="share-with-container ">
               <div className="flex">
                 <Label text={'Include Child(ren)'} />

@@ -33,7 +33,7 @@ $darkPurple: #513596;
 $lightAccentBlue: #dae5fc;
 $lightAccent: rgba(97, 113, 234, 0.22);
 $accent: #6171ea;
-$main: #3d74ec;
+$main: #2e6fff;
 $darkBlue: #0865fe;
 $linkColor: $accent;
 $lightBlue: #00a2eb;
@@ -65,19 +65,22 @@ $darkBlueDarkest: #121735;
 $darkBg: black;
 $darkGreyText: #89868f;
 $darkIconGrey: #4e4d57;
-$darkGreyLight: #1f1f23;
-$darkText: #c2c1c6;
+$darkGreyLight: #0e0e11;
+$darkText: #dcdbe0;
 $darkLightPurple: #aaa8cc;
 $darkLightBg: #13112f;
 $darkGreen: $green;
 $darkBlue: #5c8df7;
+$darkGreen: #239960;
+$darkGreenButtonText: #30c67d;
 $darkBlueMedium: #4c6fff;
 $darkMainBlue: $darkBlueMedium;
 $darkBlueLight: cornflowerblue;
+$darkYellow: #b49639;
 $darkSmallShadow:
   0 3px 6px rgba(0, 0, 0, 0.16),
   0 3px 6px rgba(0, 0, 0, 0.23);
-$darkBorderColor: #252327;
+$darkBorderColor: rgba(59, 59, 59, 0.26);
 /*#endregion DARK THEME*/
 
 /*#region  LIGHT THEME*/

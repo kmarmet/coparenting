@@ -11,12 +11,14 @@ import DatetimeFormats from '/src/constants/datetimeFormats'
 import Manager from '/src/managers/manager'
 import {FaChildren} from 'react-icons/fa6'
 import StringManager from '../../../managers/stringManager'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (event) => {}}) {
   const {state, setState} = useContext(globalState)
-  const {theme, currentUser, refreshKey} = state
+  const {theme, refreshKey} = state
+  const {currentUser} = useCurrentUser()
 
-  const getRowDotColor = (dayDate) => {
+  const GetRowDotColor = (dayDate) => {
     const arr = [...eventsOfActiveDay]
     const dayEvents = arr.filter((x) => x.startDate === dayDate)
     let dotObjects = []
@@ -60,7 +62,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
     return dotObjects
   }
 
-  const handleEventRowClick = async (clickedEvent) => {
+  const HandleEventRowClick = async (clickedEvent) => {
     if (clickedEvent.isHoliday) {
       return false
     }
@@ -68,13 +70,12 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
       return false
     }
     setTimeout(() => {
-      console.log('here')
       setState({...state, dateToEdit: clickedEvent.startDate})
     }, 500)
     setEventToEdit(clickedEvent)
   }
 
-  const hasRowIcons = (event) => {
+  const HasRowIcons = (event) => {
     return !!(
       Manager.isValid(event?.reminderTimes) ||
       Manager.isValid(event?.notes) ||
@@ -87,8 +88,8 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
   }
 
   return (
-    <>
-      <div className="events" key={refreshKey}>
+    <div className="events" key={refreshKey}>
+      {Manager.isValid(eventsOfActiveDay) && (
         <Fade
           direction={'right'}
           delay={0}
@@ -104,13 +105,13 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
               if (event?.isDateRange) {
                 startDate = event?.staticStartDate
               }
-              let dotObjects = getRowDotColor(event.startDate)
-              const dotObject = dotObjects?.filter((x) => x.id === event.id)[0]
+              let dotObjects = GetRowDotColor(event.startDate)
+              const dotObject = dotObjects?.find((x) => x.id === event.id)
               const isBirthdayEvent = event?.title.toLowerCase().includes('birthday') || event?.title.toLowerCase().includes('bday')
 
               return (
                 <div
-                  onClick={() => handleEventRowClick(event).then((r) => r)}
+                  onClick={() => HandleEventRowClick(event).then((r) => r)}
                   key={event?.id}
                   data-event-id={event?.id}
                   data-from-date={startDate}
@@ -166,7 +167,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
                     </div>
                   </div>
                   {/* ICONS */}
-                  {hasRowIcons(event) && (
+                  {HasRowIcons(event) && (
                     <div id="icon-row">
                       {Manager.isValid(event?.reminderTimes) && <BiSolidBellRing />}
                       {Manager.isValid(event?.notes) && <PiNotepadDuotone />}
@@ -182,7 +183,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
               )
             })}
         </Fade>
-      </div>
-    </>
+      )}
+    </div>
   )
 }

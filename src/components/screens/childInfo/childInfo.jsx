@@ -27,6 +27,7 @@ import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import DB_UserScoped from '../../../database/db_userScoped'
+import ObjectManager from '../../../managers/objectManager'
 
 export default function ChildInfo() {
   const {state, setState} = useContext(globalState)
@@ -52,9 +53,18 @@ export default function ChildInfo() {
       AlertManager.throwError('Please choose an image')
       return false
     }
-
     // Upload -> Set child/general/profilePic
-    await FirebaseStorage.upload(FirebaseStorage.directories.profilePics, `${currentUser?.key}/${activeChild?.id}`, imgFiles[0], 'profilePic')
+    const uploadedImageUrl = await FirebaseStorage.upload(
+      FirebaseStorage.directories.profilePics,
+      `${currentUser?.key}/${activeChild?.id}`,
+      imgFiles[0],
+      'profilePic'
+    )
+
+    console.log(activeChild?.general?.name)
+
+    // Update Child profilePic
+    await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', 'profilePic', uploadedImageUrl)
   }
 
   const DeleteChild = async () => {
@@ -70,7 +80,7 @@ export default function ChildInfo() {
 
   // Set active child on page load
   useEffect(() => {
-    if (children?.length > 0 && !activeChild) {
+    if (children?.length > 0 && (!activeChild || ObjectManager.isEmpty(activeChild))) {
       setActiveChild(children?.[0])
     }
   }, [children])

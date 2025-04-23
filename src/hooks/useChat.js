@@ -4,12 +4,13 @@ import Manager from '../managers/manager'
 import DB from '../database/DB'
 import globalState from '../context'
 import useUsers from './useUsers'
+import useCurrentUser from './useCurrentUser'
 
 const useChat = (chatIdInput) => {
   const {state, setState} = useContext(globalState)
   const {messageRecipient, authUser} = state
   const {users} = useUsers()
-  const [currentUser, setCurrentUser] = useState()
+  const {currentUser} = useCurrentUser()
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [path, setPath] = useState(`${DB.tables.chats}/${currentUser?.key}`)
@@ -22,7 +23,6 @@ const useChat = (chatIdInput) => {
     if (Manager.isValid(users)) {
       const user = users?.find((u) => u?.email === authUser?.email)
       setPath(`${DB.tables.chats}/${user?.key}`)
-      setCurrentUser(user)
     }
   }, [users])
 

@@ -1,20 +1,21 @@
 // Path: src\components\parentInput.jsx
-import React, { useContext, useState } from 'react'
+import React, {useContext, useState} from 'react'
 import globalState from '../context'
-import { phone } from 'phone'
+import {phone} from 'phone'
 import AlertManager from '../managers/alertManager'
 import InputWrapper from './shared/inputWrapper'
-import { RiUserAddLine } from 'react-icons/ri'
+import {RiUserAddLine} from 'react-icons/ri'
 import StringManager from '../managers/stringManager'
-export default function ParentInput({ add, parentsLength = 1, labels }) {
-  const { state, setState } = useContext(globalState)
+
+export default function ParentInput({add, parentsLength = 1, labels}) {
+  const {state, setState} = useContext(globalState)
   const [userPhone, setUserPhone] = useState('')
   const [name, setName] = useState('')
   const [showAddButton, setShowAddButton] = useState(true)
 
   const validatePhone = () => {
-    const validatePhone = phone(`+1${StringManager.formatPhone(userPhone)}`)
-    const { isValid } = validatePhone
+    const validatePhone = phone(`+1${StringManager.FormatPhone(userPhone)}`)
+    const {isValid} = validatePhone
     return isValid
   }
 
@@ -44,7 +45,7 @@ export default function ParentInput({ add, parentsLength = 1, labels }) {
               return false
             }
 
-            add({ name, phone: userPhone })
+            add({name, phone: userPhone})
             setShowAddButton(false)
           }}>
           Add <RiUserAddLine />

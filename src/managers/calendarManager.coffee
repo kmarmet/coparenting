@@ -109,18 +109,14 @@ export default CalendarManager =
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
-  updateEvent: (userKey, prop, value, id) ->
+  updateEvent: (userKey, event, prop, value) ->
     dbRef = getDatabase()
-    key = null
-    recordToUpdate
+    key = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{userKey}", event, 'id')
     tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{userKey}")
-    for record in tableRecords
-      if record?.id is id
-        key = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{userKey}", record, 'id')
-        record[prop] = value;
-        recordToUpdate = record
+    toUpdate = tableRecords.find((x) => x.id == event?.id)
+    toUpdate[prop] = value;
     try
-      update(ref(dbRef, "#{DB.tables.calendarEvents}/#{userKey}/#{key}"), recordToUpdate)
+      update(ref(dbRef, "#{DB.tables.calendarEvents}/#{userKey}/#{key}"), toUpdate)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 

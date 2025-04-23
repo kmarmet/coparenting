@@ -23,6 +23,7 @@ import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import InputTypes from '../../../constants/inputTypes'
 import useCoparents from '../../../hooks/useCoparents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import ObjectManager from '../../../managers/objectManager'
 
 export default function Coparents() {
   const {state, setState} = useContext(globalState)
@@ -52,7 +53,7 @@ export default function Coparents() {
   }
 
   useEffect(() => {
-    if (Manager.isValid(coparents) && !Manager.isValid(activeCoparent)) {
+    if (Manager.isValid(coparents) && (!Manager.isValid(activeCoparent) || ObjectManager.isEmpty(activeCoparent))) {
       setActiveCoparent(coparents?.[0])
     }
   }, [coparents])
@@ -222,7 +223,7 @@ export default function Coparents() {
         {!Manager.isValid(coparents) && <NoDataFallbackText text={'You have not added any co-parents to your profile yet'} />}
 
         {/* COPARENT INFO */}
-        <div id="coparent-info" key={activeCoparent?.key}>
+        <div id="coparent-info" key={activeCoparent?.userKey}>
           <p id="coparent-name-primary">{StringManager.getFirstNameOnly(activeCoparent?.name)}</p>
           <p id="coparent-type-primary"> {activeCoparent?.parentType}</p>
           {Manager.isValid(activeCoparent) && (
@@ -256,9 +257,10 @@ export default function Coparents() {
                             <InputWrapper
                               hasBottomSpacer={false}
                               defaultValue={value}
-                              onChange={(e) => {
+                              onChange={async (e) => {
                                 const inputValue = e.target.value
-                                Update(infoLabel, `${inputValue}`).then((r) => r)
+                                await Update(infoLabel, `${inputValue}`).then((r) => r)
+                                setActiveCoparent(activeCoparent)
                               }}
                               inputType={InputTypes.text}
                               labelText={infoLabel}

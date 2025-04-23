@@ -129,7 +129,7 @@ export default function NewCalendarEvent() {
     newEvent.createdBy = currentUser?.name
     newEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
     newEvent.notes = eventNotes
-    newEvent.phone = StringManager.formatPhone(eventPhone)
+    newEvent.phone = StringManager.FormatPhone(eventPhone)
     newEvent.websiteUrl = eventWebsite
     newEvent.reminderTimes = eventReminderTimes
     newEvent.repeatInterval = recurringFrequency

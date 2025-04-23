@@ -33,8 +33,11 @@ StringManager = {
   isAllUppercase: (input) ->
     return input == input.toUpperCase()
 
-  formatPhone: (input) ->
-    input = input.toString()
+  FormatPhone: (input) ->
+    if !Manager.isValid(input) or input?.length == 0
+      return input
+
+    input = input?.toString()
       .replace(/-/g, '')
       .replace(/\s+/g, '')
       .replace(/\(/g, '')

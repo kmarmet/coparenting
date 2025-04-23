@@ -43,8 +43,11 @@ StringManager = {
   isAllUppercase: function(input) {
     return input === input.toUpperCase();
   },
-  formatPhone: function(input) {
-    input = input.toString().replace(/-/g, '').replace(/\s+/g, '').replace(/\(/g, '').replace(/\)/g, '').replace(/\+/g, '').replace(/\+1/g, '');
+  FormatPhone: function(input) {
+    if (!Manager.isValid(input) || (input != null ? input.length : void 0) === 0) {
+      return input;
+    }
+    input = input != null ? input.toString().replace(/-/g, '').replace(/\s+/g, '').replace(/\(/g, '').replace(/\)/g, '').replace(/\+/g, '').replace(/\+1/g, '') : void 0;
     return input;
   },
   formatPhoneWithDashes: function(phone) {

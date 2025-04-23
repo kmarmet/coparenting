@@ -337,7 +337,7 @@ const DB_UserScoped = {
     newUser.location = locationDetails
     newUser.name = StringManager.uppercaseFirstLetterOfAllWords(name).trim()
     newUser.accountType = accountType.toLowerCase()
-    newUser.phone = StringManager.formatPhone(phone)
+    newUser.phone = StringManager.FormatPhone(phone)
     const cleanUser = ObjectManager.cleanObject(newUser, accountType === 'parent' ? ModelNames.user : ModelNames.childUser)
     // Insert
     await set(child(dbRef, `${DB.tables.users}/${key}`), cleanUser).catch((error) => {
@@ -361,7 +361,7 @@ const DB_UserScoped = {
   },
   updateUserChild: async (currentUser, activeChild, section, prop, value) => {
     const dbRef = ref(getDatabase())
-    let key = await DB.getNestedSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children/`, activeChild, 'id')
+    let key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
     await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children/${key}/${section}/${StringManager.formatDbProp(prop)}`), value)
   },
   addSharedDataUser: async (currentUser, newKey) => {
@@ -457,16 +457,10 @@ const DB_UserScoped = {
     await remove(child(dbRef, `${DB.tables.users}/${currentUser?.key}/parents/${key}`))
     await DB_UserScoped.deleteSharedDataUser(currentUser, parent?.userKey)
   },
-  deleteChild: async (currentUser, child) => {
+  deleteChild: async (currentUser, childToUnlink) => {
     const dbRef = ref(getDatabase())
-    const key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, child, 'userKey')
+    const key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, childToUnlink, 'userKey')
     await remove(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children/${key}`))
-    await DB_UserScoped.deleteSharedDataUser(currentUser, child?.userKey)
-  },
-  deleteSharedDataUser: async (currentUser, keyToRemove) => {
-    const dbRef = ref(getDatabase())
-    const updatedKeys = currentUser?.sharedDataUsers?.filter((x) => x !== keyToRemove)
-    await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/sharedDataUsers`), updatedKeys)
   },
   deleteUserData: async (currentUser) => {
     const dbRef = ref(getDatabase())

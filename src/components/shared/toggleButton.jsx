@@ -1,10 +1,16 @@
-import React, {useContext, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../context'
+import Manager from '../../managers/manager'
 
 function ToggleButton({isDefaultChecked = false, onCheck = () => {}, onUncheck = () => {}}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, refreshKey} = state
+  const {refreshKey} = state
   const [checked, setChecked] = useState(isDefaultChecked)
+
+  useEffect(() => {
+    setChecked(isDefaultChecked)
+  }, [isDefaultChecked])
+
   return (
     <div className="toggle-button-wrapper">
       <div id="toggle-button">
@@ -13,9 +19,23 @@ function ToggleButton({isDefaultChecked = false, onCheck = () => {}, onUncheck =
           className="checkbox"
           checked={checked}
           key={refreshKey}
-          onChange={() => {
+          onChange={(e) => {
             if (checked) {
               if (onUncheck) {
+                const parent = e.target.closest('.MuiPaper-root')
+                if (Manager.isValid(parent)) {
+                  const checkboxParent = parent.querySelector('.MuiCollapse-root')
+
+                  if (Manager.isValid(checkboxParent)) {
+                    const checkboxes = checkboxParent.querySelectorAll('.checkbox-wrapper')
+
+                    if (Manager.isValid(checkboxes)) {
+                      if (Manager.isValid(checkboxes)) {
+                        checkboxes.forEach((x) => x.classList.remove('active'))
+                      }
+                    }
+                  }
+                }
                 onUncheck()
               }
             } else {

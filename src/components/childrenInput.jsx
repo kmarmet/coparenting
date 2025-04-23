@@ -16,7 +16,7 @@ export default function ChildrenInput({add, childrenCount}) {
   const [showAddButton, setShowAddButton] = useState(true)
 
   const validatePhone = () => {
-    const validatePhone = phone(`+1${StringManager.formatPhone(userPhone)}`)
+    const validatePhone = phone(`+1${StringManager.FormatPhone(userPhone)}`)
     const {isValid} = validatePhone
     return isValid
   }

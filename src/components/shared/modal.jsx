@@ -3,7 +3,6 @@ import React, {useContext, useEffect} from 'react'
 import globalState from '../../context'
 import Manager from '/src/managers/manager.js'
 import StringManager from '../../managers/stringManager'
-import {IoClose} from 'react-icons/io5'
 import Overlay from './overlay'
 import Spacer from './spacer'
 
@@ -171,14 +170,14 @@ export default function Modal({
             </button>
           )}
 
-          <div
+          <button
             id="close-icon-bg"
             onClick={() => {
               onClose()
               HideCard()
             }}>
-            <IoClose className={'close-icon'} />
-          </div>
+            Cancel
+          </button>
         </div>
       </div>
     </Overlay>
