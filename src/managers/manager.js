@@ -302,6 +302,21 @@ const Manager = {
       if (onCheckRemoval) onCheckRemoval(label)
     }
   },
+  MapKeysToUsers: (keys, dbUsers) => {
+    let shareWithNames = []
+    if (Manager.isValid(keys)) {
+      let names = []
+      for (let key of keys) {
+        let shareWithUser = dbUsers.find((x) => x?.key === key || x?.userKey === key)
+        if (Manager.isValid(shareWithUser)) {
+          names.push(StringManager.getFirstNameOnly(shareWithUser?.name))
+        }
+      }
+      shareWithNames.push(names)
+    }
+
+    return shareWithNames
+  },
   buildCheckboxGroup: ({currentUser, labelType, defaultLabels = [], customLabelArray = [], labelProp, uidProp, predefinedType}) => {
     let checkboxLabels = []
     let checkboxGroup = []
@@ -348,19 +363,21 @@ const Manager = {
 
     // ITERATE THROUGH LABELS
     if (!Manager.isValid(labelProp) && !Manager.isValid(uidProp)) {
-      for (let label of checkboxLabels) {
-        let isActive = false
-        if (Manager.isValid(defaultLabels) && defaultLabels.includes(label)) {
-          isActive = true
+      if (Manager.isValid(checkboxLabels)) {
+        for (let label of checkboxLabels) {
+          let isActive = false
+          if (Manager.isValid(defaultLabels) && defaultLabels.includes(label)) {
+            isActive = true
+          }
+          if (labelType && labelType === 'reminder-times') {
+            label = CalMapper.readableReminderBeforeTimeframes(label)
+          }
+          checkboxGroup.push({
+            label: label,
+            key: label?.replaceAll(' ', ''),
+            isActive,
+          })
         }
-        if (labelType && labelType === 'reminder-times') {
-          label = CalMapper.readableReminderBeforeTimeframes(label)
-        }
-        checkboxGroup.push({
-          label: label,
-          key: label?.replaceAll(' ', ''),
-          isActive,
-        })
       }
     }
 
@@ -395,8 +412,8 @@ const Manager = {
       const eventTitle = object.title
       let repeatingEvents = await DB.getTable(DB.tables.calendarEvents)
       repeatingEvents = repeatingEvents.filter((x) => x.title === eventTitle)
-      const repeatInterval = object['repeatInterval']
-      document.querySelector(`[data-label='${StringManager.uppercaseFirstLetterOfAllWords(repeatInterval)}']`).classList.add('active')
+      const recurringInterval = object['recurringInterval']
+      document.querySelector(`[data-label='${StringManager.uppercaseFirstLetterOfAllWords(recurringInterval)}']`).classList.add('active')
       return repeatingEvents
     }
     // Share With

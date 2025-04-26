@@ -7,7 +7,7 @@ import Manager from '../../managers/manager.js'
 
 export default function Map({locationString}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, refreshKey} = state
+  const {theme, refreshKey} = state
   const [map, setMap] = useState(null)
   const [mapCenter, setMapCenter] = useState(null)
 

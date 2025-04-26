@@ -399,6 +399,7 @@ const Chats = () => {
           <div id="bookmark-messages" className="bookmark-results">
             {bookmarks.map((bookmark, index) => {
               let sender
+
               if (StringManager.getFirstNameOnly(bookmark.sender) === StringManager.getFirstNameOnly(currentUser?.name)) {
                 sender = 'ME'
               } else {

@@ -15,16 +15,17 @@ import StringManager from '../../managers/stringManager'
 import ViewSelector from './viewSelector'
 import validator from 'validator'
 import InputTypes from '../../constants/inputTypes'
+import useCurrentUser from '../../hooks/useCurrentUser'
 
 export default function CustomChildInfo({hideCard, showCard, activeChild}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
+  const {theme} = state
   const [title, setTitle] = useState('')
   const [value, setValue] = useState('')
   const [infoSection, setInfoSection] = useState('general')
   const [infoType, setInfoType] = useState('text')
   const [shareWith, setShareWith] = useState([])
-
+  const {currentUser} = useCurrentUser()
   const Add = async () => {
     if (title.length === 0 || value.length === 0) {
       AlertManager.throwError('Please fill/select required fields')

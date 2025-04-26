@@ -12,13 +12,15 @@ import AlertManager from '../../../managers/alertManager'
 import {child, getDatabase, onValue, ref} from 'firebase/database'
 import {CgMathPlus} from 'react-icons/cg'
 import Spacer from '../../shared/spacer'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function AddOrUpdateTransferChecklists({showCard, hideCard, activeChild}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, refreshKey} = state
+  const {refreshKey} = state
   const [checkboxTextList, setCheckboxTextList] = useState([])
   const [view, setView] = useState('from')
   const [existingItems, setExistingItems] = useState([])
+  const {currentUser} = useCurrentUser()
 
   const addInput = () => {
     const inputs = document.getElementById('inputs')

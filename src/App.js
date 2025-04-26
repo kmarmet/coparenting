@@ -39,7 +39,7 @@ import ExpenseTracker from '/src/components/screens/expenses/expenseTracker.jsx'
 import Home from '/src/components/screens/home'
 import InstallApp from '/src/components/screens/installApp.jsx'
 import Memories from '/src/components/screens/memories.jsx'
-import Archives from '/src/components/screens/archives.jsx'
+import Vault from '/src/components/screens/vault.jsx'
 import Settings from '/src/components/screens/settings/settings.jsx'
 import SwapRequests from '/src/components/screens/swapRequests.jsx'
 import TransferRequests from '/src/components/screens/transferRequests.jsx'
@@ -96,21 +96,7 @@ export default function App() {
   })
 
   // State to include in App.js
-  const {isLoading, currentScreen, menuIsOpen, loadingText, currentUser, theme, authUser, creationFormToShow} = state
-
-  const deleteMenuAnimation = () => {
-    document.querySelectorAll('#full-menu .menu-item').forEach((menuItem) => {
-      menuItem.classList.remove('visible')
-    })
-  }
-
-  const addMenuItemAnimation = () => {
-    document.querySelectorAll('#full-menu .menu-item').forEach((menuItem, i) => {
-      setTimeout(() => {
-        menuItem.classList.add('visible')
-      }, 75 * i)
-    })
-  }
+  const {isLoading, currentScreen, loadingText, currentUser, theme, authUser, creationFormToShow} = state
 
   // ON SCREEN CHANGE
   useEffect(() => {
@@ -143,6 +129,7 @@ export default function App() {
 
   // ON PAGE LOAD
   useEffect(() => {
+    setState({...state, isLoading: true})
     // Error Boundary Test
     // throw new Error('Something went wrong')
     document.body.appendChild(myCanvas)
@@ -150,20 +137,21 @@ export default function App() {
     // FIREBASE AUTH
     onAuthStateChanged(auth, async (user) => {
       // USER LOGGED IN FROM PERSISTED STATE
-      console.log(user)
+      // console.log(user)
       if (user) {
         const user = auth.currentUser
         await AppManager.clearAppBadge()
+        const users = await DB.getTable(DB.tables.users)
 
         let notifications = []
         let currentUserFromDb
-        const users = await DB.getTable(DB.tables.users)
         currentUserFromDb = users?.find((u) => u?.email === user?.email)
         // User Exists
-        if (currentUserFromDb) {
+        if (Manager.isValid(currentUserFromDb)) {
           let screenToNavigateTo = ScreenNames.calendar
           const body = document.getElementById('external-overrides')
           const navbar = document.getElementById('navbar')
+
           if (Manager.isValid(navbar)) {
             navbar.setAttribute('account-type', currentUserFromDb?.accountType)
           }
@@ -188,10 +176,14 @@ export default function App() {
             AppManager.deleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
             AppManager.deleteExpiredMemories(currentUserFromDb).then((r) => r)
           }
+
+          // Get notifications
           if (!window.location.href.includes('localhost')) {
             NotificationManager.init(currentUserFromDb)
             notifications = await DB.getTable(`${DB.tables.notifications}/${currentUserFromDb?.key}`)
           }
+
+          // Back to log in if user's email is not verified
           if (!user?.emailVerified) {
             screenToNavigateTo = ScreenNames.login
           }
@@ -203,7 +195,7 @@ export default function App() {
             userIsLoggedIn: true,
             loadingText: '',
             theme: currentUserFromDb?.settings?.theme,
-            isLoading: false,
+            // isLoading: false,
             notificationCount: notifications?.length,
           })
         }
@@ -219,18 +211,9 @@ export default function App() {
         console.log('user signed out or user does not exist')
       }
     })
-    // eslint-disable-next-line no-undef
+
     LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
   }, [])
-
-  // MENU OPEN/CLOSE
-  useEffect(() => {
-    if (menuIsOpen) {
-      addMenuItemAnimation()
-    } else {
-      deleteMenuAnimation()
-    }
-  }, [menuIsOpen])
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -284,7 +267,7 @@ export default function App() {
             {/* DOCUMENTS */}
             {currentScreen === ScreenNames.docsList && <DocsList />}
             {currentScreen === ScreenNames.docViewer && <DocViewer />}
-            {currentScreen === ScreenNames.archives && <Archives />}
+            {currentScreen === ScreenNames.vault && <Vault />}
 
             {/* UPLOAD */}
             {currentScreen === ScreenNames.uploadDocuments && <NewDocument />}

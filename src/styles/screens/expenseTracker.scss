@@ -342,8 +342,17 @@
           line-height: 1;
           font-weight: $fwMedium;
           width: 100%;
-          display: inline;
           white-space: nowrap;
+          display: flex;
+          align-items: center;
+
+          svg {
+            align-self: flex-end;
+            width: 18px;
+            height: 18px;
+            margin-left: 5px;
+            color: $darkestGrey;
+          }
         }
       }
 

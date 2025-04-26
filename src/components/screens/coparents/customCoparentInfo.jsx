@@ -11,12 +11,14 @@ import InputWrapper from '../../shared/inputWrapper'
 import StringManager from '../../../managers/stringManager.coffee'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function CustomCoparentInfo({hideCard, activeCoparent, showCard, onAdd = (coparent) => {}}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, refreshKey} = state
+  const {theme, refreshKey} = state
   const [title, setTitle] = useState('')
   const [value, setValue] = useState('')
+  const {currentUser} = useCurrentUser()
 
   const ResetForm = (hasMessage = false) => {
     Manager.ResetForm('custom-coparent-info-wrapper')

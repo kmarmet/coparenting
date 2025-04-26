@@ -249,8 +249,9 @@ const DB_UserScoped = {
   },
   addUserChild: async (currentUser, newChild) => {
     const dbRef = ref(getDatabase())
-    const currentChildren = await DB_UserScoped.getCurrentUserRecords(DB.tables.users, currentUser, 'children')
-    await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children`), [...currentChildren, newChild])
+    const currentChildren = currentUser?.children
+    const updatedChildren = [...currentChildren, newChild].filter((x) => x)
+    await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children`), updatedChildren)
   },
   addToUserMemories: async (currentUser, objectName, value, id) => {
     const dbRef = ref(getDatabase())
@@ -359,16 +360,21 @@ const DB_UserScoped = {
     }
     update(dbRef, {[StringManager.formatDbProp(prop)]: value})
   },
-  updateUserChild: async (currentUser, activeChild, section, prop, value) => {
+  UpdateChildInfo: async (currentUserKey, activeChild, section, prop, value) => {
     const dbRef = ref(getDatabase())
-    let key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeChild, 'id')
-    await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children/${key}/${section}/${StringManager.formatDbProp(prop)}`), value)
+    console.log(currentUserKey)
+    if (Manager.isValid(currentUserKey)) {
+      let key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUserKey}/children`, activeChild, 'id')
+      if (Manager.isValid(key)) {
+        await set(child(dbRef, `${DB.tables.users}/${currentUserKey}/children/${key}/${section}/${StringManager.formatDbProp(prop)}`), value)
+      }
+    }
   },
   addSharedDataUser: async (currentUser, newKey) => {
     const dbRef = ref(getDatabase())
-    const existingKeys = currentUser?.sharedDataUsers ?? []
+    const existingKeys = DatasetManager.getUniqueArray(currentUser?.sharedDataUsers, true) ?? []
     if (!existingKeys.includes(newKey)) {
-      const toAdd = [...existingKeys, newKey].filter((x) => x).flat()
+      const toAdd = DatasetManager.getUniqueArray([...existingKeys, newKey].filter((x) => x).flat())
       await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/sharedDataUsers`), toAdd)
     }
   },

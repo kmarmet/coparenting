@@ -13,6 +13,8 @@ import NavBar from '/src/components/navBar.jsx'
 import {BsFillSendFill} from 'react-icons/bs'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import InputWrapper from '/src/components/shared/inputWrapper'
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
+
 import AlertManager from '/src/managers/alertManager'
 import StringManager from '/src/managers/stringManager'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
@@ -23,11 +25,11 @@ import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import InputTypes from '../../../constants/inputTypes'
 import useCoparents from '../../../hooks/useCoparents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
-import ObjectManager from '../../../managers/objectManager'
+import Label from '../../shared/label'
 
 export default function Coparents() {
   const {state, setState} = useContext(globalState)
-  const {theme} = state
+  const {theme, refreshKey} = state
   const {currentUser} = useCurrentUser()
   const {coparents} = useCoparents()
 
@@ -53,8 +55,13 @@ export default function Coparents() {
   }
 
   useEffect(() => {
-    if (Manager.isValid(coparents) && (!Manager.isValid(activeCoparent) || ObjectManager.isEmpty(activeCoparent))) {
+    if (Manager.isValid(coparents) && !Manager.isValid(activeCoparent)) {
       setActiveCoparent(coparents?.[0])
+    }
+    if (Manager.isValid(activeCoparent)) {
+      const coparentId = activeCoparent?.id
+      const updatedCoparent = coparents?.find((x) => x?.id === coparentId)
+      setActiveCoparent(updatedCoparent)
     }
   }, [coparents])
 
@@ -85,9 +92,9 @@ export default function Coparents() {
               <IoPersonAdd className={'add-coparent fs-22'} />
             </div>
             <p>
-              Enable Sharing & Info Storage
+              Add a Co-Parent
               <span className="subtitle">
-                Store information and provide sharing permissions <b>for a co-parent who that has not been added to your profile</b> yet
+                Store information and provide sharing permissions for a co-parent who that has not been added to your profile yet
               </span>
             </p>
           </div>
@@ -109,7 +116,7 @@ export default function Coparents() {
                 </div>
                 <p>
                   Add your Own Info
-                  <span className="subtitle">Include personalized details about {activeCoparent?.name}</span>
+                  <span className="subtitle">Include personalized details about {StringManager.getFirstNameOnly(activeCoparent?.name)}</span>
                 </p>
               </div>
             </div>
@@ -120,7 +127,7 @@ export default function Coparents() {
               onClick={() => {
                 setState({...state, showScreenActions: false})
                 AlertManager.confirmAlert(
-                  `Are you sure you would like to unlink ${activeCoparent?.name} from your profile?`,
+                  `Are you sure you would like to unlink ${StringManager.getFirstNameOnly(activeCoparent?.name)} from your profile?`,
                   "I'm Sure",
                   true,
                   async () => {
@@ -134,8 +141,10 @@ export default function Coparents() {
                 </div>
 
                 <p>
-                  Unlink {activeCoparent?.name} from Your Profile
-                  <span className="subtitle">Remove sharing permissions for {activeCoparent?.name} along with the information stored about them</span>
+                  Unlink {StringManager.getFirstNameOnly(activeCoparent?.name)} from Your Profile
+                  <span className="subtitle">
+                    Remove sharing permissions for {StringManager.getFirstNameOnly(activeCoparent?.name)} along with the information stored about them
+                  </span>
                 </p>
               </div>
             </div>
@@ -153,7 +162,8 @@ export default function Coparents() {
               <BsFillSendFill className={'paper-airplane'} />
             </div>
             <p>
-              Invite Co-Parent <span className="subtitle">Send invitation to a co-parent you would like to share essential information with</span>
+              Invite Another Co-Parent{' '}
+              <span className="subtitle">Send invitation to a co-parent you would like to share essential information with</span>
             </p>
           </div>
         </div>
@@ -213,7 +223,7 @@ export default function Coparents() {
                   onClick={() => setActiveCoparent(coparent)}
                   className={coparentKey && coparentKey === coparent?.userKey ? 'active coparent' : 'coparent'}
                   key={index}>
-                  <span className="coparent-name">{StringManager.getFirstNameOnly(coparent?.name)?.[0]}</span>
+                  <span className="coparent-name">{StringManager.GetFirstNameAndLastInitial(coparent?.name)?.[0]}</span>
                 </div>
               )
             })}
@@ -224,7 +234,7 @@ export default function Coparents() {
 
         {/* COPARENT INFO */}
         <div id="coparent-info" key={activeCoparent?.userKey}>
-          <p id="coparent-name-primary">{StringManager.getFirstNameOnly(activeCoparent?.name)}</p>
+          <p id="coparent-name-primary">{StringManager.GetFirstNameAndLastInitial(activeCoparent?.name)}</p>
           <p id="coparent-type-primary"> {activeCoparent?.parentType}</p>
           {Manager.isValid(activeCoparent) && (
             <Fade direction={'right'} className={'parents-info-fade-wrapper'} duration={800} damping={0.08} triggerOnce={false} cascade={true}>
@@ -242,12 +252,19 @@ export default function Coparents() {
                     <div key={index}>
                       {/* ADDRESS */}
                       {infoLabel.toLowerCase().includes('address') && (
-                        <InputWrapper
-                          defaultValue={value}
-                          inputType={InputTypes.address}
-                          labelText={'Home Address'}
-                          onChange={(address) => Update('address', address).then((r) => r)}
-                        />
+                        <>
+                          <Label classes="address-label" text={'Home Address'} />
+                          <GooglePlacesAutocomplete
+                            className={'address-input'}
+                            selectProps={{
+                              // menuIsOpen: true,
+                              placeholder: value,
+                              onChange: (e) => Update('address', e?.label),
+                              isClearable: false,
+                            }}
+                          />
+                          <Spacer height={5} />
+                        </>
                       )}
 
                       {/* TEXT INPUT */}
@@ -282,7 +299,7 @@ export default function Coparents() {
       <NavBar navbarClass={'actions'}>
         <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
           <HiDotsHorizontal className={'screen-actions-menu-icon'} />
-          <p>Actions</p>
+          <p>More</p>
         </div>
       </NavBar>
     </>

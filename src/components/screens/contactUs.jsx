@@ -10,10 +10,12 @@ import {VscFeedback} from 'react-icons/vsc'
 import NavBar from '../navBar'
 import InputWrapper from '../shared/inputWrapper'
 import AlertManager from '../../managers/alertManager'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import InputTypes from '../../constants/inputTypes'
 
 export default function ContactUs() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
+  const {theme} = state
   const [featureName, setFeatureName] = useState('')
   const [featureDescription, setFeatureDescription] = useState('')
   const [showFeatureRequestCard, setShowFeatureRequestCard] = useState(false)
@@ -21,6 +23,7 @@ export default function ContactUs() {
   const [showFeedbackCard, setShowFeedbackCard] = useState(false)
   const [supportNotes, setSupportNotes] = useState('')
   const [showSupportCard, setShowSupportCard] = useState(false)
+  const {currentUser} = useCurrentUser()
 
   const resetFormFeatureRequestForm = () => {
     Manager.ResetForm('feature-request-wrapper')
@@ -89,15 +92,9 @@ export default function ContactUs() {
         <div className="feature-request-wrapper">
           <div id="feature-request-container" className={`${theme} form`}>
             <div className="form">
+              <InputWrapper labelText={'Feature Name'} required={true} onChange={(e) => setFeatureName(e.target.value)} inputType={InputTypes.text} />
               <InputWrapper
-                inputType={'input'}
-                labelText={'Feature Name'}
-                required={true}
-                onChange={(e) => setFeatureName(e.target.value)}
-                type="text"
-              />
-              <InputWrapper
-                inputType={'textarea'}
+                inputType={InputTypes.textarea}
                 labelText={'Request Details'}
                 required={true}
                 onChange={(e) => setFeatureDescription(e.target.value)}
@@ -120,7 +117,7 @@ export default function ContactUs() {
           <div id="feedback-container" className={`${theme} form`}>
             <div className="form">
               <InputWrapper
-                inputType={'textarea'}
+                inputType={InputTypes.textarea}
                 labelText={'App Feedback'}
                 required={true}
                 onChange={(e) => setFeedback(e.target.value)}
@@ -144,11 +141,10 @@ export default function ContactUs() {
           <div id="support-container" className={`${theme} form`}>
             <div className="form">
               <InputWrapper
-                inputType={'textarea'}
+                inputType={InputTypes.textarea}
                 labelText={'Problem Description or Question'}
                 required={true}
                 onChange={(e) => setSupportNotes(e.target.value)}
-                type="text"
               />
             </div>
           </div>

@@ -32,6 +32,7 @@ import Map from '../shared/map'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useCalendarEvents from '../../hooks/useCalendarEvents'
 import useUsers from '../../hooks/useUsers'
+import MultilineDetailBlock from '../shared/multilineDetailBlock'
 
 export default function EditCalEvent({event, showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
@@ -291,29 +292,12 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setShowReminders(Manager.isValid(event?.reminderTimes))
 
     // Get shareWith Names
-    if (Manager.isValid(event?.shareWith)) {
-      let names = []
-      for (let key of event.shareWith) {
-        let shareWithUser = users.find((x) => x.key === key || x?.userKey === key)
-        if (Manager.isValid(shareWithUser)) {
-          if (shareWithUser?.accountType === 'parent') {
-            if (shareWithUser?.key === currentUser?.key && event?.ownerKey !== currentUser?.key) {
-              names.push('Me')
-            } else {
-              names.push(StringManager.getFirstNameOnly(shareWithUser.name))
-            }
-          }
-          if (shareWithUser?.accountType === 'child') {
-            names.push(StringManager.getFirstNameOnly(shareWithUser?.general?.name))
-          }
-        }
-      }
-      console.log(names)
-      setShareWithNames(names)
-    }
+    let mappedShareWithNames = Manager.MapKeysToUsers(event?.shareWith, users)
+    mappedShareWithNames = mappedShareWithNames.filter((x) => x?.name !== StringManager.getFirstNameOnly(currentUser?.name)).flat()
+    setShareWithNames(mappedShareWithNames)
 
     // Repeating
-    if (Manager.isValid(event?.repeatInterval)) {
+    if (Manager.isValid(event?.recurringInterval)) {
       Manager.setDefaultCheckboxes('repeating', event, 'repeatInterval', false).then((r) => r)
     }
   }
@@ -352,6 +336,14 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         return StringManager.getFirstNameOnly(event?.createdBy)
       }
     }
+  }
+  const GetShareWithAsString = () => {
+    let joined = shareWithNames.join('\n').replaceAll('  ', '\n').trim()
+    // joined = joined.replaceAll(',', '\n \n')
+    // joined = joined.replaceAll('*', '\n')
+    console.log(joined)
+
+    return joined
   }
 
   useEffect(() => {
@@ -434,14 +426,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               <DetailBlock valueToValidate={event?.createdBy} text={GetCreatedBy()} title={'Created By'} />
 
               {/*  Shared With */}
-              <DetailBlock
-                valueToValidate={event?.shareWith}
-                text={shareWithNames
-                  ?.join(', ')
-                  .replace(/,\s*$/, '')
-                  .replace(/, \s*$/, '')}
-                title={'Shared With'}
-              />
+              <MultilineDetailBlock title={'Shared With'} array={shareWithNames} />
 
               {/* Reminders */}
               {Manager.isValid(event?.reminderTimes) && (
@@ -462,19 +447,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               )}
 
               {/* Children */}
-              {Manager.isValid(event?.children) && (
-                <div className="block">
-                  {Manager.isValid(event?.children) &&
-                    event?.children.map((child, index) => {
-                      return (
-                        <p className="block-text" key={index}>
-                          {child}
-                        </p>
-                      )
-                    })}
-                  <p className="block-title">Children</p>
-                </div>
-              )}
+              <MultilineDetailBlock title={'Children'} array={event?.children} />
 
               {/*  Notes */}
               <DetailBlock valueToValidate={event?.notes} text={event?.notes} isFullWidth={true} title={'Notes'} />
@@ -491,7 +464,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 linkUrl={event?.websiteUrl}
                 text={decodeURIComponent(event?.websiteUrl)}
                 isLink={true}
-                title={'Website'}
+                title={'Website/Link'}
               />
 
               {/*  Location */}

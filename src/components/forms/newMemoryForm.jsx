@@ -11,7 +11,6 @@ import NotificationManager from '/src/managers/notificationManager'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import moment from 'moment'
 import Memory from '/src/models/memory.js'
-import SecurityManager from '/src/managers/securityManager'
 import ModelNames from '/src/models/modelNames'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import InputWrapper from '../shared/inputWrapper'
@@ -21,13 +20,12 @@ import ImageManager from '/src/managers/imageManager'
 import AlertManager from '/src/managers/alertManager'
 import ActivityCategory from '/src/models/activityCategory'
 import StringManager from '/src/managers/stringManager'
-import DB_UserScoped from '../../database/db_userScoped'
 import {LuImagePlus} from 'react-icons/lu'
 import creationForms from '../../constants/creationForms'
-import DomManager from '../../managers/domManager'
 import InputTypes from '../../constants/inputTypes'
 import Spacer from '../shared/spacer'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import useMemories from '../../hooks/useMemories'
 
 export default function NewMemoryForm() {
   const {state, setState} = useContext(globalState)
@@ -35,11 +33,11 @@ export default function NewMemoryForm() {
   const [images, setImages] = useState([])
   const [newMemory, setNewMemory] = useState(new Memory())
   const {currentUser} = useCurrentUser()
+  const {memories} = useMemories()
 
   const ResetForm = async () => {
     Manager.ResetForm('new-memory-wrapper')
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({...state, currentUser: updatedCurrentUser, isLoading: false, refreshKey: Manager.getUid(), creationFormToShow: ''})
+    setState({...state, isLoading: false, refreshKey: Manager.getUid(), creationFormToShow: ''})
   }
 
   const HandleShareWithSelection = async (e) => {
@@ -74,10 +72,7 @@ export default function NewMemoryForm() {
     })
 
     if (notAnImage) {
-      AlertManager.throwError(
-        'Files uploaded MUST be images (.png, .jpg, .jpeg, etc.)',
-        `If you would like to share a document, please ${DomManager.tapOrClick()} the Create navbar item and select 'Document Upload'`
-      )
+      AlertManager.throwError('Files uploaded MUST be images (.png, .jpg, .jpeg, etc.)')
       return false
     }
 
@@ -91,19 +86,13 @@ export default function NewMemoryForm() {
     }
 
     // Check for existing memory
-    const securedMemories = await SecurityManager.getMemories(currentUser)
-    let existingMemoriesFound = false
     Manager.convertToArray(localImages).forEach((img) => {
-      const existingMemory = securedMemories.filter((x) => x.memoryName === img.name)[0]
+      const existingMemory = memories.find((x) => x.memoryName === img.name)
       if (existingMemory) {
-        existingMemoriesFound = true
+        AlertManager.throwError('This memory already exists')
+        return false
       }
     })
-
-    if (existingMemoriesFound) {
-      AlertManager.throwError('This memory already exists')
-      return false
-    }
 
     setState({...state, isLoading: true})
 

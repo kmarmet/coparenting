@@ -25,14 +25,16 @@ import {getStorage, ref, uploadString} from 'firebase/storage'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
 import CreationForms from '../../../constants/creationForms'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function NewDocument() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, creationFormToShow} = state
+  const {theme, creationFormToShow} = state
   const [shareWith, setShareWith] = useState([])
   const [docType, setDocType] = useState(null)
   const [docName, setDocName] = useState('')
   const [doc, setDoc] = useState()
+  const {currentUser} = useCurrentUser()
 
   const ResetForm = (successMessage = '') => {
     Manager.ResetForm('upload-doc-wrapper')

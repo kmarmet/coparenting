@@ -82,7 +82,7 @@ export default function RequestParentAccess() {
 
         // ADD OR UPDATE CHILD RECORD UNDER PARENT
         // -> Add
-        if (!Manager.isValid(existingChild)) {
+        if (!Manager.isValid(existingChild) || ObjectManager.isEmpty(existingChild)) {
           const childToAdd = new Child()
           const general = new General()
           general.phone = currentUser?.phone

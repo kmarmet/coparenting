@@ -1,5 +1,23 @@
 @import './_mixins.scss';
 
+// GOOGLE MAPS AUTOCOMPLETE
+.css-1nmdiq5-menu {
+  background: white !important;
+  z-index: 99999999999 !important;
+  width: 90% !important;
+  @include centerHoriz;
+  position: relative !important;
+}
+.css-13cymwt-control {
+  border-radius: $borderRadius !important;
+  border: 0 !important;
+  background: $mediumGrey !important;
+  padding: 5px 0 !important;
+}
+.css-1jqq78o-placeholder {
+  color: $darkestGrey !important;
+}
+
 #error-screen {
   height: 100vh;
   width: 100vw;
@@ -739,7 +757,8 @@
       @include checkboxGroup;
     }
 
-    #input-wrapper {
+    #input-wrapper,
+    #address-input-wrapper {
       @include inputWrapper;
     }
     #success-alert-wrapper {
@@ -845,38 +864,39 @@
       left: 0;
       right: 0;
       position: fixed;
-      display: none;
       height: 100vh;
       width: 100vw;
-      z-index: $maxZIndex;
-      backdrop-filter: blur(4px);
+      z-index: -1;
       opacity: 0;
-      background: rgba(000, 000, 000, 0.1);
       inset: 0;
       overflow: hidden;
+      transition: all 0.6s ease-out;
 
       &.dark {
         background: $darkBg;
       }
 
       &.active {
+        transition: all 0.6s ease-in;
+        background: white;
         display: block;
+        z-index: $maxZIndex;
         opacity: 1;
+        backdrop-filter: blur(5px);
       }
 
       p {
         @include deadCenter;
         font-size: 22px;
         font-weight: $fwMedium;
-        color: $main;
-        //        background-color: white;
+        color: $accent;
+        backdrop-filter: blur(5px);
         padding: 20px;
         text-align: center;
         max-width: 80vw;
         opacity: 1;
-        border-radius: $bigBorderRadius;
+        background: transparent;
         margin-bottom: 15px;
-        //        @include bestShadow;
       }
 
       img {

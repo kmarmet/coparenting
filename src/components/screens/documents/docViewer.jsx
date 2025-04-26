@@ -27,11 +27,12 @@ import _ from 'lodash'
 import Label from '../../shared/label.jsx'
 import DatasetManager from '../../../managers/datasetManager.coffee'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, docToView, currentScreen, creationFormToShow} = state
+  const {theme, docToView, currentScreen} = state
   const [tocHeaders, setTocHeaders] = useState([])
   const [showToc, setShowToc] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
@@ -43,6 +44,7 @@ export default function DocViewer() {
   const [sideMenuIsOpen, setSideMenuIsOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const [shouldHideSidebar, setShouldHideSidebar] = useState(true)
+  const {currentUser} = useCurrentUser()
 
   const scrollToHeader = (hashedHeader) => {
     const domHeader = document.querySelector(`#doc-text [data-hashed-header="${hashedHeader}"]`)

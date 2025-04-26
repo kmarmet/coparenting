@@ -4,7 +4,7 @@ import StringManager from '../../managers/stringManager'
 import {FaDirections} from 'react-icons/fa'
 import Spacer from './spacer'
 import {HiPhoneArrowUpRight} from 'react-icons/hi2'
-import {IoOpen} from 'react-icons/io5'
+import {MdWebAsset} from 'react-icons/md'
 
 const DetailBlock = ({
   text,
@@ -39,7 +39,7 @@ const DetailBlock = ({
               {isLink && (
                 <>
                   <a href={linkUrl} target="_blank" className={'block-text website'} rel="noreferrer">
-                    <IoOpen className={'website'} />
+                    <MdWebAsset className={'website'} />
                   </a>
                   <Spacer height={2} />
                 </>

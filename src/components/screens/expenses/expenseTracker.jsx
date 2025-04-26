@@ -9,6 +9,7 @@ import LightGallery from 'lightgallery/react'
 import moment from 'moment'
 import {Fade} from 'react-awesome-reveal'
 import {AiOutlineFileAdd} from 'react-icons/ai'
+import {MdOutlineEventRepeat} from 'react-icons/md'
 import {RxUpdate} from 'react-icons/rx'
 import NewExpenseForm from '../../forms/newExpenseForm.jsx'
 import NavBar from '../../navBar.jsx'
@@ -39,6 +40,7 @@ import AccordionTitle from '../../shared/accordionTitle'
 import DetailBlock from '../../shared/detailBlock'
 import InputTypes from '../../../constants/inputTypes'
 import useExpenses from '../../../hooks/useExpenses'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -49,7 +51,7 @@ const SortByTypes = {
 
 export default function ExpenseTracker() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
+  const {theme} = state
   const [showPaymentOptionsCard, setShowPaymentOptionsCard] = useState(false)
   const [showNewExpenseCard, setShowNewExpenseCard] = useState(false)
   const [categoriesInUse, setCategoriesInUse] = useState([])
@@ -71,8 +73,9 @@ export default function ExpenseTracker() {
   const [categoriesAsArray, setCategoriesAsArray] = useState([])
   const [expenseDateType, setExpenseDateType] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
-  const {expenses} = useExpenses()
   const [sortedExpenses, setSortedExpenses] = useState([])
+  const {expenses} = useExpenses()
+  const {currentUser} = useCurrentUser()
 
   const Update = async () => {
     // Fill/overwrite
@@ -221,6 +224,7 @@ export default function ExpenseTracker() {
     setPaidStatus(activeExpense?.paidStatus)
     setImageName(activeExpense?.imageName)
     setRecipientName(activeExpense?.recipientName)
+    setView('details')
   }
 
   const DeleteExpense = async () => await DB.deleteById(`${DB.tables.expenses}/${currentUser?.key}`, activeExpense?.id)
@@ -247,7 +251,7 @@ export default function ExpenseTracker() {
       case 'monthly':
         return `Every Month`
       case 'biweekly':
-        return `Every Two Weeks`
+        return `Every 2 Weeks`
     }
   }
 
@@ -262,7 +266,7 @@ export default function ExpenseTracker() {
           return moment(activeExpense?.dueDate).format('dddd')
         case 'Every Month':
           return moment(activeExpense?.dueDate).format('Do')
-        case 'Every Two Weeks':
+        case 'Every 2 Weeks':
           return moment(activeExpense?.dueDate).format('Do')
       }
     }
@@ -305,9 +309,10 @@ export default function ExpenseTracker() {
           setState({...state, refreshKey: Manager.getUid()})
         }}
         onDelete={DeleteExpense}
-        viewSelector={<ViewSelector labels={['Details', 'Edit']} updateState={(e) => setView(e.toLowerCase())} />}
+        viewSelector={<ViewSelector labels={['details', 'edit']} updateState={(e) => setView(e.toLowerCase())} />}
         showCard={showDetails}>
         <div id="details" className={`content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
+          <hr />
           <Spacer height={5} />
           {/* DETAILS */}
           {view === 'details' && (
@@ -419,6 +424,7 @@ export default function ExpenseTracker() {
 
                 <Spacer height={5} />
               </div>
+              <hr className="bottom" />
             </>
           )}
 
@@ -625,7 +631,10 @@ export default function ExpenseTracker() {
                       <div id="content" data-expense-id={expense?.id} className={`expense wrap`}>
                         {/* EXPENSE NAME */}
                         <div id="name-wrapper" className="flex align-center">
-                          <p className="name row-title">{StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}</p>
+                          <p className="name row-title">
+                            {StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}
+                            {expense?.isRecurring && <MdOutlineEventRepeat />}
+                          </p>
 
                           {/*  STATUS */}
                           {!expense?.isRecurring && (

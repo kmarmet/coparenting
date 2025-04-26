@@ -1,45 +1,27 @@
-import React, {useContext} from 'react'
-import Autocomplete from 'react-google-autocomplete'
-import globalState from '../../context'
-import Manager from '../../managers/manager'
+import React from 'react'
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
 
-export default function AddressInput({onSelection = (e) => {}, defaultValue}) {
-  const {state, setState} = useContext(globalState)
-  const {refreshKey, theme} = state
+export default function AddressInput({onChange = (e) => {}, defaultValue, labelText = '', required = false, value}) {
   return (
-    <Autocomplete
-      defaultValue={defaultValue}
-      apiKey={process.env.REACT_APP_AUTOCOMPLETE_ADDRESS_API_KEY}
-      placeholder={''}
-      onKeyDown={(event) => {
-        if (event.ctrlKey && event.key === 'a') {
-          // Use setTimeout to check the input value after the copy action
-          setTimeout(() => {
-            if (event.target.value === '') {
-              // console.log('Input cleared with Ctrl+C')
-              onSelection('')
-              // Add any further actions needed when input is cleared
-            } else {
-              // console.log('Ctrl+C pressed, but input was not cleared')
-            }
-          }, 500)
-        }
-      }}
-      onChange={(e) => {
-        const value = e.target.value
-        if (Manager.isValid(value, true)) {
-          const valueLength = value.length
-          if (valueLength === 1) {
-            onSelection('')
-          }
-        }
-      }}
-      options={{
-        types: ['geocode', 'establishment'],
-        componentRestrictions: {country: 'usa'},
-      }}
-      // key={refreshKey}
-      onPlaceSelected={(place) => onSelection(place.formatted_address)}
-    />
+    <div id="address-input-wrapper">
+      {/* LABEL */}
+      {/*{Manager.isValid(labelText, true) && (*/}
+      {/*  <Label classes={Manager.isValid(defaultValue) ? 'active' : ''} text={`${labelText}`} required={required} />*/}
+      {/*)}*/}
+
+      {/* INPUT */}
+      <GooglePlacesAutocomplete
+        apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
+        className={'address-input'}
+        selectProps={{
+          value: value,
+          placeholder: defaultValue,
+          onChange: (e) => {
+            console.log(e)
+          },
+          isClearable: true,
+        }}
+      />
+    </div>
   )
 }

@@ -15,12 +15,14 @@ import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
-export default function Schooling({activeChild}) {
+export default function Schooling() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
+  const {theme, activeChild} = state
   const [schoolingValues, setSchoolingValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
+  const {currentUser} = useCurrentUser()
 
   const deleteProp = async (prop) => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
@@ -49,7 +51,7 @@ export default function Schooling({activeChild}) {
   }
 
   const update = async (prop, value) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'schooling', StringManager.formatDbProp(prop), value)
+    const updatedChild = await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, 'schooling', StringManager.formatDbProp(prop), value)
     AlertManager.successAlert('Updated!')
     setState({...state, activeChild: updatedChild})
   }

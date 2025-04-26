@@ -171,7 +171,7 @@ export default function Modal({
           )}
 
           <button
-            id="close-icon-bg"
+            id="cancel-button"
             onClick={() => {
               onClose()
               HideCard()

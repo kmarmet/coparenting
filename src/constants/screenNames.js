@@ -3,7 +3,7 @@ var ScreenNames;
 
 ScreenNames = {
   adminDashboard: 'adminDashboard',
-  archives: "archives",
+  vault: "vault",
   calendar: 'calendar',
   chat: 'chat',
   chats: 'chats',

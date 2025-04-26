@@ -14,6 +14,17 @@ StringManager = {
       return parseInt(asString.substring(0, dotIndex));
     }
   },
+  GetFirstNameAndLastInitial: function(fullName) {
+    var firstName, lastNameInitial, names;
+    if (Manager.isValid(fullName, true)) {
+      names = fullName.split(" ");
+      firstName = names[0];
+      lastNameInitial = names.length > 1 ? names[names.length - 1][0] : "";
+      return `${firstName} ${lastNameInitial}`;
+    } else {
+      return fullName;
+    }
+  },
   getReadablePhoneNumber: function(phoneNumber) {
     var cleaned, formattedPhone, match;
     formattedPhone = phoneNumber;

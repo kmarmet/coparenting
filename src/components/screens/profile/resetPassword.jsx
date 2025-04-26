@@ -13,7 +13,7 @@ import InputTypes from '../../../constants/inputTypes'
 
 export default function ResetPassword() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme, firebaseUser} = state
+  const {theme, firebaseUser} = state
   const [email, setEmail] = useState('')
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)

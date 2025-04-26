@@ -1,15 +1,17 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
-import {useEffect, useState} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import Manager from '../managers/manager'
+import globalState from '../context'
 import DB from '../database/DB'
 import useCurrentUser from './useCurrentUser'
 
-const useChildren = () => {
+const useSharedChildInfo = () => {
+  const {state, setState} = useContext(globalState)
   const {currentUser} = useCurrentUser()
+  const [sharedChildInfo, setSharedChildInfo] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  const [children, setChildren] = useState([])
   const [error, setError] = useState(null)
-  const path = `${DB.tables.users}/${currentUser?.key}/children`
+  const path = `${DB.tables.sharedChildInfo}/${currentUser?.key}`
   const queryKey = ['realtime', path]
 
   useEffect(() => {
@@ -18,18 +20,16 @@ const useChildren = () => {
 
     const listener = onValue(
       dataRef,
-      (snapshot) => {
-        // console.log('Children Updated')
-        const formattedChildren = Manager.convertToArray(snapshot.val()?.filter((x) => x))
-        if (Manager.isValid(currentUser) && Manager.isValid(formattedChildren)) {
-          setChildren(formattedChildren)
-          setIsLoading(false)
+      async (snapshot) => {
+        const formatted = Manager.convertToArray(snapshot.val()).flat()
+        if (Manager.isValid(formatted)) {
+          setSharedChildInfo(formatted)
         } else {
-          setChildren([])
+          setSharedChildInfo([])
         }
+        setIsLoading(false)
       },
       (err) => {
-        console.log(`useChildren Error: ${err}`)
         setError(err)
         setIsLoading(false)
       }
@@ -38,14 +38,14 @@ const useChildren = () => {
     return () => {
       off(dataRef, 'value', listener)
     }
-  }, [path])
+  }, [path, currentUser])
 
   return {
-    children,
+    sharedChildInfo,
     isLoading,
     error,
     queryKey,
   }
 }
 
-export default useChildren
+export default useSharedChildInfo

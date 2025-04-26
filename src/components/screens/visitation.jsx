@@ -3,6 +3,8 @@ import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../context'
 import ScheduleTypes from '/src/constants/scheduleTypes'
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
+
 import DB from '/src/database/DB'
 import {Fade} from 'react-awesome-reveal'
 import CalendarEvent from '/src/models/calendarEvent'
@@ -18,9 +20,7 @@ import DB_UserScoped from '/src/database/db_userScoped'
 import VisitationMapper from '/src/mappers/visitationMapper'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import CalendarMapper from '/src/mappers/calMapper'
-import SecurityManager from '/src/managers/securityManager'
 import NavBar from '../navBar'
-import InputWrapper from '/src/components/shared/inputWrapper'
 import DatasetManager from '/src/managers/datasetManager'
 import AlertManager from '/src/managers/alertManager'
 import ObjectManager from '/src/managers/objectManager'
@@ -32,11 +32,13 @@ import CustomWeekends from '/src/components/screens/visitation/customWeekends'
 import DateManager from '/src/managers/dateManager.js'
 import Spacer from '../shared/spacer'
 import AccordionTitle from '../shared/accordionTitle'
-import InputTypes from '../../constants/inputTypes'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useCalendarEvents from '../../hooks/useCalendarEvents'
+import Label from '../shared/label'
 
 export default function Visitation() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
+  const {theme} = state
 
   // State
   const [showEveryOtherWeekendCard, setShowEveryOtherWeekendCard] = useState(false)
@@ -49,30 +51,28 @@ export default function Visitation() {
   const [showDeleteButton, setShowDeleteButton] = useState(false)
   const [showVisitationSection, setShowVisitationSection] = useState(false)
   const [showHolidaysSection, setShowHolidaysSection] = useState(false)
+  const {currentUser} = useCurrentUser()
+  const {calendarEvents} = useCalendarEvents()
 
   // Holiday
   const [userHolidays, setUserHolidays] = useState([])
   const [selectedHolidayDates, setSelectedHolidayDates] = useState([])
   const [holidaysFromApi, setHolidaysFromApi] = useState([])
 
-  const updateDefaultTransferLocation = async (location, link) => {
-    console.log(`${DB.tables.users}/${currentUser?.key}/visitation/transferNavLink`)
-    console.log(location, link)
+  const UpdateDefaultTransferLocation = async (location, link) => {
     await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/visitation/transferNavLink`, link)
     await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/visitation/transferAddress`, location)
   }
 
-  const deleteSchedule = async () => {
-    setState({...state, isLoading: true})
+  const DeleteSchedule = async () => {
     await VisitationManager.deleteSchedule(currentUser, existingScheduleEvents)
     setExistingScheduleEvents([])
     setShowDeleteButton(false)
-    setState({...state, isLoading: false})
-    AlertManager.successAlert('Visitation Schedule Removed')
+    setState({...state, successAlertMessage: 'Visitation Schedule Removed', isLoading: false})
   }
 
   // Every Weekend
-  const addEveryWeekendToCalendar = async () => {
+  const AddEveryWeekendToCalendar = async () => {
     // Set end date to the end of the year
     let weekends = VisitationManager.getEveryWeekend()
     let events = []
@@ -97,11 +97,12 @@ export default function Visitation() {
   }
 
   // SET HOLIDAYS IN DATABASE
-  const setHolidaysInDatabase = async () => {
+  const SetHolidaysInDatabase = async () => {
     // Holidays
     if (Manager.isValid(selectedHolidayDates)) {
-      setShowUpdateHolidaysButton(false)
+      // setShowUpdateHolidaysButton(false)
       let events = []
+      console.log(selectedHolidayDates)
       selectedHolidayDates.forEach((holidayDateString) => {
         const dateObject = new CalendarEvent()
         const holidayName = CalendarMapper.holidayDateToName(moment(holidayDateString).format('MM/DD'))
@@ -124,10 +125,10 @@ export default function Visitation() {
     } else {
       await VisitationManager.deleteAllHolidaysForUser(currentUser)
     }
-    AlertManager.successAlert('Visitation Holidays Updated!')
+    setState({...state, successAlertMessage: 'Visitation Holidays Updated!'})
   }
 
-  const handleHolidaySelection = async (e) => {
+  const HandleHolidaySelection = async (e) => {
     Manager.handleCheckboxSelection(
       e,
       (e) => {
@@ -151,7 +152,7 @@ export default function Visitation() {
     )
   }
 
-  const handleScheduleTypeSelection = (e) => {
+  const HandleScheduleTypeSelection = (e) => {
     Manager.handleCheckboxSelection(
       e,
       async (e) => {
@@ -165,12 +166,11 @@ export default function Visitation() {
     )
   }
 
-  const getVisitationHolidays = async (currentUser) => {
+  const GetVisitationHolidays = async (currentUser) => {
     const _holidays = await VisitationManager.getVisitationHolidays()
-    const userEvents = await SecurityManager.getCalendarEvents(currentUser)
     let userHolidays = []
-    if (Manager.isValid(userEvents)) {
-      userHolidays = userEvents.filter((x) => x.ownerKey === currentUser?.key && x.fromVisitationSchedule === true && x.isHoliday === true)
+    if (Manager.isValid(calendarEvents)) {
+      userHolidays = calendarEvents.filter((x) => x.ownerKey === currentUser?.key && x.fromVisitationSchedule === true && x.isHoliday === true)
     }
     return {
       holidays: _holidays.flat(),
@@ -178,7 +178,7 @@ export default function Visitation() {
     }
   }
 
-  const setDefaultHolidayCheckboxes = () => {
+  const SetDefaultHolidayCheckboxes = () => {
     const holidayCheckboxesWrapper = document.querySelector('.holiday-checkboxes-wrapper')
     if (Manager.isValid(holidayCheckboxesWrapper)) {
       const checkboxes = holidayCheckboxesWrapper.querySelectorAll('[data-date]')
@@ -194,17 +194,19 @@ export default function Visitation() {
     }
   }
 
-  const setAllStates = async () => {
+  const SetAllStates = async () => {
     const apiHolidays = await DateManager.getHolidays()
-    setHolidaysFromApi(apiHolidays)
-    await getVisitationHolidays(currentUser).then((holidaysObject) => {
+
+    // Minus Truman Day
+    setHolidaysFromApi(apiHolidays.filter((x) => x.date !== `${moment().year()}-05-08`))
+    await GetVisitationHolidays(currentUser).then((holidaysObject) => {
       const {holidays, userHolidays} = holidaysObject
       const userHolidaysList = Manager.convertToArray(CalendarMapper.eventsToHolidays(userHolidays))
       const userHolidaysDates = userHolidaysList.map((x) => x.date)
       setSelectedHolidayDates(DatasetManager.getUniqueArray(userHolidaysDates, true))
       setUserHolidays(userHolidaysList.map((x) => x.name))
       setTimeout(() => {
-        setDefaultHolidayCheckboxes(holidays)
+        SetDefaultHolidayCheckboxes(holidays)
       }, 300)
     })
   }
@@ -257,7 +259,7 @@ export default function Visitation() {
       setShowFiftyFiftyCard(false)
       setShowCustomWeekendsCard(false)
       AlertManager.confirmAlert('Are you sure you would like to add an Every Weekend visitation schedule?', "I'm Sure", true, async () => {
-        await addEveryWeekendToCalendar()
+        await AddEveryWeekendToCalendar()
       })
     }
 
@@ -267,9 +269,11 @@ export default function Visitation() {
   }, [scheduleType])
 
   useEffect(() => {
-    getCurrentVisitationSchedule().then((r) => r)
-    setAllStates().then((r) => r)
-  }, [])
+    if (Manager.isValid(currentUser) && Manager.isValid(calendarEvents)) {
+      getCurrentVisitationSchedule().then((r) => r)
+      SetAllStates().then((r) => r)
+    }
+  }, [currentUser, calendarEvents])
 
   return (
     <>
@@ -310,8 +314,10 @@ export default function Visitation() {
               You currently have a 50/50 visitation schedule added to your calendar. If you would like to modify the current schedule or switch to
               another schedule, please delete the current schedule first.
             </p>
+
             {showDeleteButton && (
-              <div className="buttons flex">
+              <>
+                <Spacer height={10} />
                 <button
                   className="button red default center"
                   onClick={() => {
@@ -320,14 +326,14 @@ export default function Visitation() {
                       "I'm Sure",
                       true,
                       async () => {
-                        await deleteSchedule()
+                        await DeleteSchedule()
                       },
                       setScheduleType('')
                     )
                   }}>
                   Delete Current Schedule
                 </button>
-              </div>
+              </>
             )}
           </>
         )}
@@ -347,7 +353,7 @@ export default function Visitation() {
               <Accordion id={'visitation-section'} expanded={showVisitationSection}>
                 <AccordionSummary id={'visitation-section-accordion-title'}>
                   <AccordionTitle
-                    titleText={'Schedule & Location'}
+                    titleText={'Schedule & Transfer Location'}
                     onClick={() => setShowVisitationSection(!showVisitationSection)}
                     toggleState={showVisitationSection}
                   />
@@ -358,7 +364,7 @@ export default function Visitation() {
                   <div className="section visitation-schedule">
                     <CheckboxGroup
                       elClass="schedule-type-checkboxes"
-                      onCheck={handleScheduleTypeSelection}
+                      onCheck={HandleScheduleTypeSelection}
                       skipNameFormatting={true}
                       checkboxArray={Manager.buildCheckboxGroup({
                         currentUser,
@@ -368,19 +374,21 @@ export default function Visitation() {
                   </div>
 
                   {/* LOCATION */}
-                  <InputWrapper
-                    inputType={InputTypes.address}
-                    wrapperClasses="show-label"
-                    labelText={'Agreed Upon Transfer Location'}
-                    onChange={(address) => {
-                      console.log(address)
-                      updateDefaultTransferLocation(address, Manager.getDirectionsLink(address)).then(() =>
-                        setTimeout(() => {
-                          setState({...state, successAlertMessage: 'Preferred Transfer Location Set'})
-                        }, 300)
-                      )
+                  <Label classes="address-label" text={'Preferred Transfer Location'} />
+                  <GooglePlacesAutocomplete
+                    selectProps={{
+                      className: 'address-input',
+                      placeholder: currentUser?.visitation?.transferAddress,
+                      onChange: (e) =>
+                        UpdateDefaultTransferLocation(e?.label, Manager.getDirectionsLink(e?.label)).then(() =>
+                          setTimeout(() => {
+                            setState({...state, successAlertMessage: 'Preferred Transfer Location Set'})
+                          }, 300)
+                        ),
+                      isClearable: false,
                     }}
                   />
+                  <Spacer height={5} />
                 </AccordionDetails>
               </Accordion>
             </Fade>
@@ -401,7 +409,7 @@ export default function Visitation() {
               <CheckboxGroup
                 containerClass="holidays"
                 elClass={'holiday-checkboxes-wrapper'}
-                onCheck={handleHolidaySelection}
+                onCheck={HandleHolidaySelection}
                 skipNameFormatting={true}
                 checkboxArray={Manager.buildCheckboxGroup({
                   currentUser,
@@ -411,7 +419,7 @@ export default function Visitation() {
               />
 
               {showUpdateHolidaysButton && (
-                <button className="button default green center" onClick={() => setHolidaysInDatabase()}>
+                <button className="button default green center" onClick={() => SetHolidaysInDatabase()}>
                   Update Holidays
                 </button>
               )}

@@ -26,7 +26,7 @@ import moment from 'moment'
 
 const NewChildForm = ({hideCard, showCard}) => {
   const {state, setState} = useContext(globalState)
-  const {theme, authUser, refreshKey} = state
+  const {theme} = state
   const {currentUser} = useCurrentUser()
   const {users} = useUsers()
   const [email, setEmail] = useState(false)
@@ -75,7 +75,7 @@ const NewChildForm = ({hideCard, showCard}) => {
     const existingChildRecord = users.find((x) => x?.email === email)
 
     // Link to existing account
-    if (Manager.isValid(existingChildRecord)) {
+    if (Manager.isValid(existingChildRecord) || childHasAccount || !ObjectManager.isEmpty(existingChildRecord)) {
       newChild.userKey = existingChildRecord.key
       await DB_UserScoped.addSharedDataUser(currentUser, existingChildRecord.key)
     } else {

@@ -17,7 +17,7 @@ const cashappLink = 'https://cash.app/help/6485-getting-started-with-cash-app'
 
 export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
+  const {theme} = state
 
   return (
     <>

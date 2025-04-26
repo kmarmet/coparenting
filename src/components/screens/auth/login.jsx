@@ -13,7 +13,6 @@ import firebaseConfig from '/src/firebaseConfig'
 import AlertManager from '/src/managers/alertManager'
 import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
-import DB from '../../../database/DB'
 import Spacer from '../../shared/spacer'
 import InputTypes from '../../../constants/inputTypes'
 import Turnstile, {useTurnstile} from 'react-turnstile'
@@ -64,14 +63,6 @@ export default function Login() {
     return signInWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         const user = userCredential.user
-        const users = await DB.getTable(DB.tables.users)
-        const dbUser = users?.find((u) => u?.email === user?.email)
-        let nextScreen = dbUser ? ScreenNames.calendar : ScreenNames.userDetails
-        if (dbUser?.accountType === 'child') {
-          if (!Manager.isValid(dbUser?.parentAccessGranted) || dbUser?.parentAccessGranted === false) {
-            nextScreen = ScreenNames.requestParentAccess
-          }
-        }
 
         // USER NEEDS TO VERIFY EMAIL
         if (!user.emailVerified) {
@@ -90,10 +81,9 @@ export default function Login() {
           setState({
             ...state,
             userIsLoggedIn: true,
-            currentUser: dbUser,
             authUser: user,
             isLoading: false,
-            currentScreen: nextScreen,
+            currentScreen: ScreenNames.calendar,
           })
         }
       })
@@ -107,6 +97,7 @@ export default function Login() {
           )
         } else {
           AlertManager.throwError(`Incorrect password`, `Please ${DomManager.tapOrClick()} Reset Password.`)
+          return false
         }
       })
   }
@@ -196,14 +187,14 @@ export default function Login() {
               <Spacer height={10} />
 
               {/* LOGIN BUTTONS */}
-              {/*{challengeSolved && (*/}
-              {/*  <button className="button default green" id="login-button" onClick={ManualLogin}>*/}
-              {/*    Login*/}
-              {/*  </button>*/}
-              {/*)}*/}
-              <button className="button default green" id="login-button" onClick={ManualLogin}>
-                Login
-              </button>
+              {challengeSolved && (
+                <button className="button default green" id="login-button" onClick={ManualLogin}>
+                  Login
+                </button>
+              )}
+              {/*<button className="button default green" id="login-button" onClick={ManualLogin}>*/}
+              {/*  Login*/}
+              {/*</button>*/}
 
               {!challengeSolved && <p id="captcha-loading-text">Pre-Authentication in Progress...</p>}
             </div>

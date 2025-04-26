@@ -3,7 +3,6 @@ import moment from 'moment'
 import DateManager from './dateManager'
 import Manager from '../managers/manager'
 import DB from '../database/DB'
-import DateFormats from '../constants/datetimeFormats'
 import DatasetManager from './datasetManager'
 import LogManager from './logManager'
 import CalendarManager from './calendarManager.js'
@@ -227,7 +226,7 @@ const VisitationManager = {
   },
   setVisitationHolidays: async (currentUser, holidays) => {
     await VisitationManager.deleteAllHolidaysForUser(currentUser)
-    holidays = DatasetManager.getUniqueArrayByProp(holidays, 'startDate', 'holidayName')
+    holidays = DatasetManager.getUniqueArray(holidays, true)
     try {
       await CalendarManager.addMultipleCalEvents(currentUser, holidays)
     } catch (error) {

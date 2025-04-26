@@ -14,12 +14,14 @@ import NoDataFallbackText from '../../shared/noDataFallbackText'
 import StringManager from '../../../managers/stringManager'
 import {HiDocumentText} from 'react-icons/hi2'
 import {FaFileImage} from 'react-icons/fa'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function DocsList() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
+  const {theme} = state
   const [docs, setDocs] = useState([])
   const [selectedDoc, setSelectedDoc] = useState(null)
+  const {currentUser} = useCurrentUser()
 
   const getSecuredDocs = async () => {
     const allDocs = await SecurityManager.getDocuments(currentUser)

@@ -16,28 +16,30 @@ import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import Label from '../../shared/label'
 import Spacer from '../../shared/spacer'
 import InputTypes from '../../../constants/inputTypes'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function EveryOtherWeekend({hide, showCard}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const {theme} = state
   const [shareWith, setShareWith] = useState([])
   const [firstEveryOtherWeekend, setFirstEveryOtherWeekend] = useState('')
+  const {currentUser} = useCurrentUser()
 
   const ResetForm = () => {
     Manager.ResetForm('add-every-other-weekend-schedule')
     setShareWith([])
-    setRefreshKey(Manager.getUid())
+    setState({...state, refreshKey: Manager.getUid(), isLoading: false})
     hide()
   }
 
-  const addToCalendar = async () => {
+  const AddToCalendar = async () => {
     if (firstEveryOtherWeekend.length === 0) {
       AlertManager.throwError('Please choose the Friday of the next weekend YOU have the child(ren)')
       return false
     }
     // Set end date to the end of the year
     let weekends = VisitationManager.getEveryOtherWeekend(moment(firstEveryOtherWeekend).format(DatetimeFormats.dateForDb))
+    console.log(weekends)
     let events = []
     weekends.flat().forEach((date) => {
       const dateObject = new CalendarEvent()
@@ -52,19 +54,14 @@ export default function EveryOtherWeekend({hide, showCard}) {
 
       events.push(dateObject)
     })
+    console.log(events)
     MyConfetti.fire()
     await ResetForm()
     // Upload to DB
-    VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
-  }
-  const addThemeToDatePickers = () => {
-    setTimeout(() => {
-      const datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
-      datetimeParent.classList.add(currentUser?.settings?.theme)
-    }, 100)
+    // VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
   }
 
-  const handleShareWithSelection = async (e) => {
+  const HandleShareWithSelection = async (e) => {
     const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
@@ -75,7 +72,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
       subtitle="Add an every other weekend visitation schedule."
       className="form"
       wrapperClass="add-every-other-weekend-schedule"
-      onSubmit={addToCalendar}
+      onSubmit={AddToCalendar}
       title={'Every other Weekend Visitation Schedule'}
       showCard={showCard}
       onClose={ResetForm}>
@@ -92,10 +89,9 @@ export default function EveryOtherWeekend({hide, showCard}) {
       <ShareWithCheckboxes
         required={false}
         shareWith={currentUser?.coparents?.map((x) => x.phone)}
-        onCheck={handleShareWithSelection}
+        onCheck={HandleShareWithSelection}
         labelText={'Share with'}
         containerClass={'share-with-coparents'}
-        dataKey={currentUser?.coparents?.map((x) => x.name)}
       />
     </Modal>
   )

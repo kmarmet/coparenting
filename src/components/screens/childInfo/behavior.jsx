@@ -14,12 +14,14 @@ import {FaBrain, FaMinus, FaPlus} from 'react-icons/fa6'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
-export default function Behavior({activeChild}) {
+export default function Behavior() {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
+  const {theme, activeChild} = state
   const [behaviorValues, setBehaviorValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
+  const {currentUserRole} = useCurrentUser()
 
   const deleteProp = async (prop) => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
@@ -48,7 +50,7 @@ export default function Behavior({activeChild}) {
   }
 
   const update = async (prop, value) => {
-    const updatedChild = await DB_UserScoped.updateUserChild(currentUser, activeChild, 'behavior', StringManager.formatDbProp(prop), value)
+    const updatedChild = await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, 'behavior', StringManager.formatDbProp(prop), value)
     setState({...state, activeChild: updatedChild})
     AlertManager.successAlert('Updated!')
   }

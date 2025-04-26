@@ -77,7 +77,6 @@
       <root url="file://$PROJECT_DIR$/src/constants/swapDurations.js" />
       <root url="file://$PROJECT_DIR$/src/managers/alertManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/appManager.js" />
-      <root url="file://$PROJECT_DIR$/src/managers/archivesManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/calendarManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/datasetManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />
@@ -123,6 +122,7 @@
       <root url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />
+      <root url="file://$PROJECT_DIR$/src/managers/vaultManager.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

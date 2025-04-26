@@ -83,7 +83,7 @@ export default function Parents() {
               <IoPersonAdd className={'add-child fs-22'} />
             </div>
             <p>
-              Enable Sharing & Info Storage
+              Add a Parent
               <span className="subtitle">
                 Store information and provide sharing permissions <b>for a parent who that has not been added to your profile</b> yet
               </span>
@@ -150,7 +150,7 @@ export default function Parents() {
               <BsFillSendFill className={'paper-airplane'} />
             </div>
             <p>
-              Invite Parent <span className="subtitle">Send invitation to a parent you would like to share information with</span>
+              Invite Another Parent <span className="subtitle">Send invitation to a parent you would like to share information with</span>
             </p>
           </div>
         </div>
@@ -273,7 +273,7 @@ export default function Parents() {
       <NavBar navbarClass={'actions'}>
         <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
           <HiDotsHorizontal className={'screen-actions-menu-icon'} />
-          <p>Actions</p>
+          <p>More</p>
         </div>
       </NavBar>
     </>

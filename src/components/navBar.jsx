@@ -72,8 +72,10 @@ export default function NavBar({children, navbarClass}) {
               )}
 
               {/* MENU BUTTON */}
-              <div id="svg-wrapper" className="menu-button" onClick={() => setState({...state, menuIsOpen: true})}>
-                <HiOutlineMenu className={'menu'} />
+              <div className="menu-button menu-item" onClick={() => setState({...state, menuIsOpen: true})}>
+                <div id="svg-wrapper">
+                  <HiOutlineMenu className={'menu'} />
+                </div>
               </div>
 
               {/* NOTIFICATIONS */}

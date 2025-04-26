@@ -10,7 +10,6 @@ import Medical from '/src/components/screens/childInfo/medical'
 import {HiDotsHorizontal} from 'react-icons/hi'
 import Schooling from '/src/components/screens/childInfo/schooling'
 import {FaCameraRotate, FaWandMagicSparkles} from 'react-icons/fa6'
-import {Fade} from 'react-awesome-reveal'
 import NewChildForm from '/src/components/screens/childInfo/newChildForm'
 import {IoClose, IoPersonAdd, IoPersonAddOutline, IoPersonRemove} from 'react-icons/io5'
 import NavBar from '/src/components/navBar'
@@ -27,18 +26,16 @@ import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import DB_UserScoped from '../../../database/db_userScoped'
-import ObjectManager from '../../../managers/objectManager'
 
 export default function ChildInfo() {
   const {state, setState} = useContext(globalState)
-  const {theme} = state
+  const {theme, activeChild} = state
   const {currentUser} = useCurrentUser()
   const {children} = useChildren()
   const [showInfoCard, setShowInfoCard] = useState(false)
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
-  const [activeChild, setActiveChild] = useState(children?.[0])
   const imgRef = useRef()
 
   const UploadProfilePic = async (fromButton = false, childId = activeChild?.id) => {
@@ -61,10 +58,8 @@ export default function ChildInfo() {
       'profilePic'
     )
 
-    console.log(activeChild?.general?.name)
-
     // Update Child profilePic
-    await DB_UserScoped.updateUserChild(currentUser, activeChild, 'general', 'profilePic', uploadedImageUrl)
+    await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, 'general', 'profilePic', uploadedImageUrl)
   }
 
   const DeleteChild = async () => {
@@ -80,8 +75,8 @@ export default function ChildInfo() {
 
   // Set active child on page load
   useEffect(() => {
-    if (children?.length > 0 && (!activeChild || ObjectManager.isEmpty(activeChild))) {
-      setActiveChild(children?.[0])
+    if (Manager.isValid(children)) {
+      setState({...state, setActiveChild: children?.[0]})
     }
   }, [children])
 
@@ -117,9 +112,9 @@ export default function ChildInfo() {
               <IoPersonAdd className={'add-child'} />
             </div>
             <p>
-              Enable Sharing & Info Storage
+              Add a Child
               <span className="subtitle">
-                Store information and provide sharing permissions <b>for a child that has not been added to your profile</b> yet
+                Store information and provide sharing permissions for a child that has not been added to your profile yet
               </span>
             </p>
           </div>
@@ -204,21 +199,17 @@ export default function ChildInfo() {
 
         <Spacer height={10} />
 
-        {!Manager.isValid(children) && (
-          <NoDataFallbackText
-            text={'Currently, no children have been added. To share events with your children or to store their information, please add them here.'}
-          />
-        )}
-
         {/* CHILDREN WRAPPER */}
         <div id="child-wrapper">
           {Manager.isValid(children) &&
-            children?.map((child, index) => {
+            children?.map((child) => {
               return (
-                <div key={index}>
+                <div key={child?.id}>
                   {/* PROFILE PIC */}
                   {Manager.isValid(child?.general?.profilePic) && (
-                    <div onClick={() => setActiveChild(child)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
+                    <div
+                      onClick={() => setState({...state, activeChild: child})}
+                      className={activeChild?.id === child?.id ? 'child active' : 'child'}>
                       <div className="child-image" style={{backgroundImage: `url(${child?.general?.profilePic})`}}>
                         <div className="after">
                           <input
@@ -240,7 +231,9 @@ export default function ChildInfo() {
 
                   {/* NO IMAGE */}
                   {!Manager.isValid(child?.general?.profilePic, true) && (
-                    <div onClick={() => setActiveChild(child)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
+                    <div
+                      onClick={() => setState({...state, activeChild: child})}
+                      className={activeChild?.id === child?.id ? 'child active' : 'child'}>
                       <div className="child-image no-image">
                         <span>No Image</span>
                       </div>
@@ -268,25 +261,29 @@ export default function ChildInfo() {
               />
             </button>
           )}
-          <p id="child-name-primary">{activeChild?.general?.name}</p>
-          {activeChild && (
-            <Fade direction={'right'} duration={800} cascade={true} damping={0.2} triggerOnce={true}>
-              <General activeChild={activeChild} />
-              <Medical activeChild={activeChild} />
-              <Schooling activeChild={activeChild} />
-              <Behavior activeChild={activeChild} />
-              {activeChild?.checklists?.find((x) => x?.fromOrTo === 'from') && <Checklist activeChild={activeChild} fromOrTo={'from'} />}
-              {activeChild?.checklists?.find((x) => x?.fromOrTo === 'to') && <Checklist activeChild={activeChild} fromOrTo={'to'} />}
-            </Fade>
+          {Manager.isValid(activeChild) && Manager.isValid(currentUser) && (
+            <>
+              <General />
+              <Medical />
+              <Schooling />
+              <Behavior />
+              {activeChild?.checklists?.find((x) => x?.fromOrTo === 'from') && <Checklist fromOrTo={'from'} />}
+              {activeChild?.checklists?.find((x) => x?.fromOrTo === 'to') && <Checklist fromOrTo={'to'} />}
+            </>
           )}
         </div>
       </div>
       <NavBar navbarClass={'actions'}>
         <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
           <HiDotsHorizontal className={'screen-actions-menu-icon'} />
-          <p>Actions</p>
+          <p>More</p>
         </div>
       </NavBar>
+      {!Manager.isValid(children) && (
+        <NoDataFallbackText
+          text={'Currently, no children have been added. To share events with your children or to store their information, please add them here.'}
+        />
+      )}
     </>
   )
 }

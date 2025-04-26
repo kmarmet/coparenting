@@ -136,6 +136,7 @@ CalendarMapper =
         return "Thanksgiving Day"
       else
         ''
+
   eventsToHolidays: (holidayEvents) ->
     userHolidaysList = []
     for holiday in holidayEvents

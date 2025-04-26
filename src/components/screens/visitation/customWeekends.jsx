@@ -13,19 +13,21 @@ import moment from 'moment'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import CheckboxGroup from '../../../components/shared/checkboxGroup'
 import Spacer from '../../shared/spacer'
+import useCurrentUser from '../../../hooks/useCurrentUser'
+import DatetimeFormats from '../../../constants/datetimeFormats'
 
 export default function CustomWeekends({hide, showCard}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
-  const [refreshKey, setRefreshKey] = useState(Manager.getUid())
+  const {theme} = state
   const [shareWith, setShareWith] = useState([])
   const [fifthWeekendSelection, setFifthWeekendSelection] = useState('')
   const [defaultSelectedWeekends, setDefaultSelectedWeekends] = useState([])
+  const {currentUser} = useCurrentUser()
 
   const ResetForm = () => {
     Manager.ResetForm('custom-weekends-schedule')
     setShareWith([])
-    setRefreshKey(Manager.getUid())
+    setState({...state, refreshKey: Manager.getUid(), isLoading: false})
     hide()
   }
 
@@ -110,27 +112,27 @@ export default function CustomWeekends({hide, showCard}) {
       title={'Custom Weekends Schedule'}
       showCard={showCard}
       onClose={ResetForm}>
-      <>
-        <CheckboxGroup
-          parentLabel={'Weekend YOU will have the child(ren)'}
-          onCheck={handleSpecificWeekendSelection}
-          checkboxArray={Manager.buildCheckboxGroup({
-            currentUser,
-            customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend'],
-          })}
-        />
-        <Spacer height={5} />
-        <CheckboxGroup
-          parentLabel={'Month with 5 weekends - extra weekend'}
-          onCheck={handleFifthWeekendSelection}
-          checkboxArray={Manager.buildCheckboxGroup({
-            currentUser,
-            customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend'],
-          })}
-        />
-        <Spacer height={5} />
-      </>
+      <hr className="mt-5" />
+      <CheckboxGroup
+        parentLabel={'Weekend YOU will have the child(ren)'}
+        onCheck={handleSpecificWeekendSelection}
+        checkboxArray={Manager.buildCheckboxGroup({
+          currentUser,
+          customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend'],
+        })}
+      />
+      <Spacer height={5} />
+      <CheckboxGroup
+        parentLabel={'Month with 5 weekends - extra weekend'}
+        onCheck={handleFifthWeekendSelection}
+        checkboxArray={Manager.buildCheckboxGroup({
+          currentUser,
+          customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend'],
+        })}
+      />
+      <Spacer height={5} />
       <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
+      <hr className="mt-5 mb-10" />
     </Modal>
   )
 }

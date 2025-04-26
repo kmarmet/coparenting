@@ -234,12 +234,9 @@
       min-width: 0;
       z-index: 10000;
       color: white;
-      //      @include blueGlow();
       height: 50px;
-      background: $main;
-      text-transform: uppercase;
+      background: $accent;
       border-radius: $buttonBorderRadius;
-      @include shadow;
       @include hover;
     }
 

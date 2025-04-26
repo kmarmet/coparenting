@@ -58,4 +58,4 @@ export default ArchiveManager = {
   }
 };
 
-//# sourceMappingURL=archivesManager.js.map
+//# sourceMappingURL=vaultManager.js.map

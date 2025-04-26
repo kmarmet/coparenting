@@ -47,7 +47,7 @@
   /*#endregion STANDARD PHONE*/
   /*#region SMALL PHONES*/
   @media screen and (max-width: 400px) {
-    $statusbarHeight: 50px;
+    $statusbarHeight: 70px;
     $homeIndicatorHeight: 75px;
     #app-container {
       .page-container {

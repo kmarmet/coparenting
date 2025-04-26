@@ -9,7 +9,7 @@
   transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
   background: white;
   height: 100vh;
-  padding: 65px 15px 120px 15px;
+  padding: 65px 15px 200px 15px;
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
@@ -332,7 +332,7 @@
     }
 
     &.green {
-      background: $darkGreen;
+      background: $green;
       color: white;
     }
 
@@ -370,17 +370,16 @@
 }
 
 @mixin cardIconButton {
-  background: #f3f4f6;
-  border: 1px solid #e5e5e5;
   border-radius: 100%;
   justify-content: center;
   align-items: center;
   width: 50px;
   height: 50px;
   display: flex;
+  background: $accent;
 
   svg {
-    color: $main;
+    color: white;
     width: unset;
     display: inline;
     transform: scale(1);
@@ -390,7 +389,7 @@
     }
     &.website,
     &.nav-link {
-      transform: scale(0.9);
+      //      transform: scale(0.9);
     }
   }
 }
@@ -1019,6 +1018,11 @@
     }
   }
 
+  hr {
+    opacity: 0.2;
+    border-color: $darkGrey;
+  }
+
   .bottom-menu-title {
     opacity: 1;
     z-index: 999;
@@ -1032,8 +1036,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    margin: 0 auto 20px auto;
-    border-bottom: 1px solid $accent;
+    margin: 0 auto;
 
     svg {
       font-size: 30px;
@@ -1610,6 +1613,17 @@
     }
   }
 
+  &.address-label {
+    label {
+      color: $darkerGrey;
+      text-transform: uppercase;
+      font-size: 12px;
+      padding-left: 5px;
+      font-weight: $fwMedium;
+      transition: all 0.3s ease-in-out;
+    }
+  }
+
   label {
     font-weight: $fwMedium;
     margin: 0;
@@ -1639,8 +1653,8 @@
   width: 100%;
   transition: all 0.1s ease-in-out;
   overflow: hidden;
-  background: $grey;
-  padding: 10px;
+  background: $mediumGrey;
+  padding: 10px 10px 8px 10px;
   border-radius: $borderRadius;
 
   &.active {
@@ -1649,7 +1663,7 @@
 
   * {
     line-height: 1 !important;
-    background: $grey;
+    background: $mediumGrey;
   }
 
   &.chat-input-wrapper {
@@ -1678,7 +1692,9 @@
     }
     input {
       width: 100%;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 999999;
       margin-top: 10px;
       height: 20px;
       user-select: none !important;
@@ -1709,7 +1725,7 @@
     padding-bottom: 3px;
     label {
       color: $darkerGrey;
-      font-weight: $fwMediumBold;
+      font-weight: $fwMedium;
       text-transform: uppercase;
       font-size: 12px;
       transition: all 0.3s ease-in-out;
@@ -1736,7 +1752,7 @@
     border: 0;
     align-items: center;
     font-weight: $fwRegular;
-    color: $primaryText;
+    color: $darkestGrey;
     z-index: 9;
     overscroll-behavior: none;
     width: 100%;
@@ -2622,7 +2638,8 @@
   justify-content: center;
   gap: 5px;
   align-self: center;
-  padding: 10vh 10px;
+  max-height: 80vh;
+  padding: 0 10px;
 
   &.active {
     opacity: 1;
@@ -2630,9 +2647,9 @@
     transition: all 0.6s ease-in;
     #modal-content {
       z-index: 999;
-      opacity: 1;
+      //      opacity: 1;
       transition: all 0.8s ease-in;
-      max-height: 80vh;
+      max-height: 100vh;
     }
   }
 
@@ -2742,7 +2759,6 @@
 
   #modal-content {
     height: auto;
-    opacity: 0;
     position: relative;
     z-index: -1;
     top: 0;
@@ -2755,7 +2771,7 @@
     width: calc(100vw - 20px);
     box-shadow: $boxShadow_bottom_only_dark;
     background: white;
-
+    border-top: 4px solid $main;
     /*#region  MODAL*/
     #modal {
       overflow: auto;
@@ -2772,7 +2788,7 @@
       }
 
       #modal-title-and-text {
-        padding: 20px 15px 0 15px;
+        padding: 25px 15px 0 15px;
         position: sticky;
         top: 0;
         z-index: 9999999;
@@ -2790,7 +2806,7 @@
           justify-content: center;
           border-radius: 25px 25px 0 0;
           font-weight: $fwMediumBold;
-          line-height: 1;
+          line-height: 1.3;
           max-width: 90%;
 
           .svg-wrapper {
@@ -3251,7 +3267,7 @@
     &.has-delete {
       padding: 10px 10px 0 10px;
     }
-    #close-icon-bg {
+    #cancel-button {
       position: relative;
       bottom: 0;
       display: flex;
@@ -3264,7 +3280,7 @@
       justify-self: flex-end;
       color: $darkerGrey;
       float: right;
-      font-weight: $fwBold;
+      font-weight: $fwMediumBold;
       font-size: 14px;
       width: 100%;
     }
@@ -3285,7 +3301,7 @@
       height: 50px;
       justify-self: flex-start;
       line-height: 1;
-      font-weight: $fwBold;
+      font-weight: $fwMediumBold;
       font-size: 14px;
       width: 100%;
 
@@ -4123,8 +4139,12 @@
   }
 
   hr {
-    margin: 10px 0 15px 0;
+    margin: 20px 0;
     width: 85%;
+    height: auto;
+    background-color: unset;
+    border-color: $lightBorderColor;
+    opacity: 0.15;
   }
 
   #close-icon-wrapper {
@@ -4148,37 +4168,38 @@
   .menu-title {
     color: $darkText;
     text-align: left;
-    font-weight: $fwMediumBold;
+    font-weight: $fwMedium;
     font-size: 22px;
-    margin-bottom: 5px;
-    width: 85%;
+    margin-bottom: 8px;
     line-height: 1;
+    width: 100%;
+    margin-left: 65px;
     &.sharing {
       color: $main;
     }
 
     &.info-storage {
-      color: #cb6789;
+      color: #ac516f;
     }
 
     &.admin {
-      color: $yellow;
+      color: $gold;
     }
 
     &.coparenting {
-      color: $accent;
+      color: #664ad8;
     }
 
     &.profile-settings-support {
-      color: #0076bf;
+      color: #1a74ac;
     }
   }
 
   .menu-items {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    width: 85%;
+    width: 100%;
+    gap: 8px 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
 
     &.sharing {
       * {
@@ -4188,101 +4209,64 @@
 
     &.info-storage {
       * {
-        color: #cb6789;
+        color: #ac516f;
       }
     }
 
     &.admin {
       * {
-        color: $yellow;
+        color: $gold;
       }
     }
 
     &.coparenting {
       * {
-        color: $accent;
+        color: #664ad8;
       }
     }
 
     &.profile-settings-support {
       * {
-        color: #0076bf;
+        color: #1a74ac;
       }
     }
 
     .menu-item {
       background-color: transparent;
       display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
       text-align: right;
       align-items: center;
       position: relative;
-      opacity: 0;
+      //      opacity: 0;
       transition: all 0.3s ease-out;
-      width: 45%;
       gap: 5px;
-      padding-bottom: 8px;
-
-      &:nth-child(1),
-      &:nth-child(2) {
-        //        margin-bottom: 8px;
+      left: 30px;
+      &:nth-child(even) {
+        position: relative;
       }
 
       /*#region  SVG TRANSFORMS */
-      // .8
-      &.install-app,
-      &.theme {
-        .svg-wrapper {
-          svg {
-            transform: scale(0.8);
-          }
-        }
+      svg {
+        transform: scale(0.9);
       }
-
-      // .85
-      &.logout,
-      &.contact-us,
-      &.calendar {
-        .svg-wrapper {
-          svg {
-            transform: scale(0.85);
-          }
-        }
-      }
-
-      // 1
-      &.child-info,
-      &.expenses,
-      &.visitation {
-        .svg-wrapper {
-          svg {
-            transform: scale(0.9);
-          }
-        }
-      }
-
-      // 1.1
+      &.swap-request,
       &.profile,
-      &.coparents {
-        .svg-wrapper {
-          svg {
-            transform: scale(1.1);
-          }
+      &.documents {
+        svg {
+          transform: scale(1);
         }
       }
-
-      // 1.2
-      &.settings {
-        .svg-wrapper {
-          svg {
-            transform: scale(1.2);
-          }
+      &.memories,
+      &.notifications,
+      &.visitation,
+      &.install-app,
+      &.contact-us {
+        svg {
+          transform: scale(0.8);
         }
       }
 
       /*#endregion  SVG TRANSFORMS */
-
       &.notifications {
         .badge {
           height: 8px;
@@ -4290,8 +4274,8 @@
           border-radius: 50%;
           background: $red;
           position: absolute;
-          top: 2px;
-          left: 0;
+          top: 8px;
+          right: 10px;
           z-index: 9;
         }
         p {
@@ -4316,14 +4300,9 @@
       p {
         line-height: 1;
         width: 100%;
-        font-size: 20px;
+        font-size: 17px;
         white-space: nowrap;
-        font-weight: $fwRegular;
-      }
-
-      p,
-      svg {
-        opacity: 0.6;
+        font-weight: $fwLight;
       }
 
       &.visible {
@@ -4335,9 +4314,8 @@
       &.active {
         position: relative;
         opacity: 1;
-
         p {
-          font-weight: $fwBold;
+          font-weight: $fwMediumBold;
         }
         p,
         svg {
@@ -4406,14 +4384,14 @@
 
   #svg-wrapper {
     background-color: $main;
-    border-radius: 50%;
+
     height: 60px;
-    width: 60px;
+    //    width: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
     opacity: 1;
-    margin: 0 15px;
+    //    margin: 0 15px;
     position: relative;
     bottom: 10px;
     box-shadow: 0 6px 10px 6px rgba(76, 114, 197, 0.6);
@@ -4433,9 +4411,8 @@
   }
 
   #menu-items {
-    display: grid;
+    display: flex;
     justify-content: space-between;
-    grid-template-columns: repeat(5, 1fr);
     align-items: center;
     width: 100vw;
     height: 55px;
@@ -4448,9 +4425,24 @@
       display: flex;
       color: black;
       position: relative;
+      width: calc(100vw / 5);
+
+      &.menu-button {
+        #svg-wrapper {
+          width: 60px;
+          position: relative;
+          left: 5px;
+          border-radius: 50%;
+          margin: 0;
+          svg {
+            color: white;
+          }
+        }
+      }
 
       svg {
         color: $darkGrey;
+        width: 30px;
       }
 
       p {

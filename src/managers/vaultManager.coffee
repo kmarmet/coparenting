@@ -24,6 +24,7 @@ export default ArchiveManager = {
       formattedHeaders.push(header)
 
     # Add headers
+
     csvRows.push(formattedHeaders.join(','))
 
 

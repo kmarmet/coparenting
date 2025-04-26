@@ -76,7 +76,7 @@ const NewParentForm = ({showCard, hideCard}) => {
     newParent.userKey = Manager.getUid()
 
     // Link parent with an existing user/profile
-    if (Manager.isValid(existingParent)) {
+    if (Manager.isValid(existingParent) || parentHasAccount) {
       newParent.id = Manager.getUid()
       newParent.userKey = existingParent?.key
       newParent.phone = existingParent?.phone

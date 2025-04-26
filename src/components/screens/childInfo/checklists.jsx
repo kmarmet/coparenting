@@ -11,15 +11,17 @@ import Checklist from '/src/models/checklist.js'
 import {PiListChecksFill, PiTrashSimpleDuotone} from 'react-icons/pi'
 import StringManager from '../../../managers/stringManager'
 import DomManager from '../../../managers/domManager'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function Checklists({showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, activeInfoChild} = state
+  const {activeInfoChild} = state
   const [checkboxTextList, setCheckboxTextList] = useState([])
   const [view, setView] = useState('from')
   const [checklist, setChecklist] = useState(null)
   const [activeItems, setActiveItems] = useState([])
   const [destinationLabels, setDestinationLabels] = useState(['From Co-Parent', 'To Co-Parent'])
+  const {currentUser} = useCurrentUser()
 
   const addToDb = async () => {
     const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')

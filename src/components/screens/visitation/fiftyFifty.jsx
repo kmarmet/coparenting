@@ -20,10 +20,11 @@ import moment from 'moment'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import Spacer from '../../shared/spacer'
 import InputTypes from '../../../constants/inputTypes'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function FiftyFifty({hide, showCard}) {
   const {state, setState} = useContext(globalState)
-  const {currentUser, theme} = state
+  const {theme} = state
   const [expandFiftyFiftyInfoText, setExpandFiftyFiftyInfoText] = useState(false)
   const [firstFFPeriodStart, setFirstFFPeriodStart] = useState('')
   const [firstFFPeriodEnd, setFirstFFPeriodEnd] = useState('')
@@ -32,6 +33,7 @@ export default function FiftyFifty({hide, showCard}) {
   const [thirdFFPeriodStart, setThirdFFPeriodStart] = useState('')
   const [thirdFFPeriodEnd, setThirdFFPeriodEnd] = useState('')
   const [shareWith, setShareWith] = useState([])
+  const {currentUser} = useCurrentUser()
 
   const ResetForm = () => {
     Manager.ResetForm('add-fifty-fifty-schedule')

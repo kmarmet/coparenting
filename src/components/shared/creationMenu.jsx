@@ -51,6 +51,7 @@ const CreationMenu = () => {
       <div className={`${showCreationMenu ? 'open' : 'closed'} bottom-menu-wrapper`}>
         <div className="action-items centered">
           <p className="bottom-menu-title">What Would You Like to Create?</p>
+          <hr />
           {/* CALENDAR */}
           <div
             className="action-item"

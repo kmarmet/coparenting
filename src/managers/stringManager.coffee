@@ -8,6 +8,15 @@ StringManager = {
       dotIndex = asString.indexOf('.')
       return parseInt(asString.substring(0, dotIndex))
 
+  GetFirstNameAndLastInitial: (fullName) ->
+    if Manager.isValid(fullName, true)
+      names = fullName.split(" ")
+      firstName = names[0]
+      lastNameInitial = if names.length > 1 then names[names.length - 1][0] else ""
+      "#{firstName} #{lastNameInitial}"
+    else
+      fullName
+
   getReadablePhoneNumber: (phoneNumber) ->
     formattedPhone = phoneNumber;
     # Remove non-digit characters

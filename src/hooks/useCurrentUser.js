@@ -7,7 +7,7 @@ import useUsers from './useUsers'
 
 const useCurrentUser = () => {
   const {state, setState} = useContext(globalState)
-  const {theme, creationFormToShow, authUser} = state
+  const {authUser} = state
   const {users} = useUsers()
   const [currentUser, setCurrentUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -39,7 +39,7 @@ const useCurrentUser = () => {
     return () => {
       off(dataRef, 'value', listener)
     }
-  }, [path])
+  }, [path, authUser])
 
   return {
     currentUser,

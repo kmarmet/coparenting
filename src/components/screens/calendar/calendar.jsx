@@ -293,7 +293,7 @@ export default function EventCalendar() {
 
   useEffect(() => {
     // eslint-disable-next-line no-prototype-builtins
-    if (currentUser?.hasOwnProperty('email')) {
+    if (Manager.isValid(currentUser)) {
       setInitialActivities().then((r) => r)
     }
   }, [currentUser])
@@ -398,13 +398,12 @@ export default function EventCalendar() {
         <div id="static-calendar" className={theme}>
           <StaticDatePicker
             showDaysOutsideCurrentMonth={true}
-            defaultValue={moment()}
             views={['month', 'day']}
             minDate={moment(`${moment().year()}-01-01`)}
             maxDate={moment(`${moment().year()}-12-31`)}
             onMonthChange={async (month) => {
-              await getSecuredEvents()
               setCurrentMonth(moment(month).format('MMMM'))
+              await getSecuredEvents(moment(month).format(DatetimeFormats.dateForDb))
             }}
             onChange={async (day) => {
               setSelectedDate(moment(day).format('YYYY-MM-DD'))
