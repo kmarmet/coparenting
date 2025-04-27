@@ -129,7 +129,7 @@ StringManager = {
       return '';
     }
   },
-  getFileExtension: function(fileName) {
+  GetFileExtension: function(fileName) {
     return fileName.split('.').pop();
   },
   lowercaseShouldBeLowercase: function(input) {

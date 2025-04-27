@@ -5,6 +5,8 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
+import * as Sentry from '@sentry/react'
+
 import validator from 'validator'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager.coffee'
@@ -103,133 +105,137 @@ export default function NewCalendarEvent() {
   }
 
   const submit = async () => {
-    //#region FILL NEW EVENT
-    const newEvent = new CalendarEvent()
-    newEvent.id = Manager.getUid()
+    try {
+      //#region FILL NEW EVENT
+      const newEvent = new CalendarEvent()
+      newEvent.id = Manager.getUid()
 
-    // Required
-    newEvent.title = StringManager.formatEventTitle(eventName)
-    if (isVisitation) {
-      newEvent.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Visitation`
-    }
-    if (DomManager.isMobile()) {
-      newEvent.startDate = moment(eventStartDate).format(DatetimeFormats.dateForDb)
-    } else {
-      newEvent.startDate = moment(eventEndDate).format(DatetimeFormats.dateForDb)
-    }
-    newEvent.endDate = moment(eventEndDate).format(DatetimeFormats.dateForDb)
-    newEvent.startTime = moment(eventStartTime).format(DatetimeFormats.timeForDb)
-    newEvent.endTime = moment(eventEndTime).format(DatetimeFormats.timeForDb)
+      // Required
+      newEvent.title = StringManager.formatEventTitle(eventName)
+      if (isVisitation) {
+        newEvent.title = `${StringManager.formatEventTitle(eventName)} (Visitation)`
+      }
+      if (DomManager.isMobile()) {
+        newEvent.startDate = moment(eventStartDate).format(DatetimeFormats.dateForDb)
+      } else {
+        newEvent.startDate = moment(eventEndDate).format(DatetimeFormats.dateForDb)
+      }
+      newEvent.endDate = moment(eventEndDate).format(DatetimeFormats.dateForDb)
+      newEvent.startTime = moment(eventStartTime).format(DatetimeFormats.timeForDb)
+      newEvent.endTime = moment(eventEndTime).format(DatetimeFormats.timeForDb)
 
-    // Not Required
-    newEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
-    newEvent.location = eventLocation
-    newEvent.children = eventChildren
-    newEvent.ownerKey = currentUser?.key
-    newEvent.createdBy = currentUser?.name
-    newEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
-    newEvent.notes = eventNotes
-    newEvent.phone = StringManager.FormatPhone(eventPhone)
-    newEvent.websiteUrl = eventWebsite
-    newEvent.reminderTimes = eventReminderTimes
-    newEvent.repeatInterval = recurringFrequency
-    newEvent.fromVisitationSchedule = isVisitation
-    newEvent.isRecurring = eventIsRecurring
-    newEvent.isCloned = Manager.isValid(clonedDates)
-    newEvent.isDateRange = eventIsDateRange
-    //#endregion FILL NEW EVENT
+      // Not Required
+      newEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
+      newEvent.location = eventLocation
+      newEvent.children = eventChildren
+      newEvent.ownerKey = currentUser?.key
+      newEvent.createdBy = currentUser?.name
+      newEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
+      newEvent.notes = eventNotes
+      newEvent.phone = StringManager.FormatPhone(eventPhone)
+      newEvent.websiteUrl = eventWebsite
+      newEvent.reminderTimes = eventReminderTimes
+      newEvent.repeatInterval = recurringFrequency
+      newEvent.fromVisitationSchedule = isVisitation
+      newEvent.isRecurring = eventIsRecurring
+      newEvent.isCloned = Manager.isValid(clonedDates)
+      newEvent.isDateRange = eventIsDateRange
+      //#endregion FILL NEW EVENT
 
-    if (Manager.isValid(newEvent)) {
-      //#region VALIDATION
-      if (Manager.isValid(eventPhone, true)) {
-        if (!validator.isMobilePhone(eventPhone)) {
-          AlertManager.throwError('Phone number is not valid')
+      if (Manager.isValid(newEvent)) {
+        //#region VALIDATION
+        if (Manager.isValid(eventPhone, true)) {
+          if (!validator.isMobilePhone(eventPhone)) {
+            AlertManager.throwError('Phone number is not valid')
+            return false
+          }
+        } else {
+          newEvent.phone = eventPhone
+        }
+
+        const errorString = Manager.GetInvalidInputsErrorString([
+          {name: 'Event Name', value: eventName},
+          {name: 'Date', value: eventStartDate},
+        ])
+
+        if (Manager.isValid(errorString)) {
+          AlertManager.throwError(errorString)
           return false
         }
-      } else {
-        newEvent.phone = eventPhone
+
+        if (showReminders && !Manager.isValid(eventStartTime)) {
+          AlertManager.throwError('Please select a start time when using reminders')
+          return false
+        }
+
+        if (eventIsRecurring && !Manager.isValid(recurringFrequency)) {
+          AlertManager.throwError('If event is recurring, please select a frequency')
+          return false
+        }
+
+        //#endregion VALIDATION
+
+        MyConfetti.fire()
+
+        const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
+
+        //#region MULTIPLE DATES
+        // Date Range
+        if (eventIsDateRange) {
+          const dates = CalendarManager.buildArrayOfEvents(
+            currentUser,
+            newEvent,
+            'range',
+            moment(eventStartDate).format(DatetimeFormats.dateForDb),
+            moment(eventEndDate).format(DatetimeFormats.dateForDb)
+          )
+          await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
+        }
+
+        // Add cloned dates
+        if (Manager.isValid(clonedDates)) {
+          const dates = CalendarManager.buildArrayOfEvents(
+            currentUser,
+            newEvent,
+            'cloned',
+            moment(clonedDates[0]).format(DatetimeFormats.dateForDb),
+            moment(clonedDates[clonedDates.length - 1]).format(DatetimeFormats.dateForDb)
+          )
+          await CalendarManager.addMultipleCalEvents(currentUser, dates)
+        }
+
+        // Recurring
+        if (eventIsRecurring) {
+          const dates = CalendarManager.buildArrayOfEvents(
+            currentUser,
+            newEvent,
+            'recurring',
+            moment(eventStartDate).format(DatetimeFormats.dateForDb),
+            moment(eventEndDate).format(DatetimeFormats.dateForDb)
+          )
+          await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
+        }
+
+        //#endregion MULTIPLE DATES
+
+        //#region SINGLE DATE
+        if (!eventIsRecurring && !eventIsDateRange && !eventIsCloned) {
+          await CalendarManager.addCalendarEvent(currentUser, cleanedObject)
+
+          // Send notification
+          await NotificationManager.sendToShareWith(
+            eventShareWith,
+            currentUser,
+            `New Event 📅`,
+            `${eventName} on ${moment(eventStartDate).format(DatetimeFormats.readableMonthAndDay)}`,
+            ActivityCategory.calendar
+          )
+        }
+        //#endregion SINGLE DATE
+        await ResetForm()
       }
-
-      const errorString = Manager.GetInvalidInputsErrorString([
-        {name: 'Event Name', value: eventName},
-        {name: 'Date', value: eventStartDate},
-      ])
-
-      if (Manager.isValid(errorString)) {
-        AlertManager.throwError(errorString)
-        return false
-      }
-
-      if (showReminders && !Manager.isValid(eventStartTime)) {
-        AlertManager.throwError('Please select a start time when using reminders')
-        return false
-      }
-
-      if (eventIsRecurring && !Manager.isValid(recurringFrequency)) {
-        AlertManager.throwError('If event is recurring, please select a frequency')
-        return false
-      }
-
-      //#endregion VALIDATION
-
-      MyConfetti.fire()
-
-      const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
-
-      //#region MULTIPLE DATES
-      // Date Range
-      if (eventIsDateRange) {
-        const dates = CalendarManager.buildArrayOfEvents(
-          currentUser,
-          newEvent,
-          'range',
-          moment(eventStartDate).format(DatetimeFormats.dateForDb),
-          moment(eventEndDate).format(DatetimeFormats.dateForDb)
-        )
-        await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
-      }
-
-      // Add cloned dates
-      if (Manager.isValid(clonedDates)) {
-        const dates = CalendarManager.buildArrayOfEvents(
-          currentUser,
-          newEvent,
-          'cloned',
-          moment(clonedDates[0]).format(DatetimeFormats.dateForDb),
-          moment(clonedDates[clonedDates.length - 1]).format(DatetimeFormats.dateForDb)
-        )
-        await CalendarManager.addMultipleCalEvents(currentUser, dates)
-      }
-
-      // Recurring
-      if (eventIsRecurring) {
-        const dates = CalendarManager.buildArrayOfEvents(
-          currentUser,
-          newEvent,
-          'recurring',
-          moment(eventStartDate).format(DatetimeFormats.dateForDb),
-          moment(eventEndDate).format(DatetimeFormats.dateForDb)
-        )
-        await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
-      }
-
-      //#endregion MULTIPLE DATES
-
-      //#region SINGLE DATE
-      if (!eventIsRecurring && !eventIsDateRange && !eventIsCloned) {
-        await CalendarManager.addCalendarEvent(currentUser, cleanedObject)
-
-        // Send notification
-        await NotificationManager.sendToShareWith(
-          eventShareWith,
-          currentUser,
-          `New Event 📅`,
-          `${eventName} on ${moment(eventStartDate).format(DatetimeFormats.readableMonthAndDay)}`,
-          ActivityCategory.calendar
-        )
-      }
-      //#endregion SINGLE DATE
-      await ResetForm()
+    } catch (error) {
+      Sentry.captureException(error)
     }
   }
 

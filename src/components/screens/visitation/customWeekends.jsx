@@ -37,7 +37,7 @@ export default function CustomWeekends({hide, showCard}) {
       (e) => {
         setFifthWeekendSelection(e)
       },
-      (e) => {},
+      () => {},
       false
     )
   }
@@ -52,7 +52,7 @@ export default function CustomWeekends({hide, showCard}) {
           setDefaultSelectedWeekends([e])
         }
       },
-      (e) => {},
+      () => {},
       true
     )
   }
@@ -97,8 +97,8 @@ export default function CustomWeekends({hide, showCard}) {
     VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
   }
 
-  const handleShareWithSelection = async (e) => {
-    const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
+  const HandleShareWithSelection = (e) => {
+    const updated = Manager.handleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 
@@ -131,7 +131,7 @@ export default function CustomWeekends({hide, showCard}) {
         })}
       />
       <Spacer height={5} />
-      <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
+      <ShareWithCheckboxes required={false} onCheck={HandleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
       <hr className="mt-5 mb-10" />
     </Modal>
   )

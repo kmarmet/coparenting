@@ -8,7 +8,6 @@ export default class User
     @key = ''
     @name = ''
     @email = ''
-    @showInitialLoginAlert = true
     @phone = ''
     @children = []
     @coparents = []

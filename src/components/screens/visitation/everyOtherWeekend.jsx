@@ -61,8 +61,8 @@ export default function EveryOtherWeekend({hide, showCard}) {
     // VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
   }
 
-  const HandleShareWithSelection = async (e) => {
-    const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
+  const HandleShareWithSelection = (e) => {
+    const updated = Manager.handleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 

@@ -153,8 +153,8 @@ export default function NewSwapRequest() {
     )
   }
 
-  const HandleShareWithSelection = async (e) => {
-    const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
+  const HandleShareWithSelection = (e) => {
+    const updated = Manager.handleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 

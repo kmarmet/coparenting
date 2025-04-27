@@ -12,14 +12,12 @@ import {
   set
 } from 'firebase/database';
 
-import FirebaseStorage from "../database/firebaseStorage";
-
 import DatasetManager from "./datasetManager";
 
 import StringManager from "./stringManager";
 
 export default DocumentsManager = {
-  deleteDocsWithIds: async function(idsToDelete, currentUser, callback = () => {
+  DeleteDocsWithIds: async function(idsToDelete, currentUser, callback = () => {
       return {};
     }) {
     var docId, docs, i, len, results, thisDoc;
@@ -36,7 +34,7 @@ export default DocumentsManager = {
             if (thisDoc.id === docId) {
               await DB.deleteById(`${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`, docId);
               thisDoc.name = StringManager.formatFileName(thisDoc.name);
-              await FirebaseStorage.deleteFile(`${FirebaseStorage.directories.documents}/${currentUser.key}/${thisDoc.name}`);
+              //            await FirebaseStorage.deleteFile("#{FirebaseStorage.directories.documents}/#{currentUser.key}/#{thisDoc.name}")
               if (callback) {
                 results1.push(callback(docId));
               } else {
@@ -54,22 +52,35 @@ export default DocumentsManager = {
     }
     return results;
   },
-  addToDocumentsTable: async function(currentUser, data) {
-    var dbRef, tableData;
+  AddToDocumentsTable: async function(currentUser, existingDocuments, data) {
+    var dbRef, error;
     dbRef = ref(getDatabase());
-    tableData = (await DB.getTable(`${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`));
-    if (Manager.isValid(tableData)) {
-      if (tableData.length > 0) {
-        tableData = [...tableData, data].filter(function(item) {
+    if (Manager.isValid(existingDocuments)) {
+      if (existingDocuments.length > 0) {
+        existingDocuments = [...existingDocuments, data].filter(function(item) {
           return item;
         });
       } else {
-        tableData = [data];
+        existingDocuments = [data];
       }
     } else {
-      tableData = [data];
+      existingDocuments = [data];
     }
-    return (await set(child(dbRef, `${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`), tableData));
+    try {
+      return (await set(child(dbRef, `${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`), existingDocuments));
+    } catch (error1) {
+      error = error1;
+      return console.log(`Error: ${error} | Path: ${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`);
+    }
+  },
+  IsDocumentOrImage: function(file) {
+    var extension;
+    extension = StringManager.GetFileExtension(file != null ? file.name : void 0);
+    if (extension === 'image/png' || extension === 'image/jpeg' || extension === 'image/jpg' || extension === 'image/gif') {
+      return 'image';
+    } else if (extension === 'application/pdf' || extension === 'application/msword' || extension === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      return 'document';
+    }
   }
 };
 

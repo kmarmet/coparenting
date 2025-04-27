@@ -118,7 +118,7 @@ StringManager = {
      else
       return ''
 
-  getFileExtension: (fileName) ->
+  GetFileExtension: (fileName) ->
     fileName.split('.').pop()
 
   lowercaseShouldBeLowercase: (input) ->

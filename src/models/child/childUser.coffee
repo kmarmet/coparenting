@@ -7,10 +7,10 @@ export default class ChildUser
     @email = ''
     @accountType = 'child'
     @phone = ''
-    @notificationsEnabled = true
     @id = Manager.getUid()
     @settings = {
       theme: 'light'
+      notificationsEnabled: true
     }
     @dailySummaries = {
       morningSentDate: ''

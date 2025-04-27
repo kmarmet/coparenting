@@ -90,14 +90,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
   return (
     <div className="events" key={refreshKey}>
       {Manager.isValid(eventsOfActiveDay) && (
-        <Fade
-          direction={'right'}
-          delay={0}
-          duration={800}
-          triggerOnce={false}
-          cascade={true}
-          damping={0.2}
-          className={'calendar-events-fade-wrapper'}>
+        <Fade direction={'right'} delay={0} duration={800} triggerOnce={true} cascade={true} damping={0.2} className={'calendar-events-fade-wrapper'}>
           {!Manager.isValid(eventsOfActiveDay) && <p id="no-events-text">no events</p>}
           {Manager.isValid(eventsOfActiveDay) &&
             DatasetManager.getUniqueByPropValue(eventsOfActiveDay, 'title').map((event, index) => {

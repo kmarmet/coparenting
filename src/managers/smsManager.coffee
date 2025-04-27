@@ -53,7 +53,7 @@ export default SmsManager =
     catch error
       console.error error
 
-  send: (phoneNumber, message) ->
+  Send: (phoneNumber, message) ->
       console.log('sent')
       formData = new FormData()
       formData.append 'phone', phoneNumber

@@ -48,7 +48,7 @@ export default function EventCalendar() {
   const {calendarEvents} = useCalendarEvents()
 
   // GET EVENTS
-  const getSecuredEvents = async (activeDay) => {
+  const GetSecuredEvents = async (activeDay) => {
     let _eventsOfDay = []
     let dateToUse = activeDay
 
@@ -75,10 +75,10 @@ export default function EventCalendar() {
     setEventsOfActiveDay(_eventsOfDay)
 
     // ADD DAY INDICATORS
-    await addDayIndicators([...sortedEvents, ...holidays])
+    await AddDayIndicators([...sortedEvents, ...holidays])
   }
 
-  const addDayIndicators = async (events) => {
+  const AddDayIndicators = async (events) => {
     const emojiHolidays = await DB.getTable(DB.tables.holidayEvents)
 
     // Remove existing icons/dots before adding them again
@@ -93,7 +93,7 @@ export default function EventCalendar() {
     for (const dayElement of dayElements) {
       const dayAsMs = dayElement.dataset.timestamp
       let formattedDay = moment(DateManager.msToDate(dayAsMs)).format(DatetimeFormats.dateForDb)
-      let daysEventsObject = getEventsFromDate(formattedDay, events)
+      let daysEventsObject = GetEventsFromDate(formattedDay, events)
       const {dotClasses, payEvents} = daysEventsObject
       const dayEvent = events.filter((x) => x?.startDate === formattedDay)[0]
       const holiday = holidays.filter((x) => x?.startDate === formattedDay)[0]
@@ -182,13 +182,13 @@ export default function EventCalendar() {
     }
   }
 
-  const showAllHolidays = async () => {
+  const ShowAllHolidays = async () => {
     setShowHolidaysCard(!showHolidaysCard)
     setEventsOfActiveDay(DatasetManager.getUniqueArray(holidays, true))
     setShowHolidays(true)
   }
 
-  const showVisitationHolidays = async () => {
+  const ShowVisitationHolidays = async () => {
     let allEvents = await DB.getTable(DB.tables.calendarEvents)
     allEvents = allEvents.flat()
     let userVisitationHolidays = []
@@ -196,11 +196,6 @@ export default function EventCalendar() {
       userVisitationHolidays = allEvents.filter(
         (x) => x.isHoliday === true && x.ownerKey === currentUser?.key && Manager.contains(x.title.toLowerCase(), 'holiday')
       )
-    }
-    if (currentUser.accountType === 'child') {
-      // const parentNumbers = (currentUser?.parents?.userVisitationHolidays = allEvents.filter(
-      //   (x) => x.isHoliday === true && x.ownerKey === currentUser?.key && contains(x.title.toLowerCase(), 'holiday')
-      // ))
     }
     userVisitationHolidays.forEach((holiday) => {
       holiday.title += ` (${holiday.holidayName})`
@@ -210,21 +205,21 @@ export default function EventCalendar() {
     setShowHolidays(true)
   }
 
-  const viewAllEvents = () => {
+  const ViewAllEvents = () => {
     setShowHolidaysCard(false)
     setSearchQuery('')
     setShowSearchCard(false)
-    getSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString()).then((r) => r)
+    GetSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString()).then((r) => r)
     setState({...state, refreshKey: Manager.getUid()})
   }
 
-  const setHolidaysState = async () => {
+  const SetHolidaysState = async () => {
     let holidaysState = await DB.getTable(DB.tables.holidayEvents)
     holidaysState = DatasetManager.sortByProperty(holidaysState, 'startDate', 'asc')
     setHolidays(holidaysState)
   }
 
-  const getEventsFromDate = (dayDate, events) => {
+  const GetEventsFromDate = (dayDate, events) => {
     const arr = [...events, ...holidays]
     const dayEvent = arr.find((x) => x.startDate === dayDate)
     const dayEvents = arr.filter((x) => x.startDate === dayDate)
@@ -261,14 +256,14 @@ export default function EventCalendar() {
     }
   }
 
-  const setInitialActivities = async () => {
+  const SetInitialActivities = async () => {
     const notifications = await DB.getTable(`${DB.tables.notifications}/${currentUser?.key}`)
     await AppManager.setAppBadge(notifications.length)
     setState({...state, notificationCount: notifications.length, isLoading: false})
   }
 
   // SEARCH
-  const search = async () => {
+  const Search = async () => {
     if (searchQuery.length === 0) {
       AlertManager.throwError('Please enter a search value')
       return false
@@ -287,14 +282,13 @@ export default function EventCalendar() {
 
   useEffect(() => {
     if (Manager.isValid(calendarEvents)) {
-      getSecuredEvents().then((r) => r)
+      GetSecuredEvents().then((r) => r)
     }
   }, [calendarEvents])
 
   useEffect(() => {
-    // eslint-disable-next-line no-prototype-builtins
     if (Manager.isValid(currentUser)) {
-      setInitialActivities().then((r) => r)
+      SetInitialActivities().then((r) => r)
     }
   }, [currentUser])
 
@@ -335,12 +329,13 @@ export default function EventCalendar() {
         legendButton.classList.toggle('active')
       })
     }
-    const screenHeight = window.innerHeight
-    const pageContainer = document.querySelector('.page-container')
-    if (pageContainer) {
-      pageContainer.style.maxHeight = `${screenHeight}px`
-    }
-    setHolidaysState().then((r) => r)
+    // const screenHeight = window.innerHeight
+    // const pageContainer = document.querySelector('.page-container')
+    // if (pageContainer) {
+    //   pageContainer.style.maxHeight = `${screenHeight}px`
+    // }
+    SetHolidaysState().then((r) => r)
+    setState({...state, isLoading: false})
   }, [])
 
   return (
@@ -352,15 +347,15 @@ export default function EventCalendar() {
           hasSubmitButton={false}
           className={`${theme} view-holidays`}
           wrapperClass={`view-holidays`}
-          onClose={viewAllEvents}
+          onClose={ViewAllEvents}
           showCard={showHolidaysCard}
           title={'View Holidays ✨'}>
           <Spacer height={10} />
           <div id="holiday-card-buttons">
-            <button className="default button green" id="view-all-holidays-item" onClick={showAllHolidays}>
+            <button className="default button green" id="view-all-holidays-item" onClick={ShowAllHolidays}>
               All
             </button>
-            <button className="default button blue" id="view-visitation-holidays-item" onClick={showVisitationHolidays}>
+            <button className="default button blue" id="view-visitation-holidays-item" onClick={ShowVisitationHolidays}>
               Visitation
             </button>
           </div>
@@ -373,9 +368,9 @@ export default function EventCalendar() {
           className="search-card"
           wrapperClass="search-card"
           title={'Find Events'}
-          onClose={viewAllEvents}
+          onClose={ViewAllEvents}
           showCard={showSearchCard}
-          onSubmit={search}>
+          onSubmit={Search}>
           <Spacer height={5} />
           <InputWrapper
             labelText="Event Name"
@@ -403,12 +398,12 @@ export default function EventCalendar() {
             maxDate={moment(`${moment().year()}-12-31`)}
             onMonthChange={async (month) => {
               setCurrentMonth(moment(month).format('MMMM'))
-              await getSecuredEvents(moment(month).format(DatetimeFormats.dateForDb))
+              await GetSecuredEvents(moment(month).format(DatetimeFormats.dateForDb))
             }}
             onChange={async (day) => {
               setSelectedDate(moment(day).format('YYYY-MM-DD'))
               setState({...state, dateToEdit: moment(day).format(DatetimeFormats.dateForDb)})
-              await getSecuredEvents(day).then((r) => r)
+              await GetSecuredEvents(day).then((r) => r)
             }}
             slotProps={{
               actionBar: {
@@ -454,7 +449,7 @@ export default function EventCalendar() {
           <button
             className="button bottom-right default"
             onClick={async () => {
-              await getSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
+              await GetSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
               setShowHolidays(false)
             }}>
             Hide Holidays
@@ -464,7 +459,7 @@ export default function EventCalendar() {
           <button
             className="button default bottom-right with-border"
             onClick={async () => {
-              await getSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
+              await GetSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
               setSearchResults([])
               setSearchQuery('')
             }}>
@@ -489,7 +484,7 @@ export default function EventCalendar() {
             <p
               className="item"
               onClick={async () => {
-                await getSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
+                await GetSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
                 setShowHolidays(false)
               }}>
               <PiCalendarXDuotone /> Hide Holidays
@@ -518,7 +513,7 @@ export default function EventCalendar() {
               } else {
                 if (inputValue.length === 0) {
                   setShowSearchCard(false)
-                  await getSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
+                  await GetSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
                   e.target.value = ''
                   setSearchQuery('')
                 }

@@ -40,7 +40,7 @@ export default function Memories() {
   const {children} = useChildren()
 
   const DeleteMemory = async (firebaseImagePath, record) => {
-    const imageName = FirebaseStorage.getImageNameFromUrl(firebaseImagePath)
+    const imageName = FirebaseStorage.GetImageNameFromUrl(firebaseImagePath)
 
     // Current user is record owner
     if (record?.ownerKey === currentUser?.key) {

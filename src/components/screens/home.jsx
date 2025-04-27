@@ -25,10 +25,11 @@ import Spacer from '../shared/spacer'
 
 export default function Home() {
   const {state, setState} = useContext(globalState)
-  const {theme, currentScreen} = state
+  const {theme, currentScreen, authUser} = state
   const bind = useLongPress((element) => {
     setState({...state, currentScreen: ScreenNames.login})
   })
+
   // Init Firebase
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)

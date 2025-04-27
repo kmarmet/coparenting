@@ -114,7 +114,7 @@ export default function FullMenu() {
           </div>
         </div>
         <hr />
-        {/* INFO STORAGE */}
+        {/* INFORMATION DATABASE */}
         <p className="menu-title info-storage">Information Database</p>
         <div className="menu-items info-storage">
           {/* CHILD - PARENTS */}
@@ -171,23 +171,24 @@ export default function FullMenu() {
                 </div>
                 <p>The Vault</p>
               </div>
+              <hr />
             </>
           )}
         </div>
-        <hr />
+
         {/* CO-PARENTING */}
         {currentUser?.accountType === 'parent' && (
           <>
             <p className="menu-title coparenting">Co-Parenting</p>
             <div className="menu-items coparenting">
-              {/* CHATS */}
+              {/* TRANSFER CHANGE */}
               <div
-                className={`menu-item chats ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.chats, e)}>
+                className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
+                onClick={(e) => ChangeCurrentScreen(ScreenNames.transferRequests, e)}>
                 <div className="svg-wrapper">
-                  <IoChatbubblesOutline />
+                  <TbTransferIn />
                 </div>
-                <p className="text">Chats</p>
+                <p>Transfer Requests</p>
               </div>
 
               {/* EXPENSES */}
@@ -201,24 +202,23 @@ export default function FullMenu() {
               </div>
 
               {/* SWAP REQUESTS */}
-
               <div
                 className={`menu-item swap-request ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
                 onClick={(e) => ChangeCurrentScreen(ScreenNames.swapRequests, e)}>
                 <div className="svg-wrapper">
                   <PiSwapLight />
                 </div>
-                <p>Swaps</p>
+                <p>Swap Requests</p>
               </div>
 
-              {/* TRANSFER CHANGE */}
+              {/* CHATS */}
               <div
-                className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.transferRequests, e)}>
+                className={`menu-item chats ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
+                onClick={(e) => ChangeCurrentScreen(ScreenNames.chats, e)}>
                 <div className="svg-wrapper">
-                  <TbTransferIn />
+                  <IoChatbubblesOutline />
                 </div>
-                <p>Transfers</p>
+                <p className="text">Chats</p>
               </div>
             </div>
           </>

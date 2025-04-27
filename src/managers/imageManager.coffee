@@ -4,8 +4,8 @@ import _ from "lodash"
 import DB from "../database/DB"
 import { saveAs } from 'file-saver'
 import FirebaseStorage from '../database/firebaseStorage'
-import domtoimage from 'dom-to-image';
-import AlertManager from "./alertManager"
+import domtoimage from 'dom-to-image'
+import AlertManager from "./alertManager";
 
 ImageManager =
   shortenUrl: (url) ->
@@ -110,7 +110,7 @@ ImageManager =
     returnMemories
 
   deleteImage: (currentUser, imgPaths, directory, path) ->
-    imageName = FirebaseStorage.getImageNameFromUrl(path)
+    imageName = FirebaseStorage.GetImageNameFromUrl(path)
     memoryImageToDelete = imgPaths.filter((x) -> x.includes(imageName))[0]
 
     newArray = imgPaths

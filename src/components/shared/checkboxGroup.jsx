@@ -6,7 +6,6 @@ import StringManager from '../../managers/stringManager.js'
 import {IoCloseOutline} from 'react-icons/io5'
 import Label from './label.jsx'
 import Checkbox from './checkbox.jsx'
-import Spacer from './spacer'
 
 export default function CheckboxGroup({
   onCheck = (e) => {},
@@ -24,7 +23,7 @@ export default function CheckboxGroup({
     <>
       <div id="checkbox-group" className={`${theme} ${elClass}`}>
         {parentLabel.length > 0 && <Label classes="standalone-label-wrapper" text={parentLabel} required={required} icon={icon ? icon : ''} />}
-        <Spacer height={2} />
+        {/*<Spacer height={2} />*/}
         <div id="checkboxes" className={checkboxArray.length > 2 ? 'more-than-two-checkboxes' : 'two-checkboxes'}>
           {Manager.isValid(checkboxArray) &&
             checkboxArray.map((obj, index) => {

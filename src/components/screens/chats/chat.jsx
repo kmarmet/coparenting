@@ -149,7 +149,7 @@ const Chats = () => {
     }
     //#endregion ADD TO DB
 
-    // SEND NOTIFICATION - Only send if it is not paused for the recipient
+    // SEND NOTIFICATION - Only Send if it is not paused for the recipient
     if (!chat?.isPausedFor?.includes(messageRecipient?.key)) {
       NotificationManager.sendNotification(
         'New Message 🗯️',

@@ -60,69 +60,75 @@ export default function Login() {
   }
 
   const SignInWithEmailAndPassword = () => {
-    return signInWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        const user = userCredential.user
+    return (
+      signInWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential) => {
+          const user = userCredential?.user
 
-        // USER NEEDS TO VERIFY EMAIL
-        if (!user.emailVerified) {
-          AlertManager.oneButtonAlert(
-            'Email Address Verification Needed',
-            `For security purposes, we need to verify ${user.email}. Please ${DomManager.tapOrClick()} the link sent to your email and then login.`,
-            'info',
-            () => {}
-          )
-          sendEmailVerification(user)
+          // USER NEEDS TO VERIFY EMAIL
+          if (!user.emailVerified) {
+            AlertManager.oneButtonAlert(
+              'Email Address Verification Needed',
+              `For security purposes, we need to verify ${user.email}. Please ${DomManager.tapOrClick()} the link sent to your email and then login.`,
+              'info',
+              () => {}
+            )
+            sendEmailVerification(user)
+            setState({...state, isLoading: false})
+          }
+
+          // EMAIL IS VERIFIED -> REDIRECT TO CALENDAR
+          else {
+            setState({
+              ...state,
+              userIsLoggedIn: true,
+              authUser: user,
+              isLoading: false,
+              currentScreen: ScreenNames.calendar,
+            })
+          }
+        })
+
+        // SIGN IN ERROR
+        .catch((error) => {
           setState({...state, isLoading: false})
-        }
-
-        // EMAIL IS VERIFIED
-        else {
-          setState({
-            ...state,
-            userIsLoggedIn: true,
-            authUser: user,
-            isLoading: false,
-            currentScreen: ScreenNames.calendar,
-          })
-        }
-      })
-      .catch((error) => {
-        setState({...state, isLoading: false})
-        console.error('Sign in error:', error.message)
-        if (Manager.contains(error.message, 'user-not-found')) {
-          AlertManager.throwError(
-            `No account with email ${email} found.`,
-            `If you have forgotten your password, please ${DomManager.tapOrClick()} Reset Password`
-          )
-        } else {
-          AlertManager.throwError(`Incorrect password`, `Please ${DomManager.tapOrClick()} Reset Password.`)
-          return false
-        }
-      })
+          console.error('Sign in error:', error.message)
+          if (Manager.contains(error.message, 'user-not-found')) {
+            AlertManager.throwError(
+              `No account with email ${email} found.`,
+              `If you have forgotten your password, please ${DomManager.tapOrClick()} Reset Password`
+            )
+          } else {
+            AlertManager.throwError(`Incorrect password`, `Please ${DomManager.tapOrClick()} Reset Password.`)
+            return false
+          }
+        })
+    )
   }
 
   return (
     <>
       {/* PAGE CONTAINER */}
       <div id="login-container" className={`page-container login`}>
-        <Turnstile
-          sitekey={process.env.REACT_APP_CLOUDFARE_CAPTCHA_SITE_KEY}
-          onSuccess={() => {
-            console.log(`Captcha Challenge Solved`)
-            setChallengeSolved(true)
-          }}
-          onFail={() => {
-            setState({...state, successAlertMessage: 'Pre-Authentication Failed. Please close and reopen the app again'})
-          }}
-          onError={(error) => {
-            setState({...state, successAlertMessage: 'Pre-Authentication Failed. Please close and reopen the app again'})
-            console.log(`Captcha Error: ${error}`)
-          }}
-          onExpire={() => {
-            console.log('Captcha Expired')
-          }}
-        />
+        {!window.location.href.includes('localhost') && (
+          <Turnstile
+            sitekey={process.env.REACT_APP_CLOUDFARE_CAPTCHA_SITE_KEY}
+            onSuccess={() => {
+              console.log(`Captcha Challenge Solved`)
+              setChallengeSolved(true)
+            }}
+            onFail={() => {
+              setState({...state, successAlertMessage: 'Pre-Authentication Failed. Please close and reopen the app again'})
+            }}
+            onError={(error) => {
+              setState({...state, successAlertMessage: 'Pre-Authentication Failed. Please close and reopen the app again'})
+              console.log(`Captcha Error: ${error}`)
+            }}
+            onExpire={() => {
+              console.log('Captcha Expired')
+            }}
+          />
+        )}
         <Fade direction={'right'} duration={800} damping={0.2} cascade={true} triggerOnce={true}>
           <img
             onClick={() => setState({...state, currentScreen: ScreenNames.home})}
@@ -187,16 +193,18 @@ export default function Login() {
               <Spacer height={10} />
 
               {/* LOGIN BUTTONS */}
-              {challengeSolved && (
+              {challengeSolved && !window.location.href.includes('localhost') && (
                 <button className="button default green" id="login-button" onClick={ManualLogin}>
                   Login
                 </button>
               )}
-              {/*<button className="button default green" id="login-button" onClick={ManualLogin}>*/}
-              {/*  Login*/}
-              {/*</button>*/}
+              {window.location.href.includes('localhost') && (
+                <button className="button default green" id="login-button" onClick={ManualLogin}>
+                  Login
+                </button>
+              )}
 
-              {!challengeSolved && <p id="captcha-loading-text">Pre-Authentication in Progress...</p>}
+              {!challengeSolved && !window.location.href.includes('localhost') && <p id="captcha-loading-text">Pre-Authentication in Progress...</p>}
             </div>
 
             <p id="sign-up-link" onClick={() => setState({...state, currentScreen: ScreenNames.registration})}>

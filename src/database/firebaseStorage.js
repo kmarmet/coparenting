@@ -1,4 +1,4 @@
-import { deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes } from 'firebase/storage'
+import {deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes} from 'firebase/storage'
 import Manager from '../managers/manager'
 import DB from '../database/DB'
 
@@ -18,7 +18,7 @@ const FirebaseStorage = {
     while (n--) {
       u8arr[n] = bstr.charCodeAt(n)
     }
-    return new File([u8arr], imageName, { type: mime })
+    return new File([u8arr], imageName, {type: mime})
   },
   getSingleFile: (fileDirectory, id, fileName) =>
     new Promise((resolve, reject) => {
@@ -60,24 +60,29 @@ const FirebaseStorage = {
         })
     }),
 
-  getImageAndUrl: async (imageDir, id, imageName) => {
+  GetImageAndUrl: async (imageDir, id, imageName) => {
     const storage = getStorage()
     let imgLoadStatus = 'success'
     let imageUrl = ''
-    await getDownloadURL(ref(storage, `${imageDir}/${id}/${imageName}`))
-      .then((url) => {
-        let image = new Image()
-        image.src = url
-        imageUrl = url
-        image.onerror = function () {
-          imgLoadStatus = 'error'
-        }
-      })
-      .catch((error) => {
-        if (error.toString().includes('storage/object-not-found')) {
-          imgLoadStatus = 'error'
-        }
-      })
+    try {
+      await getDownloadURL(ref(storage, `${imageDir}/${id}/${imageName}`))
+        .then((url) => {
+          let image = new Image()
+          image.src = url
+          imageUrl = url
+          image.onerror = function (error) {
+            imgLoadStatus = error
+          }
+        })
+        .catch((error) => {
+          if (error.toString().includes('storage/object-not-found')) {
+            imgLoadStatus = `Firebase Storage item not-found | Item Name: ${imageName} | Directory: ${imageDir} | Id: ${id}`
+          }
+        })
+    } catch (error) {
+      imgLoadStatus = error
+      console.log(`Error: ${error} | File: FB Storage: GetImageAndUrl function`)
+    }
 
     return {
       status: imgLoadStatus,
@@ -107,7 +112,7 @@ const FirebaseStorage = {
     }),
   imageToBlob: async (img) => {
     const fr = new FileReader()
-    const blob = new Blob([img], { type: 'text/plain' })
+    const blob = new Blob([img], {type: 'text/plain'})
 
     return new Promise((resolve, _) => {
       const reader = new FileReader()
@@ -121,7 +126,7 @@ const FirebaseStorage = {
     await FirebaseStorage.getImages(directory, userId).then(async (images) => {
       await Promise.all(images).then((firebaseUrls) => {
         firebaseUrls.forEach(async (url) => {
-          const imageName = FirebaseStorage.getImageNameFromUrl(url)
+          const imageName = FirebaseStorage.GetImageNameFromUrl(url)
           const fileImageNames = imgFiles.map((x) => x.name)
           if (fileImageNames.includes(Manager.decodeHash(imageName))) {
             urls.push(url)
@@ -131,19 +136,22 @@ const FirebaseStorage = {
     })
     return urls.flat()
   },
-  getFileUrl: async (directory, userId, fileName) =>
-    new Promise(async (resolve, reject) => {
-      await FirebaseStorage.getImages(directory, userId).then(async (images) => {
-        await Promise.all(images).then((firebaseUrls) => {
-          for (let url of firebaseUrls) {
-            const _fileName = FirebaseStorage.getImageNameFromUrl(url)
-            if (_fileName === fileName) {
-              resolve(url)
+  GetFileUrl: async (directory, userId, fileName) => {
+    const url = async () =>
+      await new Promise(async (resolve) => {
+        await FirebaseStorage.getImages(directory, userId).then(async (images) => {
+          await Promise.all(images).then((firebaseUrls) => {
+            for (let url of firebaseUrls) {
+              const _fileName = FirebaseStorage.GetImageNameFromUrl(url)
+              if (_fileName === fileName) {
+                resolve(url)
+              }
             }
-          }
+          })
         })
       })
-    }),
+    return await url()
+  },
   getProfilePicUrl: async (directory, userId, imgs) => {
     const images = async () =>
       await new Promise(async (resolve) => {
@@ -165,13 +173,13 @@ const FirebaseStorage = {
 
       await getDownloadURL(storageRef)
         .then((url) => {
-          resolve({ successful: image })
+          resolve({successful: image})
         })
         .catch((error) => {
           if (error.code === 'storage/object-not-found') {
-            resolve({ failed: image })
+            resolve({failed: image})
           } else {
-            resolve({ failed: image })
+            resolve({failed: image})
           }
         })
     }),
@@ -311,7 +319,10 @@ const FirebaseStorage = {
 
     return exists
   },
-  getImageNameFromUrl: (name) => {
+  GetImageNameFromUrl: (name) => {
+    if (!Manager.isValid(name, true)) {
+      return false
+    }
     const url = decodeURIComponent(name)
     let indexOfMemories = url.indexOf('IMG_')
     let indexOfImageName = url.indexOf('?alt')

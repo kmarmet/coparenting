@@ -1,12 +1,10 @@
 import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../../context'
-import FirebaseStorage from '/src/database/firebaseStorage'
 import searchTextHL from 'search-text-highlight'
 import DocumentConversionManager from '/src/managers/documentConversionManager'
 import Manager from '/src/managers/manager'
 import Modal from '/src/components/shared/modal'
 import {IoClose, IoListOutline} from 'react-icons/io5'
-import SecurityManager from '/src/managers/securityManager'
 import NavBar from '../../navBar'
 import DB from '/src/database/DB'
 import AlertManager from '/src/managers/alertManager'
@@ -28,6 +26,8 @@ import Label from '../../shared/label.jsx'
 import DatasetManager from '../../../managers/datasetManager.coffee'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import InputTypes from '../../../constants/inputTypes'
+import useDocuments from '../../../hooks/useDocuments'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
@@ -45,6 +45,7 @@ export default function DocViewer() {
   const [searchValue, setSearchValue] = useState('')
   const [shouldHideSidebar, setShouldHideSidebar] = useState(true)
   const {currentUser} = useCurrentUser()
+  const {documents} = useDocuments()
 
   const scrollToHeader = (hashedHeader) => {
     const domHeader = document.querySelector(`#doc-text [data-hashed-header="${hashedHeader}"]`)
@@ -61,21 +62,18 @@ export default function DocViewer() {
   }
 
   const onLoad = async () => {
-    const fileType = `.${StringManager.getFileExtension(docToView.name)}`.toLowerCase()
+    const fileType = `.${StringManager.GetFileExtension(docToView.name)}`.toLowerCase()
     const nonImageFileTypes = ['.docx', '.doc', '.pdf', '.odt', '.txt']
     if (currentUser && nonImageFileTypes.includes(fileType)) {
       setDocType('document')
-      const url = docToView.url
-      const fileName = FirebaseStorage.getImageNameFromUrl(url)
-      const firebaseText = await FirebaseStorage.getSingleFile(FirebaseStorage.directories.documents, currentUser.key, fileName)
-      await formatDocument(firebaseText)
+      await FormatDocument()
     } else {
       setDocType('image')
-      await formatImageDocument()
+      await FormatImageDocument()
     }
   }
 
-  const setTableOfContentsHeaders = async () => {
+  const SetTableOfContentsHeaders = async () => {
     let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
     let headersInDocument = []
 
@@ -91,7 +89,7 @@ export default function DocViewer() {
       for (let header of domHeaders) {
         let headerTextElement = header.querySelector('.header-text')
         // Add header event listeners
-        header.addEventListener('click', deleteHeader)
+        header.addEventListener('click', DeleteHeader)
 
         // Get header text
         if (!headerTextElement) {
@@ -150,19 +148,20 @@ export default function DocViewer() {
     }
   }
 
-  const formatImageDocument = async () => {
+  const FormatImageDocument = async () => {
     try {
       // Insert text
-      if (docToView) {
+      if (Manager.isValid(docToView)) {
         setImgUrl(docToView.url)
 
         let text = docToView.docText
-        if (!text) {
-          AlertManager.throwError(
-            'Unable to find or convert document, please try again after awhile. In the meantime, you can view the document image while this is being resolved.'
-          )
-          return false
-        }
+        console.log(text)
+        // if (!text) {
+        //         //   AlertManager.throwError(
+        //         //     `Unable to find or convert document, please try again after awhile. ${docToView?.type === 'image' ? `In the meantime, you can view the document image while this is being resolved.` : ''}`
+        //         //   )
+        //         //   return false
+        //         // }
 
         // Remove line breaks after header
         const lineBreaks = document.querySelectorAll('br')
@@ -176,9 +175,9 @@ export default function DocViewer() {
         const docText = document.getElementById('doc-text')
         docText.innerHTML = text
 
-        await addAndFormatHeaders()
-        correctTextErrors()
-        await setTableOfContentsHeaders()
+        await AddAndFormatHeaders()
+        CorrectTextErrors()
+        await SetTableOfContentsHeaders()
       } else {
         AlertManager.throwError('No Document Found')
         return false
@@ -188,24 +187,24 @@ export default function DocViewer() {
     }
   }
 
-  const formatDocument = async (firebaseText) => {
+  const FormatDocument = async () => {
     const url = docToView.url
-    if (!Manager.isValid(docToView) || !Manager.isValid(url) || !Manager.isValid(firebaseText, true)) {
+    const docText = docToView.docText
+    if (!Manager.isValid(docToView) || !Manager.isValid(docText, true)) {
       AlertManager.throwError('Unable to find or load document. Please try again after awhile.')
       setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
       return false
     }
     const textContainer = document.getElementById('doc-text')
-    const allDocuments = await SecurityManager.getDocuments(currentUser)
-    const coparents = allDocuments.map((x) => x.coparent)
-    const relevantDoc = allDocuments.find((x) => x?.name === docToView?.name)
+    const coparents = documents.map((x) => x.coparent)
+    const relevantDoc = documents.find((x) => x?.name === docToView?.name)
 
     //#region VALIDATION
     if (!Manager.isValid(relevantDoc)) {
       return false
     }
 
-    if (!Manager.isValid(allDocuments)) {
+    if (!Manager.isValid(documents)) {
       return false
     }
 
@@ -219,7 +218,7 @@ export default function DocViewer() {
     //#endregion VALIDATION
 
     // APPEND HTML
-    textContainer.innerHTML = firebaseText
+    textContainer.innerHTML = docText
 
     //#region STYLING/FORMATTING
     const allElements = textContainer.querySelectorAll('*')
@@ -289,18 +288,18 @@ export default function DocViewer() {
       }
     }
 
-    await addAndFormatHeaders()
-    correctTextErrors()
-    await setTableOfContentsHeaders()
+    await AddAndFormatHeaders()
+    CorrectTextErrors()
+    await SetTableOfContentsHeaders()
     //#endregion STYLING/FORMATTING
   }
 
-  const correctTextErrors = () => {
+  const CorrectTextErrors = () => {
     const docText = document.getElementById('doc-text')
     docText.innerHTML = docText.innerHTML.replaceAll('  ', ' ').replaceAll('Triday', 'Friday').replaceAll(')', ') ')
   }
 
-  const addAndFormatHeaders = async () => {
+  const AddAndFormatHeaders = async () => {
     const docText = document.getElementById('doc-text')
     let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
     userHeaders = userHeaders.map((x) => x.headerText)
@@ -314,7 +313,7 @@ export default function DocViewer() {
     }
   }
 
-  const addFloatingMenuAnimations = () => {
+  const AddFloatingMenuAnimations = () => {
     document.querySelectorAll('#floating-buttons .svg-wrapper').forEach((menuItem, i) => {
       setTimeout(() => {
         menuItem.classList.add('visible')
@@ -322,7 +321,7 @@ export default function DocViewer() {
     })
   }
 
-  const deleteHeader = async (headerElement) => {
+  const DeleteHeader = async (headerElement) => {
     const headerTarget = headerElement?.currentTarget
     if (headerTarget) {
       const headerText = headerTarget.querySelector('.header-text')?.textContent
@@ -335,7 +334,7 @@ export default function DocViewer() {
     }
   }
 
-  const addUserHeaderToDatabase = async () => {
+  const AddUserHeaderToDatabase = async () => {
     const text = DomManager.getSelectionText()
 
     let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
@@ -367,7 +366,7 @@ export default function DocViewer() {
     }
   }
 
-  const closeSearch = async () => {
+  const CloseSearch = async () => {
     setShowSearch(false)
     setSearchValue('')
     setState({...state, refreshKey: Manager.getUid()})
@@ -379,15 +378,15 @@ export default function DocViewer() {
     }
   }
 
-  const scrollToTop = () => {
+  const ScrollToTop = () => {
     const header = document.querySelector('.screen-title')
     header.scrollIntoView({behavior: 'smooth', block: 'end'})
     setShouldHideSidebar(true)
   }
 
-  const renameFile = async () => {
+  const RenameFile = async () => {
     if (Manager.isValid(newFileName, true)) {
-      const newName = `${newFileName}.${StringManager.getFileExtension(docToView.name).toLowerCase()}`
+      const newName = `${newFileName}.${StringManager.GetFileExtension(docToView.name).toLowerCase()}`
       const childKey = await DB.getSnapshotKey(`${DB.tables.documents}/${currentUser?.key}`, docToView, 'id')
 
       if (Manager.isValid(childKey)) {
@@ -404,7 +403,7 @@ export default function DocViewer() {
 
   useEffect(() => {
     if (sideMenuIsOpen) {
-      addFloatingMenuAnimations()
+      AddFloatingMenuAnimations()
     } else {
       const allMenuItems = document.querySelectorAll('#floating-buttons .svg-wrapper')
       allMenuItems.forEach((menuItem) => {
@@ -422,9 +421,14 @@ export default function DocViewer() {
     }
   }, [showToc, showSearch, showTips])
 
+  useEffect(() => {
+    if (Manager.isValid(currentUser)) {
+      onLoad().then((r) => r)
+    }
+  }, [currentUser])
+
   // PAGE LOAD
   useEffect(() => {
-    onLoad().then((r) => r)
     const appContentWithSidebar = document.getElementById('app-content-with-sidebar')
     if (appContentWithSidebar) {
       appContentWithSidebar.classList.add('doc-viewer')
@@ -432,17 +436,16 @@ export default function DocViewer() {
 
     // Listen for selection change
     if (currentScreen === ScreenNames.docViewer) {
-      document.addEventListener('selectionchange', debounce(addUserHeaderToDatabase, 1000))
+      document.addEventListener('selectionchange', debounce(AddUserHeaderToDatabase, 1000))
     }
 
     return () => {
-      document.removeEventListener('selectionchange', addUserHeaderToDatabase)
+      document.removeEventListener('selectionchange', AddUserHeaderToDatabase)
       if (appContentWithSidebar) {
         appContentWithSidebar.classList.remove('doc-viewer')
       }
     }
   }, [])
-  // console.log(currentScreen, creationFormToShow)
   return (
     <>
       {/* SEARCH CARD */}
@@ -454,7 +457,7 @@ export default function DocViewer() {
         title={'Search'}
         showOverlay={false}
         onSubmit={search}
-        onClose={closeSearch}>
+        onClose={CloseSearch}>
         <InputWrapper
           wrapperClasses="mt-5"
           labelText="Enter word(s) to find..."
@@ -472,6 +475,7 @@ export default function DocViewer() {
         showOverlay={true}
         onClose={() => setShowTips(false)}>
         <>
+          <hr className="mt-5 mb-20" />
           <Label text={'Searching'} isBold={true} />
 
           <p className="tip-text">
@@ -540,10 +544,10 @@ export default function DocViewer() {
         submitText={'Rename'}
         wrapperClass="rename-file-card"
         onClose={() => setShowRenameFile(false)}
-        onSubmit={renameFile}
+        onSubmit={RenameFile}
         className="rename-file"
         title={'Rename Document'}>
-        <InputWrapper labelText={'Enter new document name...'} onChange={(e) => setNewFileName(e.target.value)} />
+        <InputWrapper labelText={'New document name'} required={true} inputType={InputTypes.text} onChange={(e) => setNewFileName(e.target.value)} />
       </Modal>
 
       {/* SCREEN ACTIONS */}
@@ -554,7 +558,7 @@ export default function DocViewer() {
           className="action-item scroll-to-top"
           onClick={() => {
             setState({...state, showScreenActions: false})
-            scrollToTop()
+            ScrollToTop()
           }}>
           <div className="content">
             <div className="svg-wrapper ">
@@ -569,7 +573,7 @@ export default function DocViewer() {
           <div
             className="action-item toc"
             onClick={async () => {
-              await setTableOfContentsHeaders()
+              await SetTableOfContentsHeaders()
               setShowToc(true)
               setState({...state, showScreenActions: false})
             }}>
@@ -630,34 +634,37 @@ export default function DocViewer() {
         {/* DOCUMENT IMAGE */}
         {docType === 'image' && (
           <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
-            <div className="action-item document-image">
+            <div data-src={imgUrl} className="action-item document-image">
               <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
             </div>
           </LightGallery>
         )}
         {/*</Fade>*/}
-        <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
+        <div id="close-icon-wrapper">
+          <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
+        </div>
       </ScreenActionsMenu>
 
       {/* PAGE CONTAINER / TEXT */}
       <div id="documents-container" className={`${theme} page-container form documents`}>
-        <p className="screen-title">
+        <p className="screen-title accent">
           {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(docToView?.name)).replaceAll('-', ' ')}
         </p>
+        <hr className="documents" />
         <div id="doc-text"></div>
         {Manager.isValid(searchValue, true) && (
-          <button onClick={closeSearch} id="close-search-button" className="default with-border">
+          <button onClick={CloseSearch} id="close-search-button" className="default with-border">
             Close Search
           </button>
         )}
       </div>
 
-      {/* NAVBARS */}
+      {/* NAV BAR */}
       {DomManager.isMobile() && (
         <NavBar navbarClass={'actions'}>
           <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
             <HiDotsHorizontal className={'screen-actions-menu-icon'} />
-            <p>Actions</p>
+            <p>More</p>
           </div>
         </NavBar>
       )}

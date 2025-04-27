@@ -252,6 +252,10 @@ const DB = {
         }
       }
       await update(ref(dbRef, `${path}/${key}`), updatedRow)
+        .then()
+        .catch((error) => {
+          console.log(error)
+        })
       return await DB.getTable(`${path}/${key}`, true)
     } catch (error) {
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)

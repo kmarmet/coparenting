@@ -2,7 +2,6 @@
 import {LocalizationProvider} from '@mui/x-date-pickers-pro/LocalizationProvider'
 import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment'
 import React, {useEffect, useState} from 'react'
-import 'react-toggle/style.css'
 import globalState from '/src/context.js'
 // Screens
 import emailjs from '@emailjs/browser'
@@ -10,7 +9,6 @@ import {LicenseInfo} from '@mui/x-license'
 import {initializeApp} from 'firebase/app'
 import {getAuth, onAuthStateChanged} from 'firebase/auth'
 import RequestParentAccess from './components/screens/auth/requestParentAccess'
-import UserDetails from './components/screens/auth/userDetails'
 import EditCalEvent from '/src/components/forms/editCalEvent.jsx'
 import NewCalendarEvent from '/src/components/forms/newCalendarEvent.jsx'
 import NewExpenseForm from '/src/components/forms/newExpenseForm.jsx'
@@ -60,9 +58,9 @@ import Manager from '/src/managers/manager'
 import DB from './database/DB'
 import NotificationManager from './managers/notificationManager'
 import CreationForms from './constants/creationForms'
-import AlertManager from './managers/alertManager'
 import Parents from './components/screens/parents/parents'
 import Onboarding from './components/screens/onboarding'
+import * as Sentry from '@sentry/react'
 
 export default function App() {
   // Initialize Firebase
@@ -77,6 +75,19 @@ export default function App() {
   const screensToHideSidebar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home]
   const screensToHideBrandbar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home]
 
+  // Init Sentry
+  Sentry.init({
+    dsn: 'https://15c40c1ea019fafd61508f12c6a03298@o4509223026163712.ingest.us.sentry.io/4509223028129792',
+    integrations: [Sentry.browserTracingIntegration()],
+
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production
+    tracesSampleRate: 1.0,
+    sendDefaultPii: true,
+  })
+
+  // Init EmailJS
   emailjs.init({
     publicKey: process.env.REACT_EMAILJS_API_KEY,
     // Do not allow headless browsers
@@ -101,35 +112,14 @@ export default function App() {
   // ON SCREEN CHANGE
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
+      console.log(`Screen: ${currentScreen}`)
       window.navigator.clearAppBadge().then((r) => r)
     }
   }, [currentScreen])
 
-  useEffect(() => {
-    // Check if user needs to link co-parent
-    if (Manager.isValid(currentUser) && currentUser?.showInitialLoginAlert === true && currentUser?.accountType === 'parent') {
-      const config = AlertManager.ThreeButtonAlertConfig
-      config.title = 'To communicate essential information and messages with a co-parent, you must link them to your profile'
-      config.confirmButtonText = 'Link Co-Parent'
-      config.cancelButtonText = 'Later'
-      config.denyButtonText = "Don't Show Again"
-      config.showThirdButton = true
-
-      config.onConfirm = async () => {
-        setState({...state, creationFormToShow: CreationForms.coparent})
-        await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/showInitialLoginAlert`, false)
-      }
-      config.onDeny = async () => {
-        await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/showInitialLoginAlert`, false)
-      }
-
-      AlertManager.threeButtonAlert(config)
-    }
-  }, [currentUser])
-
   // ON PAGE LOAD
   useEffect(() => {
-    setState({...state, isLoading: true})
+    // setState({...state, isLoading: true})
     // Error Boundary Test
     // throw new Error('Something went wrong')
     document.body.appendChild(myCanvas)
@@ -138,77 +128,80 @@ export default function App() {
     onAuthStateChanged(auth, async (user) => {
       // USER LOGGED IN FROM PERSISTED STATE
       // console.log(user)
-      if (user) {
-        const user = auth.currentUser
-        await AppManager.clearAppBadge()
-        const users = await DB.getTable(DB.tables.users)
+      try {
+        if (user) {
+          const user = auth.currentUser
+          await AppManager.clearAppBadge()
+          const users = await DB.getTable(DB.tables.users)
 
-        let notifications = []
-        let currentUserFromDb
-        currentUserFromDb = users?.find((u) => u?.email === user?.email)
-        // User Exists
-        if (Manager.isValid(currentUserFromDb)) {
-          let screenToNavigateTo = ScreenNames.calendar
-          const body = document.getElementById('external-overrides')
-          const navbar = document.getElementById('navbar')
+          let notifications = []
+          let currentUserFromDb
+          currentUserFromDb = users?.find((u) => u?.email === user?.email)
+          // User Exists
+          if (Manager.isValid(currentUserFromDb)) {
+            let screenToNavigateTo = ScreenNames.calendar
+            const body = document.getElementById('external-overrides')
+            const navbar = document.getElementById('navbar')
 
-          if (Manager.isValid(navbar)) {
-            navbar.setAttribute('account-type', currentUserFromDb?.accountType)
-          }
-          if (body) {
-            body.classList.add(currentUserFromDb?.settings?.theme)
-          }
-
-          // Check if child profile and if parent access is granted
-          if (currentUserFromDb?.accountType === 'child') {
-            if (currentUserFromDb?.parentAccessGranted === false) {
-              screenToNavigateTo = ScreenNames.requestParentAccess
+            if (Manager.isValid(navbar)) {
+              navbar.setAttribute('account-type', currentUserFromDb?.accountType)
             }
-          } else {
-            // Add location details to use record if they do not exist
-            if (!Manager.isValid(currentUserFromDb?.location)) {
-              AppManager.getLocationDetails().then(async (r) => {
-                await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUserFromDb?.key}/location`, r)
-              })
+            if (body) {
+              body.classList.add(currentUserFromDb?.settings?.theme)
             }
 
-            // Delete expired items
-            AppManager.deleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
-            AppManager.deleteExpiredMemories(currentUserFromDb).then((r) => r)
-          }
+            // Check if child profile and if parent access is granted
+            if (currentUserFromDb?.accountType === 'child') {
+              if (currentUserFromDb?.parentAccessGranted === false) {
+                screenToNavigateTo = ScreenNames.requestParentAccess
+              }
+            } else {
+              // Add location details to use record if they do not exist
+              if (!Manager.isValid(currentUserFromDb?.location)) {
+                AppManager.getLocationDetails().then(async (r) => {
+                  await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUserFromDb?.key}/location`, r)
+                })
+              }
 
-          // Get notifications
-          if (!window.location.href.includes('localhost')) {
-            NotificationManager.init(currentUserFromDb)
-            notifications = await DB.getTable(`${DB.tables.notifications}/${currentUserFromDb?.key}`)
-          }
+              // Delete expired items
+              AppManager.deleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
+              AppManager.deleteExpiredMemories(currentUserFromDb).then((r) => r)
+            }
 
-          // Back to log in if user's email is not verified
-          if (!user?.emailVerified) {
-            screenToNavigateTo = ScreenNames.login
+            // Get notifications
+            if (!window.location.href.includes('localhost')) {
+              NotificationManager.init(currentUserFromDb)
+              notifications = await DB.getTable(`${DB.tables.notifications}/${currentUserFromDb?.key}`)
+            }
+
+            // Back to log in if user's email is not verified
+            if (!user?.emailVerified) {
+              screenToNavigateTo = ScreenNames.login
+            }
+            setState({
+              ...state,
+              authUser: user,
+              currentUser: currentUserFromDb,
+              currentScreen: screenToNavigateTo,
+              userIsLoggedIn: true,
+              loadingText: '',
+              theme: currentUserFromDb?.settings?.theme,
+              notificationCount: notifications?.length,
+            })
           }
+        } else {
           setState({
             ...state,
             authUser: user,
-            currentUser: currentUserFromDb,
-            currentScreen: screenToNavigateTo,
-            userIsLoggedIn: true,
+            currentScreen: ScreenNames.home,
+            userIsLoggedIn: false,
             loadingText: '',
-            theme: currentUserFromDb?.settings?.theme,
-            // isLoading: false,
-            notificationCount: notifications?.length,
+            isLoading: false,
           })
+          console.log('user signed out or user does not exist')
         }
-      } else {
-        setState({
-          ...state,
-          authUser: user,
-          currentScreen: ScreenNames.home,
-          userIsLoggedIn: false,
-          loadingText: '',
-          isLoading: false,
-        })
-        console.log('user signed out or user does not exist')
+      } catch (error) {
+        console.log(`Error: ${error} | Code File: App.js  | Function: useEffect |`)
       }
     })
 
@@ -259,7 +252,6 @@ export default function App() {
             {currentScreen === ScreenNames.login && <Login />}
             {currentScreen === ScreenNames.registration && <Registration />}
             {currentScreen === ScreenNames.requestParentAccess && <RequestParentAccess />}
-            {currentScreen === ScreenNames.userDetails && <UserDetails />}
 
             {/* UPDATE/EDIT */}
             {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}

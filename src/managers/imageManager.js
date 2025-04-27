@@ -135,7 +135,7 @@ ImageManager = {
   },
   deleteImage: function(currentUser, imgPaths, directory, path) {
     var imageName, memoryImageToDelete, memoryImageToDeleteIndex, newArray, newMemoryObj;
-    imageName = FirebaseStorage.getImageNameFromUrl(path);
+    imageName = FirebaseStorage.GetImageNameFromUrl(path);
     memoryImageToDelete = imgPaths.filter(function(x) {
       return x.includes(imageName);
     })[0];

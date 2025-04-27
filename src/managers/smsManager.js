@@ -73,7 +73,7 @@ export default SmsManager = {
       return console.error(error);
     }
   },
-  send: async function(phoneNumber, message) {
+  Send: async function(phoneNumber, message) {
     var error, formData, requestOptions, response, result;
     console.log('sent');
     formData = new FormData();

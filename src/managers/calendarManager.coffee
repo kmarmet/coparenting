@@ -109,16 +109,21 @@ export default CalendarManager =
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
-  updateEvent: (userKey, event, prop, value) ->
+  UpdateEvent: (userKey,existingEvents, event, prop, value) ->
     dbRef = getDatabase()
     key = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{userKey}", event, 'id')
-    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{userKey}")
+
+    if !Manager.isValid(key)
+      console.log('Error: Key not found | Code File: CalendarManager  | Function: UpdateEvent');
+      return false
+
+    tableRecords = existingEvents
     toUpdate = tableRecords.find((x) => x.id == event?.id)
     toUpdate[prop] = value;
     try
       update(ref(dbRef, "#{DB.tables.calendarEvents}/#{userKey}/#{key}"), toUpdate)
     catch error
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      console.log("Error: #{error} | Code File: CalendarManager  | Function: UpdateEvent");
 
   updateMultipleEvents: (events, currentUser) ->
     dbRef = getDatabase()

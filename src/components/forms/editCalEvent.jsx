@@ -10,6 +10,7 @@ import globalState from '../../context'
 import Spacer from '../shared/spacer.jsx'
 import {Fade} from 'react-awesome-reveal'
 import ViewSelector from '../shared/viewSelector'
+import * as Sentry from '@sentry/react'
 import Modal from '/src/components/shared/modal'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import InputWrapper from '/src/components/shared/inputWrapper'
@@ -105,7 +106,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     if (Manager.isValid(event?.shareWith)) {
       // Remove currentUser from original event shareWith
       const shareWithWithoutCurrentUser = event.shareWith.filter((x) => x !== currentUser?.key)
-      await CalendarManager.updateEvent(event?.ownerKey, event, 'shareWith', shareWithWithoutCurrentUser)
+      await CalendarManager.UpdateEvent(event?.ownerKey, calendarEvents, event, 'shareWith', shareWithWithoutCurrentUser)
       // Add cloned event for currentUser
       await CalendarManager.addCalendarEvent(currentUser, _updatedEvent)
       NotificationManager.sendToShareWith(
@@ -120,112 +121,116 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
   // SUBMIT
   const Submit = async () => {
-    // Set new event values
-    const updatedEvent = {...event}
+    try {
+      // Set new event values
+      const updatedEvent = {...event}
 
-    // Required
-    updatedEvent.title = eventName
-    updatedEvent.reminderTimes = eventReminderTimes
-    updatedEvent.shareWith = eventShareWith
-    updatedEvent.startDate = moment(eventStartDate).format(DatetimeFormats.dateForDb)
-    updatedEvent.endDate = moment(eventEndDate).format(DatetimeFormats.dateForDb)
-    updatedEvent.phone = StringManager.FormatPhone(eventPhone)
-    updatedEvent.repeatInterval = recurrenceFrequency
-    updatedEvent.isDateRange = eventIsDateRange
-    updatedEvent.isCloned = eventIsCloned
-    updatedEvent.isRecurring = eventIsRecurring
+      // Required
+      updatedEvent.title = eventName
+      updatedEvent.reminderTimes = eventReminderTimes
+      updatedEvent.shareWith = eventShareWith
+      updatedEvent.startDate = moment(eventStartDate).format(DatetimeFormats.dateForDb)
+      updatedEvent.endDate = moment(eventEndDate).format(DatetimeFormats.dateForDb)
+      updatedEvent.phone = StringManager.FormatPhone(eventPhone)
+      updatedEvent.repeatInterval = recurrenceFrequency
+      updatedEvent.isDateRange = eventIsDateRange
+      updatedEvent.isCloned = eventIsCloned
+      updatedEvent.isRecurring = eventIsRecurring
 
-    if (Manager.isValid(eventStartTime) || Manager.isValid(eventEndTime)) {
-      updatedEvent.startTime = moment(eventStartTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
-      updatedEvent.endTime = moment(eventEndTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
-    }
-
-    // Not Required
-    updatedEvent.ownerKey = currentUser?.key
-    updatedEvent.createdBy = currentUser?.name
-    updatedEvent.notes = eventNotes
-    updatedEvent.reminderTimes = eventReminderTimes || []
-    updatedEvent.children = eventChildren
-    updatedEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
-    updatedEvent.location = eventLocation
-
-    // Add birthday cake
-    if (Manager.contains(eventName, 'birthday')) {
-      updatedEvent.title += ' 🎂'
-    }
-
-    updatedEvent.websiteUrl = eventWebsiteUrl
-    updatedEvent.fromVisitationSchedule = isVisitation
-    updatedEvent.morningSummaryReminderSent = false
-    updatedEvent.eveningSummaryReminderSent = false
-    updatedEvent.sentReminders = []
-
-    if (Manager.isValid(updatedEvent)) {
-      if (!Manager.isValid(eventName)) {
-        AlertManager.throwError('Event name is required')
-        return false
+      if (Manager.isValid(eventStartTime) || Manager.isValid(eventEndTime)) {
+        updatedEvent.startTime = moment(eventStartTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
+        updatedEvent.endTime = moment(eventEndTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
       }
 
-      if (!Manager.isValid(eventStartDate)) {
-        AlertManager.throwError('Please select a date for this event')
-        return false
+      // Not Required
+      updatedEvent.ownerKey = currentUser?.key
+      updatedEvent.createdBy = currentUser?.name
+      updatedEvent.notes = eventNotes
+      updatedEvent.reminderTimes = eventReminderTimes || []
+      updatedEvent.children = eventChildren
+      updatedEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
+      updatedEvent.location = eventLocation
+
+      // Add birthday cake
+      if (Manager.contains(eventName, 'birthday')) {
+        updatedEvent.title += ' 🎂'
       }
 
-      const cleanedEvent = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
-      const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
+      updatedEvent.websiteUrl = eventWebsiteUrl
+      updatedEvent.fromVisitationSchedule = isVisitation
+      updatedEvent.morningSummaryReminderSent = false
+      updatedEvent.eveningSummaryReminderSent = false
+      updatedEvent.sentReminders = []
 
-      // Events with multiple days
-      if (event?.isRecurring || event?.isDateRange || event?.isCloned) {
-        const allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
-        const existing = allEvents.filter((x) => x.multipleDatesId === event?.multipleDatesId)
-
-        if (!Manager.isValid(existing)) {
+      if (Manager.isValid(updatedEvent)) {
+        if (!Manager.isValid(eventName)) {
+          AlertManager.throwError('Event name is required')
           return false
         }
 
-        // Add cloned dates
-        if (Manager.isValid(clonedDates)) {
-          // await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
+        if (!Manager.isValid(eventStartDate)) {
+          AlertManager.throwError('Please select a date for this event')
+          return false
         }
 
-        if (eventIsDateRange) {
-          const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'range', existing[0].startDate, eventEndDate)
-          await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
+        const cleanedEvent = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
+        const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
+
+        // Events with multiple days
+        if (event?.isRecurring || event?.isDateRange || event?.isCloned) {
+          const allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
+          const existing = allEvents.filter((x) => x.multipleDatesId === event?.multipleDatesId)
+
+          if (!Manager.isValid(existing)) {
+            return false
+          }
+
+          // Add cloned dates
+          if (Manager.isValid(clonedDates)) {
+            // await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
+          }
+
+          if (eventIsDateRange) {
+            const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'range', existing[0].startDate, eventEndDate)
+            await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
+          }
+
+          // Add repeating dates
+          if (eventIsRecurring) {
+            const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'recurring', existing[0]?.startDate, eventEndDate)
+            await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
+          }
+
+          // Delete all before updated
+          await DB.deleteMultipleRows(`${DB.tables.calendarEvents}/${currentUser?.key}`, existing, currentUser)
         }
 
-        // Add repeating dates
-        if (eventIsRecurring) {
-          const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'recurring', existing[0]?.startDate, eventEndDate)
-          await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
+        // Update Single Event
+        else {
+          if (event?.ownerKey === currentUser?.key) {
+            await DB.updateEntireRecord(`${dbPath}`, cleanedEvent, updatedEvent.id)
+          }
         }
-
-        // Delete all before updated
-        await DB.deleteMultipleRows(`${DB.tables.calendarEvents}/${currentUser?.key}`, existing, currentUser)
-      }
-
-      // Update Single Event
-      else {
         if (event?.ownerKey === currentUser?.key) {
-          await DB.updateEntireRecord(`${dbPath}`, cleanedEvent, updatedEvent.id)
+          if (Manager.isValid(eventShareWith)) {
+            NotificationManager.sendToShareWith(
+              eventShareWith,
+              currentUser,
+              'Event Updated',
+              `${eventName} has been updated`,
+              ActivityCategory.calendar
+            )
+          }
         }
       }
-      if (event?.ownerKey === currentUser?.key) {
-        if (Manager.isValid(eventShareWith)) {
-          NotificationManager.sendToShareWith(
-            eventShareWith,
-            currentUser,
-            'Event Updated',
-            `${eventName} has been updated`,
-            ActivityCategory.calendar
-          )
-        }
-      }
-    }
 
-    if (event?.ownerKey !== currentUser?.key) {
-      await EditNonOwnerEvent(updatedEvent)
+      if (event?.ownerKey !== currentUser?.key) {
+        await EditNonOwnerEvent(updatedEvent)
+      }
+      await ResetForm('Event Updated')
+    } catch (error) {
+      Sentry.captureException(error)
     }
-    await ResetForm('Event Updated')
   }
 
   // CHECKBOX HANDLERS
@@ -245,7 +250,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     )
   }
 
-  const HandleShareWithSelection = async (e) => {
+  const HandleShareWithSelection = (e) => {
     const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
     setEventShareWith(shareWithNumbers)
   }
@@ -292,7 +297,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setShowReminders(Manager.isValid(event?.reminderTimes))
 
     // Get shareWith Names
-    let mappedShareWithNames = Manager.MapKeysToUsers(event?.shareWith, users)
+    const shareWithWithoutMe = event?.shareWith?.filter((x) => x !== currentUser?.key) || event?.shareWith
+    let mappedShareWithNames = Manager.MapKeysToUsers(shareWithWithoutMe, users)
     mappedShareWithNames = mappedShareWithNames.filter((x) => x?.name !== StringManager.getFirstNameOnly(currentUser?.name)).flat()
     setShareWithNames(mappedShareWithNames)
 
@@ -336,14 +342,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         return StringManager.getFirstNameOnly(event?.createdBy)
       }
     }
-  }
-  const GetShareWithAsString = () => {
-    let joined = shareWithNames.join('\n').replaceAll('  ', '\n').trim()
-    // joined = joined.replaceAll(',', '\n \n')
-    // joined = joined.replaceAll('*', '\n')
-    console.log(joined)
-
-    return joined
   }
 
   useEffect(() => {

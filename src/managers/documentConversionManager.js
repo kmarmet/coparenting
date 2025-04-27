@@ -80,29 +80,37 @@ const DocumentConversionManager = {
     'dependents',
   ],
 
-  docToHtml: async (fileName, currentUserId) => {
-    const myHeaders = new Headers()
-    myHeaders.append('Access-Control-Allow-Origin', '*')
-    // let apiAddress = 'https://localhost:5000'
-    let apiAddress = 'https://peaceful-coparenting.app:5000'
-    const requestOptions = {
-      method: 'GET',
-      headers: myHeaders,
-      mode: 'cors',
-      crossOrigin: true,
-      redirect: 'follow',
-    }
+  DocToHtml: async (fileName, currentUserId) => {
+    try {
+      const myHeaders = new Headers()
 
-    let returnHtml = ''
-    const all = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, currentUserId, fileName)
-    const {status, imageUrl} = all
-    if (status === 'success') {
+      myHeaders.append('Access-Control-Allow-Origin', '*')
+      // let apiAddress = 'https://localhost:5000'
+      let apiAddress = 'https://peaceful-coparenting.app:5000'
+      const requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        mode: 'cors',
+        crossOrigin: true,
+        redirect: 'follow',
+      }
+      let html = ''
+
       await fetch(`${apiAddress}/document/getDocText?fileName=${fileName}&currentUserId=${currentUserId}`, requestOptions)
         .then((response) => response.text())
-        .then((result) => (returnHtml = result))
-        .catch((error) => console.error(error))
+        .then((result) => {
+          html = result
+          console.log(result)
+        })
+        .catch((error) =>
+          console.error(`Error: ${error} | Code File: documentConversionManager | Function: DocToHtml | File: ${fileName} | User: ${currentUserId}`)
+        )
+
+      return html
+    } catch (error) {
+      console.log(`Error: ${error} | File: ; ${fileName} | User: ${currentUserId}`)
     }
-    return returnHtml
+    return ''
   },
   pdfToHtml: async (fileName, currentUserId) => {
     const myHeaders = new Headers()
@@ -118,7 +126,7 @@ const DocumentConversionManager = {
     }
 
     let returnHtml = ''
-    const all = await FirebaseStorage.getImageAndUrl(FirebaseStorage.directories.documents, currentUserId, fileName)
+    const all = await FirebaseStorage.GetImageAndUrl(FirebaseStorage.directories.documents, currentUserId, fileName)
     const {status, imageUrl} = all
     if (status === 'success') {
       await fetch(`${apiAddress}/document/getTextFromPdf?fileName=${fileName}&currentUserId=${currentUserId}`, requestOptions)
@@ -130,7 +138,7 @@ const DocumentConversionManager = {
   },
   imageToHtml: async (url, fileName) => {
     let returnHtml = ''
-    const extension = StringManager.getFileExtension(fileName)
+    const extension = StringManager.GetFileExtension(fileName)
     const myHeaders = new Headers()
     myHeaders.append('Content-Type', 'image/*')
     let shortenedUrl = await ImageManager.shortenUrl(url)

@@ -31,11 +31,10 @@
         width: 100%;
         align-items: stretch;
         justify-content: center;
-        background: $grey;
+        background: $lightAccentBlue;
         border-radius: $buttonBorderRadius;
         margin: 20px auto 5px auto;
         padding: 5px 10px;
-        border: 1px solid $lightBorderColor;
         @include hover;
 
         &:after {
@@ -51,9 +50,9 @@
         }
 
         .header-text {
-          font-size: 16px;
+          font-size: 18px;
           font-weight: $fwMedium;
-          color: $primaryText !important;
+          color: $accent !important;
           text-align: center;
           display: flex;
           justify-content: center;
@@ -135,7 +134,7 @@
       p,
       li {
         font-size: 18px;
-        font-weight: 400;
+        font-weight: $fwLight;
         margin: 0;
         span {
           line-height: 1.4 !important;

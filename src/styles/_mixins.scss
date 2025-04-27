@@ -1058,9 +1058,10 @@
     position: relative;
     background: white;
     width: 100vw;
-    border-radius: 25px 25px 0 0;
+    border-radius: 35px 35px 0 0;
     overflow: auto;
     border-top: 4px solid $accent;
+
     #menu-content {
       max-width: calc(100% - 20px);
       position: relative;
@@ -1308,7 +1309,6 @@
   overflow: auto;
   overscroll-behavior: none;
   min-height: 50px;
-  margin-bottom: 10px;
 
   &.child-info {
     padding-left: 80px;
@@ -2764,7 +2764,7 @@
     top: 0;
     max-height: 0;
     transition: all 1s ease-out;
-    border-radius: 20px;
+    border-radius: 25px;
     align-self: center;
     overflow: hidden;
     display: flex;
@@ -2792,7 +2792,7 @@
         position: sticky;
         top: 0;
         z-index: 9999999;
-        border-radius: 15px 15px 0 0;
+        border-radius: 35px 35px 0 0;
         background: white;
 
         #modal-title {
@@ -4117,12 +4117,12 @@
 
   &.open {
     bottom: 0;
-    transition: all 0.5s ease-in;
+    transition: all 0.5s ease-out;
 
     .menu-items {
       .menu-item {
         opacity: 1;
-        transition: all 0.9s ease-in;
+        transition: all 0.8s ease-out;
       }
     }
   }
@@ -4183,7 +4183,7 @@
     }
 
     &.admin {
-      color: $gold;
+      color: black;
     }
 
     &.coparenting {
@@ -4200,6 +4200,7 @@
     gap: 8px 0;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    transition: all 0.6s ease-out;
 
     &.sharing {
       * {
@@ -4215,7 +4216,7 @@
 
     &.admin {
       * {
-        color: $gold;
+        color: black;
       }
     }
 
@@ -4315,7 +4316,7 @@
         position: relative;
         opacity: 1;
         p {
-          font-weight: $fwMediumBold;
+          font-weight: $fwMedium;
         }
         p,
         svg {

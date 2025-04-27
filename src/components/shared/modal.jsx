@@ -176,7 +176,7 @@ export default function Modal({
               onClose()
               HideCard()
             }}>
-            Cancel
+            Close
           </button>
         </div>
       </div>

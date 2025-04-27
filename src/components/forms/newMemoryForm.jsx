@@ -40,8 +40,8 @@ export default function NewMemoryForm() {
     setState({...state, isLoading: false, refreshKey: Manager.getUid(), creationFormToShow: ''})
   }
 
-  const HandleShareWithSelection = async (e) => {
-    const updated = await Manager.handleShareWithSelection(e, currentUser, newMemory.shareWith)
+  const HandleShareWithSelection = (e) => {
+    const updated = Manager.handleShareWithSelection(e, currentUser, newMemory.shareWith)
     setNewMemory((prevMemory) => ({...prevMemory, shareWith: updated}))
   }
 
@@ -110,7 +110,7 @@ export default function NewMemoryForm() {
           .then(async (urls) => {
             // Add to user memories object
             for (const url of urls) {
-              const imageName = FirebaseStorage.getImageNameFromUrl(url)
+              const imageName = FirebaseStorage.GetImageNameFromUrl(url)
               const cleanedObject = ObjectManager.cleanObject(newMemory, ModelNames.memory)
 
               cleanedObject.url = url

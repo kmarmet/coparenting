@@ -56,7 +56,7 @@ export default function NewTransferChangeRequest() {
     })
   }
 
-  const submit = async () => {
+  const Submit = async () => {
     const validAccounts = currentUser?.sharedDataUsers
 
     //#region VALIDATION
@@ -68,7 +68,7 @@ export default function NewTransferChangeRequest() {
       return false
     }
     if (!Manager.isValid(requestRecipientKey)) {
-      AlertManager.throwError('Please choose who to send the request to')
+      AlertManager.throwError('Please choose who to Send the request to')
       return false
     }
     if (!Manager.isValid(requestLocation) && !Manager.isValid(requestTime)) {
@@ -122,12 +122,12 @@ export default function NewTransferChangeRequest() {
     await ResetForm(true)
   }
 
-  const handleShareWithSelection = async (e) => {
-    const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
+  const HandleShareWithSelection = (e) => {
+    const updated = Manager.handleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 
-  const handleRequestRecipient = (e) => {
+  const HandleRequestRecipient = (e) => {
     const coparentKey = e.getAttribute('data-key')
     if (e.classList.contains('active')) {
       setRequestRecipientKey(coparentKey)
@@ -138,7 +138,7 @@ export default function NewTransferChangeRequest() {
 
   return (
     <Modal
-      onSubmit={submit}
+      onSubmit={Submit}
       submitText={'Send Request'}
       wrapperClass="new-transfer-request"
       title={'Request Transfer Change '}
@@ -197,13 +197,13 @@ export default function NewTransferChangeRequest() {
                 currentUser,
                 predefinedType: 'coparents',
               })}
-              onCheck={handleRequestRecipient}
+              onCheck={HandleRequestRecipient}
               required={true}
             />
 
             <ShareWithCheckboxes
               shareWith={currentUser?.coparents?.map((x) => x.phone)}
-              onCheck={handleShareWithSelection}
+              onCheck={HandleShareWithSelection}
               labelText={'Share with'}
               containerClass={'share-with-coparents'}
               checkboxArray={Manager.buildCheckboxGroup({

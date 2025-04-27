@@ -87,7 +87,7 @@ const Chats = () => {
           <AccordionDetails>
             <p>
               Currently, your account is linked to {currentUser?.coparents?.length} {currentUser?.coparents?.length > 1 ? 'co-parents' : 'co-parent'}.
-              If you wish to communicate with another co-parent, feel free to send them an invitation.
+              If you wish to communicate with another co-parent, feel free to Send them an invitation.
             </p>
 
             <button

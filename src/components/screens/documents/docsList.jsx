@@ -1,53 +1,37 @@
 // Path: src\components\screens\documents\docsList.jsx
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useState} from 'react'
 import ScreenNames from '../../../constants/screenNames'
-import DB from '../../../database/DB'
 import Manager from '../../../managers/manager'
 import globalState from '../../../context'
 import DocumentsManager from '../../../managers/documentsManager'
 import {HiDocumentRemove} from 'react-icons/hi'
-import {child, getDatabase, onValue, ref} from 'firebase/database'
 import {Fade} from 'react-awesome-reveal'
-import SecurityManager from '../../../managers/securityManager'
 import NavBar from '../../navBar'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import StringManager from '../../../managers/stringManager'
 import {HiDocumentText} from 'react-icons/hi2'
 import {FaFileImage} from 'react-icons/fa'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import useDocuments from '../../../hooks/useDocuments'
+import AlertManager from '../../../managers/alertManager'
 
 export default function DocsList() {
   const {state, setState} = useContext(globalState)
   const {theme} = state
-  const [docs, setDocs] = useState([])
   const [selectedDoc, setSelectedDoc] = useState(null)
   const {currentUser} = useCurrentUser()
+  const {documents} = useDocuments()
 
-  const getSecuredDocs = async () => {
-    const allDocs = await SecurityManager.getDocuments(currentUser)
-    setDocs(allDocs)
-  }
-
-  const deleteDoc = async (checkbox) => {
+  const DeleteDoc = async (checkbox) => {
     const id = checkbox.currentTarget?.previousSibling?.getAttribute('data-id')
-    DocumentsManager.deleteDocsWithIds([id], currentUser)
-  }
-
-  const onTableChange = async () => {
-    const dbRef = ref(getDatabase())
-    onValue(child(dbRef, `${DB.tables.documents}/${currentUser?.key}`), async () => {
-      await getSecuredDocs()
+    AlertManager.confirmAlert('Are you sure you want to delete this document?', "I'm Sure", true, async () => {
+      await DocumentsManager.DeleteDocsWithIds([id], currentUser)
     })
   }
-
-  useEffect(() => {
-    onTableChange().then((r) => r)
-  }, [])
 
   return (
     <>
       <div id="doc-selection-container" className={`${theme} page-container`}>
-        {docs.length === 0 && <NoDataFallbackText text={'There are currently no documents'} />}
         <div className="flex" id="screen-title-wrapper">
           <p className="screen-title">Documents</p>
         </div>
@@ -56,14 +40,14 @@ export default function DocsList() {
           shared with a co-parent.
         </p>
 
-        {!Manager.isValid(selectedDoc) && (
+        {!Manager.isValid(selectedDoc) && Manager.isValid(documents) && (
           <div className="sections">
-            {Manager.isValid(docs) && (
+            {Manager.isValid(documents) && (
               <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={0.2}>
-                {Manager.isValid(docs) &&
-                  docs.map((doc, index) => {
+                {Manager.isValid(documents) &&
+                  documents.map((doc, index) => {
                     const documentExts = ['doc', 'docx', 'pdf', 'txt', 'odt']
-                    const fileType = documentExts.includes(StringManager.getFileExtension(doc.name).toString()) ? 'Document' : 'Image'
+                    const fileType = documentExts.includes(StringManager.GetFileExtension(doc.name).toString()) ? 'Document' : 'Image'
                     return (
                       <div
                         className="row"
@@ -79,7 +63,7 @@ export default function DocsList() {
                             {fileType === 'Document' ? <HiDocumentText className={'file-type'} /> : <FaFileImage className={'file-type'} />}
                             {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
                           </p>
-                          <div className={`checkbox delete`} onClick={deleteDoc}>
+                          <div className={`checkbox delete`} onClick={DeleteDoc}>
                             <HiDocumentRemove className={'delete-icon'} />
                           </div>
                         </div>
@@ -91,6 +75,7 @@ export default function DocsList() {
           </div>
         )}
       </div>
+      {documents.length === 0 && <NoDataFallbackText text={'There are currently no documents'} />}
       <NavBar navbarClass={'documents'} />
     </>
   )

@@ -25,14 +25,13 @@ export default function RequestParentAccess() {
   const [parentPhone, setParentPhone] = useState(null)
   const [enteredCode, setEnteredCode] = useState(0)
   const [verificationCode, setVerificationCode] = useState('')
-  const [userName, setUserName] = useState('')
   const [parentEmail, setParentEmail] = useState('')
   const {currentUser} = useCurrentUser()
+  const [userName, setUserName] = useState(currentUser?.name)
 
   // SEND VERIFICATION CODE
   const SendPhoneVerificationCode = async (codeResent = false) => {
     const errorString = Manager.GetInvalidInputsErrorString([
-      {name: 'Your Name', value: userName},
       {name: 'Parent Email', value: parentEmail},
       {name: 'Parent Phone', value: parentPhone},
     ])
@@ -60,8 +59,8 @@ export default function RequestParentAccess() {
       // }
       const phoneCode = Manager.getUid().slice(0, 6)
       setVerificationCode(phoneCode)
-      setState({...state, isLoading: true, loadingText: 'Sending security code...'})
-      await SmsManager.send(parentPhone, SmsManager.getParentVerificationTemplate(userName, phoneCode))
+      setState({...state, isLoading: true, loadingText: 'Sending security code to your parent...'})
+      await SmsManager.Send(parentPhone, SmsManager.getParentVerificationTemplate(StringManager.getFirstNameOnly(currentUser?.name), phoneCode))
       setReadyToVerify(true)
       setState({...state, isLoading: false})
     }
@@ -75,13 +74,15 @@ export default function RequestParentAccess() {
 
     // Access granted
     if (enteredCode === verificationCode) {
-      const parent = await DB.find(DB.tables.users, ['email', parentEmail], true)
+      const existingParentAccount = await DB.find(DB.tables.users, ['email', parentEmail], true)
 
-      if (parent) {
-        const existingChild = parent?.children?.find((x) => x?.general?.phone === currentUser?.phone || x?.general?.email === currentUser?.email)
+      if (existingParentAccount) {
+        const existingChild = existingParentAccount?.children?.find(
+          (x) => x?.general?.phone === currentUser?.phone || x?.general?.email === currentUser?.email
+        )
 
         // ADD OR UPDATE CHILD RECORD UNDER PARENT
-        // -> Add
+        // -> Add child to parent
         if (!Manager.isValid(existingChild) || ObjectManager.isEmpty(existingChild)) {
           const childToAdd = new Child()
           const general = new General()
@@ -90,28 +91,28 @@ export default function RequestParentAccess() {
           childToAdd.general = general
           childToAdd.userKey = currentUser?.key
           const cleanChild = ObjectManager.cleanObject(childToAdd, ModelNames.child)
-          await DB_UserScoped.addUserChild(parent, cleanChild)
+          await DB_UserScoped.addUserChild(existingParentAccount, cleanChild)
         }
 
         // -> Update
         else {
-          const existingChildKey = await DB.getSnapshotKey(`${DB.tables.users}/${parent?.key}/children`, existingChild, 'id')
+          const existingChildKey = await DB.getSnapshotKey(`${DB.tables.users}/${existingParentAccount?.key}/children`, existingChild, 'id')
 
           if (Manager.isValid(existingChildKey)) {
             existingChild.userKey = currentUser?.key
-            await DB.updateByPath(`${DB.tables.users}/${parent?.key}/children/${existingChildKey}`, existingChild)
+            await DB.updateByPath(`${DB.tables.users}/${existingParentAccount?.key}/children/${existingChildKey}`, existingChild)
           }
         }
 
-        // Add parent
+        // Add parent to child
         await DB.add(`${DB.tables.users}/${currentUser?.key}/parents`, {
-          name: parent?.name,
-          phone: parent?.phone,
-          userKey: parent?.key,
-          email: parent?.email,
+          name: existingParentAccount?.name,
+          phone: existingParentAccount?.phone,
+          userKey: existingParentAccount?.key,
+          email: existingParentAccount?.email,
         })
-        await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/parentAccessGranted`, true)
-        await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/name`, StringManager.uppercaseFirstLetterOfAllWords(userName))
+        await DB_UserScoped.updateUserRecord(currentUser?.key, 'parentAccessGranted', true)
+        await DB_UserScoped.updateUserRecord(currentUser?.key, 'sharedDataUsers', [existingParentAccount?.key])
         setState({...state, currentScreen: ScreenNames.onboarding, successAlertMessage: 'Access Granted'})
       } else {
         AlertManager.throwError(
@@ -121,83 +122,77 @@ export default function RequestParentAccess() {
         return false
       }
     } else {
-      AlertManager.throwError('Security code is incorrect, please try again')
+      AlertManager.throwError('Access code is incorrect, please try again')
       return false
     }
   }
 
   useEffect(() => {
     if (Manager.isValid(currentUser)) {
-      if (Manager.isValid(currentUser?.parentAccessGranted) && currentUser?.parentAccessGranted === true) {
-        setState({...state, currentScreen: ScreenNames.calendar})
-      }
+      setUserName(currentUser?.name)
     }
   }, [currentUser])
 
   return (
     <div className="page-container parent-access">
-      <p className="screen-title">Request Access from Parent</p>
-      <Spacer height={5} />
-      <p>To ensure privacy and security, your parent needs to provide a code for you to gain access.</p>
-      <Spacer height={5} />
-      <p>
-        When you enter your parent&#39;s phone number and {DomManager.tapOrClick()} the <b>Request Access</b> button, a text message containing the
-        code will be sent to them.
-      </p>
-      <Spacer height={5} />
-      <p>Please ask your parent for the code and enter it below.</p>
-      <Spacer height={10} />
-      {/* NAME */}
       {!readyToVerify && (
-        <InputWrapper inputType={InputTypes.text} required={true} labelText={'Your Name'} onChange={(e) => setUserName(e.target.value)} />
+        <>
+          <p className="screen-title">Request Access from Parent</p>
+          <Spacer height={5} />
+          <p>To ensure privacy and security, your parent needs to provide a code for you to gain access.</p>
+          <Spacer height={5} />
+          <p>
+            When you enter your parent&#39;s phone number and {DomManager.tapOrClick()} the <b>Request Access</b> button, a text message containing
+            the code will be sent to them.
+          </p>
+          <Spacer height={5} />
+          <p>Please ask your parent for the code and enter it below.</p>
+        </>
       )}
+      {readyToVerify && <p className="screen-title">Enter Access Code</p>}
 
       {!readyToVerify && (
-        <InputWrapper
-          inputType={InputTypes.email}
-          required={true}
-          labelText={'Parent Email Address'}
-          onChange={(e) => setParentEmail(e.target.value)}
-        />
-      )}
-
-      {/* PARENT PHONE */}
-      {!readyToVerify && (
-        <InputWrapper
-          inputType={InputTypes.phone}
-          required={true}
-          labelText={'Parent Phone Number'}
-          onChange={(e) => setParentPhone(e.target.value)}
-        />
-      )}
-      <Spacer height={10} />
-      {readyToVerify && (
-        <InputWrapper labelText={'Access Code'} inputType={InputTypes.text} required={true} onChange={(e) => setEnteredCode(e.target.value)} />
-      )}
-      {!readyToVerify && (
-        <button className="button default green center" onClick={SendPhoneVerificationCode}>
-          Request Access
-        </button>
+        <>
+          {/* PARENT EMAIL */}
+          <InputWrapper
+            inputType={InputTypes.email}
+            required={true}
+            labelText={'Parent Email Address'}
+            onChange={(e) => setParentEmail(e.target.value)}
+          />
+          {/* PARENT PHONE */}
+          <InputWrapper
+            inputType={InputTypes.phone}
+            required={true}
+            labelText={'Parent Phone Number'}
+            onChange={(e) => setParentPhone(e.target.value)}
+          />
+          <button className="button default green center" onClick={SendPhoneVerificationCode}>
+            Send Access Code
+          </button>
+        </>
       )}
       <Spacer height={10} />
       {readyToVerify && (
-        <button className="button default green center" onClick={VerifyPhoneCode}>
-          Verify Code
-        </button>
-      )}
-      <Spacer height={10} />
-      {readyToVerify && (
-        <button
-          className="button default submit center"
-          onClick={async () => {
-            setReadyToVerify(false)
-            setParentPhone('')
-            setEnteredCode('')
-            setVerificationCode('')
-            await SendPhoneVerificationCode(true)
-          }}>
-          Resend
-        </button>
+        <>
+          <InputWrapper labelText={'Access Code'} inputType={InputTypes.text} required={true} onChange={(e) => setEnteredCode(e.target.value)} />
+          <Spacer height={10} />
+          <button className="button w-50 default green center" onClick={VerifyPhoneCode}>
+            Verify Code
+          </button>
+          <Spacer height={5} />
+          <button
+            className="button default grey center w-50"
+            onClick={async () => {
+              setReadyToVerify(false)
+              setParentPhone('')
+              setEnteredCode('')
+              setVerificationCode('')
+              await SendPhoneVerificationCode(true)
+            }}>
+            Resend
+          </button>
+        </>
       )}
       <button
         id="request-access-screen"

@@ -84,8 +84,8 @@ export default function FiftyFifty({hide, showCard}) {
     ResetForm()
   }
 
-  const handleShareWithSelection = async (e) => {
-    const updated = await Manager.handleShareWithSelection(e, currentUser, shareWith)
+  const HandleShareWithSelection = (e) => {
+    const updated = Manager.handleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 
@@ -174,7 +174,7 @@ export default function FiftyFifty({hide, showCard}) {
         <ShareWithCheckboxes
           required={false}
           shareWith={currentUser?.coparents?.map((x) => x.phone)}
-          onCheck={handleShareWithSelection}
+          onCheck={HandleShareWithSelection}
           labelText={'Share with'}
           containerClass={'share-with-coparents'}
           dataKey={currentUser?.coparents?.map((x) => x.name)}

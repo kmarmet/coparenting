@@ -11,15 +11,19 @@ import ScreenNames from '/src/constants/screenNames'
 import globalState from '/src/context.js'
 import firebaseConfig from '/src/firebaseConfig'
 import AlertManager from '/src/managers/alertManager'
-import LogManager from '/src/managers/logManager.js'
 import DomManager from '/src/managers/domManager.js'
 import InputTypes from '../../../constants/inputTypes'
+import CheckboxGroup from '../../shared/checkboxGroup'
+import DB_UserScoped from '../../../database/db_userScoped'
 
 export default function Registration() {
   const {state, setState} = useContext(globalState)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmedPassword, setConfirmedPassword] = useState('')
+  const [name, setName] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
+  const [accountType, setAccountType] = useState('')
 
   // Firebase init
   const app = initializeApp(firebaseConfig)
@@ -31,20 +35,45 @@ export default function Registration() {
       AlertManager.throwError('Email address is not valid')
       return false
     }
-    if (!Manager.isValid(confirmedPassword) || !Manager.isValid(password)) {
-      AlertManager.throwError('Please enter a password')
+
+    const errorString = Manager.GetInvalidInputsErrorString([
+      {name: 'Your Name', value: name},
+      {name: 'Your Phone Number', value: phoneNumber},
+      {name: 'Profile Type', value: accountType},
+      {name: 'Email', value: email},
+      {name: 'Password', value: password},
+      {name: 'Password Confirmation', value: confirmedPassword},
+    ])
+    if (Manager.isValid(errorString, true)) {
+      AlertManager.throwError(errorString)
       return false
     }
+
+    // CREATE FIREBASE USER
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         try {
           // Signed up successfully
           const user = userCredential.user
           console.log('Signed up as:', user.email)
-          AlertManager.successAlert(`Welcome aboard!`)
-          setState({...state, currentScreen: ScreenNames.login})
+          setState({...state, successAlertMessage: 'Welcome aboard!'})
+          const userObject = {
+            phone: phoneNumber,
+            email: email,
+            accountType,
+            authUser: user,
+            name,
+            key: user?.uid,
+          }
+          const newUser = await DB_UserScoped.createAndInsertUser(userObject)
+          setState({
+            ...state,
+            currentScreen: accountType === 'parent' ? ScreenNames.onboarding : ScreenNames.requestParentAccess,
+            currentUser: newUser,
+            successAlertMessage: 'Success',
+          })
         } catch (error) {
-          LogManager.log(error.message, LogManager.logTypes.error)
+          console.log(`Error: ${error} | Code File: Registration  | Function:  Submit `)
         }
       })
       .catch((error) => {
@@ -56,16 +85,34 @@ export default function Registration() {
       })
   }
 
+  const HandleAccountType = (type) => {
+    Manager.handleCheckboxSelection(
+      type,
+      (type) => {
+        setAccountType(type)
+      },
+      () => {},
+      false
+    )
+  }
+
   return (
     <>
       {/* PAGE CONTAINER */}
       <div id="registration-container" className="page-container form">
         <p className="screen-title">Sign Up</p>
+        <p className="screen-intro-text">
+          Please provide your information below to set up an account and begin your harmonious co-parenting experience
+        </p>
 
         <Spacer height={15} />
 
         {/* PARENT FORM */}
         <div className="form">
+          <InputWrapper inputType={InputTypes.text} required={true} labelText={'Name'} onChange={(e) => setName(e.target.value)} />
+
+          <InputWrapper inputType={InputTypes.phone} required={true} labelText={'Phone Number'} onChange={(e) => setPhoneNumber(e.target.value)} />
+
           <InputWrapper inputType={InputTypes.text} required={true} labelText={'Email Address'} onChange={(e) => setEmail(e.target.value)} />
           <InputWrapper
             inputType={InputTypes.password}
@@ -81,7 +128,6 @@ export default function Registration() {
             labelText={'Confirm Password'}
             onChange={(e) => setConfirmedPassword(e.target.value)}
           />
-          <Spacer height={15} />
           <PasswordChecklist
             rules={['minLength', 'specialChar', 'number', 'capital', 'match', 'notEmpty']}
             minLength={5}
@@ -94,7 +140,20 @@ export default function Registration() {
               }
             }}
           />
-          <Spacer height={15} />
+
+          <Spacer height={10} />
+
+          <CheckboxGroup
+            onCheck={HandleAccountType}
+            parentLabel="Profile Type (cannot be changed later)"
+            labelText="Profile Type"
+            checkboxArray={Manager.buildCheckboxGroup({
+              customLabelArray: ['Parent', 'Child'],
+            })}
+            required={true}
+            textOnly={true}
+            dataKey={['Parent', 'Child']}
+          />
           <button
             className="button default green"
             onClick={() => {
@@ -106,9 +165,9 @@ export default function Registration() {
                 AlertManager.throwError('Please enter a password')
                 return false
               }
-              AlertManager.confirmAlert('Are the details you provided correct?', 'Yes', 'No', Submit)
+              AlertManager.confirmAlert('Are the details you provided correct? Profile Type cannot be changed after signing up', 'Yes', 'No', Submit)
             }}>
-            Submit
+            Create Account
           </button>
           <button
             id="registration-screen"
