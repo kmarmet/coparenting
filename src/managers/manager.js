@@ -1,10 +1,10 @@
 // Path: src\managers\manager.js
-import DB from '../database/DB'
-import CalMapper from '../mappers/calMapper'
 import _ from 'lodash'
-import StringManager from './stringManager'
-import DomManager from './domManager'
+import DB from '../database/DB'
 import DB_UserScoped from '../database/db_userScoped'
+import CalMapper from '../mappers/calMapper'
+import DomManager from './domManager'
+import StringManager from './stringManager'
 
 const Manager = {
   GetInvalidInputsErrorString: (requiredInputs) => {
@@ -323,15 +323,17 @@ const Manager = {
 
     // PREDEFINED TYPES
     if (Manager.isValid(predefinedType)) {
-      if (predefinedType === 'coparents') {
-        checkboxLabels = DB_UserScoped.getCoparentObjArray(currentUser)
+      if (predefinedType === 'coparents' && Manager.isValid(currentUser?.coparents)) {
+        checkboxLabels = DB_UserScoped.getCoparentObjArray(currentUser, currentUser?.coparents)
       }
 
-      for (const label of checkboxLabels) {
-        checkboxGroup.push({
-          label: label['name'],
-          key: label['key'],
-        })
+      if (Manager.isValid(checkboxLabels)) {
+        for (const label of checkboxLabels) {
+          checkboxGroup.push({
+            label: label['name'],
+            key: label['key'],
+          })
+        }
       }
 
       return checkboxGroup

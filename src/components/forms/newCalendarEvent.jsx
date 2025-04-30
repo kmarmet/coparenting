@@ -36,6 +36,7 @@ import Label from '../shared/label'
 import DB_UserScoped from '../../database/db_userScoped'
 import InputTypes from '../../constants/inputTypes'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import AddressInput from '../shared/addressInput'
 
 export default function NewCalendarEvent() {
   // APP STATE
@@ -554,12 +555,11 @@ export default function NewCalendarEvent() {
           <InputWrapper labelText={'Website/Link'} required={false} inputType={InputTypes.url} onChange={(e) => setEventWebsite(e.target.value)} />
 
           {/* ADDRESS */}
-          <InputWrapper
+          <AddressInput
             wrapperClasses={Manager.isValid(eventLocation, true) ? 'show-label' : ''}
             labelText={'Location'}
             required={false}
             onChange={(address) => setEventLocation(address)}
-            inputType={InputTypes.address}
           />
 
           {/* PHONE */}

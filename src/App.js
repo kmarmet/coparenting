@@ -1,14 +1,4 @@
 // Path: src\App.js
-import {LocalizationProvider} from '@mui/x-date-pickers-pro/LocalizationProvider'
-import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment'
-import React, {useEffect, useState} from 'react'
-import globalState from '/src/context.js'
-// Screens
-import emailjs from '@emailjs/browser'
-import {LicenseInfo} from '@mui/x-license'
-import {initializeApp} from 'firebase/app'
-import {getAuth, onAuthStateChanged} from 'firebase/auth'
-import RequestParentAccess from './components/screens/auth/requestParentAccess'
 import EditCalEvent from '/src/components/forms/editCalEvent.jsx'
 import NewCalendarEvent from '/src/components/forms/newCalendarEvent.jsx'
 import NewExpenseForm from '/src/components/forms/newExpenseForm.jsx'
@@ -16,9 +6,6 @@ import NewMemoryForm from '/src/components/forms/newMemoryForm.jsx'
 import NewSwapRequest from '/src/components/forms/newSwapRequest.jsx'
 import NewTransferChangeRequest from '/src/components/forms/newTransferRequest.jsx'
 import FullMenu from '/src/components/fullMenu'
-import Profile from '/src/components/screens/profile/profile.jsx'
-import ResetPassword from '/src/components/screens/profile/resetPassword.jsx'
-import Notifications from '/src/components/screens/notifications'
 import AdminDashboard from '/src/components/screens/admin/adminDashboard'
 import Login from '/src/components/screens/auth/login.jsx'
 import Registration from '/src/components/screens/auth/registration.jsx'
@@ -37,30 +24,43 @@ import ExpenseTracker from '/src/components/screens/expenses/expenseTracker.jsx'
 import Home from '/src/components/screens/home'
 import InstallApp from '/src/components/screens/installApp.jsx'
 import Memories from '/src/components/screens/memories.jsx'
-import Vault from '/src/components/screens/vault.jsx'
+import Notifications from '/src/components/screens/notifications'
+import Profile from '/src/components/screens/profile/profile.jsx'
+import ResetPassword from '/src/components/screens/profile/resetPassword.jsx'
 import Settings from '/src/components/screens/settings/settings.jsx'
 import SwapRequests from '/src/components/screens/swapRequests.jsx'
 import TransferRequests from '/src/components/screens/transferRequests.jsx'
+import Vault from '/src/components/screens/vault.jsx'
 import Visitation from '/src/components/screens/visitation.jsx'
 import BrandBar from '/src/components/shared/brandBar'
-import Loading from '/src/components/shared/loading'
 import DesktopLeftSidebar from '/src/components/shared/desktopLeftSidebar'
-import CreationMenu from './components/shared/creationMenu'
-import NewChat from './components/forms/newChat'
-import SuccessAlert from './components/shared/successAlert'
+import Loading from '/src/components/shared/loading'
 import ScreenNames from '/src/constants/screenNames'
 import StateObj from '/src/constants/stateObj'
+import globalState from '/src/context.js'
 import DB_UserScoped from '/src/database/db_userScoped'
 import firebaseConfig from '/src/firebaseConfig.js'
 import AppManager from '/src/managers/appManager.js'
 import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
+// Screens
+import emailjs from '@emailjs/browser'
+import {LocalizationProvider} from '@mui/x-date-pickers-pro/LocalizationProvider'
+import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment'
+import {LicenseInfo} from '@mui/x-license'
+import * as Sentry from '@sentry/react'
+import {initializeApp} from 'firebase/app'
+import {getAuth, onAuthStateChanged} from 'firebase/auth'
+import React, {useEffect, useState} from 'react'
+import NewChat from './components/forms/newChat'
+import RequestParentAccess from './components/screens/auth/requestParentAccess'
+import Onboarding from './components/screens/onboarding'
+import Parents from './components/screens/parents/parents'
+import CreationMenu from './components/shared/creationMenu'
+import SuccessAlert from './components/shared/successAlert'
+import CreationForms from './constants/creationForms'
 import DB from './database/DB'
 import NotificationManager from './managers/notificationManager'
-import CreationForms from './constants/creationForms'
-import Parents from './components/screens/parents/parents'
-import Onboarding from './components/screens/onboarding'
-import * as Sentry from '@sentry/react'
 
 export default function App() {
   // Initialize Firebase
@@ -112,7 +112,7 @@ export default function App() {
   // ON SCREEN CHANGE
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
-      console.log(`Screen: ${currentScreen}`)
+      // console.log(`Screen: ${currentScreen}`)
       window.navigator.clearAppBadge().then((r) => r)
     }
   }, [currentScreen])
@@ -178,6 +178,8 @@ export default function App() {
             if (!user?.emailVerified) {
               screenToNavigateTo = ScreenNames.login
             }
+
+            // EMAIL VERIFIED
             setState({
               ...state,
               authUser: user,

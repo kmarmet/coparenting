@@ -2,11 +2,25 @@ import DB from "../database/DB"
 import _ from "lodash"
 import moment from "moment"
 import Manager from "./manager"
+import ObjectManager from "./objectManager"
 
 DatasetManager = {
+  GetDatabaseKeyFromArray: (arr,getSingleObjectPropName, getSingleObjectProp) ->
+    if getSingleObjectProp
+      formatted = Object.entries(arr).map (x) -> x[1]
+      console.log(ObjectManager.RecursivelyFindProperty(formatted,getSingleObjectPropName), getSingleObjectProp);
+      return formatted.find (x) -> ObjectManager.RecursivelyFindProperty(formatted,getSingleObjectPropName) == getSingleObjectProp
+
+    else
+      return Object.entries(arr).flat()
+
+
+    return arr
   getValidArray: (arr) ->
     if Manager.isValid(arr)
+      arr = Manager.convertToArray(arr)
       arr.filter (x) -> x
+
   getNestedObject: (table, objectPath) ->
     dataset = await DB.getTable(table)
     _.get(dataset[0], objectPath)
@@ -16,6 +30,7 @@ DatasetManager = {
     return _.uniqBy(arr)
   mergeMultiple: (arrayOfArrays) ->
     _.flatten(arrayOfArrays[0].concat(arrayOfArrays[1])).filter (x) -> x?
+
   getUniqueArrayByProp: (arr, propOne, propTwo, propThree) ->
     uniqueData = _.values(_.keyBy(arr, (item) -> "#{item[propOne]}-#{item[propTwo]}"))
     if propThree

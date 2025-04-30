@@ -1,27 +1,48 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
+import Label from './label'
 
-export default function AddressInput({onChange = (e) => {}, defaultValue, labelText = '', required = false, value}) {
+import Manager from '../../managers/manager'
+import globalState from '../../context'
+import Spacer from './spacer'
+
+export default function AddressInput({onChange = (e) => {}, defaultValue, labelText = '', required = false, wrapperClasses = ''}) {
+  const {state, setState} = useContext(globalState)
+
   return (
-    <div id="address-input-wrapper">
-      {/* LABEL */}
-      {/*{Manager.isValid(labelText, true) && (*/}
-      {/*  <Label classes={Manager.isValid(defaultValue) ? 'active' : ''} text={`${labelText}`} required={required} />*/}
-      {/*)}*/}
+    <>
+      {Manager.isValid(process.env.REACT_APP_GOOGLE_MAPS_API_KEY, true) && (
+        <>
+          <div id="address-input-wrapper" className={`${wrapperClasses}`}>
+            {/* LABEL */}
+            {Manager.isValid(labelText, true) && (
+              <Label classes={Manager.isValid(defaultValue) ? 'active' : ''} text={`${labelText}`} required={required} />
+            )}
 
-      {/* INPUT */}
-      <GooglePlacesAutocomplete
-        apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
-        className={'address-input'}
-        selectProps={{
-          value: value,
-          placeholder: defaultValue,
-          onChange: (e) => {
-            console.log(e)
-          },
-          isClearable: true,
-        }}
-      />
-    </div>
+            {/* INPUT */}
+            <GooglePlacesAutocomplete
+              apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
+              className={'address-input'}
+              selectProps={{
+                placeholder: defaultValue,
+                blurInputOnSelect: true,
+                backspaceRemovesValue: true,
+                controlShouldRenderValue: true,
+                isClearable: true,
+
+                onChange: (e) => {
+                  if (Manager.isValid(e?.label, true)) {
+                    onChange(e?.label)
+                  } else {
+                    onChange('')
+                  }
+                },
+              }}
+            />
+          </div>
+          <Spacer height={5} />
+        </>
+      )}
+    </>
   )
 }

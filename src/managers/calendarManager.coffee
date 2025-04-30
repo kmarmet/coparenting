@@ -9,6 +9,8 @@ import CalendarMapper from "../mappers/calMapper"
 import DatasetManager from "./datasetManager"
 import CalendarEvent from "../models/calendarEvent"
 import ObjectManager from "./objectManager"
+import * as Sentry from '@sentry/react'
+
 import ModelNames from "../models/modelNames"
 
 export default CalendarManager =
@@ -109,34 +111,15 @@ export default CalendarManager =
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
-  UpdateEvent: (userKey,existingEvents, event, prop, value) ->
+  UpdateEvent:  (currentUserKey, updateIndex,updatedEvent) ->
     dbRef = getDatabase()
-    key = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{userKey}", event, 'id')
 
-    if !Manager.isValid(key)
-      console.log('Error: Key not found | Code File: CalendarManager  | Function: UpdateEvent');
-      return false
-
-    tableRecords = existingEvents
-    toUpdate = tableRecords.find((x) => x.id == event?.id)
-    toUpdate[prop] = value;
     try
-      update(ref(dbRef, "#{DB.tables.calendarEvents}/#{userKey}/#{key}"), toUpdate)
+      if updateIndex
+        await update(ref(dbRef, "#{DB.tables.calendarEvents}/#{currentUserKey}/#{updateIndex}"), updatedEvent)
     catch error
-      console.log("Error: #{error} | Code File: CalendarManager  | Function: UpdateEvent");
+      Sentry.captureException("Error: #{error} | Code File: CalendarManager | Function: UpdateExpense")
 
-  updateMultipleEvents: (events, currentUser) ->
-    dbRef = getDatabase()
-    path = "#{DB.tables.calendarEvents}/#{currentUser.key}";
-    existingEvents = await DB.getTable(path)
-    if Manager.isValid(events)
-      for updatedEvent in events
-        for event in existingEvents
-          if event.id == updatedEvent.id
-            key = await DB.getSnapshotKey(path, event, 'id')
-            await DB.deleteByPath("#{path}/#{key}")
-            await DB.add("#{path}/#{key}", event)
-            await update(ref(dbRef, "#{path}/#{key}"), updatedEvent)
 
   deleteMultipleEvents: (events, currentUser) ->
     dbRef = ref(getDatabase())

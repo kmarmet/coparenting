@@ -1,30 +1,31 @@
-import React, {useContext, useEffect, useState} from 'react'
-// Path: src\components\screens\childInfo\checklists.jsx
-import Modal from '../../shared/modal'
-import globalState from '../../../context'
 import Spacer from '/src/components/shared/spacer'
 import ViewSelector from '/src/components/shared/viewSelector'
-import Manager from '/src/managers/manager'
-import {MdOutlineChecklist} from 'react-icons/md'
 import DB from '/src/database/DB'
+import Manager from '/src/managers/manager'
 import Checklist from '/src/models/checklist.js'
+import React, {useContext, useEffect, useState} from 'react'
+import {MdOutlineChecklist} from 'react-icons/md'
 import {PiListChecksFill, PiTrashSimpleDuotone} from 'react-icons/pi'
-import StringManager from '../../../managers/stringManager'
-import DomManager from '../../../managers/domManager'
+import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import DomManager from '../../../managers/domManager'
+import StringManager from '../../../managers/stringManager'
+// Path: src\components\screens\childInfo\checklists.jsx
+import Modal from '../../shared/modal'
 
 export default function Checklists({showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
-  const {activeInfoChild} = state
+  const {activeChild} = state
   const [checkboxTextList, setCheckboxTextList] = useState([])
   const [view, setView] = useState('from')
   const [checklist, setChecklist] = useState(null)
   const [activeItems, setActiveItems] = useState([])
   const [destinationLabels, setDestinationLabels] = useState(['From Co-Parent', 'To Co-Parent'])
-  const {currentUser} = useCurrentUser()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
 
-  const addToDb = async () => {
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
+  const AddToDb = async () => {
+    const childKey = DB.GetChildIndex(currentUser?.children, activeChild?.id)
+
     const newChecklist = new Checklist()
     newChecklist.checklistItems = checkboxTextList
     newChecklist.ownerKey = currentUser?.key
@@ -46,7 +47,7 @@ export default function Checklists({showCard, hideCard}) {
   const deleteItem = async (el) => {
     const element = el.currentTarget
     const checklistItem = element.previousElementSibling
-    const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
+    const childKey = DB.GetChildIndex(currentUser?.children, activeChild?.id)
     const path = `${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`
     const childChecklists = await DB.getTable(path)
     const activeChecklist = childChecklists.filter((x) => x.fromOrTo === view)[0]
@@ -71,8 +72,8 @@ export default function Checklists({showCard, hideCard}) {
   }
 
   const setActiveChildChecklist = async () => {
-    if (Manager.isValid(activeInfoChild)) {
-      const childKey = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/children`, activeInfoChild, 'id')
+    if (Manager.isValid(activeChild)) {
+      const childKey = DB.GetChildIndex(currentUser?.children, activeChild?.id)
       const updatedActiveChild = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`)
       const checklists = updatedActiveChild?.checklists?.map((x) => x)
       if (Manager.isValid(checklists)) {
@@ -124,9 +125,13 @@ export default function Checklists({showCard, hideCard}) {
     }
   }, [showCard])
 
+  if (currentUserIsLoading) {
+    return <img src={require('../../../img/loading.gif')} alt="Loading" className="data-loading-gif" />
+  }
+
   return (
     <Modal
-      onSubmit={addToDb}
+      onSubmit={AddToDb}
       wrapperClass="child-info-checklists"
       submitIcon={<MdOutlineChecklist />}
       showCard={showCard}

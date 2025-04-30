@@ -1,27 +1,28 @@
 // Path: src\components\forms\newTransferRequest.jsx
-import React, {useContext, useState} from 'react'
-import globalState from '../../context'
-import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
-import TransferChangeRequest from '/src/models/transferChangeRequest.js'
-import moment from 'moment'
-import DB from '/src/database/DB'
-import NotificationManager from '/src/managers/notificationManager.js'
-import DB_UserScoped from '/src/database/db_userScoped'
 import DatetimeFormats from '/src/constants/datetimeFormats'
-import DateManager from '/src/managers/dateManager'
-import Modal from '../shared/modal'
-import InputWrapper from '../shared/inputWrapper'
-import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
+import DB from '/src/database/DB'
+import DB_UserScoped from '/src/database/db_userScoped'
 import AlertManager from '/src/managers/alertManager'
+import DateManager from '/src/managers/dateManager'
+import Manager from '/src/managers/manager'
+import NotificationManager from '/src/managers/notificationManager.js'
 import StringManager from '/src/managers/stringManager'
 import ActivityCategory from '/src/models/activityCategory'
-import Spacer from '../shared/spacer'
+import TransferChangeRequest from '/src/models/transferChangeRequest.js'
+import moment from 'moment'
+import React, {useContext, useState} from 'react'
 import creationForms from '../../constants/creationForms'
-import ToggleButton from '../shared/toggleButton'
-import Label from '../shared/label'
 import InputTypes from '../../constants/inputTypes'
+import globalState from '../../context'
+import useCoparents from '../../hooks/useCoparents'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import InputWrapper from '../shared/inputWrapper'
+import Label from '../shared/label'
+import Modal from '../shared/modal'
+import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
+import Spacer from '../shared/spacer'
+import ToggleButton from '../shared/toggleButton'
 
 export default function NewTransferChangeRequest() {
   const {state, setState} = useContext(globalState)
@@ -34,7 +35,8 @@ export default function NewTransferChangeRequest() {
   const [requestRecipientKey, setRequestRecipientKey] = useState('')
   const [preferredLocation, setPreferredLocation] = useState('')
   const [responseDueDate, setResponseDueDate] = useState('')
-  const {currentUser} = useCurrentUser()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {coparents, coparentsAreLoading} = useCoparents()
 
   const ResetForm = async (showSuccessAlert = false) => {
     Manager.ResetForm('transfer-request-wrapper')
@@ -111,7 +113,7 @@ export default function NewTransferChangeRequest() {
     await DB.add(`${DB.tables.transferChangeRequests}/${currentUser.key}`, newRequest)
 
     // Notify
-    await NotificationManager.sendNotification(
+    await NotificationManager.SendNotification(
       `Transfer Change Request`,
       `${StringManager.getFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
       requestRecipientKey,
@@ -134,6 +136,10 @@ export default function NewTransferChangeRequest() {
     } else {
       setRequestRecipientKey('')
     }
+  }
+
+  if (coparentsAreLoading || currentUserIsLoading) {
+    return <img src={require('../../img/loading.gif')} alt="" />
   }
 
   return (
@@ -202,7 +208,7 @@ export default function NewTransferChangeRequest() {
             />
 
             <ShareWithCheckboxes
-              shareWith={currentUser?.coparents?.map((x) => x.phone)}
+              shareWith={coparents?.map((x) => x.phone)}
               onCheck={HandleShareWithSelection}
               labelText={'Share with'}
               containerClass={'share-with-coparents'}

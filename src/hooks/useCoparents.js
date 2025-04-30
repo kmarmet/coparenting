@@ -1,19 +1,19 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useContext, useEffect, useState} from 'react'
-import Manager from '../managers/manager'
-import DB from '../database/DB'
-import useUsers from './useUsers'
 import globalState from '../context'
+import DB from '../database/DB'
+import DatasetManager from '../managers/datasetManager'
+import Manager from '../managers/manager'
+import useCurrentUser from './useCurrentUser'
 
 const useCoparents = () => {
   const {state, setState} = useContext(globalState)
   const {authUser} = state
-  const {users} = useUsers()
-  const [isLoading, setIsLoading] = useState(true)
+  const {currentUser} = useCurrentUser()
+  const [coparentsAreLoading, setCoparentsAreLoading] = useState(true)
   const [coparents, setCoparents] = useState([])
   const [error, setError] = useState(null)
-  const dbUser = users?.find((u) => u?.email === authUser?.email)
-  const path = `${DB.tables.users}/${dbUser?.key}/coparents`
+  const path = `${DB.tables.users}/${currentUser?.key}/coparents`
   const queryKey = ['realtime', path]
 
   useEffect(() => {
@@ -24,29 +24,29 @@ const useCoparents = () => {
       dataRef,
       (snapshot) => {
         // console.log('Children Updated')
-        const formattedCoparents = Manager.convertToArray(snapshot.val()?.filter((x) => x))
-        if (Manager.isValid(dbUser) && Manager.isValid(formattedCoparents)) {
+        const formattedCoparents = DatasetManager.getValidArray(snapshot.val())
+        if (Manager.isValid(currentUser) && Manager.isValid(formattedCoparents)) {
           setCoparents(formattedCoparents)
-          setIsLoading(false)
         } else {
           setCoparents([])
         }
+        setCoparentsAreLoading(false)
       },
       (err) => {
         console.log(`useCoparents Error: ${err}`)
         setError(err)
-        setIsLoading(false)
+        setCoparentsAreLoading(false)
       }
     )
 
     return () => {
       off(dataRef, 'value', listener)
     }
-  }, [path, dbUser])
+  }, [path, currentUser])
 
   return {
     coparents,
-    isLoading,
+    coparentsAreLoading,
     error,
     queryKey,
   }

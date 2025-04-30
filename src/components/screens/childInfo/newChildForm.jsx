@@ -1,28 +1,29 @@
 // Path: src\components\screens\childInfo\newChildForm.jsx
+import moment from 'moment'
 import React, {useContext, useState} from 'react'
-import globalState from '../../../context'
-import Manager from '../../../managers/manager'
-import General from '../../../models/child/general'
-import Child from '../../../models/child/child'
-import DB_UserScoped from '../../../database/db_userScoped'
-import ModelNames from '../../../models/modelNames'
-import InputWrapper from '../../shared/inputWrapper'
-import Modal from '../../shared/modal'
-import ObjectManager from '../../../managers/objectManager'
-import UploadInputs from '../../shared/uploadInputs'
-import ImageManager from '../../../managers/imageManager'
-import FirebaseStorage from '../../../database/firebaseStorage'
-import Label from '../../shared/label'
-import StringManager from '../../../managers/stringManager.js'
-import CalendarManager from '../../../managers/calendarManager'
-import CalendarEvent from '../../../models/calendarEvent'
 import InputTypes from '../../../constants/inputTypes'
-import Spacer from '../../shared/spacer'
-import AlertManager from '../../../managers/alertManager'
+import globalState from '../../../context'
+import DB_UserScoped from '../../../database/db_userScoped'
+import FirebaseStorage from '../../../database/firebaseStorage'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
+import AlertManager from '../../../managers/alertManager'
+import CalendarManager from '../../../managers/calendarManager'
+import ImageManager from '../../../managers/imageManager'
+import Manager from '../../../managers/manager'
+import ObjectManager from '../../../managers/objectManager'
+import StringManager from '../../../managers/stringManager.js'
+import CalendarEvent from '../../../models/calendarEvent'
+import Child from '../../../models/child/child'
+import General from '../../../models/child/general'
+import ModelNames from '../../../models/modelNames'
+import AddressInput from '../../shared/addressInput'
+import InputWrapper from '../../shared/inputWrapper'
+import Label from '../../shared/label'
+import Modal from '../../shared/modal'
+import Spacer from '../../shared/spacer'
 import ToggleButton from '../../shared/toggleButton'
-import moment from 'moment'
+import UploadInputs from '../../shared/uploadInputs'
 
 const NewChildForm = ({hideCard, showCard}) => {
   const {state, setState} = useContext(globalState)
@@ -144,7 +145,7 @@ const NewChildForm = ({hideCard, showCard}) => {
           />
 
           {/* ADDRESS */}
-          <InputWrapper labelText={'Home Address'} inputType={InputTypes.address} onChange={(address) => setAddress(address)} />
+          <AddressInput labelText={'Home Address'} onChange={(address) => setAddress(address)} />
 
           {/* PHONE NUMBER */}
           <InputWrapper labelText={'Phone Number'} inputType={InputTypes.phone} required={false} onChange={(e) => setPhoneNumber(e.target.value)} />

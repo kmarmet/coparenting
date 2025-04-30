@@ -1,36 +1,36 @@
 // Path: src\components\screens\transferRequests?.jsx
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../context.js'
-import DB from '/src/database/DB'
-import Manager from '/src/managers/manager'
-import {MdPersonPinCircle} from 'react-icons/md'
-import NotificationManager from '/src/managers/notificationManager.js'
-import DB_UserScoped from '../../database/db_userScoped.js'
-import {IoAdd} from 'react-icons/io5'
-import {PiCarProfileDuotone, PiCheckBold} from 'react-icons/pi'
-import {Fade} from 'react-awesome-reveal'
-import moment from 'moment'
-import AlertManager from '/src/managers/alertManager'
-import Modal from '/src/components/shared/modal'
-import DomManager from '/src/managers/domManager'
-import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
-import ActivityCategory from '/src/models/activityCategory'
-import DatetimeFormats from '/src/constants/datetimeFormats'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import ObjectManager from '/src/managers/objectManager'
-import ModelNames from '/src/models/modelNames'
-import StringManager from '/src/managers/stringManager'
-import Spacer from '../shared/spacer.jsx'
 import Map from '/src/components/shared/map.jsx'
+import Modal from '/src/components/shared/modal'
+import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
+import DatetimeFormats from '/src/constants/datetimeFormats'
+import DB from '/src/database/DB'
+import AlertManager from '/src/managers/alertManager'
+import DomManager from '/src/managers/domManager'
+import Manager from '/src/managers/manager'
+import NotificationManager from '/src/managers/notificationManager.js'
+import ObjectManager from '/src/managers/objectManager'
+import StringManager from '/src/managers/stringManager'
+import ActivityCategory from '/src/models/activityCategory'
+import ModelNames from '/src/models/modelNames'
+import moment from 'moment'
+import React, {useContext, useEffect, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
 import {setKey} from 'react-geocode'
-import Label from '../shared/label.jsx'
-import ViewSelector from '../shared/viewSelector'
-import NavBar from '../navBar'
-import ToggleButton from '../shared/toggleButton'
-import DetailBlock from '../shared/detailBlock'
+import {IoAdd} from 'react-icons/io5'
+import {MdPersonPinCircle} from 'react-icons/md'
+import {PiCarProfileDuotone, PiCheckBold} from 'react-icons/pi'
 import InputTypes from '../../constants/inputTypes'
+import globalState from '../../context.js'
+import DB_UserScoped from '../../database/db_userScoped.js'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useTransferRequests from '../../hooks/useTransferRequests'
+import NavBar from '../navBar'
+import DetailBlock from '../shared/detailBlock'
+import Label from '../shared/label.jsx'
+import Spacer from '../shared/spacer.jsx'
+import ToggleButton from '../shared/toggleButton'
+import ViewSelector from '../shared/viewSelector'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -108,7 +108,7 @@ export default function TransferRequests() {
       activeRequest.declineReason = declineReason
       await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.ownerKey}`, activeRequest, activeRequest.id)
       const message = NotificationManager.templates.transferRequestRejection(activeRequest, recipientName)
-      await NotificationManager.sendNotification(
+      await NotificationManager.SendNotification(
         'Transfer Request Decision',
         message,
         activeRequest?.ownerKey,
@@ -124,7 +124,7 @@ export default function TransferRequests() {
       await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.ownerKey}`, activeRequest, activeRequest.id)
       const message = NotificationManager.templates.transferRequestApproval(activeRequest, recipientName)
       setShowDetails(false)
-      await NotificationManager.sendNotification(
+      await NotificationManager.SendNotification(
         'Transfer Request Decision',
         message,
         activeRequest?.ownerKey,
@@ -145,7 +145,7 @@ export default function TransferRequests() {
       notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
     }
     const recipientKey = activeRequest?.ownerKey === currentUser?.key ? activeRequest.recipientKey : currentUser?.key
-    await NotificationManager.sendNotification(
+    await NotificationManager.SendNotification(
       'Transfer Destination Arrival',
       notificationMessage,
       recipientKey,

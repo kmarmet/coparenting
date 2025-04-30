@@ -23,6 +23,7 @@ import StringManager from '../../../managers/stringManager.coffee'
 import InputTypes from '../../../constants/inputTypes'
 import Spacer from '../../shared/spacer'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import AddressInput from '../../shared/addressInput'
 
 export default function Profile() {
   const {state, setState} = useContext(globalState)
@@ -190,7 +191,6 @@ export default function Profile() {
   }
 
   const SetHomeAddress = async (address) => {
-    console.log(currentUser)
     await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser?.key}/location/homeAddress`, address)
     setState({...state, successAlertMessage: 'Home address has been updated'})
   }
@@ -254,6 +254,7 @@ export default function Profile() {
       {/* PAGE CONTAINER */}
       <div id="account-container" className={`${theme} page-container`}>
         <p className="screen-title">My Profile</p>
+        <Spacer height={10} />
         <p id="user-name">
           Hey {StringManager.getFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
         </p>
@@ -261,11 +262,16 @@ export default function Profile() {
           <Fade direction={'right'} duration={800} className={'visitation-fade-wrapper'} triggerOnce={true} damping={0.2} cascade={true}>
             {/* HOME ADDRESS */}
             {Manager.isValid(currentUser) && (
-              <InputWrapper
-                defaultValue={currentUser?.homeAddress}
-                inputType={InputTypes.address}
+              <AddressInput
+                wrapperClasses="on-grey-bg"
+                onChange={(address) => {
+                  console.log(address)
+                  SetHomeAddress(address).then()
+                }}
+                defaultValue={currentUser?.location?.homeAddress}
                 labelText={'Home Address'}
-                onChange={(address) => SetHomeAddress(address)}
+                required={true}
+                value={currentUser?.homeAddress}
               />
             )}
 

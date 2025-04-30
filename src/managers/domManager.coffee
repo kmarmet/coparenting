@@ -1,12 +1,67 @@
 import Manager from "./manager"
 
 DomManager = {
+  AnimateClasses:
+    names:
+      fadeInUp: 'fadeInUp'
+      fadeInDown: 'fadeInDown'
+      fadeInRight: 'fadeInRight'
+      slideInLeft: 'slideInLeft'
+      slideInRight: 'slideInRight'
+      fadeIn: 'fadeIn'
+      zoomIn: 'zoomIn'
+
+    zoomIn:
+      enter: 'animate__zoomIn',
+      exit: 'animate__zoomOut'
+
+    fadeIn:
+      enter: 'animate__fadeIn',
+      exit: 'animate__fadeOut'
+
+    slideInLeft:
+      enter: 'animate__slideInLeft',
+      exit: 'animate__slideOutLeft'
+
+    slideInRight:
+      enter: 'animate__slideInRight',
+      exit: 'animate__slideOutRight'
+
+    fadeInUp:
+      enter: 'animate__fadeInUp',
+      exit: 'animate__fadeOutDown'
+
+    fadeInDown:
+      enter: 'animate__fadeInDown',
+      exit: 'animate__fadeOutUp'
+
+    fadeInRight:
+      enter: 'animate__fadeInRight',
+      exit: 'animate__fadeOut'
+
   AddThemeToDatePickers: (currentUser) ->
     setTimeout ->
       datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
       if Manager.isValid(datetimeParent)
         datetimeParent.classList.add(currentUser?.settings?.theme)
     , 100
+
+  ToggleAnimation:(addOrRemove, itemsClass, animateName, delay = 80) ->
+    allMenuItems = document.querySelectorAll(".#{itemsClass}")
+    if Manager.isValid(allMenuItems)
+
+      allMenuItems.forEach (item) ->
+          item.classList.add('animate__animated')
+          item.classList.remove(DomManager.AnimateClasses[animateName].exit)
+          item.classList.remove(DomManager.AnimateClasses[animateName].enter)
+
+      allMenuItems.forEach (item, index) ->
+        setTimeout ->
+          if addOrRemove is 'add'
+            item.classList.add(DomManager.AnimateClasses[animateName].enter)
+          else
+            item.classList.add(DomManager.AnimateClasses[animateName].exit)
+        , index * delay
 
 
   setDefaultView: () ->

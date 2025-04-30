@@ -14,8 +14,20 @@ import Doc from "../models/doc"
 import Child from "../models/child/child"
 import _ from "lodash"
 import Parent from "../models/parent"
+import Manager from "./manager"
 
 ObjectManager = {
+  RecursivelyFindProperty:  (obj, key) ->
+    if Manager.isValid(obj) and typeof obj is 'object'
+      if obj.hasOwnProperty(key)
+        return obj[key]
+      for prop of obj
+        result = ObjectManager.RecursivelyFindProperty obj[prop], key
+        if result != undefined
+          return result
+    return undefined
+
+
   cleanObject: (object, modelName) ->
     returnObject = switch modelName
       when ModelNames.calendarEvent then new CalendarEvent()

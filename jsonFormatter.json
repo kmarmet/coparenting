@@ -1,0 +1,105 @@
+{
+  "accountType": "parent",
+  "allowNotifications": "",
+  "children": [
+    {
+      "general": {
+        "address": "3289 Sherman Rd, Mansfield, OH 44903, USA",
+        "dateOfBirth": "03/17/2025",
+        "gender": "Female",
+        "name": "Ellie",
+        "profilePic": "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/profilePics%2FPn4pnBDLoTfwpP3VFzBhM3QzxZE3%2F6f7d61b6-b97d-4e1d-a7ec-dd1b48cff524%2FprofilePic?alt=media&token=b00420a8-1e70-4f2a-898c-9ffc12022768"
+      },
+      "id": "6f7d61b6-b97d-4e1d-a7ec-dd1b48cff524",
+      "medical": {"doctorName": ""},
+      "schooling": {"grade": "", "schoolName": ""}
+    },
+    {
+      "checklists": [{"checklistItems": ["Chromebook", "Brain 🧠 "], "fromOrTo": "to", "id": "00d42596-1868-4552-90fa-84c5ebd667dd"}],
+      "general": {
+        "address": "3289 Sherman Road, Mansfield, OH, USA",
+        "dateOfBirth": "03/31/2025",
+        "gender": "Male",
+        "name": "Larkin",
+        "profilePic": "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/profilePics%2FPn4pnBDLoTfwpP3VFzBhM3QzxZE3%2Fc02dcb72-af17-4b23-98cc-ff28963381ec%2FprofilePic?alt=media&token=479fc12b-fef1-440f-ad14-fbfeeac55149"
+      },
+      "id": "c02dcb72-af17-4b23-98cc-ff28963381ec",
+      "schooling": {"grade": "", "schoolName": ""},
+      "userKey": "AbZYjeiR7wX8z3WMVtwQRB0ztKB3"
+    },
+    {
+      "general": {
+        "address": "3289 Sherman Road, Mansfield, OH, USA",
+        "dateOfBirth": "04/18/2025",
+        "gender": "Male",
+        "name": "Otto",
+        "profilePic": "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/profilePics%2FPn4pnBDLoTfwpP3VFzBhM3QzxZE3%2Fb978af7a-fffc-4b9c-83f1-9d5b6b30e3a6%2FprofilePic?alt=media&token=ce29573d-06dc-4178-b692-f4613a6cd544"
+      },
+      "id": "b978af7a-fffc-4b9c-83f1-9d5b6b30e3a6",
+      "medical": {"doctorName": ""},
+      "schooling": {"grade": "", "schoolName": ""},
+      "userKey": "v4nbWHlURxRLZkEuA5IhLD4CDkm2"
+    }
+  ],
+  "coparents": [
+    {
+      "address": "1514 Ohio 60, Ashland, OH, USA",
+      "email": "lmarmet6@gmail.com",
+      "id": "6af8e6f0-fc5d-40f7-baf0-1e5d0d299c94",
+      "name": "Lindsay",
+      "parentType": "Step-Parent",
+      "phone": "4199615795",
+      "relationshipToMe": "",
+      "userKey": "no37T3EPtdP2LgFDOI4FYwUdm9a2"
+    },
+    {
+      "address": "209 Idaho Avenue, Salem, OH, USA",
+      "email": "",
+      "id": "a0230af5-2496-4e3c-9308-34d04dc9f7f2",
+      "name": "Ashley",
+      "parentType": "Biological",
+      "phone": "",
+      "relationshipToMe": "",
+      "userKey": "583ad164-89c5-46d4-9a7f-7602b3a0cffc"
+    }
+  ],
+  "dailySummaries": {
+    "eveningReminderSummaryHour": "8pm",
+    "eveningSentDate": "04/28/2025",
+    "morningReminderSummaryHour": "9am",
+    "morningSentDate": "04/29/2025"
+  },
+  "email": "kmarmet1@gmail.com",
+  "id": "70b4c0b2-5ac5-40a6-adc8-a37ea5940faf",
+  "key": "Pn4pnBDLoTfwpP3VFzBhM3QzxZE3",
+  "location": {
+    "city": "Ashland",
+    "country": "United States",
+    "homeAddress": "1514 Ohio 60, Ashland, OH, USA",
+    "ipAddress": "24.112.233.209",
+    "latitude": 40.8552,
+    "longitude": -82.3143,
+    "timezone": "America/New_York"
+  },
+  "name": "Kevin",
+  "parentAccessGranted": true,
+  "parentType": "Biological Parent",
+  "phone": "3307494534",
+  "settings": {"eveningReminderSummaryHour": "8pm", "morningReminderSummaryHour": "10am", "notificationsEnabled": true, "theme": "light"},
+  "sharedDataUsers": [
+    "no37T3EPtdP2LgFDOI4FYwUdm9a2",
+    "eYnXXHXsvHZnB0XVi0jSgMhGRjq1",
+    "v4nbWHlURxRLZkEuA5IhLD4CDkm2",
+    "AbZYjeiR7wX8z3WMVtwQRB0ztKB3",
+    "4tbA8dBOvNZTkmD54Uk5cZOOj8Y2",
+    "AbkZAnNVeXPtrfrCaIf9n9HxEJn2",
+    "5a2cce71-cc59-4430-bb19-6db2f33a6775",
+    "583ad164-89c5-46d4-9a7f-7602b3a0cffc",
+    "dbf9903c-168f-459b-82ba-3423e4f7fcb5"
+  ],
+  "showInitialLoginAlert": false,
+  "visitation": {
+    "transferAddress": "4757 Tuscarawas Street West, Canton, OH, USA",
+    "transferNavLink": "https://www.google.com/maps?daddr=4757%20Tuscarawas%20Street%20West%2C%20Canton%2C%20OH%2C%20USA"
+  }
+}

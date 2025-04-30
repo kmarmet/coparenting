@@ -1,36 +1,37 @@
 // Path: src\components\screens\calendar\calendar.jsx
-import React, {useContext, useEffect, useState} from 'react'
+import EditCalEvent from '/src/components/forms/editCalEvent'
+import NavBar from '/src/components/navBar.jsx'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import Modal from '/src/components/shared/modal'
+import DatetimeFormats from '/src/constants/datetimeFormats'
+import globalState from '/src/context.js'
+import firebaseConfig from '/src/firebaseConfig.js'
 import AlertManager from '/src/managers/alertManager'
 import AppManager from '/src/managers/appManager'
-import Modal from '/src/components/shared/modal'
-import DB from '../../../database/DB.js'
 import DatasetManager from '/src/managers/datasetManager'
-import DatetimeFormats from '/src/constants/datetimeFormats'
 import DateManager from '/src/managers/dateManager'
 import DomManager from '/src/managers/domManager'
-import EditCalEvent from '/src/components/forms/editCalEvent'
-import InputWrapper from '/src/components/shared/inputWrapper'
 import Manager from '/src/managers/manager'
-import NavBar from '/src/components/navBar.jsx'
-import globalState from '/src/context.js'
+import {StaticDatePicker} from '@mui/x-date-pickers-pro'
+import {initializeApp} from 'firebase/app'
 import moment from 'moment'
+import React, {useContext, useEffect, useState} from 'react'
+import {BsStars} from 'react-icons/bs'
 import {LuCalendarSearch} from 'react-icons/lu'
 import {PiCalendarPlusDuotone, PiCalendarXDuotone} from 'react-icons/pi'
-import {StaticDatePicker} from '@mui/x-date-pickers-pro'
-import {BsStars} from 'react-icons/bs'
+import InputTypes from '../../../constants/inputTypes'
+import DB from '../../../database/DB.js'
+import useCalendarEvents from '../../../hooks/useCalendarEvents'
+import useCurrentUser from '../../../hooks/useCurrentUser'
+import Spacer from '../../shared/spacer'
+import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
 import CalendarEvents from './calendarEvents.jsx'
 import CalendarLegend from './calendarLegend.jsx'
 import DesktopLegend from './desktopLegend.jsx'
-import firebaseConfig from '/src/firebaseConfig.js'
-import {initializeApp} from 'firebase/app'
-import InputTypes from '../../../constants/inputTypes'
-import Spacer from '../../shared/spacer'
-import useCurrentUser from '../../../hooks/useCurrentUser'
-import useCalendarEvents from '../../../hooks/useCalendarEvents'
 
 export default function EventCalendar() {
   const {state, setState} = useContext(globalState)
-  const {theme, authUser, refreshKey} = state
+  const {theme, currentScreen, refreshKey} = state
   const [eventsOfActiveDay, setEventsOfActiveDay] = useState([])
   const [searchResults, setSearchResults] = useState([])
   const [holidays, setHolidays] = useState([])
@@ -44,8 +45,8 @@ export default function EventCalendar() {
   const [showHolidays, setShowHolidays] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(null)
   const app = initializeApp(firebaseConfig)
-  const {currentUser} = useCurrentUser()
-  const {calendarEvents} = useCalendarEvents()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {calendarEvents, eventsAreLoading} = useCalendarEvents()
 
   // GET EVENTS
   const GetSecuredEvents = async (activeDay) => {
@@ -259,7 +260,7 @@ export default function EventCalendar() {
   const SetInitialActivities = async () => {
     const notifications = await DB.getTable(`${DB.tables.notifications}/${currentUser?.key}`)
     await AppManager.setAppBadge(notifications.length)
-    setState({...state, notificationCount: notifications.length, isLoading: false})
+    setState({...state, notificationCount: notifications.length, isLoading: false, refreshKey: Manager.getUid()})
   }
 
   // SEARCH
@@ -276,7 +277,7 @@ export default function EventCalendar() {
       setSearchResults(searchResults)
       setEventsOfActiveDay(searchResults)
       setShowSearchCard(false)
-      setState({...state, refreshKey: Manager.getUid()})
+      setState({...state, refreshKey: Manager.getUid(), isLoading: false})
     }
   }
 
@@ -308,38 +309,35 @@ export default function EventCalendar() {
   // ON PAGE LOAD
   useEffect(() => {
     // Append Holidays/Search Cal Buttons
-    const staticCalendar = document.querySelector('.MuiDialogActions-root')
-    const holidaysButton = document.getElementById('holidays-button')
-    const searchButton = document.getElementById('search-button')
-    if (staticCalendar && holidaysButton && searchButton) {
-      staticCalendar.prepend(holidaysButton)
-      staticCalendar.prepend(searchButton)
+    if (!currentUserIsLoading) {
+      const staticCalendar = document.querySelector('.MuiDialogActions-root')
+      const holidaysButton = document.getElementById('holidays-button')
+      const searchButton = document.getElementById('search-button')
+      if (staticCalendar && holidaysButton && searchButton) {
+        staticCalendar.prepend(holidaysButton)
+        staticCalendar.prepend(searchButton)
 
-      holidaysButton.addEventListener('click', () => {
-        setShowHolidaysCard(!showHolidaysCard)
-      })
-      searchButton.addEventListener('click', () => {
-        setShowSearchCard(true)
-      })
-    }
+        holidaysButton.addEventListener('click', () => {
+          setShowHolidaysCard(!showHolidaysCard)
+        })
+        searchButton.addEventListener('click', () => {
+          setShowSearchCard(true)
+        })
+      }
 
-    const legendButton = document.getElementById('legend-button')
-    if (legendButton) {
-      legendButton.addEventListener('click', () => {
-        legendButton.classList.toggle('active')
-      })
+      const legendButton = document.getElementById('legend-button')
+      if (legendButton) {
+        legendButton.addEventListener('click', () => {
+          legendButton.classList.toggle('active')
+        })
+      }
+      SetHolidaysState().then((r) => r)
     }
-    // const screenHeight = window.innerHeight
-    // const pageContainer = document.querySelector('.page-container')
-    // if (pageContainer) {
-    //   pageContainer.style.maxHeight = `${screenHeight}px`
-    // }
-    SetHolidaysState().then((r) => r)
-    setState({...state, isLoading: false})
-  }, [])
+  }, [currentScreen, currentUserIsLoading])
 
   return (
     <>
+      {currentUserIsLoading && !Manager.isValid(eventsOfActiveDay) && <StandaloneLoadingGif />}
       {/* CARDS */}
       <>
         {/* HOLIDAYS CARD */}
@@ -435,13 +433,15 @@ export default function EventCalendar() {
         {/* CONTENT WITH PADDING */}
         <div className="with-padding">
           {/* MAP/LOOP EVENTS */}
-          <CalendarEvents
-            eventsOfActiveDay={eventsOfActiveDay}
-            setEventToEdit={(ev) => {
-              setEventToEdit(ev)
-              setShowEditCard(true)
-            }}
-          />
+          {!eventsAreLoading && (
+            <CalendarEvents
+              eventsOfActiveDay={eventsOfActiveDay}
+              setEventToEdit={(ev) => {
+                setEventToEdit(ev)
+                setShowEditCard(true)
+              }}
+            />
+          )}
         </div>
 
         {/* HIDE BUTTONS */}

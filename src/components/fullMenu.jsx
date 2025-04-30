@@ -1,25 +1,26 @@
 // Path: src\components\fullMenu.jsx
-import React, {useContext} from 'react'
-import globalState from '../context'
-import ScreenNames from '../constants/screenNames'
-import Manager from '../managers/manager'
 import {getAuth, signOut} from 'firebase/auth'
-import {BsHouses, BsImages} from 'react-icons/bs'
-import {PiFiles, PiIdentificationCard, PiSwapLight, PiUserCircleCheckLight, PiUsersLight, PiVaultLight} from 'react-icons/pi'
-import {IoChatbubblesOutline, IoClose, IoSettingsOutline} from 'react-icons/io5'
-import {GrInstallOption, GrUserAdmin} from 'react-icons/gr'
-import {RiMailSendLine, RiParentLine} from 'react-icons/ri'
-import {LuBellRing, LuCalendarDays} from 'react-icons/lu'
-import Overlay from './shared/overlay'
+import React, {useContext, useEffect, useState} from 'react'
 import {AiOutlineLogout} from 'react-icons/ai'
-import useCurrentUser from '../hooks/useCurrentUser'
+import {BsHouses, BsImages} from 'react-icons/bs'
+import {GrInstallOption, GrSettingsOption, GrUserAdmin} from 'react-icons/gr'
+import {IoChatbubblesOutline, IoClose} from 'react-icons/io5'
 import {LiaFileInvoiceDollarSolid} from 'react-icons/lia'
+import {LuBellRing, LuCalendarDays} from 'react-icons/lu'
+import {PiFiles, PiIdentificationCard, PiSwap, PiUsers, PiVault} from 'react-icons/pi'
+import {RiAccountPinCircleLine, RiMailSendLine, RiParentLine} from 'react-icons/ri'
 import {TbTransferIn} from 'react-icons/tb'
+import ScreenNames from '../constants/screenNames'
+import globalState from '../context'
+import DB_UserScoped from '../database/db_userScoped'
+import DomManager from '../managers/domManager'
+import Manager from '../managers/manager'
+import Overlay from './shared/overlay'
 
 export default function FullMenu() {
   const {state, setState} = useContext(globalState)
-  const {currentScreen, menuIsOpen, theme, notificationCount} = state
-  const {currentUser} = useCurrentUser()
+  const {currentScreen, menuIsOpen, theme, notificationCount, refreshKey, authUser, userIsLoggedIn} = state
+  const [updatedCurrentUser, setUpdatedCurrentUser] = useState(null)
   const auth = getAuth()
 
   const ChangeCurrentScreen = async (screen) => setState({...state, currentScreen: screen, refreshKey: Manager.getUid(), menuIsOpen: false})
@@ -41,240 +42,243 @@ export default function FullMenu() {
       })
   }
 
+  const UpdateCurrentUser = async () => {
+    const updated = await DB_UserScoped.getCurrentUser(authUser?.email)
+    setUpdatedCurrentUser(updated)
+  }
+
+  useEffect(() => {
+    if (menuIsOpen === true) {
+      DomManager.ToggleAnimation('add', 'menu-items', DomManager.AnimateClasses.names.fadeInUp)
+    } else {
+      DomManager.ToggleAnimation('remove', 'menu-items', DomManager.AnimateClasses.names.fadeInUp)
+    }
+  }, [menuIsOpen])
+
+  useEffect(() => {
+    if (userIsLoggedIn === true) {
+      UpdateCurrentUser().then()
+    }
+  }, [userIsLoggedIn])
+
   return (
     <Overlay show={menuIsOpen}>
-      <div id="full-menu" className={`${theme} ${menuIsOpen ? 'open' : 'closed'}`}>
-        <p className="menu-title mt-0 admin">Admin</p>
-        <div className="menu-items admin">
-          {currentUser?.email === 'kmarmet1@gmail.com' && (
+      <div
+        key={refreshKey}
+        id="full-menu"
+        className={`${menuIsOpen ? 'animate__animated animate__fadeInUp' : 'animate__animated animate__fadeOutDown'}`}>
+        <div id="menu-sections">
+          {/* SHARING */}
+          <p className="menu-title sharing">Sharing</p>
+          <div className="menu-items animate__animated sharing">
+            {/* CALENDAR */}
             <div
-              className={`menu-item admin ${currentScreen === ScreenNames.onboarding ? 'active' : ''}`}
-              onClick={(e) => ChangeCurrentScreen(ScreenNames.onboarding, e)}>
-              <p>Onboarding</p>
-            </div>
-          )}
-          {/* ADMIN DASHBOARD */}
-          {currentUser?.email === 'kmarmet1@gmail.com' && (
-            <div
-              className={`menu-item admin ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
-              onClick={(e) => ChangeCurrentScreen(ScreenNames.adminDashboard, e)}>
+              className={`menu-item calendar ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
+              onClick={(e) => ChangeCurrentScreen(ScreenNames.calendar, e)}>
               <div className="svg-wrapper">
-                <GrUserAdmin />
+                <LuCalendarDays />
               </div>
-              <p>Dashboard</p>
+              <p>Calendar</p>
             </div>
-          )}
-        </div>
-
-        <hr />
-
-        {/* SHARING */}
-        <p className="menu-title sharing">Sharing</p>
-        <div className="menu-items sharing">
-          {/* CALENDAR */}
-          <div
-            className={`menu-item calendar ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
-            onClick={(e) => ChangeCurrentScreen(ScreenNames.calendar, e)}>
-            <div className="svg-wrapper">
-              <LuCalendarDays />
-            </div>
-            <p>Calendar</p>
-          </div>
-          {/* MEMORIES */}
-          <div
-            className={`menu-item memories ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
-            onClick={(e) => ChangeCurrentScreen(ScreenNames.memories, e)}>
-            <div className="svg-wrapper">
-              <BsImages />
-            </div>
-            <p>Memories</p>
-          </div>
-
-          {/* DOCUMENTS */}
-          {currentUser?.accountType === 'parent' && (
+            {/* MEMORIES */}
             <div
-              className={`menu-item documents ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
-              onClick={(e) => ChangeCurrentScreen(ScreenNames.docsList, e)}>
+              className={`menu-item memories ${currentScreen === ScreenNames.memories ? 'active' : ''}`}
+              onClick={(e) => ChangeCurrentScreen(ScreenNames.memories, e)}>
               <div className="svg-wrapper">
-                <PiFiles />
+                <BsImages />
               </div>
-              <p>Documents</p>
+              <p>Memories</p>
             </div>
-          )}
 
-          {/* NOTIFICATIONS */}
-          <div
-            className={`menu-item notifications ${currentScreen === ScreenNames.notifications ? 'active' : ''}`}
-            onClick={(e) => ChangeCurrentScreen(ScreenNames.notifications, e)}>
-            {notificationCount > 0 && <div className="badge"></div>}
-            <div className="svg-wrapper">
-              <LuBellRing />
-            </div>
-            <p>Notifications</p>
-          </div>
-        </div>
-        <hr />
-        {/* INFORMATION DATABASE */}
-        <p className="menu-title info-storage">Information Database</p>
-        <div className="menu-items info-storage">
-          {/* CHILD - PARENTS */}
-          {currentUser?.accountType === 'child' && (
+            {/* DOCUMENTS */}
+            {updatedCurrentUser?.accountType === 'parent' && (
+              <div
+                className={`menu-item documents ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
+                onClick={(e) => ChangeCurrentScreen(ScreenNames.docsList, e)}>
+                <div className="svg-wrapper">
+                  <PiFiles />
+                </div>
+                <p>Documents</p>
+              </div>
+            )}
+
+            {/* NOTIFICATIONS */}
             <div
-              className={`menu-item parents ${currentScreen === ScreenNames.parents ? 'active' : ''}`}
-              onClick={(e) => ChangeCurrentScreen(ScreenNames.parents, e)}>
+              className={`menu-item notifications ${currentScreen === ScreenNames.notifications ? 'active' : ''}`}
+              onClick={(e) => ChangeCurrentScreen(ScreenNames.notifications, e)}>
+              {notificationCount > 0 && <div className="badge"></div>}
               <div className="svg-wrapper">
-                <RiParentLine />
+                <LuBellRing />
               </div>
-              <p>Parents</p>
+              <p>Notifications</p>
             </div>
-          )}
+          </div>
 
-          {/* PARENTS ONLY */}
-          {currentUser?.accountType === 'parent' && (
+          {/* INFORMATION DATABASE */}
+          <p className="menu-title info-storage">Information Database</p>
+          <div className="menu-items animate__animated info-storage">
+            {/* CHILD - PARENTS */}
+            {updatedCurrentUser?.accountType === 'child' && (
+              <div
+                className={`menu-item parents ${currentScreen === ScreenNames.parents ? 'active' : ''}`}
+                onClick={(e) => ChangeCurrentScreen(ScreenNames.parents, e)}>
+                <div className="svg-wrapper">
+                  <RiParentLine />
+                </div>
+                <p>Parents</p>
+              </div>
+            )}
+
+            {/* PARENTS ONLY */}
+            {updatedCurrentUser?.accountType === 'parent' && (
+              <>
+                {/* CHILD INFO */}
+                <div
+                  className={`menu-item child-info ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
+                  onClick={(e) => ChangeCurrentScreen(ScreenNames.childInfo, e)}>
+                  <div className="svg-wrapper">
+                    <PiIdentificationCard />
+                  </div>
+                  <p>Child Info</p>
+                </div>
+
+                {/* COPARENTS */}
+                <div
+                  className={`menu-item coparents ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
+                  onClick={(e) => ChangeCurrentScreen(ScreenNames.coparents, e)}>
+                  <div className="svg-wrapper">
+                    <PiUsers />
+                  </div>
+                  <p>Co-Parents</p>
+                </div>
+
+                {/* VISITATION */}
+                <div
+                  className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
+                  onClick={(e) => ChangeCurrentScreen(ScreenNames.visitation, e)}>
+                  <div className="svg-wrapper">
+                    <BsHouses />
+                  </div>
+                  <p>Visitation</p>
+                </div>
+
+                {/* ARCHIVES */}
+                <div
+                  className={`menu-item archives ${currentScreen === ScreenNames.vault ? 'active' : ''}`}
+                  onClick={(e) => ChangeCurrentScreen(ScreenNames.vault, e)}>
+                  <div className="svg-wrapper">
+                    <PiVault />
+                  </div>
+                  <p>The Vault</p>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* CO-PARENTING */}
+          {updatedCurrentUser?.accountType === 'parent' && (
             <>
-              {/* CHILD INFO */}
-              <div
-                className={`menu-item child-info ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.childInfo, e)}>
-                <div className="svg-wrapper">
-                  <PiIdentificationCard />
+              <p className="menu-title coparenting">Co-Parenting</p>
+              <div className="menu-items animate__animated coparenting">
+                {/* TRANSFER CHANGE */}
+                <div
+                  className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
+                  onClick={(e) => ChangeCurrentScreen(ScreenNames.transferRequests, e)}>
+                  <div className="svg-wrapper">
+                    <TbTransferIn />
+                  </div>
+                  <p>Transfer Requests</p>
                 </div>
-                <p>Child Info</p>
-              </div>
 
-              {/* COPARENTS */}
-              <div
-                className={`menu-item coparents ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.coparents, e)}>
-                <div className="svg-wrapper">
-                  <PiUsersLight />
+                {/* EXPENSES */}
+                <div
+                  className={`menu-item expenses ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
+                  onClick={(e) => ChangeCurrentScreen(ScreenNames.expenseTracker, e)}>
+                  <div className="svg-wrapper">
+                    <LiaFileInvoiceDollarSolid />
+                  </div>
+                  <p>Expenses</p>
                 </div>
-                <p>Co-Parents</p>
-              </div>
 
-              {/* VISITATION */}
-              <div
-                className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.visitation, e)}>
-                <div className="svg-wrapper">
-                  <BsHouses />
+                {/* SWAP REQUESTS */}
+                <div
+                  className={`menu-item swap-request ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
+                  onClick={(e) => ChangeCurrentScreen(ScreenNames.swapRequests, e)}>
+                  <div className="svg-wrapper">
+                    <PiSwap />
+                  </div>
+                  <p>Swap Requests</p>
                 </div>
-                <p>Visitation</p>
-              </div>
 
-              {/* ARCHIVES */}
-              <div
-                className={`menu-item archives ${currentScreen === ScreenNames.vault ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.vault, e)}>
-                <div className="svg-wrapper">
-                  <PiVaultLight />
+                {/* CHATS */}
+                <div
+                  className={`menu-item chats ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
+                  onClick={(e) => ChangeCurrentScreen(ScreenNames.chats, e)}>
+                  <div className="svg-wrapper">
+                    <IoChatbubblesOutline />
+                  </div>
+                  <p className="text">Chats</p>
                 </div>
-                <p>The Vault</p>
               </div>
-              <hr />
             </>
           )}
-        </div>
-
-        {/* CO-PARENTING */}
-        {currentUser?.accountType === 'parent' && (
-          <>
-            <p className="menu-title coparenting">Co-Parenting</p>
-            <div className="menu-items coparenting">
-              {/* TRANSFER CHANGE */}
-              <div
-                className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.transferRequests, e)}>
-                <div className="svg-wrapper">
-                  <TbTransferIn />
-                </div>
-                <p>Transfer Requests</p>
+          {/* PROFILE SETTINGS & SUPPORT */}
+          <p className="menu-title profile-settings-support">Settings & Support</p>
+          <div className="menu-items animate__animated profile-settings-support">
+            {/* PROFILE */}
+            <div
+              className={`menu-item profile ${currentScreen === ScreenNames.profile ? 'active' : ''}`}
+              onClick={(e) => ChangeCurrentScreen(ScreenNames.profile, e)}>
+              <div className="svg-wrapper">
+                <RiAccountPinCircleLine />
               </div>
-
-              {/* EXPENSES */}
-              <div
-                className={`menu-item expenses ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.expenseTracker, e)}>
-                <div className="svg-wrapper">
-                  <LiaFileInvoiceDollarSolid />
-                </div>
-                <p>Expenses</p>
-              </div>
-
-              {/* SWAP REQUESTS */}
-              <div
-                className={`menu-item swap-request ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.swapRequests, e)}>
-                <div className="svg-wrapper">
-                  <PiSwapLight />
-                </div>
-                <p>Swap Requests</p>
-              </div>
-
-              {/* CHATS */}
-              <div
-                className={`menu-item chats ${currentScreen === ScreenNames.chats ? 'active' : ''}`}
-                onClick={(e) => ChangeCurrentScreen(ScreenNames.chats, e)}>
-                <div className="svg-wrapper">
-                  <IoChatbubblesOutline />
-                </div>
-                <p className="text">Chats</p>
-              </div>
+              <p>My Profile</p>
             </div>
-          </>
+
+            {/* SETTINGS */}
+            <div
+              className={`menu-item settings ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
+              onClick={(e) => ChangeCurrentScreen(ScreenNames.settings, e)}>
+              <div className="svg-wrapper">
+                <GrSettingsOption />
+              </div>
+              <p>Settings</p>
+            </div>
+
+            {/* CONTACT US */}
+            <div
+              className={`menu-item contact-us ${currentScreen === ScreenNames.contactUs ? 'active' : ''}`}
+              onClick={(e) => ChangeCurrentScreen(ScreenNames.contactUs, e)}>
+              <div className="svg-wrapper">
+                <RiMailSendLine />
+              </div>
+              <p>Contact Us</p>
+            </div>
+
+            {/* INSTALL APP BUTTON */}
+            <div
+              className={`menu-item install-app ${currentScreen === ScreenNames.installApp ? 'active' : ''}`}
+              onClick={(e) => ChangeCurrentScreen(ScreenNames.installApp, e)}>
+              <div className="svg-wrapper">
+                <GrInstallOption />
+              </div>
+              <p>Install</p>
+            </div>
+            {/* LOGOUT BUTTON */}
+
+            <div className={`menu-item logout`} onClick={Logout}>
+              <div className="svg-wrapper">
+                <AiOutlineLogout />
+              </div>
+              <p>Logout</p>
+            </div>
+          </div>
+        </div>
+        {updatedCurrentUser?.email === 'kmarmet1@gmail.com' && (
+          <div id="admin-icon-wrapper" onClick={(e) => ChangeCurrentScreen(ScreenNames.adminDashboard, e)}>
+            <GrUserAdmin id={'admin-icon'} />
+          </div>
         )}
-        <hr />
-        {/* PROFILE SETTINGS & SUPPORT */}
-        <p className="menu-title profile-settings-support">Settings & Support</p>
-        <div className="menu-items profile-settings-support">
-          {/* PROFILE */}
-          <div
-            className={`menu-item profile ${currentScreen === ScreenNames.profile ? 'active' : ''}`}
-            onClick={(e) => ChangeCurrentScreen(ScreenNames.profile, e)}>
-            <div className="svg-wrapper">
-              <PiUserCircleCheckLight />
-            </div>
-            <p>My Profile</p>
-          </div>
-
-          {/* SETTINGS */}
-          <div
-            className={`menu-item settings ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
-            onClick={(e) => ChangeCurrentScreen(ScreenNames.settings, e)}>
-            <div className="svg-wrapper">
-              <IoSettingsOutline />
-            </div>
-            <p>Settings</p>
-          </div>
-
-          {/* CONTACT US */}
-          <div
-            className={`menu-item contact-us ${currentScreen === ScreenNames.contactUs ? 'active' : ''}`}
-            onClick={(e) => ChangeCurrentScreen(ScreenNames.contactUs, e)}>
-            <div className="svg-wrapper">
-              <RiMailSendLine />
-            </div>
-            <p>Contact Us</p>
-          </div>
-
-          {/* INSTALL APP BUTTON */}
-          <div
-            className={`menu-item install-app ${currentScreen === ScreenNames.installApp ? 'active' : ''}`}
-            onClick={(e) => ChangeCurrentScreen(ScreenNames.installApp, e)}>
-            <div className="svg-wrapper">
-              <GrInstallOption />
-            </div>
-            <p>Install</p>
-          </div>
-          {/* LOGOUT BUTTON */}
-
-          <div className={`menu-item logout`} onClick={Logout}>
-            <div className="svg-wrapper">
-              <AiOutlineLogout />
-            </div>
-            <p>Logout</p>
-          </div>
-        </div>
         <div id="close-icon-wrapper">
           <IoClose onClick={() => setState({...state, menuIsOpen: false})} id={'close-icon'} />
         </div>

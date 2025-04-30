@@ -19,7 +19,7 @@
     max-width: calc(100vw - 20px) !important;
     transition: all 0.3s ease-in-out !important;
     box-shadow: $boxShadow_bottom_only_dark;
-    overflow: hidden !important;
+    //    overflow: hidden !important;
 
     &.MuiAccordion-root {
       width: 100% !important;

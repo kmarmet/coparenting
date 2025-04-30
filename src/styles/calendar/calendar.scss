@@ -84,9 +84,9 @@
             display: none;
           }
           &.Mui-expanded {
-            width: 200px !important;
+            width: calc(100vw - 30px) !important;
             padding: 15px 0 !important;
-            background: $grey !important;
+            background: $lightGrey !important;
             border-radius: $bigBorderRadius !important;
             border: 1px solid $lightBorderColor !important;
           }
@@ -104,12 +104,12 @@
           min-height: unset !important;
           opacity: 0.75;
           position: absolute;
-          bottom: 4px;
+          bottom: 0px;
           z-index: 1000;
-          right: 4px;
+          right: 8px;
 
           svg {
-            font-size: 22px !important;
+            font-size: 26px !important;
             color: $red !important;
             margin: 0 !important;
           }
@@ -314,18 +314,20 @@
               z-index: 99;
 
               &.MuiPickersDay-today {
-                &:after {
-                  content: '';
-                  position: absolute;
-                  top: 15px;
-                  left: 0;
-                  width: 35px;
-                  @include centerHoriz;
-                  height: 18px;
-                  z-index: -1;
-                  border-radius: 12px;
-                  border: 1px solid $main;
-                }
+                color: $main !important;
+                font-weight: $fwBold !important;
+                //                &:after {
+                //                  content: '';
+                //                  position: absolute;
+                //                  top: 15px;
+                //                  left: 0;
+                //                  width: 35px;
+                //                  @include centerHoriz;
+                //                  height: 18px;
+                //                  z-index: -1;
+                //                  border-radius: 12px;
+                //                  border: 1px solid $main;
+                //                }
               }
 
               &.Mui-selected {

@@ -1,8 +1,8 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useContext, useEffect, useState} from 'react'
-import Manager from '../managers/manager'
 import globalState from '../context'
 import DB from '../database/DB'
+import Manager from '../managers/manager'
 import useUsers from './useUsers'
 
 const useCurrentUser = () => {
@@ -10,7 +10,7 @@ const useCurrentUser = () => {
   const {authUser} = state
   const {users} = useUsers()
   const [currentUser, setCurrentUser] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [currentUserIsLoading, setCurrentUserIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const dbUser = users?.find((u) => u?.email === authUser?.email)
   const path = `${DB.tables.users}/${dbUser?.key}`
@@ -26,13 +26,13 @@ const useCurrentUser = () => {
         if (Manager.isValid(snapshot.val())) {
           setCurrentUser(snapshot.val())
         } else {
-          setCurrentUser([])
+          setCurrentUser(null)
         }
-        setIsLoading(false)
+        setCurrentUserIsLoading(false)
       },
       (err) => {
         setError(err)
-        setIsLoading(false)
+        setCurrentUserIsLoading(false)
       }
     )
 
@@ -43,7 +43,7 @@ const useCurrentUser = () => {
 
   return {
     currentUser,
-    isLoading,
+    currentUserIsLoading,
     error,
     queryKey,
   }

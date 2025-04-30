@@ -93,7 +93,7 @@
     "workbox-cli": "7.1.0"
   },
   "scripts": {
-    "start": "parcel public/index.html",
+    "start": "npm run removeParcelCache && parcel public/index.html",
     "watch-coffee": "coffee --watch --compile src",
     "build": "npm run deleteBuild && npm run removeParcelCache && parcel build public/index.html --no-source-maps && npm run deleteUnwantedFilesFromBuild && compress-cra",
     "buildHtml": "parcel build public/index.html --no-source-maps",

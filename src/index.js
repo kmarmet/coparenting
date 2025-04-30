@@ -1,13 +1,12 @@
-import App from './App'
-import * as Sentry from '@sentry/react'
-import React from 'react'
-import {createRoot} from 'react-dom/client'
-import '../src/styles/bundle.scss'
-import {ErrorBoundary} from 'react-error-boundary'
 import {getAuth, signOut} from 'firebase/auth'
+import React from 'react'
+import '../src/styles/bundle.scss'
+import {createRoot} from 'react-dom/client'
+import {ErrorBoundary} from 'react-error-boundary'
 import {IoEllipsisVerticalSharp} from 'react-icons/io5'
-import AlertManager from './managers/alertManager'
+import App from './App'
 import Spacer from './components/shared/spacer'
+import AlertManager from './managers/alertManager'
 
 if ('serviceWorker' in navigator) {
   function handleConnection() {
@@ -117,17 +116,18 @@ const logout = () => {
 // const root = ReactDOM.createRoot(document.getElementById('root'))
 // Add Logging in Boundary
 // Add support email in text
-const container = document.getElementById('root')
-const root = createRoot(container, {
-  // Callback called when an error is thrown and not caught by an ErrorBoundary.
-  onUncaughtError: Sentry.reactErrorHandler((error, errorInfo) => {
-    console.warn('Uncaught error', error, errorInfo.componentStack)
-  }),
-  // Callback called when React catches an error in an ErrorBoundary.
-  onCaughtError: Sentry.reactErrorHandler(),
-  // Callback called when React automatically recovers from errors.
-  onRecoverableError: Sentry.reactErrorHandler(),
-})
+// const container = document.getElementById('root')
+// const root = createRoot(container, {
+//   // Callback called when an error is thrown and not caught by an ErrorBoundary.
+//   onUncaughtError: Sentry.reactErrorHandler((error, errorInfo) => {
+//     console.warn('Uncaught error', error, errorInfo.componentStack)
+//   }),
+//   // Callback called when React catches an error in an ErrorBoundary.
+//   onCaughtError: Sentry.reactErrorHandler(),
+//   // Callback called when React automatically recovers from errors.
+//   onRecoverableError: Sentry.reactErrorHandler(),
+// })
+const root = createRoot(document.getElementById('root'))
 root.render(
   <ErrorBoundary
     fallback={

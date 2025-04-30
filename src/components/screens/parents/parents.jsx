@@ -1,28 +1,28 @@
 // Path: src\components\screens\parents\parents.jsx
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../../context'
-import Manager from '/src/managers/manager'
-import DB_UserScoped from '/src/database/db_userScoped'
-import CustomParentInfo from './customParentInfo'
-import {HiDotsHorizontal} from 'react-icons/hi'
-import NewParentForm from './newParentForm'
-import {FaWandMagicSparkles} from 'react-icons/fa6'
-import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
-import {Fade} from 'react-awesome-reveal'
 import NavBar from '/src/components/navBar.jsx'
-import {BsFillSendFill} from 'react-icons/bs'
-import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import InputWrapper from '/src/components/shared/inputWrapper'
+import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
+import DB_UserScoped from '/src/database/db_userScoped'
 import AlertManager from '/src/managers/alertManager'
+import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
+import React, {useContext, useEffect, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import {BsFillSendFill} from 'react-icons/bs'
+import {FaWandMagicSparkles} from 'react-icons/fa6'
+import {HiDotsHorizontal} from 'react-icons/hi'
+import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
-import Modal from '../../shared/modal'
-import EmailManager from '../../../managers/emailManager'
-import Spacer from '../../shared/spacer'
-import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import InputTypes from '../../../constants/inputTypes'
-import useParents from '../../../hooks/useParents'
+import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import useParents from '../../../hooks/useParents'
+import EmailManager from '../../../managers/emailManager'
+import Modal from '../../shared/modal'
+import ScreenActionsMenu from '../../shared/screenActionsMenu'
+import Spacer from '../../shared/spacer'
+import CustomParentInfo from './customParentInfo'
+import NewParentForm from './newParentForm'
 
 export default function Parents() {
   const {state, setState} = useContext(globalState)
@@ -46,7 +46,7 @@ export default function Parents() {
   }
 
   const DeleteCoparent = async () => {
-    await DB_UserScoped.deleteParent(currentUser, activeParent)
+    await DB_UserScoped.DeleteParent(currentUser, activeParent)
     setState({...state, successAlertMessage: `${activeParent?.name} has been unlinked from your profile`, showScreenActions: false})
     setActiveParent(parents[0])
   }

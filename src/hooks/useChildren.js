@@ -1,12 +1,12 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useEffect, useState} from 'react'
-import Manager from '../managers/manager'
 import DB from '../database/DB'
+import Manager from '../managers/manager'
 import useCurrentUser from './useCurrentUser'
 
 const useChildren = () => {
   const {currentUser} = useCurrentUser()
-  const [isLoading, setIsLoading] = useState(true)
+  const [childrenAreLoading, setChildrenAreLoading] = useState(true)
   const [children, setChildren] = useState([])
   const [error, setError] = useState(null)
   const path = `${DB.tables.users}/${currentUser?.key}/children`
@@ -23,7 +23,7 @@ const useChildren = () => {
         const formattedChildren = Manager.convertToArray(snapshot.val()?.filter((x) => x))
         if (Manager.isValid(currentUser) && Manager.isValid(formattedChildren)) {
           setChildren(formattedChildren)
-          setIsLoading(false)
+          setChildrenAreLoading(false)
         } else {
           setChildren([])
         }
@@ -31,7 +31,7 @@ const useChildren = () => {
       (err) => {
         console.log(`useChildren Error: ${err}`)
         setError(err)
-        setIsLoading(false)
+        setChildrenAreLoading(false)
       }
     )
 
@@ -42,7 +42,7 @@ const useChildren = () => {
 
   return {
     children,
-    isLoading,
+    childrenAreLoading,
     error,
     queryKey,
   }

@@ -1,23 +1,23 @@
 // Path: src\components\screens\parents\newParentForm.jsx
-import React, {useContext, useState} from 'react'
-import globalState from '../../../context'
-import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import Modal from '/src/components/shared/modal'
 import AlertManager from '/src/managers/alertManager'
+import Manager from '/src/managers/manager'
+import React, {useContext, useState} from 'react'
 import validator from 'validator'
-import StringManager from '../../../managers/stringManager'
-import Spacer from '../../shared/spacer'
-import ModelNames from '../../../models/modelNames'
-import ObjectManager from '../../../managers/objectManager'
-import DB_UserScoped from '../../../database/db_userScoped'
 import InputTypes from '../../../constants/inputTypes'
-import Parent from '../../../models/parent'
+import globalState from '../../../context'
+import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
-import ToggleButton from '../../shared/toggleButton'
+import ObjectManager from '../../../managers/objectManager'
+import StringManager from '../../../managers/stringManager'
+import ModelNames from '../../../models/modelNames'
+import Parent from '../../../models/parent'
 import Label from '../../shared/label'
+import Spacer from '../../shared/spacer'
+import ToggleButton from '../../shared/toggleButton'
 
 const NewParentForm = ({showCard, hideCard}) => {
   const {state, setState} = useContext(globalState)
@@ -90,7 +90,7 @@ const NewParentForm = ({showCard, hideCard}) => {
 
     const cleanParent = ObjectManager.cleanObject(newParent, ModelNames.parent)
     try {
-      await DB_UserScoped.addParent(currentUser, cleanParent)
+      await DB_UserScoped.AddParent(currentUser, cleanParent)
     } catch (error) {
       console.log(error)
       // LogManager.log(error.message, LogManager.logTypes.error)

@@ -1,15 +1,15 @@
 // Path: src\components\navBar.jsx
-import {IoMdImages} from 'react-icons/io'
 import React, {useContext, useEffect} from 'react'
-import globalState from '../context'
-import ScreenNames from '../constants/screenNames'
 import {Fade} from 'react-awesome-reveal'
+import {HiOutlineMenu} from 'react-icons/hi'
+import {IoMdImages} from 'react-icons/io'
 import {IoChatbubblesOutline, IoNotificationsOutline} from 'react-icons/io5'
 import {LuCalendarDays} from 'react-icons/lu'
-import {HiOutlineMenu} from 'react-icons/hi'
 import {PiPlusBold} from 'react-icons/pi'
-import Manager from '../managers/manager'
+import ScreenNames from '../constants/screenNames'
+import globalState from '../context'
 import useCurrentUser from '../hooks/useCurrentUser'
+import Manager from '../managers/manager'
 
 export default function NavBar({children, navbarClass}) {
   const {state, setState} = useContext(globalState)
@@ -20,7 +20,7 @@ export default function NavBar({children, navbarClass}) {
     setState({
       ...state,
       currentScreen: screen,
-      activeInfoChild: null,
+      activeChild: null,
       notificationCount: 0,
     })
   }

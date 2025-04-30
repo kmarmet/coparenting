@@ -1,27 +1,24 @@
 // Path: src\components\screens\childInfo\general.jsx
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../../context'
-import Manager from '/src/managers/manager'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import Accordion from '@mui/material/Accordion'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import {PiIdentificationCardFill, PiTrashSimpleDuotone} from 'react-icons/pi'
 import DB from '/src/database/DB'
+import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager.coffee'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import React, {useContext, useEffect, useState} from 'react'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
-
-import DB_UserScoped from '../../../database/db_userScoped'
+import {PiIdentificationCardFill, PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
-import Spacer from '../../shared/spacer'
+import globalState from '../../../context'
+import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useSharedChildInfo from '../../../hooks/useSharedChildInfo'
-import Label from '../../shared/label'
+import AddressInput from '../../shared/addressInput'
 
-function General() {
+function General({activeChild}) {
   const {state, setState} = useContext(globalState)
-  const {theme, activeChild, refreshKey} = state
+  const {theme, refreshKey} = state
   const {currentUser} = useCurrentUser()
   const {sharedChildInfo} = useSharedChildInfo()
   const [generalValues, setGeneralValues] = useState(Object.entries(activeChild?.general))
@@ -29,17 +26,15 @@ function General() {
   const [currentUserKey, setCurrentUserKey] = useState(currentUser?.key)
 
   const DeleteProp = async (prop) => {
-    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
-
     // Delete Shared
-    const sharedProps = sharing?.map((x) => x?.prop)
+    const sharedProps = sharedChildInfo?.map((x) => x?.prop)
     if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
-      const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
-      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
+      const scopedSharingObject = await DB.find(sharedChildInfo, ['prop', prop.toLowerCase()], false)
+      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharedChildInfo, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
       await SetSelectedChildData()
     } else {
-      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'general', StringManager.formatDbProp(prop))
-      setState({...state, activeChild: updatedChild})
+      const childIndex = DB.GetChildIndex(currentUser?.children, activeChild?.id)
+      await DB_UserScoped.DeleteChildInfoProp(currentUser?.key, childIndex, 'general', StringManager.formatDbProp(prop))
       await SetSelectedChildData()
     }
   }
@@ -73,7 +68,7 @@ function General() {
   }
 
   const Update = async (prop, value) => {
-    await DB_UserScoped.UpdateChildInfo(currentUserKey, activeChild, 'general', StringManager.formatDbProp(prop), value)
+    await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, 'general', StringManager.formatDbProp(prop), value)
     setState({...state, successAlertMessage: `${StringManager.FormatTitle(prop, true)} has been updated`})
   }
 
@@ -109,42 +104,31 @@ function General() {
                 const toSkip = ['profilePic']
 
                 return (
-                  <div key={index} className={`${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''}`}>
+                  <div key={index} className={`${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''}`} id="data-row">
                     {!toSkip.includes(prop[0]) && (
                       <>
                         {Manager.contains(infoLabel.toLowerCase(), 'address') && (
-                          <>
-                            <Label classes="address-label" text={'Home Address'} />
-                            <GooglePlacesAutocomplete
-                              key={refreshKey}
-                              className={'address-input'}
-                              selectProps={{
-                                placeholder: activeChild?.general?.address,
-                                onChange: (e) => Update(infoLabel, e?.label),
-                                isClearable: false,
-                              }}
-                            />
-                            <Spacer height={5} />
-                          </>
+                          <AddressInput
+                            labelText="Home Address"
+                            onChange={(address) => Update(infoLabel, address)}
+                            defaultValue={activeChild?.general?.address}
+                          />
                         )}
                         {!Manager.contains(infoLabel.toLowerCase(), 'address') && (
                           <>
-                            <div className="flex input">
-                              <InputWrapper
-                                hasBottomSpacer={false}
-                                inputType={InputTypes.text}
-                                labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
-                                defaultValue={value}
-                                onChange={async (e) => {
-                                  const inputValue = e.target.value
-                                  await Update(infoLabel, inputValue)
-                                }}
-                              />
-                              {infoLabel.toLowerCase() !== 'name' && (
-                                <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
-                              )}
-                            </div>
-                            <Spacer height={5} />
+                            <InputWrapper
+                              hasBottomSpacer={false}
+                              inputType={InputTypes.text}
+                              labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
+                              defaultValue={value}
+                              onChange={async (e) => {
+                                const inputValue = e.target.value
+                                await Update(infoLabel, inputValue)
+                              }}
+                            />
+                            {infoLabel.toLowerCase() !== 'name' && (
+                              <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
+                            )}
                           </>
                         )}
                       </>

@@ -85,7 +85,7 @@ export default NotificationManager =
             # If user already exists -> replace record
             if Manager.isValid(existingSubscriber)
               deleteKey = await DB.getSnapshotKey("#{DB.tables.notificationSubscribers}", existingSubscriber, "id")
-              await DB.deleteByPath("#{DB.tables.notificationSubscribers}/#{deleteKey}")
+              await DB.DeleteByPath("#{DB.tables.notificationSubscribers}/#{deleteKey}")
               await DB.add("/#{DB.tables.notificationSubscribers}", newSubscriber)
 
             # Else create new record
@@ -106,7 +106,7 @@ export default NotificationManager =
     fetch "https://api.onesignal.com/apps/#{NotificationManager.appId}/users/by/onesignal_id/#{oneSignalId}",
       method: 'DELETE'
 
-  sendNotification: (title, message, recipientKey, currentUser = null, category = '') ->
+  SendNotification: (title, message, recipientKey, currentUser = null, category = '') ->
     myHeaders = new Headers()
     myHeaders.append "Accept", "application/json"
     myHeaders.append "Content-Type", "application/json"
@@ -161,7 +161,7 @@ export default NotificationManager =
   sendToShareWith: (shareWithKeys, currentUser, title, message, category = '') ->
     if Manager.isValid(shareWithKeys)
       for key in shareWithKeys
-        await NotificationManager.sendNotification(title, message, key, currentUser, category)
+        await NotificationManager.SendNotification(title, message, key, currentUser, category)
 
   enableNotifications: (subId) ->
     myHeaders = new Headers()

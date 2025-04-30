@@ -28,6 +28,10 @@
       width: 80px;
       border-radius: 100%;
 
+      &:not(.animate__zoomIn) {
+        opacity: 0;
+      }
+
       * {
         user-select: none;
         outline: 0;
@@ -99,6 +103,10 @@
       text-align: left;
       margin-bottom: 15px;
       color: $darkerGrey;
+    }
+
+    .info-row:not(.animate__fadeInRight) {
+      opacity: 0;
     }
 
     .form {

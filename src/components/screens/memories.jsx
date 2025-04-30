@@ -1,32 +1,32 @@
 // Path: src\components\screens\memories?.jsx
-import React, {useContext, useState} from 'react'
-import DB from '../../database/DB'
-import FirebaseStorage from '../../database/firebaseStorage'
-import Manager from '../../managers/manager'
-import globalState from '../../context'
-import LightGallery from 'lightgallery/react'
-import 'lightgallery/css/lightgallery.css'
-import moment from 'moment'
-import {Fade} from 'react-awesome-reveal'
-import {LuImagePlus, LuMinus, LuPlus} from 'react-icons/lu'
-import ImageManager from '../../managers/imageManager'
-import NoDataFallbackText from '../shared/noDataFallbackText'
-import NavBar from '../navBar'
-import DatetimeFormats from '../../constants/datetimeFormats'
-import DateManager from '../../managers/dateManager'
-import DomManager from '../../managers/domManager'
-import StringManager from '../../managers/stringManager'
-import {IoHeart} from 'react-icons/io5'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import Spacer from '../shared/spacer'
-import Label from '../shared/label'
+import LightGallery from 'lightgallery/react'
+import 'lightgallery/css/lightgallery.css'
+import moment from 'moment'
+import React, {useContext, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import {IoHeart} from 'react-icons/io5'
+import {LuImagePlus, LuMinus, LuPlus} from 'react-icons/lu'
+import DatetimeFormats from '../../constants/datetimeFormats'
+import globalState from '../../context'
+import DB from '../../database/DB'
+import FirebaseStorage from '../../database/firebaseStorage'
+import useChildren from '../../hooks/useChildren'
+import useCoparents from '../../hooks/useCoparents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useMemories from '../../hooks/useMemories'
-import useCoparents from '../../hooks/useCoparents'
 import useParents from '../../hooks/useParents'
-import useChildren from '../../hooks/useChildren'
+import DateManager from '../../managers/dateManager'
+import DomManager from '../../managers/domManager'
+import ImageManager from '../../managers/imageManager'
+import Manager from '../../managers/manager'
+import StringManager from '../../managers/stringManager'
+import NavBar from '../navBar'
+import Label from '../shared/label'
+import NoDataFallbackText from '../shared/noDataFallbackText'
+import Spacer from '../shared/spacer'
 
 export default function Memories() {
   const {state, setState} = useContext(globalState)
@@ -52,7 +52,7 @@ export default function Memories() {
     }
     // Memory was shared with current user -> hide it
     else {
-      const memoryKey = await DB.getSnapshotKey(`${DB.tables.memories}/${record?.ownerKey}`, record, 'id')
+      const memoryKey = DB.GetTableIndexById(memories, record?.id)
       if (Manager.isValid(memoryKey)) {
         const updatedShareWith = record.shareWith.filter((x) => x !== currentUser?.key)
         await DB.updateByPath(`${DB.tables.memories}/${record?.ownerKey}/${memoryKey}/shareWith`, updatedShareWith)

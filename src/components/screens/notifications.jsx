@@ -1,29 +1,29 @@
 // Path: src\components\screens\notifications?.jsx
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../context'
-import {Fade} from 'react-awesome-reveal'
-import {FaMinus, FaPlus} from 'react-icons/fa6'
-import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
-import {IoCheckmarkDoneOutline} from 'react-icons/io5'
-import DB from '../../database/DB'
-import Manager from '../../managers/manager'
-import DatetimeFormats from '../../constants/datetimeFormats'
+import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
-import NavBar from '../navBar'
-import DatasetManager from '../../managers/datasetManager'
-import ScreenNames from '../../constants/screenNames'
-import ActivityCategory from '../../models/activityCategory'
-import {PiSealWarningDuotone} from 'react-icons/pi'
-import StringManager from '../../managers/stringManager'
-import AppManager from '../../managers/appManager.coffee'
+import React, {useContext, useEffect, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {IoMdCheckmarkCircleOutline} from 'react-icons/io'
-import Spacer from '../shared/spacer'
+import {IoCheckmarkDoneOutline} from 'react-icons/io5'
+import {PiSealWarningDuotone} from 'react-icons/pi'
+import DatetimeFormats from '../../constants/datetimeFormats'
+import ScreenNames from '../../constants/screenNames'
+import globalState from '../../context'
+import DB from '../../database/DB'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useNotifications from '../../hooks/useNotifications'
+import AppManager from '../../managers/appManager.coffee'
+import DatasetManager from '../../managers/datasetManager'
+import Manager from '../../managers/manager'
+import StringManager from '../../managers/stringManager'
+import ActivityCategory from '../../models/activityCategory'
+import NavBar from '../navBar'
 import Label from '../shared/label'
 import NoDataFallbackText from '../shared/noDataFallbackText'
-import useNotifications from '../../hooks/useNotifications'
-import useCurrentUser from '../../hooks/useCurrentUser'
+import Spacer from '../shared/spacer'
 
 export default function Notifications() {
   const {state, setState} = useContext(globalState)
@@ -39,12 +39,12 @@ export default function Notifications() {
     setState({...state, notificationCount: toReturn.length})
   }
 
-  const ClearAll = async () => await DB.deleteByPath(`${DB.tables.notifications}/${currentUser?.key}`)
+  const ClearAll = async () => await DB.DeleteByPath(`${DB.tables.notifications}/${currentUser?.key}`)
 
   const ClearActivity = async (activity) => {
-    const key = await DB.getSnapshotKey(`${DB.tables.notifications}/${currentUser?.key}`, activity, 'id')
-    if (Manager.isValid(key)) {
-      await DB.deleteByPath(`${DB.tables.notifications}/${currentUser?.key}/${key}`)
+    const recordIndex = DB.GetTableIndexById(notifications, activity?.id)
+    if (Manager.isValid(recordIndex)) {
+      await DB.DeleteByPath(`${DB.tables.notifications}/${currentUser?.key}/${recordIndex}`)
     }
   }
 

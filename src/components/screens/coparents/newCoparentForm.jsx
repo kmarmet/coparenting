@@ -1,23 +1,24 @@
 // Path: src\components\screens\coparents\newCoparentForm.jsx
-import React, {useContext, useState} from 'react'
-import globalState from '../../../context'
-import Coparent from '/src/models/coparent'
-import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import Modal from '/src/components/shared/modal'
 import AlertManager from '/src/managers/alertManager'
+import Manager from '/src/managers/manager'
+import Coparent from '/src/models/coparent'
+import React, {useContext, useState} from 'react'
 import validator from 'validator'
-import StringManager from '../../../managers/stringManager'
-import Spacer from '../../shared/spacer'
-import ModelNames from '../../../models/modelNames'
-import ObjectManager from '../../../managers/objectManager'
-import DB_UserScoped from '../../../database/db_userScoped'
 import InputTypes from '../../../constants/inputTypes'
+import globalState from '../../../context'
+import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
-import ToggleButton from '../../shared/toggleButton'
+import ObjectManager from '../../../managers/objectManager'
+import StringManager from '../../../managers/stringManager'
+import ModelNames from '../../../models/modelNames'
+import AddressInput from '../../shared/addressInput'
 import Label from '../../shared/label'
+import Spacer from '../../shared/spacer'
+import ToggleButton from '../../shared/toggleButton'
 
 const NewCoparentForm = ({showCard, hideCard}) => {
   const {state, setState} = useContext(globalState)
@@ -44,7 +45,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
   }
 
   const Submit = async () => {
-    if (!validator.isEmail(email)) {
+    if (!validator.isEmail(email) && coparentHasAccount) {
       AlertManager.throwError('Email address is not valid')
       return false
     }
@@ -64,14 +65,13 @@ const NewCoparentForm = ({showCard, hideCard}) => {
       return false
     }
 
-    if (!coparentHasAccount && !Manager.isValid(email)) {
+    if (coparentHasAccount && !Manager.isValid(email)) {
       AlertManager.throwError('If the coparent has an account with us, their email is required')
       return false
     }
 
     const existingCoparentRecord = users.find((x) => x?.email === email)
     let newCoparent = new Coparent()
-    AlertManager.throwError('All fields are required')
     newCoparent.id = Manager.getUid()
     newCoparent.address = address
     newCoparent.name = StringManager.uppercaseFirstLetterOfAllWords(name.trim())
@@ -134,13 +134,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
               labelText={'Email Address'}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <InputWrapper
-              inputType={InputTypes.address}
-              labelText={'Home Address'}
-              onChange={(place) => {
-                setAddress(place)
-              }}
-            />
+            <AddressInput labelText={'Home Address'} onChange={(address) => setAddress(address)} />
 
             <div className="flex">
               <Label text={'Co-Parent has an Account with Us'} />

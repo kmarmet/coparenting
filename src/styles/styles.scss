@@ -1,6 +1,6 @@
 @import './_mixins.scss';
 
-// GOOGLE MAPS AUTOCOMPLETE
+/*#region  GOOGLE MAPS INPUT */
 .css-1nmdiq5-menu {
   background: white !important;
   z-index: 99999999999 !important;
@@ -8,15 +8,48 @@
   @include centerHoriz;
   position: relative !important;
 }
-.css-13cymwt-control {
-  border-radius: $borderRadius !important;
-  border: 0 !important;
-  background: $mediumGrey !important;
-  padding: 5px 0 !important;
+.css-1hb7zxy-IndicatorsContainer {
+  display: none !important;
 }
+
+// PARENT
+.css-b62m3t-container {
+  width: 100% !important;
+
+  .css-13cymwt-control {
+    border-radius: $borderRadius !important;
+    border: 0 !important;
+    background: $mediumGrey !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    margin-top: 3px !important;
+
+    .css-1fdsijx-ValueContainer {
+      padding: 0 !important;
+      .css-qbdosj-Input {
+        margin: 0 !important;
+        padding: 0 !important;
+
+        input {
+          color: $darkestGrey !important;
+        }
+      }
+      .css-1dimb5e-singleValue {
+        background: transparent !important;
+        color: $darkestGrey !important;
+      }
+      [id^='react-select'] {
+        //        display: none;
+      }
+    }
+  }
+}
+
+// PLACEHOLDER
 .css-1jqq78o-placeholder {
   color: $darkestGrey !important;
 }
+/*#endregion  GOOGLE MAPS INPUT */
 
 #error-screen {
   height: 100vh;
@@ -736,6 +769,23 @@
       }
     }
 
+    #standalone-loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(5px);
+      z-index: 999999999999;
+      .data-loading-gif {
+        transform: scale(0.2);
+        @include deadCenter;
+        height: 130px;
+        width: auto !important;
+      }
+    }
+
     #lazy-loaded-img-placeholder {
       transform: scale(0.4);
     }
@@ -768,6 +818,23 @@
     #input-wrapper,
     #address-input-wrapper {
       @include inputWrapper;
+
+      &#address-input-wrapper {
+        //        padding: 0 !important;
+
+        &.on-grey-bg {
+          *:not(#label-wrapper):not(label):not(.asterisk) {
+          }
+          .css-b62m3t-container {
+            border: 1px solid $lightBorderColor;
+            border-radius: $borderRadius;
+          }
+        }
+        * {
+          line-height: 1 !important;
+          background: unset;
+        }
+      }
     }
     #success-alert-wrapper {
       @include successAlert;

@@ -137,7 +137,7 @@ export default function Settings() {
             <hr className="hr less-margin" />
 
             {/* THEME */}
-            <Label text={'Theme'} />
+            <Label text={'Theme'} classes="settings-section-title" />
             <CheckboxGroup
               checkboxArray={Manager.buildCheckboxGroup({
                 currentUser,

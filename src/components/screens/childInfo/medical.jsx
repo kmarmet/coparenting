@@ -1,29 +1,30 @@
 // Path: src\components\screens\childInfo\medical.jsx
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../../context'
-import Manager from '/src/managers/manager'
-import DB_UserScoped from '/src/database/db_userScoped'
-import Accordion from '@mui/material/Accordion'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import AccordionDetails from '@mui/material/AccordionDetails'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import {FaBriefcaseMedical} from 'react-icons/fa'
 import DB from '/src/database/DB'
-import StringManager from '../../../managers/stringManager'
+import DB_UserScoped from '/src/database/db_userScoped'
+import Manager from '/src/managers/manager'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import React, {useContext, useEffect, useState} from 'react'
+import {FaBriefcaseMedical} from 'react-icons/fa'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
-import Spacer from '../../shared/spacer'
+import globalState from '../../../context'
+import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import StringManager from '../../../managers/stringManager'
 
-export default function Medical() {
+export default function Medical({activeChild}) {
   const {state, setState} = useContext(globalState)
-  const {theme, activeChild} = state
+  const {theme} = state
   const [medicalValues, setMedicalValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
-  const {currentUser} = useCurrentUser()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {children} = useChildren()
 
-  const deleteProp = async (prop) => {
+  const DeleteProp = async (prop) => {
     const sharedInfoRecords = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
     const existingPropCount = Object.keys(activeChild?.medical).length
 
@@ -42,22 +43,22 @@ export default function Medical() {
     if (Manager.isValid(sharedProps) && sharedProps.includes(formattedProp)) {
       const scopedSharingObject = await DB.find(sharedInfoRecords, ['prop', formattedProp], false)
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, scopedSharingObject, formattedProp, scopedSharingObject?.sharedByOwnerKey)
-      await setChildData()
+      await SetChildData()
     }
 
     // Delete NOT shared
     else {
-      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'medical', StringManager.formatDbProp(prop))
-      setState({...state, activeChild: updatedChild})
-      await setChildData()
+      const childIndex = DB.GetChildIndex(children, activeChild?.id)
+      await DB_UserScoped.DeleteChildInfoProp(currentUser?.key, childIndex, 'medical', StringManager.formatDbProp(prop))
+      await SetChildData()
     }
   }
 
-  const update = async (prop, value) => {
+  const Update = async (prop, value) => {
     await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, 'medical', StringManager.formatDbProp(prop), value)
   }
 
-  const setChildData = async () => {
+  const SetChildData = async () => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
     let sharedValues = []
     for (let obj of sharing) {
@@ -88,13 +89,17 @@ export default function Medical() {
 
   useEffect(() => {
     if (showInputs) {
-      setChildData().then((r) => r)
+      SetChildData().then((r) => r)
     }
   }, [showInputs])
 
   useEffect(() => {
-    setChildData().then((r) => r)
+    SetChildData().then((r) => r)
   }, [activeChild])
+
+  if (currentUserIsLoading) {
+    return <img src={require('../../../img/loading.gif')} alt="Loading" />
+  }
 
   return (
     <div className="info-section section medical form">
@@ -116,37 +121,31 @@ export default function Medical() {
               const value = prop[1]
 
               return (
-                <div key={index}>
+                <div key={index} id="data-row">
                   {infoLabel.toLowerCase().includes('phone') && (
                     <>
-                      <div className="flex input">
-                        <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
-                          {infoLabel}: {value}
-                        </a>
-                        <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
-                      </div>
-                      <Spacer height={5} />
+                      <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
+                        {infoLabel}: {value}
+                      </a>
+                      <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
                     </>
                   )}
                   {!infoLabel.toLowerCase().includes('phone') && (
                     <>
-                      <div className="flex input">
-                        <InputWrapper
-                          hasBottomSpacer={false}
-                          inputType={InputTypes.text}
-                          labelText={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
-                            Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''
-                          }`}
-                          defaultValue={value}
-                          debounceTimeout={1000}
-                          onChange={(e) => {
-                            const inputValue = e.target.value
-                            update(infoLabel, `${inputValue}`).then((r) => r)
-                          }}
-                        />
-                        <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
-                      </div>
-                      <Spacer height={5} />
+                      <InputWrapper
+                        hasBottomSpacer={false}
+                        inputType={InputTypes.text}
+                        labelText={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
+                          Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''
+                        }`}
+                        defaultValue={value}
+                        debounceTimeout={1000}
+                        onChange={(e) => {
+                          const inputValue = e.target.value
+                          Update(infoLabel, `${inputValue}`).then((r) => r)
+                        }}
+                      />
+                      <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
                     </>
                   )}
                 </div>

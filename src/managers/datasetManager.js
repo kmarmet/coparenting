@@ -9,9 +9,27 @@ import moment from "moment";
 
 import Manager from "./manager";
 
+import ObjectManager from "./objectManager";
+
 DatasetManager = {
+  GetDatabaseKeyFromArray: function(arr, getSingleObjectPropName, getSingleObjectProp) {
+    var formatted;
+    if (getSingleObjectProp) {
+      formatted = Object.entries(arr).map(function(x) {
+        return x[1];
+      });
+      console.log(ObjectManager.RecursivelyFindProperty(formatted, getSingleObjectPropName), getSingleObjectProp);
+      return formatted.find(function(x) {
+        return ObjectManager.RecursivelyFindProperty(formatted, getSingleObjectPropName) === getSingleObjectProp;
+      });
+    } else {
+      return Object.entries(arr).flat();
+    }
+    return arr;
+  },
   getValidArray: function(arr) {
     if (Manager.isValid(arr)) {
+      arr = Manager.convertToArray(arr);
       return arr.filter(function(x) {
         return x;
       });
@@ -98,3 +116,5 @@ DatasetManager = {
 };
 
 export default DatasetManager;
+
+//# sourceMappingURL=datasetManager.js.map

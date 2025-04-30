@@ -1,34 +1,34 @@
 // Path: src\components\screens\swapRequests?.jsx
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../context.js'
-import DB from '/src/database/DB'
-import Manager from '/src/managers/manager'
-import moment from 'moment'
-import SwapDurations from '/src/constants/swapDurations.js'
-import NotificationManager from '/src/managers/notificationManager'
-import NavBar from '../navBar'
-import {IoAdd} from 'react-icons/io5'
-import AlertManager from '/src/managers/alertManager'
-import Modal from '/src/components/shared/modal'
-import {PiCheckBold, PiSwapDuotone} from 'react-icons/pi'
-import {Fade} from 'react-awesome-reveal'
-import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
-import DomManager from '/src/managers/domManager'
-import InputWrapper from '/src/components/shared/inputWrapper'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import Modal from '/src/components/shared/modal'
+import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
+import SwapDurations from '/src/constants/swapDurations.js'
+import DB from '/src/database/DB'
+import AlertManager from '/src/managers/alertManager'
+import DomManager from '/src/managers/domManager'
+import Manager from '/src/managers/manager'
+import NotificationManager from '/src/managers/notificationManager'
 import ObjectManager from '/src/managers/objectManager'
-import ModelNames from '/src/models/modelNames'
-import ActivityCategory from '/src/models/activityCategory'
 import StringManager from '/src/managers/stringManager'
-import ViewSelector from '../shared/viewSelector'
-import DB_UserScoped from '../../database/db_userScoped.js'
-import Spacer from '../shared/spacer'
-import ToggleButton from '../shared/toggleButton'
-import InputTypes from '../../constants/inputTypes'
-import DetailBlock from '../shared/detailBlock'
+import ActivityCategory from '/src/models/activityCategory'
+import ModelNames from '/src/models/modelNames'
+import moment from 'moment'
+import React, {useContext, useEffect, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import {IoAdd} from 'react-icons/io5'
+import {PiCheckBold, PiSwapDuotone} from 'react-icons/pi'
 import DatetimeFormats from '../../constants/datetimeFormats'
+import InputTypes from '../../constants/inputTypes'
+import globalState from '../../context.js'
+import DB_UserScoped from '../../database/db_userScoped.js'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useSwapRequests from '../../hooks/useSwapRequests'
+import NavBar from '../navBar'
+import DetailBlock from '../shared/detailBlock'
+import Spacer from '../shared/spacer'
+import ToggleButton from '../shared/toggleButton'
+import ViewSelector from '../shared/viewSelector'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -91,7 +91,7 @@ export default function SwapRequests() {
       await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerKey}`, activeRequest, activeRequest.id)
 
       const message = NotificationManager.templates.swapRequestRejection(activeRequest, recipientName)
-      NotificationManager.sendNotification('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
+      NotificationManager.SendNotification('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
       setShowDetails(false)
     }
     // Approved
@@ -100,7 +100,7 @@ export default function SwapRequests() {
       activeRequest.status = 'approved'
       await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerKey}`, activeRequest, activeRequest.id)
 
-      NotificationManager.sendNotification('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
+      NotificationManager.SendNotification('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
       setShowDetails(false)
     }
 

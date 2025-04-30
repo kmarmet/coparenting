@@ -1,30 +1,7 @@
-import React, {useContext, useEffect, useState} from 'react'
-// Path: src\components\screens\expenses\expenseTracker.jsx
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import MenuItem from '@mui/material/MenuItem'
-import 'lightgallery/css/lightgallery.css'
-import LightGallery from 'lightgallery/react'
-import moment from 'moment'
-import {Fade} from 'react-awesome-reveal'
-import {AiOutlineFileAdd} from 'react-icons/ai'
-import {MdOutlineEventRepeat} from 'react-icons/md'
-import {RxUpdate} from 'react-icons/rx'
-import NewExpenseForm from '../../forms/newExpenseForm.jsx'
-import NavBar from '../../navBar.jsx'
-import Modal from '../../shared/modal.jsx'
-import InputWrapper from '../../shared/inputWrapper.jsx'
-import Label from '../../shared/label.jsx'
-import NoDataFallbackText from '../../shared/noDataFallbackText.jsx'
-import SelectDropdown from '../../shared/selectDropdown.jsx'
-import Spacer from '../../shared/spacer'
-import PaymentOptions from './paymentOptions.jsx'
 import MyConfetti from '/src/components/shared/myConfetti.js'
 import DatetimeFormats from '/src/constants/datetimeFormats.js'
 import ExpenseCategories from '/src/constants/expenseCategories'
 import globalState from '/src/context.js'
-import DB from '../../../database/DB.js'
 import DatasetManager from '/src/managers/datasetManager'
 import DateManager from '/src/managers/dateManager.js'
 import DomManager from '/src/managers/domManager'
@@ -35,12 +12,35 @@ import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
-import ViewSelector from '../../shared/viewSelector.jsx'
+// Path: src\components\screens\expenses\expenseTracker.jsx
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import MenuItem from '@mui/material/MenuItem'
+import 'lightgallery/css/lightgallery.css'
+import LightGallery from 'lightgallery/react'
+import moment from 'moment'
+import React, {useContext, useEffect, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import {AiOutlineFileAdd} from 'react-icons/ai'
+import {MdOutlineEventRepeat} from 'react-icons/md'
+import {RxUpdate} from 'react-icons/rx'
+import InputTypes from '../../../constants/inputTypes'
+import DB from '../../../database/DB.js'
+import useCurrentUser from '../../../hooks/useCurrentUser'
+import useExpenses from '../../../hooks/useExpenses'
+import NewExpenseForm from '../../forms/newExpenseForm.jsx'
+import NavBar from '../../navBar.jsx'
 import AccordionTitle from '../../shared/accordionTitle'
 import DetailBlock from '../../shared/detailBlock'
-import InputTypes from '../../../constants/inputTypes'
-import useExpenses from '../../../hooks/useExpenses'
-import useCurrentUser from '../../../hooks/useCurrentUser'
+import InputWrapper from '../../shared/inputWrapper.jsx'
+import Label from '../../shared/label.jsx'
+import Modal from '../../shared/modal.jsx'
+import NoDataFallbackText from '../../shared/noDataFallbackText.jsx'
+import SelectDropdown from '../../shared/selectDropdown.jsx'
+import Spacer from '../../shared/spacer'
+import ViewSelector from '../../shared/viewSelector.jsx'
+import PaymentOptions from './paymentOptions.jsx'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -74,8 +74,8 @@ export default function ExpenseTracker() {
   const [expenseDateType, setExpenseDateType] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
   const [sortedExpenses, setSortedExpenses] = useState([])
-  const {expenses} = useExpenses()
-  const {currentUser} = useCurrentUser()
+  const {expenses, expensesAreLoading} = useExpenses()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
 
   const Update = async () => {
     // Fill/overwrite
@@ -97,7 +97,8 @@ export default function ExpenseTracker() {
     }
     const cleanedExpense = ObjectManager.cleanObject(updatedExpense, ModelNames.expense)
     cleanedExpense.ownerKey = activeExpense.ownerKey
-    await ExpenseManager.updateExpense(currentUser, cleanedExpense, cleanedExpense.id)
+    const updateIndex = DB.GetTableIndexById(expenses, activeExpense?.id)
+    await ExpenseManager.UpdateExpense(currentUser?.key, updateIndex, cleanedExpense)
     await GetSecuredExpenses()
     setActiveExpense(updatedExpense)
     setShowDetails(false)
@@ -107,8 +108,9 @@ export default function ExpenseTracker() {
     const updatedStatus = activeExpense.paidStatus === 'paid' ? 'unpaid' : 'paid'
     setPaidStatus(updatedStatus)
     activeExpense.paidStatus = updatedStatus
-    await ExpenseManager.updateExpense(currentUser, activeExpense, activeExpense.id).then(async () => {
-      NotificationManager.sendNotification(
+    const updateIndex = DB.GetTableIndexById(expenses, activeExpense?.id)
+    await ExpenseManager.UpdateExpense(currentUser?.key, updateIndex, activeExpense).then(async () => {
+      NotificationManager.SendNotification(
         `Expense Paid`,
         `An expense has been marked ${updatedStatus.toUpperCase()} by ${currentUser?.name} \nExpense Name: ${activeExpense?.name}`,
         payer?.key,
@@ -134,7 +136,7 @@ export default function ExpenseTracker() {
     const message = `This is a reminder to pay the ${expense?.name} expense?.  ${
       Manager.isValid(expense?.dueDate) ? 'Due date is: ' + expense?.dueDate : ''
     }`
-    NotificationManager.sendNotification(`Expense Reminder`, message, expense?.payer?.phone, currentUser, ActivityCategory.expenses)
+    NotificationManager.SendNotification(`Expense Reminder`, message, expense?.payer?.phone, currentUser, ActivityCategory.expenses)
     setState({...state, successAlertMessage: 'Reminder Sent'})
     setShowDetails(false)
   }
@@ -285,6 +287,10 @@ export default function ExpenseTracker() {
       setSortedExpenses(expenses)
     }
   }, [expenses])
+
+  if (expensesAreLoading || currentUserIsLoading) {
+    return <img className="data-loading-gif" src={require('../../../img/loading.gif')} alt="Loading" />
+  }
 
   return (
     <>

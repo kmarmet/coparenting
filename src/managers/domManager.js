@@ -4,6 +4,45 @@ var DomManager;
 import Manager from "./manager";
 
 DomManager = {
+  AnimateClasses: {
+    names: {
+      fadeInUp: 'fadeInUp',
+      fadeInDown: 'fadeInDown',
+      fadeInRight: 'fadeInRight',
+      slideInLeft: 'slideInLeft',
+      slideInRight: 'slideInRight',
+      fadeIn: 'fadeIn',
+      zoomIn: 'zoomIn'
+    },
+    zoomIn: {
+      enter: 'animate__zoomIn',
+      exit: 'animate__zoomOut'
+    },
+    fadeIn: {
+      enter: 'animate__fadeIn',
+      exit: 'animate__fadeOut'
+    },
+    slideInLeft: {
+      enter: 'animate__slideInLeft',
+      exit: 'animate__slideOutLeft'
+    },
+    slideInRight: {
+      enter: 'animate__slideInRight',
+      exit: 'animate__slideOutRight'
+    },
+    fadeInUp: {
+      enter: 'animate__fadeInUp',
+      exit: 'animate__fadeOutDown'
+    },
+    fadeInDown: {
+      enter: 'animate__fadeInDown',
+      exit: 'animate__fadeOutUp'
+    },
+    fadeInRight: {
+      enter: 'animate__fadeInRight',
+      exit: 'animate__fadeOut'
+    }
+  },
   AddThemeToDatePickers: function(currentUser) {
     return setTimeout(function() {
       var datetimeParent, ref;
@@ -12,6 +51,26 @@ DomManager = {
         return datetimeParent.classList.add(currentUser != null ? (ref = currentUser.settings) != null ? ref.theme : void 0 : void 0);
       }
     }, 100);
+  },
+  ToggleAnimation: function(addOrRemove, itemsClass, animateName, delay = 80) {
+    var allMenuItems;
+    allMenuItems = document.querySelectorAll(`.${itemsClass}`);
+    if (Manager.isValid(allMenuItems)) {
+      allMenuItems.forEach(function(item) {
+        item.classList.add('animate__animated');
+        item.classList.remove(DomManager.AnimateClasses[animateName].exit);
+        return item.classList.remove(DomManager.AnimateClasses[animateName].enter);
+      });
+      return allMenuItems.forEach(function(item, index) {
+        return setTimeout(function() {
+          if (addOrRemove === 'add') {
+            return item.classList.add(DomManager.AnimateClasses[animateName].enter);
+          } else {
+            return item.classList.add(DomManager.AnimateClasses[animateName].exit);
+          }
+        }, index * delay);
+      });
+    }
   },
   setDefaultView: function() {
     var activeModal, allViews, detailsView;

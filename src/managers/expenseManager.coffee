@@ -1,9 +1,7 @@
 import DB from "../database/DB"
-import { child, getDatabase, ref, remove, set, update } from 'firebase/database'
-import Manager from "./manager"
+import { getDatabase, ref, update } from 'firebase/database'
 import LogManager from "./logManager"
 import SecurityManager from "./securityManager"
-import DB_UserScoped from "../database/db_userScoped"
 
 export default ExpenseManager = {
   markAsPaid:  (currentUser, updatedExpense, id) ->
@@ -20,19 +18,12 @@ export default ExpenseManager = {
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
 
-  updateExpense:  (currentUser, updatedExpense, id) ->
+  UpdateExpense:  (currentUserKey, updateIndex,updatedExpense) ->
     dbRef = getDatabase()
-    key = null
 
     try
-      console.log(id)
-      expenses = await SecurityManager.getExpenses(currentUser)
-      expense = await DB.find(expenses, ["id", id], false)
-      ownerKey = expense.ownerKey
-      console.log(ownerKey)
-      key = await DB.getSnapshotKey("#{DB.tables.expenses}/#{ownerKey}", expense, "id")
-      if key
-        update(ref(dbRef, "#{DB.tables.expenses}/#{ownerKey}/#{key}"), updatedExpense)
+      if updateIndex
+       await update(ref(dbRef, "#{DB.tables.expenses}/#{currentUserKey}/#{updateIndex}"), updatedExpense)
     catch error
       LogManager.log(error.message, LogManager.logTypes.error, error.stack)
   }

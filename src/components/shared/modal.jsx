@@ -142,18 +142,20 @@ export default function Modal({
     <Overlay show={showCard}>
       <div id="modal-wrapper" className={`${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
         {viewSelector}
-        <div id="modal-content">
-          <div id="modal">
-            <div id="modal-title-and-text" className={Manager.isValid(subtitle, true) ? 'with-subtitle' : ''}>
-              <p id="modal-title">
-                {title}
-                {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
-              </p>
-              <Spacer height={3} />
-              {Manager.isValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}
-            </div>
-            <div id="relative-wrapper">
-              <div id="content">{children}</div>
+        <div className={`${showCard ? 'animate__animated animate__fadeInUp' : 'animate__animated animate__fadeOutDown'} modal-fade-wrapper`}>
+          <div id="modal-content">
+            <div id="modal">
+              <div id="modal-title-and-text" className={Manager.isValid(subtitle, true) ? 'with-subtitle' : ''}>
+                <p id="modal-title">
+                  {title}
+                  {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
+                </p>
+                <Spacer height={3} />
+                {Manager.isValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}
+              </div>
+              <div id="relative-wrapper">
+                <div id="content">{children}</div>
+              </div>
             </div>
           </div>
         </div>

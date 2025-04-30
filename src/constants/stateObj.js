@@ -8,14 +8,13 @@ import DateFormats from "./datetimeFormats";
 import moment from "moment";
 
 StateObj = {
-  activeChild: null,
   authUser: null,
   childAccessGranted: false,
   creationFormToShow: '',
   currentScreen: ScreenNames.home,
   currentUser: {},
   docToView: '',
-  isLoading: false,
+  isLoading: true,
   loadingText: 'Preparing your pathway to peace...',
   menuIsOpen: false,
   messageToUser: null,
@@ -30,7 +29,6 @@ StateObj = {
   successAlertMessage: null,
   users: [],
   activeChatId: '',
-  setActiveChild: function(child) {},
   setActiveChatId: function(id) {},
   setUsers: function(users) {},
   setSuccessAlertMessage: function(message) {},

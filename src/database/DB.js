@@ -1,8 +1,9 @@
 // Path: src\database\DB.js
-import Manager from '../managers/manager'
+import * as Sentry from '@sentry/react'
 import {child, get, getDatabase, ref, remove, set, update} from 'firebase/database'
 import _ from 'lodash'
 import LogManager from '../managers/logManager.js'
+import Manager from '../managers/manager'
 
 const DB = {
   tables: {
@@ -45,6 +46,27 @@ const DB = {
       return Object.entries(keyObject).map((x) => x[1])
     } else {
       return []
+    }
+  },
+  GetTableIndexByUserKey: (arr, userKey) => {
+    if (Manager.isValid(arr)) {
+      return Object.entries(arr)
+        ?.filter((x) => x[1]?.userKey === userKey)
+        .flat()[0]
+    }
+  },
+  GetTableIndexById: (arr, id) => {
+    if (Manager.isValid(arr)) {
+      return Object.entries(arr)
+        ?.filter((x) => x[1]?.id === id)
+        .flat()[0]
+    }
+  },
+  GetChildIndex: (children, childId) => {
+    if (Manager.isValid(children)) {
+      return Object.entries(children)
+        ?.filter((x) => x[1]?.id === childId)
+        .flat()[0]
     }
   },
   getSnapshotKey: async (path, objectToCheck, propertyToCompare = 'id') =>
@@ -172,12 +194,12 @@ const DB = {
       }
     }
   },
-  deleteByPath: (path) => {
+  DeleteByPath: async (path) => {
     const dbRef = ref(getDatabase())
     try {
-      remove(child(dbRef, path))
+      await remove(child(dbRef, path))
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      Sentry.captureException(`Error: ${error} | Code File: DB  | Function: DeleteByPath`)
     }
   },
   deleteById: async (path, id) => {

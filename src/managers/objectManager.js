@@ -33,7 +33,24 @@ import _ from "lodash";
 
 import Parent from "../models/parent";
 
+import Manager from "./manager";
+
 ObjectManager = {
+  RecursivelyFindProperty: function(obj, key) {
+    var prop, result;
+    if (Manager.isValid(obj) && typeof obj === 'object') {
+      if (obj.hasOwnProperty(key)) {
+        return obj[key];
+      }
+      for (prop in obj) {
+        result = ObjectManager.RecursivelyFindProperty(obj[prop], key);
+        if (result !== void 0) {
+          return result;
+        }
+      }
+    }
+    return void 0;
+  },
   cleanObject: function(object, modelName) {
     var prop, ref, ref1, returnObject;
     returnObject = (function() {

@@ -1,33 +1,33 @@
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../../context'
-import searchTextHL from 'search-text-highlight'
-import DocumentConversionManager from '/src/managers/documentConversionManager'
-import Manager from '/src/managers/manager'
+import InputWrapper from '/src/components/shared/inputWrapper'
 import Modal from '/src/components/shared/modal'
-import {IoClose, IoListOutline} from 'react-icons/io5'
-import NavBar from '../../navBar'
+import ScreenNames from '/src/constants/screenNames'
 import DB from '/src/database/DB'
 import AlertManager from '/src/managers/alertManager'
+import DocumentConversionManager from '/src/managers/documentConversionManager'
+import DomManager from '/src/managers/domManager'
+import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
+import DocumentHeader from '/src/models/documentHeader'
+import debounce from 'debounce'
 import LightGallery from 'lightgallery/react'
 import 'lightgallery/css/lightgallery.css'
-import {HiDotsHorizontal} from 'react-icons/hi'
-import DomManager from '/src/managers/domManager'
-import debounce from 'debounce'
-import DocumentHeader from '/src/models/documentHeader'
-import InputWrapper from '/src/components/shared/inputWrapper'
-import {TbFileSearch} from 'react-icons/tb'
-import {MdDriveFileRenameOutline} from 'react-icons/md'
-import {FaLightbulb} from 'react-icons/fa6'
-import {IoIosArrowUp} from 'react-icons/io'
-import ScreenNames from '/src/constants/screenNames'
 import _ from 'lodash'
-import Label from '../../shared/label.jsx'
-import DatasetManager from '../../../managers/datasetManager.coffee'
-import ScreenActionsMenu from '../../shared/screenActionsMenu'
-import useCurrentUser from '../../../hooks/useCurrentUser'
+import React, {useContext, useEffect, useState} from 'react'
+import {FaLightbulb} from 'react-icons/fa6'
+import {HiDotsHorizontal} from 'react-icons/hi'
+import {IoIosArrowUp} from 'react-icons/io'
+import {IoClose, IoListOutline} from 'react-icons/io5'
+import {MdDriveFileRenameOutline} from 'react-icons/md'
+import {TbFileSearch} from 'react-icons/tb'
+import searchTextHL from 'search-text-highlight'
 import InputTypes from '../../../constants/inputTypes'
+import globalState from '../../../context'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 import useDocuments from '../../../hooks/useDocuments'
+import DatasetManager from '../../../managers/datasetManager.coffee'
+import NavBar from '../../navBar'
+import Label from '../../shared/label.jsx'
+import ScreenActionsMenu from '../../shared/screenActionsMenu'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
@@ -387,10 +387,9 @@ export default function DocViewer() {
   const RenameFile = async () => {
     if (Manager.isValid(newFileName, true)) {
       const newName = `${newFileName}.${StringManager.GetFileExtension(docToView.name).toLowerCase()}`
-      const childKey = await DB.getSnapshotKey(`${DB.tables.documents}/${currentUser?.key}`, docToView, 'id')
-
-      if (Manager.isValid(childKey)) {
-        await DB.updateByPath(`${DB.tables.documents}/${currentUser?.key}/${childKey}/name`, newName)
+      const recordIndex = DB.GetTableIndexById(documents, docToView?.id)
+      if (Manager.isValid(recordIndex)) {
+        await DB.updateByPath(`${DB.tables.documents}/${currentUser?.key}/${recordIndex}/name`, newName)
         setState({...state, refreshKey: Manager.getUid(), docToView: {...docToView, name: newName}})
       }
       setShowRenameFile(false)

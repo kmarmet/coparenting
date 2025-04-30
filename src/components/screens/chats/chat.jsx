@@ -1,38 +1,38 @@
 // Path: src\components\screens\chats\chat.jsx
-import React, {useContext, useEffect, useState} from 'react'
-import moment from 'moment-timezone'
-import ScreenNames from '/src/constants/screenNames'
-import {FaStar} from 'react-icons/fa'
-import globalState from '/src/context.js'
-import {IoChevronBack, IoCopy, IoSend} from 'react-icons/io5'
-import ChatMessage from '/src/models/chat/chatMessage'
-import {MdCancel, MdOutlineSearchOff} from 'react-icons/md'
-import Manager from '/src/managers/manager'
-import ChatManager from '/src/managers/chatManager.js'
-import {PiBookmarksSimpleDuotone} from 'react-icons/pi'
-import ModelNames from '/src/models/modelNames'
-import {BsBookmarkDashFill, BsBookmarkStarFill, BsFillBookmarksFill} from 'react-icons/bs'
-import {Fade} from 'react-awesome-reveal'
+import InputWrapper from '/src/components/shared/inputWrapper'
 import Modal from '/src/components/shared/modal'
+import ScreenNames from '/src/constants/screenNames'
+import globalState from '/src/context.js'
+import AlertManager from '/src/managers/alertManager'
+import ChatManager from '/src/managers/chatManager.js'
+import DomManager from '/src/managers/domManager'
+import Manager from '/src/managers/manager'
+import ObjectManager from '/src/managers/objectManager'
+import StringManager from '/src/managers/stringManager.coffee'
+import ChatMessage from '/src/models/chat/chatMessage'
+import ChatThread from '/src/models/chat/chatThread'
+import ModelNames from '/src/models/modelNames'
+import moment from 'moment-timezone'
+import React, {useContext, useEffect, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import {BsBookmarkDashFill, BsBookmarkStarFill, BsFillBookmarksFill} from 'react-icons/bs'
+import {FaStar} from 'react-icons/fa'
+import {IoChevronBack, IoCopy, IoSend} from 'react-icons/io5'
+import {MdCancel, MdOutlineSearchOff} from 'react-icons/md'
+import {PiBookmarksSimpleDuotone} from 'react-icons/pi'
 import {TbMessageCircleSearch} from 'react-icons/tb'
 import {useLongPress} from 'use-long-press'
-import ObjectManager from '/src/managers/objectManager'
-import AlertManager from '/src/managers/alertManager'
-import InputWrapper from '/src/components/shared/inputWrapper'
-import DomManager from '/src/managers/domManager'
-import ChatThread from '/src/models/chat/chatThread'
-import StringManager from '/src/managers/stringManager.coffee'
 import DatetimeFormats from '../../../constants/datetimeFormats'
+import InputTypes from '../../../constants/inputTypes'
+import DB from '../../../database/DB'
+import useChat from '../../../hooks/useChat'
+import useChatMessages from '../../../hooks/useChatMessages'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 import AppManager from '../../../managers/appManager'
 import DateManager from '../../../managers/dateManager'
-import InputTypes from '../../../constants/inputTypes'
-import Spacer from '../../shared/spacer'
-import useChat from '../../../hooks/useChat'
-import useCurrentUser from '../../../hooks/useCurrentUser'
-import DB from '../../../database/DB'
 import NotificationManager from '../../../managers/notificationManager'
 import ActivityCategory from '../../../models/activityCategory'
-import useChatMessages from '../../../hooks/useChatMessages'
+import Spacer from '../../shared/spacer'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
@@ -151,7 +151,7 @@ const Chats = () => {
 
     // SEND NOTIFICATION - Only Send if it is not paused for the recipient
     if (!chat?.isPausedFor?.includes(messageRecipient?.key)) {
-      NotificationManager.sendNotification(
+      NotificationManager.SendNotification(
         'New Message 🗯️',
         `You have an unread message from ${StringManager.getFirstNameOnly(currentUser.name)}`,
         messageRecipient?.key,

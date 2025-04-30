@@ -3,7 +3,8 @@
 #external-overrides {
   #child-info-container {
     #child-wrapper {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       width: 100%;
       overflow: auto;
       background-color: transparent;
@@ -14,10 +15,11 @@
       padding: 20px 0;
 
       .child {
-        transition: all 0.3s ease-in-out;
+        //        transition: all 0.3s ease-in-out;
         justify-content: center;
         position: relative;
-
+        display: flex;
+        flex-wrap: wrap;
         * {
           opacity: 0.7;
           user-select: none;
@@ -41,8 +43,13 @@
           background-size: cover;
           border-radius: 100%;
           position: relative;
-          height: 95px;
-          width: 95px;
+          height: 80px;
+          transition: all 0.7s ease-in-out;
+          width: 80px;
+
+          &:not(.animate__zoomIn) {
+            opacity: 0;
+          }
 
           &.no-image {
             border: 1px solid $lightBorderColor;
@@ -75,48 +82,6 @@
               font-weight: 500;
             }
           }
-
-          .after {
-            position: absolute;
-            z-index: 1;
-            @include centerHoriz;
-            margin-left: auto;
-            padding: 0;
-            width: 25px;
-            height: 25px;
-            overflow: hidden;
-            background: $grey;
-            border-radius: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 0;
-            bottom: -5px;
-            right: -10px;
-            border: 2px solid white;
-
-            svg {
-              color: $darkerGrey;
-              display: block;
-              width: 100%;
-              opacity: 1;
-              position: absolute;
-              z-index: 10;
-              transform: scale(0.8);
-            }
-
-            input {
-              font-size: 5px;
-              align-self: stretch;
-            }
-          }
-        }
-
-        input {
-          opacity: 0;
-          display: block !important;
-          z-index: 100;
-          position: relative;
         }
 
         p {
@@ -133,6 +98,13 @@
           * {
             transition: all 0.2s ease-in;
             opacity: 1;
+          }
+
+          .child-image {
+            transform: scale(1.2);
+            transition: all 0.7s ease-in-out;
+            position: relative;
+            top: -10px;
           }
 
           .child-name {
@@ -328,19 +300,62 @@
         padding: 0 10px;
       }
 
-      .flex {
+      #data-row {
+        display: flex;
         align-items: center;
         width: 100%;
         justify-content: space-between;
         max-width: 100%;
-        &.input {
-          .delete-icon {
-            color: $red;
-            position: relative;
-            font-size: 24px;
-            margin-left: 10px;
-            bottom: 5px;
+        margin-bottom: 8px;
+
+        &.checklist-item-row {
+          border-bottom: 0;
+          justify-content: space-between;
+          margin-bottom: 5px;
+          overflow: hidden;
+
+          .checklist-item {
+            width: 100%;
+            background: $mediumGrey;
+            padding: 12px;
+            border-radius: $buttonBorderRadius;
+            display: flex;
+            line-height: 1;
+            white-space: nowrap;
+            align-items: center;
+            transition: all 0.3s ease-in-out;
+
+            .checkmark {
+              display: none;
+            }
+
+            &.active {
+              background: $green;
+              transition: all 0.3s ease-in-out;
+              color: white;
+              padding: 10px;
+
+              .checkmark {
+                display: unset;
+                color: white;
+                font-size: 22px;
+                margin-right: 8px;
+              }
+            }
           }
+        }
+
+        #input-wrapper {
+          width: 100%;
+        }
+        .delete-icon {
+          color: $red;
+          position: relative;
+          font-size: 26px;
+          margin-left: 10px;
+        }
+        #spacer {
+          display: none;
         }
       }
 
@@ -372,6 +387,7 @@
         transition: max-height 0.3s ease-in-out;
         max-width: calc(100vw - 30px);
         overflow: hidden;
+        opacity: 0;
 
         @media screen and (min-width: 1000px) {
           &:hover {
@@ -379,51 +395,6 @@
 
             span {
               padding-left: 10px;
-            }
-          }
-        }
-
-        // CHECKLIST
-        &.checklist {
-          .checklist-item-row {
-            border-bottom: 0;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            overflow: hidden;
-
-            svg {
-              margin-right: 5px;
-              &.checklist-delete-icon {
-                color: $red;
-                font-size: 24px;
-                padding: 0;
-                position: relative;
-                margin: 0 0 0 10px;
-              }
-            }
-
-            .checklist-item {
-              width: 100%;
-              background: $grey;
-              padding: 12px;
-              border-radius: $buttonBorderRadius;
-              display: flex;
-              line-height: 1;
-              white-space: nowrap;
-              align-items: center;
-              transition: all 0.3s ease-in-out;
-
-              &.active {
-                background: $green;
-                transition: all 0.3s ease-in-out;
-                color: white;
-                padding: 10px;
-
-                svg {
-                  color: white;
-                  font-size: 22px;
-                }
-              }
             }
           }
         }

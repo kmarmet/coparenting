@@ -1,18 +1,18 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useContext, useEffect, useState} from 'react'
-import Manager from '../managers/manager'
 import globalState from '../context'
 import DB from '../database/DB'
+import Manager from '../managers/manager'
 import SecurityManager from '../managers/securityManager'
 import useCurrentUser from './useCurrentUser'
 
-const useCalendarEvents = () => {
+const useCalendarEvents = (userKey = null) => {
   const {state, setState} = useContext(globalState)
   const {currentUser} = useCurrentUser()
   const [calendarEvents, setCalendarEvents] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [eventsAreLoading, setEventsAreLoading] = useState(true)
   const [error, setError] = useState(null)
-  const path = `${DB.tables.calendarEvents}/${currentUser?.key}`
+  const path = `${DB.tables.calendarEvents}/${Manager.isValid(userKey) ? userKey : currentUser?.key}`
   const queryKey = ['realtime', path]
 
   useEffect(() => {
@@ -30,11 +30,11 @@ const useCalendarEvents = () => {
         } else {
           setCalendarEvents([])
         }
-        setIsLoading(false)
+        setEventsAreLoading(false)
       },
       (err) => {
         setError(err)
-        setIsLoading(false)
+        setEventsAreLoading(false)
       }
     )
 
@@ -45,7 +45,7 @@ const useCalendarEvents = () => {
 
   return {
     calendarEvents,
-    isLoading,
+    eventsAreLoading,
     error,
     queryKey,
   }

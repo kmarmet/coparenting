@@ -1,23 +1,23 @@
 // Path: src\components\screens\auth\requestParentAccess.jsx
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../../context'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import AlertManager from '/src/managers/alertManager'
-import Manager from '../../../managers/manager'
 import SmsManager from '/src/managers/smsManager.js'
+import React, {useContext, useEffect, useState} from 'react'
 import validator from 'validator'
-import DB from '../../../database/DB'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
-import StringManager from '../../../managers/stringManager'
+import globalState from '../../../context'
+import DB from '../../../database/DB'
+import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
-import Spacer from '../../shared/spacer'
 import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
+import ObjectManager from '../../../managers/objectManager'
+import StringManager from '../../../managers/stringManager'
 import Child from '../../../models/child/child'
 import General from '../../../models/child/general'
-import DB_UserScoped from '../../../database/db_userScoped'
-import ObjectManager from '../../../managers/objectManager'
 import ModelNames from '../../../models/modelNames'
+import Spacer from '../../shared/spacer'
 
 export default function RequestParentAccess() {
   const {state, setState} = useContext(globalState)
@@ -60,7 +60,7 @@ export default function RequestParentAccess() {
       const phoneCode = Manager.getUid().slice(0, 6)
       setVerificationCode(phoneCode)
       setState({...state, isLoading: true, loadingText: 'Sending security code to your parent...'})
-      await SmsManager.Send(parentPhone, SmsManager.getParentVerificationTemplate(StringManager.getFirstNameOnly(currentUser?.name), phoneCode))
+      await SmsManager.Send(parentPhone, SmsManager.getParentVerificationTemplate(StringManager.getFirstNameOnly(userName), phoneCode))
       setReadyToVerify(true)
       setState({...state, isLoading: false})
     }
@@ -73,57 +73,65 @@ export default function RequestParentAccess() {
     }
 
     // Access granted
-    if (enteredCode === verificationCode) {
-      const existingParentAccount = await DB.find(DB.tables.users, ['email', parentEmail], true)
+    try {
+      if (enteredCode === verificationCode) {
+        const existingParentAccount = await DB.find(DB.tables.users, ['email', parentEmail], true)
 
-      if (existingParentAccount) {
-        const existingChild = existingParentAccount?.children?.find(
-          (x) => x?.general?.phone === currentUser?.phone || x?.general?.email === currentUser?.email
-        )
+        if (existingParentAccount) {
+          const existingChild = existingParentAccount?.children?.find(
+            (x) => x?.general?.phone === currentUser?.phone || x?.general?.email === currentUser?.email
+          )
 
-        // ADD OR UPDATE CHILD RECORD UNDER PARENT
-        // -> Add child to parent
-        if (!Manager.isValid(existingChild) || ObjectManager.isEmpty(existingChild)) {
-          const childToAdd = new Child()
-          const general = new General()
-          general.phone = currentUser?.phone
-          general.name = StringManager.uppercaseFirstLetterOfAllWords(userName)
-          childToAdd.general = general
-          childToAdd.userKey = currentUser?.key
-          const cleanChild = ObjectManager.cleanObject(childToAdd, ModelNames.child)
-          await DB_UserScoped.addUserChild(existingParentAccount, cleanChild)
-        }
-
-        // -> Update
-        else {
-          const existingChildKey = await DB.getSnapshotKey(`${DB.tables.users}/${existingParentAccount?.key}/children`, existingChild, 'id')
-
-          if (Manager.isValid(existingChildKey)) {
-            existingChild.userKey = currentUser?.key
-            await DB.updateByPath(`${DB.tables.users}/${existingParentAccount?.key}/children/${existingChildKey}`, existingChild)
+          // ADD OR UPDATE CHILD RECORD UNDER PARENT
+          // -> Add child to parent
+          if (!Manager.isValid(existingChild) || ObjectManager.isEmpty(existingChild)) {
+            const childToAdd = new Child()
+            const general = new General()
+            general.phone = currentUser?.phone
+            general.name = StringManager.uppercaseFirstLetterOfAllWords(userName)
+            childToAdd.general = general
+            childToAdd.userKey = currentUser?.key
+            const cleanChild = ObjectManager.cleanObject(childToAdd, ModelNames.child)
+            await DB_UserScoped.addUserChild(existingParentAccount, cleanChild)
           }
-        }
 
-        // Add parent to child
-        await DB.add(`${DB.tables.users}/${currentUser?.key}/parents`, {
-          name: existingParentAccount?.name,
-          phone: existingParentAccount?.phone,
-          userKey: existingParentAccount?.key,
-          email: existingParentAccount?.email,
-        })
-        await DB_UserScoped.updateUserRecord(currentUser?.key, 'parentAccessGranted', true)
-        await DB_UserScoped.updateUserRecord(currentUser?.key, 'sharedDataUsers', [existingParentAccount?.key])
-        setState({...state, currentScreen: ScreenNames.onboarding, successAlertMessage: 'Access Granted'})
+          // -> Update
+          else {
+            const existingChildKey = DB.GetChildIndex(currentUser?.children, existingChild?.id)
+
+            if (Manager.isValid(existingChildKey)) {
+              await DB.updateByPath(
+                `${DB.tables.users}/${existingParentAccount?.key}/children/${existingChildKey}/userKey/${currentUser?.key}`,
+                existingChild
+              )
+            }
+          }
+
+          // Add parent to child
+          const newParent = {
+            name: existingParentAccount?.name,
+            phone: existingParentAccount?.phone,
+            userKey: existingParentAccount?.key,
+            email: existingParentAccount?.email,
+          }
+          const cleanParent = ObjectManager.cleanObject(newParent, ModelNames.parent)
+          await DB_UserScoped.AddParent(currentUser, cleanParent)
+          await DB_UserScoped.updateUserRecord(currentUser?.key, 'parentAccessGranted', true)
+          await DB_UserScoped.updateUserRecord(currentUser?.key, 'sharedDataUsers', [existingParentAccount?.key])
+          setState({...state, currentScreen: ScreenNames.onboarding, successAlertMessage: 'Access Granted'})
+        } else {
+          AlertManager.throwError(
+            'No parent profile found with provided email',
+            'Please check the email and enter again or let your parent know they will need to register an account'
+          )
+          return false
+        }
       } else {
-        AlertManager.throwError(
-          'No parent profile found with provided email',
-          'Please check the email and enter again or let your parent know they will need to register an account'
-        )
+        AlertManager.throwError('Access code is incorrect, please try again')
         return false
       }
-    } else {
-      AlertManager.throwError('Access code is incorrect, please try again')
-      return false
+    } catch (error) {
+      console.log(`Error: ${error} | Code File: requestParentAccess   | Function: VerifyPhoneCode`)
     }
   }
 

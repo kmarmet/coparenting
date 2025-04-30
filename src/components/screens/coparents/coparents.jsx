@@ -1,37 +1,39 @@
 // Path: src\components\screens\parents\parents.jsx
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../../context'
-import Manager from '/src/managers/manager'
-import DB_UserScoped from '/src/database/db_userScoped'
-import CustomCoparentInfo from './customCoparentInfo'
-import {HiDotsHorizontal} from 'react-icons/hi'
-import NewCoparentForm from './newCoparentForm'
-import {FaWandMagicSparkles} from 'react-icons/fa6'
-import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
-import {Fade} from 'react-awesome-reveal'
 import NavBar from '/src/components/navBar.jsx'
-import {BsFillSendFill} from 'react-icons/bs'
-import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
+import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
+import DB_UserScoped from '/src/database/db_userScoped'
 
 import AlertManager from '/src/managers/alertManager'
+import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
+import React, {useContext, useEffect, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import {BsFillSendFill} from 'react-icons/bs'
+import {FaWandMagicSparkles} from 'react-icons/fa6'
+import {HiDotsHorizontal} from 'react-icons/hi'
+import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
-import Modal from '../../shared/modal'
-import EmailManager from '../../../managers/emailManager'
-import Spacer from '../../shared/spacer'
-import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import InputTypes from '../../../constants/inputTypes'
+import globalState from '../../../context'
+import DB from '../../../database/DB'
 import useCoparents from '../../../hooks/useCoparents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
-import Label from '../../shared/label'
+import DomManager from '../../../managers/domManager'
+import EmailManager from '../../../managers/emailManager'
+import AddressInput from '../../shared/addressInput'
+import Modal from '../../shared/modal'
+import ScreenActionsMenu from '../../shared/screenActionsMenu'
+import Spacer from '../../shared/spacer'
+import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
+import CustomCoparentInfo from './customCoparentInfo'
+import NewCoparentForm from './newCoparentForm'
 
 export default function Coparents() {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
-  const {currentUser} = useCurrentUser()
-  const {coparents} = useCoparents()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {coparents, coparentsAreLoading} = useCoparents()
 
   // State
   const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
@@ -41,29 +43,63 @@ export default function Coparents() {
   const [invitedCoparentName, setInvitedCoparentName] = useState('')
   const [invitedCoparentEmail, setInvitedCoparentEmail] = useState('')
 
-  const DeleteProp = async (prop) => await DB_UserScoped.deleteCoparentInfoProp(currentUser, StringManager.formatDbProp(prop), activeCoparent)
+  const DeleteProp = async (prop) => {
+    const coparentIndex = DB.GetTableIndexByUserKey(coparents, activeCoparent?.userKey)
+    if (Manager.isValid(coparentIndex)) {
+      await DB_UserScoped.DeleteCoparentInfoProp(currentUser?.key, coparentIndex, StringManager.formatDbProp(prop), activeCoparent)
+    }
+  }
 
   const Update = async (prop, value) => {
-    await DB_UserScoped.updateCoparent(currentUser, activeCoparent, StringManager.formatDbProp(prop), value)
+    const coparentIndex = DB.GetTableIndexByUserKey(coparents, activeCoparent?.userKey)
+
+    if (!Manager.isValid(coparentIndex)) {
+      return
+    }
+    await DB_UserScoped.UpdateCoparent(currentUser?.key, coparentIndex, StringManager.formatDbProp(prop), value)
     setState({...state, successAlertMessage: `${StringManager.FormatTitle(prop, true)} has been updated`})
   }
 
   const DeleteCoparent = async () => {
-    await DB_UserScoped.deleteCoparent(currentUser, activeCoparent)
-    setState({...state, successAlertMessage: `${activeCoparent?.name} has been unlinked from your profile`})
-    setActiveCoparent(coparents?.[0])
+    const coparentIndex = DB.GetTableIndexByUserKey(coparents, activeCoparent?.userKey)
+
+    if (!Manager.isValid(coparentIndex)) {
+      return
+    }
+    await DB_UserScoped.DeleteCoparent(currentUser?.key, coparentIndex)
+    await DB_UserScoped.DeleteSharedDataUserKey(currentUser, activeCoparent?.userKey)
+  }
+
+  const ExecuteAnimations = () => {
+    DomManager.ToggleAnimation('add', 'coparent', DomManager.AnimateClasses.names.zoomIn, 0)
+    setTimeout(() => {
+      DomManager.ToggleAnimation('add', 'info-row', DomManager.AnimateClasses.names.fadeInRight, 50)
+    }, 200)
   }
 
   useEffect(() => {
-    if (Manager.isValid(coparents) && !Manager.isValid(activeCoparent)) {
-      setActiveCoparent(coparents?.[0])
-    }
-    if (Manager.isValid(activeCoparent)) {
-      const coparentId = activeCoparent?.id
-      const updatedCoparent = coparents?.find((x) => x?.id === coparentId)
-      setActiveCoparent(updatedCoparent)
+    if (!Manager.isValid(coparents)) {
+      setActiveCoparent(null)
+    } else {
+      DomManager.ToggleAnimation('add', 'coparent', DomManager.AnimateClasses.names.zoomIn, 100)
+      if (Manager.isValid(coparents) && !Manager.isValid(activeCoparent)) {
+        setActiveCoparent(coparents?.[0])
+      }
+      if (Manager.isValid(activeCoparent) && Manager.isValid(coparents)) {
+        const coparentId = activeCoparent?.id
+        const updatedCoparent = coparents?.find((x) => x?.id === coparentId)
+        setActiveCoparent(updatedCoparent)
+      }
     }
   }, [coparents])
+
+  useEffect(() => {
+    ExecuteAnimations()
+  }, [activeCoparent])
+
+  if (currentUserIsLoading) {
+    return <StandaloneLoadingGif />
+  }
 
   return (
     <>
@@ -229,71 +265,59 @@ export default function Coparents() {
             })}
         </div>
 
-        {/* NO DATA FALLBACK */}
-        {!Manager.isValid(coparents) && <NoDataFallbackText text={'You have not added any co-parents to your profile yet'} />}
-
         {/* COPARENT INFO */}
         <div id="coparent-info" key={activeCoparent?.userKey}>
           <p id="coparent-name-primary">{StringManager.GetFirstNameAndLastInitial(activeCoparent?.name)}</p>
           <p id="coparent-type-primary"> {activeCoparent?.parentType}</p>
-          {Manager.isValid(activeCoparent) && (
-            <Fade direction={'right'} className={'parents-info-fade-wrapper'} duration={800} damping={0.08} triggerOnce={false} cascade={true}>
-              {/* ITERATE COPARENT INFO */}
-              {Manager.isValid(activeCoparent) &&
-                Object.entries(activeCoparent).map((propArray, index) => {
-                  let infoLabel = propArray[0]
-                  infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
-                  infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
-                  infoLabel = StringManager.FormatTitle(infoLabel, true)
-                  const value = propArray[1]
-                  const inputsToSkip = ['address', 'key', 'id', 'user key']
+          {/* ITERATE COPARENT INFO */}
+          {Manager.isValid(activeCoparent) &&
+            Object.entries(activeCoparent).map((propArray, index) => {
+              let infoLabel = propArray[0]
+              infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
+              infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
+              infoLabel = StringManager.FormatTitle(infoLabel, true)
+              const value = propArray[1]
+              const inputsToSkip = ['address', 'key', 'id', 'user key']
 
-                  return (
-                    <div key={index}>
-                      {/* ADDRESS */}
-                      {infoLabel.toLowerCase().includes('address') && (
-                        <>
-                          <Label classes="address-label" text={'Home Address'} />
-                          <GooglePlacesAutocomplete
-                            className={'address-input'}
-                            selectProps={{
-                              // menuIsOpen: true,
-                              placeholder: value,
-                              onChange: (e) => Update('address', e?.label),
-                              isClearable: false,
-                            }}
-                          />
-                          <Spacer height={5} />
-                        </>
-                      )}
+              return (
+                <div key={index} className="info-row">
+                  {/* ADDRESS */}
+                  {infoLabel.toLowerCase().includes('address') && (
+                    <AddressInput
+                      className={'address-input'}
+                      defaultValue={value}
+                      labelText="Home Address"
+                      onChange={(address) => Update('address', address)}
+                    />
+                  )}
 
-                      {/* TEXT INPUT */}
-                      {!inputsToSkip.includes(infoLabel.toLowerCase()) && !infoLabel.toLowerCase().includes('address') && (
-                        <>
-                          <div className="flex input">
-                            <InputWrapper
-                              hasBottomSpacer={false}
-                              defaultValue={value}
-                              onChange={async (e) => {
-                                const inputValue = e.target.value
-                                await Update(infoLabel, `${inputValue}`).then((r) => r)
-                                setActiveCoparent(activeCoparent)
-                              }}
-                              inputType={InputTypes.text}
-                              labelText={infoLabel}
-                            />
-                            <PiTrashSimpleDuotone className="delete-icon fs-24" onClick={() => DeleteProp(infoLabel)} />
-                          </div>
-                          <Spacer height={5} />
-                        </>
-                      )}
-                    </div>
-                  )
-                })}
-            </Fade>
-          )}
+                  {/* TEXT INPUT */}
+                  {!inputsToSkip.includes(infoLabel.toLowerCase()) && !infoLabel.toLowerCase().includes('address') && (
+                    <>
+                      <div className="flex input">
+                        <InputWrapper
+                          hasBottomSpacer={false}
+                          defaultValue={value}
+                          onChange={async (e) => {
+                            const inputValue = e.target.value
+                            await Update(infoLabel, `${inputValue}`).then((r) => r)
+                            setActiveCoparent(activeCoparent)
+                          }}
+                          inputType={InputTypes.text}
+                          labelText={infoLabel}
+                        />
+                        <PiTrashSimpleDuotone className="delete-icon fs-24" onClick={() => DeleteProp(infoLabel)} />
+                      </div>
+                      <Spacer height={5} />
+                    </>
+                  )}
+                </div>
+              )
+            })}
         </div>
       </div>
+      {/* NO DATA FALLBACK */}
+      {!Manager.isValid(coparents) && <NoDataFallbackText text={'You have not added any co-parents to your profile yet'} />}
 
       {/* NAVBAR */}
       <NavBar navbarClass={'actions'}>

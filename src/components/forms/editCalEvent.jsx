@@ -1,19 +1,7 @@
 // Path: src\components\forms\editCalEvent.jsx
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import moment from 'moment'
-import {BsCalendar2CheckFill} from 'react-icons/bs'
-import {MdEventRepeat} from 'react-icons/md'
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../context'
-import Spacer from '../shared/spacer.jsx'
-import {Fade} from 'react-awesome-reveal'
-import ViewSelector from '../shared/viewSelector'
-import * as Sentry from '@sentry/react'
-import Modal from '/src/components/shared/modal'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import InputWrapper from '/src/components/shared/inputWrapper'
+import Modal from '/src/components/shared/modal'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import DB from '/src/database/DB'
@@ -26,20 +14,33 @@ import StringManager from '/src/managers/stringManager'
 import {default as CalendarMapper, default as CalMapper} from '/src/mappers/calMapper'
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
-import ToggleButton from '../shared/toggleButton'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import * as Sentry from '@sentry/react'
+import moment from 'moment'
+import React, {useContext, useEffect, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import {BsCalendar2CheckFill} from 'react-icons/bs'
+import {MdEventRepeat} from 'react-icons/md'
 import InputTypes from '../../constants/inputTypes'
+import globalState from '../../context'
+import useCalendarEvents from '../../hooks/useCalendarEvents'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useUsers from '../../hooks/useUsers'
+import AddressInput from '../shared/addressInput'
 import DetailBlock from '../shared/detailBlock'
 import Map from '../shared/map'
-import useCurrentUser from '../../hooks/useCurrentUser'
-import useCalendarEvents from '../../hooks/useCalendarEvents'
-import useUsers from '../../hooks/useUsers'
 import MultilineDetailBlock from '../shared/multilineDetailBlock'
+import Spacer from '../shared/spacer.jsx'
+import ToggleButton from '../shared/toggleButton'
+import ViewSelector from '../shared/viewSelector'
 
 export default function EditCalEvent({event, showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey, dateToEdit} = state
   const {currentUser} = useCurrentUser()
-  const {calendarEvents} = useCalendarEvents()
+  const {calendarEvents} = useCalendarEvents(event?.ownerKey)
   const {users} = useUsers()
 
   // Event Details
@@ -91,10 +92,12 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setEventIsRecurring(false)
     setEventIsCloned(false)
     setEventPhone('')
+
     setRecurrenceFrequency('')
 
     setState({
       ...state,
+
       successAlertMessage: alertMessage,
       dateToEdit: moment().format(DatetimeFormats.dateForDb),
       refreshKey: Manager.getUid(),
@@ -106,7 +109,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     if (Manager.isValid(event?.shareWith)) {
       // Remove currentUser from original event shareWith
       const shareWithWithoutCurrentUser = event.shareWith.filter((x) => x !== currentUser?.key)
-      await CalendarManager.UpdateEvent(event?.ownerKey, calendarEvents, event, 'shareWith', shareWithWithoutCurrentUser)
+      event.shareWith = shareWithWithoutCurrentUser
+      const updateIndex = DB.GetTableIndexById(calendarEvents, event?.id)
+      await CalendarManager.UpdateEvent(event?.ownerKey, updateIndex, event)
       // Add cloned event for currentUser
       await CalendarManager.addCalendarEvent(currentUser, _updatedEvent)
       NotificationManager.sendToShareWith(
@@ -630,14 +635,16 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             onChange={(e) => setEventWebsiteUrl(e.target.value)}
           />
           {/* LOCATION/ADDRESS */}
-          <InputWrapper
-            defaultValue={event?.location}
-            wrapperClasses={Manager.isValid(event?.location) ? 'show-label' : ''}
-            labelText={'Location'}
-            required={false}
-            onChange={(address) => setEventLocation(address)}
-            inputType={InputTypes.address}
-          />
+          {/*<InputWrapper*/}
+          {/*  defaultValue={event?.location}*/}
+          {/*  wrapperClasses={Manager.isValid(event?.location) ? 'show-label' : ''}*/}
+          {/*  labelText={'Location'}*/}
+          {/*  required={false}*/}
+          {/*  onChange={(address) => setEventLocation(address)}*/}
+          {/*  inputType={InputTypes.address}*/}
+          {/*/>*/}
+
+          <AddressInput defaultValue={event?.location} labelText={'Location'} onChange={(address) => setEventLocation(address)} />
 
           {/* PHONE */}
           <InputWrapper

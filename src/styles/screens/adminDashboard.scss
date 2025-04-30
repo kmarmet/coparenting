@@ -19,6 +19,7 @@
         font-size: 16px;
         text-align: center;
         border: 0;
+        width: calc(100% / 3);
 
         &.red {
           background: $red;
@@ -47,6 +48,10 @@
       gap: 20px;
       align-items: flex-start;
       grid-template-columns: repeat(4, 1fr);
+
+      @media screen and (min-width: 1000px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
       .tool-box {
         padding: 20px;
         border-radius: $borderRadius;
@@ -54,6 +59,9 @@
         margin-bottom: 15px;
         height: 100%;
         border: 1px solid $lightBorderColor;
+
+        &.get-records {
+        }
 
         #code-block {
           background: #272822;

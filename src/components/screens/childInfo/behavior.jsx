@@ -1,31 +1,31 @@
 // Path: src\components\screens\childInfo\behavior.jsx
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../../context'
-import Manager from '/src/managers/manager'
-import DB_UserScoped from '/src/database/db_userScoped'
-import Accordion from '@mui/material/Accordion'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import AccordionDetails from '@mui/material/AccordionDetails'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import AlertManager from '/src/managers/alertManager'
 import DB from '/src/database/DB'
-import StringManager from '../../../managers/stringManager'
+import DB_UserScoped from '/src/database/db_userScoped'
+import AlertManager from '/src/managers/alertManager'
+import Manager from '/src/managers/manager'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import React, {useContext, useEffect, useState} from 'react'
 import {FaBrain, FaMinus, FaPlus} from 'react-icons/fa6'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
-import Spacer from '../../shared/spacer'
+import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import useSharedChildInfo from '../../../hooks/useSharedChildInfo'
+import StringManager from '../../../managers/stringManager'
+import Spacer from '../../shared/spacer'
 
-export default function Behavior() {
+export default function Behavior({activeChild}) {
   const {state, setState} = useContext(globalState)
-  const {theme, activeChild} = state
+  const {theme, refreshKey} = state
   const [behaviorValues, setBehaviorValues] = useState([])
   const [showInputs, setShowInputs] = useState(false)
-  const {currentUserRole} = useCurrentUser()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {sharedChildInfo} = useSharedChildInfo()
 
-  const deleteProp = async (prop) => {
-    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
-
+  const DeleteProp = async (prop) => {
     const existingPropCount = Object.keys(activeChild?.behavior).length
 
     if (existingPropCount <= 1) {
@@ -37,28 +37,32 @@ export default function Behavior() {
     }
 
     // Delete Shared
-    const sharedProps = sharing?.map((x) => x?.prop)
+    const sharedProps = sharedChildInfo?.map((x) => x?.prop)
     if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
-      const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
-      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
-      await setSelectedChild()
-    } else {
-      const updatedChild = await DB_UserScoped.deleteUserChildPropByPath(currentUser, activeChild, 'behavior', StringManager.formatDbProp(prop))
-      await setSelectedChild()
-      setState({...state, activeChild: updatedChild})
+      const scopedSharingObject = await DB.find(sharedChildInfo, ['prop', prop.toLowerCase()], false)
+      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharedChildInfo, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
+      await SetSelectedChild()
+    }
+
+    // Delete NOT shared
+    else {
+      const childIndex = DB.GetChildIndex(currentUser?.children, activeChild?.id)
+
+      if (Manager.isValid(childIndex)) {
+        await DB_UserScoped.DeleteChildInfoProp(currentUser?.key, childIndex, 'behavior', StringManager.formatDbProp(prop))
+        await SetSelectedChild()
+      }
     }
   }
 
-  const update = async (prop, value) => {
-    const updatedChild = await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, 'behavior', StringManager.formatDbProp(prop), value)
-    setState({...state, activeChild: updatedChild})
+  const Update = async (prop, value) => {
+    await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, 'behavior', StringManager.formatDbProp(prop), value)
     AlertManager.successAlert('Updated!')
   }
 
-  const setSelectedChild = async () => {
-    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
+  const SetSelectedChild = async () => {
     let sharedValues = []
-    for (let obj of sharing) {
+    for (let obj of sharedChildInfo) {
       sharedValues.push([obj.prop, obj.value, obj.sharedByName])
     }
     if (Manager.isValid(activeChild.behavior)) {
@@ -84,11 +88,14 @@ export default function Behavior() {
   }
 
   useEffect(() => {
-    setSelectedChild().then((r) => r)
-  }, [activeChild])
+    SetSelectedChild().then((r) => r)
+  }, [activeChild, sharedChildInfo])
 
+  if (currentUserIsLoading) {
+    return <img src={require('../../../img/loading.gif')} className="data-loading-gif" alt="Loading" />
+  }
   return (
-    <div className="info-section section behavior">
+    <div className="info-section section behavior" key={refreshKey}>
       <Accordion className={`${theme} child-info`} disabled={!Manager.isValid(activeChild?.behavior)}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
@@ -106,39 +113,35 @@ export default function Behavior() {
               infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel).replaceAll('OF', ' of ')
               const value = prop[1]
               return (
-                <div key={index}>
-                  <div className="flex input">
-                    {infoLabel.toLowerCase().includes('phone') && (
-                      <>
-                        <div className="flex input">
-                          <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
-                            {infoLabel}: {value}
-                          </a>
-                        </div>
-                        <Spacer height={5} />
-                        <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
-                      </>
-                    )}
-                    {!infoLabel.toLowerCase().includes('phone') && (
-                      <>
-                        <div className="flex input">
-                          <InputWrapper
-                            customDebounceDelay={1200}
-                            isDebounced={true}
-                            inputType={InputTypes.text}
-                            defaultValue={value}
-                            labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
-                            onChange={async (e) => {
-                              const inputValue = e.target.value
-                              await update(infoLabel, `${inputValue}`)
-                            }}
-                          />
-                          <Spacer height={5} />
-                        </div>
-                        <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => deleteProp(infoLabel)} />
-                      </>
-                    )}
-                  </div>
+                <div key={index} id="data-row">
+                  {infoLabel.toLowerCase().includes('phone') && (
+                    <>
+                      <div className="flex input">
+                        <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
+                          {infoLabel}: {value}
+                        </a>
+                      </div>
+                      <Spacer height={5} />
+                      <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
+                    </>
+                  )}
+                  {!infoLabel.toLowerCase().includes('phone') && (
+                    <>
+                      <InputWrapper
+                        hasBottomSpacer={false}
+                        customDebounceDelay={1200}
+                        isDebounced={true}
+                        inputType={InputTypes.text}
+                        defaultValue={value}
+                        labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
+                        onChange={async (e) => {
+                          const inputValue = e.target.value
+                          await Update(infoLabel, `${inputValue}`)
+                        }}
+                      />
+                      <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
+                    </>
+                  )}
                 </div>
               )
             })}
