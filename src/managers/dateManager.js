@@ -1,11 +1,11 @@
 import moment from 'moment-timezone'
+import DatetimeFormats from '../constants/datetimeFormats'
+import DatasetManager from '../managers/datasetManager.coffee'
 import Manager from '../managers/manager'
 import CalendarEvent from '../models/calendarEvent'
-import DatetimeFormats from '../constants/datetimeFormats'
+import ModelNames from '../models/modelNames'
 import CalendarManager from './calendarManager.js'
 import ObjectManager from './objectManager'
-import ModelNames from '../models/modelNames'
-import DatasetManager from '../managers/datasetManager.coffee'
 
 const DateManager = {
   reminderTimes: {
@@ -49,7 +49,7 @@ const DateManager = {
   },
   sortCalendarEvents: (events, datePropertyName, timePropertyName) => {
     const sorted = events.sort((a, b) => moment(a.startTime, DatetimeFormats.timeForDb).diff(moment(b.startTime, DatetimeFormats.timeForDb)))
-    // console.log(sorted)
+    // console.Log(sorted)
     let nestedSort =
       (prop1, prop2 = null, direction = 'asc') =>
       (e1, e2) => {

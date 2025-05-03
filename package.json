@@ -21,7 +21,7 @@
     "@tanstack/react-query": "^5.74.4",
     "@theme-toggles/react": "4.1.0",
     "@vis.gl/react-google-maps": "^1.5.1",
-    "add": "2.0.6",
+    "Add": "2.0.6",
     "animate.css": "^4.1.1",
     "browser-image-compression": "^2.0.2",
     "canvas-confetti": "1.9.3",

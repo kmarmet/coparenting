@@ -44,10 +44,10 @@ export default function DocViewer() {
   const [sideMenuIsOpen, setSideMenuIsOpen] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const [shouldHideSidebar, setShouldHideSidebar] = useState(true)
-  const {currentUser} = useCurrentUser()
-  const {documents} = useDocuments()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {documents, documentsAreLoading} = useDocuments()
 
-  const scrollToHeader = (hashedHeader) => {
+  const ScrollToHeader = (hashedHeader) => {
     const domHeader = document.querySelector(`#doc-text [data-hashed-header="${hashedHeader}"]`)
     if (domHeader) {
       setTimeout(() => {
@@ -61,7 +61,7 @@ export default function DocViewer() {
     }
   }
 
-  const onLoad = async () => {
+  const OnLoad = async () => {
     const fileType = `.${StringManager.GetFileExtension(docToView.name)}`.toLowerCase()
     const nonImageFileTypes = ['.docx', '.doc', '.pdf', '.odt', '.txt']
     if (currentUser && nonImageFileTypes.includes(fileType)) {
@@ -116,7 +116,7 @@ export default function DocViewer() {
     setTocHeaders(DatasetManager.getUniqueArray(allHeaders, true))
   }
 
-  const search = async () => {
+  const Search = async () => {
     if (Manager.isValid(searchValue, true)) {
       const docText = document.getElementById('doc-text')
       let textAsHtml = docText.innerHTML
@@ -329,7 +329,7 @@ export default function DocViewer() {
       if (header) {
         await DB.deleteById(`${DB.tables.documentHeaders}/${currentUser?.key}`, header.id)
         setTocHeaders([])
-        await onLoad()
+        await OnLoad()
       }
     }
   }
@@ -350,8 +350,8 @@ export default function DocViewer() {
             const header = new DocumentHeader()
             header.headerText = text
             header.ownerKey = currentUser.key
-            await DB.add(`${DB.tables.documentHeaders}/${currentUser?.key}`, header)
-            await onLoad()
+            await DB.Add(`${DB.tables.documentHeaders}/${currentUser?.key}`, header)
+            await OnLoad()
           },
           () => {
             DomManager.clearTextSelection()
@@ -421,10 +421,10 @@ export default function DocViewer() {
   }, [showToc, showSearch, showTips])
 
   useEffect(() => {
-    if (Manager.isValid(currentUser)) {
-      onLoad().then((r) => r)
+    if (!currentUserIsLoading && !documentsAreLoading) {
+      OnLoad().then((r) => r)
     }
-  }, [currentUser])
+  }, [currentUserIsLoading, documentsAreLoading])
 
   // PAGE LOAD
   useEffect(() => {
@@ -445,6 +445,7 @@ export default function DocViewer() {
       }
     }
   }, [])
+
   return (
     <>
       {/* SEARCH CARD */}
@@ -455,7 +456,7 @@ export default function DocViewer() {
         showCard={showSearch}
         title={'Search'}
         showOverlay={false}
-        onSubmit={search}
+        onSubmit={Search}
         onClose={CloseSearch}>
         <InputWrapper
           wrapperClasses="mt-5"
@@ -524,7 +525,7 @@ export default function DocViewer() {
                       <p
                         onClick={() => {
                           setShowToc(false)
-                          scrollToHeader(header)
+                          ScrollToHeader(header)
                         }}
                         className={`toc-header`}
                         data-hashed-header={header}

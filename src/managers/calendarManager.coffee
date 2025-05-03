@@ -30,7 +30,7 @@ export default CalendarManager =
     try
       await set(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.key}/"), toAdd)
     catch error
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
 
   buildArrayOfEvents: (currentUser, eventObject, arrayType = "recurring", startDate, endDate) ->
     datesToPush = []
@@ -94,7 +94,7 @@ export default CalendarManager =
     try
       await set(child(dbRef, "#{DB.tables.holidayEvents}"), eventsToAdd)
     catch error
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
 
   addCalendarEvent: (currentUser, newEvent) ->
     dbRef = ref(getDatabase())
@@ -109,7 +109,7 @@ export default CalendarManager =
         toAdd = [newEvent]
       set(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.key}/"), toAdd)
     catch error
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
 
   UpdateEvent:  (currentUserKey, updateIndex,updatedEvent) ->
     dbRef = getDatabase()
@@ -147,4 +147,4 @@ export default CalendarManager =
         try
           remove(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.key}/#{idToDelete}"))
         catch error
-          LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+          LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)

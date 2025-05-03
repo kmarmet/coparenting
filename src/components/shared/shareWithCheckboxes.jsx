@@ -1,12 +1,13 @@
 // Path: src\components\shared\shareWithCheckboxes.jsx
-import Manager from '../../managers/manager'
 import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../context'
-import Label from './label'
-import StringManager from '../../managers/stringManager.coffee'
-import Checkbox from './checkbox.jsx'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useUsers from '../../hooks/useUsers'
+import DatasetManager from '../../managers/datasetManager'
+import Manager from '../../managers/manager'
+import StringManager from '../../managers/stringManager.coffee'
+import Checkbox from './checkbox.jsx'
+import Label from './label'
 import Spacer from './spacer'
 
 export default function ShareWithCheckboxes({
@@ -18,22 +19,22 @@ export default function ShareWithCheckboxes({
   labelText = '',
 }) {
   const {state, setState} = useContext(globalState)
-  const {theme} = state
+  const {theme, refreshKey} = state
   const [shareWith, setShareWith] = useState([])
-  const {currentUser} = useCurrentUser()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {users} = useUsers()
 
   const SetShareWithUsers = async () => {
     const sharedDataUsers = currentUser?.sharedDataUsers
     const sharedDataUsersAccounts = users?.filter((x) => sharedDataUsers?.includes(x.key))
-    setShareWith(Manager.convertToArray(sharedDataUsersAccounts).flat())
+    setShareWith(DatasetManager.getValidArray(sharedDataUsersAccounts).flat())
   }
 
   useEffect(() => {
-    if (Manager.isValid(currentUser) && Manager.isValid(users)) {
+    if (Manager.isValid(currentUser) && Manager.isValid(users) && !currentUserIsLoading) {
       SetShareWithUsers().then((r) => r)
     }
-  }, [currentUser, users])
+  }, [currentUser, users, refreshKey, currentUserIsLoading])
 
   return (
     <>

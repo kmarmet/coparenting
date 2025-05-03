@@ -1,11 +1,12 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useEffect, useState} from 'react'
-import Manager from '../managers/manager'
 import DB from '../database/DB'
+import DatasetManager from '../managers/datasetManager'
+import Manager from '../managers/manager'
 
 const useUsers = () => {
   const [users, setUsers] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [usersAreLoading, setUsersAreLoading] = useState(true)
   const [error, setError] = useState(null)
   const [path, setPath] = useState(DB.tables.users)
 
@@ -19,15 +20,15 @@ const useUsers = () => {
       dataRef,
       (snapshot) => {
         if (Manager.isValid(snapshot.val())) {
-          setUsers(Manager.convertToArray(snapshot.val()))
+          setUsers(DatasetManager.getValidArray(snapshot.val()))
         } else {
           setUsers([])
         }
-        setIsLoading(false)
+        setUsersAreLoading(false)
       },
       (err) => {
         setError(err)
-        setIsLoading(false)
+        setUsersAreLoading(false)
       }
     )
 
@@ -38,7 +39,7 @@ const useUsers = () => {
 
   return {
     users,
-    isLoading,
+    usersAreLoading,
     error,
     queryKey,
   }

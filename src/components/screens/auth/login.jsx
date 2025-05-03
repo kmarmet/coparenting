@@ -1,11 +1,4 @@
 // Path: src\components\screens\auth\login.jsx
-import {initializeApp} from 'firebase/app'
-import {browserLocalPersistence, getAuth, sendEmailVerification, setPersistence, signInWithEmailAndPassword} from 'firebase/auth'
-import React, {useContext, useState} from 'react'
-import {Fade} from 'react-awesome-reveal'
-import {PiEyeClosedDuotone, PiEyeDuotone} from 'react-icons/pi'
-import {FaArrowCircleDown} from 'react-icons/fa'
-import validator from 'validator'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import ScreenNames from '/src/constants/screenNames'
 import globalState from '/src/context.js'
@@ -13,10 +6,17 @@ import firebaseConfig from '/src/firebaseConfig'
 import AlertManager from '/src/managers/alertManager'
 import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
-import Spacer from '../../shared/spacer'
-import InputTypes from '../../../constants/inputTypes'
+import {initializeApp} from 'firebase/app'
+import {browserLocalPersistence, getAuth, sendEmailVerification, setPersistence, signInWithEmailAndPassword} from 'firebase/auth'
+import React, {useContext, useEffect, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import {FaArrowCircleDown} from 'react-icons/fa'
+import {PiEyeClosedDuotone, PiEyeDuotone} from 'react-icons/pi'
 import Turnstile, {useTurnstile} from 'react-turnstile'
+import validator from 'validator'
+import InputTypes from '../../../constants/inputTypes'
 import Checkbox from '../../shared/checkbox'
+import Spacer from '../../shared/spacer'
 
 export default function Login() {
   const {state, setState} = useContext(globalState)
@@ -84,7 +84,7 @@ export default function Login() {
               userIsLoggedIn: true,
               authUser: user,
               isLoading: false,
-              currentScreen: ScreenNames.calendar,
+              currentScreen: ScreenNames.home,
             })
           }
         })
@@ -105,6 +105,10 @@ export default function Login() {
         })
     )
   }
+
+  useEffect(() => {
+    setState({...state, isLoading: false})
+  }, [])
 
   return (
     <>

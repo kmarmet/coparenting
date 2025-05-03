@@ -17,10 +17,8 @@ import ModelNames from '/src/models/modelNames'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import * as Sentry from '@sentry/react'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {Fade} from 'react-awesome-reveal'
 import {BsCalendar2CheckFill} from 'react-icons/bs'
 import {MdEventRepeat} from 'react-icons/md'
 import InputTypes from '../../constants/inputTypes'
@@ -28,6 +26,7 @@ import globalState from '../../context'
 import useCalendarEvents from '../../hooks/useCalendarEvents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useUsers from '../../hooks/useUsers'
+import LogManager from '../../managers/logManager'
 import AddressInput from '../shared/addressInput'
 import DetailBlock from '../shared/detailBlock'
 import Map from '../shared/map'
@@ -39,9 +38,9 @@ import ViewSelector from '../shared/viewSelector'
 export default function EditCalEvent({event, showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey, dateToEdit} = state
-  const {currentUser} = useCurrentUser()
-  const {calendarEvents} = useCalendarEvents(event?.ownerKey)
-  const {users} = useUsers()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {calendarEvents, eventsAreLoading} = useCalendarEvents(event?.ownerKey)
+  const {users, usersAreLoading} = useUsers()
 
   // Event Details
   const [eventStartDate, setEventStartDate] = useState('')
@@ -234,7 +233,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       }
       await ResetForm('Event Updated')
     } catch (error) {
-      Sentry.captureException(error)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   }
 
@@ -302,8 +301,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setShowReminders(Manager.isValid(event?.reminderTimes))
 
     // Get shareWith Names
-    const shareWithWithoutMe = event?.shareWith?.filter((x) => x !== currentUser?.key) || event?.shareWith
-    let mappedShareWithNames = Manager.MapKeysToUsers(shareWithWithoutMe, users)
+    const securedShareWith = event?.shareWith?.filter((x) => x !== currentUser?.key && currentUser?.sharedDataUsers.includes(x)) || event?.shareWith
+    let mappedShareWithNames = Manager.MapKeysToUsers(securedShareWith, users)
     mappedShareWithNames = mappedShareWithNames.filter((x) => x?.name !== StringManager.getFirstNameOnly(currentUser?.name)).flat()
     setShareWithNames(mappedShareWithNames)
 
@@ -395,99 +394,97 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         {/* DETAILS */}
         <div id="details" className={view === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
           <hr className="top" />
-          <Fade direction={'up'} duration={800} triggerOnce={true}>
-            <div className="blocks">
-              {/*  Date */}
-              <DetailBlock
-                valueToValidate={event?.startDate}
-                text={moment(event?.startDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                title={event?.isDateRange ? 'Start Date' : 'Date'}
-              />
+          <div className="blocks">
+            {/*  Date */}
+            <DetailBlock
+              valueToValidate={event?.startDate}
+              text={moment(event?.startDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+              title={event?.isDateRange ? 'Start Date' : 'Date'}
+            />
 
-              {/*  End Date */}
-              <DetailBlock
-                valueToValidate={event?.endDate}
-                text={moment(event?.endDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                title={'End Date'}
-              />
+            {/*  End Date */}
+            <DetailBlock
+              valueToValidate={event?.endDate}
+              text={moment(event?.endDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+              title={'End Date'}
+            />
 
-              {/*  Start Time */}
-              <DetailBlock
-                valueToValidate={event?.startTime}
-                text={moment(event?.startTime, DatetimeFormats.timeForDb).format('h:mma')}
-                title={'Start Time'}
-              />
+            {/*  Start Time */}
+            <DetailBlock
+              valueToValidate={event?.startTime}
+              text={moment(event?.startTime, DatetimeFormats.timeForDb).format('h:mma')}
+              title={'Start Time'}
+            />
 
-              {/*  End Time */}
-              <DetailBlock
-                valueToValidate={event?.endTime}
-                text={moment(event?.endTime, DatetimeFormats.timeForDb).format('h:mma')}
-                title={'End time'}
-              />
+            {/*  End Time */}
+            <DetailBlock
+              valueToValidate={event?.endTime}
+              text={moment(event?.endTime, DatetimeFormats.timeForDb).format('h:mma')}
+              title={'End time'}
+            />
 
-              {/*  Created By */}
-              <DetailBlock valueToValidate={event?.createdBy} text={GetCreatedBy()} title={'Created By'} />
+            {/*  Created By */}
+            <DetailBlock valueToValidate={event?.createdBy} text={GetCreatedBy()} title={'Created By'} />
 
-              {/*  Shared With */}
-              <MultilineDetailBlock title={'Shared With'} array={shareWithNames} />
+            {/*  Shared With */}
+            <MultilineDetailBlock title={'Shared With'} array={shareWithNames} />
 
-              {/* Reminders */}
-              {Manager.isValid(event?.reminderTimes) && (
-                <div className="block">
-                  {Manager.isValid(event?.reminderTimes) &&
-                    event?.reminderTimes.map((time, index) => {
-                      time = CalMapper.readableReminderBeforeTimeframes(time).replace('before', '')
-                      time = time.replace('At', '')
-                      time = StringManager.uppercaseFirstLetterOfAllWords(time)
-                      return (
-                        <p className="block-text" key={index}>
-                          {time}
-                        </p>
-                      )
-                    })}
-                  <p className="block-title">Reminders</p>
-                </div>
-              )}
-
-              {/* Children */}
-              <MultilineDetailBlock title={'Children'} array={event?.children} />
-
-              {/*  Notes */}
-              <DetailBlock valueToValidate={event?.notes} text={event?.notes} isFullWidth={true} title={'Notes'} />
-            </div>
-            <hr className="bottom" />
-
-            <div className="blocks">
-              {/*  Phone */}
-              <DetailBlock valueToValidate={event?.phone} isPhone={true} text={StringManager.FormatPhone(event?.phone)} title={'Call'} />
-
-              {/*  Website */}
-              <DetailBlock
-                valueToValidate={event?.websiteUrl}
-                linkUrl={event?.websiteUrl}
-                text={decodeURIComponent(event?.websiteUrl)}
-                isLink={true}
-                title={'Website/Link'}
-              />
-
-              {/*  Location */}
-              <DetailBlock valueToValidate={event?.location} isNavLink={true} text={event?.location} linkUrl={event?.location} title={'Go'} />
-            </div>
-
-            {/* Recurring Frequency */}
-            {event?.isRecurring && (
-              <div className="flex">
-                <b>
-                  <MdEventRepeat />
-                  DatetimeFormats
-                </b>
-                <span>{StringManager.uppercaseFirstLetterOfAllWords(event?.recurringFrequency)}</span>
+            {/* Reminders */}
+            {Manager.isValid(event?.reminderTimes) && (
+              <div className="block">
+                {Manager.isValid(event?.reminderTimes) &&
+                  event?.reminderTimes.map((time, index) => {
+                    time = CalMapper.readableReminderBeforeTimeframes(time).replace('before', '')
+                    time = time.replace('At', '')
+                    time = StringManager.uppercaseFirstLetterOfAllWords(time)
+                    return (
+                      <p className="block-text" key={index}>
+                        {time}
+                      </p>
+                    )
+                  })}
+                <p className="block-title">Reminders</p>
               </div>
             )}
 
-            {/* Map */}
-            {Manager.isValid(event?.location) && <Map locationString={event?.location} />}
-          </Fade>
+            {/* Children */}
+            <MultilineDetailBlock title={'Children'} array={event?.children} />
+
+            {/*  Notes */}
+            <DetailBlock valueToValidate={event?.notes} text={event?.notes} isFullWidth={true} title={'Notes'} />
+          </div>
+          <hr className="bottom" />
+
+          <div className="blocks">
+            {/*  Phone */}
+            <DetailBlock valueToValidate={event?.phone} isPhone={true} text={StringManager.FormatPhone(event?.phone)} title={'Call'} />
+
+            {/*  Website */}
+            <DetailBlock
+              valueToValidate={event?.websiteUrl}
+              linkUrl={event?.websiteUrl}
+              text={decodeURIComponent(event?.websiteUrl)}
+              isLink={true}
+              title={'Website/Link'}
+            />
+
+            {/*  Location */}
+            <DetailBlock valueToValidate={event?.location} isNavLink={true} text={event?.location} linkUrl={event?.location} title={'Go'} />
+          </div>
+
+          {/* Recurring Frequency */}
+          {event?.isRecurring && (
+            <div className="flex">
+              <b>
+                <MdEventRepeat />
+                DatetimeFormats
+              </b>
+              <span>{StringManager.uppercaseFirstLetterOfAllWords(event?.recurringFrequency)}</span>
+            </div>
+          )}
+
+          {/* Map */}
+          {Manager.isValid(event?.location) && <Map locationString={event?.location} />}
         </div>
 
         {/* EDIT */}

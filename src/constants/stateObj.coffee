@@ -7,7 +7,7 @@ StateObj =
   authUser: null
   childAccessGranted: false,
   creationFormToShow: ''
-  currentScreen: ScreenNames.home
+  currentScreen: ScreenNames.landing
   currentUser: {}
   docToView: ''
   isLoading: true

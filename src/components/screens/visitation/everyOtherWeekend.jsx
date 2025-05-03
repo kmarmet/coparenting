@@ -1,22 +1,22 @@
 // Path: src\components\screens\visitation\everyOtherWeekend.jsx
-import Modal from '../../../components/shared/modal'
-import globalState from '../../../context'
+import moment from 'moment'
 import React, {useContext, useState} from 'react'
-import Manager from '../../../managers/manager'
 import InputWrapper from '../../../components/shared/inputWrapper'
+import Modal from '../../../components/shared/modal'
+import MyConfetti from '../../../components/shared/myConfetti'
+import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
+import InputTypes from '../../../constants/inputTypes'
+import ScheduleTypes from '../../../constants/scheduleTypes'
+import globalState from '../../../context'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 import AlertManager from '../../../managers/alertManager'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager'
 import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/calendarEvent'
-import StringManager from '../../../managers/stringManager'
-import ScheduleTypes from '../../../constants/scheduleTypes'
-import MyConfetti from '../../../components/shared/myConfetti'
-import moment from 'moment'
-import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import Label from '../../shared/label'
 import Spacer from '../../shared/spacer'
-import InputTypes from '../../../constants/inputTypes'
-import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function EveryOtherWeekend({hide, showCard}) {
   const {state, setState} = useContext(globalState)
@@ -26,7 +26,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
   const {currentUser} = useCurrentUser()
 
   const ResetForm = () => {
-    Manager.ResetForm('add-every-other-weekend-schedule')
+    Manager.ResetForm('Add-every-other-weekend-schedule')
     setShareWith([])
     setState({...state, refreshKey: Manager.getUid(), isLoading: false})
     hide()

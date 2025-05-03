@@ -1,7 +1,7 @@
 @import '../palette';
 
 #external-overrides {
-  #contact-us-container {
+  #help-container {
     .sections {
       margin-top: 15px;
       .section {
@@ -11,10 +11,10 @@
         align-items: center;
         display: flex;
         margin-bottom: 15px;
-
+        opacity: 0;
         svg {
-          font-size: 24px;
           margin-right: 10px;
+          transform: scale(0.9);
           color: $main;
         }
       }

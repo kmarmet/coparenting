@@ -1,4 +1,3 @@
-import React, {useContext, useEffect, useState} from 'react'
 // Path: src\components\screens\archives.jsx
 import CheckboxGroup from '/src/components/shared/checkboxGroup.jsx'
 import Label from '/src/components/shared/label.jsx'
@@ -10,16 +9,17 @@ import SecurityManager from '/src/managers/securityManager.coffee'
 import StringManager from '/src/managers/stringManager.coffee'
 import MenuItem from '@mui/material/MenuItem'
 import moment from 'moment'
+import React, {useContext, useEffect, useState} from 'react'
 import {Fade} from 'react-awesome-reveal'
 import {RiFileExcel2Fill} from 'react-icons/ri'
 import globalState from '../../context'
-import NavBar from '../navBar'
-import Spacer from '../shared/spacer'
-import useExpenses from '../../hooks/useExpenses'
-import useCurrentUser from '../../hooks/useCurrentUser'
-import useCoparents from '../../hooks/useCoparents'
 import useChat from '../../hooks/useChat'
 import useChatMessages from '../../hooks/useChatMessages'
+import useCoparents from '../../hooks/useCoparents'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useExpenses from '../../hooks/useExpenses'
+import NavBar from '../navBar'
+import Spacer from '../shared/spacer'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -279,7 +279,7 @@ export default function Vault() {
           />
         )}
       </div>
-      <NavBar navbarClass={'activity no-add-new-button'}></NavBar>
+      <NavBar navbarClass={'activity no-Add-new-button'}></NavBar>
     </>
   )
 }

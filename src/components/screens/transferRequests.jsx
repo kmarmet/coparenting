@@ -15,7 +15,6 @@ import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {Fade} from 'react-awesome-reveal'
 import {setKey} from 'react-geocode'
 import {IoAdd} from 'react-icons/io5'
 import {MdPersonPinCircle} from 'react-icons/md'
@@ -26,6 +25,7 @@ import DB_UserScoped from '../../database/db_userScoped.js'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useTransferRequests from '../../hooks/useTransferRequests'
 import NavBar from '../navBar'
+import AddressInput from '../shared/addressInput'
 import DetailBlock from '../shared/detailBlock'
 import Label from '../shared/label.jsx'
 import Spacer from '../shared/spacer.jsx'
@@ -180,6 +180,14 @@ export default function TransferRequests() {
     }
   }, [showDetails])
 
+  useEffect(() => {
+    if (Manager.isValid(currentUser)) {
+      setTimeout(() => {
+        DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight, 90)
+      }, 300)
+    }
+  }, [currentUser])
+
   return (
     <>
       {/* DETAILS CARD */}
@@ -307,12 +315,7 @@ export default function TransferRequests() {
               />
 
               {/*  NEW LOCATION*/}
-              <InputWrapper
-                inputType={InputTypes.address}
-                labelText={'Address'}
-                defaultValue={activeRequest?.location}
-                onChange={(address) => setRequestLocation(address)}
-              />
+              <AddressInput labelText={'Address'} defaultValue={activeRequest?.location} onChange={(address) => setRequestLocation(address)} />
 
               {/* RESPONSE DUE DATE */}
               <InputWrapper
@@ -374,7 +377,7 @@ export default function TransferRequests() {
 
         <div className="flex" id="screen-title-wrapper">
           <p className="screen-title">Transfer Change Requests</p>
-          {!DomManager.isMobile() && <IoAdd id={'add-new-button'} onClick={() => setShowNewRequestCard(true)} />}
+          {!DomManager.isMobile() && <IoAdd id={'Add-new-button'} onClick={() => setShowNewRequestCard(true)} />}
         </div>
         <p className="text-screen-intro">A proposal to modify the time and/or location for the child exchange on a designated day.</p>
         <Spacer height={10} />
@@ -382,44 +385,40 @@ export default function TransferRequests() {
         {/* LOOP REQUESTS */}
         {!showNewRequestCard && (
           <div id="all-transfer-requests-container">
-            {Manager.isValid(transferRequests) && (
-              <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={0.2}>
-                {Manager.isValid(transferRequests) &&
-                  transferRequests?.map((request, index) => {
-                    return (
-                      <div
-                        key={index}
-                        className="flex row"
-                        onClick={() => {
-                          setActiveRequest(request)
-                          setShowDetails(true)
-                        }}>
-                        <div id="primary-icon-wrapper">
-                          <PiCarProfileDuotone id={'primary-row-icon'} />
-                        </div>
-                        <div data-request-id={request.id} className="request " id="content">
-                          {/* DATE */}
-                          <p id="title" className="flex date row-title">
-                            {moment(request.startDate).format(DatetimeFormats.readableMonthAndDay)}
-                            <span className={`${request.status} status`} id="request-status">
-                              {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
-                            </span>
-                          </p>
-                          {request?.recipientKey === currentUser?.key && (
-                            <p id="subtitle">from {currentUser?.coparents.find((x) => x.key === request.ownerKey)?.name}</p>
-                          )}
-                          {request?.recipientKey !== currentUser?.key && (
-                            <p id="subtitle">
-                              to&nbsp;
-                              {StringManager.getFirstNameOnly(currentUser?.coparents?.find((x) => x?.userKey === request?.recipientKey)?.name)}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })}
-              </Fade>
-            )}
+            {Manager.isValid(transferRequests) &&
+              transferRequests?.map((request, index) => {
+                return (
+                  <div
+                    key={index}
+                    className="flex row"
+                    onClick={() => {
+                      setActiveRequest(request)
+                      setShowDetails(true)
+                    }}>
+                    <div id="primary-icon-wrapper">
+                      <PiCarProfileDuotone id={'primary-row-icon'} />
+                    </div>
+                    <div data-request-id={request.id} className="request " id="content">
+                      {/* DATE */}
+                      <p id="title" className="flex date row-title">
+                        {moment(request.startDate).format(DatetimeFormats.readableMonthAndDay)}
+                        <span className={`${request.status} status`} id="request-status">
+                          {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
+                        </span>
+                      </p>
+                      {request?.recipientKey === currentUser?.key && (
+                        <p id="subtitle">from {currentUser?.coparents.find((x) => x.key === request.ownerKey)?.name}</p>
+                      )}
+                      {request?.recipientKey !== currentUser?.key && (
+                        <p id="subtitle">
+                          to&nbsp;
+                          {StringManager.getFirstNameOnly(currentUser?.coparents?.find((x) => x?.userKey === request?.recipientKey)?.name)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
           </div>
         )}
         <NavBar />

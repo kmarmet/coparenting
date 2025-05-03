@@ -199,7 +199,8 @@
 
       .row {
         @include row;
-
+        @include hover;
+        opacity: 0;
         .checkbox {
           @include extraClickableSpace;
           position: relative;

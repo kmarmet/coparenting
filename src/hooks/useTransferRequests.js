@@ -1,8 +1,9 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useContext, useEffect, useState} from 'react'
-import Manager from '../managers/manager'
 import globalState from '../context'
 import DB from '../database/DB'
+import DatasetManager from '../managers/datasetManager'
+import Manager from '../managers/manager'
 import SecurityManager from '../managers/securityManager'
 import useCurrentUser from './useCurrentUser'
 
@@ -22,9 +23,9 @@ const useTransferRequests = () => {
     const listener = onValue(
       dataRef,
       async (snapshot) => {
-        const formattedRequests = Manager.convertToArray(snapshot.val()).flat()
+        const formattedRequests = DatasetManager.getValidArray(snapshot.val()) || []
         const shared = await SecurityManager.getSharedItems(currentUser, DB.tables.transferRequests)
-        const formattedShared = Manager.convertToArray(shared).flat()
+        const formattedShared = DatasetManager.getValidArray(shared) || []
         if (Manager.isValid(formattedRequests) || Manager.isValid(formattedShared)) {
           setTransferRequests([...formattedRequests, ...formattedShared].filter((x) => x)?.flat())
         } else {

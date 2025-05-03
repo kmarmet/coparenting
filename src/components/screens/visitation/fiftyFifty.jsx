@@ -1,26 +1,26 @@
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import moment from 'moment'
 import React, {useContext, useState} from 'react'
+import {FaMinus, FaPlus} from 'react-icons/fa6'
+import InputWrapper from '../../../components/shared/inputWrapper'
 // Path: src\components\screens\visitation\fiftyFifty.jsx
 import Label from '../../../components/shared/label'
 import Modal from '../../../components/shared/modal'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import globalState from '../../../context'
-import {FaMinus, FaPlus} from 'react-icons/fa6'
-import Manager from '../../../managers/manager'
-import InputWrapper from '../../../components/shared/inputWrapper'
+import MyConfetti from '../../../components/shared/myConfetti'
+import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
+import InputTypes from '../../../constants/inputTypes'
+import ScheduleTypes from '../../../constants/scheduleTypes'
+import globalState from '../../../context'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 import AlertManager from '../../../managers/alertManager'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager'
 import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/calendarEvent'
-import StringManager from '../../../managers/stringManager'
-import ScheduleTypes from '../../../constants/scheduleTypes'
-import MyConfetti from '../../../components/shared/myConfetti'
-import moment from 'moment'
-import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import Spacer from '../../shared/spacer'
-import InputTypes from '../../../constants/inputTypes'
-import useCurrentUser from '../../../hooks/useCurrentUser'
 
 export default function FiftyFifty({hide, showCard}) {
   const {state, setState} = useContext(globalState)
@@ -36,7 +36,7 @@ export default function FiftyFifty({hide, showCard}) {
   const {currentUser} = useCurrentUser()
 
   const ResetForm = () => {
-    Manager.ResetForm('add-fifty-fifty-schedule')
+    Manager.ResetForm('Add-fifty-fifty-schedule')
     setShareWith([])
     setState({...state, refreshKey: Manager.getUid()})
     hide()

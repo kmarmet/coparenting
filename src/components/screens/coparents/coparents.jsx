@@ -8,7 +8,6 @@ import AlertManager from '/src/managers/alertManager'
 import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
 import React, {useContext, useEffect, useState} from 'react'
-import {Fade} from 'react-awesome-reveal'
 import {BsFillSendFill} from 'react-icons/bs'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiDotsHorizontal} from 'react-icons/hi'
@@ -125,7 +124,7 @@ export default function Coparents() {
           }}>
           <div className="content">
             <div className="svg-wrapper">
-              <IoPersonAdd className={'add-coparent fs-22'} />
+              <IoPersonAdd className={'Add-coparent fs-22'} />
             </div>
             <p>
               Add a Co-Parent
@@ -242,12 +241,10 @@ export default function Coparents() {
 
       {/* COPARENTS CONTAINER */}
       <div id="coparents-container" className={`${theme} page-container parents-wrapper`}>
-        <Fade direction={'up'} duration={1000} className={'parents-fade-wrapper'} triggerOnce={true}>
-          <div className="flex" id="screen-title-wrapper">
-            <p className="screen-title beside-action-button">Co-Parents</p>
-          </div>
-          <p className="screen-intro-text">Maintain accessible records of important information regarding your co-parent.</p>
-        </Fade>
+        <div className="flex" id="screen-title-wrapper">
+          <p className="screen-title beside-action-button">Co-Parents</p>
+        </div>
+        <p className="screen-intro-text">Maintain accessible records of important information regarding your co-parent.</p>
 
         {/* COPARENT ICONS CONTAINER */}
         <div id="coparent-container">

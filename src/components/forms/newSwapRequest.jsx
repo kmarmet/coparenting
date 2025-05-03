@@ -1,30 +1,30 @@
 // Path: src\components\forms\newSwapRequest.jsx
-import moment from 'moment'
-import React, {useContext, useState} from 'react'
-import globalState from '../../context'
-import SwapDurations from '/src/constants/swapDurations'
-import DB from '/src/database/DB'
-import SwapRequest from '/src/models/swapRequest'
-import Manager from '/src/managers/manager'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
-import NotificationManager from '/src/managers/notificationManager'
-import Modal from '/src/components/shared/modal'
-import ModelNames from '/src/models/modelNames'
 import InputWrapper from '/src/components/shared/inputWrapper'
+import Modal from '/src/components/shared/modal'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import DatetimeFormats from '/src/constants/datetimeFormats'
-import ObjectManager from '/src/managers/objectManager'
+import SwapDurations from '/src/constants/swapDurations'
+import DB from '/src/database/DB'
 import AlertManager from '/src/managers/alertManager'
+import Manager from '/src/managers/manager'
+import NotificationManager from '/src/managers/notificationManager'
+import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
 import ActivityCategory from '/src/models/activityCategory'
-import ViewSelector from '../shared/viewSelector'
-import Spacer from '../shared/spacer'
+import ModelNames from '/src/models/modelNames'
+import SwapRequest from '/src/models/swapRequest'
+import moment from 'moment'
+import React, {useContext, useState} from 'react'
 import creationForms from '../../constants/creationForms'
-import ToggleButton from '../shared/toggleButton'
-import Label from '../shared/label'
 import InputTypes from '../../constants/inputTypes'
-import useCurrentUser from '../../hooks/useCurrentUser'
+import globalState from '../../context'
 import useChildren from '../../hooks/useChildren'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import Label from '../shared/label'
+import Spacer from '../shared/spacer'
+import ToggleButton from '../shared/toggleButton'
+import ViewSelector from '../shared/viewSelector'
 
 export default function NewSwapRequest() {
   const {state, setState} = useContext(globalState)
@@ -124,7 +124,7 @@ export default function NewSwapRequest() {
     const cleanObject = ObjectManager.cleanObject(newRequest, ModelNames.swapRequest)
 
     // Send Notification
-    await DB.add(`${DB.tables.swapRequests}/${currentUser?.key}`, cleanObject).finally(() => {
+    await DB.Add(`${DB.tables.swapRequests}/${currentUser?.key}`, cleanObject).finally(() => {
       NotificationManager.sendToShareWith(
         shareWith,
         currentUser,

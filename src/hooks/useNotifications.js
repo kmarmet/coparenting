@@ -1,8 +1,9 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useContext, useEffect, useState} from 'react'
-import Manager from '../managers/manager'
-import DB from '../database/DB'
 import globalState from '../context'
+import DB from '../database/DB'
+import DatasetManager from '../managers/datasetManager'
+import Manager from '../managers/manager'
 import useCurrentUser from './useCurrentUser'
 
 const useNotifications = () => {
@@ -11,6 +12,7 @@ const useNotifications = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [notifications, setNotifications] = useState([])
   const [error, setError] = useState(null)
+  const [notificationCount, setNotificationCount] = useState(0)
   const path = `${DB.tables.notifications}/${currentUser?.key}`
   const queryKey = ['realtime', path]
 
@@ -21,10 +23,11 @@ const useNotifications = () => {
     const listener = onValue(
       dataRef,
       (snapshot) => {
-        // console.log('Children Updated')
-        const formattedNotifications = Manager.convertToArray(snapshot.val()?.filter((x) => x))
+        // console.Log('Children Updated')
+        const formattedNotifications = DatasetManager.getValidArray(snapshot.val())
         if (Manager.isValid(currentUser) && Manager.isValid(formattedNotifications)) {
           setNotifications(formattedNotifications)
+          setNotificationCount(formattedNotifications?.length)
           setIsLoading(false)
         } else {
           setNotifications([])
@@ -44,6 +47,7 @@ const useNotifications = () => {
 
   return {
     notifications,
+    notificationCount,
     isLoading,
     error,
     queryKey,

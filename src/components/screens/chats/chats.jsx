@@ -1,35 +1,38 @@
 // Path: src\components\screens\chats\chats?.jsx
-import React, {useContext, useState} from 'react'
-import Manager from '/src/managers/manager'
-import globalState from '../../../context.js'
-import {Fade} from 'react-awesome-reveal'
-import Modal from '../../shared/modal'
-import NoDataFallbackText from '../../shared/noDataFallbackText'
 import AlertManager from '/src/managers/alertManager'
-import ChatRow from './chatRow.jsx'
-import Spacer from '../../shared/spacer'
+import Manager from '/src/managers/manager'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
+import React, {useContext, useState} from 'react'
 import {LuMinus, LuPlus} from 'react-icons/lu'
-import EmailManager from '../../../managers/emailManager'
-import InputWrapper from '../../shared/inputWrapper'
-import NavBar from '../../navBar'
-import Label from '../../shared/label'
 import InputTypes from '../../../constants/inputTypes'
-import useCurrentUser from '../../../hooks/useCurrentUser'
+import globalState from '../../../context.js'
 import useChat from '../../../hooks/useChat'
+import useCurrentUser from '../../../hooks/useCurrentUser'
+import EmailManager from '../../../managers/emailManager'
+import NavBar from '../../navBar'
+import InputWrapper from '../../shared/inputWrapper'
+import Label from '../../shared/label'
+import Modal from '../../shared/modal'
+import NoDataFallbackText from '../../shared/noDataFallbackText'
+import Spacer from '../../shared/spacer'
+import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
+import ChatRow from './chatRow.jsx'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
   const {theme, creationFormToShow} = state
-  // const [chats, setChats] = useState([])
   const [showInfo, setShowInfo] = useState(false)
   const [showInvitationCard, setShowInvitationCard] = useState(false)
   const [inviteeName, setInviteeName] = useState('')
   const [inviteeEmail, setInviteeEmail] = useState('')
-  const {currentUser} = useCurrentUser()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {chats} = useChat()
+
+  if (currentUserIsLoading) {
+    return <StandaloneLoadingGif />
+  }
 
   return (
     <>
@@ -102,15 +105,11 @@ const Chats = () => {
           </AccordionDetails>
         </Accordion>
         <Spacer height={8} />
-        {Manager.isValid(chats) && (
-          <Fade direction={'right'} damping={0.2} duration={800} triggerOnce={true} cascade={true}>
-            {/* CHAT ROWS */}
-            {chats?.length > 0 &&
-              chats?.map((chat, index) => {
-                return <ChatRow chat={chat} key={index} />
-              })}
-          </Fade>
-        )}
+        {/* CHAT ROWS */}
+        {chats?.length > 0 &&
+          chats?.map((chat, index) => {
+            return <ChatRow chat={chat} key={index} />
+          })}
         <NavBar />
       </div>
     </>

@@ -4,8 +4,8 @@ ScreenNames = {
   calendar: 'calendar'
   chat: 'chat'
   chats: 'chats'
-  childInfo: 'childInfo'
-  contactUs: 'contactUs'
+  children: 'children'
+  help: 'help'
   coparentVerification: 'coparentVerification'
   coparents: 'coparents'
   dashboard: 'dashboard'
@@ -18,6 +18,7 @@ ScreenNames = {
   featureRequests: 'featureRequests'
   feedback: 'feedback'
   firebaseLogin: "firebaseLogin"
+  landing: 'landing'
   home: 'home'
   imageDocs: 'imageDocs'
   installApp: 'installApp'

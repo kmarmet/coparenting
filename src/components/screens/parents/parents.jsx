@@ -15,9 +15,12 @@ import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
+import DB from '../../../database/DB'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useParents from '../../../hooks/useParents'
+import DomManager from '../../../managers/domManager'
 import EmailManager from '../../../managers/emailManager'
+import AddressInput from '../../shared/addressInput'
 import Modal from '../../shared/modal'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import Spacer from '../../shared/spacer'
@@ -41,7 +44,8 @@ export default function Parents() {
   const DeleteProp = async (prop) => await DB_UserScoped.deleteParentInfoProp(currentUser, StringManager.formatDbProp(prop), activeParent)
 
   const Update = async (prop, value) => {
-    await DB_UserScoped.updateParent(currentUser, activeParent, StringManager.formatDbProp(prop), value)
+    const parentIndex = DB.GetTableIndexById(parents, activeParent?.id)
+    await DB_UserScoped.UpdateParent(currentUser?.key, parentIndex, StringManager.formatDbProp(prop), value)
     setState({...state, successAlertMessage: `${StringManager.FormatTitle(prop, true)} has been updated`})
   }
 
@@ -50,8 +54,17 @@ export default function Parents() {
     setState({...state, successAlertMessage: `${activeParent?.name} has been unlinked from your profile`, showScreenActions: false})
     setActiveParent(parents[0])
   }
+
+  const ExecuteAnimations = () => {
+    DomManager.ToggleAnimation('add', 'parent', DomManager.AnimateClasses.names.zoomIn, 0)
+    setTimeout(() => {
+      DomManager.ToggleAnimation('add', 'info-row', DomManager.AnimateClasses.names.fadeInRight, 50)
+    }, 200)
+  }
+
   useEffect(() => {
     if (Manager.isValid(parents)) {
+      ExecuteAnimations()
       setActiveParent(parents[0])
     }
   }, [parents])
@@ -80,7 +93,7 @@ export default function Parents() {
           }}>
           <div className="content">
             <div className="svg-wrapper">
-              <IoPersonAdd className={'add-child fs-22'} />
+              <IoPersonAdd className={'Add-child fs-22'} />
             </div>
             <p>
               Add a Parent
@@ -218,54 +231,45 @@ export default function Parents() {
         <div id="parent-info" key={activeParent?.key}>
           <p id="parent-name-primary">{StringManager.getFirstNameOnly(activeParent?.name)}</p>
           <p id="parent-type-primary"> {activeParent?.parentType}</p>
-          {Manager.isValid(activeParent) && (
-            <Fade direction={'right'} className={'parents-info-fade-wrapper'} duration={800} damping={0.08} triggerOnce={false} cascade={true}>
-              {/* ITERATE PARENT INFO */}
-              {Manager.isValid(activeParent) &&
-                Object.entries(activeParent).map((propArray, index) => {
-                  let infoLabel = propArray[0]
-                  infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
-                  infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
-                  infoLabel = StringManager.FormatTitle(infoLabel, true)
-                  const value = propArray[1]
-                  const inputsToSkip = ['address', 'key', 'id', 'user key']
+          {/* ITERATE PARENT INFO */}
+          {Manager.isValid(activeParent) &&
+            Object.entries(activeParent).map((propArray, index) => {
+              let infoLabel = propArray[0]
+              infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
+              infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
+              infoLabel = StringManager.FormatTitle(infoLabel, true)
+              const value = propArray[1]
+              const inputsToSkip = ['address', 'key', 'id', 'user key']
 
-                  return (
-                    <div key={index}>
-                      {/* ADDRESS */}
-                      {infoLabel.toLowerCase().includes('address') && (
+              return (
+                <div key={index} className="info-row">
+                  {/* ADDRESS */}
+                  {infoLabel.toLowerCase().includes('address') && (
+                    <AddressInput defaultValue={value} labelText={'Home Address'} onChange={(address) => Update('address', address).then((r) => r)} />
+                  )}
+
+                  {/* TEXT INPUT */}
+                  {!inputsToSkip.includes(infoLabel.toLowerCase()) && !infoLabel.toLowerCase().includes('address') && (
+                    <>
+                      <div className="flex input">
                         <InputWrapper
+                          hasBottomSpacer={false}
                           defaultValue={value}
-                          inputType={InputTypes.address}
-                          labelText={'Home Address'}
-                          onChange={(address) => Update('address', address).then((r) => r)}
+                          onChange={(e) => {
+                            const inputValue = e.target.value
+                            Update(infoLabel, `${inputValue}`).then((r) => r)
+                          }}
+                          inputType={InputTypes.text}
+                          labelText={infoLabel}
                         />
-                      )}
-
-                      {/* TEXT INPUT */}
-                      {!inputsToSkip.includes(infoLabel.toLowerCase()) && !infoLabel.toLowerCase().includes('address') && (
-                        <>
-                          <div className="flex input">
-                            <InputWrapper
-                              hasBottomSpacer={false}
-                              defaultValue={value}
-                              onChange={(e) => {
-                                const inputValue = e.target.value
-                                Update(infoLabel, `${inputValue}`).then((r) => r)
-                              }}
-                              inputType={InputTypes.text}
-                              labelText={infoLabel}
-                            />
-                            <PiTrashSimpleDuotone className="delete-icon fs-24" onClick={() => DeleteProp(infoLabel)} />
-                          </div>
-                          <Spacer height={5} />
-                        </>
-                      )}
-                    </div>
-                  )
-                })}
-            </Fade>
-          )}
+                        <PiTrashSimpleDuotone className="delete-icon fs-24" onClick={() => DeleteProp(infoLabel)} />
+                      </div>
+                      <Spacer height={5} />
+                    </>
+                  )}
+                </div>
+              )
+            })}
         </div>
       </div>
 

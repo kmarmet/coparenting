@@ -1,19 +1,21 @@
-// Path: src\components\screens\contactUs.jsx
-import React, {useContext, useState} from 'react'
-import globalState from '../../context'
-import Manager from '../../managers/manager'
-import Modal from '../shared/modal'
-import EmailManager from '../../managers/emailManager'
-import {Fade} from 'react-awesome-reveal'
+// Path: src\components\screens\help.jsx
+import React, {useContext, useEffect, useState} from 'react'
+import {GoVideo} from 'react-icons/go'
 import {MdOutlineAppShortcut, MdOutlineEmail} from 'react-icons/md'
 import {VscFeedback} from 'react-icons/vsc'
+import InputTypes from '../../constants/inputTypes'
+import globalState from '../../context'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import AlertManager from '../../managers/alertManager'
+import DomManager from '../../managers/domManager'
+import EmailManager from '../../managers/emailManager'
+import Manager from '../../managers/manager'
 import NavBar from '../navBar'
 import InputWrapper from '../shared/inputWrapper'
-import AlertManager from '../../managers/alertManager'
-import useCurrentUser from '../../hooks/useCurrentUser'
-import InputTypes from '../../constants/inputTypes'
+import Modal from '../shared/modal'
+import Spacer from '../shared/spacer'
 
-export default function ContactUs() {
+export default function Help() {
   const {state, setState} = useContext(globalState)
   const {theme} = state
   const [featureName, setFeatureName] = useState('')
@@ -25,37 +27,37 @@ export default function ContactUs() {
   const [showSupportCard, setShowSupportCard] = useState(false)
   const {currentUser} = useCurrentUser()
 
-  const resetFormFeatureRequestForm = () => {
+  const ResetFormFeatureRequestForm = () => {
     Manager.ResetForm('feature-request-wrapper')
     setFeatureName('')
     setFeatureDescription('')
   }
 
-  const resetFeedbackForm = () => {
+  const ResetFeedbackForm = () => {
     Manager.ResetForm('feedback-wrapper')
     setFeatureName('')
     setFeatureDescription('')
   }
 
-  const resetSupportForm = () => {
+  const ResetSupportForm = () => {
     Manager.ResetForm('support-wrapper')
     setFeatureName('')
     setFeatureDescription('')
   }
 
-  const submitFeatureRequest = () => {
+  const SubmitFeatureRequest = () => {
     if (featureDescription.length === 0) {
-      AlertManager.throwError('Please enter a description of the feature you would like to add')
+      AlertManager.throwError('Please enter a description of the feature you would like to Add')
       return false
     }
 
     setState({...state, successAlertMessage: 'Feature Request Received'})
     EmailManager.SendFeatureRequest(currentUser?.email, `Feature Name: ${featureName} \n Description: ${featureDescription}`)
     setShowFeatureRequestCard(false)
-    resetFormFeatureRequestForm()
+    ResetFormFeatureRequestForm()
   }
 
-  const submitSupportRequest = () => {
+  const SubmitSupportRequest = () => {
     if (supportNotes.length === 0) {
       AlertManager.throwError('Please a description of the problem you are facing')
       return false
@@ -64,10 +66,10 @@ export default function ContactUs() {
     setState({...state, successAlertMessage: 'We will be in touch soon!'})
     EmailManager.SendSupportEmail(currentUser?.email, supportNotes)
     setShowSupportCard(false)
-    resetSupportForm()
+    ResetSupportForm()
   }
 
-  const submitFeedback = () => {
+  const SubmitFeedback = () => {
     if (feedback.length === 0) {
       AlertManager.throwError('Please enter your feedback')
       return false
@@ -76,20 +78,28 @@ export default function ContactUs() {
 
     EmailManager.SendAppFeedback(currentUser?.email, feedback)
     setShowFeedbackCard(false)
-    resetFeedbackForm()
+    ResetFeedbackForm()
   }
+
+  useEffect(() => {
+    setTimeout(() => {
+      DomManager.ToggleAnimation('add', 'section', DomManager.AnimateClasses.names.fadeInRight)
+    }, 300)
+  }, [])
 
   return (
     <>
       {/* FEATURE REQUEST */}
       <Modal
-        onSubmit={submitFeatureRequest}
+        onSubmit={SubmitFeatureRequest}
         submitText={'Send Request'}
         wrapperClass="feature-request"
         showCard={showFeatureRequestCard}
+        subtitle="Request a new feature to be added to the app! Big or small, we want to hear your ideas and possibly place YOUR feature idea on the app!"
         onClose={() => setShowFeatureRequestCard(false)}
         title={'Request New Feature'}>
         <div className="feature-request-wrapper">
+          <Spacer height={10} />
           <div id="feature-request-container" className={`${theme} form`}>
             <div className="form">
               <InputWrapper labelText={'Feature Name'} required={true} onChange={(e) => setFeatureName(e.target.value)} inputType={InputTypes.text} />
@@ -110,10 +120,12 @@ export default function ContactUs() {
         className="feedback-wrapper"
         wrapperClass="feedback-wrapper"
         title={'Give us your Feedback'}
-        onSubmit={submitFeedback}
+        subtitle="Your feedback helps us improve the app! Whether it's a feature request or an feature needing improvement, we value your input."
+        onSubmit={SubmitFeedback}
         showCard={showFeedbackCard}
         onClose={() => setShowFeedbackCard(false)}>
         <div className="feedback-wrapper">
+          <Spacer height={10} />
           <div id="feedback-container" className={`${theme} form`}>
             <div className="form">
               <InputWrapper
@@ -131,18 +143,20 @@ export default function ContactUs() {
       {/* CONTACT SUPPORT */}
       <Modal
         submitText={'Send Support Request'}
-        onSubmit={submitSupportRequest}
+        onSubmit={SubmitSupportRequest}
         wrapperClass="support-wrapper"
         className="support-wrapper"
+        subtitle="We genuinely care about your experience with our app. Because of that, we are here to help in any way we can!"
         title={'How can we Help?'}
         showCard={showSupportCard}
         onClose={() => setShowSupportCard(false)}>
         <div className="support-wrapper">
+          <Spacer height={10} />
           <div id="support-container" className={`${theme} form`}>
             <div className="form">
               <InputWrapper
                 inputType={InputTypes.textarea}
-                labelText={'Problem Description or Question'}
+                labelText={'Describe the issue'}
                 required={true}
                 onChange={(e) => setSupportNotes(e.target.value)}
               />
@@ -152,27 +166,29 @@ export default function ContactUs() {
       </Modal>
 
       {/* CONTACT US */}
-      <div id="contact-us-container" className={`${theme} page-container form`}>
-        <p className="screen-title">Get in Touch</p>
+      <div id="help-container" className={`${theme} page-container form`}>
+        <p className="screen-title">We&#39;re Here to Help</p>
         {/* SECTIONS */}
         <div className="sections">
-          <Fade direction={'right'} duration={800} damping={0.2} className={'contact-us-fade-wrapper'} triggerOnce={true} cascade={true}>
-            <p className="section" onClick={() => setShowFeatureRequestCard(true)}>
-              <MdOutlineAppShortcut />
-              Feature Request
-            </p>
-            <p className="section" onClick={() => setShowFeedbackCard(true)}>
-              <VscFeedback />
-              Send App Feedback
-            </p>
-            <p className="section" onClick={() => setShowSupportCard(true)}>
-              <MdOutlineEmail />
-              Contact Support
-            </p>
-          </Fade>
+          <p className="section" onClick={() => setShowFeatureRequestCard(true)}>
+            <GoVideo />
+            Tutorial
+          </p>
+          <p className="section" onClick={() => setShowFeatureRequestCard(true)}>
+            <MdOutlineAppShortcut />
+            Feature Request
+          </p>
+          <p className="section" onClick={() => setShowFeedbackCard(true)}>
+            <VscFeedback />
+            Provide App Feedback
+          </p>
+          <p className="section" onClick={() => setShowSupportCard(true)}>
+            <MdOutlineEmail />
+            Contact Support
+          </p>
         </div>
       </div>
-      {!showFeatureRequestCard && !showFeedbackCard && !showSupportCard && <NavBar navbarClass={'no-add-new-button'}></NavBar>}
+      {!showFeatureRequestCard && !showFeedbackCard && !showSupportCard && <NavBar navbarClass={'no-Add-new-button'}></NavBar>}
     </>
   )
 }

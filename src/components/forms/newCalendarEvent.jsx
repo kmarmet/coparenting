@@ -1,27 +1,13 @@
 // Path: src\components\forms\newCalendarEvent.jsx
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import {MobileDatePicker} from '@mui/x-date-pickers-pro'
-import moment from 'moment'
-import React, {useContext, useEffect, useState} from 'react'
-import * as Sentry from '@sentry/react'
-
-import validator from 'validator'
-import globalState from '../../context'
-import DomManager from '../../managers/domManager.coffee'
-import Spacer from '../shared/spacer.jsx'
-import ViewSelector from '../shared/viewSelector'
-import Modal from '/src/components/shared/modal'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import InputWrapper from '/src/components/shared/inputWrapper'
+import Modal from '/src/components/shared/modal'
 import MyConfetti from '/src/components/shared/myConfetti.js'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import EventLengths from '/src/constants/eventLengths'
 import AlertManager from '/src/managers/alertManager'
 import DatasetManager from '/src/managers/datasetManager'
-import CalendarManager from '../../managers/calendarManager'
 import Manager from '/src/managers/manager'
 import NotificationManager from '/src/managers/notificationManager.js'
 import ObjectManager from '/src/managers/objectManager'
@@ -30,13 +16,25 @@ import CalendarMapper from '/src/mappers/calMapper'
 import ActivityCategory from '/src/models/activityCategory'
 import CalendarEvent from '/src/models/calendarEvent'
 import ModelNames from '/src/models/modelNames'
-import ToggleButton from '../shared/toggleButton'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import {MobileDatePicker} from '@mui/x-date-pickers-pro'
+import moment from 'moment'
+import React, {useContext, useEffect, useState} from 'react'
+import validator from 'validator'
 import CreationForms from '../../constants/creationForms'
-import Label from '../shared/label'
-import DB_UserScoped from '../../database/db_userScoped'
 import InputTypes from '../../constants/inputTypes'
+import globalState from '../../context'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import CalendarManager from '../../managers/calendarManager'
+import DomManager from '../../managers/domManager.coffee'
+import LogManager from '../../managers/logManager'
 import AddressInput from '../shared/addressInput'
+import Label from '../shared/label'
+import Spacer from '../shared/spacer.jsx'
+import ToggleButton from '../shared/toggleButton'
+import ViewSelector from '../shared/viewSelector'
 
 export default function NewCalendarEvent() {
   // APP STATE
@@ -94,10 +92,8 @@ export default function NewCalendarEvent() {
     setShowReminders(false)
     setIncludeChildren(false)
     setIsVisitation(false)
-    const updatedUser = await DB_UserScoped.getCurrentUser(currentUser?.email)
     setState({
       ...state,
-      currentUser: updatedUser,
       showBottomMenu: false,
       creationFormToShow: '',
       refreshKey: Manager.getUid(),
@@ -105,7 +101,7 @@ export default function NewCalendarEvent() {
     })
   }
 
-  const submit = async () => {
+  const Submit = async () => {
     try {
       //#region FILL NEW EVENT
       const newEvent = new CalendarEvent()
@@ -177,6 +173,7 @@ export default function NewCalendarEvent() {
         //#endregion VALIDATION
 
         MyConfetti.fire()
+        setState({...state, creationFormToShow: ''})
 
         const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
 
@@ -236,7 +233,7 @@ export default function NewCalendarEvent() {
         await ResetForm()
       }
     } catch (error) {
-      Sentry.captureException(error)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   }
 
@@ -257,7 +254,6 @@ export default function NewCalendarEvent() {
 
   const handleShareWithSelection = (e) => {
     const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
-    console.log(shareWithNumbers)
     setEventShareWith(shareWithNumbers)
   }
 
@@ -351,7 +347,7 @@ export default function NewCalendarEvent() {
         submitText={`Create Event`}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={ResetForm}
-        onSubmit={submit}
+        onSubmit={Submit}
         showCard={creationFormToShow === CreationForms.calendar}
         wrapperClass={`new-calendar-event`}
         contentClass={eventLength === EventLengths.single ? 'single-view' : 'multiple-view'}

@@ -12,17 +12,17 @@ import Registration from '/src/components/screens/auth/registration.jsx'
 import EventCalendar from '/src/components/screens/calendar/calendar.jsx'
 import Chat from '/src/components/screens/chats/chat.jsx'
 import Chats from '/src/components/screens/chats/chats.jsx'
-import ChildInfo from '/src/components/screens/childInfo/childInfo.jsx'
-import NewChildForm from '/src/components/screens/childInfo/newChildForm.jsx'
-import ContactUs from '/src/components/screens/contactUs'
+import Children from '/src/components/screens/children/children.jsx'
+import NewChildForm from '/src/components/screens/children/newChildForm.jsx'
 import Coparents from '/src/components/screens/coparents/coparents.jsx'
 import NewCoparentForm from '/src/components/screens/coparents/newCoparentForm.jsx'
 import DocsList from '/src/components/screens/documents/docsList.jsx'
 import DocViewer from '/src/components/screens/documents/docViewer'
 import NewDocument from '/src/components/screens/documents/newDocument.jsx'
 import ExpenseTracker from '/src/components/screens/expenses/expenseTracker.jsx'
-import Home from '/src/components/screens/home'
+import Help from '/src/components/screens/help'
 import InstallApp from '/src/components/screens/installApp.jsx'
+import Landing from '/src/components/screens/landing'
 import Memories from '/src/components/screens/memories.jsx'
 import Notifications from '/src/components/screens/notifications'
 import Profile from '/src/components/screens/profile/profile.jsx'
@@ -53,8 +53,7 @@ import {initializeApp} from 'firebase/app'
 import {getAuth, onAuthStateChanged} from 'firebase/auth'
 import React, {useEffect, useState} from 'react'
 import NewChat from './components/forms/newChat'
-import RequestParentAccess from './components/screens/auth/requestParentAccess'
-import Onboarding from './components/screens/onboarding'
+import Home from './components/screens/home'
 import Parents from './components/screens/parents/parents'
 import CreationMenu from './components/shared/creationMenu'
 import SuccessAlert from './components/shared/successAlert'
@@ -112,7 +111,7 @@ export default function App() {
   // ON SCREEN CHANGE
   useEffect(() => {
     if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
-      // console.log(`Screen: ${currentScreen}`)
+      // console.Log(`Screen: ${currentScreen}`)
       window.navigator.clearAppBadge().then((r) => r)
     }
   }, [currentScreen])
@@ -127,7 +126,7 @@ export default function App() {
     // FIREBASE AUTH
     onAuthStateChanged(auth, async (user) => {
       // USER LOGGED IN FROM PERSISTED STATE
-      // console.log(user)
+      // console.Log(user)
       try {
         if (user) {
           const user = auth.currentUser
@@ -139,7 +138,7 @@ export default function App() {
           currentUserFromDb = users?.find((u) => u?.email === user?.email)
           // User Exists
           if (Manager.isValid(currentUserFromDb)) {
-            let screenToNavigateTo = ScreenNames.calendar
+            let screenToNavigateTo = ScreenNames.home
             const body = document.getElementById('external-overrides')
             const navbar = document.getElementById('navbar')
 
@@ -151,17 +150,11 @@ export default function App() {
             }
 
             // Check if child profile and if parent access is granted
-            if (currentUserFromDb?.accountType === 'child') {
-              if (currentUserFromDb?.parentAccessGranted === false) {
-                screenToNavigateTo = ScreenNames.requestParentAccess
-              }
-            } else {
-              // Add location details to use record if they do not exist
-              if (!Manager.isValid(currentUserFromDb?.location)) {
-                AppManager.getLocationDetails().then(async (r) => {
-                  await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUserFromDb?.key}/location`, r)
-                })
-              }
+            // Add location details to use record if they do not exist
+            if (!Manager.isValid(currentUserFromDb?.location)) {
+              AppManager.getLocationDetails().then(async (r) => {
+                await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUserFromDb?.key}/location`, r)
+              })
 
               // Delete expired items
               AppManager.deleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
@@ -174,7 +167,7 @@ export default function App() {
               notifications = await DB.getTable(`${DB.tables.notifications}/${currentUserFromDb?.key}`)
             }
 
-            // Back to log in if user's email is not verified
+            // Back to Log in if user's email is not verified
             if (!user?.emailVerified) {
               screenToNavigateTo = ScreenNames.login
             }
@@ -186,6 +179,7 @@ export default function App() {
               currentUser: currentUserFromDb,
               currentScreen: screenToNavigateTo,
               userIsLoggedIn: true,
+              isLoading: false,
               loadingText: '',
               theme: currentUserFromDb?.settings?.theme,
               notificationCount: notifications?.length,
@@ -195,7 +189,7 @@ export default function App() {
           setState({
             ...state,
             authUser: user,
-            currentScreen: ScreenNames.home,
+            currentScreen: ScreenNames.landing,
             userIsLoggedIn: false,
             loadingText: '',
             isLoading: false,
@@ -253,7 +247,6 @@ export default function App() {
             {/* AUTHENTICATION */}
             {currentScreen === ScreenNames.login && <Login />}
             {currentScreen === ScreenNames.registration && <Registration />}
-            {currentScreen === ScreenNames.requestParentAccess && <RequestParentAccess />}
 
             {/* UPDATE/EDIT */}
             {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}
@@ -277,7 +270,7 @@ export default function App() {
 
             {/* STANDARD */}
             {currentScreen === ScreenNames.installApp && <InstallApp />}
-            {currentScreen === ScreenNames.home && !isLoading && <Home />}
+            {currentScreen === ScreenNames.landing && !isLoading && <Landing />}
             {currentScreen === ScreenNames.notifications && <Notifications />}
             {currentScreen === ScreenNames.calendar && <EventCalendar />}
             {currentScreen === ScreenNames.settings && <Settings />}
@@ -287,14 +280,14 @@ export default function App() {
             {currentScreen === ScreenNames.resetPassword && <ResetPassword />}
             {currentScreen === ScreenNames.transferRequests && <TransferRequests />}
             {currentScreen === ScreenNames.memories && <Memories />}
-            {currentScreen === ScreenNames.childInfo && <ChildInfo />}
+            {currentScreen === ScreenNames.children && <Children />}
             {currentScreen === ScreenNames.coparents && <Coparents />}
             {currentScreen === ScreenNames.parents && <Parents />}
             {currentScreen === ScreenNames.chat && <Chat />}
             {currentScreen === ScreenNames.chats && <Chats />}
             {currentScreen === ScreenNames.visitation && <Visitation />}
-            {currentScreen === ScreenNames.contactUs && <ContactUs />}
-            {currentScreen === ScreenNames.onboarding && <Onboarding />}
+            {currentScreen === ScreenNames.help && <Help />}
+            {currentScreen === ScreenNames.home && <Home />}
           </div>
         </globalState.Provider>
       </div>

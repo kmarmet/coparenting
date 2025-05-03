@@ -1,29 +1,32 @@
 // Path: src\components\screens\documents\newDocument.jsx
-import React, {useContext, useState} from 'react'
-import globalState from '../../../context'
-import Manager from '/src/managers/manager.js'
-import FirebaseStorage from '/src/database/firebaseStorage'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
-import Doc from '/src/models/doc'
-import NotificationManager from '/src/managers/notificationManager'
-import UploadInputs from '/src/components/shared/uploadInputs'
-import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
-import Modal from '/src/components/shared/modal'
-import DatasetManager from '/src/managers/datasetManager'
-import AlertManager from '/src/managers/alertManager'
-import ImageManager from '/src/managers/imageManager'
-import ModelNames from '/src/models/modelNames'
-import ObjectManager from '/src/managers/objectManager'
-import DocumentsManager from '/src/managers/documentsManager'
-import ActivityCategory from '/src/models/activityCategory'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import StringManager from '/src/managers/stringManager'
+import Modal from '/src/components/shared/modal'
+import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
+import UploadInputs from '/src/components/shared/uploadInputs'
+import FirebaseStorage from '/src/database/firebaseStorage'
+import AlertManager from '/src/managers/alertManager'
+import DatasetManager from '/src/managers/datasetManager'
 import DocumentConversionManager from '/src/managers/documentConversionManager.js'
-import InputTypes from '../../../constants/inputTypes'
-import Spacer from '../../shared/spacer'
+import DocumentsManager from '/src/managers/documentsManager'
+import ImageManager from '/src/managers/imageManager'
+import Manager from '/src/managers/manager.js'
+import NotificationManager from '/src/managers/notificationManager'
+import ObjectManager from '/src/managers/objectManager'
+import StringManager from '/src/managers/stringManager'
+import ActivityCategory from '/src/models/activityCategory'
+import Doc from '/src/models/doc'
+import ModelNames from '/src/models/modelNames'
+import {getStorage, ref, uploadString} from 'firebase/storage'
+import React, {useContext, useState} from 'react'
 import CreationForms from '../../../constants/creationForms'
+import InputTypes from '../../../constants/inputTypes'
+import ScreenNames from '../../../constants/screenNames'
+import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useDocuments from '../../../hooks/useDocuments'
+import LogManager from '../../../managers/logManager'
+import Spacer from '../../shared/spacer'
 
 export default function NewDocument() {
   const {state, setState} = useContext(globalState)
@@ -40,7 +43,14 @@ export default function NewDocument() {
     setShareWith([])
     setDocType(null)
     setDoc(null)
-    setState({...state, refreshKey: Manager.getUid(), isLoading: false, creationFormToShow: '', successAlertMessage: successMessage})
+    setState({
+      ...state,
+      refreshKey: Manager.getUid(),
+      isLoading: false,
+      creationFormToShow: '',
+      successAlertMessage: successMessage,
+      currentScreen: ScreenNames.docsList,
+    })
   }
 
   const Upload = async () => {
@@ -116,9 +126,12 @@ export default function NewDocument() {
 
     //#region DOCUMENT CONVERSION
     if (docType === 'document') {
+      await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser.key}/${docNameToUse}`, doc)
+      let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
       docText = await DocumentConversionManager.DocToHtml(docNameToUse, currentUser?.key)
-      console.log(docText)
+      await UploadDocToFirebaseStorage(docText, firebaseStorageFileName)
     }
+
     //#endregion DOCUMENT CONVERSION
 
     //#region ADD TO DB / SEND NOTIFICATION
@@ -132,24 +145,43 @@ export default function NewDocument() {
     newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
     newDocument.type = docType
     newDocument.name = StringManager.formatFileName(docNameToUse)
-    console.log('here')
 
-    const cleanedDoc = ObjectManager.cleanObject(newDocument, ModelNames.doc)
-    await DocumentsManager.AddToDocumentsTable(currentUser, documents, cleanedDoc)
+    if (Manager.isValid(newDocument.docText, true)) {
+      const cleanedDoc = ObjectManager.cleanObject(newDocument, ModelNames.doc)
+      console.log(cleanedDoc)
+      await DocumentsManager.AddToDocumentsTable(currentUser, documents, newDocument)
 
-    // Send Notification
-    if (Manager.isValid(shareWith)) {
-      await NotificationManager.sendToShareWith(
-        shareWith,
-        currentUser,
-        `New Document`,
-        `${StringManager.getFirstNameOnly(currentUser?.name)} has uploaded a new document`,
-        ActivityCategory.documents
-      )
+      // Send Notification
+      if (Manager.isValid(shareWith)) {
+        await NotificationManager.sendToShareWith(
+          shareWith,
+          currentUser,
+          `New Document`,
+          `${StringManager.getFirstNameOnly(currentUser?.name)} has uploaded a new document`,
+          ActivityCategory.documents
+        )
+      }
     }
     //#endregion ADD TO DB / SEND NOTIFICATION
 
+    await FirebaseStorage.deleteFile(`${FirebaseStorage.directories.documents}/${currentUser?.key}/${StringManager.formatFileName(docNameToUse)}`)
+
     ResetForm('Document Uploaded!')
+  }
+
+  const UploadDocToFirebaseStorage = async (txt, fileName) => {
+    const storage = getStorage()
+    const storageRef = ref(storage, `${FirebaseStorage.directories.documents}/${currentUser?.key}/${fileName}`)
+
+    // Upload the string
+    uploadString(storageRef, txt, 'raw')
+      .then(() => {
+        console.log('Uploaded a raw string!')
+      })
+      .catch((error) => {
+        console.error('Error uploading string:', error)
+        LogManager.Log(`Error: ${error} | Code File: newDocument | Function: StoreTextInFirebase | File: ${fileName} | User: ${currentUser?.key}`)
+      })
   }
 
   const HandleShareWithSelection = (e) => {

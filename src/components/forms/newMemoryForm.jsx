@@ -1,31 +1,32 @@
 // Path: src\components\forms\newMemoryForm.jsx
-import React, {useContext, useState} from 'react'
-import globalState from '../../context'
+import MyConfetti from '/src/components/shared/myConfetti'
 import UploadInputs from '/src/components/shared/uploadInputs'
+import DatetimeFormats from '/src/constants/datetimeFormats'
 import DB from '/src/database/DB'
 import FirebaseStorage from '/src/database/firebaseStorage'
+import AlertManager from '/src/managers/alertManager'
 import AppManager from '/src/managers/appManager'
-import MyConfetti from '/src/components/shared/myConfetti'
+import ImageManager from '/src/managers/imageManager'
 import Manager from '/src/managers/manager'
 import NotificationManager from '/src/managers/notificationManager'
-import DatetimeFormats from '/src/constants/datetimeFormats'
-import moment from 'moment'
+import ObjectManager from '/src/managers/objectManager'
+import StringManager from '/src/managers/stringManager'
+import ActivityCategory from '/src/models/activityCategory'
 import Memory from '/src/models/memory.js'
 import ModelNames from '/src/models/modelNames'
-import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
-import InputWrapper from '../shared/inputWrapper'
-import Modal from '../shared/modal'
-import ObjectManager from '/src/managers/objectManager'
-import ImageManager from '/src/managers/imageManager'
-import AlertManager from '/src/managers/alertManager'
-import ActivityCategory from '/src/models/activityCategory'
-import StringManager from '/src/managers/stringManager'
+import moment from 'moment'
+import React, {useContext, useState} from 'react'
 import {LuImagePlus} from 'react-icons/lu'
 import creationForms from '../../constants/creationForms'
 import InputTypes from '../../constants/inputTypes'
-import Spacer from '../shared/spacer'
+import globalState from '../../context'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useMemories from '../../hooks/useMemories'
+import DatasetManager from '../../managers/datasetManager'
+import InputWrapper from '../shared/inputWrapper'
+import Modal from '../shared/modal'
+import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
+import Spacer from '../shared/spacer'
 
 export default function NewMemoryForm() {
   const {state, setState} = useContext(globalState)
@@ -45,7 +46,7 @@ export default function NewMemoryForm() {
     setNewMemory((prevMemory) => ({...prevMemory, shareWith: updated}))
   }
 
-  const Submit = async () => {
+  const Upload = async () => {
     const validAccounts = currentUser?.sharedDataUsers
     if (validAccounts === 0) {
       AlertManager.throwError(
@@ -86,7 +87,7 @@ export default function NewMemoryForm() {
     }
 
     // Check for existing memory
-    Manager.convertToArray(localImages).forEach((img) => {
+    DatasetManager.getValidArray(localImages).forEach((img) => {
       const existingMemory = memories.find((x) => x.memoryName === img.name)
       if (existingMemory) {
         AlertManager.throwError('This memory already exists')
@@ -119,7 +120,7 @@ export default function NewMemoryForm() {
               cleanedObject.id = Manager.getUid()
 
               // Add to Database
-              await DB.add(`${DB.tables.memories}/${currentUser?.key}`, cleanedObject)
+              await DB.Add(`${DB.tables.memories}/${currentUser?.key}`, cleanedObject)
             }
 
             // Send Notification
@@ -144,7 +145,7 @@ export default function NewMemoryForm() {
 
   return (
     <Modal
-      onSubmit={Submit}
+      onSubmit={Upload}
       wrapperClass="new-memory"
       submitText={'Add Memory'}
       submitIcon={<LuImagePlus />}

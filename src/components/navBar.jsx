@@ -1,19 +1,21 @@
 // Path: src\components\navBar.jsx
 import React, {useContext, useEffect} from 'react'
 import {Fade} from 'react-awesome-reveal'
+import {BiHomeSmile} from 'react-icons/bi'
 import {HiOutlineMenu} from 'react-icons/hi'
 import {IoMdImages} from 'react-icons/io'
-import {IoChatbubblesOutline, IoNotificationsOutline} from 'react-icons/io5'
+import {IoNotificationsOutline} from 'react-icons/io5'
 import {LuCalendarDays} from 'react-icons/lu'
 import {PiPlusBold} from 'react-icons/pi'
 import ScreenNames from '../constants/screenNames'
 import globalState from '../context'
 import useCurrentUser from '../hooks/useCurrentUser'
 import Manager from '../managers/manager'
+import NotificationBadge from './shared/NotificationBadge'
 
 export default function NavBar({children, navbarClass}) {
   const {state, setState} = useContext(globalState)
-  const {currentScreen, menuIsOpen, theme, notificationCount} = state
+  const {currentScreen, menuIsOpen, theme} = state
   const {currentUser} = useCurrentUser()
 
   const changeCurrentScreen = async (screen) => {
@@ -21,6 +23,7 @@ export default function NavBar({children, navbarClass}) {
       ...state,
       currentScreen: screen,
       activeChild: null,
+      refreshKey: Manager.getUid(),
       notificationCount: 0,
     })
   }
@@ -41,6 +44,14 @@ export default function NavBar({children, navbarClass}) {
         <div id="navbar" className={`${theme} ${currentUser?.accountType} ${navbarClass} ${menuIsOpen ? 'hide' : ''}`}>
           <div id="menu-items" className="flex">
             <Fade cascade={true} direction={'up'} delay={0} damping={0.1} duration={600} triggerOnce={true}>
+              {/* HOME */}
+              <div
+                onClick={() => changeCurrentScreen(ScreenNames.home)}
+                className={`${currentScreen === ScreenNames.home ? 'active menu-item' : 'menu-item'}`}>
+                <BiHomeSmile className={'calendar'} />
+                <p>Home</p>
+              </div>
+
               {/* CALENDAR */}
               <div
                 onClick={() => changeCurrentScreen(ScreenNames.calendar)}
@@ -61,15 +72,15 @@ export default function NavBar({children, navbarClass}) {
               )}
 
               {/* CHATS */}
-              {currentUser && currentUser?.accountType === 'parent' && (
-                <div
-                  id="chat-menu-item"
-                  onClick={() => changeCurrentScreen(ScreenNames.chats)}
-                  className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
-                  <IoChatbubblesOutline className={'chats'} />
-                  <p>Chats</p>
-                </div>
-              )}
+              {/*{currentUser && currentUser?.accountType === 'parent' && (*/}
+              {/*  <div*/}
+              {/*    id="chat-menu-item"*/}
+              {/*    onClick={() => changeCurrentScreen(ScreenNames.chats)}*/}
+              {/*    className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>*/}
+              {/*    <IoChatbubblesOutline className={'chats'} />*/}
+              {/*    <p>Chats</p>*/}
+              {/*  </div>*/}
+              {/*)}*/}
 
               {/* MENU BUTTON */}
               <div className="menu-button menu-item" onClick={() => setState({...state, menuIsOpen: true})}>
@@ -84,7 +95,7 @@ export default function NavBar({children, navbarClass}) {
                 className={`${currentScreen === ScreenNames.notifications ? 'active menu-item notifications' : 'menu-item notifications'}`}>
                 <IoNotificationsOutline className={'notifications active'} />
                 <p>Notifications</p>
-                {notificationCount > 0 && <span className="badge"></span>}
+                <NotificationBadge classes={'navbar'} />
               </div>
 
               {/* CREATE */}

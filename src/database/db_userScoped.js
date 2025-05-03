@@ -2,10 +2,10 @@
 import DatasetManager from '/src/managers/datasetManager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager.coffee'
-import * as Sentry from '@sentry/react'
 import {child, get, getDatabase, push, ref, remove, set, update} from 'firebase/database'
 import _ from 'lodash'
 import AppManager from '../managers/appManager'
+import LogManager from '../managers/logManager'
 import Manager from '../managers/manager'
 import ModelNames from '../models/modelNames'
 import User from '../models/user'
@@ -176,7 +176,7 @@ const DB_UserScoped = {
       get(child(dbRef, `${tableName}/${currentUser?.key}/${objectName}`))
         .then((snapshot) => {
           if (snapshot.exists()) {
-            // console.log("if");
+            // console.Log("if");
             resolve(snapshot.val())
           } else {
             resolve([])
@@ -197,7 +197,7 @@ const DB_UserScoped = {
   getCoparentByKey: async (coparentKey, currentUser) => {
     let coparent
     if (Manager.isValid(currentUser)) {
-      // console.log('Coparent Key: ', coparentKey)
+      // console.Log('Coparent Key: ', coparentKey)
       coparent = await DB.find(DB.tables.users, ['key', coparentKey], true)
     }
     return coparent
@@ -250,10 +250,10 @@ const DB_UserScoped = {
         } else {
           updatedParents = [newParent]
         }
-        await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/parents/`), updatedParents)
+        await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/parents`), updatedParents)
       }
     } catch (error) {
-      Sentry.captureException(`Error: ${error} | Code File: DB_userScoped  | Function: AddParent`)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
   addUserChild: async (currentUser, newChild) => {
@@ -395,11 +395,9 @@ const DB_UserScoped = {
     const dbRef = ref(getDatabase())
     await set(child(dbRef, `${DB.tables.users}/${currentUserKey}/coparents/${coparentKey}/${StringManager.formatDbProp(prop)}`), value)
   },
-  updateParent: async (currentUser, parent, prop, value) => {
+  UpdateParent: async (currentUserKey, parentIndex, prop, value) => {
     const dbRef = ref(getDatabase())
-    console.log(parent.name)
-    let key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/parents`, parent, 'userKey')
-    await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/parents/${key}/${StringManager.formatDbProp(prop)}`), value)
+    await set(child(dbRef, `${DB.tables.users}/${currentUserKey}/parents/${parentIndex}/${StringManager.formatDbProp(prop)}`), value)
   },
   updateUserRecord: async (keyOrUid, propPath, value) => {
     const dbRef = ref(getDatabase())
@@ -436,9 +434,8 @@ const DB_UserScoped = {
     try {
       const dbRef = ref(getDatabase())
       await remove(child(dbRef, `${DB.tables.users}/${currentUserKey}/children/${childIndex}/${section}/${prop}`))
-    } catch (e) {
-      console.log(e)
-      Sentry.captureException(`Error: ${e} | Code File: DB_userScoped  | Function: deleteUserChildPropByPath`)
+    } catch (error) {
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
   DeleteCoparentInfoProp: async (currentUserKey, coparentIndex, prop) => {
@@ -446,7 +443,7 @@ const DB_UserScoped = {
       const dbRef = ref(getDatabase())
       await remove(child(dbRef, `${DB.tables.users}/${currentUserKey}/coparents/${coparentIndex}/${StringManager.formatDbProp(prop)}`))
     } catch (error) {
-      Sentry.captureException(`Error: ${error} | Code File: DB_userScoped | Function: DeleteCoparentInfoProp`)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
   DeleteSharedDataUserKey: async (currentUser, keyToRemove) => {
@@ -472,7 +469,7 @@ const DB_UserScoped = {
       console.log(`${DB.tables.users}/${currentUserKey}/coparents/${coparentIndex}`)
       await remove(child(dbRef, `${DB.tables.users}/${currentUserKey}/coparents/${coparentIndex}`))
     } catch (error) {
-      Sentry.captureException(`Error: ${error} | Code File: DB_userScoped | Function: DeleteCoparent`)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
   DeleteParent: async (currentUser, parent) => {

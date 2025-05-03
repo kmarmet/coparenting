@@ -15,6 +15,7 @@ import ObjectManager from '../../../managers/objectManager'
 import StringManager from '../../../managers/stringManager'
 import ModelNames from '../../../models/modelNames'
 import Parent from '../../../models/parent'
+import AddressInput from '../../shared/addressInput'
 import Label from '../../shared/label'
 import Spacer from '../../shared/spacer'
 import ToggleButton from '../../shared/toggleButton'
@@ -93,7 +94,7 @@ const NewParentForm = ({showCard, hideCard}) => {
       await DB_UserScoped.AddParent(currentUser, cleanParent)
     } catch (error) {
       console.log(error)
-      // LogManager.log(error.message, LogManager.logTypes.error)
+      // LogManager.Log(error.message, LogManager.LogTypes.error)
     }
     await ResetForm(`${StringManager.getFirstNameOnly(name)} Added!`)
   }
@@ -132,8 +133,7 @@ const NewParentForm = ({showCard, hideCard}) => {
               labelText={'Email Address'}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <InputWrapper
-              inputType={InputTypes.address}
+            <AddressInput
               labelText={'Home Address'}
               onChange={(place) => {
                 setAddress(place)

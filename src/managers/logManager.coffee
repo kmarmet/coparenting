@@ -1,17 +1,14 @@
+import * as Sentry from '@sentry/react'
 
 LogManager = {
-  logTypes: {
+  LogTypes: {
     error: 'Error'
     warning: 'Warning'
     fatal: 'Fatal'
   }
-  log: (message, type, stackTrace) ->
-    requestOptions =
-      mode: 'no-cors'
-      redirect: 'follow'
-    #fetch("https://peaceful-coparenting.app:5000/log?errorMessage=#{message}&messageType=#{type}&stackTrace=#{stackTrace}", requestOptions)
-    console.log(message)
-    # fetch("https://peaceful-coparenting.app:5000/log?errorMessage=#{message}&messageType=#{type}", requestOptions)
+  Log: (message, type = LogManager.LogTypes.error, stackTrace) ->
+    if not !window.location.href.includes( 'localhost' )
+      Sentry.captureException("Error: #{message} | Type: #{type} | Stacktrace: #{stackTrace}")
 }
 
 export default LogManager

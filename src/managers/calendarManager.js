@@ -55,7 +55,7 @@ export default CalendarManager = {
       return (await set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.key}/`), toAdd));
     } catch (error1) {
       error = error1;
-      return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
+      return LogManager.Log(error.message, LogManager.LogTypes.error, error.stack);
     }
   },
   buildArrayOfEvents: function(currentUser, eventObject, arrayType = "recurring", startDate, endDate) {
@@ -121,7 +121,7 @@ export default CalendarManager = {
       return (await set(child(dbRef, `${DB.tables.holidayEvents}`), eventsToAdd));
     } catch (error1) {
       error = error1;
-      return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
+      return LogManager.Log(error.message, LogManager.LogTypes.error, error.stack);
     }
   },
   addCalendarEvent: async function(currentUser, newEvent) {
@@ -141,7 +141,7 @@ export default CalendarManager = {
       return set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.key}/`), toAdd);
     } catch (error1) {
       error = error1;
-      return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
+      return LogManager.Log(error.message, LogManager.LogTypes.error, error.stack);
     }
   },
   UpdateEvent: async function(currentUserKey, updateIndex, updatedEvent) {
@@ -202,7 +202,7 @@ export default CalendarManager = {
           results.push(remove(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.key}/${idToDelete}`)));
         } catch (error1) {
           error = error1;
-          results.push(LogManager.log(error.message, LogManager.logTypes.error, error.stack));
+          results.push(LogManager.Log(error.message, LogManager.LogTypes.error, error.stack));
         }
       } else {
         results.push(void 0);

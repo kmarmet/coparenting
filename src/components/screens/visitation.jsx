@@ -1,40 +1,40 @@
 // Path: src\components\screens\visitation.jsx
-import moment from 'moment'
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../context'
+import CustomWeekends from '/src/components/screens/visitation/customWeekends'
+import EveryOtherWeekend from '/src/components/screens/visitation/everyOtherWeekend'
+import FiftyFifty from '/src/components/screens/visitation/fiftyFifty'
+import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import MyConfetti from '/src/components/shared/myConfetti'
+import Note from '/src/components/shared/note'
+import DatetimeFormats from '/src/constants/datetimeFormats'
 import ScheduleTypes from '/src/constants/scheduleTypes'
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
 
 import DB from '/src/database/DB'
-import {Fade} from 'react-awesome-reveal'
-import CalendarEvent from '/src/models/calendarEvent'
+import DB_UserScoped from '/src/database/db_userScoped'
+import AlertManager from '/src/managers/alertManager'
+import DatasetManager from '/src/managers/datasetManager'
+import DateManager from '/src/managers/dateManager.js'
 import Manager from '/src/managers/manager'
-import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import ObjectManager from '/src/managers/objectManager'
+import StringManager from '/src/managers/stringManager'
 import VisitationManager from '/src/managers/visitationManager'
+import CalendarMapper from '/src/mappers/calMapper'
+import VisitationMapper from '/src/mappers/visitationMapper'
+import CalendarEvent from '/src/models/calendarEvent'
+import ModelNames from '/src/models/modelNames'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import MyConfetti from '/src/components/shared/myConfetti'
-import Note from '/src/components/shared/note'
-import DB_UserScoped from '/src/database/db_userScoped'
-import VisitationMapper from '/src/mappers/visitationMapper'
-import DatetimeFormats from '/src/constants/datetimeFormats'
-import CalendarMapper from '/src/mappers/calMapper'
-import NavBar from '../navBar'
-import DatasetManager from '/src/managers/datasetManager'
-import AlertManager from '/src/managers/alertManager'
-import ObjectManager from '/src/managers/objectManager'
-import ModelNames from '/src/models/modelNames'
-import StringManager from '/src/managers/stringManager'
-import FiftyFifty from '/src/components/screens/visitation/fiftyFifty'
-import EveryOtherWeekend from '/src/components/screens/visitation/everyOtherWeekend'
-import CustomWeekends from '/src/components/screens/visitation/customWeekends'
-import DateManager from '/src/managers/dateManager.js'
-import Spacer from '../shared/spacer'
-import AccordionTitle from '../shared/accordionTitle'
-import useCurrentUser from '../../hooks/useCurrentUser'
+import moment from 'moment'
+import React, {useContext, useEffect, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
+import globalState from '../../context'
 import useCalendarEvents from '../../hooks/useCalendarEvents'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import NavBar from '../navBar'
+import AccordionTitle from '../shared/accordionTitle'
 import Label from '../shared/label'
+import Spacer from '../shared/spacer'
 
 export default function Visitation() {
   const {state, setState} = useContext(globalState)
@@ -258,7 +258,7 @@ export default function Visitation() {
       setShowEveryOtherWeekendCard(false)
       setShowFiftyFiftyCard(false)
       setShowCustomWeekendsCard(false)
-      AlertManager.confirmAlert('Are you sure you would like to add an Every Weekend visitation schedule?', "I'm Sure", true, async () => {
+      AlertManager.confirmAlert('Are you sure you would like to Add an Every Weekend visitation schedule?', "I'm Sure", true, async () => {
         await AddEveryWeekendToCalendar()
       })
     }
@@ -429,7 +429,7 @@ export default function Visitation() {
           </Accordion>
         </Fade>
       </div>
-      {!showEveryOtherWeekendCard && !showCustomWeekendsCard && !showFiftyFiftyCard && <NavBar navbarClass={'visitation no-add-new-button'}></NavBar>}
+      {!showEveryOtherWeekendCard && !showCustomWeekendsCard && !showFiftyFiftyCard && <NavBar navbarClass={'visitation no-Add-new-button'}></NavBar>}
     </>
   )
 }

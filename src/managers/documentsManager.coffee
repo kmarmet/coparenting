@@ -20,12 +20,9 @@ export default DocumentsManager =
     dbRef = ref getDatabase()
 
     if Manager.isValid (existingDocuments)
-      if existingDocuments.length > 0
-        existingDocuments = [existingDocuments..., data].filter (item) -> item
-      else
-        existingDocuments = [data]
+      existingDocuments = [existingDocuments..., data].filter (item) -> item
     else
-      existingDocuments = [data]
+      existingDocuments = [data].filter (item) -> item
 
     try
       await set child(dbRef, "#{DB.tables.documents}/#{currentUser?.key}"), existingDocuments

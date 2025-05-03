@@ -10,6 +10,7 @@ import globalState from '../../../context'
 import DB from '../../../database/DB'
 import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import DatasetManager from '../../../managers/datasetManager'
 import DomManager from '../../../managers/domManager'
 import StringManager from '../../../managers/stringManager'
 
@@ -19,8 +20,9 @@ export default function Checklist({fromOrTo, activeChild}) {
   const {currentUser} = useCurrentUser()
   const [checklist, setChecklist] = useState([])
   const [activeItems, setActiveItems] = useState([])
-  const [showChecklist, setShowChecklist] = useState(false)
   const {children, childrenAreLoading} = useChildren()
+  const [showChecklist, setShowChecklist] = useState(false)
+  const [accordionIsExpanded, setAccordionIsExpanded] = useState('')
 
   const ToggleActive = (el) => {
     const filtered = activeItems.filter((x) => x !== el.target.textContent.toLowerCase())
@@ -52,7 +54,6 @@ export default function Checklist({fromOrTo, activeChild}) {
         await DB.delete(`${path}`, activeChecklist.id)
       } else {
         await DB.updateByPath(path, updated)
-        // await DB.updateEntireRecord(`${path}`, updated, activeChecklist.id)
       }
       checklistItemWrapper.remove()
       element.remove()
@@ -60,12 +61,17 @@ export default function Checklist({fromOrTo, activeChild}) {
   }
 
   const SetSelectedChild = async () => {
-    const activeChecklist = activeChild?.checklists?.find((x) => x?.fromOrTo === fromOrTo)
+    const validChecklists = DatasetManager.getValidArray(activeChild?.checklists)
+    const activeChecklist = validChecklists?.find((x) => x?.fromOrTo === fromOrTo)
+    if (Manager.isValid(activeChecklist)) {
+      setShowChecklist(true)
+    }
     setChecklist(activeChecklist)
     setActiveItems(activeChecklist?.checklistItems)
   }
 
   useEffect(() => {
+    setShowChecklist(false)
     if (Manager.isValid(activeChild)) {
       SetSelectedChild().then((r) => r)
     }
@@ -73,30 +79,32 @@ export default function Checklist({fromOrTo, activeChild}) {
 
   return (
     <div className={`info-section section checklist ${fromOrTo}`}>
-      <Accordion className={`${theme} child-info`} expanded={showChecklist}>
-        <AccordionSummary onClick={() => setShowChecklist(!showChecklist)} className={'header checklist'}>
-          <PiListChecksFill className={`${fromOrTo} svg`} />
-          <p id="toggle-button" className={showChecklist ? 'active' : ''}>
-            Transfer Checklist<span className="smaller-text">({fromOrTo})</span>
-            {showChecklist ? <FaMinus className={`plus-minus ${fromOrTo}`} /> : <FaPlus className={`plus-minus ${fromOrTo}`} />}
-          </p>
-        </AccordionSummary>
-        <AccordionDetails className={'checklist-wrapper'}>
-          {Manager.isValid(checklist) &&
-            Manager.isValid(checklist?.checklistItems) &&
-            checklist?.checklistItems?.map((item, index) => {
-              return (
-                <div key={index} id="data-row" className="checklist-item-row">
-                  <p onClick={ToggleActive} className="checklist-item">
-                    {activeItems.includes(item.toLowerCase()) && <IoCheckmarkCircleSharp className={'checkmark'} />}
-                    {StringManager.uppercaseFirstLetterOfAllWords(item)}
-                  </p>
-                  <PiTrashSimpleDuotone className={'delete-icon'} onClick={DeleteItem} />
-                </div>
-              )
-            })}
-        </AccordionDetails>
-      </Accordion>
+      {showChecklist && (
+        <Accordion className={`${theme} child-info`} expanded={accordionIsExpanded}>
+          <AccordionSummary onClick={() => setAccordionIsExpanded(!accordionIsExpanded)} className={'header checklist'}>
+            <PiListChecksFill className={`${fromOrTo} svg`} />
+            <p id="toggle-button" className={accordionIsExpanded ? 'active' : ''}>
+              Transfer Checklist<span className="smaller-text">({fromOrTo})</span>
+              {accordionIsExpanded ? <FaMinus className={`plus-minus ${fromOrTo}`} /> : <FaPlus className={`plus-minus ${fromOrTo}`} />}
+            </p>
+          </AccordionSummary>
+          <AccordionDetails className={'checklist-wrapper'}>
+            {Manager.isValid(checklist) &&
+              Manager.isValid(checklist?.checklistItems) &&
+              checklist?.checklistItems?.map((item, index) => {
+                return (
+                  <div key={index} id="data-row" className="checklist-item-row">
+                    <p onClick={ToggleActive} className="checklist-item">
+                      {activeItems.includes(item.toLowerCase()) && <IoCheckmarkCircleSharp className={'checkmark'} />}
+                      {StringManager.uppercaseFirstLetterOfAllWords(item)}
+                    </p>
+                    <PiTrashSimpleDuotone className={'delete-icon'} onClick={DeleteItem} />
+                  </div>
+                )
+              })}
+          </AccordionDetails>
+        </Accordion>
+      )}
     </div>
   )
 }

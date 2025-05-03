@@ -1,29 +1,29 @@
 // Path: src\components\screens\profile\profile.jsx
+import {initializeApp} from 'firebase/app'
+import {EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail} from 'firebase/auth'
 import React, {useContext, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import {IoIosRemoveCircle} from 'react-icons/io'
+import {MdContactMail, MdOutlinePassword} from 'react-icons/md'
+import {PiHandWavingDuotone} from 'react-icons/pi'
+import validator from 'validator'
+import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
-import Manager from '../../../managers/manager'
-import {Fade} from 'react-awesome-reveal'
-import {PiHandWavingDuotone} from 'react-icons/pi'
-import {MdContactMail, MdOutlinePassword} from 'react-icons/md'
-import {IoIosRemoveCircle} from 'react-icons/io'
-import NavBar from '../../navBar'
-import AlertManager from '../../../managers/alertManager'
-import firebaseConfig from '../../../firebaseConfig'
-import {initializeApp} from 'firebase/app'
-import DB_UserScoped from '../../../database/db_userScoped'
 import DB from '../../../database/DB'
-import Modal from '../../shared/modal'
-import InputWrapper from '../../shared/inputWrapper'
-import validator from 'validator'
-import {EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail} from 'firebase/auth'
-import NotificationManager from '../../../managers/notificationManager'
+import DB_UserScoped from '../../../database/db_userScoped'
 import FirebaseStorage from '../../../database/firebaseStorage'
-import StringManager from '../../../managers/stringManager.coffee'
-import InputTypes from '../../../constants/inputTypes'
-import Spacer from '../../shared/spacer'
+import firebaseConfig from '../../../firebaseConfig'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import AlertManager from '../../../managers/alertManager'
+import Manager from '../../../managers/manager'
+import NotificationManager from '../../../managers/notificationManager'
+import StringManager from '../../../managers/stringManager.coffee'
+import NavBar from '../../navBar'
 import AddressInput from '../../shared/addressInput'
+import InputWrapper from '../../shared/inputWrapper'
+import Modal from '../../shared/modal'
+import Spacer from '../../shared/spacer'
 
 export default function Profile() {
   const {state, setState} = useContext(globalState)
@@ -295,7 +295,7 @@ export default function Profile() {
           </Fade>
         </div>
       </div>
-      {!showUpdateCard && !showLoginForm && <NavBar navbarClass={'profile no-add-new-button'}></NavBar>}
+      {!showUpdateCard && !showLoginForm && <NavBar navbarClass={'profile no-Add-new-button'}></NavBar>}
     </>
   )
 }

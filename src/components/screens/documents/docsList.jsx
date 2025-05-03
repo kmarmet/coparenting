@@ -1,19 +1,19 @@
 // Path: src\components\screens\documents\docsList.jsx
-import React, {useContext, useState} from 'react'
-import ScreenNames from '../../../constants/screenNames'
-import Manager from '../../../managers/manager'
-import globalState from '../../../context'
-import DocumentsManager from '../../../managers/documentsManager'
-import {HiDocumentRemove} from 'react-icons/hi'
-import {Fade} from 'react-awesome-reveal'
-import NavBar from '../../navBar'
-import NoDataFallbackText from '../../shared/noDataFallbackText'
-import StringManager from '../../../managers/stringManager'
-import {HiDocumentText} from 'react-icons/hi2'
+import React, {useContext, useEffect, useState} from 'react'
 import {FaFileImage} from 'react-icons/fa'
+import {HiDocumentRemove} from 'react-icons/hi'
+import {HiDocumentText} from 'react-icons/hi2'
+import ScreenNames from '../../../constants/screenNames'
+import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useDocuments from '../../../hooks/useDocuments'
 import AlertManager from '../../../managers/alertManager'
+import DocumentsManager from '../../../managers/documentsManager'
+import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager'
+import NavBar from '../../navBar'
+import NoDataFallbackText from '../../shared/noDataFallbackText'
 
 export default function DocsList() {
   const {state, setState} = useContext(globalState)
@@ -29,6 +29,12 @@ export default function DocsList() {
     })
   }
 
+  useEffect(() => {
+    setTimeout(() => {
+      DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight, 80)
+    }, 300)
+  }, [])
+
   return (
     <>
       <div id="doc-selection-container" className={`${theme} page-container`}>
@@ -42,36 +48,32 @@ export default function DocsList() {
 
         {!Manager.isValid(selectedDoc) && Manager.isValid(documents) && (
           <div className="sections">
-            {Manager.isValid(documents) && (
-              <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={0.2}>
-                {Manager.isValid(documents) &&
-                  documents.map((doc, index) => {
-                    const documentExts = ['doc', 'docx', 'pdf', 'txt', 'odt']
-                    const fileType = documentExts.includes(StringManager.GetFileExtension(doc.name).toString()) ? 'Document' : 'Image'
-                    return (
-                      <div
-                        className="row"
-                        key={index}
-                        onClick={(e) => {
-                          if (!Manager.contains(e.target.classList, 'delete')) {
-                            setSelectedDoc(doc)
-                            setState({...state, docToView: doc, currentScreen: ScreenNames.docViewer})
-                          }
-                        }}>
-                        <div className="flex section">
-                          <p data-id={doc.id}>
-                            {fileType === 'Document' ? <HiDocumentText className={'file-type'} /> : <FaFileImage className={'file-type'} />}
-                            {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
-                          </p>
-                          <div className={`checkbox delete`} onClick={DeleteDoc}>
-                            <HiDocumentRemove className={'delete-icon'} />
-                          </div>
-                        </div>
+            {Manager.isValid(documents) &&
+              documents.map((doc, index) => {
+                const documentExts = ['doc', 'docx', 'pdf', 'txt', 'odt']
+                const fileType = documentExts.includes(StringManager.GetFileExtension(doc.name).toString()) ? 'Document' : 'Image'
+                return (
+                  <div
+                    className="row"
+                    key={index}
+                    onClick={(e) => {
+                      if (!Manager.contains(e.target.classList, 'delete')) {
+                        setSelectedDoc(doc)
+                        setState({...state, docToView: doc, currentScreen: ScreenNames.docViewer})
+                      }
+                    }}>
+                    <div className="flex section">
+                      <p data-id={doc.id}>
+                        {fileType === 'Document' ? <HiDocumentText className={'file-type'} /> : <FaFileImage className={'file-type'} />}
+                        {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
+                      </p>
+                      <div className={`checkbox delete`} onClick={DeleteDoc}>
+                        <HiDocumentRemove className={'delete-icon'} />
                       </div>
-                    )
-                  })}
-              </Fade>
-            )}
+                    </div>
+                  </div>
+                )
+              })}
           </div>
         )}
       </div>

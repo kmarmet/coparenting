@@ -96,6 +96,12 @@
   #parent-info {
     margin-top: 20px;
 
+    #parent-name-primary {
+      font-weight: $fwMediumBold;
+      font-size: 18px;
+      line-height: 1;
+    }
+
     #coparent-type-primary,
     #parent-type-primary {
       font-size: 14px;

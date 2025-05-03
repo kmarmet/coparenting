@@ -33,8 +33,8 @@ export default SmsManager =
  * @return {number} Cube of input
  ###
   getParentVerificationTemplate: (childName, verificationCode) ->
-    "#{StringManager.uppercaseFirstLetterOfAllWords(childName)} is registering for an profile and requires your permission
-   for access. #{SmsManager.lineBreak}#{SmsManager.lineBreak}If you accept, please share this code with them: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
+    "#{StringManager.uppercaseFirstLetterOfAllWords(childName)} is requesting sharing access. #{SmsManager.lineBreak}#{SmsManager.lineBreak}If you would like to grant access, please share this code
+ with them: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getRegistrationVerificationTemplate: (userName, verificationCode) ->
     "#{userName} ,please enter this code to continue registration: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
   getPhoneVerificationTemplate: (verificationCode) ->    "Please enter this code for Peaceful coParenting registration #{SmsManager.lineBreak} #{verificationCode}"

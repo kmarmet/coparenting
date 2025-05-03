@@ -21,7 +21,6 @@ import 'lightgallery/css/lightgallery.css'
 import LightGallery from 'lightgallery/react'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {Fade} from 'react-awesome-reveal'
 import {AiOutlineFileAdd} from 'react-icons/ai'
 import {MdOutlineEventRepeat} from 'react-icons/md'
 import {RxUpdate} from 'react-icons/rx'
@@ -288,6 +287,12 @@ export default function ExpenseTracker() {
     }
   }, [expenses])
 
+  useEffect(() => {
+    setTimeout(() => {
+      DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight, 80)
+    }, 300)
+  }, [])
+
   if (expensesAreLoading || currentUserIsLoading) {
     return <img className="data-loading-gif" src={require('../../../img/loading.gif')} alt="Loading" />
   }
@@ -513,7 +518,7 @@ export default function ExpenseTracker() {
       <div id="expense-tracker" className={`${theme} page-container form`}>
         <div className="flex" id="screen-title-wrapper">
           <p className="screen-title">Expense Tracker </p>
-          {!DomManager.isMobile() && <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)} id={'add-new-button'} />}
+          {!DomManager.isMobile() && <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)} id={'Add-new-button'} />}
         </div>
         <p className={`${theme} text-screen-intro`}>
           Incorporate expenses that your co-parent is responsible for. Should a new expense arise that requires your payment, you will have the option
@@ -609,77 +614,73 @@ export default function ExpenseTracker() {
 
         {/* LOOP EXPENSES */}
         <div id="expenses-container">
-          {Manager.isValid(sortedExpenses) && (
-            <Fade direction={'right'} duration={800} triggerOnce={true} className={'expense-tracker-fade-wrapper'} cascade={true} damping={0.2}>
-              {Manager.isValid(sortedExpenses) &&
-                sortedExpenses.map((expense, index) => {
-                  let dueDate = moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay) ?? ''
-                  const readableDueDate = moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()
-                  const isPastDue = readableDueDate.toString().includes('ago')
-                  const dueInADay = readableDueDate.toString().includes('in a day')
-                  const dueInHours = readableDueDate.toString().includes('hours')
+          {Manager.isValid(sortedExpenses) &&
+            sortedExpenses.map((expense, index) => {
+              let dueDate = moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay) ?? ''
+              const readableDueDate = moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()
+              const isPastDue = readableDueDate.toString().includes('ago')
+              const dueInADay = readableDueDate.toString().includes('in a day')
+              const dueInHours = readableDueDate.toString().includes('hours')
 
-                  if (!Manager.isValid(dueDate)) {
-                    dueDate = ''
-                  }
-                  return (
-                    <div
-                      key={index}
-                      className="row"
-                      onClick={() => {
-                        setActiveExpense(expense)
-                        setShowDetails(true)
-                      }}>
-                      <div id="primary-icon-wrapper">
-                        <span className="amount">${expense?.amount}</span>
-                      </div>
+              if (!Manager.isValid(dueDate)) {
+                dueDate = ''
+              }
+              return (
+                <div
+                  key={index}
+                  className="row"
+                  onClick={() => {
+                    setActiveExpense(expense)
+                    setShowDetails(true)
+                  }}>
+                  <div id="primary-icon-wrapper">
+                    <span className="amount">${expense?.amount}</span>
+                  </div>
 
-                      <div id="content" data-expense-id={expense?.id} className={`expense wrap`}>
-                        {/* EXPENSE NAME */}
-                        <div id="name-wrapper" className="flex align-center">
-                          <p className="name row-title">
-                            {StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}
-                            {expense?.isRecurring && <MdOutlineEventRepeat />}
-                          </p>
+                  <div id="content" data-expense-id={expense?.id} className={`expense wrap`}>
+                    {/* EXPENSE NAME */}
+                    <div id="name-wrapper" className="flex align-center">
+                      <p className="name row-title">
+                        {StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}
+                        {expense?.isRecurring && <MdOutlineEventRepeat />}
+                      </p>
 
-                          {/*  STATUS */}
-                          {!expense?.isRecurring && (
-                            <>
-                              {!dueInADay && !dueInHours && (
-                                <span className={`${expense?.paidStatus} status`} id="request-status">
-                                  {isPastDue ? 'PAST DUE' : StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
-                                </span>
-                              )}
-                              {dueInADay ||
-                                (dueInHours && (
-                                  <span className={`status soon`} id="request-status">
-                                    Soon
-                                  </span>
-                                ))}
-                            </>
+                      {/*  STATUS */}
+                      {!expense?.isRecurring && (
+                        <>
+                          {!dueInADay && !dueInHours && (
+                            <span className={`${expense?.paidStatus} status`} id="request-status">
+                              {isPastDue ? 'PAST DUE' : StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
+                            </span>
                           )}
-                        </div>
-
-                        {/* DATE */}
-                        <div className="flex" id="below-title">
-                          {Manager.isValid(dueDate, true) && (
-                            <>
-                              {!expense?.isRecurring && (
-                                <p className={`due-date`}>
-                                  {DateManager.formatDate(expense?.dueDate)} ({readableDueDate.toString()})
-                                </p>
-                              )}
-                              {expense?.isRecurring && <p className={`due-date`}>{GetRecurringDateText(expense)}</p>}
-                            </>
-                          )}
-                          {!Manager.isValid(dueDate, true) && <p className="due-date no-due-date">no due date</p>}
-                        </div>
-                      </div>
+                          {dueInADay ||
+                            (dueInHours && (
+                              <span className={`status soon`} id="request-status">
+                                Soon
+                              </span>
+                            ))}
+                        </>
+                      )}
                     </div>
-                  )
-                })}
-            </Fade>
-          )}
+
+                    {/* DATE */}
+                    <div className="flex" id="below-title">
+                      {Manager.isValid(dueDate, true) && (
+                        <>
+                          {!expense?.isRecurring && (
+                            <p className={`due-date`}>
+                              {DateManager.formatDate(expense?.dueDate)} ({readableDueDate.toString()})
+                            </p>
+                          )}
+                          {expense?.isRecurring && <p className={`due-date`}>{GetRecurringDateText(expense)}</p>}
+                        </>
+                      )}
+                      {!Manager.isValid(dueDate, true) && <p className="due-date no-due-date">no due date</p>}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
         </div>
       </div>
       <NavBar navbarClass={'expenses'} />

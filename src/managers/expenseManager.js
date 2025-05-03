@@ -27,7 +27,7 @@ export default ExpenseManager = {
       return update(ref(dbRef, `${DB.tables.expenses}/${ownerKey}/${key}`), updatedExpense);
     } catch (error1) {
       error = error1;
-      return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
+      return LogManager.Log(error.message, LogManager.LogTypes.error, error.stack);
     }
   },
   UpdateExpense: async function(currentUserKey, updateIndex, updatedExpense) {
@@ -39,7 +39,7 @@ export default ExpenseManager = {
       }
     } catch (error1) {
       error = error1;
-      return LogManager.log(error.message, LogManager.logTypes.error, error.stack);
+      return LogManager.Log(error.message, LogManager.LogTypes.error, error.stack);
     }
   }
 };

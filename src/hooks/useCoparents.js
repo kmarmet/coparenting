@@ -23,7 +23,7 @@ const useCoparents = () => {
     const listener = onValue(
       dataRef,
       (snapshot) => {
-        // console.log('Children Updated')
+        // console.Log('Children Updated')
         const formattedCoparents = DatasetManager.getValidArray(snapshot.val())
         if (Manager.isValid(currentUser) && Manager.isValid(formattedCoparents)) {
           setCoparents(formattedCoparents)

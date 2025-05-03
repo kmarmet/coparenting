@@ -28,11 +28,11 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('offline', handleConnection)
   // eslint-disable-next-line no-undef
   const publicUrl = window.location.hostname.indexOf('localhost') > -1 ? 'http://localhost:1234' : process.env.REACT_APP_PUBLIC_URL
-  // console.log(`${publicUrl}/OneSignalSDKWorker.js`)
+  // console.Log(`${publicUrl}/OneSignalSDKWorker.js`)
   navigator.serviceWorker
     .register(`${publicUrl}/OneSignalSDKWorker.js`)
     .then((registration) => {
-      // console.log(registration);
+      // console.Log(registration);
 
       console.log('[SW] service Worker is registered at', registration.scope)
     })
@@ -43,7 +43,7 @@ if ('serviceWorker' in navigator) {
   // Update content
   navigator.serviceWorker.ready.then((registration) => {
     registration.update().then(() => {
-      // console.log('PWA Updated')
+      // console.Log('PWA Updated')
     })
   })
   function isReachable(url) {
@@ -90,9 +90,9 @@ if ('serviceWorker' in navigator) {
   // function forceSWupdate() {
   //   navigator.serviceWorker.getRegistrations().then(function (registrations) {
   //     for (let registration of registrations) {
-  //       console.log(registration)
+  //       console.Log(registration)
   //       registration.update().then((r) => {
-  //         console.log('App Updated')
+  //         console.Log('App Updated')
   //       })
   //     }
   //   })

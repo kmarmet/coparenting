@@ -1,22 +1,22 @@
 // Path: src\components\shared\inputWrapper.jsx
+import {MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
+import moment from 'moment'
 import React, {useContext, useEffect} from 'react'
 import {DebounceInput} from 'react-debounce-input'
-import globalState from '../../context.js'
-import Manager from '../../managers/manager'
-import {MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
-import Label from './label'
-import InputTypes from '../../constants/inputTypes'
-import moment from 'moment'
 import DatetimeFormats from '../../constants/datetimeFormats'
-import AddressInput from './addressInput'
-import Spacer from './spacer'
-import DomManager from '../../managers/domManager'
+import InputTypes from '../../constants/inputTypes'
+import globalState from '../../context.js'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import DomManager from '../../managers/domManager'
+import Manager from '../../managers/manager'
+import AddressInput from './addressInput'
+import Label from './label'
+import Spacer from './spacer'
 
 function InputWrapper({
   wrapperClasses = '',
   labelText = '',
-  inputType = 'input',
+  inputType = InputTypes.text,
   required,
   onChange,
   defaultValue = null,
@@ -29,6 +29,7 @@ function InputWrapper({
   dateViews = ['month', 'day'],
   placeholder = '',
   dateFormat = DatetimeFormats.readableMonthAndDay,
+  inputName = '',
 }) {
   const {state, setState} = useContext(globalState)
   const {refreshKey, theme} = state
@@ -64,6 +65,7 @@ function InputWrapper({
             placeholder={placeholder}
             className={`${inputClasses}`}
             onChange={onChange}
+            name={inputName}
             debounceTimeout={isDebounced ? 1000 : 0}
             key={refreshKey}
           />
@@ -74,7 +76,7 @@ function InputWrapper({
           <input
             type="tel"
             id="number"
-            name="number"
+            name={inputName}
             placeholder={placeholder}
             key={refreshKey}
             pattern="[0-9]"
@@ -89,7 +91,7 @@ function InputWrapper({
           <input
             type="tel"
             id="phone"
-            name="phone"
+            name={inputName}
             maxLength={16}
             placeholder={placeholder}
             key={refreshKey}
@@ -110,6 +112,7 @@ function InputWrapper({
             label={labelText}
             onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
             views={dateViews}
+            name={inputName}
             class={`${theme} ${inputClasses}`}
             value={Manager.isValid(defaultValue) ? moment(defaultValue) : null}
             key={refreshKey}
@@ -139,6 +142,7 @@ function InputWrapper({
                 actions: ['clear', 'accept'],
               },
             }}
+            name={inputName}
             views={timeViews}
             value={Manager.isValid(defaultValue) ? moment(defaultValue, DatetimeFormats.timeForDb) : null}
             label={labelText}
@@ -159,6 +163,7 @@ function InputWrapper({
             onChange={(e) => {
               onChange(e)
             }}
+            name={inputName}
             className={inputClasses}
             defaultValue={defaultValue}
             key={refreshKey}
@@ -174,6 +179,7 @@ function InputWrapper({
             onChange={(e) => {
               onChange(e)
             }}
+            name={inputName}
             className={inputClasses}
             defaultValue={defaultValue}
             key={refreshKey}
@@ -205,6 +211,7 @@ function InputWrapper({
             }}
             onKeyUp={onKeyUp}
             className={inputClasses}
+            name={inputName}
             defaultValue={defaultValue}
             key={refreshKey}
           />

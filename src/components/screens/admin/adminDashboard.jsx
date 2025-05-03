@@ -160,7 +160,7 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-      <NavBar navbarClass={'visitation no-add-new-button'}></NavBar>
+      <NavBar navbarClass={'visitation no-Add-new-button'}></NavBar>
     </div>
   )
 }

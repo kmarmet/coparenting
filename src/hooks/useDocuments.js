@@ -1,11 +1,12 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useEffect, useState} from 'react'
-import Manager from '../managers/manager'
 import DB from '../database/DB'
+import DatasetManager from '../managers/datasetManager'
+import Manager from '../managers/manager'
 import useCurrentUser from './useCurrentUser'
 
 const useDocuments = () => {
-  const [isLoading, setIsLoading] = useState(true)
+  const [documentsAreLoading, setDocumentsAreLoading] = useState(true)
   const [documents, setDocuments] = useState([])
   const [error, setError] = useState(null)
   const {currentUser} = useCurrentUser()
@@ -21,10 +22,10 @@ const useDocuments = () => {
       (snapshot) => {
         const data = snapshot.val()
 
-        const formatted = Manager.convertToArray(data)
+        const formatted = DatasetManager.getValidArray(data)
         if (Manager.isValid(currentUser) && Manager.isValid(formatted)) {
           setDocuments(formatted.filter((x) => x))
-          setIsLoading(false)
+          setDocumentsAreLoading(false)
         } else {
           setDocuments([])
         }
@@ -32,7 +33,7 @@ const useDocuments = () => {
       (err) => {
         console.log(`useDocuments Error: ${err}`)
         setError(err)
-        setIsLoading(false)
+        setDocumentsAreLoading(false)
       }
     )
 
@@ -43,7 +44,7 @@ const useDocuments = () => {
 
   return {
     documents,
-    isLoading,
+    documentsAreLoading,
     error,
     queryKey,
   }

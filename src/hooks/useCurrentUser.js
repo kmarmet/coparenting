@@ -7,9 +7,9 @@ import useUsers from './useUsers'
 
 const useCurrentUser = () => {
   const {state, setState} = useContext(globalState)
-  const {authUser} = state
+  const {authUser, currentUser: dbCurrentUser} = state
   const {users} = useUsers()
-  const [currentUser, setCurrentUser] = useState(null)
+  const [currentUser, setCurrentUser] = useState(dbCurrentUser)
   const [currentUserIsLoading, setCurrentUserIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const dbUser = users?.find((u) => u?.email === authUser?.email)
@@ -39,7 +39,7 @@ const useCurrentUser = () => {
     return () => {
       off(dataRef, 'value', listener)
     }
-  }, [path, authUser])
+  }, [path, authUser, dbUser])
 
   return {
     currentUser,

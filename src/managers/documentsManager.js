@@ -56,15 +56,13 @@ export default DocumentsManager = {
     var dbRef, error;
     dbRef = ref(getDatabase());
     if (Manager.isValid(existingDocuments)) {
-      if (existingDocuments.length > 0) {
-        existingDocuments = [...existingDocuments, data].filter(function(item) {
-          return item;
-        });
-      } else {
-        existingDocuments = [data];
-      }
+      existingDocuments = [...existingDocuments, data].filter(function(item) {
+        return item;
+      });
     } else {
-      existingDocuments = [data];
+      existingDocuments = [data].filter(function(item) {
+        return item;
+      });
     }
     try {
       return (await set(child(dbRef, `${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`), existingDocuments));

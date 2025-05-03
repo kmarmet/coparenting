@@ -63,12 +63,15 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  margin-bottom: 5px;
   text-align: center;
   opacity: 1;
-  color: $headerText;
+  color: $accent;
   font-family: 'Inter', sans-serif;
   font-weight: $fwMedium;
+  width: max-content;
+  margin: 0 auto 15px auto;
+  padding-bottom: 6px;
+  border-bottom: 2px solid $lightBorderColor;
 
   &.active {
     transform: scale(1);
@@ -119,7 +122,7 @@
 
   p {
     &.screen-title {
-      padding: 0;
+      //      padding: 0;
     }
   }
 }
@@ -339,22 +342,6 @@
     &.red {
       background: $red;
       color: white;
-    }
-
-    &.back-to-login-button {
-      border: 0;
-      border-radius: 0;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      min-height: 0;
-      background-color: $grey;
-      height: 68px;
-      width: 100vw;
-      margin: 0;
-      color: $darkestGrey;
-      border-top: 1px solid $lightBorderColor;
     }
 
     &#upload-button {
@@ -1284,7 +1271,8 @@
             }
             &.memory,
             &.swap,
-            &.checklist {
+            &.checklist,
+            &.profile-pic {
               transform: scale(1.2);
             }
           }
@@ -1441,6 +1429,7 @@
   align-items: center;
   justify-content: space-between;
   display: flex;
+  opacity: 0;
 
   &.active {
     max-height: 10000px;
@@ -1450,6 +1439,7 @@
   &.chats {
     padding-bottom: 0;
     border: 0;
+    opacity: 0;
   }
 
   @include hover;
@@ -1782,50 +1772,6 @@
     height: 100%;
     justify-content: flex-start;
     justify-self: flex-start;
-  }
-}
-
-@mixin inputSuggestionDropdown {
-  transition: all 0.3s ease-in-out;
-  opacity: 1;
-  overflow: hidden;
-
-  #title-suggestion-dropdown {
-    background: $grey;
-    border-radius: $borderRadius;
-
-    .MuiPaper-root {
-      max-width: 100% !important;
-      background: transparent;
-
-      .MuiAccordionDetails-root {
-        padding: 15px;
-      }
-    }
-  }
-
-  .MuiAccordion-heading {
-    height: 0;
-  }
-
-  .suggestions {
-    padding: 0;
-    width: 100%;
-
-    p {
-      background: $grey;
-      margin-bottom: 10px;
-      margin-top: 0;
-      padding-bottom: 5px;
-      border-bottom: 1px solid $lightDarkGrey;
-    }
-  }
-
-  svg {
-    opacity: 0.6;
-    font-size: 22px;
-    margin: 20px auto 0 auto;
-    display: block;
   }
 }
 
@@ -2633,7 +2579,6 @@
   align-items: center;
   left: 0;
   right: 0;
-  top: 0;
   z-index: -1;
   overscroll-behavior: none;
   opacity: 0;
@@ -2656,9 +2601,10 @@
   }
 
   &.owner {
+    .modal-fade-wrapper {
+      border-top: 5px solid $main;
+    }
     #modal-content {
-      border-top: 4px solid $main;
-
       #modal {
         #modal-title-and-text {
           #modal-title {
@@ -2671,8 +2617,9 @@
 
   &.non-owner {
     .modal-fade-wrapper {
-      border-top: 4px solid $coparentPurple;
-
+      .modal-fade-wrapper {
+        border-top: 5px solid $coparentPurple;
+      }
       #modal-content {
         #modal {
           #modal-title-and-text {
@@ -2766,10 +2713,11 @@
     background: white;
     max-height: 70vh;
     overflow: hidden;
-    border-radius: 18px;
+    border-radius: 24px;
     box-shadow: $boxShadow_bottom_only_dark;
     width: calc(100vw - 20px);
     transition: all 0.8s ease-out;
+    border-top: 5px solid $main;
     #modal-content {
       padding-bottom: 40px;
       height: auto;
@@ -2805,7 +2753,7 @@
           #modal-title {
             text-align: center;
             font-size: 24px;
-            color: $accent;
+            color: $main;
             width: max-content;
             margin: 0 auto;
             display: flex;
@@ -2934,6 +2882,7 @@
             flex-wrap: wrap;
             justify-content: center;
             margin-bottom: 20px;
+            opacity: 0;
 
             *:not(.card-icon-button) {
               width: 100%;
@@ -4299,8 +4248,13 @@
         transform: scale(0.8);
       }
 
+      &.help {
+        svg {
+          transform: scale(0.85);
+        }
+      }
+
       &.settings,
-      &.contact-us,
       &.install-app,
       &.memories,
       &.transfer-change {

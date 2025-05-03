@@ -1,11 +1,11 @@
 // Path: src\managers\chatManager.js
 import {child, getDatabase, ref, set} from 'firebase/database'
-import Manager from '../managers/manager'
 import DB from '../database/DB'
-import SecurityManager from './securityManager'
+import Manager from '../managers/manager'
 import ChatBookmark from '../models/chat/chatBookmark'
-import LogManager from './logManager'
 import DatasetManager from './datasetManager.coffee'
+import LogManager from './logManager'
+import SecurityManager from './securityManager'
 
 const ChatManager = {
   getToneAndSentiment: async (message) => {
@@ -88,7 +88,7 @@ const ChatManager = {
       }
       return chatToReturn
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error)
+      LogManager.Log(error.message, LogManager.LogTypes.error)
     }
   },
   getMessages: async (chatId) => {
@@ -110,7 +110,7 @@ const ChatManager = {
       await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser?.key}`, securedChat, securedChat.id)
       await DB.updateEntireRecord(`${DB.tables.chats}/${coparentKey}`, securedChat, securedChat.id)
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error)
+      LogManager.Log(error.message, LogManager.LogTypes.error)
     }
   },
   unpauseChat: async (currentUser, coparentKey) => {
@@ -123,7 +123,7 @@ const ChatManager = {
       await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser?.key}`, securedChat, securedChat.id)
       await DB.updateEntireRecord(`${DB.tables.chats}/${coparentKey}`, securedChat, securedChat.id)
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error)
+      LogManager.Log(error.message, LogManager.LogTypes.error)
     }
   },
   getBookmarks: async (chatId) => {
@@ -157,7 +157,7 @@ const ChatManager = {
         console.log(error)
       })
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error)
+      LogManager.Log(error.message, LogManager.LogTypes.error)
     }
   },
   addChat: async (path, chat) => {
@@ -174,7 +174,7 @@ const ChatManager = {
         console.log(error)
       })
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error)
+      LogManager.Log(error.message, LogManager.LogTypes.error)
     }
   },
   addChatMessage: async (path, message) => {
@@ -191,7 +191,7 @@ const ChatManager = {
         console.log(error)
       })
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error)
+      LogManager.Log(error.message, LogManager.LogTypes.error)
     }
   },
 }

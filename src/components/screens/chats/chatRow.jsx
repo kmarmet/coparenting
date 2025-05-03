@@ -1,19 +1,20 @@
 // Path: src\components\screens\chats\chatRow.jsx
-import React, {useContext, useEffect, useState} from 'react'
-import {FaPlay} from 'react-icons/fa'
 import ScreenNames from '/src/constants/screenNames.coffee'
 import globalState from '/src/context.js'
 import AlertManager from '/src/managers/alertManager.coffee'
 import ChatManager from '/src/managers/chatManager.js'
 import Manager from '/src/managers/manager.js'
 import StringManager from '/src/managers/stringManager.coffee'
+import React, {useContext, useEffect, useState} from 'react'
+import {FaPlay} from 'react-icons/fa'
 import {FaCirclePause} from 'react-icons/fa6'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
+import DomManager from '../../../managers/domManager'
 
 export default function ChatRow({chat}) {
   const {state, setState} = useContext(globalState)
-  const {theme} = state
+  const {refreshKey} = state
   const [otherMember, setOtherMember] = useState(null)
   const [lastMessage, setLastMessage] = useState('')
   const {currentUser} = useCurrentUser()
@@ -51,7 +52,7 @@ export default function ChatRow({chat}) {
   }
 
   const SetDefaultOtherMember = async () => {
-    const coparent = chat?.members.find((member) => member?.key !== currentUser?.key)
+    const coparent = chat?.members?.find((member) => member?.key !== currentUser?.key)
     setOtherMember(coparent)
   }
 
@@ -72,6 +73,13 @@ export default function ChatRow({chat}) {
     GetLastMessage().then((r) => r)
   }, [otherMember, chat])
 
+  useEffect(() => {
+    setTimeout(() => {
+      DomManager.ToggleAnimation('add', 'thread-item', DomManager.AnimateClasses.names.fadeInRight, 90)
+      DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight, 90)
+    }, 300)
+  }, [])
+
   return (
     <div
       onClick={(e) => {
@@ -83,7 +91,7 @@ export default function ChatRow({chat}) {
         if (e.target !== e.currentTarget) return false
       }}
       data-thread-id={chat?.id}
-      className="chats row">
+      className="chats row chats-animation-row">
       {/* THREAD ITEM */}
       <div className={`flex thread-item wrap`}>
         {/* COPARENT NAME */}

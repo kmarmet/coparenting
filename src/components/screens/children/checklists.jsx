@@ -30,7 +30,7 @@ export default function Checklists({showCard, hideCard}) {
     newChecklist.checklistItems = checkboxTextList
     newChecklist.ownerKey = currentUser?.key
     newChecklist.fromOrTo = view
-    await DB.add(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, newChecklist)
+    await DB.Add(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, newChecklist)
     await DB.getTable(`${DB.tables.users}/${currentUser?.key}/children/${childKey}`)
   }
 

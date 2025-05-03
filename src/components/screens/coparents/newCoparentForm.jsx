@@ -96,7 +96,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
       await DB_UserScoped.addCoparent(currentUser, cleanCoparent)
     } catch (error) {
       console.log(error)
-      // LogManager.log(error.message, LogManager.logTypes.error)
+      // LogManager.Log(error.message, LogManager.LogTypes.error)
     }
     await ResetForm(`${StringManager.getFirstNameOnly(name)} Added!`)
   }

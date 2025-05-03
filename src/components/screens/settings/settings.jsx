@@ -1,23 +1,23 @@
 // Path: src\components\screens\settings\settings.jsx
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../../context'
-import moment from 'moment'
-import DB_UserScoped from '/src/database/db_userScoped'
-import DatetimeFormats from '/src/constants/datetimeFormats'
-import {Fade} from 'react-awesome-reveal'
-import DateManager from '/src/managers/dateManager'
 import NavBar from '/src/components/navBar'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import Label from '/src/components/shared/label'
+import DatetimeFormats from '/src/constants/datetimeFormats'
 import DB from '/src/database/DB'
+import DB_UserScoped from '/src/database/db_userScoped'
+import DateManager from '/src/managers/dateManager'
 import NotificationManager from '/src/managers/notificationManager.js'
-import ToggleButton from '../../shared/toggleButton'
+import moment from 'moment'
+import React, {useContext, useEffect, useState} from 'react'
+import {Fade} from 'react-awesome-reveal'
 import InputTypes from '../../../constants/inputTypes'
-import CheckboxGroup from '../../shared/checkboxGroup'
-import Manager from '../../../managers/manager'
-import Spacer from '../../shared/spacer'
-import StringManager from '../../../managers/stringManager'
+import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager'
+import CheckboxGroup from '../../shared/checkboxGroup'
+import Spacer from '../../shared/spacer'
+import ToggleButton from '../../shared/toggleButton'
 
 export default function Settings() {
   const {state, setState} = useContext(globalState)
@@ -166,7 +166,7 @@ export default function Settings() {
           </div>
         </Fade>
       </div>
-      <NavBar navbarClass={'settings no-add-new-button'}></NavBar>
+      <NavBar navbarClass={'settings no-Add-new-button'}></NavBar>
     </>
   )
 }

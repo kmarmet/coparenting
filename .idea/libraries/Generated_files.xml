@@ -7,7 +7,6 @@
         <item url="file://$PROJECT_DIR$/src/constants/eventLengths.js" />
         <item url="file://$PROJECT_DIR$/src/constants/expenseCategories.js" />
         <item url="file://$PROJECT_DIR$/src/constants/inputTypes.js" />
-        <item url="file://$PROJECT_DIR$/src/constants/mapperTables.js" />
         <item url="file://$PROJECT_DIR$/src/constants/reminderTimes.js" />
         <item url="file://$PROJECT_DIR$/src/constants/scheduleTypes.js" />
         <item url="file://$PROJECT_DIR$/src/constants/screenNames.js" />
@@ -15,7 +14,6 @@
         <item url="file://$PROJECT_DIR$/src/constants/swapDurations.js" />
         <item url="file://$PROJECT_DIR$/src/managers/alertManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/appManager.js" />
-        <item url="file://$PROJECT_DIR$/src/managers/archivesManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/calendarManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/datasetManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/documentsManager.js" />
@@ -25,6 +23,7 @@
         <item url="file://$PROJECT_DIR$/src/managers/imageManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/locationManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/logManager.js" />
+        <item url="file://$PROJECT_DIR$/src/managers/networkManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/notificationManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/objectManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/securityManager.js" />
@@ -69,7 +68,6 @@
       <root url="file://$PROJECT_DIR$/src/constants/eventLengths.js" />
       <root url="file://$PROJECT_DIR$/src/constants/expenseCategories.js" />
       <root url="file://$PROJECT_DIR$/src/constants/inputTypes.js" />
-      <root url="file://$PROJECT_DIR$/src/constants/mapperTables.js" />
       <root url="file://$PROJECT_DIR$/src/constants/reminderTimes.js" />
       <root url="file://$PROJECT_DIR$/src/constants/scheduleTypes.js" />
       <root url="file://$PROJECT_DIR$/src/constants/screenNames.js" />
@@ -86,11 +84,13 @@
       <root url="file://$PROJECT_DIR$/src/managers/imageManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/locationManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/logManager.js" />
+      <root url="file://$PROJECT_DIR$/src/managers/networkManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/notificationManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/objectManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/securityManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/smsManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/stringManager.js" />
+      <root url="file://$PROJECT_DIR$/src/managers/vaultManager.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/menuMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
@@ -122,7 +122,6 @@
       <root url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />
-      <root url="file://$PROJECT_DIR$/src/managers/vaultManager.js" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

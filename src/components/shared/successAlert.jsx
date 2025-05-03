@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react'
+import {IoClose} from 'react-icons/io5'
 import globalState from '../../context'
 import Manager from '../../managers/manager'
-import {IoClose} from 'react-icons/io5'
 import StringManager from '../../managers/stringManager'
 
 const SuccessAlert = () => {
@@ -20,6 +20,7 @@ const SuccessAlert = () => {
       }, 2200)
     }
   }, [successAlertMessage])
+
   return (
     <div id="success-alert-wrapper" onClick={() => setShowAlert(false)} className={showAlert ? 'active' : ''}>
       <p id="success-alert">{StringManager.FormatTitle(successAlertMessage)}</p>

@@ -17,6 +17,7 @@ import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
 import useCoparents from '../../hooks/useCoparents'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import AddressInput from '../shared/addressInput'
 import InputWrapper from '../shared/inputWrapper'
 import Label from '../shared/label'
 import Modal from '../shared/modal'
@@ -110,7 +111,7 @@ export default function NewTransferChangeRequest() {
     }
 
     // // Add record
-    await DB.add(`${DB.tables.transferChangeRequests}/${currentUser.key}`, newRequest)
+    await DB.Add(`${DB.tables.transferChangeRequests}/${currentUser.key}`, newRequest)
 
     // Notify
     await NotificationManager.SendNotification(
@@ -182,7 +183,7 @@ export default function NewTransferChangeRequest() {
             />
 
             {/*  NEW LOCATION*/}
-            <InputWrapper inputType={InputTypes.address} labelText={'New Location'} onChange={(address) => setRequestLocation(address)} />
+            <AddressInput labelText={'New Location'} onChange={(address) => setRequestLocation(address)} />
             <div className="flex">
               <Label text={'Set as Preferred Transfer Location'} />
               <ToggleButton onCheck={() => setPreferredLocation(requestLocation)} onUncheck={() => setPreferredLocation('')} />

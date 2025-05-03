@@ -99,7 +99,7 @@ export default function Memories() {
       <div id="memories-container" className={`${theme} page-container`}>
         <div className="flex" id="screen-title-wrapper">
           <p className="screen-title">Memories</p>
-          {!DomManager.isMobile() && <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'add-new-button'} />}
+          {!DomManager.isMobile() && <LuImagePlus onClick={() => setShowNewMemoryCard(true)} id={'Add-new-button'} />}
         </div>
         <Spacer height={2} />
         <p id="happy-subtitle" className={`${theme}`}>

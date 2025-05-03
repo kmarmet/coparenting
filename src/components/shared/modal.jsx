@@ -1,7 +1,8 @@
 // Path: src\components\shared\modal.jsx
+import Manager from '/src/managers/manager.js'
 import React, {useContext, useEffect} from 'react'
 import globalState from '../../context'
-import Manager from '/src/managers/manager.js'
+import DomManager from '../../managers/domManager'
 import StringManager from '../../managers/stringManager'
 import Overlay from './overlay'
 import Spacer from './spacer'
@@ -135,6 +136,12 @@ export default function Modal({
       if (pageContainer) {
         pageContainer.classList.remove('disable-scroll')
       }
+    }
+
+    if (showCard) {
+      DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
+    } else {
+      DomManager.ToggleAnimation('remove', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
     }
   }, [showCard])
 

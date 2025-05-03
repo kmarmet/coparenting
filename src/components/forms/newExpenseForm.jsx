@@ -1,38 +1,38 @@
 // Path: src\components\forms\newExpenseForm.jsx
-import React, {useContext, useState} from 'react'
-import MenuItem from '@mui/material/MenuItem'
-import moment from 'moment'
-import globalState from '../../context'
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import InputWrapper from '/src/components/shared/inputWrapper'
+import Modal from '/src/components/shared/modal'
+import SelectDropdown from '/src/components/shared/selectDropdown'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
+import Spacer from '/src/components/shared/spacer.jsx'
 import UploadInputs from '/src/components/shared/uploadInputs'
 import ExpenseCategories from '/src/constants/expenseCategories.js'
-import DB from '../../database/DB'
-import DB_UserScoped from '../../database/db_userScoped'
 import FirebaseStorage from '/src/database/firebaseStorage'
 import AlertManager from '/src/managers/alertManager'
 import DateManager from '/src/managers/dateManager'
 import ImageManager from '/src/managers/imageManager'
-import {GrPowerReset} from 'react-icons/gr'
 import NotificationManager from '/src/managers/notificationManager'
-import Manager from '../../managers/manager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager.coffee'
 import CalendarMapper from '/src/mappers/calMapper'
 import ActivityCategory from '/src/models/activityCategory'
 import Expense from '/src/models/expense.js'
 import ModelNames from '/src/models/modelNames'
-import Modal from '/src/components/shared/modal'
-import InputWrapper from '/src/components/shared/inputWrapper'
-import SelectDropdown from '/src/components/shared/selectDropdown'
-import Spacer from '/src/components/shared/spacer.jsx'
-import DatasetManager from '../../managers/datasetManager.coffee'
+import MenuItem from '@mui/material/MenuItem'
+import moment from 'moment'
+import React, {useContext, useState} from 'react'
+import {GrPowerReset} from 'react-icons/gr'
 import CreationForms from '../../constants/creationForms'
-import ToggleButton from '../shared/toggleButton'
-import Label from '../shared/label'
-import InputTypes from '../../constants/inputTypes'
 import DatetimeFormats from '../../constants/datetimeFormats'
+import InputTypes from '../../constants/inputTypes'
+import globalState from '../../context'
+import DB from '../../database/DB'
+import DB_UserScoped from '../../database/db_userScoped'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import DatasetManager from '../../managers/datasetManager.coffee'
+import Manager from '../../managers/manager'
+import Label from '../shared/label'
+import ToggleButton from '../shared/toggleButton'
 
 export default function NewExpenseForm() {
   const {state, setState} = useContext(globalState)
@@ -98,11 +98,11 @@ export default function NewExpenseForm() {
       return false
     }
     if (expenseName.length === 0) {
-      AlertManager.throwError('Please add an expense name')
+      AlertManager.throwError('Please Add an expense name')
       return false
     }
     if (expenseAmount.length === 0) {
-      AlertManager.throwError('Please add an expense expenseAmount')
+      AlertManager.throwError('Please Add an expense expenseAmount')
       return false
     }
 
@@ -156,7 +156,7 @@ export default function NewExpenseForm() {
     const cleanObject = ObjectManager.cleanObject(newExpense, ModelNames.expense)
 
     // Add to DB
-    await DB.add(`${DB.tables.calendarEvents}/${currentUser?.key}`, cleanObject).finally(async () => {
+    await DB.Add(`${DB.tables.calendarEvents}/${currentUser?.key}`, cleanObject).finally(async () => {
       // Add repeating expense to DB
       if (recurringFrequency.length > 0 && repeatingEndDate.length > 0) {
         await AddRepeatingExpensesToDb()

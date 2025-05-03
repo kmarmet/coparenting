@@ -28,14 +28,18 @@ const useExpenses = () => {
       dataRef,
       async (snapshot) => {
         const formattedExpenses = DatasetManager.getValidArray(snapshot.val())
-        const shared = await SecurityManager.getSharedItems(currentUser, DB.tables.expenses)
-        const formattedShared = DatasetManager.getValidArray(shared)
-        if (Manager.isValid(formattedExpenses) || Manager.isValid(formattedShared)) {
-          if (Manager.isValid(formattedShared)) {
-            setExpenses([...formattedExpenses, ...formattedShared]?.flat())
-          } else {
-            setExpenses(formattedExpenses?.flat())
-          }
+        let shared = await SecurityManager.getSharedItems(currentUser, DB.tables.expenses)
+        shared = DatasetManager.getValidArray(shared)
+        let localExpenses = []
+
+        if (Manager.isValid(formattedExpenses)) {
+          localExpenses = formattedExpenses?.flat()
+        }
+        if (Manager.isValid(shared)) {
+          localExpenses = [...localExpenses, ...shared]?.flat()
+        }
+        if (Manager.isValid(localExpenses)) {
+          setExpenses(localExpenses)
         } else {
           setExpenses([])
         }

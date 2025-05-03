@@ -1,26 +1,28 @@
 // Path: src\components\fullMenu.jsx
 import {getAuth, signOut} from 'firebase/auth'
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useEffect} from 'react'
 import {AiOutlineLogout} from 'react-icons/ai'
 import {BsHouses, BsImages} from 'react-icons/bs'
 import {GrInstallOption, GrSettingsOption, GrUserAdmin} from 'react-icons/gr'
 import {IoChatbubblesOutline, IoClose} from 'react-icons/io5'
 import {LiaFileInvoiceDollarSolid} from 'react-icons/lia'
 import {LuBellRing, LuCalendarDays} from 'react-icons/lu'
-import {PiFiles, PiIdentificationCard, PiSwap, PiUsers, PiVault} from 'react-icons/pi'
-import {RiAccountPinCircleLine, RiMailSendLine, RiParentLine} from 'react-icons/ri'
+import {PiFiles, PiIdentificationCard, PiSealQuestion, PiSwap, PiUsers, PiVault} from 'react-icons/pi'
+import {RiAccountPinCircleLine, RiParentLine} from 'react-icons/ri'
 import {TbTransferIn} from 'react-icons/tb'
 import ScreenNames from '../constants/screenNames'
 import globalState from '../context'
-import DB_UserScoped from '../database/db_userScoped'
+import useCurrentUser from '../hooks/useCurrentUser'
 import DomManager from '../managers/domManager'
 import Manager from '../managers/manager'
+import NotificationBadge from './shared/NotificationBadge'
 import Overlay from './shared/overlay'
+import StandaloneLoadingGif from './shared/standaloneLoadingGif'
 
 export default function FullMenu() {
   const {state, setState} = useContext(globalState)
   const {currentScreen, menuIsOpen, theme, notificationCount, refreshKey, authUser, userIsLoggedIn} = state
-  const [updatedCurrentUser, setUpdatedCurrentUser] = useState(null)
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
   const auth = getAuth()
 
   const ChangeCurrentScreen = async (screen) => setState({...state, currentScreen: screen, refreshKey: Manager.getUid(), menuIsOpen: false})
@@ -42,11 +44,6 @@ export default function FullMenu() {
       })
   }
 
-  const UpdateCurrentUser = async () => {
-    const updated = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setUpdatedCurrentUser(updated)
-  }
-
   useEffect(() => {
     if (menuIsOpen === true) {
       DomManager.ToggleAnimation('add', 'menu-items', DomManager.AnimateClasses.names.fadeInUp)
@@ -55,11 +52,9 @@ export default function FullMenu() {
     }
   }, [menuIsOpen])
 
-  useEffect(() => {
-    if (userIsLoggedIn === true) {
-      UpdateCurrentUser().then()
-    }
-  }, [userIsLoggedIn])
+  if (currentUserIsLoading) {
+    return <StandaloneLoadingGif />
+  }
 
   return (
     <Overlay show={menuIsOpen}>
@@ -91,7 +86,7 @@ export default function FullMenu() {
             </div>
 
             {/* DOCUMENTS */}
-            {updatedCurrentUser?.accountType === 'parent' && (
+            {currentUser?.accountType === 'parent' && (
               <div
                 className={`menu-item documents ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
                 onClick={(e) => ChangeCurrentScreen(ScreenNames.docsList, e)}>
@@ -106,7 +101,7 @@ export default function FullMenu() {
             <div
               className={`menu-item notifications ${currentScreen === ScreenNames.notifications ? 'active' : ''}`}
               onClick={(e) => ChangeCurrentScreen(ScreenNames.notifications, e)}>
-              {notificationCount > 0 && <div className="badge"></div>}
+              <NotificationBadge classes={'menu'} />
               <div className="svg-wrapper">
                 <LuBellRing />
               </div>
@@ -118,7 +113,7 @@ export default function FullMenu() {
           <p className="menu-title info-storage">Information Database</p>
           <div className="menu-items animate__animated info-storage">
             {/* CHILD - PARENTS */}
-            {updatedCurrentUser?.accountType === 'child' && (
+            {currentUser?.accountType === 'child' && (
               <div
                 className={`menu-item parents ${currentScreen === ScreenNames.parents ? 'active' : ''}`}
                 onClick={(e) => ChangeCurrentScreen(ScreenNames.parents, e)}>
@@ -130,16 +125,16 @@ export default function FullMenu() {
             )}
 
             {/* PARENTS ONLY */}
-            {updatedCurrentUser?.accountType === 'parent' && (
+            {currentUser?.accountType === 'parent' && (
               <>
                 {/* CHILD INFO */}
                 <div
-                  className={`menu-item child-info ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
-                  onClick={(e) => ChangeCurrentScreen(ScreenNames.childInfo, e)}>
+                  className={`menu-item child-info ${currentScreen === ScreenNames.children ? 'active' : ''}`}
+                  onClick={(e) => ChangeCurrentScreen(ScreenNames.children, e)}>
                   <div className="svg-wrapper">
                     <PiIdentificationCard />
                   </div>
-                  <p>Child Info</p>
+                  <p>Children</p>
                 </div>
 
                 {/* COPARENTS */}
@@ -176,7 +171,7 @@ export default function FullMenu() {
           </div>
 
           {/* CO-PARENTING */}
-          {updatedCurrentUser?.accountType === 'parent' && (
+          {currentUser?.accountType === 'parent' && (
             <>
               <p className="menu-title coparenting">Co-Parenting</p>
               <div className="menu-items animate__animated coparenting">
@@ -245,14 +240,26 @@ export default function FullMenu() {
               <p>Settings</p>
             </div>
 
-            {/* CONTACT US */}
-            <div
-              className={`menu-item contact-us ${currentScreen === ScreenNames.contactUs ? 'active' : ''}`}
-              onClick={(e) => ChangeCurrentScreen(ScreenNames.contactUs, e)}>
-              <div className="svg-wrapper">
-                <RiMailSendLine />
+            {/* ADMIN DASHBOARD */}
+            {currentUser?.email === 'kmarmet1@gmail.com' && (
+              <div
+                className={`menu-item settings ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
+                onClick={(e) => ChangeCurrentScreen(ScreenNames.adminDashboard, e)}>
+                <div className="svg-wrapper">
+                  <GrUserAdmin />
+                </div>
+                <p>Dashboard</p>
               </div>
-              <p>Contact Us</p>
+            )}
+
+            {/* HELP */}
+            <div
+              className={`menu-item help ${currentScreen === ScreenNames.help ? 'active' : ''}`}
+              onClick={(e) => ChangeCurrentScreen(ScreenNames.help, e)}>
+              <div className="svg-wrapper">
+                <PiSealQuestion />
+              </div>
+              <p>Help</p>
             </div>
 
             {/* INSTALL APP BUTTON */}
@@ -274,11 +281,6 @@ export default function FullMenu() {
             </div>
           </div>
         </div>
-        {updatedCurrentUser?.email === 'kmarmet1@gmail.com' && (
-          <div id="admin-icon-wrapper" onClick={(e) => ChangeCurrentScreen(ScreenNames.adminDashboard, e)}>
-            <GrUserAdmin id={'admin-icon'} />
-          </div>
-        )}
         <div id="close-icon-wrapper">
           <IoClose onClick={() => setState({...state, menuIsOpen: false})} id={'close-icon'} />
         </div>

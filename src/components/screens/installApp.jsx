@@ -1,19 +1,19 @@
 // Path: src\components\screens\installApp.jsx
-import React, {useContext, useState} from 'react'
-import {FaApple, FaMinus, FaPlus} from 'react-icons/fa6'
-import {BsAndroid2} from 'react-icons/bs'
-import {TbDeviceDesktopDown} from 'react-icons/tb'
-import AccordionSummary from '@mui/material/AccordionSummary'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
-import DomManager from '../../managers/domManager'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import React, {useContext, useState} from 'react'
+import {BsAndroid2} from 'react-icons/bs'
+import {FaApple, FaMinus, FaPlus} from 'react-icons/fa6'
 import {MdOutlineIosShare} from 'react-icons/md'
-import Spacer from '../shared/spacer'
-import NavBar from '../navBar'
+import {TbDeviceDesktopDown} from 'react-icons/tb'
 import ScreenNames from '../../constants/screenNames'
-import Manager from '../../managers/manager'
-import useCurrentUser from '../../hooks/useCurrentUser'
 import globalState from '../../context'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import DomManager from '../../managers/domManager'
+import Manager from '../../managers/manager'
+import NavBar from '../navBar'
+import Spacer from '../shared/spacer'
 
 export default function InstallApp() {
   const {state, setState} = useContext(globalState)
@@ -150,7 +150,7 @@ export default function InstallApp() {
           Back to Login
         </button>
       )}
-      {Manager.isValid(currentUser) && <NavBar navbarClass={'child-info no-add-new-button'} />}
+      {Manager.isValid(currentUser) && <NavBar navbarClass={'child-info no-Add-new-button'} />}
     </>
   )
 }

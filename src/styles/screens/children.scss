@@ -92,7 +92,6 @@
 
         // ACTIVE
         &.active {
-          transition: all 0.3s ease-in;
           opacity: 1;
 
           * {
@@ -102,7 +101,6 @@
 
           .child-image {
             transform: scale(1.2);
-            transition: all 0.7s ease-in-out;
             position: relative;
             top: -10px;
           }

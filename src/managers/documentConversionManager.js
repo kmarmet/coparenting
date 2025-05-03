@@ -1,7 +1,8 @@
 import FirebaseStorage from '../database/firebaseStorage'
-import ImageManager from './imageManager'
-import StringManager from './stringManager'
 import AlertManager from './alertManager'
+import ImageManager from './imageManager'
+import LogManager from './logManager'
+import StringManager from './stringManager'
 
 const DocumentConversionManager = {
   tocHeaders: [
@@ -80,13 +81,13 @@ const DocumentConversionManager = {
     'dependents',
   ],
 
-  DocToHtml: async (fileName, currentUserId) => {
+  DocToHtml: async (fileName, currentUserKey) => {
     try {
       const myHeaders = new Headers()
-
+      let returnHtml = ''
       myHeaders.append('Access-Control-Allow-Origin', '*')
-      // let apiAddress = 'https://localhost:5000'
-      let apiAddress = 'https://peaceful-coparenting.app:5000'
+      let apiAddress = 'https://localhost:5000'
+      // let apiAddress = 'https://peaceful-coparenting.app:5000'
       const requestOptions = {
         method: 'GET',
         headers: myHeaders,
@@ -94,21 +95,16 @@ const DocumentConversionManager = {
         crossOrigin: true,
         redirect: 'follow',
       }
-      let html = ''
 
-      await fetch(`${apiAddress}/document/getDocText?fileName=${fileName}&currentUserId=${currentUserId}`, requestOptions)
+      await fetch(`${apiAddress}/document/getDocText?fileName=${fileName}&currentUserId=${currentUserKey}`, requestOptions)
         .then((response) => response.text())
-        .then((result) => {
-          html = result
-          console.log(result)
-        })
-        .catch((error) =>
-          console.error(`Error: ${error} | Code File: documentConversionManager | Function: DocToHtml | File: ${fileName} | User: ${currentUserId}`)
-        )
+        .then((result) => (returnHtml = result))
+        .catch((error) => console.error(error))
 
-      return html
+      return returnHtml
     } catch (error) {
-      console.log(`Error: ${error} | File: ; ${fileName} | User: ${currentUserId}`)
+      LogManager.Log(`Error: ${error} | Code File: documentConversionManager | Function: DocToHtml | User: ${currentUserKey}`)
+      console.log(`Error: ${error} | File: ; ${fileName} | User: ${currentUserKey}`)
     }
     return ''
   },

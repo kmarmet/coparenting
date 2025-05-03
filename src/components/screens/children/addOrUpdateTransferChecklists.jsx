@@ -13,6 +13,7 @@ import DatasetManager from '../../../managers/datasetManager'
 import Modal from '../../shared/modal'
 import MyConfetti from '../../shared/myConfetti'
 import Spacer from '../../shared/spacer'
+import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
 
 export default function AddOrUpdateTransferChecklists({showCard, hideCard, activeChild}) {
   const {state, setState} = useContext(globalState)
@@ -44,20 +45,24 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
     newChecklist.fromOrTo = view
 
     if (childKey) {
+      // UPDATE
       if (Manager.isValid(existingChecklist)) {
-        // Update
-        console.log(existingChecklist)
         const newItems = DatasetManager.getUniqueArray(checkboxTextList, true)
+        const existingIndex = DB.GetTableIndexById(activeChild?.checklists, existingChecklist?.id)
+
+        if (!Manager.isValid(existingIndex)) {
+          return false
+        }
+
         existingChecklist.checklistItems = DatasetManager.getValidArray([...existingChecklist.checklistItems, ...newItems])
-        // Update existing checklist
-        await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, existingChecklist)
-        // setState({...state, successAlertMessage: 'Checklist Updated', refreshKey: Manager.getUid()})
+        await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists/${existingIndex}`, existingChecklist)
+        setState({...state, successAlertMessage: 'Checklist Updated', refreshKey: Manager.getUid()})
       }
-      // Add new
+
+      // CREATE
       else {
         if (Manager.isValid(newChecklist.checklistItems)) {
-          console.log(newChecklist)
-          // await DB.add(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, newChecklist)
+          await DB.Add(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, activeChild?.checklists, newChecklist)
         } else {
           AlertManager.throwError('Please enter at least one item')
           return false
@@ -71,8 +76,9 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
 
   const SetChecklists = async () => {
     if (activeChild) {
-      const fromChecklist = activeChild?.checklists?.find((x) => x?.fromOrTo === 'from')
-      const toChecklist = activeChild?.checklists?.find((x) => x?.fromOrTo === 'to')
+      const checklists = DatasetManager.getValidArray(activeChild?.checklists)
+      const fromChecklist = checklists?.find((x) => x?.fromOrTo === 'from')
+      const toChecklist = checklists?.find((x) => x?.fromOrTo === 'to')
       if (view === 'from') {
         if (fromChecklist) {
           setExistingItems(fromChecklist?.checklistItems)
@@ -119,9 +125,9 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
     }
   }, [showCard])
 
-  // if (childrenAreLoading || !Manager.isValid(activeChild)) {
-  //   return <StandaloneLoadingGif />
-  // }
+  if (childrenAreLoading || !Manager.isValid(activeChild)) {
+    return <StandaloneLoadingGif />
+  }
 
   return (
     <Modal

@@ -16,7 +16,7 @@ export default ExpenseManager = {
       key = await DB.getSnapshotKey("#{DB.tables.expenses}/#{ownerKey}", expense, "id")
       update(ref(dbRef, "#{DB.tables.expenses}/#{ownerKey}/#{key}"), updatedExpense)
     catch error
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
 
   UpdateExpense:  (currentUserKey, updateIndex,updatedExpense) ->
     dbRef = getDatabase()
@@ -25,5 +25,5 @@ export default ExpenseManager = {
       if updateIndex
        await update(ref(dbRef, "#{DB.tables.expenses}/#{currentUserKey}/#{updateIndex}"), updatedExpense)
     catch error
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
   }

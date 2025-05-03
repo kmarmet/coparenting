@@ -1,10 +1,10 @@
 // Path: src\components\screens\childInfo\childInfo.jsx
 import NavBar from '/src/components/navBar'
-import Behavior from '/src/components/screens/childInfo/behavior'
-import General from '/src/components/screens/childInfo/general'
-import Medical from '/src/components/screens/childInfo/medical'
-import NewChildForm from '/src/components/screens/childInfo/newChildForm'
-import Schooling from '/src/components/screens/childInfo/schooling'
+import Behavior from '/src/components/screens/children/behavior'
+import General from '/src/components/screens/children/general'
+import Medical from '/src/components/screens/children/medical'
+import NewChildForm from '/src/components/screens/children/newChildForm'
+import Schooling from '/src/components/screens/children/schooling'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import FirebaseStorage from '/src/database/firebaseStorage'
 import AlertManager from '/src/managers/alertManager'
@@ -15,12 +15,11 @@ import React, {useContext, useEffect, useRef, useState} from 'react'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoClose, IoPersonAdd, IoPersonAddOutline, IoPersonRemove} from 'react-icons/io5'
-import {PiListChecksFill} from 'react-icons/pi'
+import {PiCameraRotateFill, PiListChecksFill} from 'react-icons/pi'
 import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
 import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
-import DatasetManager from '../../../managers/datasetManager'
 import CustomChildInfo from '../../shared/customChildInfo'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import Spacer from '../../shared/spacer'
@@ -29,7 +28,7 @@ import AddOrUpdateTransferChecklists from './addOrUpdateTransferChecklists'
 import Checklist from './checklist'
 import Checklists from './checklists'
 
-export default function ChildInfo() {
+export default function Children() {
   const {state, setState} = useContext(globalState)
   const {theme} = state
   const {currentUser, currentUserIsLoading} = useCurrentUser()
@@ -126,7 +125,7 @@ export default function ChildInfo() {
           }}>
           <div className="content">
             <div className="svg-wrapper add-child">
-              <IoPersonAdd className={'add-child'} />
+              <IoPersonAdd className={'Add-child'} />
             </div>
             <p>
               Add a Child
@@ -156,6 +155,7 @@ export default function ChildInfo() {
             </div>
 
             {/* PROFILE PIC */}
+
             <div className="action-item" onClick={() => setState({...state, showScreenActions: false})}>
               <div className="content">
                 <input
@@ -168,7 +168,7 @@ export default function ChildInfo() {
                   onChange={() => UploadProfilePic(false, activeChild?.id)}
                 />
                 <div className="svg-wrapper">
-                  <FaWandMagicSparkles className={'magic'} />
+                  <PiCameraRotateFill className={'profile-pic'} />
                 </div>
                 <p>
                   Manage Profile Picture
@@ -227,10 +227,10 @@ export default function ChildInfo() {
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container child-info form`}>
         <div className="flex" id="screen-title-wrapper">
-          <p className="screen-title beside-action-button">Child Info</p>
+          <p className="screen-title beside-action-button">Children</p>
 
           {/* ADD NEW BUTTON - DESKTOP */}
-          {!DomManager.isMobile() && <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'add-new-button'} />}
+          {!DomManager.isMobile() && <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'Add-new-button'} />}
         </div>
 
         <p className="screen-intro-text">
@@ -280,14 +280,8 @@ export default function ChildInfo() {
               <Medical activeChild={activeChild} />
               <Schooling activeChild={activeChild} />
               <Behavior activeChild={activeChild} />
-              {Manager.isValid(activeChild?.checklists) &&
-                DatasetManager.getValidArray(activeChild?.checklists)?.find((x) => x?.fromOrTo === 'from') && (
-                  <Checklist activeChild={activeChild} fromOrTo={'from'} />
-                )}
-              {Manager.isValid(activeChild?.checklists) &&
-                DatasetManager.getValidArray(activeChild?.checklists)?.find((x) => x?.fromOrTo === 'to') && (
-                  <Checklist activeChild={activeChild} fromOrTo={'to'} />
-                )}
+              <Checklist activeChild={activeChild} fromOrTo={'from'} />
+              <Checklist activeChild={activeChild} fromOrTo={'to'} />
             </>
           )}
         </div>
@@ -300,7 +294,7 @@ export default function ChildInfo() {
       </NavBar>
       {!Manager.isValid(children) && (
         <NoDataFallbackText
-          text={'Currently, no children have been added. To share events with your children or to store their information, please add them here.'}
+          text={'Currently, no children have been added. To share events with your children or to store their information, please Add them here.'}
         />
       )}
     </>

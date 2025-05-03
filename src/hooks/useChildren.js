@@ -19,7 +19,7 @@ const useChildren = () => {
     const listener = onValue(
       dataRef,
       (snapshot) => {
-        // console.log('Children Updated')
+        // console.Log('Children Updated')
         const formattedChildren = Manager.convertToArray(snapshot.val()?.filter((x) => x))
         if (Manager.isValid(currentUser) && Manager.isValid(formattedChildren)) {
           setChildren(formattedChildren)

@@ -86,11 +86,11 @@ export default NotificationManager =
             if Manager.isValid(existingSubscriber)
               deleteKey = await DB.getSnapshotKey("#{DB.tables.notificationSubscribers}", existingSubscriber, "id")
               await DB.DeleteByPath("#{DB.tables.notificationSubscribers}/#{deleteKey}")
-              await DB.add("/#{DB.tables.notificationSubscribers}", newSubscriber)
+              await DB.Add("/#{DB.tables.notificationSubscribers}", newSubscriber)
 
             # Else create new record
             else
-              await DB.add("/#{DB.tables.notificationSubscribers}", newSubscriber)
+              await DB.Add("/#{DB.tables.notificationSubscribers}", newSubscriber)
       , 500
 
   getUserSubId: (currentUserPhoneOrEmail, phoneOrEmail = "email") ->
@@ -147,7 +147,7 @@ export default NotificationManager =
     newNotification.text = message
     newNotification.category = category
 
-    await DB.add "#{DB.tables.notifications}/#{recipientKey}", newNotification
+    await DB.Add "#{DB.tables.notifications}/#{recipientKey}", newNotification
     console.log("Sent to #{recipientKey}")
     # Do not send notification in dev
     if !window.location.href.includes("localhosssst")

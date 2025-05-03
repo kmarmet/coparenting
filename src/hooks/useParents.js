@@ -1,9 +1,9 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useContext, useEffect, useState} from 'react'
-import Manager from '../managers/manager'
-import DB from '../database/DB'
-import useUsers from './useUsers'
 import globalState from '../context'
+import DB from '../database/DB'
+import Manager from '../managers/manager'
+import useUsers from './useUsers'
 
 const useParents = () => {
   const {state, setState} = useContext(globalState)
@@ -23,7 +23,7 @@ const useParents = () => {
     const listener = onValue(
       dataRef,
       (snapshot) => {
-        // console.log('Children Updated')
+        // console.Log('Children Updated')
         const formattedParents = Manager.convertToArray(snapshot.val()?.filter((x) => x))
         if (Manager.isValid(dbUser) && Manager.isValid(formattedParents)) {
           setParents(formattedParents)

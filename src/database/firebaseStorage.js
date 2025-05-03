@@ -1,6 +1,6 @@
 import {deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes} from 'firebase/storage'
-import Manager from '../managers/manager'
 import DB from '../database/DB'
+import Manager from '../managers/manager'
 
 const FirebaseStorage = {
   directories: {
@@ -136,13 +136,14 @@ const FirebaseStorage = {
     })
     return urls.flat()
   },
-  GetFileUrl: async (directory, userId, fileName) => {
+  GetFileUrl: async (directory, userKey, fileName) => {
     const url = async () =>
       await new Promise(async (resolve) => {
-        await FirebaseStorage.getImages(directory, userId).then(async (images) => {
+        await FirebaseStorage.getImages(directory, userKey).then(async (images) => {
           await Promise.all(images).then((firebaseUrls) => {
             for (let url of firebaseUrls) {
               const _fileName = FirebaseStorage.GetImageNameFromUrl(url)
+              console.log(_fileName, fileName)
               if (_fileName === fileName) {
                 resolve(url)
               }
@@ -194,9 +195,9 @@ const FirebaseStorage = {
     try {
       const storage = getStorage()
       const storageRef = ref(storage, path)
+      console.log(file)
       await uploadBytes(storageRef, file)
-      const returnUrl = await getDownloadURL(ref(storage, path))
-      return await returnUrl
+      return await getDownloadURL(ref(storage, path))
     } catch (error) {
       console.log(error)
       return null
@@ -300,7 +301,7 @@ const FirebaseStorage = {
     const storage = getStorage()
     let exists = false
     try {
-      // console.log("here: ", `${dir}/${uid}/${imageName}`);
+      // console.Log("here: ", `${dir}/${uid}/${imageName}`);
       return new Promise(async (resolve, reject) => {
         await getDownloadURL(ref(storage, `${dir}/${uid}/${imageName}`))
           .then((url) => {
@@ -308,7 +309,7 @@ const FirebaseStorage = {
             resolve(true)
           })
           .catch(() => {
-            // console.log("FALSE");
+            // console.Log("FALSE");
             reject(false)
           })
       })

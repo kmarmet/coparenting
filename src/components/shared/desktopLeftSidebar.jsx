@@ -1,41 +1,41 @@
 // Path: src\components\shared\desktopLeftSidebar.jsx
-import React, { useContext } from 'react'
-import ScreenNames from '../../constants/screenNames'
-import globalState from '../../context'
-import Manager from '../../managers/manager'
-import AppManager from '../../managers/appManager'
-import { getAuth, signOut } from 'firebase/auth' // ICONS
+import {getAuth, signOut} from 'firebase/auth' // ICONS
+import React, {useContext} from 'react'
+import {Fade} from 'react-awesome-reveal'
+import {BsPeople} from 'react-icons/bs'
+import {FiSettings} from 'react-icons/fi'
+import {HiOutlineDocumentText} from 'react-icons/hi2'
+import {MdOutlineManageAccounts} from 'react-icons/md'
 import {
   PiCalendarDotsDuotone,
   PiCarProfileDuotone,
   PiChatsCircleDuotone,
   PiHouseLineDuotone,
+  PiIdentificationCardDuotone,
   PiImagesSquareDuotone,
   PiMoneyWavyDuotone,
   PiMoonStarsDuotone,
   PiSignOutDuotone,
   PiSunDuotone,
   PiSwapDuotone,
-  PiIdentificationCardDuotone,
   PiToolboxDuotone,
 } from 'react-icons/pi'
-import { RxActivityLog } from 'react-icons/rx'
+import {RiMailSendLine} from 'react-icons/ri'
+import {RxActivityLog} from 'react-icons/rx'
+import ScreenNames from '../../constants/screenNames'
+import globalState from '../../context'
 import DB_UserScoped from '../../database/db_userScoped'
-import { RiMailSendLine } from 'react-icons/ri'
-import { HiOutlineDocumentText } from 'react-icons/hi2'
-import { BsPeople } from 'react-icons/bs'
-import { MdOutlineManageAccounts } from 'react-icons/md'
-import { FiSettings } from 'react-icons/fi'
-import { Fade } from 'react-awesome-reveal'
+import AppManager from '../../managers/appManager'
+import Manager from '../../managers/manager'
 
 export default function DesktopLeftSidebar() {
-  const { state, setState } = useContext(globalState)
-  const { theme, currentUser, currentScreen, notificationCount } = state
+  const {state, setState} = useContext(globalState)
+  const {theme, currentUser, currentScreen, notificationCount} = state
 
   const auth = getAuth()
 
   const changeCurrentScreen = (screen) => {
-    setState({ ...state, currentScreen: screen, updateKey: Manager.getUid(), menuIsOpen: false })
+    setState({...state, currentScreen: screen, updateKey: Manager.getUid(), menuIsOpen: false})
     Manager.showPageContainer('show')
   }
 
@@ -149,8 +149,8 @@ export default function DesktopLeftSidebar() {
               </div>
               {/* CHILD INFO */}
               <div
-                className={`menu-item child-info ${currentScreen === ScreenNames.childInfo ? 'active' : ''}`}
-                onClick={() => changeCurrentScreen(ScreenNames.childInfo)}>
+                className={`menu-item child-info ${currentScreen === ScreenNames.children ? 'active' : ''}`}
+                onClick={() => changeCurrentScreen(ScreenNames.children)}>
                 <PiIdentificationCardDuotone />
                 <p>Child Info</p>
               </div>
@@ -193,8 +193,8 @@ export default function DesktopLeftSidebar() {
 
           {/* CONTACT US */}
           <div
-            className={`menu-item contact-us ${currentScreen === ScreenNames.contactUs ? 'active' : ''}`}
-            onClick={() => changeCurrentScreen(ScreenNames.contactUs)}>
+            className={`menu-item help ${currentScreen === ScreenNames.help ? 'active' : ''}`}
+            onClick={() => changeCurrentScreen(ScreenNames.help)}>
             <RiMailSendLine />
             <p>Contact Us</p>
           </div>

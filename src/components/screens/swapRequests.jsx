@@ -163,6 +163,14 @@ export default function SwapRequests() {
   }, [])
 
   useEffect(() => {
+    if (Manager.isValid(currentUser)) {
+      setTimeout(() => {
+        DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight, 90)
+      }, 300)
+    }
+  }, [currentUser])
+
+  useEffect(() => {
     if (showDetails) {
       DomManager.setDefaultView()
       setRequestTimeRemaining(moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString())
@@ -355,13 +363,13 @@ export default function SwapRequests() {
       <div id="swap-requests" className={`${theme} page-container form`}>
         {swapRequests?.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
         <Fade direction={'up'} duration={1000} triggerOnce={true} className={'swap-requests-fade-wrapper'}>
-          <div className="flex" id="screen-title-wrapper">
+          <div className="screen-intro-wrapper">
             <p className="screen-title">Swap Requests </p>
-            {!DomManager.isMobile() && <IoAdd id={'add-new-button'} className={'swap-requests'} onClick={() => setShowCard(true)} />}
+            {!DomManager.isMobile() && <IoAdd id={'Add-new-button'} className={'swap-requests'} onClick={() => setShowCard(true)} />}
+            <p className="text-screen-intro">
+              A request for your child(ren) to remain with you during the designated visitation time of your co-parent.
+            </p>
           </div>
-          <p className="text-screen-intro">
-            A request for your child(ren) to remain with you during the designated visitation time of your co-parent.
-          </p>
 
           {/* LOOP REQUESTS */}
           <div id="swap-requests-container">

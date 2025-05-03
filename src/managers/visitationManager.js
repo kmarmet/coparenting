@@ -1,12 +1,12 @@
 // Path: src\managers\visitationManager.js
 import moment from 'moment'
-import DateManager from './dateManager'
-import Manager from '../managers/manager'
 import DB from '../database/DB'
-import DatasetManager from './datasetManager'
-import LogManager from './logManager'
-import CalendarManager from './calendarManager.js'
+import Manager from '../managers/manager'
 import StringManager from '../managers/stringManager'
+import CalendarManager from './calendarManager.js'
+import DatasetManager from './datasetManager'
+import DateManager from './dateManager'
+import LogManager from './logManager'
 
 const VisitationManager = {
   weekendMapper: (input) => {
@@ -230,7 +230,7 @@ const VisitationManager = {
     try {
       await CalendarManager.addMultipleCalEvents(currentUser, holidays)
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
   getSchedule: async (currentUser) => {
@@ -333,7 +333,7 @@ const VisitationManager = {
     try {
       await CalendarManager.addMultipleCalEvents(currentUser, vScheduleEvents)
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
 }

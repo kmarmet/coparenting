@@ -1,7 +1,7 @@
 // Path: src\database\DB.js
-import * as Sentry from '@sentry/react'
 import {child, get, getDatabase, ref, remove, set, update} from 'firebase/database'
 import _ from 'lodash'
+import DatasetManager from '../managers/datasetManager'
 import LogManager from '../managers/logManager.js'
 import Manager from '../managers/manager'
 
@@ -41,7 +41,7 @@ const DB = {
     }
   },
   convertKeyObjectToArray: (keyObject) => {
-    // console.log(keyObject)
+    // console.Log(keyObject)
     if (Manager.isValid(keyObject)) {
       return Object.entries(keyObject).map((x) => x[1])
     } else {
@@ -84,7 +84,7 @@ const DB = {
         })
       } catch (error) {
         console.log(error.message)
-        LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+        LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
       }
     }),
   getNestedSnapshotKey: async (recordPath, objectToCheck, propertyToCompare) =>
@@ -93,7 +93,7 @@ const DB = {
       // await get(child(dbRef, recordPath)).then((snapshot) => {
       //   snapshot.val().forEach((obj) => {
       //     if (obj[propertyToCompare] === '4199615795') {
-      //       console.log(snapshot.key)
+      //       console.Log(snapshot.key)
       //       resolve(data.key)
       //     }
       //   })
@@ -102,7 +102,7 @@ const DB = {
         if (Array.isArray(data)) {
           for (let prop in data) {
             if (data[prop][propertyToCompare] === objectToCheck[propertyToCompare]) {
-              // console.log(prop)
+              // console.Log(prop)
               resolve(prop)
             }
           }
@@ -120,46 +120,25 @@ const DB = {
         }
       })
     }),
-  add: async (path, data) =>
-    await new Promise(async (resolve) => {
-      const dbRef = ref(getDatabase())
+  Add: async (path, existingData = [], newData) => {
+    const dbRef = ref(getDatabase())
+    if (Manager.isValid(existingData) && !Array.isArray(existingData)) {
+      existingData = [existingData]
+    }
+    try {
       let tableData = []
-      tableData = await DB.getTable(path)
-      if (Manager.isValid(tableData)) {
-        if (tableData.length > 0) {
-          tableData = [...tableData, data].filter((item) => item)
-        } else {
-          tableData = [data]
-        }
+      if (Manager.isValid(existingData)) {
+        tableData = [...existingData, newData]
+      } else {
+        tableData = [newData]
       }
-      // tableData is NULL
-      else {
-        tableData = [data]
-      }
-      resolve('')
-      try {
-        await set(child(dbRef, path), tableData)
-      } catch (error) {
-        console.log(error.message)
-        LogManager.log(error.message, LogManager.logTypes.error, error.stack)
-      }
-    }),
-  addSingleRecord: async (path, record) => {
-    const dbRef = ref(getDatabase())
-    await set(child(dbRef, path), record).catch((error) => {})
-  },
-  addSuggestion: async (newSuggestion) => {
-    const dbRef = ref(getDatabase())
-    let currentSuggestions = await DB.getTable(DB.tables.suggestions)
-    if (!Array.isArray(currentSuggestions)) {
-      currentSuggestions = []
-    }
-    const existingSuggestion = currentSuggestions.filter((x) => x.ownerKey === newSuggestion.ownerKey && x.suggestion === newSuggestion.suggestion)[0]
-    if (!existingSuggestion) {
-      currentSuggestions = currentSuggestions.filter((n) => n)
-      set(child(dbRef, `${DB.tables.suggestions}`), [...currentSuggestions, newSuggestion])
+      await set(child(dbRef, path), DatasetManager.getValidArray(tableData))
+    } catch (error) {
+      console.log(error.message)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
+
   delete: async (path, id) => {
     const dbRef = ref(getDatabase())
     let tableRecords = await DB.getTable(path)
@@ -170,7 +149,7 @@ const DB = {
         try {
           await remove(child(dbRef, `${path}/${deleteKey}/`))
         } catch (error) {
-          LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+          LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
         }
       }
     }
@@ -188,7 +167,7 @@ const DB = {
             await remove(child(dbRef, `${path}/${idToDelete}/`))
             console.log(`${path} record deleted`)
           } catch (error) {
-            LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+            LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
           }
         }
       }
@@ -199,7 +178,7 @@ const DB = {
     try {
       await remove(child(dbRef, path))
     } catch (error) {
-      Sentry.captureException(`Error: ${error} | Code File: DB  | Function: DeleteByPath`)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
   deleteById: async (path, id) => {
@@ -216,7 +195,7 @@ const DB = {
     try {
       remove(child(dbRef, `${path}/${key}`))
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
   deleteMemory: async (userKey, memory) => {
@@ -225,7 +204,7 @@ const DB = {
     try {
       remove(child(dbRef, `${DB.tables.memories}/${userKey}/${key}`))
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
   getTable: async (path, returnObject = false) => {
@@ -243,7 +222,7 @@ const DB = {
     try {
       await set(child(dbRef, path), newValue)
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
   updateRecord: async (tableName, currentUser, recordToUpdate, prop, value, propUid) => {
@@ -260,7 +239,7 @@ const DB = {
     try {
       // set(child(dbRef, tableName), tableRecords)
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
   updateEntireRecord: async (path, updatedRow, id) => {
@@ -280,7 +259,7 @@ const DB = {
         })
       return await DB.getTable(`${path}/${key}`, true)
     } catch (error) {
-      LogManager.log(error.message, LogManager.logTypes.error, error.stack)
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
 }

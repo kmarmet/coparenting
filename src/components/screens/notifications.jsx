@@ -7,7 +7,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import {Fade} from 'react-awesome-reveal'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {IoMdCheckmarkCircleOutline} from 'react-icons/io'
-import {IoCheckmarkDoneOutline} from 'react-icons/io5'
+import {MdClearAll} from 'react-icons/md'
 import {PiSealWarningDuotone} from 'react-icons/pi'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import ScreenNames from '../../constants/screenNames'
@@ -68,7 +68,7 @@ export default function Notifications() {
 
       case title?.indexOf('medical') > -1:
         return {
-          screen: ScreenNames.childInfo,
+          screen: ScreenNames.children,
           className: 'medical',
           category: ActivityCategory.childInfo.medical,
         }
@@ -136,7 +136,7 @@ export default function Notifications() {
               <AccordionDetails>
                 <div className="flex">
                   <div className="box medical"></div>
-                  <p>Child Info - Medical</p>
+                  <p>Child Related - Medical</p>
                 </div>
 
                 <div className="flex">
@@ -153,7 +153,7 @@ export default function Notifications() {
         {/* CLEAR ALL BUTTON */}
         {notifications?.length > 0 && (
           <button className="button default bottom-right" onClick={ClearAll}>
-            Clear All <IoCheckmarkDoneOutline className={'ml-5'} />
+            Clear All <MdClearAll className={'ml-5 fs-25'} />
           </button>
         )}
         <Fade direction={'up'} duration={1000} className={'activity-fade-wrapper'} triggerOnce={true}>
@@ -183,7 +183,7 @@ export default function Notifications() {
         </Fade>
       </div>
       {notifications?.length === 0 && <NoDataFallbackText text={'You have no notifications awaiting your attention'} />}
-      <NavBar navbarClass={'activity no-add-new-button'}></NavBar>
+      <NavBar navbarClass={'activity no-Add-new-button'}></NavBar>
     </>
   )
 }

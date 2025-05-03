@@ -20,6 +20,7 @@ import {BsStars} from 'react-icons/bs'
 import {LuCalendarSearch} from 'react-icons/lu'
 import {PiCalendarPlusDuotone, PiCalendarXDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
+import ScreenNames from '../../../constants/screenNames'
 import DB from '../../../database/DB.js'
 import useCalendarEvents from '../../../hooks/useCalendarEvents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
@@ -31,7 +32,7 @@ import DesktopLegend from './desktopLegend.jsx'
 
 export default function EventCalendar() {
   const {state, setState} = useContext(globalState)
-  const {theme, currentScreen, refreshKey} = state
+  const {theme, currentScreen, refreshKey, userIsLoggedIn} = state
   const [eventsOfActiveDay, setEventsOfActiveDay] = useState([])
   const [searchResults, setSearchResults] = useState([])
   const [holidays, setHolidays] = useState([])
@@ -260,7 +261,7 @@ export default function EventCalendar() {
   const SetInitialActivities = async () => {
     const notifications = await DB.getTable(`${DB.tables.notifications}/${currentUser?.key}`)
     await AppManager.setAppBadge(notifications.length)
-    setState({...state, notificationCount: notifications.length, isLoading: false, refreshKey: Manager.getUid()})
+    setState({...state, notificationCount: notifications.length, currentScreen: ScreenNames.calendar, isLoading: false, refreshKey: Manager.getUid()})
   }
 
   // SEARCH
@@ -472,7 +473,7 @@ export default function EventCalendar() {
       {!DomManager.isMobile() && (
         <div id="calendar-sidebar">
           <p className="item" id="new-event" onClick={() => setShowNewEventCard(true)}>
-            <PiCalendarPlusDuotone className={'new-event'} id={'add-new-button'} /> New Event
+            <PiCalendarPlusDuotone className={'new-event'} id={'Add-new-button'} /> New Event
           </p>
           {!showHolidays && (
             <p className="item" id="holidays-button" onClick={() => setShowHolidaysCard(true)}>
