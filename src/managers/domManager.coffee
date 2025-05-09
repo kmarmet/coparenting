@@ -1,6 +1,48 @@
 import Manager from "./manager"
+import DatasetManager from "./datasetManager"
+import DB_UserScoped from "../database/db_userScoped"
+import CalMapper from "../mappers/calMapper"
+import DateManager from "./dateManager"
 
 DomManager = {
+  Animate:
+    RemoveAnimationClasses: (classOfElementsToAnimate, classToRemove) ->
+      if Manager.IsValid(classOfElementsToAnimate)
+        classOfElementsToAnimate = document.querySelectorAll("#{classOfElementsToAnimate}")
+        for element in classOfElementsToAnimate
+          element.classList.remove(classToRemove)
+
+    FadeInRight: (variableToCheck, classOfElementsToAnimate, fastSlowOrDefault = "") ->
+      if typeof variableToCheck == 'boolean'
+        if (variableToCheck == true)
+          return "animate__animated animate__fadeInRight #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+        else
+          return 'animate__animated animate__fadeOut'
+      if Manager.IsValid(variableToCheck)
+        return "animate__animated animate__fadeInRight #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+      else
+        return 'animate__animated animate__fadeOut'
+
+    FadeInUp: (variableToCheck, classOfElementsToAnimate, fastSlowOrDefault = "") ->
+      if typeof variableToCheck == 'boolean'
+        if (variableToCheck == true)
+          return "animate__animated animate__fadeInUp #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+        else
+          return 'animate__animated animate__fadeOutDown'
+      if Manager.IsValid(variableToCheck)
+        return "animate__animated animate__fadeInUp #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+      else
+        return 'animate__animated animate__fadeOutDown'
+
+    FadeIn: (variableToCheck, fastSlowOrDefault = "") ->
+      if Manager.IsValid(variableToCheck)
+        return "animate__animated animate__fadeIn animate__#{fastSlowOrDefault}"
+      else
+        return 'animate__animated animate__fadeOut'
+
+  AnimateDelayStyle: (index, delay = .2) ->
+    return {animationDelay: "#{index * delay}s"}
+
   AnimateClasses:
     names:
       fadeInUp: 'fadeInUp'
@@ -42,18 +84,18 @@ DomManager = {
   AddThemeToDatePickers: (currentUser) ->
     setTimeout ->
       datetimeParent = document.querySelector('.MuiDialog-root.MuiModal-root')
-      if Manager.isValid(datetimeParent)
+      if Manager.IsValid(datetimeParent)
         datetimeParent.classList.add(currentUser?.settings?.theme)
     , 100
 
   ToggleAnimation:(addOrRemove, itemsClass, animateName, delay = 80) ->
     allMenuItems = document.querySelectorAll(".#{itemsClass}")
-    if Manager.isValid(allMenuItems)
+    if Manager.IsValid(allMenuItems)
 
       allMenuItems.forEach (item) ->
-          item.classList.add('animate__animated')
-          item.classList.remove(DomManager.AnimateClasses[animateName].exit)
-          item.classList.remove(DomManager.AnimateClasses[animateName].enter)
+        item.classList.add('animate__animated')
+        item.classList.remove(DomManager.AnimateClasses[animateName].exit)
+        item.classList.remove(DomManager.AnimateClasses[animateName].enter)
 
       allMenuItems.forEach (item, index) ->
         setTimeout ->
@@ -63,6 +105,127 @@ DomManager = {
             item.classList.add(DomManager.AnimateClasses[animateName].exit)
         , index * delay
 
+  SetDefaultCheckboxes: (checkboxContainerClass, object, propName, isArray = false, values) ->
+    # Share With
+    if checkboxContainerClass == 'share-with'
+      for phone in values
+        console.log ".#{checkboxContainerClass} [data-phone='#{phone}'] .box"
+        document.querySelector(".#{checkboxContainerClass} [data-phone='#{phone}'] .box").classList.add('active')
+
+    # Repeating
+    if checkboxContainerClass == 'repeating'
+      return await DateManager.GetRepeatingEvents(object)
+
+    # Reminder Times
+    if checkboxContainerClass == 'reminder-times'
+      reminderIsValid = Manager.IsValid(values, true)
+      reminderTimes = values
+      if reminderIsValid
+        for timeframe in reminderTimes
+          box = document.querySelector("[data-label='#{CalMapper.readableReminderBeforeTimeframes(timeframe)}'] .box")
+          if Manager.IsValid(box)
+            box.classList.add('active')
+
+  HandleCheckboxSelection: (element, onCheck, onCheckRemoval, canSelectAll = false) ->
+    clickedEl = element
+    checkboxes = clickedEl.parentNode
+    checkboxWrappers = checkboxes.querySelectorAll('.checkbox-wrapper')
+    label = clickedEl.dataset.label
+
+    # CHECK
+    if clickedEl.classList.contains('active')
+      label = clickedEl.dataset.label
+
+      # UNCHECK OTHERS
+      unless canSelectAll
+        for wrapper in checkboxWrappers
+          thisLabel = wrapper.dataset.label
+          if thisLabel isnt label
+            wrapper.classList.remove('active')
+
+      # CHECK
+      if onCheck? then onCheck(label)
+
+    # UNCHECK
+    else if onCheckRemoval? then onCheckRemoval(label)
+
+  HandleShareWithSelection: (e, currentUser, shareWith) ->
+    clickedEl = e.currentTarget
+    key = clickedEl.getAttribute('data-key')
+
+    DomManager.toggleActive(clickedEl)
+
+    if key in shareWith
+      shareWith = shareWith.filter (x) -> x isnt key
+    else
+      shareWith = [shareWith..., key]
+
+    return DatasetManager.GetValidArray(shareWith)
+
+  BuildCheckboxGroup: ({currentUser, labelType, defaultLabels = [], customLabelArray = [], labelProp, uidProp, predefinedType}) ->
+    checkboxLabels = []
+    checkboxGroup = []
+
+    # PREDEFINED TYPES
+    if Manager.IsValid(predefinedType)
+      if predefinedType is 'coparents' and Manager.IsValid(currentUser?.coparents)
+        checkboxLabels = DB_UserScoped.getCoparentObjArray(currentUser, currentUser?.coparents)
+
+      if Manager.IsValid(checkboxLabels)
+        for label in checkboxLabels
+          checkboxGroup.push
+            label: label['name']
+            key: label['key']
+
+        return checkboxGroup
+
+    # CUSTOM LABELS
+    if not Manager.IsValid(labelProp) and not Manager.IsValid(uidProp)
+      if labelType and labelType is 'reminder-times'
+        checkboxLabels = CalMapper.allUnformattedTimes()
+
+      if labelType and labelType is 'children'
+        checkboxLabels = currentUser?.children?.map (x) -> x?.general?.name
+
+      if labelType and labelType is 'recurring-intervals'
+        checkboxLabels = ['Daily', 'Weekly', 'Biweekly', 'Monthly']
+
+      if labelType and labelType is 'record-types'
+        checkboxLabels = ['Expenses', 'Chats']
+
+      if labelType and labelType is 'visitation'
+        checkboxLabels = ['50/50', 'Custom Weekends', 'Every Weekend', 'Every other Weekend']
+
+      if labelType and labelType is 'expense-payers' and Manager.IsValid(currentUser.coparents)
+        checkboxLabels = DatasetManager.GetValidArray ([...currentUser.coparents.map (x) -> x.name 'Me'])
+
+      if not labelType and Manager.IsValid(customLabelArray)
+        checkboxLabels = customLabelArray
+
+    # ITERATE THROUGH LABELS
+    if not Manager.IsValid(labelProp) and not Manager.IsValid(uidProp)
+      if Manager.IsValid(checkboxLabels)
+        for label in checkboxLabels
+          isActive = false
+          if Manager.IsValid(defaultLabels) and defaultLabels.includes(label)
+            isActive = true
+          if labelType and labelType is 'reminder-times'
+            label = CalMapper.readableReminderBeforeTimeframes(label)
+          if Manager.IsValid(label)
+            checkboxGroup.push
+              label: label
+              key: label?.replaceAll(' ', '')
+              isActive: isActive
+
+    # ITERATE THROUGH OBJECTS
+    else
+      for obj in customLabelArray
+        if Manager.IsValid(obj[labelProp]) and Manager.IsValid(obj[uidProp])
+          checkboxGroup.push
+            label: obj[labelProp]
+            key: obj[uidProp]
+
+    return DatasetManager.GetValidArray(checkboxGroup)
 
   setDefaultView: () ->
     activeModal = document.querySelector('#modal.active')
@@ -71,10 +234,13 @@ DomManager = {
       if detailsView
         allViews = activeModal.querySelectorAll('.view')
 
-        if Manager.isValid(allViews)
+        if Manager.IsValid(allViews)
           if detailsView
             detailsView.click()
             allViews[0].classList.add('active')
+
+  ScrollToTopOfPage: () ->
+    window.scrollTo(0, 0)
 
   toggleActive: (element) ->
     element.classList.toggle("active")
@@ -100,13 +266,13 @@ DomManager = {
 
   autoExpandingHeight: (e) ->
     textarea = e.target
-    if Manager.isValid textarea
+    if Manager.IsValid textarea
       textarea?.style?.height = ''
       textarea?.style?.height = Math.min(textarea?.scrollHeight, 300) + 'px'
 
   unsetHeight: (e) ->
     element = e.target
-    if Manager.isValid element
+    if Manager.IsValid element
       element?.style?.height = 'unset'
 
   isMobile: () -> window.screen.width < 801
@@ -132,7 +298,7 @@ DomManager = {
     executedFunction
 
   isInViewport: (el) ->
-    if Manager.isValid(el)
+    if Manager.IsValid(el)
       rect = el.getBoundingClientRect()
       rect.top >= 0 and rect.left >= 0 and
         rect.bottom <= (window.innerHeight or document.documentElement.clientHeight) and
@@ -153,7 +319,7 @@ DomManager = {
                   labelWrapper.classList.add("active")
 
   mostIsInViewport: (scrollWrapper, el) ->
-    if Manager.isValid(el)
+    if Manager.IsValid(el)
       rect = el.getBoundingClientRect()
       scrollWrapperHeight = scrollWrapper.getBoundingClientRect().height
       pxCloseToEl =rect.top - scrollWrapperHeight;
@@ -162,8 +328,8 @@ DomManager = {
 
   addScrollListener: (scrollableElement, callback, delay) ->
     scrollableElement.addEventListener 'scroll', DomManager.debounce  ->
-        callback()
-      , delay
+      callback()
+    , delay
 
   getSelectionText: ->
     text = ""
@@ -175,14 +341,14 @@ DomManager = {
 
   clearTextSelection: ->
     if window.getSelection
-    # Chrome
-        if window.getSelection().empty
-          window.getSelection().empty()
-        else if window.getSelection().removeAllRanges
-    # Firefox
-          window.getSelection().removeAllRanges()
+# Chrome
+      if window.getSelection().empty
+        window.getSelection().empty()
+      else if window.getSelection().removeAllRanges
+# Firefox
+        window.getSelection().removeAllRanges()
     else if document.selection
-    # IE?
+# IE?
       document.selection.empty()
 
 }

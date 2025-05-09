@@ -44,12 +44,7 @@
           border-radius: 100%;
           position: relative;
           height: 80px;
-          transition: all 0.7s ease-in-out;
           width: 80px;
-
-          &:not(.animate__zoomIn) {
-            opacity: 0;
-          }
 
           &.no-image {
             border: 1px solid $lightBorderColor;
@@ -385,7 +380,6 @@
         transition: max-height 0.3s ease-in-out;
         max-width: calc(100vw - 30px);
         overflow: hidden;
-        opacity: 0;
 
         @media screen and (min-width: 1000px) {
           &:hover {

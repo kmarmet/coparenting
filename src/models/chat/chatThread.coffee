@@ -10,7 +10,7 @@ member = {
 
 export default class ChatThread
   constructor: (
-    @id = Manager.getUid(),
+    @id = Manager.GetUid(),
     @members = [member],
     @creationTimestamp = moment().format(DateFormats.dateForDb),
     @ownerKey = '',

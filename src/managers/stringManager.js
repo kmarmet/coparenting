@@ -6,6 +6,12 @@ import lzstring from "lz-string";
 import Manager from "./manager";
 
 StringManager = {
+  IsNotAllSameNumber: function(str) {
+    if (!/^\d+$/.test(str)) {
+      return true;
+    }
+    return !(new RegExp(`^${str[0]}+$`).test(str));
+  },
   FormatAsWholeNumber: function(number) {
     var asString, dotIndex;
     asString = number.toString();
@@ -16,7 +22,7 @@ StringManager = {
   },
   GetFirstNameAndLastInitial: function(fullName) {
     var firstName, lastNameInitial, names;
-    if (Manager.isValid(fullName, true)) {
+    if (Manager.IsValid(fullName, true)) {
       names = fullName.split(" ");
       firstName = names[0];
       lastNameInitial = names.length > 1 ? names[names.length - 1][0] : "";
@@ -55,7 +61,7 @@ StringManager = {
     return input === input.toUpperCase();
   },
   FormatPhone: function(input) {
-    if (!Manager.isValid(input) || (input != null ? input.length : void 0) === 0) {
+    if (!Manager.IsValid(input) || (input != null ? input.length : void 0) === 0) {
       return input;
     }
     input = input != null ? input.toString().replace(/-/g, '').replace(/\s+/g, '').replace(/\(/g, '').replace(/\)/g, '').replace(/\+/g, '').replace(/\+1/g, '') : void 0;
@@ -94,7 +100,7 @@ StringManager = {
     raw = JSON.stringify({
       key: process.env.REACT_APP_SAPLER_TONE_API_KEY,
       text: text,
-      session_id: Manager.getUid(),
+      session_id: Manager.GetUid(),
       auto_apply: true,
       lang: 'en',
       variety: 'us-variety'
@@ -140,7 +146,7 @@ StringManager = {
   },
   GetWordCount: function(input) {
     var ref, ref1;
-    if (Manager.isValid(input, true)) {
+    if (Manager.IsValid(input, true)) {
       return input != null ? (ref = input.trim()) != null ? (ref1 = ref.split(/\s+/)) != null ? ref1.length : void 0 : void 0 : void 0;
     } else {
       return 0;
@@ -182,7 +188,7 @@ StringManager = {
   },
   uppercaseFirstLetterOfAllWords: function(input) {
     var words;
-    if (!Manager.isValid(input, true)) {
+    if (!Manager.IsValid(input, true)) {
       return input;
     }
     words = input != null ? input.toString() : void 0;
@@ -215,7 +221,7 @@ StringManager = {
     if (!title || (title != null ? title.length : void 0) === 0) {
       return title;
     }
-    if (!Manager.isValid(title, true)) {
+    if (!Manager.IsValid(title, true)) {
       return title;
     }
     if (uppercase) {

@@ -23,14 +23,14 @@ function ToggleButton({isDefaultChecked = false, onCheck = () => {}, onUncheck =
             if (checked) {
               if (onUncheck) {
                 const parent = e.target.closest('.MuiPaper-root')
-                if (Manager.isValid(parent)) {
+                if (Manager.IsValid(parent)) {
                   const checkboxParent = parent.querySelector('.MuiCollapse-root')
 
-                  if (Manager.isValid(checkboxParent)) {
+                  if (Manager.IsValid(checkboxParent)) {
                     const checkboxes = checkboxParent.querySelectorAll('.checkbox-wrapper')
 
-                    if (Manager.isValid(checkboxes)) {
-                      if (Manager.isValid(checkboxes)) {
+                    if (Manager.IsValid(checkboxes)) {
+                      if (Manager.IsValid(checkboxes)) {
                         checkboxes.forEach((x) => x.classList.remove('active'))
                       }
                     }

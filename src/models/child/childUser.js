@@ -3,8 +3,12 @@ var ChildUser;
 
 import Manager from '../../managers/manager.js';
 
+import moment from 'moment';
+
+import DatetimeFormats from "../../constants/datetimeFormats";
+
 export default ChildUser = class ChildUser {
-  constructor(parents = [], name = '', email = '', accountType = 'child', phone = '', id = Manager.getUid(), settings = {
+  constructor(creationDate = moment().format(DatetimeFormats.dateForDb), parents = [], name = '', email = '', accountType = 'child', phone = '', id = Manager.GetUid(), settings = {
       theme: 'light',
       notificationsEnabled: true
     }, dailySummaries = {
@@ -13,6 +17,7 @@ export default ChildUser = class ChildUser {
       morningReminderSummaryHour: '10am',
       eveningReminderSummaryHour: '8pm'
     }, parentAccessGranted = false) {
+    this.creationDate = creationDate;
     this.parents = parents;
     this.name = name;
     this.email = email;

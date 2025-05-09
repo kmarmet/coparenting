@@ -8,13 +8,14 @@ import {IoCheckmarkCircleSharp} from 'react-icons/io5'
 import {PiListChecksFill, PiTrashSimpleDuotone} from 'react-icons/pi'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
+import useActiveChild from '../../../hooks/useActiveChild'
 import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
-import DatasetManager from '../../../managers/datasetManager'
 import DomManager from '../../../managers/domManager'
 import StringManager from '../../../managers/stringManager'
+import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
 
-export default function Checklist({fromOrTo, activeChild}) {
+export default function Checklist({fromOrTo, activeChildId}) {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
   const {currentUser} = useCurrentUser()
@@ -22,7 +23,8 @@ export default function Checklist({fromOrTo, activeChild}) {
   const [activeItems, setActiveItems] = useState([])
   const {children, childrenAreLoading} = useChildren()
   const [showChecklist, setShowChecklist] = useState(false)
-  const [accordionIsExpanded, setAccordionIsExpanded] = useState('')
+  const [accordionIsExpanded, setAccordionIsExpanded] = useState(false)
+  const {activeChild, activeChildIsLoading} = useActiveChild(activeChildId)
 
   const ToggleActive = (el) => {
     const filtered = activeItems.filter((x) => x !== el.target.textContent.toLowerCase())
@@ -37,45 +39,67 @@ export default function Checklist({fromOrTo, activeChild}) {
   const DeleteItem = async (el) => {
     const element = el.currentTarget
     const checklistItemWrapper = element.closest('.checklist-item-row')
-    const childKey = DB.GetChildIndex(children, activeChild?.id)
-    const path = `${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`
-    const childChecklists = children.find((x) => x.id === activeChild?.id)?.checklists
-    const activeChecklist = childChecklists.filter((x) => x.fromOrTo === fromOrTo)[0]
+    const text = checklistItemWrapper.getAttribute('data-checklist-text')
 
-    if (activeChecklist) {
-      const items = activeChecklist.checklistItems
-      const text = checklistItemWrapper.textContent.toLowerCase()
-      const filteredText = items.filter((x) => x.toLowerCase() !== text.toLowerCase())
-      const newChecklist = {...activeChecklist}
-      newChecklist.checklistItems = filteredText
-      const updated = {...activeChecklist, ...newChecklist}
+    if (!Manager.IsValid(text)) {
+      return false
+    }
 
-      if (filteredText.length === 0) {
-        await DB.delete(`${path}`, activeChecklist.id)
-      } else {
-        await DB.updateByPath(path, updated)
-      }
-      checklistItemWrapper.remove()
-      element.remove()
+    const childIndex = DB.GetChildIndex(children, activeChild?.id)
+
+    if (!Manager.IsValid(childIndex)) {
+      return false
+    }
+    let activeChecklist = activeChild?.checklists?.find((x) => x?.fromOrTo === fromOrTo)
+
+    if (!Manager.IsValid(activeChecklist)) {
+      return false
+    }
+
+    const activeChecklistIndex = DB.GetTableIndexById(activeChild?.checklists, activeChecklist?.id)
+
+    if (!Manager.IsValid(activeChecklistIndex)) {
+      return false
+    }
+
+    const path = `${DB.tables.users}/${currentUser?.key}/children/${childIndex}/checklists/${activeChecklistIndex}`
+
+    // Update items
+    activeChecklist.items = activeChecklist.items?.filter((x) => x.trim().toLowerCase() !== text.trim().toLowerCase())
+
+    if (activeChecklist.items?.length === 0) {
+      await DB.Delete(path)
+    } else {
+      await DB.updateByPath(path, activeChecklist)
     }
   }
 
   const SetSelectedChild = async () => {
-    const validChecklists = DatasetManager.getValidArray(activeChild?.checklists)
-    const activeChecklist = validChecklists?.find((x) => x?.fromOrTo === fromOrTo)
-    if (Manager.isValid(activeChecklist)) {
-      setShowChecklist(true)
+    const activeChecklists = activeChild?.checklists
+    let activeChecklist
+    if (Manager.IsValid(activeChecklists)) {
+      // console.log(activeChecklists)
+      activeChecklist = activeChecklists.find((x) => x?.fromOrTo === fromOrTo)
     }
-    setChecklist(activeChecklist)
-    setActiveItems(activeChecklist?.checklistItems)
+    // console.log(activeChecklist)
+    if (Manager.IsValid(activeChecklist)) {
+      setShowChecklist(true)
+      setChecklist(activeChecklist)
+      setActiveItems(activeChecklist?.items)
+    } else {
+      setShowChecklist(false)
+    }
   }
 
   useEffect(() => {
-    setShowChecklist(false)
-    if (Manager.isValid(activeChild)) {
+    if (Manager.IsValid(activeChild)) {
       SetSelectedChild().then((r) => r)
     }
   }, [activeChild])
+
+  if (childrenAreLoading || activeChildIsLoading) {
+    return <StandaloneLoadingGif />
+  }
 
   return (
     <div className={`info-section section checklist ${fromOrTo}`}>
@@ -89,11 +113,11 @@ export default function Checklist({fromOrTo, activeChild}) {
             </p>
           </AccordionSummary>
           <AccordionDetails className={'checklist-wrapper'}>
-            {Manager.isValid(checklist) &&
-              Manager.isValid(checklist?.checklistItems) &&
-              checklist?.checklistItems?.map((item, index) => {
+            {Manager.IsValid(checklist) &&
+              Manager.IsValid(checklist?.items) &&
+              checklist?.items?.map((item, index) => {
                 return (
-                  <div key={index} id="data-row" className="checklist-item-row">
+                  <div data-checklist-text={item} key={index} id="data-row" className="checklist-item-row">
                     <p onClick={ToggleActive} className="checklist-item">
                       {activeItems.includes(item.toLowerCase()) && <IoCheckmarkCircleSharp className={'checkmark'} />}
                       {StringManager.uppercaseFirstLetterOfAllWords(item)}

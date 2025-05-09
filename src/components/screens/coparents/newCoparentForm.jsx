@@ -12,6 +12,7 @@ import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
+import DomManager from '../../../managers/domManager'
 import ObjectManager from '../../../managers/objectManager'
 import StringManager from '../../../managers/stringManager'
 import ModelNames from '../../../models/modelNames'
@@ -40,7 +41,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
     setEmail('')
     setParentType('')
     setCoparentHasAccount(false)
-    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: successMessage})
+    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
     hideCard()
   }
 
@@ -60,28 +61,28 @@ const NewCoparentForm = ({showCard, hideCard}) => {
       },
     ])
 
-    if (Manager.isValid(errorString, true)) {
+    if (Manager.IsValid(errorString, true)) {
       AlertManager.throwError(errorString)
       return false
     }
 
-    if (coparentHasAccount && !Manager.isValid(email)) {
+    if (coparentHasAccount && !Manager.IsValid(email)) {
       AlertManager.throwError('If the coparent has an account with us, their email is required')
       return false
     }
 
     const existingCoparentRecord = users.find((x) => x?.email === email)
     let newCoparent = new Coparent()
-    newCoparent.id = Manager.getUid()
+    newCoparent.id = Manager.GetUid()
     newCoparent.address = address
     newCoparent.name = StringManager.uppercaseFirstLetterOfAllWords(name.trim())
     newCoparent.parentType = parentType
     newCoparent.email = email
-    newCoparent.userKey = Manager.getUid()
+    newCoparent.userKey = Manager.GetUid()
     newCoparent.phone = existingCoparentRecord?.phone
 
     // Link to existing account
-    if (Manager.isValid(existingCoparentRecord)) {
+    if (Manager.IsValid(existingCoparentRecord)) {
       newCoparent.userKey = existingCoparentRecord.key
       await DB_UserScoped.addSharedDataUser(currentUser, existingCoparentRecord.key)
     }
@@ -103,7 +104,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
 
   const HandleCoparentType = (e) => {
     const type = e.dataset['key']
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       () => {
         setParentType(type)
@@ -118,7 +119,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
     <Modal
       onSubmit={Submit}
       submitText={name.length > 0 ? `Add ${StringManager.uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
-      title={`Add ${Manager.isValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} to Your Profile`}
+      title={`Add ${Manager.IsValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} to Your Profile`}
       wrapperClass="new-coparent-card"
       showCard={showCard}
       onClose={ResetForm}>
@@ -148,7 +149,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
               parentLabel={'Parent Type'}
               className="coparent-type"
               skipNameFormatting={true}
-              checkboxArray={Manager.buildCheckboxGroup({
+              checkboxArray={DomManager.BuildCheckboxGroup({
                 currentUser,
                 customLabelArray: ['Biological', 'Step-Parent', 'Guardian', 'Other'],
               })}

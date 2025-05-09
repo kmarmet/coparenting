@@ -1,10 +1,11 @@
 import React from 'react'
-import Manager from '../../managers/manager'
-import StringManager from '../../managers/stringManager'
 import {FaDirections} from 'react-icons/fa'
-import Spacer from './spacer'
 import {HiPhoneArrowUpRight} from 'react-icons/hi2'
 import {MdWebAsset} from 'react-icons/md'
+import DomManager from '../../managers/domManager'
+import Manager from '../../managers/manager'
+import StringManager from '../../managers/stringManager'
+import Spacer from './spacer'
 
 const DetailBlock = ({
   text,
@@ -21,10 +22,9 @@ const DetailBlock = ({
 }) => {
   return (
     <>
-      {Manager.isValid(valueToValidate?.toString()) && (
-        <div className={`block ${classes} ${isFullWidth ? 'w-100 full-width' : ''}`}>
+      {Manager.IsValid(valueToValidate?.toString()) && (
+        <div style={DomManager.AnimateDelayStyle(1, 0.009)} className={`block ${classes} ${isFullWidth ? 'w-100 full-width' : ''}`}>
           {/* CUSTOM */}
-
           {isCustom && children}
 
           {/* STANDARD */}
@@ -48,7 +48,7 @@ const DetailBlock = ({
               {/*  NAV LINK */}
               {isNavLink && !isLink && (
                 <>
-                  <a href={Manager.getDirectionsLink(linkUrl)} target="_blank" className={'block-text nav-link'} rel="noreferrer">
+                  <a href={Manager.GetDirectionsLink(linkUrl)} target="_blank" className={'block-text nav-link'} rel="noreferrer">
                     <FaDirections className={'nav-link'} />
                   </a>
                   <Spacer height={2} />

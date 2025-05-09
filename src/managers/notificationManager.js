@@ -22,7 +22,7 @@ export default NotificationManager = {
   templates: {
     // Template for event tomorrow reminder
     eventIsTomorrowReminder: function(event) {
-      return `${event.title} is tomorrow ${Manager.isValid(event.fromTime) ? '@ ' + event.fromTime : ''}`;
+      return `${event.title} is tomorrow ${Manager.IsValid(event.fromTime) ? '@ ' + event.fromTime : ''}`;
     },
     // Template for event in an hour reminder
     eventIsInAnHourReminder: function(event) {
@@ -77,7 +77,7 @@ export default NotificationManager = {
         var ref1, ref2;
         newSubscriber.email = NotificationManager != null ? (ref1 = NotificationManager.currentUser) != null ? ref1.email : void 0 : void 0;
         newSubscriber.key = NotificationManager != null ? (ref2 = NotificationManager.currentUser) != null ? ref2.key : void 0 : void 0;
-        newSubscriber.id = Manager.getUid();
+        newSubscriber.id = Manager.GetUid();
         newSubscriber.subscriptionId = subId;
         return fetch(`https://api.onesignal.com/apps/${NotificationManager.appId}/subscriptions/${subId}/user/identity`).then(async function(identity) {
           var deleteKey, existingSubscriber, ref3, ref4, userIdentity;
@@ -85,7 +85,7 @@ export default NotificationManager = {
           newSubscriber.oneSignalId = userIdentity != null ? (ref3 = userIdentity.identity) != null ? ref3.onesignal_id : void 0 : void 0;
           existingSubscriber = (await DB.find(DB.tables.notificationSubscribers, ["email", NotificationManager != null ? (ref4 = NotificationManager.currentUser) != null ? ref4.email : void 0 : void 0], true));
           // If user already exists -> replace record
-          if (Manager.isValid(existingSubscriber)) {
+          if (Manager.IsValid(existingSubscriber)) {
             deleteKey = (await DB.getSnapshotKey(`${DB.tables.notificationSubscribers}`, existingSubscriber, "id"));
             await DB.DeleteByPath(`${DB.tables.notificationSubscribers}/${deleteKey}`);
             return (await DB.Add(`/${DB.tables.notificationSubscribers}`, newSubscriber));
@@ -147,14 +147,14 @@ export default NotificationManager = {
     };
     // Add notification to database
     newNotification = new Notification();
-    newNotification.id = Manager.getUid();
+    newNotification.id = Manager.GetUid();
     newNotification.recipientKey = recipientKey;
     newNotification.ownerKey = currentUser != null ? currentUser.key : void 0;
     newNotification.sharedByName = currentUser != null ? currentUser.name : void 0;
     newNotification.title = title;
     newNotification.text = message;
     newNotification.category = category;
-    await DB.Add(`${DB.tables.notifications}/${recipientKey}`, newNotification);
+    await DB.Add(`${DB.tables.notifications}/${recipientKey}`, [], newNotification);
     console.log(`Sent to ${recipientKey}`);
     if (!window.location.href.includes("localhosssst")) {
       return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
@@ -169,7 +169,7 @@ export default NotificationManager = {
   },
   sendToShareWith: async function(shareWithKeys, currentUser, title, message, category = '') {
     var i, key, len, results;
-    if (Manager.isValid(shareWithKeys)) {
+    if (Manager.IsValid(shareWithKeys)) {
       results = [];
       for (i = 0, len = shareWithKeys.length; i < len; i++) {
         key = shareWithKeys[i];

@@ -1,12 +1,11 @@
 // Path: src\components\navBar.jsx
+import moment from 'moment'
 import React, {useContext, useEffect} from 'react'
-import {Fade} from 'react-awesome-reveal'
-import {BiHomeSmile} from 'react-icons/bi'
+import {BsCalendar} from 'react-icons/bs'
 import {HiOutlineMenu} from 'react-icons/hi'
 import {IoMdImages} from 'react-icons/io'
-import {IoNotificationsOutline} from 'react-icons/io5'
-import {LuCalendarDays} from 'react-icons/lu'
-import {PiPlusBold} from 'react-icons/pi'
+import {IoAdd, IoChatbubblesOutline} from 'react-icons/io5'
+import {PiBellSimpleRinging} from 'react-icons/pi'
 import ScreenNames from '../constants/screenNames'
 import globalState from '../context'
 import useCurrentUser from '../hooks/useCurrentUser'
@@ -23,7 +22,7 @@ export default function NavBar({children, navbarClass}) {
       ...state,
       currentScreen: screen,
       activeChild: null,
-      refreshKey: Manager.getUid(),
+      refreshKey: Manager.GetUid(),
       notificationCount: 0,
     })
   }
@@ -40,75 +39,68 @@ export default function NavBar({children, navbarClass}) {
 
   return (
     <>
-      {!menuIsOpen && (
-        <div id="navbar" className={`${theme} ${currentUser?.accountType} ${navbarClass} ${menuIsOpen ? 'hide' : ''}`}>
-          <div id="menu-items" className="flex">
-            <Fade cascade={true} direction={'up'} delay={0} damping={0.1} duration={600} triggerOnce={true}>
-              {/* HOME */}
-              <div
-                onClick={() => changeCurrentScreen(ScreenNames.home)}
-                className={`${currentScreen === ScreenNames.home ? 'active menu-item' : 'menu-item'}`}>
-                <BiHomeSmile className={'calendar'} />
-                <p>Home</p>
-              </div>
-
-              {/* CALENDAR */}
-              <div
-                onClick={() => changeCurrentScreen(ScreenNames.calendar)}
-                className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'}`}>
-                <LuCalendarDays className={'calendar'} />
-                <p>Calendar</p>
-              </div>
-
-              {/* MEMORIES */}
-              {currentUser?.accountType === 'child' && (
-                <div
-                  id="memories-menu-item"
-                  onClick={() => changeCurrentScreen(ScreenNames.memories)}
-                  className={`${currentScreen === ScreenNames.memories ? 'active menu-item' : 'menu-item'}`}>
-                  <IoMdImages />
-                  <p>Memories</p>
-                </div>
-              )}
-
-              {/* CHATS */}
-              {/*{currentUser && currentUser?.accountType === 'parent' && (*/}
-              {/*  <div*/}
-              {/*    id="chat-menu-item"*/}
-              {/*    onClick={() => changeCurrentScreen(ScreenNames.chats)}*/}
-              {/*    className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>*/}
-              {/*    <IoChatbubblesOutline className={'chats'} />*/}
-              {/*    <p>Chats</p>*/}
-              {/*  </div>*/}
-              {/*)}*/}
-
-              {/* MENU BUTTON */}
-              <div className="menu-button menu-item" onClick={() => setState({...state, menuIsOpen: true})}>
-                <div id="svg-wrapper">
-                  <HiOutlineMenu className={'menu'} />
-                </div>
-              </div>
-
-              {/* NOTIFICATIONS */}
-              <div
-                onClick={() => changeCurrentScreen(ScreenNames.notifications)}
-                className={`${currentScreen === ScreenNames.notifications ? 'active menu-item notifications' : 'menu-item notifications'}`}>
-                <IoNotificationsOutline className={'notifications active'} />
-                <p>Notifications</p>
-                <NotificationBadge classes={'navbar'} />
-              </div>
-
-              {/* CREATE */}
-              <div onClick={() => setState({...state, showCreationMenu: true})} className={`menu-item`}>
-                <PiPlusBold className={'create'} />
-                <p>Create</p>
-              </div>
-
-              {Manager.isValid(children) && children}
-            </Fade>
+      <div id="navbar" className={`${theme} ${currentUser?.accountType} ${navbarClass} ${menuIsOpen ? 'hide' : ''}`}>
+        <div id="menu-items" className="flex">
+          {/* CALENDAR */}
+          <div
+            onClick={() => changeCurrentScreen(ScreenNames.calendar)}
+            className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'}`}>
+            <div id="calendar-and-month">
+              <BsCalendar className={'calendar'} />
+              <span>{moment().format('MMM')}</span>
+            </div>
+            <p>Calendar</p>
           </div>
+
+          {/* CHATS */}
+          {currentUser && currentUser?.accountType === 'parent' && (
+            <div
+              id="chat-menu-item"
+              onClick={() => changeCurrentScreen(ScreenNames.chats)}
+              className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
+              <IoChatbubblesOutline className={'chats'} />
+              <p>Chats</p>
+            </div>
+          )}
+
+          {/* MENU BUTTON */}
+          <div className="menu-button menu-item" onClick={() => setState({...state, menuIsOpen: true})}>
+            <div id="svg-wrapper">
+              <HiOutlineMenu className={'menu'} />
+            </div>
+          </div>
+
+          {/* MEMORIES */}
+          {currentUser?.accountType === 'child' && currentScreen !== ScreenNames.parents && (
+            <div
+              id="memories-menu-item"
+              onClick={() => changeCurrentScreen(ScreenNames.memories)}
+              className={`${currentScreen === ScreenNames.memories ? 'active menu-item' : 'menu-item'}`}>
+              <IoMdImages />
+              <p>Memories</p>
+            </div>
+          )}
+
+          {/* NOTIFICATIONS */}
+          {currentUser?.accountType === 'parent' && (
+            <div
+              onClick={() => changeCurrentScreen(ScreenNames.notifications)}
+              className={`${currentScreen === ScreenNames.notifications ? 'active menu-item notifications' : 'menu-item notifications'}`}>
+              <PiBellSimpleRinging className={'notifications active'} />
+              <p>Notifications</p>
+              <NotificationBadge classes={'navbar'} />
+            </div>
+          )}
+
+          {/* CREATE */}
+          <div onClick={() => setState({...state, showCreationMenu: true})} className={`menu-item create`}>
+            <IoAdd className={'create'} />
+            <p>Create</p>
+          </div>
+
+          {Manager.IsValid(children) && children}
         </div>
-      )}
+      </div>
     </>
   )
 }

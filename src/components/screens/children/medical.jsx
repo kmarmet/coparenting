@@ -40,7 +40,7 @@ export default function Medical({activeChild}) {
     const sharedProps = sharedInfoRecords?.map((x) => x?.prop)
     let formattedProp = StringManager.toCamelCase(prop.toLowerCase())
 
-    if (Manager.isValid(sharedProps) && sharedProps.includes(formattedProp)) {
+    if (Manager.IsValid(sharedProps) && sharedProps.includes(formattedProp)) {
       const scopedSharingObject = await DB.find(sharedInfoRecords, ['prop', formattedProp], false)
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, scopedSharingObject, formattedProp, scopedSharingObject?.sharedByOwnerKey)
       await SetChildData()
@@ -64,11 +64,11 @@ export default function Medical({activeChild}) {
     for (let obj of sharing) {
       sharedValues.push([obj.prop, obj.value, obj.sharedByName])
     }
-    if (Manager.isValid(activeChild?.medical)) {
+    if (Manager.IsValid(activeChild?.medical)) {
       // Set info
       let values = Object.entries(activeChild?.medical)
 
-      if (Manager.isValid(sharedValues)) {
+      if (Manager.IsValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
 
@@ -103,19 +103,19 @@ export default function Medical({activeChild}) {
 
   return (
     <div className="info-section section medical form">
-      <Accordion className={`${theme} child-info`} disabled={!Manager.isValid(medicalValues)}>
+      <Accordion className={`${theme} child-info`} disabled={!Manager.IsValid(medicalValues)}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
-          className={!Manager.isValid(medicalValues) ? 'disabled header medical' : 'header medical'}>
+          className={!Manager.IsValid(medicalValues) ? 'disabled header medical' : 'header medical'}>
           <FaBriefcaseMedical className={'svg medical'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Medical
-            {!Manager.isValid(medicalValues) ? '- no info' : ''}
-            {Manager.isValid(medicalValues) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
+            {!Manager.IsValid(medicalValues) ? '- no info' : ''}
+            {Manager.IsValid(medicalValues) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>
-          {Manager.isValid(medicalValues) &&
+          {Manager.IsValid(medicalValues) &&
             medicalValues.map((prop, index) => {
               const infoLabel = StringManager.spaceBetweenWords(prop[0])
               const value = prop[1]
@@ -136,7 +136,7 @@ export default function Medical({activeChild}) {
                         hasBottomSpacer={false}
                         inputType={InputTypes.text}
                         labelText={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
-                          Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''
+                          Manager.IsValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''
                         }`}
                         defaultValue={value}
                         debounceTimeout={1000}

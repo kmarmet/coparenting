@@ -2,6 +2,7 @@ import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useContext, useEffect, useState} from 'react'
 import globalState from '../context'
 import DB from '../database/DB'
+import DatasetManager from '../managers/datasetManager'
 import Manager from '../managers/manager'
 import SecurityManager from '../managers/securityManager'
 import useCurrentUser from './useCurrentUser'
@@ -12,7 +13,7 @@ const useCalendarEvents = (userKey = null) => {
   const [calendarEvents, setCalendarEvents] = useState([])
   const [eventsAreLoading, setEventsAreLoading] = useState(true)
   const [error, setError] = useState(null)
-  const path = `${DB.tables.calendarEvents}/${Manager.isValid(userKey) ? userKey : currentUser?.key}`
+  const path = `${DB.tables.calendarEvents}/${Manager.IsValid(userKey) ? userKey : currentUser?.key}`
   const queryKey = ['realtime', path]
 
   useEffect(() => {
@@ -22,11 +23,12 @@ const useCalendarEvents = (userKey = null) => {
     const listener = onValue(
       dataRef,
       async (snapshot) => {
-        const formattedEvents = Manager.convertToArray(snapshot.val()).flat()
+        const formattedEvents = DatasetManager.GetValidArray(snapshot.val())
         const shared = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents)
-        const formattedShared = Manager.convertToArray(shared).flat()
-        if (Manager.isValid(formattedEvents)) {
-          setCalendarEvents([...formattedEvents, ...formattedShared].flat())
+        const formattedShared = DatasetManager.GetValidArray(shared)
+        if (Manager.IsValid(formattedEvents)) {
+          const combined = DatasetManager.CombineArrays(formattedEvents, formattedShared)
+          setCalendarEvents(DatasetManager.GetValidArray(combined))
         } else {
           setCalendarEvents([])
         }

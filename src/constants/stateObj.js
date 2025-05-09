@@ -29,6 +29,8 @@ StateObj = {
   successAlertMessage: null,
   users: [],
   activeChatId: '',
+  registrationExitStep: "",
+  setRegistrationExitStep: function(step) {},
   setActiveChatId: function(id) {},
   setUsers: function(users) {},
   setSuccessAlertMessage: function(message) {},

@@ -1,7 +1,7 @@
 // Path: src\components\shared\viewSelector.jsx
+import DomManager from '/src/managers/domManager'
 import React, {useContext, useEffect} from 'react'
 import globalState from '../../context'
-import DomManager from '/src/managers/domManager'
 import Manager from '../../managers/manager'
 
 export default function ViewSelector({labels, updateState, wrapperClasses = ''}) {
@@ -9,7 +9,7 @@ export default function ViewSelector({labels, updateState, wrapperClasses = ''})
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
 
-  const toggleActive = (el) => {
+  const ToggleActive = (el) => {
     const views = document.querySelectorAll('.view')
     views.forEach((view) => {
       view.classList.remove('active')
@@ -23,7 +23,7 @@ export default function ViewSelector({labels, updateState, wrapperClasses = ''})
 
   return (
     <div key={refreshKey} className={`${wrapperClasses} views-wrapper`}>
-      {Manager.isValid(labels) &&
+      {Manager.IsValid(labels) &&
         labels.map((label, index) => {
           return (
             <p
@@ -32,7 +32,7 @@ export default function ViewSelector({labels, updateState, wrapperClasses = ''})
               className={`${index === 0 ? 'active view' : 'view'}`}
               onClick={(el) => {
                 updateState(label)
-                toggleActive(el.target)
+                ToggleActive(el.target)
               }}>
               {label}
             </p>

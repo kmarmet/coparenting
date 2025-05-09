@@ -40,30 +40,22 @@ const DB = {
       return _.find(arrayOrTable, matchArray)
     }
   },
-  convertKeyObjectToArray: (keyObject) => {
-    // console.Log(keyObject)
-    if (Manager.isValid(keyObject)) {
-      return Object.entries(keyObject).map((x) => x[1])
-    } else {
-      return []
-    }
-  },
   GetTableIndexByUserKey: (arr, userKey) => {
-    if (Manager.isValid(arr)) {
+    if (Manager.IsValid(arr)) {
       return Object.entries(arr)
         ?.filter((x) => x[1]?.userKey === userKey)
         .flat()[0]
     }
   },
   GetTableIndexById: (arr, id) => {
-    if (Manager.isValid(arr)) {
+    if (Manager.IsValid(arr)) {
       return Object.entries(arr)
         ?.filter((x) => x[1]?.id === id)
         .flat()[0]
     }
   },
   GetChildIndex: (children, childId) => {
-    if (Manager.isValid(children)) {
+    if (Manager.IsValid(children)) {
       return Object.entries(children)
         ?.filter((x) => x[1]?.id === childId)
         .flat()[0]
@@ -122,47 +114,36 @@ const DB = {
     }),
   Add: async (path, existingData = [], newData) => {
     const dbRef = ref(getDatabase())
-    if (Manager.isValid(existingData) && !Array.isArray(existingData)) {
-      existingData = [existingData]
-    }
     try {
       let tableData = []
-      if (Manager.isValid(existingData)) {
-        tableData = [...existingData, newData]
+      if (Manager.IsValid(existingData)) {
+        tableData = DatasetManager.AddToArray(existingData, newData)
       } else {
         tableData = [newData]
       }
-      await set(child(dbRef, path), DatasetManager.getValidArray(tableData))
+      await set(child(dbRef, path), tableData)
     } catch (error) {
       console.log(error.message)
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
-
-  delete: async (path, id) => {
+  Delete: async (recordPath) => {
     const dbRef = ref(getDatabase())
-    let tableRecords = await DB.getTable(path)
-    let rowToDelete = _.find(tableRecords, ['id', id], false)
-    if (Manager.isValid(tableRecords, true)) {
-      const deleteKey = await DB.getSnapshotKey(path, rowToDelete, 'id')
-      if (Manager.isValid(deleteKey)) {
-        try {
-          await remove(child(dbRef, `${path}/${deleteKey}/`))
-        } catch (error) {
-          LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
-        }
-      }
+    try {
+      await remove(child(dbRef, recordPath))
+    } catch (error) {
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
   deleteMultipleRows: async function (path, rows, currentUser) {
-    rows = Manager.convertToArray(rows)
+    rows = DatasetManager.GetValidArray(rows)
     let dbRef = ref(getDatabase())
     let idToDelete
-    if (Manager.isValid(rows)) {
+    if (Manager.IsValid(rows)) {
       for (let row of rows) {
         idToDelete = await DB.getSnapshotKey(path, row, 'id')
         console.log(`${path} | ID to delete: ${idToDelete}`)
-        if (Manager.isValid(idToDelete)) {
+        if (Manager.IsValid(idToDelete)) {
           try {
             await remove(child(dbRef, `${path}/${idToDelete}/`))
             console.log(`${path} record deleted`)
@@ -213,7 +194,7 @@ const DB = {
     await get(child(dbRef, path)).then((snapshot) => {
       tableData = snapshot.val()
     })
-    let tableAsArray = Manager.convertToArray(tableData)
+    let tableAsArray = DatasetManager.GetValidArray(tableData)
     tableAsArray = tableAsArray.filter((x) => x)
     return returnObject ? tableData : tableAsArray
   },
@@ -227,7 +208,7 @@ const DB = {
   },
   updateRecord: async (tableName, currentUser, recordToUpdate, prop, value, propUid) => {
     const dbRef = ref(getDatabase())
-    const tableRecords = Manager.convertToArray(await DB.getTable(tableName))
+    const tableRecords = DatasetManager.GetValidArray(await DB.getTable(tableName))
     let toUpdate
     if (propUid) {
       toUpdate = tableRecords.filter((x) => x[propUid] === recordToUpdate[propUid])[0]

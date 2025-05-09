@@ -8,7 +8,6 @@ InputTypes = {
   date: 'date',
   dateRange: 'date-range'
   time: 'time'
-  address: 'address'
   textarea: 'textarea'
   phone: 'phone'
   url: 'url'

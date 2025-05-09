@@ -48,18 +48,18 @@ const NewChildForm = ({hideCard, showCard}) => {
     setChildHasAccount(false)
     setAddress('')
     setName('')
-    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: successMessage})
+    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
   }
 
   const Submit = async () => {
     const errorString = Manager.GetInvalidInputsErrorString([{name: "Child's Name", value: name}])
 
-    if (Manager.isValid(errorString, true)) {
+    if (Manager.IsValid(errorString, true)) {
       AlertManager.throwError(errorString)
       return false
     }
 
-    if (childHasAccount && !Manager.isValid(email)) {
+    if (childHasAccount && !Manager.IsValid(email)) {
       AlertManager.throwError('If the child has an account with us, their email is required')
       return false
     }
@@ -72,11 +72,11 @@ const NewChildForm = ({hideCard, showCard}) => {
     general.dateOfBirth = dateOfBirth
     newChild.general = general
     newChild.general.profilePic = ''
-    newChild.userKey = Manager.getUid()
+    newChild.userKey = Manager.GetUid()
     const existingChildRecord = users.find((x) => x?.email === email)
 
     // Link to existing account
-    if (Manager.isValid(existingChildRecord) || childHasAccount || !ObjectManager.isEmpty(existingChildRecord)) {
+    if (Manager.IsValid(existingChildRecord) || childHasAccount || !ObjectManager.isEmpty(existingChildRecord)) {
       newChild.userKey = existingChildRecord.key
       await DB_UserScoped.addSharedDataUser(currentUser, existingChildRecord.key)
     } else {
@@ -84,7 +84,7 @@ const NewChildForm = ({hideCard, showCard}) => {
     }
 
     // Add profile pic
-    if (Manager.isValid(_profilePic)) {
+    if (Manager.IsValid(_profilePic)) {
       _profilePic = await ImageManager.compressImage(profilePic)
       await FirebaseStorage.upload(
         FirebaseStorage.directories.profilePics,
@@ -98,7 +98,7 @@ const NewChildForm = ({hideCard, showCard}) => {
     const cleanChild = ObjectManager.cleanObject(newChild, ModelNames.child)
 
     // Add Child's Birthday to Calendar
-    if (Manager.isValid(dateOfBirth, true)) {
+    if (Manager.IsValid(dateOfBirth, true)) {
       const childBirthdayEvent = new CalendarEvent()
       childBirthdayEvent.title = `${cleanChild.general.name}'s Birthday`
       childBirthdayEvent.startDate = cleanChild.general.dateOfBirth
@@ -107,7 +107,7 @@ const NewChildForm = ({hideCard, showCard}) => {
     }
 
     // Add child to DB
-    await DB_UserScoped.addUserChild(currentUser, cleanChild)
+    await DB_UserScoped.AddChildToParentProfile(currentUser, cleanChild)
 
     await ResetForm(`${StringManager.getFirstNameOnly(StringManager.FormatTitle(name, true))} Added to Your Profile`)
   }

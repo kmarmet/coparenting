@@ -4,7 +4,6 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {Fade} from 'react-awesome-reveal'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {IoMdCheckmarkCircleOutline} from 'react-icons/io'
 import {MdClearAll} from 'react-icons/md'
@@ -16,7 +15,7 @@ import DB from '../../database/DB'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useNotifications from '../../hooks/useNotifications'
 import AppManager from '../../managers/appManager.coffee'
-import DatasetManager from '../../managers/datasetManager'
+import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import ActivityCategory from '../../models/activityCategory'
@@ -27,23 +26,19 @@ import Spacer from '../shared/spacer'
 
 export default function Notifications() {
   const {state, setState} = useContext(globalState)
-  const {theme, notificationCount} = state
+  const {theme} = state
   const [legendIsExpanded, setLegendIsExpanded] = useState(false)
   const {currentUser} = useCurrentUser()
   const {notifications} = useNotifications()
   const criticalCategories = [ActivityCategory.expenses, ActivityCategory.childInfo.medical]
 
-  const GetActivities = async () => {
-    const toReturn = DatasetManager.sortDates(notifications).reverse()
-    await AppManager.setAppBadge(notificationCount)
-    setState({...state, notificationCount: toReturn.length})
-  }
+  const SetAppBadge = async () => await AppManager.setAppBadge(notifications?.length)
 
   const ClearAll = async () => await DB.DeleteByPath(`${DB.tables.notifications}/${currentUser?.key}`)
 
-  const ClearActivity = async (activity) => {
+  const ClearNotification = async (activity) => {
     const recordIndex = DB.GetTableIndexById(notifications, activity?.id)
-    if (Manager.isValid(recordIndex)) {
+    if (Manager.IsValid(recordIndex)) {
       await DB.DeleteByPath(`${DB.tables.notifications}/${currentUser?.key}/${recordIndex}`)
     }
   }
@@ -104,15 +99,18 @@ export default function Notifications() {
   }
 
   const ChangeScreen = (screenName, activity) => {
-    ClearActivity(activity).then()
+    ClearNotification(activity).then()
     setTimeout(() => {
       setState({...state, currentScreen: ScreenNames[screenName]})
     }, 500)
   }
 
   useEffect(() => {
-    if (Manager.isValid(notifications)) {
-      GetActivities().then()
+    if (Manager.IsValid(notifications)) {
+      setTimeout(() => {
+        DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight)
+      }, 300)
+      SetAppBadge().then()
     }
   }, [notifications])
 
@@ -123,8 +121,8 @@ export default function Notifications() {
         <p className="screen-intro-text">Stay updated with all developments and notifications as they happen.</p>
 
         {/* LEGEND */}
-        <Spacer height={5} />
-        {Manager.isValid(currentUser?.accountType) && currentUser?.accountType === 'parent' && (
+        <Spacer height={15} />
+        {Manager.IsValid(currentUser?.accountType) && currentUser?.accountType === 'parent' && (
           <div className="flex">
             <Accordion id={'legend'} expanded={legendIsExpanded} className={`${theme} accordion`}>
               <AccordionSummary>
@@ -156,31 +154,29 @@ export default function Notifications() {
             Clear All <MdClearAll className={'ml-5 fs-25'} />
           </button>
         )}
-        <Fade direction={'up'} duration={1000} className={'activity-fade-wrapper'} triggerOnce={true}>
-          {/* LOOP ACTIVITIES */}
+        {/* LOOP ACTIVITIES */}
 
-          <div id="activity-cards">
-            {Manager.isValid(notifications) &&
-              notifications?.map((activity, index) => {
-                const {text, title, creationDate} = activity
-                const categoryObject = GetCategory(activity)
-                const {screen, category, className} = categoryObject
+        <div id="activity-cards">
+          {Manager.IsValid(notifications) &&
+            notifications?.map((activity, index) => {
+              const {text, title, creationDate} = activity
+              const categoryObject = GetCategory(activity)
+              const {screen, category, className} = categoryObject
 
-                return (
-                  <div key={index} className="flex" id="row-wrapper">
-                    <div className={`activity-row row ${className}`} onClick={() => ChangeScreen(screen, activity)}>
-                      <p className={`card-title ${className}`}>
-                        {criticalCategories.includes(category) && <PiSealWarningDuotone />} {StringManager.uppercaseFirstLetterOfAllWords(title)}
-                      </p>
-                      <p className="text">{text}</p>
-                      <p id="date">{moment(creationDate, DatetimeFormats.fullDatetime).format(DatetimeFormats.readableDatetime)}</p>
-                    </div>
-                    <IoMdCheckmarkCircleOutline className={'row-checkmark'} onClick={() => ClearActivity(activity)} />
+              return (
+                <div key={index} className="flex" id="row-wrapper">
+                  <div className={`activity-row row ${className}`} onClick={() => ChangeScreen(screen, activity)}>
+                    <p className={`card-title ${className}`}>
+                      {criticalCategories.includes(category) && <PiSealWarningDuotone />} {StringManager.uppercaseFirstLetterOfAllWords(title)}
+                    </p>
+                    <p className="text">{text}</p>
+                    <p id="date">{moment(creationDate, DatetimeFormats.fullDatetime).format(DatetimeFormats.readableDatetime)}</p>
                   </div>
-                )
-              })}
-          </div>
-        </Fade>
+                  <IoMdCheckmarkCircleOutline className={'row-checkmark'} onClick={() => ClearNotification(activity)} />
+                </div>
+              )
+            })}
+        </div>
       </div>
       {notifications?.length === 0 && <NoDataFallbackText text={'You have no notifications awaiting your attention'} />}
       <NavBar navbarClass={'activity no-Add-new-button'}></NavBar>

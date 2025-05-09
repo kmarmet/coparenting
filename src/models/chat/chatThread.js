@@ -14,7 +14,7 @@ member = {
 };
 
 export default ChatThread = class ChatThread {
-  constructor(id = Manager.getUid(), members = [member], creationTimestamp = moment().format(DateFormats.dateForDb), ownerKey = '', isPausedFor = []) {
+  constructor(id = Manager.GetUid(), members = [member], creationTimestamp = moment().format(DateFormats.dateForDb), ownerKey = '', isPausedFor = []) {
     this.id = id;
     this.members = members;
     this.creationTimestamp = creationTimestamp;

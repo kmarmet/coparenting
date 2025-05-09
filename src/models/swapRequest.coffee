@@ -4,7 +4,7 @@ import moment from "moment"
 
 export default class SwapRequest
   constructor: (
-    @id = Manager.getUid(),
+    @id = Manager.GetUid(),
     @startDate = ''
     @shareWith = []
     @endDate = ''
@@ -20,6 +20,7 @@ export default class SwapRequest
     @toHour = ''
     @status = 'pending'
     @declineReason = ''
+    @responseDate = ''
     @range = []
-    @responseDueDate = ''
+    @requestedResponseDate = ''
   ) ->

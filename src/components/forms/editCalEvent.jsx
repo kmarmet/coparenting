@@ -26,6 +26,7 @@ import globalState from '../../context'
 import useCalendarEvents from '../../hooks/useCalendarEvents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useUsers from '../../hooks/useUsers'
+import DomManager from '../../managers/domManager'
 import LogManager from '../../managers/logManager'
 import AddressInput from '../shared/addressInput'
 import DetailBlock from '../shared/detailBlock'
@@ -99,13 +100,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
       successAlertMessage: alertMessage,
       dateToEdit: moment().format(DatetimeFormats.dateForDb),
-      refreshKey: Manager.getUid(),
+      refreshKey: Manager.GetUid(),
     })
     hideCard()
   }
 
   const EditNonOwnerEvent = async (_updatedEvent) => {
-    if (Manager.isValid(event?.shareWith)) {
+    if (Manager.IsValid(event?.shareWith)) {
       // Remove currentUser from original event shareWith
       const shareWithWithoutCurrentUser = event.shareWith.filter((x) => x !== currentUser?.key)
       event.shareWith = shareWithWithoutCurrentUser
@@ -141,7 +142,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       updatedEvent.isCloned = eventIsCloned
       updatedEvent.isRecurring = eventIsRecurring
 
-      if (Manager.isValid(eventStartTime) || Manager.isValid(eventEndTime)) {
+      if (Manager.IsValid(eventStartTime) || Manager.IsValid(eventEndTime)) {
         updatedEvent.startTime = moment(eventStartTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
         updatedEvent.endTime = moment(eventEndTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
       }
@@ -152,11 +153,11 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       updatedEvent.notes = eventNotes
       updatedEvent.reminderTimes = eventReminderTimes || []
       updatedEvent.children = eventChildren
-      updatedEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
+      updatedEvent.directionsLink = Manager.GetDirectionsLink(eventLocation)
       updatedEvent.location = eventLocation
 
       // Add birthday cake
-      if (Manager.contains(eventName, 'birthday')) {
+      if (Manager.Contains(eventName, 'birthday')) {
         updatedEvent.title += ' 🎂'
       }
 
@@ -166,13 +167,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       updatedEvent.eveningSummaryReminderSent = false
       updatedEvent.sentReminders = []
 
-      if (Manager.isValid(updatedEvent)) {
-        if (!Manager.isValid(eventName)) {
+      if (Manager.IsValid(updatedEvent)) {
+        if (!Manager.IsValid(eventName)) {
           AlertManager.throwError('Event name is required')
           return false
         }
 
-        if (!Manager.isValid(eventStartDate)) {
+        if (!Manager.IsValid(eventStartDate)) {
           AlertManager.throwError('Please select a date for this event')
           return false
         }
@@ -185,12 +186,12 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           const allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
           const existing = allEvents.filter((x) => x.multipleDatesId === event?.multipleDatesId)
 
-          if (!Manager.isValid(existing)) {
+          if (!Manager.IsValid(existing)) {
             return false
           }
 
           // Add cloned dates
-          if (Manager.isValid(clonedDates)) {
+          if (Manager.IsValid(clonedDates)) {
             // await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
           }
 
@@ -216,7 +217,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           }
         }
         if (event?.ownerKey === currentUser?.key) {
-          if (Manager.isValid(eventShareWith)) {
+          if (Manager.IsValid(eventShareWith)) {
             NotificationManager.sendToShareWith(
               eventShareWith,
               currentUser,
@@ -240,7 +241,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   // CHECKBOX HANDLERS
   const HandleChildSelection = (e) => {
     let childrenArr = []
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         childrenArr = [...eventChildren, e]
@@ -255,12 +256,12 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   }
 
   const HandleShareWithSelection = (e) => {
-    const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
+    const shareWithNumbers = DomManager.HandleShareWithSelection(e, currentUser, eventShareWith)
     setEventShareWith(shareWithNumbers)
   }
 
   const HandleReminderSelection = async (e) => {
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         let timeframe = CalendarMapper.reminderTimes(e)
@@ -297,8 +298,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setRecurrenceFrequency(event?.repeatInterval)
     setEventIsDateRange(event?.isDateRange)
     setEventWebsiteUrl(event?.websiteUrl)
-    setIncludeChildren(Manager.isValid(event?.children))
-    setShowReminders(Manager.isValid(event?.reminderTimes))
+    setIncludeChildren(Manager.IsValid(event?.children))
+    setShowReminders(Manager.IsValid(event?.reminderTimes))
 
     // Get shareWith Names
     const securedShareWith = event?.shareWith?.filter((x) => x !== currentUser?.key && currentUser?.sharedDataUsers.includes(x)) || event?.shareWith
@@ -307,8 +308,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setShareWithNames(mappedShareWithNames)
 
     // Repeating
-    if (Manager.isValid(event?.recurringInterval)) {
-      Manager.setDefaultCheckboxes('repeating', event, 'repeatInterval', false).then((r) => r)
+    if (Manager.IsValid(event?.recurringInterval)) {
+      DomManager.SetDefaultCheckboxes('repeating', event, 'repeatInterval', false).then((r) => r)
     }
   }
 
@@ -320,7 +321,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       await ResetForm('Event Deleted')
     } else {
       let clonedEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
-      if (Manager.isValid(clonedEvents)) {
+      if (Manager.IsValid(clonedEvents)) {
         clonedEvents = clonedEvents.filter((x) => x.title === event?.title)
         await CalendarManager.deleteMultipleEvents(clonedEvents, currentUser)
         await ResetForm('Event Deleted')
@@ -329,17 +330,17 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   }
 
   const SetLocalConfirmMessage = () => {
-    let message = 'Are you sure you want to delete this event?'
+    let message = 'Are you sure you want to Delete this event?'
 
     if (event?.isRecurring || event?.isCloned || event?.isDateRange) {
-      message = 'Are you sure you would like to delete ALL events with these details?'
+      message = 'Are you sure you would like to Delete ALL events with these details?'
     }
 
     return message
   }
 
   const GetCreatedBy = () => {
-    if (Manager.isValid(event?.createdBy)) {
+    if (Manager.IsValid(event?.createdBy)) {
       if (event?.ownerKey === currentUser?.key) {
         return 'Me'
       } else {
@@ -349,7 +350,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   }
 
   useEffect(() => {
-    if (Manager.isValid(event)) {
+    if (Manager.IsValid(event)) {
       SetDefaultValues().then((r) => r)
     }
   }, [event])
@@ -397,8 +398,10 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           <div className="blocks">
             {/*  Date */}
             <DetailBlock
-              valueToValidate={event?.startDate}
-              text={moment(event?.startDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+              valueToValidate={event?.isDateRange ? event?.staticStartDate : event?.startDate}
+              text={moment(event?.isDateRange ? event?.staticStartDate : event?.startDate).format(
+                DatetimeFormats.readableMonthAndDayWithDayDigitOnly
+              )}
               title={event?.isDateRange ? 'Start Date' : 'Date'}
             />
 
@@ -430,9 +433,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             <MultilineDetailBlock title={'Shared With'} array={shareWithNames} />
 
             {/* Reminders */}
-            {Manager.isValid(event?.reminderTimes) && (
+            {Manager.IsValid(event?.reminderTimes) && (
               <div className="block">
-                {Manager.isValid(event?.reminderTimes) &&
+                {Manager.IsValid(event?.reminderTimes) &&
                   event?.reminderTimes.map((time, index) => {
                     time = CalMapper.readableReminderBeforeTimeframes(time).replace('before', '')
                     time = time.replace('At', '')
@@ -484,7 +487,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           )}
 
           {/* Map */}
-          {Manager.isValid(event?.location) && <Map locationString={event?.location} />}
+          {Manager.IsValid(event?.location) && <Map locationString={event?.location} />}
         </div>
 
         {/* EDIT */}
@@ -559,7 +562,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               <div className="flex reminder-times-toggle">
                 <p className="label">Remind Me</p>
                 <ToggleButton
-                  isDefaultChecked={Manager.isValid(event?.reminderTimes)}
+                  isDefaultChecked={Manager.IsValid(event?.reminderTimes)}
                   onCheck={() => setShowReminders(true)}
                   onUncheck={() => setShowReminders(false)}
                 />
@@ -567,7 +570,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             </AccordionSummary>
             <AccordionDetails>
               <CheckboxGroup
-                checkboxArray={Manager.buildCheckboxGroup({
+                checkboxArray={DomManager.BuildCheckboxGroup({
                   currentUser,
                   labelType: 'reminder-times',
                   defaultLabels: event?.reminderTimes,
@@ -606,7 +609,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               <AccordionDetails>
                 <div id="include-children-checkbox-container">
                   <CheckboxGroup
-                    checkboxArray={Manager.buildCheckboxGroup({
+                    checkboxArray={DomManager.BuildCheckboxGroup({
                       currentUser,
                       labelType: 'children',
                       defaultLabels: event?.children,
@@ -626,7 +629,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           <InputWrapper
             defaultValue={event?.websiteUrl}
             labelText={'URL/Website'}
-            wrapperClasses={Manager.isValid(event?.websiteUrl) ? 'show-label' : ''}
+            wrapperClasses={Manager.IsValid(event?.websiteUrl) ? 'show-label' : ''}
             required={false}
             inputType={InputTypes.url}
             onChange={(e) => setEventWebsiteUrl(e.target.value)}
@@ -634,7 +637,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           {/* LOCATION/ADDRESS */}
           {/*<InputWrapper*/}
           {/*  defaultValue={event?.location}*/}
-          {/*  wrapperClasses={Manager.isValid(event?.location) ? 'show-label' : ''}*/}
+          {/*  wrapperClasses={Manager.IsValid(event?.location) ? 'show-label' : ''}*/}
           {/*  labelText={'Location'}*/}
           {/*  required={false}*/}
           {/*  onChange={(address) => setEventLocation(address)}*/}
@@ -645,7 +648,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
           {/* PHONE */}
           <InputWrapper
-            wrapperClasses={Manager.isValid(event?.phone) ? 'show-label' : ''}
+            wrapperClasses={Manager.IsValid(event?.phone) ? 'show-label' : ''}
             defaultValue={event?.phone}
             inputType={InputTypes.phone}
             labelText={'Phone'}
@@ -657,7 +660,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             defaultValue={event?.notes}
             labelText={'Notes'}
             required={false}
-            wrapperClasses={Manager.isValid(event?.notes) ? 'show-label textarea' : 'textarea'}
+            wrapperClasses={Manager.IsValid(event?.notes) ? 'show-label textarea' : 'textarea'}
             inputType={InputTypes.textarea}
             onChange={(e) => setEventNotes(e.target.value)}
           />

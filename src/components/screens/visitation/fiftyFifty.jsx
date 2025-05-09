@@ -38,7 +38,7 @@ export default function FiftyFifty({hide, showCard}) {
   const ResetForm = () => {
     Manager.ResetForm('Add-fifty-fifty-schedule')
     setShareWith([])
-    setState({...state, refreshKey: Manager.getUid()})
+    setState({...state, refreshKey: Manager.GetUid()})
     hide()
   }
 
@@ -69,9 +69,9 @@ export default function FiftyFifty({hide, showCard}) {
       dateObject.ownerKey = currentUser?.key
       dateObject.createdBy = currentUser?.name
       dateObject.fromVisitationSchedule = true
-      dateObject.id = Manager.getUid()
+      dateObject.id = Manager.GetUid()
       dateObject.visitationSchedule = ScheduleTypes.fiftyFifty
-      dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
+      dateObject.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
       if (events.length === 0) {
         events = [dateObject]
       } else {
@@ -85,7 +85,7 @@ export default function FiftyFifty({hide, showCard}) {
   }
 
   const HandleShareWithSelection = (e) => {
-    const updated = Manager.handleShareWithSelection(e, currentUser, shareWith)
+    const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 
@@ -136,7 +136,7 @@ export default function FiftyFifty({hide, showCard}) {
           required={true}
           inputType={InputTypes.dateRange}
           onDateOrTimeSelection={(dateArray) => {
-            if (Manager.isValid(dateArray)) {
+            if (Manager.IsValid(dateArray)) {
               setFirstFFPeriodStart(dateArray[0].format(DatetimeFormats.dateForDb))
               setFirstFFPeriodEnd(moment(dateArray[1].format(DatetimeFormats.dateForDb)))
             }
@@ -149,7 +149,7 @@ export default function FiftyFifty({hide, showCard}) {
           required={true}
           inputType={InputTypes.dateRange}
           onDateOrTimeSelection={(dateArray) => {
-            if (Manager.isValid(dateArray)) {
+            if (Manager.IsValid(dateArray)) {
               setSecondFFPeriodStart(dateArray[0].format(DatetimeFormats.dateForDb))
               setSecondFFPeriodEnd(moment(dateArray[1].format(DatetimeFormats.dateForDb)))
             }
@@ -163,7 +163,7 @@ export default function FiftyFifty({hide, showCard}) {
           required={true}
           inputType={InputTypes.dateRange}
           onDateOrTimeSelection={(dateArray) => {
-            if (Manager.isValid(dateArray)) {
+            if (Manager.IsValid(dateArray)) {
               setThirdFFPeriodStart(dateArray[0].format(DatetimeFormats.dateForDb))
               setThirdFFPeriodEnd(moment(dateArray[1].format(DatetimeFormats.dateForDb)))
             }

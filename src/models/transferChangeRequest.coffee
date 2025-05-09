@@ -2,7 +2,7 @@ import Manager from "../managers/manager"
 
 export default class TransferChangeRequest
   constructor: (
-    @id = Manager.getUid()
+    @id = Manager.GetUid()
     @startDate = ''
     @endDate = ''
     @time = ''
@@ -13,6 +13,7 @@ export default class TransferChangeRequest
     @requestReason = ''
     @declineReason = ''
     @recipientKey = ''
-    @responseDueDate = ''
+    @requestedResponseDate = ''
+    @responseDate = ''
     @preferredTransferLocation = ''
   ) ->

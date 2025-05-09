@@ -4,7 +4,8 @@ import DateFormats from '../constants/datetimeFormats'
 
 export default class User
   constructor: (
-    @id = Manager.getUid()
+    @id = Manager.GetUid()
+    @creationDate = moment().format(DateFormats.dateForDb)
     @key = ''
     @name = ''
     @email = ''

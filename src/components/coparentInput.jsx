@@ -1,22 +1,21 @@
 // Path: src\components\coparentInput.jsx
-import React, { useContext, useState } from 'react'
-import CheckboxGroup from '../components/shared/checkboxGroup'
-import Manager from '../managers/manager'
-import globalState from '../context'
+import React, {useContext, useState} from 'react'
 import validator from 'validator'
-import AlertManager from '../managers/alertManager'
+import CheckboxGroup from '../components/shared/checkboxGroup'
 import InputWrapper from '../components/shared/inputWrapper'
+import globalState from '../context'
+import AlertManager from '../managers/alertManager'
 import StringManager from '../managers/stringManager'
 
-export default function CoparentInputs({ add, coparentsLength = 1 }) {
-  const { state, setState } = useContext(globalState)
+export default function CoparentInputs({add, coparentsLength = 1}) {
+  const {state, setState} = useContext(globalState)
   const [name, setName] = useState('')
   const [userPhone, setUserPhone] = useState('')
   const [parentType, setParentType] = useState('')
   const [showAddButton, setShowAddButton] = useState(true)
 
   const handleCoparentType = (e) => {
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         setParentType(e)
@@ -63,7 +62,7 @@ export default function CoparentInputs({ add, coparentsLength = 1 }) {
               return false
             }
             setShowAddButton(false)
-            add({ name, phone: userPhone, parentType })
+            add({name, phone: userPhone, parentType})
           }}>
           Save {StringManager.uppercaseFirstLetterOfAllWords(name)}
         </button>

@@ -19,7 +19,7 @@ const useChat = (chatIdInput) => {
 
   // Get current user and set path
   useEffect(() => {
-    if (Manager.isValid(users)) {
+    if (Manager.IsValid(users)) {
       const user = users?.find((u) => u?.email === authUser?.email)
       setPath(`${DB.tables.chats}/${user?.key}`)
       setCurrentUser(user)
@@ -35,10 +35,10 @@ const useChat = (chatIdInput) => {
       async (snapshot) => {
         const chats = snapshot.val()
         setChats(chats)
-        if (Manager.isValid(chats)) {
+        if (Manager.IsValid(chats)) {
           for (let _chat of chats) {
             const memberKeys = _chat?.members?.map((x) => x?.key)
-            if (Manager.isValid(memberKeys) && memberKeys.includes(messageRecipient?.key) && memberKeys.includes(currentUser?.key)) {
+            if (Manager.IsValid(memberKeys) && memberKeys.includes(messageRecipient?.key) && memberKeys.includes(currentUser?.key)) {
               setChat(_chat)
             }
           }

@@ -92,6 +92,7 @@
 
       span {
         text-decoration: none !important;
+        font-family: 'Quicksand', sans-serif !important;
       }
 
       a {
@@ -127,6 +128,7 @@
         opacity: 1;
         max-width: 95%;
         word-break: break-word;
+        font-family: 'Nunito', sans-serif !important;
         &.delete-header-button {
           font-size: 12px;
         }

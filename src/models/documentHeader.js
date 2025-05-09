@@ -4,7 +4,7 @@ var DocumentHeader;
 import Manager from "../managers/manager";
 
 export default DocumentHeader = class DocumentHeader {
-  constructor(id = Manager.getUid(), headerText = '', ownerKey = '') {
+  constructor(id = Manager.GetUid(), headerText = '', ownerKey = '') {
     this.id = id;
     this.headerText = headerText;
     this.ownerKey = ownerKey;

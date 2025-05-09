@@ -7,25 +7,30 @@ import Manager from '/src/managers/manager'
 import HomescreenSections from '/src/models/homescreenSections.js'
 import {initializeApp} from 'firebase/app'
 import {getAuth} from 'firebase/auth'
-import LightGallery from 'lightgallery/react'
-import 'lightgallery/css/lightgallery.css'
-import React, {useContext, useEffect} from 'react'
-import {Fade} from 'react-awesome-reveal'
+import React, {useContext, useEffect, useState} from 'react'
 import {AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool} from 'react-icons/ai'
 import {BsFillEnvelopeHeartFill} from 'react-icons/bs'
-import {IoIosArrowDown, IoIosArrowUp, IoIosChatbubbles} from 'react-icons/io'
+import {IoIosArrowUp, IoIosChatbubbles} from 'react-icons/io'
 import {IoSyncCircle} from 'react-icons/io5'
 import {MdLooksOne, MdPeopleAlt, MdStyle} from 'react-icons/md'
 import {PiCalendarDotsDuotone, PiDevicesFill} from 'react-icons/pi'
 import {TbSunMoon} from 'react-icons/tb'
+import {LazyLoadImage} from 'react-lazy-load-image-component'
 import {useLongPress} from 'use-long-press'
 import globalState from '../../context'
 import Logo from '../../img/logo.png'
+import Slideshow from '../shared/slideshow'
 import Spacer from '../shared/spacer'
 
 export default function Landing() {
   const {state, setState} = useContext(globalState)
   const {theme, currentScreen, authUser} = state
+  const [showTrioSlideshow, setShowTrioSlideshow] = useState(false)
+  const [showDocumentsSlidehow, setShowDocumentsSlideshow] = useState(false)
+  const [showEmotionMeterSlideshow, setShowEmotionMeterSlideshow] = useState(false)
+  const [showExpensesSlideshow, setShowExpensesSlideshow] = useState(false)
+  const [showDevicesSlideshow, setShowDevicesSlideshow] = useState(false)
+  const [showCollabSlideshow, setShowCollabSlideshow] = useState(false)
   const bind = useLongPress((element) => {
     setState({...state, currentScreen: ScreenNames.login})
   })
@@ -40,10 +45,10 @@ export default function Landing() {
     const allFeatureElements = document.querySelectorAll(`[data-name]`)
 
     if (clickedFeatureElement) {
-      if (Manager.contains(clickedFeatureElement.classList, 'active')) {
+      if (Manager.Contains(clickedFeatureElement.classList, 'active')) {
         clickedFeatureElement.classList.remove('active')
       } else {
-        if (Manager.isValid(allFeatureElements)) {
+        if (Manager.IsValid(allFeatureElements)) {
           for (let _feature of allFeatureElements) {
             _feature.classList.remove('active')
           }
@@ -57,6 +62,21 @@ export default function Landing() {
     const firstViewableBox = document.querySelector('#first-scroll-button-candidate')
     const scrollWrapper = document.querySelector('#wrapper')
     const scrollToTopButton = document.querySelector('#scroll-to-top-button-wrapper')
+    const allFadeUpWrappers = document.querySelectorAll('.fade-up-wrapper')
+
+    if (Manager.IsValid(allFadeUpWrappers)) {
+      for (let wrapper of allFadeUpWrappers) {
+        if (DomManager.mostIsInViewport(scrollWrapper, wrapper)) {
+          if (
+            !wrapper.classList.contains(DomManager.AnimateClasses.names.default) &&
+            !wrapper.classList.contains(DomManager.AnimateClasses.fadeInUp.enter)
+          ) {
+            wrapper.classList.add(DomManager.AnimateClasses.fadeInUp.enter, DomManager.AnimateClasses.names.default)
+          }
+        }
+      }
+    }
+
     if (DomManager.mostIsInViewport(scrollWrapper, firstViewableBox)) {
       scrollToTopButton.classList.remove('hide')
     } else {
@@ -73,27 +93,16 @@ export default function Landing() {
   }
 
   useEffect(() => {
-    if (currentScreen === ScreenNames.home) {
+    if (currentScreen === ScreenNames.landing) {
       setState({...state, isLoading: false})
     }
   }, [currentScreen])
 
   useEffect(() => {
-    const scrollDownButton = document.querySelector('#scroll-down-button-wrapper')
     const scrollWrapper = document.querySelector('#wrapper')
 
-    if (scrollDownButton) {
-      scrollDownButton.addEventListener('click', () => {
-        scrollWrapper.scrollBy({
-          top: screen.height - 100,
-          left: 0,
-          behavior: 'smooth',
-        })
-      })
-    }
-
     const queryStringSection = AppManager.getQueryStringParams('section')
-    if (Manager.isValid(queryStringSection)) {
+    if (Manager.IsValid(queryStringSection)) {
       const whyUsSection = document.querySelector('.unique-features.section')
       if (queryStringSection === HomescreenSections.whyUs) {
         if (whyUsSection) {
@@ -106,66 +115,145 @@ export default function Landing() {
     if (appWrapper) {
       appWrapper.classList.add('home')
     }
+
+    if (Manager.IsValid(scrollWrapper)) {
+      DomManager.addScrollListener(scrollWrapper, HandleScroll, 200)
+    }
   }, [])
 
   return (
     <div id="wrapper" onScroll={HandleScroll}>
+      {/* SLIDESHOWS */}
+
+      {/* Documents */}
+      <Slideshow
+        show={showDocumentsSlidehow}
+        hide={() => setShowDocumentsSlideshow(false)}
+        activeIndex={0}
+        images={[
+          {
+            url: require('/src/img/homepage/tableOfContents.png'),
+            name: 'Table of Contents',
+            alt: 'Table of Contents',
+          },
+          {
+            url: require('/src/img/homepage/customDocHeaders.gif'),
+            name: 'Custom Headers',
+            alt: 'Custom Headers',
+          },
+        ]}
+      />
+
+      {/* Trio */}
+      <Slideshow
+        show={showTrioSlideshow}
+        activeIndex={0}
+        hide={() => setShowTrioSlideshow(false)}
+        images={[
+          {
+            title: 'Memories',
+            url: require('/src/img/homepage/memories.png'),
+            notes: "Share your child's valuable memories with your co-parents or children",
+          },
+          {title: 'Calendar', url: require('/src/img/homepage/calendar.png'), notes: 'Schedule important dates with your co-parents or children'},
+          {
+            title: 'Child Info',
+            url: require('/src/img/homepage/child-info.png'),
+            notes: 'Share important details about your child with your co-parents or children',
+          },
+        ]}
+      />
+
+      {/* Compatibility */}
+      <Slideshow
+        show={showDevicesSlideshow}
+        hide={() => setShowDevicesSlideshow(false)}
+        activeIndex={1}
+        images={[
+          {url: require('/src/img/homepage/devices/phone.png'), title: 'Compatible with all Phones'},
+          {url: require('/src/img/homepage/devices/laptop.png'), title: 'Compatible with all Tablets'},
+          {url: require('/src/img/homepage/devices/tablet.png'), title: 'Compatible with all Computers'},
+        ]}
+      />
+
+      {/* Menu */}
+      <Slideshow
+        images={[
+          {
+            url: require('/src/img/homepage/menu.png'),
+            title: 'Collaboration',
+            alt: 'Collaboration',
+          },
+        ]}
+        show={showCollabSlideshow}
+        hide={() => setShowCollabSlideshow(false)}
+      />
+
+      {/* Expenses */}
+      <Slideshow
+        images={[
+          {
+            url: require('/src/img/homepage/expense-tracker.png'),
+            alt: 'Expenses',
+            title: 'Expense Tracker',
+            notes: 'Assign and track all expenses between you and your co-parents',
+          },
+        ]}
+        activeIndex={0}
+        show={showExpensesSlideshow}
+        hide={() => setShowExpensesSlideshow(false)}
+      />
+
+      {/* Emotion Meter */}
+      <Slideshow
+        activeIndex={0}
+        show={showEmotionMeterSlideshow}
+        hide={() => setShowEmotionMeterSlideshow(false)}
+        images={[
+          {
+            url: require('../../img/homepage/emotion-meter.gif'),
+            title: 'Emotion Meter',
+            alt: 'Emotion Meter',
+          },
+        ]}
+      />
+
       {/* ABOVE FOLD WRAPPER */}
       <div id="scroll-to-top-button-wrapper" className="hide" onClick={ScrollToTop}>
         <IoIosArrowUp id={'scroll-to-top-button'} />
       </div>
-      <div id="scroll-down-button-wrapper">
-        <IoIosArrowDown id={'scroll-down-button'} />
-      </div>
+
       <div id="above-fold-wrapper" className="section above-fold">
-        <Fade>
-          <div id="home-navbar" className="flex">
-            <img src={Logo} id="logo" {...bind()} alt="Logo" />
-            <div id="login-buttons">
-              {/*<button id="register-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>*/}
-              {/*  Sign Up <IoPersonAddOutline />*/}
-              {/*</button>*/}
-              {/*<button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>*/}
-              {/*  Log In <AiTwotoneUnlock />*/}
-              {/*</button>*/}
-              {/*<button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>*/}
-              {/*  Get Started*/}
-              {/*</button>*/}
-              <div id="choose-peace-text" className="flex">
-                <p id="choose-peace-text">
-                  <span className="emphasize">Choose Peace</span>
-                  <span>ful Co-Parenting</span>
-                </p>
-              </div>
+        <div id="home-navbar" className="flex">
+          <img src={Logo} id="logo" {...bind()} alt="Logo" />
+          <div id="login-buttons">
+            {/*<button id="register-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>*/}
+            {/*  Sign Up <IoPersonAddOutline />*/}
+            {/*</button>*/}
+            {/*<button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>*/}
+            {/*  Log In <AiTwotoneUnlock />*/}
+            {/*</button>*/}
+            {/*<button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>*/}
+            {/*  Get Started*/}
+            {/*</button>*/}
+            <div id="choose-peace-text" className="flex">
+              <p id="choose-peace-text">
+                <span className="emphasize">Choose Peace</span>
+                <span>ful Co-Parenting</span>
+              </p>
             </div>
           </div>
-          <div className="section page-title">
-            <p id="title">Peaceful Co-Parenting</p>
-            <p id="subtitle">Built for Families - Focused on Peace</p>
-          </div>
-          <LightGallery mode={'fade'} elementClassNames={`light-gallery home ${theme}`} selector={'.image'} speed={500}>
-            <div className="flex" id="images">
-              <img
-                data-src={require('/src/img/homepage/memories.png')}
-                className={'image'}
-                src={require('/src/img/homepage/memories.png')}
-                alt="Memories"
-              />
-              <img
-                data-src={require('/src/img/homepage/calendar.png')}
-                className={'image'}
-                src={require('/src/img/homepage/calendar.png')}
-                alt="Calendar"
-              />
-              <img
-                data-src={require('/src/img/homepage/child-info.png')}
-                className={'image'}
-                src={require('/src/img/homepage/child-info.png')}
-                alt="Child Info"
-              />
-            </div>
-          </LightGallery>
-        </Fade>
+        </div>
+        <div className="section page-title">
+          <p id="title">Peaceful Co-Parenting</p>
+          <p id="subtitle">Built for Families - Focused on Peace</p>
+        </div>
+
+        <div className="flex" id="images" onClick={() => setShowTrioSlideshow(true)}>
+          <img className={'image'} src={require('/src/img/homepage/memories.png')} alt="Memories" />
+          <img className={'image'} src={require('/src/img/homepage/calendar.png')} alt="Calendar" />
+          <img className={'image'} src={require('/src/img/homepage/child-info.png')} alt="Child Info" />
+        </div>
       </div>
 
       {/* PAGE CONTAINER */}
@@ -180,37 +268,42 @@ export default function Landing() {
 
       {/* BELOW FOLD */}
       <div id="below-fold-wrapper">
-        <Fade direction={'up'} duration={1000} triggerOnce={true}>
-          <div className="flex boxes section" data-section={1}>
-            <div className="text-box">
-              <PiCalendarDotsDuotone />
-              <p className="text-box-title">Streamline your Parenting Schedule </p>
-              <p className="text-box-subtitle">Shared Calendars, Real-Time Updates, and Reminders</p>
-              <p className="text-box-main-text">
-                Easily coordinate visitation, school events, and extracurricular activities with our intuitive scheduling tool. Ensuring both parents
-                stay on the same page without the hassle.
+        <div className="flex boxes section" data-section={1}>
+          <div className="text-box">
+            <PiCalendarDotsDuotone />
+            <p className="text-box-title">Streamline your Parenting Schedule </p>
+            <p className="text-box-subtitle">Shared Calendars, Real-Time Updates, and Reminders</p>
+            <p className="text-box-main-text">
+              Easily coordinate visitation, school events, and extracurricular activities with our intuitive scheduling tool. Ensuring both parents
+              stay on the same page without the hassle.
+            </p>
+          </div>
+
+          <div className="text-box with-bg fade-up-wrapper" style={DomManager.AnimateDelayStyle(1)} id="first-scroll-button-candidate">
+            <AiTwotoneMessage />
+            <p className="text-box-title">Effective Communication without Conflict </p>
+            <p className="text-box-subtitle">Clear Messaging for Healthier Conversations</p>
+            <p className="text-box-main-text">Facilitate positive communication with in-app messaging designed to reduce misunderstandings.</p>
+            <div id="emotion-meter-wrapper">
+              <p>Emotion Meter 😃</p>
+              <p className="description">
+                Effective communication with a foundation of respect is crucial for successful co-parenting. The Emotion Meter plays a vital role in
+                facilitating this essential aspect.
               </p>
-            </div>
-            <div className="text-box with-bg" id="first-scroll-button-candidate">
-              <AiTwotoneMessage />
-              <p className="text-box-title"> Effective Communication without Conflict </p>
-              <p className="text-box-subtitle">Clear Messaging for Healthier Conversations</p>
-              <p className="text-box-main-text">Facilitate positive communication with in-app messaging designed to reduce misunderstandings.</p>
-              <div id="emotion-meter-wrapper">
-                <p>Emotion Meter 😃</p>
-                <p className="description">
-                  Effective communication with a foundation of respect is crucial for successful co-parenting. The Emotion Meter plays a vital role in
-                  facilitating this essential aspect.
-                </p>
-                <img id="emotion-meter-gif" src={require('../../img/homepage/emotion-meter.gif')} alt="Emotion Meter" />
-              </div>
+
+              <LazyLoadImage
+                onClick={(e) => setShowEmotionMeterSlideshow(true)}
+                id="emotion-meter-gif"
+                src={require('../../img/homepage/emotion-meter.gif')}
+                alt="Emotion Meter"
+              />
             </div>
           </div>
-        </Fade>
+        </div>
         <hr className="hr" />
 
         {/* UNIQUE FEATURES */}
-        <Fade direction={'up'} duration={1000} triggerOnce={true}>
+        <div className="fade-up-wrapper">
           <div className="section full-width-box unique-features" data-section={2}>
             <div id="text-content">
               <p className="title">
@@ -558,11 +651,11 @@ export default function Landing() {
               </div>
             </div>
           </div>
-        </Fade>
+        </div>
         <hr className="hr" />
 
         {/* DOCUMENTS */}
-        <Fade direction={'up'} duration={1000} triggerOnce={true}>
+        <div className="fade-up-wrapper">
           <div id="documents" className="section text-box documents">
             <div className="flex text-columns">
               <div className="text-wrapper left">
@@ -593,38 +686,48 @@ export default function Landing() {
               </div>
             </div>
             <p className="light-gallery-instructions">{DomManager.tapOrClick()} an image to enlarge</p>
-            {currentScreen === ScreenNames.home && (
-              <Fade direction={'up'} duration={1000} triggerOnce={true}>
-                <LightGallery mode={'fade'} elementClassNames={`images no-wrap ${theme}`} speed={500} selector={'.image'}>
-                  <img className={'image'} src={require('/src/img/homepage/tableOfContents.png')} alt="Table of Contents" />
-                  <img className={'image'} src={require('/src/img/homepage/customDocHeaders.gif')} alt="Custom Headers" />
-                </LightGallery>
-              </Fade>
-            )}
+
+            <LazyLoadImage
+              onClick={() => setShowDocumentsSlideshow(true)}
+              className={'image'}
+              src={require('/src/img/homepage/tableOfContents.png')}
+              alt="Table of Contents"
+            />
+
+            <Spacer height={8} />
+            <LazyLoadImage
+              onClick={() => setShowDocumentsSlideshow(true)}
+              className={'image'}
+              src={require('/src/img/homepage/customDocHeaders.gif')}
+              alt="Custom Headers"
+            />
           </div>
-        </Fade>
+        </div>
+
         <hr className="hr" />
         {/* EXPENSES */}
-        <Fade direction={'up'} duration={1000} triggerOnce={true}>
-          <div id="calendarEvents-wrapper" className="section calendarEvents">
-            <div className="text-wrapper">
-              <p className="title">Track Expenses and Share Responsibilities</p>
-              <p className="text subtitle">Transparency in Shared Financial Responsibilities</p>
-              <p className="text">
-                Manage shared calendarEvents like childcare, education, and extracurricular costs with our expense tracking feature, making it easy to
-                split costs and avoid conflicts over money.
-              </p>
-            </div>
-            <LightGallery mode={'fade'} elementClassNames={`images expense-tracker no-wrap ${theme}`} speed={500} selector={'.image'}>
-              <img className={'image'} src={require('/src/img/homepage/expense-tracker.png')} alt="Expenses" />
-            </LightGallery>
+        <div id="expenses-wrapper" className="section expenses">
+          <div className="text-wrapper">
+            <p className="title">Track Expenses and Share Responsibilities</p>
+            <p className="text subtitle">Transparency in Shared Financial Responsibilities</p>
+            <p className="text">
+              Manage shared expenses like childcare, education, and extracurricular costs with our expense tracking feature, making it easy to split
+              costs and avoid conflicts over money.
+            </p>
           </div>
-        </Fade>
+
+          <LazyLoadImage
+            className={'image'}
+            onClick={() => setShowExpensesSlideshow(true)}
+            src={require('/src/img/homepage/expense-tracker.png')}
+            alt="Expenses"
+          />
+        </div>
 
         <hr className="hr" />
 
         {/* COLLABORATION */}
-        <Fade direction={'up'} duration={1000} triggerOnce={true}>
+        <div className="fade-up-wrapper">
           <div id="collaboration" className="section text-box">
             {/*<FaRegHandshake />*/}
             <div className="text-wrapper">
@@ -642,14 +745,13 @@ export default function Landing() {
                 environment for your children.
               </p>
             </div>
-            <LightGallery mode={'fade'} elementClassNames={`images expense-tracker no-wrap ${theme}`} speed={500} selector={'.image'}>
-              <img className={'image'} src={require('/src/img/homepage/menu.png')} alt="Menu" />
-            </LightGallery>
+
+            <LazyLoadImage onClick={() => setShowCollabSlideshow(true)} className={'image'} src={require('/src/img/homepage/menu.png')} alt="Menu" />
           </div>
-        </Fade>
+        </div>
         <hr className="hr" />
         {/* SECURITY & PRIVACY */}
-        <Fade direction={'up'} duration={1000} triggerOnce={true}>
+        <div className="fade-up-wrapper">
           <div className="box section security-and-privacy with-bg">
             <AiTwotoneSafetyCertificate />
             <div className="content text-wrapper">
@@ -665,10 +767,10 @@ export default function Landing() {
               </p>
             </div>
           </div>
-        </Fade>
+        </div>
         <hr className="hr" />
         {/* COMPATIBLE */}
-        <Fade direction={'up'} duration={1000} triggerOnce={true}>
+        <div className="fade-up-wrapper">
           <div className="section text-box all-devices" id="all-devices">
             <TbSunMoon />
             <p className="title">Compatible & Accessible</p>
@@ -695,28 +797,28 @@ export default function Landing() {
               </span>
             </div>
 
-            {currentScreen === ScreenNames.home && (
-              <div className="flex images mt-15">
-                <LightGallery mode={'fade'} elementClassNames={`images no-wrap ${theme}`} speed={500} selector={'.image'}>
-                  <img
-                    data-src={'/src/img/homepage/devices/phone.png'}
-                    className={'image'}
-                    src={require('/src/img/homepage/devices/phone.png')}
-                    alt="Phone"
-                  />
-                  <img
-                    className={'image'}
-                    data-src={'/src/img/homepage/devices/laptop.png'}
-                    src={require('/src/img/homepage/devices/laptop.png')}
-                    alt="Computer"
-                  />
-                  <img
-                    className={'image'}
-                    data-src={'/src/img/homepage/devices/tablet.png'}
-                    src={require('/src/img/homepage/devices/tablet.png')}
-                    alt="Tablet"
-                  />
-                </LightGallery>
+            {currentScreen === ScreenNames.landing && (
+              <div className="flex images mt-15" onClick={() => setShowDevicesSlideshow(true)}>
+                <LazyLoadImage
+                  data-src={'/src/img/homepage/devices/phone.png'}
+                  className={'image'}
+                  src={require('/src/img/homepage/devices/phone.png')}
+                  alt="Phone"
+                />
+                <LazyLoadImage
+                  className={'image'}
+                  data-src={'/src/img/homepage/devices/laptop.png'}
+                  src={require('/src/img/homepage/devices/laptop.png')}
+                  alt="Computer"
+                />
+
+                <Spacer height={10} />
+                <LazyLoadImage
+                  className={'image'}
+                  data-src={'/src/img/homepage/devices/tablet.png'}
+                  src={require('/src/img/homepage/devices/tablet.png')}
+                  alt="Tablet"
+                />
               </div>
             )}
 
@@ -724,9 +826,9 @@ export default function Landing() {
               You can use the application across multiple devices and all of your data will be kept in sync across them all!
             </p>
           </div>
-        </Fade>
+        </div>
         <hr className="hr" />
-        <Fade direction={'up'} duration={1000} triggerOnce={true}>
+        <div className="fade-up-wrapper">
           <div className="flex" id="double">
             <div className="text-wrapper text-only box">
               <AiTwotoneTool />
@@ -756,7 +858,7 @@ export default function Landing() {
               </p>
             </div>
           </div>
-        </Fade>
+        </div>
       </div>
     </div>
   )

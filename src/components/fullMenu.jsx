@@ -1,6 +1,6 @@
 // Path: src\components\fullMenu.jsx
 import {getAuth, signOut} from 'firebase/auth'
-import React, {useContext, useEffect} from 'react'
+import React, {useContext} from 'react'
 import {AiOutlineLogout} from 'react-icons/ai'
 import {BsHouses, BsImages} from 'react-icons/bs'
 import {GrInstallOption, GrSettingsOption, GrUserAdmin} from 'react-icons/gr'
@@ -17,15 +17,15 @@ import DomManager from '../managers/domManager'
 import Manager from '../managers/manager'
 import NotificationBadge from './shared/NotificationBadge'
 import Overlay from './shared/overlay'
-import StandaloneLoadingGif from './shared/standaloneLoadingGif'
 
 export default function FullMenu() {
   const {state, setState} = useContext(globalState)
   const {currentScreen, menuIsOpen, theme, notificationCount, refreshKey, authUser, userIsLoggedIn} = state
   const {currentUser, currentUserIsLoading} = useCurrentUser()
+
   const auth = getAuth()
 
-  const ChangeCurrentScreen = async (screen) => setState({...state, currentScreen: screen, refreshKey: Manager.getUid(), menuIsOpen: false})
+  const ChangeCurrentScreen = async (screen) => setState({...state, currentScreen: screen, refreshKey: Manager.GetUid(), menuIsOpen: false})
 
   const Logout = () => {
     const pageOverlay = document.getElementById('page-overlay')
@@ -44,28 +44,22 @@ export default function FullMenu() {
       })
   }
 
-  useEffect(() => {
-    if (menuIsOpen === true) {
-      DomManager.ToggleAnimation('add', 'menu-items', DomManager.AnimateClasses.names.fadeInUp)
-    } else {
-      DomManager.ToggleAnimation('remove', 'menu-items', DomManager.AnimateClasses.names.fadeInUp)
-    }
-  }, [menuIsOpen])
-
   if (currentUserIsLoading) {
-    return <StandaloneLoadingGif />
+    return null
   }
 
   return (
     <Overlay show={menuIsOpen}>
       <div
-        key={refreshKey}
         id="full-menu"
-        className={`${menuIsOpen ? 'animate__animated animate__fadeInUp' : 'animate__animated animate__fadeOutDown'}`}>
+        style={DomManager.AnimateDelayStyle(1, 0.1)}
+        className={`full-menu-wrapper ${DomManager.Animate.FadeInUp(menuIsOpen, '.full-menu-wrapper')}`}>
         <div id="menu-sections">
           {/* SHARING */}
           <p className="menu-title sharing">Sharing</p>
-          <div className="menu-items animate__animated sharing">
+          <div
+            style={DomManager.AnimateDelayStyle(1, 0.2)}
+            className={`menu-items sharing ${DomManager.Animate.FadeInUp(menuIsOpen, '.menu-items')}`}>
             {/* CALENDAR */}
             <div
               className={`menu-item calendar ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
@@ -111,7 +105,9 @@ export default function FullMenu() {
 
           {/* INFORMATION DATABASE */}
           <p className="menu-title info-storage">Information Database</p>
-          <div className="menu-items animate__animated info-storage">
+          <div
+            style={DomManager.AnimateDelayStyle(1, 0.35)}
+            className={`menu-items info-storage ${DomManager.Animate.FadeInUp(menuIsOpen, '.menu-items')}`}>
             {/* CHILD - PARENTS */}
             {currentUser?.accountType === 'child' && (
               <div
@@ -174,7 +170,9 @@ export default function FullMenu() {
           {currentUser?.accountType === 'parent' && (
             <>
               <p className="menu-title coparenting">Co-Parenting</p>
-              <div className="menu-items animate__animated coparenting">
+              <div
+                style={DomManager.AnimateDelayStyle(1, 0.45)}
+                className={`menu-items coparenting ${DomManager.Animate.FadeInUp(menuIsOpen, '.menu-items')}`}>
                 {/* TRANSFER CHANGE */}
                 <div
                   className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
@@ -219,7 +217,9 @@ export default function FullMenu() {
           )}
           {/* PROFILE SETTINGS & SUPPORT */}
           <p className="menu-title profile-settings-support">Settings & Support</p>
-          <div className="menu-items animate__animated profile-settings-support">
+          <div
+            style={DomManager.AnimateDelayStyle(1, 0.55)}
+            className={`menu-items profile-settings-support ${DomManager.Animate.FadeInUp(menuIsOpen, '.menu-items')}`}>
             {/* PROFILE */}
             <div
               className={`menu-item profile ${currentScreen === ScreenNames.profile ? 'active' : ''}`}
@@ -282,7 +282,12 @@ export default function FullMenu() {
           </div>
         </div>
         <div id="close-icon-wrapper">
-          <IoClose onClick={() => setState({...state, menuIsOpen: false})} id={'close-icon'} />
+          <IoClose
+            onClick={() => {
+              setState({...state, menuIsOpen: false})
+            }}
+            id={'close-icon'}
+          />
         </div>
       </div>
     </Overlay>

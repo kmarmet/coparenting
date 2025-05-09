@@ -9,13 +9,13 @@ VisitationMapper = {
   formattedScheduleTypes: function(type) {
     console.log(type);
     switch (true) {
-      case Manager.contains(type, '50'):
+      case Manager.Contains(type, '50'):
         return ScheduleTypes.fiftyFifty;
-      case Manager.contains(type, 'Custom Weekends'):
+      case Manager.Contains(type, 'Custom Weekends'):
         return ScheduleTypes.customWeekends;
-      case Manager.contains(type, 'Every Weekend'):
+      case Manager.Contains(type, 'Every Weekend'):
         return ScheduleTypes.everyWeekend;
-      case Manager.contains(type, 'Every other Weekend'):
+      case Manager.Contains(type, 'Every other Weekend'):
         return ScheduleTypes.everyOtherWeekend;
     }
     return null;
@@ -23,3 +23,5 @@ VisitationMapper = {
 };
 
 export default VisitationMapper;
+
+//# sourceMappingURL=visitationMapper.js.map

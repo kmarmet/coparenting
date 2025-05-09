@@ -5,13 +5,13 @@ import Manager from "../managers/manager"
 
 CalendarMapper =
   reminderTimes: (timeframe) ->
-    if Manager.contains(timeframe,'hour')
+    if Manager.Contains(timeframe,'hour')
       return ReminderTimes.hour
-    if Manager.contains(timeframe,'30')
+    if Manager.Contains(timeframe,'30')
       return ReminderTimes.halfHour
-    if Manager.contains(timeframe,'5')
+    if Manager.Contains(timeframe,'5')
       return ReminderTimes.fiveMinutes
-    if Manager.contains(timeframe,'event')
+    if Manager.Contains(timeframe,'event')
       return ReminderTimes.timeOfEvent
 
   allReadableReminderTimes: () ->
@@ -25,13 +25,13 @@ CalendarMapper =
     return all
 
   readableReminderBeforeTimeframes: (timeframe) ->
-    if Manager.contains(timeframe,'hour', false)
+    if Manager.Contains(timeframe,'hour', false)
       return  '1 hour before'
-    if Manager.contains(timeframe,'halfHour', false)
+    if Manager.Contains(timeframe,'halfHour', false)
       return  '30 minutes before'
-    if Manager.contains(timeframe,'fiveMinutes', false)
+    if Manager.Contains(timeframe,'fiveMinutes', false)
       return  '5 minutes before'
-    if Manager.contains(timeframe,'timeOfEvent', false)
+    if Manager.Contains(timeframe,'timeOfEvent', false)
       return  'At event time'
 
   readableRepeatIntervals: (selectedInterval) ->

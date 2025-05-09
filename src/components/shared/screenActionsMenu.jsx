@@ -2,6 +2,7 @@ import React, {useContext, useEffect} from 'react'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager'
 import Overlay from './overlay'
+import Spacer from './spacer'
 
 const ScreenActionsMenu = ({children, centeredActionItem}) => {
   const {state, setState} = useContext(globalState)
@@ -30,8 +31,7 @@ const ScreenActionsMenu = ({children, centeredActionItem}) => {
       <div
         className={`bottom-menu-wrapper screen-actions ${showScreenActions ? 'active' : ''} ${showScreenActions ? 'animate__animated animate__fadeInUp' : 'animate__animated animate__fadeOutDown'}`}>
         <div className={centeredActionItem ? 'centered action-items' : 'action-items'}>
-          <p className="bottom-menu-title">Actions</p>
-          <hr />
+          <Spacer height={4} />
           {children}
         </div>
       </div>

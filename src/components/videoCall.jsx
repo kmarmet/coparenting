@@ -1,24 +1,11 @@
-import { useEffect, useState } from 'react'
-import {
-  useCallStateHooks,
-  ParticipantView,
-  useCallCallingState,
-  Call,
-  CallControls,
-  CallingState,
-  StreamCall,
-  useCall,
-  StreamVideo,
-  SpeakerLayout,
-  StreamVideoClient,
-} from '@stream-io/video-react-sdk'
-import { StreamClient } from '@stream-io/node-sdk'
 import Manager from '/src/managers/manager.js'
+import {StreamCall, StreamVideo, StreamVideoClient, useCall, useCallStateHooks} from '@stream-io/video-react-sdk'
+import {useEffect} from 'react'
 
 const apiKey = 'mzwp8k4jeyqn'
 const token =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3Byb250by5nZXRzdHJlYW0uaW8iLCJzdWIiOiJ1c2VyL0phaW5hX1NvbG8iLCJ1c2VyX2lkIjoiSmFpbmFfU29sbyIsInZhbGlkaXR5X2luX3NlY29uZHMiOjYwNDgwMCwiaWF0IjoxNzM4ODQyNjcyLCJleHAiOjE3Mzk0NDc0NzJ9.4CFB_byVYEPBY6_EEvzXIj4eh24_xR7vL0klnNtlVt4'
-const userId = Manager.getUid()
+const userId = Manager.GetUid()
 const callId = '1234'
 
 const newUser = {
@@ -26,12 +13,12 @@ const newUser = {
   name: 'Lindsay',
 }
 
-const client = new StreamVideoClient({ apiKey, newUser, token })
+const client = new StreamVideoClient({apiKey, newUser, token})
 const call = client.call('default', callId)
 
 function VideoCall() {
   const call = useCall()
-  const { useCallCallingState, useParticipantCount } = useCallStateHooks()
+  const {useCallCallingState, useParticipantCount} = useCallStateHooks()
   const callingState = useCallCallingState()
   const participantCount = useParticipantCount()
 

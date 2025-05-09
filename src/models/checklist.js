@@ -4,9 +4,9 @@ var Checklist;
 import Manager from "/src/managers/manager";
 
 export default Checklist = class Checklist {
-  constructor(id = Manager.getUid(), checklistItems = [], fromOrTo = "from") {
+  constructor(id = Manager.GetUid(), items = [], fromOrTo = "from") {
     this.id = id;
-    this.checklistItems = checklistItems;
+    this.items = items;
     this.fromOrTo = fromOrTo;
   }
 

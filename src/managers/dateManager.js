@@ -1,53 +1,47 @@
 import moment from 'moment-timezone'
 import DatetimeFormats from '../constants/datetimeFormats'
+import DB from '../database/DB'
 import DatasetManager from '../managers/datasetManager.coffee'
 import Manager from '../managers/manager'
 import CalendarEvent from '../models/calendarEvent'
 import ModelNames from '../models/modelNames'
 import CalendarManager from './calendarManager.js'
 import ObjectManager from './objectManager'
+import StringManager from './stringManager'
 
 const DateManager = {
-  reminderTimes: {
-    oneHour: 'hour',
-    halfHour: 'halfHour',
+  GetRepeatingEvents: async (object) => {
+    const eventTitle = object.title
+    let repeatingEvents = await DB.getTable(DB.tables.calendarEvents)
+    repeatingEvents = repeatingEvents.filter((event) => event.title === eventTitle)
+    const recurringInterval = object.recurringInterval
+    const active = document.querySelector(`[data-label=${StringManager.uppercaseFirstLetterOfAllWords(recurringInterval)}]`)
+    if (Manager.IsValid(active)) {
+      document.querySelector(`[data-label=${StringManager.uppercaseFirstLetterOfAllWords(recurringInterval)}]`).classList.add('active')
+    }
+    return repeatingEvents
+  },
+  GetCurrentJavascriptDate: () => {
+    const date = new Date()
+    let day = date.getDate()
+    let month = date.getMonth() + 1
+    let year = date.getFullYear()
+    let currentDate = `${month}/${day}/${year}`
+    return currentDate
   },
   convertTime: (time, sourceTimezone, targetTimezone) => {
-    if (!Manager.isValid(sourceTimezone) || !Manager.isValid(targetTimezone)) {
+    if (!Manager.IsValid(sourceTimezone) || !Manager.IsValid(targetTimezone)) {
       return moment(time).format(DatetimeFormats.timeForDb)
     }
     const momentObj = moment.tz(time, 'h:mma', sourceTimezone)
     const convertedMomentObj = momentObj.tz(targetTimezone)
     return moment(convertedMomentObj).format(DatetimeFormats.timeForDb)
   },
-  getTodayJsDate: () => {
-    const today = new Date()
-
-    const day = String(today.getDate()).padStart(2, '0')
-    const month = String(today.getMonth() + 1).padStart(2, '0') // Month is 0-indexed
-    const year = today.getFullYear()
-
-    return `${year}-${month}-${day}`
-  },
-  formatDate: (inputDate, inputFormat = 'M-DD-YYYY', outputFormat = 'dddd, MMM DD') => {
-    let inputFormatString = inputFormat
-    let inputString = inputDate
-    if (inputDate) {
-      if (inputFormat.indexOf('-') > -1) {
-        inputFormatString = inputFormat.replaceAll('-', '/')
-      }
-      if (inputDate.indexOf('-') > -1) {
-        inputString = inputDate.replaceAll('-', '/')
-      }
-      return moment(inputDate, inputFormatString).format(outputFormat)
-    }
-    return inputDate
-  },
   getTimeFromTimezone: (currentUser, date) => {
     const currentDate = moment.tz(date)
     return currentDate.tz(currentUser?.location?.timezone).format(DatetimeFormats.timeForDb)
   },
-  sortCalendarEvents: (events, datePropertyName, timePropertyName) => {
+  SortCalendarEvents: (events, datePropertyName, timePropertyName) => {
     const sorted = events.sort((a, b) => moment(a.startTime, DatetimeFormats.timeForDb).diff(moment(b.startTime, DatetimeFormats.timeForDb)))
     // console.Log(sorted)
     let nestedSort =
@@ -93,12 +87,12 @@ const DateManager = {
     }
   },
   getValidDate: (date) => {
-    if (!Manager.isValid(date)) {
+    if (!Manager.IsValid(date)) {
       return null
     }
     const format = DateManager.getMomentFormat(date)
     const asMoment = moment(date, format).format(DatetimeFormats.dateForDb)
-    if (Manager.contains(asMoment, 'Invalid')) {
+    if (Manager.Contains(asMoment, 'Invalid')) {
       return null
     }
     console.log(asMoment)
@@ -107,20 +101,13 @@ const DateManager = {
   msToDate: (ms) => {
     return moment(ms, 'x').format(DatetimeFormats.dateForDb)
   },
-  dateOrNull: (date) => {
-    if (!Manager.isValid(date)) {
-      return null
-    }
-
-    return date
-  },
   isValidDate: (date) => {
-    if (!Manager.isValid(date)) {
+    if (!Manager.IsValid(date)) {
       return false
     }
     const format = DateManager.getMomentFormat(date)
     const asMoment = moment(date, format).format(format)
-    if (Manager.contains(asMoment, 'Invalid')) {
+    if (Manager.Contains(asMoment, 'Invalid')) {
       return false
     }
     return asMoment.length !== 0
@@ -276,7 +263,7 @@ const DateManager = {
     const holidays = await DateManager.getHolidays()
     let holidayEvents = []
     const switchCheck = (title, holidayName) => {
-      return !!Manager.contains(title, holidayName)
+      return !!Manager.Contains(title, holidayName)
     }
 
     // SET EMOJIS / CREATE EVENT SET
@@ -314,7 +301,7 @@ const DateManager = {
         default:
           newEvent.title = holiday.name
       }
-      newEvent.id = Manager.getUid()
+      newEvent.id = Manager.GetUid()
       newEvent.holidayName = holiday.name
       newEvent.startDate = moment(holiday.date).format(DatetimeFormats.dateForDb)
       newEvent.isHoliday = true
@@ -324,7 +311,7 @@ const DateManager = {
     }
     await CalendarManager.setHolidays(holidayEvents)
   },
-  dateIsValid: (inputDate, format = DatetimeFormats.dateForDb) => {
+  DateIsValid: (inputDate, format = DatetimeFormats.dateForDb) => {
     return moment(inputDate, format).isValid()
   },
   // DELETE

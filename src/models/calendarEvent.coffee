@@ -2,7 +2,7 @@ import Manager from "../managers/manager"
 
 export default class CalendarEvent
   constructor: (
-    @id = Manager.getUid()
+    @id = Manager.GetUid()
     @multipleDatesId = ''
     @websiteUrl = ''
     @notes = ''

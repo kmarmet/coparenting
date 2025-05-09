@@ -1,13 +1,13 @@
 // Path: src\components\childrenInput.jsx
-import React, {useContext, useState} from 'react'
-import globalState from '../context'
-import Manager from '../managers/manager'
 import phone from 'phone'
-import AlertManager from '../managers/alertManager'
-import ChildUser from '../models/child/childUser'
+import React, {useContext, useState} from 'react'
 import InputWrapper from '../components/shared/inputWrapper'
+import globalState from '../context'
+import AlertManager from '../managers/alertManager'
+import Manager from '../managers/manager'
 
 import StringManager from '../managers/stringManager.coffee'
+import ChildUser from '../models/child/childUser'
 
 export default function ChildrenInput({add, childrenCount}) {
   const {state, setState} = useContext(globalState)
@@ -44,7 +44,7 @@ export default function ChildrenInput({add, childrenCount}) {
             }
             const child = new ChildUser()
             child.general = new General()
-            child.id = Manager.getUid()
+            child.id = Manager.GetUid()
             child.general.name = name
             child.general.phone = userPhone
             add(child)

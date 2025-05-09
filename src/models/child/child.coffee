@@ -6,7 +6,7 @@ import Behavior from './behavior'
 
 export default class Child
   constructor: (
-    @id = Manager.getUid()
+    @id = Manager.GetUid()
     @general = new General()
     @medical = new Medical()
     @schooling = new Schooling()

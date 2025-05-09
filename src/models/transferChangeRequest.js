@@ -4,7 +4,7 @@ var TransferChangeRequest;
 import Manager from "../managers/manager";
 
 export default TransferChangeRequest = class TransferChangeRequest {
-  constructor(id = Manager.getUid(), startDate = '', endDate = '', time = '', ownerKey = '', location = '', directionsLink = '', shareWith = [], requestReason = '', declineReason = '', recipientKey = '', responseDueDate = '', preferredTransferLocation = '') {
+  constructor(id = Manager.GetUid(), startDate = '', endDate = '', time = '', ownerKey = '', location = '', directionsLink = '', shareWith = [], requestReason = '', declineReason = '', recipientKey = '', requestedResponseDate = '', responseDate = '', preferredTransferLocation = '') {
     this.id = id;
     this.startDate = startDate;
     this.endDate = endDate;
@@ -16,7 +16,8 @@ export default TransferChangeRequest = class TransferChangeRequest {
     this.requestReason = requestReason;
     this.declineReason = declineReason;
     this.recipientKey = recipientKey;
-    this.responseDueDate = responseDueDate;
+    this.requestedResponseDate = requestedResponseDate;
+    this.responseDate = responseDate;
     this.preferredTransferLocation = preferredTransferLocation;
   }
 

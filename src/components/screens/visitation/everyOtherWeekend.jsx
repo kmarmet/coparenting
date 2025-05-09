@@ -28,7 +28,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
   const ResetForm = () => {
     Manager.ResetForm('Add-every-other-weekend-schedule')
     setShareWith([])
-    setState({...state, refreshKey: Manager.getUid(), isLoading: false})
+    setState({...state, refreshKey: Manager.GetUid(), isLoading: false})
     hide()
   }
 
@@ -50,7 +50,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
       dateObject.ownerKey = currentUser?.key
       dateObject.fromVisitationSchedule = true
       dateObject.visitationSchedule = ScheduleTypes.everyOtherWeekend
-      dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
+      dateObject.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
 
       events.push(dateObject)
     })
@@ -62,7 +62,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
   }
 
   const HandleShareWithSelection = (e) => {
-    const updated = Manager.handleShareWithSelection(e, currentUser, shareWith)
+    const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 

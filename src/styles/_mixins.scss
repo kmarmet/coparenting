@@ -66,12 +66,11 @@
   text-align: center;
   opacity: 1;
   color: $accent;
-  font-family: 'Inter', sans-serif;
-  font-weight: $fwMedium;
+  font-weight: $fwBold;
   width: max-content;
   margin: 0 auto 15px auto;
-  padding-bottom: 6px;
-  border-bottom: 2px solid $lightBorderColor;
+  padding-bottom: 4px;
+  border-bottom: 2px solid rgba(79, 98, 238, 0.27);
 
   &.active {
     transform: scale(1);
@@ -1027,7 +1026,8 @@
   }
 
   .action-items {
-    padding: 20px 20px 50px 20px;
+    padding-top: 25px;
+    padding-bottom: 45px;
     transition: all 0.8s ease-out;
     display: flex;
     flex-direction: column;
@@ -1063,6 +1063,7 @@
       justify-content: center;
       align-items: center;
       margin-top: 15px;
+      width: 100vw;
 
       .close-button {
         color: #929292;
@@ -1086,6 +1087,10 @@
       opacity: 0;
       border: 0;
       margin-bottom: 15px;
+
+      .content {
+        margin-left: 25px;
+      }
 
       /*#region  ROW COLORS*/
       &:nth-of-type(1) {
@@ -2148,33 +2153,47 @@
 
   .accordion-header {
     opacity: 1;
-    color: white;
-    border-radius: $borderRadius;
     font-size: 18px;
     display: flex;
     align-items: center;
     line-height: 1;
-
-    &.android {
-      background: #a4c639;
-    }
-
-    &.desktop {
-      background: $darkBg;
-      padding: 11px;
-    }
+    background: transparent;
+    color: $primaryText;
+    margin-top: 25px;
+    width: max-content;
+    padding: 5px 0 10px 0;
+    font-weight: $fwMediumBold;
 
     svg {
       color: white;
-      margin-left: 5px;
-      position: unset;
+      position: relative;
+      right: -5px;
+    }
 
-      &:last-child {
-        margin-left: auto;
+    &.android {
+      border-top: 3px solid #a4c639;
+      color: #a4c639;
+
+      svg {
+        color: #a4c639;
       }
+    }
 
-      &.apple-logo {
-        margin-left: 5px;
+    &.apple {
+      border-top: 3px solid $main;
+      color: $main;
+
+      svg {
+        color: $main;
+      }
+    }
+
+    &.desktop {
+      border-top: 3px solid $primaryText;
+      color: $primaryText;
+
+      svg {
+        color: $primaryText;
       }
     }
   }
@@ -2242,11 +2261,6 @@
   }
 
   // Install App
-  .rs-panel-body,
-  .rs-panel-header {
-    padding: 0;
-  }
-
   #card {
     @include deadCenter();
     background-color: white;
@@ -2267,9 +2281,7 @@
     }
 
     .accordion-header {
-      color: white;
       font-weight: 500;
-      background-color: black;
       border-radius: $buttonBorderRadius;
       text-align: center;
       padding: 10px;
@@ -2287,18 +2299,6 @@
         }
       }
 
-      &.android {
-        background-color: #359948;
-
-        span {
-          color: white;
-        }
-      }
-
-      &.desktop {
-        background-color: $main;
-      }
-
       span {
         position: relative;
         top: 2px;
@@ -2311,11 +2311,42 @@
   }
 
   .os-container {
-    background: $grey;
-    padding: 12px;
-    border: 1px solid $lightBorderColor;
-    border-radius: $borderRadius;
-
+    &.apple {
+      .steps {
+        a {
+          color: $main;
+        }
+        .flex {
+          .step-number {
+            color: $main;
+          }
+        }
+      }
+    }
+    &.desktop {
+      .steps {
+        a {
+          color: $primaryText;
+        }
+        .flex {
+          .step-number {
+            color: $primaryText;
+          }
+        }
+      }
+    }
+    &.android {
+      .steps {
+        a {
+          color: #a4c639;
+        }
+        .flex {
+          .step-number {
+            color: #a4c639;
+          }
+        }
+      }
+    }
     .while-viewing {
       text-align-last: left;
       font-weight: $fwBold;
@@ -2323,11 +2354,9 @@
     }
 
     .emphasize {
-      background-color: $lightAccentBlue;
       color: $accent;
-      border-radius: 5px;
-      padding: 3px 10px;
       font-weight: $fwBold;
+      padding-left: 5px;
 
       &.no-bold {
         font-weight: 400;
@@ -2335,6 +2364,14 @@
 
       &.more-padding {
         padding: 15px;
+        background: $bootstrapYellowBg;
+        border-radius: $borderRadius;
+        border: 1px solid $bootstrapYellowBorder;
+        color: $bootstrapYellowColor;
+
+        b {
+          color: $bootstrapYellowColor;
+        }
       }
     }
   }
@@ -2581,8 +2618,6 @@
   right: 0;
   z-index: -1;
   overscroll-behavior: none;
-  opacity: 0;
-  transition: all 0.6s ease-out;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -2594,7 +2629,6 @@
   &.active {
     opacity: 1;
     z-index: 9999999;
-    transition: all 0.6s ease-in;
     .modal-fade-wrapper {
       z-index: 999;
     }
@@ -2708,8 +2742,12 @@
 
   /*#endregion  SPECIFIC MODALS*/
 
-  .modal-fade-wrapper {
+  #modal-card {
+    padding-bottom: 40px;
     height: auto;
+    position: relative;
+    align-self: center;
+    display: flex;
     background: white;
     max-height: 70vh;
     overflow: hidden;
@@ -2718,80 +2756,71 @@
     width: calc(100vw - 20px);
     transition: all 0.8s ease-out;
     border-top: 5px solid $main;
-    #modal-content {
-      padding-bottom: 40px;
-      height: auto;
+
+    /*#region  MODAL*/
+    #modal {
+      overflow: auto;
+      overscroll-behavior: none;
       position: relative;
-      align-self: center;
-      max-height: 70vh;
       display: flex;
-      background: white;
+      align-items: stretch;
+      flex-direction: column;
+      flex-grow: 1;
 
-      /*#region  MODAL*/
-      #modal {
-        overflow: auto;
-        overscroll-behavior: none;
-        position: relative;
-        display: flex;
-        align-items: stretch;
-        flex-direction: column;
-        flex-grow: 1;
+      #subtitle {
+        font-size: 15px;
+        color: $darkestGrey;
+      }
 
-        #subtitle {
-          font-size: 15px;
-          color: $darkestGrey;
-        }
+      #modal-title-and-text {
+        padding: 25px 15px 0 15px;
+        position: sticky;
+        top: 0;
+        z-index: 9999999;
+        border-radius: 35px 35px 0 0;
+        background: white;
 
-        #modal-title-and-text {
-          padding: 25px 15px 0 15px;
-          position: sticky;
-          top: 0;
-          z-index: 9999999;
-          border-radius: 35px 35px 0 0;
-          background: white;
+        #modal-title {
+          text-align: center;
+          font-size: 24px;
+          color: $main;
+          width: max-content;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 25px 25px 0 0;
+          font-weight: $fwMediumBold;
+          line-height: 1.3;
+          max-width: 90%;
 
-          #modal-title {
-            text-align: center;
-            font-size: 24px;
-            color: $main;
-            width: max-content;
-            margin: 0 auto;
+          .svg-wrapper {
+            height: 35px;
+            width: 35px;
+            background: $grey;
+            padding: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 25px 25px 0 0;
-            font-weight: $fwMediumBold;
-            line-height: 1.3;
-            max-width: 90%;
+            border-radius: 50%;
+            border: 1px solid $lightBorderColor;
+            svg {
+              font-size: 28px;
+              color: $primaryText;
 
-            .svg-wrapper {
-              height: 35px;
-              width: 35px;
-              background: $grey;
-              padding: 6px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              border-radius: 50%;
-              border: 1px solid $lightBorderColor;
-              svg {
-                font-size: 28px;
-                color: $primaryText;
-
-                &.document {
-                  font-size: 20px;
-                }
+              &.document {
+                font-size: 20px;
               }
             }
+          }
 
-            &.long-title {
-              line-height: 1.3;
-            }
+          &.long-title {
+            line-height: 1.3;
           }
         }
       }
-      /*#endregion  MODAL*/
     }
+    /*#endregion  MODAL*/
   }
 
   &.full-menu {
@@ -4058,7 +4087,6 @@
   grid-template-columns: repeat(2, 1fr);
   position: fixed;
   overflow: auto;
-  transition: all 0.6s ease-out;
   width: 100%;
   margin: 0;
   z-index: -1;
@@ -4073,10 +4101,6 @@
   padding: 30px 0 60px 0;
   bottom: 0;
   max-height: 90vh;
-
-  &.animate__animated animate__fadeInUp {
-    z-index: 9999999;
-  }
 
   .svg-wrapper {
     &.admin {
@@ -4308,6 +4332,7 @@
       &.active {
         position: relative;
         opacity: 1;
+        border-left: 3px solid rgba(0, 0, 0, 0.25);
         p {
           font-weight: $fwMedium;
         }
@@ -4336,9 +4361,6 @@
   }
 
   /*#region  SVGS BY CLASS*/
-  .css-1fpyyhj:has(> .no-add-new-button) {
-    display: none;
-  }
 
   &.actions {
     #menu-items {
@@ -4358,7 +4380,8 @@
     }
   }
 
-  &.calendar {
+  &.calendar,
+  &.home {
     #svg-wrapper {
       #add-new-button {
         transform: scale(1.1);
@@ -4378,14 +4401,11 @@
 
   #svg-wrapper {
     background-color: $main;
-
     height: 60px;
-    //    width: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
     opacity: 1;
-    //    margin: 0 15px;
     position: relative;
     bottom: 10px;
     box-shadow: 0 6px 10px 6px rgba(76, 114, 197, 0.6);
@@ -4426,7 +4446,7 @@
           width: 60px;
           position: relative;
           left: 5px;
-          border-radius: 50%;
+          border-radius: 19px;
           margin: 0;
           svg {
             color: white;
@@ -4436,7 +4456,15 @@
 
       svg {
         color: $darkGrey;
-        width: 30px;
+        &.calendar {
+          transform: scale(0.9);
+        }
+        &.create {
+          transform: scale(1.25);
+        }
+        &.notifications {
+          transform: scale(1);
+        }
       }
 
       p {
@@ -4446,6 +4474,20 @@
         text-align: center;
         padding-top: 5px;
         font-weight: $fwMedium;
+      }
+
+      #calendar-and-month {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        span {
+          position: absolute;
+          color: $darkGrey;
+          padding-top: 5px;
+          font-size: 10px;
+          font-weight: $fwMedium;
+        }
       }
 
       &.notifications {
@@ -4471,23 +4513,17 @@
         font-size: 13px;
       }
 
-      svg {
-        font-size: 28px;
-
-        &.child-info {
-          transform: scale(1.08);
-        }
-
-        &.chats {
-          transform: scale(1.08);
-        }
-      }
-
       &.active {
         opacity: 1;
         color: $accent;
         position: relative;
         transition: all 0.3s ease-in-out;
+
+        #calendar-and-month {
+          span {
+            color: $accent;
+          }
+        }
 
         p,
         svg {

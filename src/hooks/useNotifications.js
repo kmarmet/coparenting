@@ -12,9 +12,14 @@ const useNotifications = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [notifications, setNotifications] = useState([])
   const [error, setError] = useState(null)
-  const [notificationCount, setNotificationCount] = useState(0)
   const path = `${DB.tables.notifications}/${currentUser?.key}`
   const queryKey = ['realtime', path]
+
+  const ClearAppBadge = () => {
+    if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
+      window.navigator.clearAppBadge().then((r) => r)
+    }
+  }
 
   useEffect(() => {
     const database = getDatabase()
@@ -24,12 +29,13 @@ const useNotifications = () => {
       dataRef,
       (snapshot) => {
         // console.Log('Children Updated')
-        const formattedNotifications = DatasetManager.getValidArray(snapshot.val())
-        if (Manager.isValid(currentUser) && Manager.isValid(formattedNotifications)) {
+        const formattedNotifications = DatasetManager.GetValidArray(snapshot.val())
+        if (Manager.IsValid(currentUser) && Manager.IsValid(formattedNotifications)) {
           setNotifications(formattedNotifications)
-          setNotificationCount(formattedNotifications?.length)
           setIsLoading(false)
         } else {
+          ClearAppBadge()
+
           setNotifications([])
         }
       },
@@ -47,7 +53,6 @@ const useNotifications = () => {
 
   return {
     notifications,
-    notificationCount,
     isLoading,
     error,
     queryKey,

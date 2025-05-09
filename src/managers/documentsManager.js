@@ -24,8 +24,8 @@ export default DocumentsManager = {
     results = [];
     for (i = 0, len = idsToDelete.length; i < len; i++) {
       docId = idsToDelete[i];
-      docs = DatasetManager.getValidArray((await DB.getTable(`${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`)));
-      if (Manager.isValid(docs)) {
+      docs = DatasetManager.GetValidArray((await DB.getTable(`${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`)));
+      if (Manager.IsValid(docs)) {
         results.push((await (async function() {
           var j, len1, results1;
           results1 = [];
@@ -55,7 +55,7 @@ export default DocumentsManager = {
   AddToDocumentsTable: async function(currentUser, existingDocuments, data) {
     var dbRef, error;
     dbRef = ref(getDatabase());
-    if (Manager.isValid(existingDocuments)) {
+    if (Manager.IsValid(existingDocuments)) {
       existingDocuments = [...existingDocuments, data].filter(function(item) {
         return item;
       });

@@ -17,6 +17,34 @@ import CalendarManager from './calendarManager'
 import Manager from './manager'
 
 export default AppManager = {
+  OperatingSystems: {
+    Windows: 'Windows',
+    Linux: 'Linux',
+    Mac: 'Mac',
+    iOS: 'iOS',
+    Android: 'Android',
+  },
+  GetOS: function () {
+    var iosPlatforms, macosPlatforms, os, platform, userAgent, windowsPlatforms
+    userAgent = window.navigator.userAgent
+    platform = window.navigator.platform
+    macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K']
+    windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE']
+    iosPlatforms = ['iPhone', 'iPad', 'iPod']
+    os = null
+    if (macosPlatforms.indexOf(platform) !== -1) {
+      os = AppManager.OperatingSystems.Mac
+    } else if (iosPlatforms.indexOf(platform) !== -1) {
+      os = AppManager.OperatingSystems.iOS
+    } else if (windowsPlatforms.indexOf(platform) !== -1) {
+      os = AppManager.OperatingSystems.Windows
+    } else if (/Android/.test(userAgent)) {
+      os = AppManager.OperatingSystems.Android
+    } else if (!os && /Linux/.test(platform)) {
+      os = AppManager.OperatingSystems.Linux
+    }
+    return os
+  },
   getIPAddress: async function () {
     var error, ipAddress, myHeaders, requestOptions, response, result
     ipAddress = ''
@@ -96,7 +124,7 @@ export default AppManager = {
   getQueryStringParams: function (queryStringName) {
     var searchParams
     searchParams = new URLSearchParams(window.location.search)
-    if (Manager.isValid(queryStringName, true)) {
+    if (Manager.IsValid(queryStringName, true)) {
       return searchParams.get(queryStringName)
     }
     return searchParams
@@ -115,8 +143,8 @@ export default AppManager = {
     return location.hostname === 'localhost'
   },
   getAccountType: (currentUser) => {
-    if (Manager.isValid(currentUser)) {
-      if (Manager.isValid(currentUser.accountType)) {
+    if (Manager.IsValid(currentUser)) {
+      if (Manager.IsValid(currentUser.accountType)) {
         if (currentUser.accountType === 'parent') {
           return 'parent'
         } else {
@@ -129,7 +157,7 @@ export default AppManager = {
   deleteExpiredCalendarEvents: async function (currentUser) {
     var daysPassed, event, events, i, len, results
     events = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.key : void 0}`)
-    if (Manager.isValid(events)) {
+    if (Manager.IsValid(events)) {
       events = events.filter(function (x) {
         return x != null
       })
@@ -169,7 +197,7 @@ export default AppManager = {
       set(child(dbRef, 'updateAvailable'), updateObject)
       return false
     }
-    if (!Manager.isValid(updateAvailable) || updateAvailable === false) {
+    if (!Manager.IsValid(updateAvailable) || updateAvailable === false) {
       updateObject.updateAvailable = true
       return set(child(dbRef, 'updateAvailable'), updateObject)
     }
@@ -182,14 +210,14 @@ export default AppManager = {
   deleteExpiredMemories: async function (currentUser) {
     var daysPassed, i, len, memories, memory, results
     memories = await DB.getTable(DB.tables.memories)
-    if (Manager.isValid(memories)) {
+    if (Manager.IsValid(memories)) {
       results = []
       for (i = 0, len = memories.length; i < len; i++) {
         memory = memories[i]
         daysPassed = moment().diff(event.creationDate, 'days')
         if (daysPassed >= 30) {
-          await DB.delete(`${DB.tables.memories}/${currentUser != null ? currentUser.key : void 0}`, memory.id)
-          if (Manager.isValid(memory != null ? memory.memoryName : void 0)) {
+          await DB.Delete(`${DB.tables.memories}/${currentUser != null ? currentUser.key : void 0}`, memory.id)
+          if (Manager.IsValid(memory != null ? memory.memoryName : void 0)) {
             results.push(
               await FirebaseStorage.delete(
                 FirebaseStorage.directories.memories,

@@ -9,11 +9,10 @@ import DateManager from '/src/managers/dateManager'
 import NotificationManager from '/src/managers/notificationManager.js'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {Fade} from 'react-awesome-reveal'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
-import Manager from '../../../managers/manager'
+import DomManager from '../../../managers/domManager'
 import StringManager from '../../../managers/stringManager'
 import CheckboxGroup from '../../shared/checkboxGroup'
 import Spacer from '../../shared/spacer'
@@ -29,14 +28,14 @@ export default function Settings() {
   const [showSummaryUpdateButton, setShowSummaryUpdateButton] = useState(false)
 
   const submitCalendarSettings = async () => {
-    if (DateManager.dateIsValid(morningSummaryHour)) {
+    if (DateManager.DateIsValid(morningSummaryHour)) {
       await DB_UserScoped.updateUserRecord(
         currentUser?.key,
         'dailySummaries/morningReminderSummaryHour',
         moment(morningSummaryHour).format(DatetimeFormats.summaryHour)
       )
     }
-    if (DateManager.dateIsValid(eveningSummaryHour)) {
+    if (DateManager.DateIsValid(eveningSummaryHour)) {
       await DB_UserScoped.updateUserRecord(
         currentUser?.key,
         'dailySummaries/eveningReminderSummaryHour',
@@ -51,8 +50,6 @@ export default function Settings() {
     const subscriber = await DB.find(DB.tables.notificationSubscribers, ['key', currentUser.key], true)
     const {subscriptionId} = subscriber
     await DB_UserScoped.updateUserRecord(currentUser?.key, 'settings/notificationsEnabled', !currentUser?.settings?.notificationsEnabled)
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setState({...state, currentUser: updatedCurrentUser})
 
     if (notificationsToggled === true) {
       await NotificationManager.enableNotifications(subscriptionId)
@@ -73,6 +70,7 @@ export default function Settings() {
   }
 
   useEffect(() => {
+    DomManager.Animate.RemoveAnimationClasses('.section', 'animate__fadeInUp')
     if (
       morningSummaryHour !== currentUser?.dailySummaries?.morningReminderSummaryHour ||
       eveningSummaryHour !== currentUser?.dailySummaries?.eveningReminderSummaryHour
@@ -86,85 +84,75 @@ export default function Settings() {
   return (
     <>
       <div id="settings-container" className={`${currentUser?.settings?.theme} page-container form`}>
-        <Fade direction={'up'} duration={1000} className={'visitation-fade-wrapper'} triggerOnce={true}>
-          <p className="screen-title">Settings</p>
-          <Spacer height={10} />
-          {/* CALENDAR SETTINGS */}
-          <Label text={'Calendar'} classes="settings-section-title" />
-          <div className="calendar-settings form">
-            <div className="section summary">
-              <p className="screen-intro-text">
-                The summaries for the current and following day will be provided during the morning and evening summary hours.
-              </p>
-              <Spacer height={8} />
-              {/* MORNING SUMMARY */}
-              <InputWrapper
-                defaultValue={moment(currentUser?.dailySummaries?.morningReminderSummaryHour, 'h:mma')}
-                labelText={'Morning Hour'}
-                timeViews={['hours']}
-                inputType={InputTypes.time}
-                onDateOrTimeSelection={(e) => setMorningSummaryHour(e)}
-              />
-              {/* EVENING SUMMARY */}
-              <InputWrapper
-                defaultValue={moment(currentUser?.dailySummaries?.eveningReminderSummaryHour, 'h:mma')}
-                labelText={'Evening Hour'}
-                timeViews={['hours']}
-                inputType={InputTypes.time}
-                onChange={(e) => setEveningSummaryHour(e.target.value)}
-                onDateOrTimeSelection={(e) => setEveningSummaryHour(e)}
-              />
-            </div>
-            {currentUser && showSummaryUpdateButton && (
-              <div className="mt-15">
-                <button onClick={submitCalendarSettings} className="button default submit green center mb-10">
-                  Update Summary Times
-                </button>
-              </div>
-            )}
-            <hr className="hr less-margin" />
-
-            {/*  NOTIFICATIONS */}
-            <Label text={'Notifications'} classes="settings-section-title" />
-            <div className="flex">
-              <Label text={'Enabled'} />
-              <ToggleButton
-                isDefaultChecked={currentUser?.settings?.notificationsEnabled}
-                onCheck={toggleNotifications}
-                onUncheck={toggleNotifications}
-              />
-            </div>
-            <hr className="hr less-margin" />
-
-            {/* THEME */}
-            <Label text={'Theme'} classes="settings-section-title" />
-            <CheckboxGroup
-              checkboxArray={Manager.buildCheckboxGroup({
-                currentUser,
-                customLabelArray: ['Light', 'Dark'],
-                defaultLabels: [StringManager.uppercaseFirstLetterOfAllWords(currentUser?.settings?.theme)],
-              })}
-              isDefaultChecked={currentUser?.settings?.theme === 'dark'}
-              elClass={`${currentUser?.settings?.theme}`}
-              skipNameFormatting={true}
-              onCheck={ChangeTheme}
-            />
-            {/*{currentUser?.settings?.theme === 'dark' && (*/}
-            {/*  <div className="menu-item theme">*/}
-            {/*    <PiSunDuotone />*/}
-            {/*    <p onClick={() => ChangeTheme('light')}>Light Mode</p>*/}
-            {/*  </div>*/}
-            {/*)}*/}
-            {/*{currentUser?.settings?.theme === 'light' && (*/}
-            {/*  <div onClick={() => ChangeTheme('dark')} className="menu-item theme">*/}
-            {/*    <div className="svg-wrapper">*/}
-            {/*      <BsFillMoonStarsFill />*/}
-            {/*    </div>*/}
-            {/*    <p>Dark Mode</p>*/}
-            {/*  </div>*/}
-            {/*)}*/}
+        <p className="screen-title">Settings</p>
+        <Spacer height={10} />
+        {/* CALENDAR SETTINGS */}
+        <Label text={'Calendar'} classes="settings-section-title" />
+        <div
+          style={DomManager.AnimateDelayStyle(1)}
+          className={`section summary ${DomManager.Animate.FadeInUp(currentUser?.dailySummaries, '.section')}`}>
+          <p className="screen-intro-text">
+            The summaries for the current and following day will be provided during the morning and evening summary hours.
+          </p>
+          <Spacer height={8} />
+          {/* MORNING SUMMARY */}
+          <InputWrapper
+            defaultValue={moment(currentUser?.dailySummaries?.morningReminderSummaryHour, 'h:mma')}
+            labelText={'Morning Hour'}
+            timeViews={['hours']}
+            inputType={InputTypes.time}
+            onDateOrTimeSelection={(e) => setMorningSummaryHour(e)}
+          />
+          {/* EVENING SUMMARY */}
+          <InputWrapper
+            defaultValue={moment(currentUser?.dailySummaries?.eveningReminderSummaryHour, 'h:mma')}
+            labelText={'Evening Hour'}
+            timeViews={['hours']}
+            inputType={InputTypes.time}
+            onChange={(e) => setEveningSummaryHour(e.target.value)}
+            onDateOrTimeSelection={(e) => setEveningSummaryHour(e)}
+          />
+        </div>
+        {currentUser && showSummaryUpdateButton && (
+          <div className="mt-15">
+            <button onClick={submitCalendarSettings} className="button default submit green center mb-10">
+              Update Summary Times
+            </button>
           </div>
-        </Fade>
+        )}
+
+        <Spacer height={10} />
+
+        {/*  NOTIFICATIONS */}
+        <Label text={'Notifications'} classes="settings-section-title" />
+        <div style={DomManager.AnimateDelayStyle(1)} className={`section ${DomManager.Animate.FadeInUp(currentUser?.settings, '.section')}`}>
+          <div className="flex">
+            <Label text={'Enabled'} />
+            <ToggleButton
+              isDefaultChecked={currentUser?.settings?.notificationsEnabled}
+              onCheck={toggleNotifications}
+              onUncheck={toggleNotifications}
+            />
+          </div>
+        </div>
+
+        <Spacer height={10} />
+
+        {/* THEME */}
+        <Label text={'Theme'} classes="settings-section-title" />
+        <div style={DomManager.AnimateDelayStyle(1)} className={`section ${DomManager.Animate.FadeInUp(currentUser?.settings?.theme, '.section')}`}>
+          <CheckboxGroup
+            checkboxArray={DomManager.BuildCheckboxGroup({
+              currentUser,
+              customLabelArray: ['Light', 'Dark'],
+              defaultLabels: [StringManager.uppercaseFirstLetterOfAllWords(currentUser?.settings?.theme)],
+            })}
+            isDefaultChecked={currentUser?.settings?.theme === 'dark'}
+            elClass={`${currentUser?.settings?.theme} `}
+            skipNameFormatting={true}
+            onCheck={ChangeTheme}
+          />
+        </div>
       </div>
       <NavBar navbarClass={'settings no-Add-new-button'}></NavBar>
     </>

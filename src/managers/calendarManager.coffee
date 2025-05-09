@@ -17,13 +17,13 @@ export default CalendarManager =
   addMultipleCalEvents: (currentUser, newEvents, isRangeClonedOrRecurring = false) ->
     dbRef = ref(getDatabase())
     currentEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}")
-    multipleDatesId = Manager.getUid()
+    multipleDatesId = Manager.GetUid()
 
     if isRangeClonedOrRecurring = true
       for event in newEvents
         event.multipleDatesId = multipleDatesId
 
-    if !Manager.isValid(currentEvents)
+    if !Manager.IsValid(currentEvents)
       toAdd = [...newEvents]
     else
       toAdd = [currentEvents..., newEvents...]
@@ -52,7 +52,7 @@ export default CalendarManager =
       dateObject = new CalendarEvent()
       # Required
       dateObject.title = eventObject.title
-      dateObject.id = Manager.getUid()
+      dateObject.id = Manager.GetUid()
       dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       dateObject.endDate = moment(endDate).format(DateFormats.dateForDb)
 
@@ -60,7 +60,7 @@ export default CalendarManager =
         dateObject.staticStartDate = moment(datesToIterate[0]).format(DateFormats.dateForDb)
 
       # Not Required
-      dateObject.directionsLink = Manager.getDirectionsLink(eventObject.location)
+      dateObject.directionsLink = Manager.GetDirectionsLink(eventObject.location)
       dateObject.location = eventObject.location
       dateObject.children = eventObject.children
       dateObject.ownerKey = currentUser?.key
@@ -74,9 +74,9 @@ export default CalendarManager =
 #      dateObject.isCloned = Manager.isValid(clonedDates)
 
       # Times
-      if Manager.isValid(eventObject.startTime)
+      if Manager.IsValid(eventObject.startTime)
         dateObject.startTime = moment(eventObject.startTime).format(DateFormats.timeForDb)
-      if Manager.isValid(eventObject.endTime)
+      if Manager.IsValid(eventObject.endTime)
         dateObject.endTime = moment(eventObject.endTime).format(DateFormats.timeForDb)
 
       dateObject.reminderTimes = eventObject.reminderTimes
@@ -103,7 +103,7 @@ export default CalendarManager =
 
     toAdd = []
     try
-      if Manager.isValid(currentEvents)
+      if Manager.IsValid(currentEvents)
         toAdd = [currentEvents..., newEvent]
       else
         toAdd = [newEvent]
@@ -125,9 +125,9 @@ export default CalendarManager =
     dbRef = ref(getDatabase())
     tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}")
     idsToDelete = events.map (x) -> x.id
-    if Manager.isValid(tableRecords)
+    if Manager.IsValid(tableRecords)
       for record in tableRecords
-        if Manager.contains(idsToDelete, record.id)
+        if Manager.Contains(idsToDelete, record.id)
           await CalendarManager.deleteEvent(currentUser, record.id)
 
   deleteAllHolidayEvents: () ->

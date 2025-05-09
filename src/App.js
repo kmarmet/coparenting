@@ -51,13 +51,14 @@ import {LicenseInfo} from '@mui/x-license'
 import * as Sentry from '@sentry/react'
 import {initializeApp} from 'firebase/app'
 import {getAuth, onAuthStateChanged} from 'firebase/auth'
+import moment from 'moment'
 import React, {useEffect, useState} from 'react'
 import NewChat from './components/forms/newChat'
-import Home from './components/screens/home'
 import Parents from './components/screens/parents/parents'
 import CreationMenu from './components/shared/creationMenu'
 import SuccessAlert from './components/shared/successAlert'
 import CreationForms from './constants/creationForms'
+import DatetimeFormats from './constants/datetimeFormats'
 import DB from './database/DB'
 import NotificationManager from './managers/notificationManager'
 
@@ -70,9 +71,9 @@ export default function App() {
   const {userIsLoggedIn, firebaseUser, setFirebaseUser} = state
   const myCanvas = document.createElement('canvas')
 
-  const fullscreenScreens = [ScreenNames.login, ScreenNames.home, ScreenNames.registration]
-  const screensToHideSidebar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home]
-  const screensToHideBrandbar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.home]
+  const fullscreenScreens = [ScreenNames.login, ScreenNames.landing, ScreenNames.registration]
+  const screensToHideSidebar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.landing]
+  const screensToHideBrandbar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.landing]
 
   // Init Sentry
   Sentry.init({
@@ -94,7 +95,7 @@ export default function App() {
     blockList: {
       // Block the suspended emails
       list: [],
-      // The variable contains the email address
+      // The variable Contains the email address
       // watchVariable: 'userEmail',
     },
     limitRate: {
@@ -107,14 +108,6 @@ export default function App() {
 
   // State to include in App.js
   const {isLoading, currentScreen, loadingText, currentUser, theme, authUser, creationFormToShow} = state
-
-  // ON SCREEN CHANGE
-  useEffect(() => {
-    if (window.navigator.clearAppBadge && typeof window.navigator.clearAppBadge === 'function') {
-      // console.Log(`Screen: ${currentScreen}`)
-      window.navigator.clearAppBadge().then((r) => r)
-    }
-  }, [currentScreen])
 
   // ON PAGE LOAD
   useEffect(() => {
@@ -130,6 +123,21 @@ export default function App() {
       try {
         if (user) {
           const user = auth.currentUser
+
+          // Check for last auto refresh tie and last login datetime
+          if (Manager.IsValid(user)) {
+            // Login check
+            const lastLogin = moment(user?.metadata?.lastSignInTime).format(DatetimeFormats.fullDatetime)
+            const msSinceLastLogin = moment(lastLogin, DatetimeFormats.fullDatetime).diff()
+            const hoursSinceLastLogin = Math.abs(Math.ceil(msSinceLastLogin / (1000 * 60 * 60))) ?? 0
+
+            // If user has been logged in for more than 30 days -> sign them out
+            if (hoursSinceLastLogin >= 720) {
+              await auth.signOut()
+              return
+            }
+          }
+          await AppManager.setAppBadge(0)
           await AppManager.clearAppBadge()
           const users = await DB.getTable(DB.tables.users)
 
@@ -137,12 +145,12 @@ export default function App() {
           let currentUserFromDb
           currentUserFromDb = users?.find((u) => u?.email === user?.email)
           // User Exists
-          if (Manager.isValid(currentUserFromDb)) {
-            let screenToNavigateTo = ScreenNames.home
+          if (Manager.IsValid(currentUserFromDb)) {
+            let screenToNavigateTo = ScreenNames.calendar
             const body = document.getElementById('external-overrides')
             const navbar = document.getElementById('navbar')
 
-            if (Manager.isValid(navbar)) {
+            if (Manager.IsValid(navbar)) {
               navbar.setAttribute('account-type', currentUserFromDb?.accountType)
             }
             if (body) {
@@ -151,7 +159,7 @@ export default function App() {
 
             // Check if child profile and if parent access is granted
             // Add location details to use record if they do not exist
-            if (!Manager.isValid(currentUserFromDb?.location)) {
+            if (!Manager.IsValid(currentUserFromDb?.location)) {
               AppManager.getLocationDetails().then(async (r) => {
                 await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUserFromDb?.key}/location`, r)
               })
@@ -179,7 +187,6 @@ export default function App() {
               currentUser: currentUserFromDb,
               currentScreen: screenToNavigateTo,
               userIsLoggedIn: true,
-              isLoading: false,
               loadingText: '',
               theme: currentUserFromDb?.settings?.theme,
               notificationCount: notifications?.length,
@@ -197,6 +204,7 @@ export default function App() {
           console.log('user signed out or user does not exist')
         }
       } catch (error) {
+        setState({...state, isLoading: false})
         console.log(`Error: ${error} | Code File: App.js  | Function: useEffect |`)
       }
     })
@@ -227,7 +235,7 @@ export default function App() {
           <NewExpenseForm showCard={creationFormToShow === CreationForms.expense} />
           <NewCoparentForm
             showCard={creationFormToShow === CreationForms.coparent}
-            hideCard={() => setState({...state, creationFormToShow: '', refreshKey: Manager.getUid()})}
+            hideCard={() => setState({...state, creationFormToShow: '', refreshKey: Manager.GetUid()})}
           />
           <NewChat />
 
@@ -237,7 +245,7 @@ export default function App() {
           {/* SCREENS */}
           <div
             id="app-content-with-sidebar"
-            className={`${fullscreenScreens.includes(currentScreen) ? 'fullscreen' : ''} ${Manager.isValid(authUser) ? 'logged-in' : ''} ${currentScreen === ScreenNames.calendar ? 'three-columns' : ''}`}>
+            className={`${fullscreenScreens.includes(currentScreen) ? 'fullscreen' : ''} ${Manager.IsValid(authUser) ? 'logged-in' : ''} ${currentScreen === ScreenNames.calendar ? 'three-columns' : ''}`}>
             {/* SIDE NAVBAR */}
             {!screensToHideSidebar.includes(currentScreen) && !DomManager.isMobile() && <DesktopLeftSidebar />}
 
@@ -287,7 +295,6 @@ export default function App() {
             {currentScreen === ScreenNames.chats && <Chats />}
             {currentScreen === ScreenNames.visitation && <Visitation />}
             {currentScreen === ScreenNames.help && <Help />}
-            {currentScreen === ScreenNames.home && <Home />}
           </div>
         </globalState.Provider>
       </div>

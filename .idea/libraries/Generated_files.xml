@@ -10,6 +10,7 @@
         <item url="file://$PROJECT_DIR$/src/constants/reminderTimes.js" />
         <item url="file://$PROJECT_DIR$/src/constants/scheduleTypes.js" />
         <item url="file://$PROJECT_DIR$/src/constants/screenNames.js" />
+        <item url="file://$PROJECT_DIR$/src/constants/slideshowImage.js" />
         <item url="file://$PROJECT_DIR$/src/constants/stateObj.js" />
         <item url="file://$PROJECT_DIR$/src/constants/swapDurations.js" />
         <item url="file://$PROJECT_DIR$/src/managers/alertManager.js" />
@@ -57,6 +58,7 @@
         <item url="file://$PROJECT_DIR$/src/models/parent.js" />
         <item url="file://$PROJECT_DIR$/src/models/parentPermissionCode.js" />
         <item url="file://$PROJECT_DIR$/src/models/shortcut.js" />
+        <item url="file://$PROJECT_DIR$/src/models/slideshowImage.js" />
         <item url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
         <item url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
         <item url="file://$PROJECT_DIR$/src/models/user.js" />
@@ -71,6 +73,7 @@
       <root url="file://$PROJECT_DIR$/src/constants/reminderTimes.js" />
       <root url="file://$PROJECT_DIR$/src/constants/scheduleTypes.js" />
       <root url="file://$PROJECT_DIR$/src/constants/screenNames.js" />
+      <root url="file://$PROJECT_DIR$/src/constants/slideshowImage.js" />
       <root url="file://$PROJECT_DIR$/src/constants/stateObj.js" />
       <root url="file://$PROJECT_DIR$/src/constants/swapDurations.js" />
       <root url="file://$PROJECT_DIR$/src/managers/alertManager.js" />
@@ -119,6 +122,7 @@
       <root url="file://$PROJECT_DIR$/src/models/parent.js" />
       <root url="file://$PROJECT_DIR$/src/models/parentPermissionCode.js" />
       <root url="file://$PROJECT_DIR$/src/models/shortcut.js" />
+      <root url="file://$PROJECT_DIR$/src/models/slideshowImage.js" />
       <root url="file://$PROJECT_DIR$/src/models/swapRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/transferChangeRequest.js" />
       <root url="file://$PROJECT_DIR$/src/models/user.js" />

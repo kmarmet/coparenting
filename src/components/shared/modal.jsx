@@ -24,32 +24,18 @@ export default function Modal({
   viewSelector,
 }) {
   const {state, setState} = useContext(globalState)
-  const {theme, authUser, creationFormToShow} = state
+  const {theme, refreshKey, creationFormToShow} = state
 
   const HideCard = () => {
     const modalWrapper = document.querySelector(`.${wrapperClass}#modal-wrapper`)
 
     if (modalWrapper) {
       const modal = modalWrapper.querySelector('#modal')
-      const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
-      const pageContainer = document.querySelector('.page-container')
 
       if (modal) {
-        // DB_UserScoped.getCurrentUser(authUser?.email).then((user) => {
-        //   setState({...state, refreshKey: Manager.getUid(), menuIsOpen: false, currentUser: user, showBottomMenu: false, creationFormToShow: ''})
-        // })
-
-        // Remove disable-scroll class
-        if (pageContainer) {
-          pageContainer.classList.remove('disable-scroll')
-        }
-
-        document.body.classList.remove('disable-scroll')
-        appContentWithSidebar.classList.remove('disable-scroll')
-
         setTimeout(() => {
           const labelWrappers = modal.querySelectorAll('#label-wrapper')
-          if (Manager.isValid(labelWrappers)) {
+          if (Manager.IsValid(labelWrappers)) {
             labelWrappers.forEach((label) => {
               label.classList.remove('active')
             })
@@ -68,13 +54,11 @@ export default function Modal({
     let modalWrapper = document.querySelector(`.${wrapperClass}#modal-wrapper.active`)
 
     // Check if creationFormToShow is valid and if so, find the modal wrapper
-    if (Manager.isValid(creationFormToShow, true)) {
+    if (Manager.IsValid(creationFormToShow, true)) {
       modalWrapper = document.querySelector(`.${creationFormToShow}#modal-wrapper`)
     }
     if (modalWrapper) {
       const checkboxContainer = document.getElementById('share-with-checkbox-container')
-      const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
-      const pageContainer = document.querySelector('.page-container')
 
       if (modalWrapper && StringManager.GetWordCount(title) >= 4) {
         const title = modalWrapper.querySelector('#modal-title')
@@ -84,36 +68,21 @@ export default function Modal({
       }
 
       // show or hide card
-      if (Manager.isValid(wrapperClass, true) && Manager.isValid(modalWrapper)) {
-        // show card
-
+      if (Manager.IsValid(wrapperClass, true) && Manager.IsValid(modalWrapper)) {
         if (showCard) {
           ScrollToTop()
           const checkboxes = modalWrapper.querySelectorAll('.checkbox')
-          if (Manager.isValid(checkboxes)) {
+          if (Manager.IsValid(checkboxes)) {
             for (let checkbox of checkboxes) {
               checkbox.checked = false
             }
           }
-          document.body.classList.add('disable-scroll')
-          appContentWithSidebar.classList.add('disable-scroll')
 
           if (checkboxContainer) {
             checkboxContainer.classList.remove('active')
           }
-
-          if (pageContainer) {
-            pageContainer.classList.add('disable-scroll')
-          }
-        }
-
-        // hide card
-        else {
-          document.body.classList.remove('disable-scroll')
-          appContentWithSidebar.classList.remove('disable-scroll')
-          if (pageContainer) {
-            pageContainer.classList.remove('disable-scroll')
-          }
+        } else {
+          DomManager.ToggleAnimation('remove', 'modal-fade-wrapper', DomManager.AnimateClasses.names.fadeInUp, 50)
         }
       }
 
@@ -126,43 +95,27 @@ export default function Modal({
         endTimeInput.placeholder = 'End time'
       }
     }
-    if (!showCard) {
-      const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
-      const pageContainer = document.querySelector('.page-container')
-      document.body.classList.remove('disable-scroll')
-      if (appContentWithSidebar) {
-        appContentWithSidebar.classList.remove('disable-scroll')
-      }
-      if (pageContainer) {
-        pageContainer.classList.remove('disable-scroll')
-      }
-    }
-
-    if (showCard) {
-      DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
-    } else {
-      DomManager.ToggleAnimation('remove', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
-    }
   }, [showCard])
 
   return (
     <Overlay show={showCard}>
-      <div id="modal-wrapper" className={`${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
+      <div key={refreshKey} id="modal-wrapper" className={`${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
         {viewSelector}
-        <div className={`${showCard ? 'animate__animated animate__fadeInUp' : 'animate__animated animate__fadeOutDown'} modal-fade-wrapper`}>
-          <div id="modal-content">
-            <div id="modal">
-              <div id="modal-title-and-text" className={Manager.isValid(subtitle, true) ? 'with-subtitle' : ''}>
-                <p id="modal-title">
-                  {title}
-                  {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
-                </p>
-                <Spacer height={3} />
-                {Manager.isValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}
-              </div>
-              <div id="relative-wrapper">
-                <div id="content">{children}</div>
-              </div>
+        <div
+          style={DomManager.AnimateDelayStyle(1, 0.002)}
+          id="modal-card"
+          className={`${DomManager.Animate.FadeInUp(showCard, '.modal-fade-wrapper')} modal-fade-wrapper`}>
+          <div id="modal">
+            <div id="modal-title-and-text" className={Manager.IsValid(subtitle, true) ? 'with-subtitle' : ''}>
+              <p id="modal-title">
+                {title}
+                {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
+              </p>
+              <Spacer height={3} />
+              {Manager.IsValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}
+            </div>
+            <div id="relative-wrapper">
+              <div id="content">{children}</div>
             </div>
           </div>
         </div>
@@ -174,7 +127,7 @@ export default function Modal({
             </button>
           )}
           {hasDelete && (
-            <button className={'delete-button default warning card-button'} onClick={onDelete}>
+            <button className={'Delete-button default warning card-button'} onClick={onDelete}>
               {deleteButtonText}
             </button>
           )}

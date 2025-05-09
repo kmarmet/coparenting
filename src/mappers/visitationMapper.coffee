@@ -5,13 +5,13 @@ VisitationMapper =
   formattedScheduleTypes: (type) ->
     console.log(type)
     switch true
-      when Manager.contains(type, '50')
+      when Manager.Contains(type, '50')
         return ScheduleTypes.fiftyFifty
-      when Manager.contains(type, 'Custom Weekends')
+      when Manager.Contains(type, 'Custom Weekends')
         return ScheduleTypes.customWeekends
-      when Manager.contains(type, 'Every Weekend')
+      when Manager.Contains(type, 'Every Weekend')
         return ScheduleTypes.everyWeekend
-      when Manager.contains(type, 'Every other Weekend')
+      when Manager.Contains(type, 'Every other Weekend')
         return ScheduleTypes.everyOtherWeekend
     null
 

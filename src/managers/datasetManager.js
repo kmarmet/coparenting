@@ -25,15 +25,71 @@ DatasetManager = {
     } else {
       return Object.entries(arr).flat();
     }
-    return arr;
   },
-  getValidArray: function(arr) {
-    if (Manager.isValid(arr)) {
-      arr = Manager.convertToArray(arr);
-      return arr.filter(function(x) {
-        return x;
-      });
+  CombineArrays: function(arrOne = [], arrTwo = [], isUnique = true, isFlattened = true) {
+    var returnArray;
+    returnArray = [];
+    arrOne = DatasetManager.GetValidArray(arrOne);
+    arrTwo = DatasetManager.GetValidArray(arrTwo);
+    if (Manager.IsValid(arrOne)) {
+      returnArray = [...arrOne];
     }
+    if (Manager.IsValid(arrTwo)) {
+      returnArray = [...returnArray, ...arrTwo];
+    }
+    if (isUnique) {
+      returnArray = DatasetManager.getUniqueArray(returnArray);
+    }
+    if (isFlattened) {
+      returnArray = returnArray.flat();
+    }
+    return returnArray;
+  },
+  AddToArray: (arr, newItem) => {
+    var returnArray;
+    returnArray = [];
+    if (!Manager.IsValid(arr)) {
+      returnArray = [newItem];
+    }
+    if (Manager.IsValid(arr) && Array.isArray(arr) && arr.length > 0) {
+      returnArray = [...arr, newItem];
+    }
+    if (Manager.IsValid(arr) && Array.isArray(arr) && arr.length === 0) {
+      returnArray = [newItem];
+    }
+    if (Manager.IsValid(arr) && !Array.isArray(arr)) {
+      returnArray = [newItem];
+    }
+    console.log(returnArray);
+    if (Manager.IsValid(returnArray)) {
+      returnArray = DatasetManager.GetValidArray(returnArray);
+    }
+    console.log(returnArray);
+    return returnArray;
+  },
+  GetValidArray: function(source, isUnique = true, isFlattened = true, getObjectValuesOnly = false) {
+    var returnArray;
+    returnArray = [];
+    if (Manager.IsValid(source)) {
+      if (Array.isArray(source)) {
+        if (source != null) {
+          returnArray = source;
+        }
+      } else if (typeof source === 'object') {
+        if (getObjectValuesOnly) {
+          returnArray = Object.values(source);
+        } else {
+          returnArray = Object.entries(source);
+        }
+      }
+    }
+    if (isUnique) {
+      returnArray = DatasetManager.getUniqueArray(returnArray);
+    }
+    if (isFlattened) {
+      returnArray = returnArray.flat();
+    }
+    return returnArray;
   },
   getNestedObject: async function(table, objectPath) {
     var dataset;

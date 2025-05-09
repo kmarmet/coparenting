@@ -1,7 +1,7 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useEffect, useState} from 'react'
-import Manager from '../managers/manager'
 import DB from '../database/DB'
+import Manager from '../managers/manager'
 
 const useChatMessages = (chatId) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -20,7 +20,7 @@ const useChatMessages = (chatId) => {
       dataRef,
       async (snapshot) => {
         const messages = snapshot.val()
-        if (Manager.isValid(messages)) {
+        if (Manager.IsValid(messages)) {
           setChatMessages(messages)
         } else {
           setChatMessages([])

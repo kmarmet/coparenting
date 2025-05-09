@@ -9,7 +9,6 @@ import globalState from '../../context.js'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
-import AddressInput from './addressInput'
 import Label from './label'
 import Spacer from './spacer'
 
@@ -52,16 +51,16 @@ function InputWrapper({
           wrapper.classList.remove('active')
         }}
         id="input-wrapper"
-        className={`${wrapperClasses} ${inputType} ${Manager.isValid(defaultValue) ? 'show-label' : ''}`}>
+        className={`${wrapperClasses} ${inputType} ${Manager.IsValid(defaultValue) ? 'show-label' : ''}`}>
         {/* LABEL */}
-        {Manager.isValid(labelText, true) && (
-          <Label classes={Manager.isValid(defaultValue) ? 'active' : ''} text={`${labelText}`} required={required} />
+        {Manager.IsValid(labelText, true) && (
+          <Label classes={Manager.IsValid(defaultValue) ? 'active' : ''} text={`${labelText}`} required={required} />
         )}
 
         {/* TEXT */}
         {inputType === InputTypes.text && (
           <DebounceInput
-            value={Manager.isValid(defaultValue) ? defaultValue : ''}
+            value={Manager.IsValid(defaultValue) ? defaultValue : ''}
             placeholder={placeholder}
             className={`${inputClasses}`}
             onChange={onChange}
@@ -102,9 +101,6 @@ function InputWrapper({
           />
         )}
 
-        {/* ADDRESS */}
-        {inputType === InputTypes.address && <AddressInput defaultValue={defaultValue} onSelection={onChange} />}
-
         {/* DATE */}
         {inputType === InputTypes.date && (
           <MobileDatePicker
@@ -114,7 +110,7 @@ function InputWrapper({
             views={dateViews}
             name={inputName}
             class={`${theme} ${inputClasses}`}
-            value={Manager.isValid(defaultValue) ? moment(defaultValue) : null}
+            value={Manager.IsValid(defaultValue) ? moment(defaultValue) : null}
             key={refreshKey}
             format={dateFormat}
             onAccept={onDateOrTimeSelection}
@@ -125,7 +121,7 @@ function InputWrapper({
         {inputType === InputTypes.dateRange && (
           <MobileDateRangePicker
             onAccept={onDateOrTimeSelection}
-            defaultValue={Manager.isValid(defaultValue) ? moment(defaultValue) : null}
+            defaultValue={Manager.IsValid(defaultValue) ? moment(defaultValue) : null}
             slots={{field: SingleInputDateRangeField}}
             key={refreshKey}
             onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
@@ -144,7 +140,7 @@ function InputWrapper({
             }}
             name={inputName}
             views={timeViews}
-            value={Manager.isValid(defaultValue) ? moment(defaultValue, DatetimeFormats.timeForDb) : null}
+            value={Manager.IsValid(defaultValue) ? moment(defaultValue, DatetimeFormats.timeForDb) : null}
             label={labelText}
             minutesStep={5}
             onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}

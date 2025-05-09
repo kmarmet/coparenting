@@ -1,20 +1,20 @@
 // Path: src\components\screens\visitation\customWeekends.jsx
-import Modal from '../../../components/shared/modal'
-import globalState from '../../../context'
+import moment from 'moment'
 import React, {useContext, useState} from 'react'
-import Manager from '../../../managers/manager'
+import CheckboxGroup from '../../../components/shared/checkboxGroup'
+import Modal from '../../../components/shared/modal'
+import MyConfetti from '../../../components/shared/myConfetti'
+import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
+import DatetimeFormats from '../../../constants/datetimeFormats'
+import ScheduleTypes from '../../../constants/scheduleTypes'
+import globalState from '../../../context'
+import useCurrentUser from '../../../hooks/useCurrentUser'
 import AlertManager from '../../../managers/alertManager'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager'
 import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/calendarEvent'
-import StringManager from '../../../managers/stringManager'
-import ScheduleTypes from '../../../constants/scheduleTypes'
-import MyConfetti from '../../../components/shared/myConfetti'
-import moment from 'moment'
-import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
-import CheckboxGroup from '../../../components/shared/checkboxGroup'
 import Spacer from '../../shared/spacer'
-import useCurrentUser from '../../../hooks/useCurrentUser'
-import DatetimeFormats from '../../../constants/datetimeFormats'
 
 export default function CustomWeekends({hide, showCard}) {
   const {state, setState} = useContext(globalState)
@@ -27,12 +27,12 @@ export default function CustomWeekends({hide, showCard}) {
   const ResetForm = () => {
     Manager.ResetForm('custom-weekends-schedule')
     setShareWith([])
-    setState({...state, refreshKey: Manager.getUid(), isLoading: false})
+    setState({...state, refreshKey: Manager.GetUid(), isLoading: false})
     hide()
   }
 
   const handleFifthWeekendSelection = (e) => {
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         setFifthWeekendSelection(e)
@@ -43,7 +43,7 @@ export default function CustomWeekends({hide, showCard}) {
   }
 
   const handleSpecificWeekendSelection = (e) => {
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         if (defaultSelectedWeekends.length > 0) {
@@ -58,7 +58,7 @@ export default function CustomWeekends({hide, showCard}) {
   }
 
   const addSpecificWeekendsToCalendar = async () => {
-    if (!Manager.isValid(defaultSelectedWeekends) || !Manager.isValid(fifthWeekendSelection)) {
+    if (!Manager.IsValid(defaultSelectedWeekends) || !Manager.IsValid(fifthWeekendSelection)) {
       AlertManager.throwError('Please choose default weekends and a five-month weekend')
       return false
     }
@@ -78,9 +78,9 @@ export default function CustomWeekends({hide, showCard}) {
       dateObject.ownerKey = currentUser?.key
       dateObject.createdBy = currentUser?.name
       dateObject.fromVisitationSchedule = true
-      dateObject.id = Manager.getUid()
+      dateObject.id = Manager.GetUid()
       dateObject.visitationSchedule = ScheduleTypes.customWeekends
-      dateObject.shareWith = Manager.getUniqueArray(shareWith, 'phone').flat()
+      dateObject.shareWith = DatasetManager.getUniqueArray(shareWith, 'phone').flat()
 
       if (events.length === 0) {
         events = [dateObject]
@@ -91,14 +91,14 @@ export default function CustomWeekends({hide, showCard}) {
 
     MyConfetti.fire()
     await ResetForm()
-    events = Manager.getUniqueArray(events, 'startDate')
+    events = DatasetManager.getUniqueArray(events, 'startDate')
 
     // Upload to DB
     VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
   }
 
   const HandleShareWithSelection = (e) => {
-    const updated = Manager.handleShareWithSelection(e, currentUser, shareWith)
+    const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 
@@ -107,7 +107,7 @@ export default function CustomWeekends({hide, showCard}) {
       submitText={'Add Schedule'}
       className={'long-title form'}
       onSubmit={addSpecificWeekendsToCalendar}
-      hasSubmitButton={Manager.isValid(defaultSelectedWeekends)}
+      hasSubmitButton={Manager.IsValid(defaultSelectedWeekends)}
       wrapperClass="custom-weekends-schedule"
       title={'Custom Weekends Schedule'}
       showCard={showCard}
@@ -116,7 +116,7 @@ export default function CustomWeekends({hide, showCard}) {
       <CheckboxGroup
         parentLabel={'Weekend YOU will have the child(ren)'}
         onCheck={handleSpecificWeekendSelection}
-        checkboxArray={Manager.buildCheckboxGroup({
+        checkboxArray={DomManager.BuildCheckboxGroup({
           currentUser,
           customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend'],
         })}
@@ -125,7 +125,7 @@ export default function CustomWeekends({hide, showCard}) {
       <CheckboxGroup
         parentLabel={'Month with 5 weekends - extra weekend'}
         onCheck={handleFifthWeekendSelection}
-        checkboxArray={Manager.buildCheckboxGroup({
+        checkboxArray={DomManager.BuildCheckboxGroup({
           currentUser,
           customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend'],
         })}

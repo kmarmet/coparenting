@@ -26,11 +26,11 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {Fade} from 'react-awesome-reveal'
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
 import globalState from '../../context'
 import useCalendarEvents from '../../hooks/useCalendarEvents'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import DomManager from '../../managers/domManager'
 import NavBar from '../navBar'
 import AccordionTitle from '../shared/accordionTitle'
 import Label from '../shared/label'
@@ -86,7 +86,7 @@ export default function Visitation() {
       dateObject.createdBy = currentUser?.name
       dateObject.fromVisitationSchedule = true
       dateObject.visitationSchedule = ScheduleTypes.everyWeekend
-      dateObject.shareWith = Manager.getUniqueArray(shareWith).flat()
+      dateObject.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
 
       events.push(dateObject)
     })
@@ -99,7 +99,7 @@ export default function Visitation() {
   // SET HOLIDAYS IN DATABASE
   const SetHolidaysInDatabase = async () => {
     // Holidays
-    if (Manager.isValid(selectedHolidayDates)) {
+    if (Manager.IsValid(selectedHolidayDates)) {
       // setShowUpdateHolidaysButton(false)
       let events = []
       console.log(selectedHolidayDates)
@@ -115,7 +115,7 @@ export default function Visitation() {
         dateObject.createdBy = currentUser?.name
         dateObject.fromVisitationSchedule = true
         dateObject.isHoliday = true
-        dateObject.id = Manager.getUid()
+        dateObject.id = Manager.GetUid()
         dateObject.shareWith = DatasetManager.getUniqueArray(shareWith, true)
         const cleanedObject = ObjectManager.cleanObject(dateObject, ModelNames.calendarEvent)
         events.push(cleanedObject)
@@ -129,7 +129,7 @@ export default function Visitation() {
   }
 
   const HandleHolidaySelection = async (e) => {
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         const dataDate = CalendarMapper.holidayNameToDate(e)
@@ -153,7 +153,7 @@ export default function Visitation() {
   }
 
   const HandleScheduleTypeSelection = (e) => {
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       async (e) => {
         setScheduleType(VisitationMapper.formattedScheduleTypes(e))
@@ -169,7 +169,7 @@ export default function Visitation() {
   const GetVisitationHolidays = async (currentUser) => {
     const _holidays = await VisitationManager.getVisitationHolidays()
     let userHolidays = []
-    if (Manager.isValid(calendarEvents)) {
+    if (Manager.IsValid(calendarEvents)) {
       userHolidays = calendarEvents.filter((x) => x.ownerKey === currentUser?.key && x.fromVisitationSchedule === true && x.isHoliday === true)
     }
     return {
@@ -180,7 +180,7 @@ export default function Visitation() {
 
   const SetDefaultHolidayCheckboxes = () => {
     const holidayCheckboxesWrapper = document.querySelector('.holiday-checkboxes-wrapper')
-    if (Manager.isValid(holidayCheckboxesWrapper)) {
+    if (Manager.IsValid(holidayCheckboxesWrapper)) {
       const checkboxes = holidayCheckboxesWrapper.querySelectorAll('[data-date]')
       checkboxes.forEach((checkboxWrapper) => {
         const holidayLabel = checkboxWrapper.getAttribute('data-label')
@@ -201,7 +201,7 @@ export default function Visitation() {
     setHolidaysFromApi(apiHolidays.filter((x) => x.date !== `${moment().year()}-05-08`))
     await GetVisitationHolidays(currentUser).then((holidaysObject) => {
       const {holidays, userHolidays} = holidaysObject
-      const userHolidaysList = Manager.convertToArray(CalendarMapper.eventsToHolidays(userHolidays))
+      const userHolidaysList = DatasetManager.GetValidArray(CalendarMapper.eventsToHolidays(userHolidays))
       const userHolidaysDates = userHolidaysList.map((x) => x.date)
       setSelectedHolidayDates(DatasetManager.getUniqueArray(userHolidaysDates, true))
       setUserHolidays(userHolidaysList.map((x) => x.name))
@@ -224,9 +224,9 @@ export default function Visitation() {
 
   const removeScheduleTypeActiveClass = () => {
     const checkboxWrapper = document.querySelector('.schedule-type-checkboxes')
-    if (Manager.isValid(checkboxWrapper)) {
+    if (Manager.IsValid(checkboxWrapper)) {
       const checkboxes = checkboxWrapper.querySelectorAll('#checkbox-container')
-      if (Manager.isValid(checkboxes)) {
+      if (Manager.IsValid(checkboxes)) {
         for (let checkbox of checkboxes) {
           checkbox.classList.remove('active')
         }
@@ -269,7 +269,7 @@ export default function Visitation() {
   }, [scheduleType])
 
   useEffect(() => {
-    if (Manager.isValid(currentUser) && Manager.isValid(calendarEvents)) {
+    if (Manager.IsValid(currentUser) && Manager.IsValid(calendarEvents)) {
       getCurrentVisitationSchedule().then((r) => r)
       SetAllStates().then((r) => r)
     }
@@ -322,7 +322,7 @@ export default function Visitation() {
                   className="button red default center"
                   onClick={() => {
                     AlertManager.confirmAlert(
-                      'Are you sure you would like to permanently delete your current visitation schedule?',
+                      'Are you sure you would like to permanently Delete your current visitation schedule?',
                       "I'm Sure",
                       true,
                       async () => {
@@ -348,7 +348,9 @@ export default function Visitation() {
             </div>
 
             <Spacer height={10} />
-            <Fade direction={'up'} duration={1000} triggerOnce={true}>
+            <div
+              style={DomManager.AnimateDelayStyle(1, 0.2)}
+              className={`visitation-section ${DomManager.Animate.FadeInUp('d', '.visitation-section')}`}>
               {/*  VISITATION SECTION */}
               <Accordion id={'visitation-section'} expanded={showVisitationSection}>
                 <AccordionSummary id={'visitation-section-accordion-title'}>
@@ -366,7 +368,7 @@ export default function Visitation() {
                       elClass="schedule-type-checkboxes"
                       onCheck={HandleScheduleTypeSelection}
                       skipNameFormatting={true}
-                      checkboxArray={Manager.buildCheckboxGroup({
+                      checkboxArray={DomManager.BuildCheckboxGroup({
                         currentUser,
                         labelType: 'visitation',
                       })}
@@ -380,7 +382,7 @@ export default function Visitation() {
                       className: 'address-input',
                       placeholder: currentUser?.visitation?.transferAddress,
                       onChange: (e) =>
-                        UpdateDefaultTransferLocation(e?.label, Manager.getDirectionsLink(e?.label)).then(() =>
+                        UpdateDefaultTransferLocation(e?.label, Manager.GetDirectionsLink(e?.label)).then(() =>
                           setTimeout(() => {
                             setState({...state, successAlertMessage: 'Preferred Transfer Location Set'})
                           }, 300)
@@ -391,12 +393,14 @@ export default function Visitation() {
                   <Spacer height={5} />
                 </AccordionDetails>
               </Accordion>
-            </Fade>
+            </div>
           </div>
         )}
 
         <Spacer height={5} />
-        <Fade direction={'up'} duration={1000} triggerOnce={true}>
+        <div
+          style={DomManager.AnimateDelayStyle(1, 0.35)}
+          className={`visitation-section ${DomManager.Animate.FadeInUp('d', '.visitation-section')}`}>
           {/*  HOLIDAYS */}
           <Accordion id={'visitation-holidays-section'} expanded={showHolidaysSection}>
             <AccordionSummary id={'visitation-holidays-section-accordion-title'}>
@@ -411,7 +415,7 @@ export default function Visitation() {
                 elClass={'holiday-checkboxes-wrapper'}
                 onCheck={HandleHolidaySelection}
                 skipNameFormatting={true}
-                checkboxArray={Manager.buildCheckboxGroup({
+                checkboxArray={DomManager.BuildCheckboxGroup({
                   currentUser,
                   customLabelArray: holidaysFromApi.map((x) => x.name),
                   defaultLabels: userHolidays,
@@ -427,7 +431,7 @@ export default function Visitation() {
               <Spacer height={5} />
             </AccordionDetails>
           </Accordion>
-        </Fade>
+        </div>
       </div>
       {!showEveryOtherWeekendCard && !showCustomWeekendsCard && !showFiftyFiftyCard && <NavBar navbarClass={'visitation no-Add-new-button'}></NavBar>}
     </>

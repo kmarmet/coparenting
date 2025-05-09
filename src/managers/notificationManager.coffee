@@ -13,7 +13,7 @@ export default NotificationManager =
   templates:
   # Template for event tomorrow reminder
     eventIsTomorrowReminder: (event) ->
-      "#{event.title} is tomorrow #{if Manager.isValid(event.fromTime) then '@ ' + event.fromTime else ''}"
+      "#{event.title} is tomorrow #{if Manager.IsValid(event.fromTime) then '@ ' + event.fromTime else ''}"
 
   # Template for event in an hour reminder
     eventIsInAnHourReminder: (event) ->
@@ -73,7 +73,7 @@ export default NotificationManager =
       setTimeout  ->
         newSubscriber.email = NotificationManager?.currentUser?.email
         newSubscriber.key = NotificationManager?.currentUser?.key
-        newSubscriber.id = Manager.getUid()
+        newSubscriber.id = Manager.GetUid()
         newSubscriber.subscriptionId = subId
 
         fetch("https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}/user/identity")
@@ -83,7 +83,7 @@ export default NotificationManager =
             existingSubscriber = await DB.find(DB.tables.notificationSubscribers, ["email", NotificationManager?.currentUser?.email], true)
 
             # If user already exists -> replace record
-            if Manager.isValid(existingSubscriber)
+            if Manager.IsValid(existingSubscriber)
               deleteKey = await DB.getSnapshotKey("#{DB.tables.notificationSubscribers}", existingSubscriber, "id")
               await DB.DeleteByPath("#{DB.tables.notificationSubscribers}/#{deleteKey}")
               await DB.Add("/#{DB.tables.notificationSubscribers}", newSubscriber)
@@ -139,7 +139,7 @@ export default NotificationManager =
 
     # Add notification to database
     newNotification = new Notification()
-    newNotification.id = Manager.getUid()
+    newNotification.id = Manager.GetUid()
     newNotification.recipientKey = recipientKey
     newNotification.ownerKey = currentUser?.key
     newNotification.sharedByName = currentUser?.name
@@ -147,7 +147,7 @@ export default NotificationManager =
     newNotification.text = message
     newNotification.category = category
 
-    await DB.Add "#{DB.tables.notifications}/#{recipientKey}", newNotification
+    await DB.Add "#{DB.tables.notifications}/#{recipientKey}", [],newNotification
     console.log("Sent to #{recipientKey}")
     # Do not send notification in dev
     if !window.location.href.includes("localhosssst")
@@ -159,7 +159,7 @@ export default NotificationManager =
         .catch (error) -> console.error error
 
   sendToShareWith: (shareWithKeys, currentUser, title, message, category = '') ->
-    if Manager.isValid(shareWithKeys)
+    if Manager.IsValid(shareWithKeys)
       for key in shareWithKeys
         await NotificationManager.SendNotification(title, message, key, currentUser, category)
 

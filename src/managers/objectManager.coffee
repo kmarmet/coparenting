@@ -18,7 +18,7 @@ import Manager from "./manager"
 
 ObjectManager = {
   RecursivelyFindProperty:  (obj, key) ->
-    if Manager.isValid(obj) and typeof obj is 'object'
+    if Manager.IsValid(obj) and typeof obj is 'object'
       if obj.hasOwnProperty(key)
         return obj[key]
       for prop of obj

@@ -1,13 +1,13 @@
 // Path: src\components\shared\checkbox.jsx
-import React, { useContext } from 'react'
+import React, {useContext} from 'react'
 import globalState from '../../context.js'
 import DomManager from '../../managers/domManager.coffee'
 
-export default function Checkbox({ isActive, text, onCheck, wrapperClass = '', dataKey, dataDate, dataLabel }) {
-  const { state, setState } = useContext(globalState)
-  const { theme, currentUser, refreshKey } = state
+export default function Checkbox({isActive, text, onCheck, wrapperClass = '', dataKey, dataDate, dataLabel}) {
+  const {state, setState} = useContext(globalState)
+  const {theme, currentUser, refreshKey} = state
 
-  const toggleActive = (e) => {
+  const ToggleActive = (e) => {
     const checkboxWrapper = e.currentTarget
     DomManager.toggleActive(checkboxWrapper)
 
@@ -23,7 +23,7 @@ export default function Checkbox({ isActive, text, onCheck, wrapperClass = '', d
       data-label={dataLabel}
       data-date={dataDate}
       className={`checkbox-wrapper ${wrapperClass} ${isActive ? 'active' : ''}`}
-      onClick={toggleActive}>
+      onClick={ToggleActive}>
       <p className="checkbox-text">{text}</p>
     </div>
   )

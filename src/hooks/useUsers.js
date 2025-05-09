@@ -19,8 +19,8 @@ const useUsers = () => {
     const listener = onValue(
       dataRef,
       (snapshot) => {
-        if (Manager.isValid(snapshot.val())) {
-          setUsers(DatasetManager.getValidArray(snapshot.val()))
+        if (Manager.IsValid(snapshot.val())) {
+          setUsers(DatasetManager.GetValidArray(snapshot.val()))
         } else {
           setUsers([])
         }

@@ -15,6 +15,7 @@ import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
 import DB_UserScoped from '../../../database/db_userScoped'
+import DatasetManager from '../../../managers/datasetManager'
 import DomManager from '../../../managers/domManager'
 import LogManager from '../../../managers/logManager'
 import Manager from '../../../managers/manager'
@@ -34,6 +35,7 @@ const Steps = {
 
 export default function Registration() {
   const {state, setState} = useContext(globalState)
+  const {registrationExitStep, authUser} = state
 
   // FORM
   const [email, setEmail] = useState('')
@@ -50,10 +52,12 @@ export default function Registration() {
   const [parentEmail, setParentEmail] = useState('')
 
   // STATE
-  const [activeStep, setActiveStep] = useState(Steps.Form)
+  const [activeStep, setActiveStep] = useState(Manager.IsValid(registrationExitStep) ? Steps.RequestParentAccess : Steps.Form)
   const [localCurrentUser, setLocalCurrentUser] = useState()
   const [showCreateButton, setShowCreateButton] = useState(false)
   const [onboardingScreen, setOnboardingScreen] = useState(1)
+  const [codeRetryCount, setCodeRetryCount] = useState(0)
+
   // Firebase init
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
@@ -66,8 +70,18 @@ export default function Registration() {
       setState({...state, isLoading: false})
       return false
     }
-    if (!validator.isMobilePhone(phoneNumber)) {
+    if (!validator.isMobilePhone(phoneNumber) || !StringManager.IsNotAllSameNumber(phoneNumber)) {
       AlertManager.throwError('Phone number is not valid')
+      setState({...state, isLoading: false})
+      return false
+    }
+    if (!Manager.IsValid(confirmedPassword) || !Manager.IsValid(password)) {
+      AlertManager.throwError('Please enter a password')
+      return false
+    }
+
+    if (password !== confirmedPassword) {
+      AlertManager.throwError('Passwords do not match')
       setState({...state, isLoading: false})
       return false
     }
@@ -81,11 +95,13 @@ export default function Registration() {
       {name: 'Password Confirmation', value: confirmedPassword},
     ])
 
-    if (Manager.isValid(errorString, true)) {
+    if (Manager.IsValid(errorString, true)) {
       AlertManager.throwError(errorString)
       setState({...state, isLoading: false})
       return false
     }
+
+    localStorage.setItem('pcp_registration_started', 'true')
 
     // CREATE FIREBASE USER
     createUserWithEmailAndPassword(auth, email, password)
@@ -108,7 +124,7 @@ export default function Registration() {
           }
 
           // INSERT USER TO DATABASE
-          const newUser = await DB_UserScoped.createAndInsertUser(userObject)
+          const newUser = await DB_UserScoped.CreateAndInsertUser(userObject)
           setLocalCurrentUser(newUser)
 
           setState({
@@ -123,16 +139,22 @@ export default function Registration() {
           } else {
             setActiveStep(Steps.RequestParentAccess)
           }
+
+          if (accountType === 'parent') {
+            localStorage.removeItem('pcp_registration_started')
+          }
         } catch (error) {
+          localStorage.removeItem('pcp_registration_started')
           console.log(`Error: ${error} | Code File: Registration  | Function:  Submit `)
           LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
           setState({...state, isLoading: false})
         }
       })
       .catch((error) => {
+        localStorage.removeItem('pcp_registration_started')
         console.error('Sign up error:', error.message)
         LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
-        if (Manager.contains(error.message, 'email-already-in-use')) {
+        if (Manager.Contains(error.message, 'email-already-in-use')) {
           AlertManager.throwError(`Account already exists. If you meant to login, ${DomManager.tapOrClick()} Back to Login below`)
           setState({...state, isLoading: false})
           return false
@@ -141,7 +163,7 @@ export default function Registration() {
   }
 
   const HandleAccountType = (type) => {
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       type,
       (type) => {
         setAccountType(type.toLowerCase())
@@ -158,7 +180,7 @@ export default function Registration() {
       {name: 'Parent Phone', value: parentPhone},
     ])
 
-    if (Manager.isValid(errorString)) {
+    if (Manager.IsValid(errorString)) {
       AlertManager.throwError(errorString)
       return false
     }
@@ -181,9 +203,9 @@ export default function Registration() {
         return false
       }
 
-      const phoneCode = Manager.getUid().slice(0, 6)
+      const phoneCode = Manager.GetUid().slice(0, 6)
       setVerificationCode(phoneCode)
-      setState({...state, isLoading: true, loadingText: 'Sending security code to your parent...'})
+      setState({...state, isLoading: true, loadingText: 'Sending access code to your parent...'})
       await SmsManager.Send(parentPhone, SmsManager.getParentVerificationTemplate(StringManager.getFirstNameOnly(name), phoneCode))
       setState({...state, isLoading: false})
       setActiveStep(Steps.VerifyParentAccessCode)
@@ -202,36 +224,42 @@ export default function Registration() {
         const existingParentAccount = await DB.find(DB.tables.users, ['email', parentEmail], true)
 
         if (existingParentAccount) {
+          let currentUserToUse = localCurrentUser
+
+          if (!Manager.IsValid(currentUserToUse)) {
+            currentUserToUse = await DB.find(DB.tables.users, ['email', authUser?.email], true)
+          }
           const existingChild = existingParentAccount?.children?.find(
-            (x) => x?.general?.phone === localCurrentUser?.phone || x?.general?.email === localCurrentUser?.email
+            (x) => x?.general?.phone === currentUserToUse?.phone || x?.general?.email === currentUserToUse?.email
           )
 
           // ADD OR UPDATE CHILD RECORD UNDER PARENT
           // -> Add child to parent
-          if (!Manager.isValid(existingChild)) {
+          if (!Manager.IsValid(existingChild)) {
             const childToAdd = new Child()
             const general = new General()
-            general.phone = localCurrentUser?.phone
+            general.phone = currentUserToUse?.phone
             general.name = StringManager.uppercaseFirstLetterOfAllWords(name)
+            general.email = currentUserToUse?.email
             childToAdd.general = general
-            childToAdd.userKey = localCurrentUser?.key
+            childToAdd.userKey = currentUserToUse?.key
 
             // Add child key to parent sharedDataUsers
-            const updatedSharedDataUsers = [...existingParentAccount.sharedDataUsers, localCurrentUser?.key]
+            const updatedSharedDataUsers = DatasetManager.AddToArray(existingParentAccount?.sharedDataUsers, currentUserToUse?.key)
             await DB.updateByPath(`${DB.tables.users}/${existingParentAccount?.key}/sharedDataUsers`, updatedSharedDataUsers)
 
             // Add child to parent's children array
             const cleanChild = ObjectManager.cleanObject(childToAdd, ModelNames.child)
-            await DB_UserScoped.addUserChild(existingParentAccount, cleanChild)
+            await DB_UserScoped.AddChildToParentProfile(existingParentAccount, cleanChild)
           }
 
           // -> Update
           else {
-            const existingChildKey = DB.GetChildIndex(localCurrentUser?.children, existingChild?.id)
+            const existingChildKey = DB.GetChildIndex(currentUserToUse?.children, existingChild?.id)
 
-            if (Manager.isValid(existingChildKey)) {
+            if (Manager.IsValid(existingChildKey)) {
               await DB.updateByPath(
-                `${DB.tables.users}/${existingParentAccount?.key}/children/${existingChildKey}/userKey/${localCurrentUser?.key}`,
+                `${DB.tables.users}/${existingParentAccount?.key}/children/${existingChildKey}/userKey/${currentUserToUse?.key}`,
                 existingChild
               )
             }
@@ -245,10 +273,10 @@ export default function Registration() {
             email: existingParentAccount?.email,
           }
           const cleanParent = ObjectManager.cleanObject(newParent, ModelNames.parent)
-          await DB_UserScoped.AddParent(localCurrentUser, cleanParent)
-          await DB_UserScoped.updateUserRecord(localCurrentUser?.key, 'parentAccessGranted', true)
-          await DB_UserScoped.updateUserRecord(localCurrentUser?.key, 'sharedDataUsers', [existingParentAccount?.key])
-
+          await DB_UserScoped.AddParent(currentUserToUse, cleanParent)
+          await DB_UserScoped.updateUserRecord(currentUserToUse?.key, 'parentAccessGranted', true)
+          await DB_UserScoped.updateUserRecord(currentUserToUse?.key, 'sharedDataUsers', [existingParentAccount?.key])
+          localStorage.removeItem('pcp_registration_started')
           setActiveStep(Steps.Onboarding)
         } else {
           AlertManager.throwError(
@@ -258,7 +286,26 @@ export default function Registration() {
           return false
         }
       } else {
+        if (codeRetryCount === 1) {
+          AlertManager.throwError(
+            'Access code is incorrect',
+            'Registration will be aborted for security reasons if access code is incorrect after 5 attempts'
+          )
+          setCodeRetryCount(codeRetryCount + 1)
+          return false
+        }
+        if (codeRetryCount > 4) {
+          AlertManager.confirmAlert(
+            'Registration aborted for security reasons. Please check the access code with your parent and try again, contact us if the issue continues',
+            'Ok',
+            false,
+            () => setState({...state, currentScreen: ScreenNames.login})
+          )
+          setCodeRetryCount(0)
+          return false
+        }
         AlertManager.throwError('Access code is incorrect, please try again')
+        setCodeRetryCount(codeRetryCount + 1)
         return false
       }
     } catch (error) {
@@ -277,10 +324,17 @@ export default function Registration() {
       {name: 'Password Confirmation', value: confirmedPassword},
     ])
 
-    if (!Manager.isValid(errorString, true)) {
+    if (!Manager.IsValid(errorString, true)) {
       setShowCreateButton(true)
     }
   }, [phoneNumber, email, name, accountType, password, confirmedPassword])
+
+  useEffect(() => {
+    window.onbeforeunload = function () {
+      // Code to execute before the page is unloaded (refreshed or navigated away)
+      return 'Are you sure you want to leave the page? Any unsaved changes will be lost.' // Optional message to confirm
+    }
+  }, [])
 
   return (
     <>
@@ -356,7 +410,7 @@ export default function Registration() {
                 onCheck={HandleAccountType}
                 parentLabel="Profile Type (cannot be changed later)"
                 labelText="Profile Type"
-                checkboxArray={Manager.buildCheckboxGroup({
+                checkboxArray={DomManager.BuildCheckboxGroup({
                   customLabelArray: ['Parent', 'Child'],
                 })}
                 required={true}
@@ -505,14 +559,6 @@ export default function Registration() {
               <button
                 className="button default green"
                 onClick={() => {
-                  if (!validator.isEmail(email)) {
-                    AlertManager.throwError('Email address is not valid')
-                    return false
-                  }
-                  if (!Manager.isValid(confirmedPassword) || !Manager.isValid(password)) {
-                    AlertManager.throwError('Please enter a password')
-                    return false
-                  }
                   AlertManager.confirmAlert(
                     'Are the details you provided correct? Profile Type cannot be changed after signing up',
                     'Yes',

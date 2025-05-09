@@ -27,33 +27,33 @@ export default function ShareWithCheckboxes({
   const SetShareWithUsers = async () => {
     const sharedDataUsers = currentUser?.sharedDataUsers
     const sharedDataUsersAccounts = users?.filter((x) => sharedDataUsers?.includes(x.key))
-    setShareWith(DatasetManager.getValidArray(sharedDataUsersAccounts).flat())
+    setShareWith(DatasetManager.GetValidArray(sharedDataUsersAccounts))
   }
 
   useEffect(() => {
-    if (Manager.isValid(currentUser) && Manager.isValid(users) && !currentUserIsLoading) {
+    if (Manager.IsValid(currentUser) && Manager.IsValid(users) && !currentUserIsLoading) {
       SetShareWithUsers().then((r) => r)
     }
   }, [currentUser, users, refreshKey, currentUserIsLoading])
 
   return (
     <>
-      {Manager.isValid(shareWith) && (
+      {Manager.IsValid(shareWith) && (
         <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass}`}>
           <Label text={`${labelText.length === 0 ? 'Share with' : labelText}`} required={required} />
           <Spacer height={2} />
           <div className="flex" id="checkboxes">
-            {Manager.isValid(shareWith) &&
+            {Manager.IsValid(shareWith) &&
               shareWith?.map((user, index) => {
-                let name = user?.name
+                let name = StringManager.getFirstNameOnly(user?.name)
                 let key = user?.key
 
-                if (!Manager.isValid(key)) {
+                if (!Manager.IsValid(key)) {
                   key = user?.userKey
                 }
 
-                if (!Manager.isValid(name)) {
-                  name = user?.general?.name
+                if (!Manager.IsValid(name)) {
+                  name = StringManager.getFirstNameOnly(user?.general?.name)
                 }
 
                 return (
@@ -63,12 +63,7 @@ export default function ShareWithCheckboxes({
                     data-key={key ? key : ''}
                     className={`flex ${containerClass} ${defaultKeys.includes(key) ? 'active' : ''}`}
                     onClick={onCheck}>
-                    <Checkbox
-                      isActive={defaultKeys.includes(key)}
-                      dataKey={key}
-                      text={StringManager.getFirstNameOnly(name)}
-                      onClick={() => console.log(name)}
-                    />
+                    <Checkbox isActive={defaultKeys.includes(key)} dataKey={key} text={name} onClick={() => console.log(name)} />
                   </div>
                 )
               })}

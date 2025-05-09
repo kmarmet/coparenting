@@ -25,6 +25,7 @@ import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useDocuments from '../../../hooks/useDocuments'
+import DomManager from '../../../managers/domManager'
 import LogManager from '../../../managers/logManager'
 import Spacer from '../../shared/spacer'
 
@@ -45,7 +46,7 @@ export default function NewDocument() {
     setDoc(null)
     setState({
       ...state,
-      refreshKey: Manager.getUid(),
+      refreshKey: Manager.GetUid(),
       isLoading: false,
       creationFormToShow: '',
       successAlertMessage: successMessage,
@@ -61,17 +62,17 @@ export default function NewDocument() {
     const fileExtension = StringManager.GetFileExtension(doc?.name).toString()
     let docNameToUse = `${docName}.${fileExtension}`
 
-    if (!Manager.isValid(docName, true)) {
+    if (!Manager.IsValid(docName, true)) {
       docNameToUse = doc?.name
     }
 
     //#region VALIDATION
-    if (!Manager.isValid(docType)) {
+    if (!Manager.IsValid(docType)) {
       AlertManager.throwError('Please choose a document type')
       return false
     }
 
-    // if (docType === 'document' && Object.entries(files).map((x) => !Manager.contains(x[1].name, '.docx'))[0]) {
+    // if (docType === 'document' && Object.entries(files).map((x) => !Manager.Contains(x[1].name, '.docx'))[0]) {
     //   AlertManager.throwError('Uploaded file MUST be of type .docx')
     //   setState({ ...state, isLoading: false })
     //   return false
@@ -79,7 +80,7 @@ export default function NewDocument() {
 
     // Check for existing document
     const existingDocument = documents.find((doc) => doc?.name === docName && doc?.ownerKey === currentUser.key)
-    if (Manager.isValid(existingDocument)) {
+    if (Manager.IsValid(existingDocument)) {
       AlertManager.throwError('Document has already been uploaded')
       return false
     }
@@ -92,35 +93,42 @@ export default function NewDocument() {
 
     //#region IMAGE CONVERSION
     if (docType === 'image') {
-      if (!Manager.isValid(imageUrl, true)) {
-        imageUrl = await FirebaseStorage.GetFileUrl(FirebaseStorage.directories.documents, currentUser?.key, docNameToUse)
+      try {
+        if (!Manager.IsValid(imageUrl, true)) {
+          imageUrl = await FirebaseStorage.GetFileUrl(FirebaseStorage.directories.documents, currentUser?.key, docNameToUse)
+        }
+        const compressedDoc = await ImageManager.compressImage(doc)
+        let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
+        // Upload to Firebase Storage
+        imageUrl = await FirebaseStorage.uploadByPath(
+          `${FirebaseStorage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`,
+          compressedDoc
+        )
+        const imageName = FirebaseStorage.GetImageNameFromUrl(imageUrl)
+        const ocrObject = await DocumentConversionManager.imageToHtml(imageUrl, imageName)
+        html = ocrObject?.ParsedResults[0]?.ParsedText
+        html = html
+          .replaceAll(/([a-z])([A-Z])/g, '$1 $2')
+          .replaceAll('\n', '')
+          .replaceAll('\r', '')
+          .replaceAll(' p.x.', 'pm ')
+          .replaceAll(' p..', 'pm ')
+          .replaceAll(' p.wn', 'pm ')
+          .replaceAll(' p.m.', 'pm ')
+          .replaceAll(' a.x.', 'am ')
+          .replaceAll(' a..', 'am ')
+          .replaceAll(' a.wn', 'am ')
+          .replaceAll(' a.m.', 'am ')
+          .replaceAll(' .', '. ')
+          .replaceAll('Triday', 'Friday')
+        const test = await StringManager.typoCorrection(html).then()
+        // html = await StringManager.typoCorrection(html).then()
+      } catch (error) {
+        console.log(error)
+        AlertManager.throwError('Unable to process image. Please try again after awhile.')
+        setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+        return false
       }
-      const compressedDoc = await ImageManager.compressImage(doc)
-      let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
-      // Upload to Firebase Storage
-      imageUrl = await FirebaseStorage.uploadByPath(
-        `${FirebaseStorage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`,
-        compressedDoc
-      )
-      const imageName = FirebaseStorage.GetImageNameFromUrl(imageUrl)
-      const ocrObject = await DocumentConversionManager.imageToHtml(imageUrl, imageName)
-      html = ocrObject?.ParsedResults[0]?.ParsedText
-      html = html
-        .replaceAll(/([a-z])([A-Z])/g, '$1 $2')
-        .replaceAll('\n', '')
-        .replaceAll('\r', '')
-        .replaceAll(' p.x.', 'pm ')
-        .replaceAll(' p..', 'pm ')
-        .replaceAll(' p.wn', 'pm ')
-        .replaceAll(' p.m.', 'pm ')
-        .replaceAll(' a.x.', 'am ')
-        .replaceAll(' a..', 'am ')
-        .replaceAll(' a.wn', 'am ')
-        .replaceAll(' a.m.', 'am ')
-        .replaceAll(' .', '. ')
-        .replaceAll('Triday', 'Friday')
-      const test = await StringManager.typoCorrection(html).then()
-      // html = await StringManager.typoCorrection(html).then()
     }
     //#endregion IMAGE CONVERSION
 
@@ -146,13 +154,13 @@ export default function NewDocument() {
     newDocument.type = docType
     newDocument.name = StringManager.formatFileName(docNameToUse)
 
-    if (Manager.isValid(newDocument.docText, true)) {
+    if (Manager.IsValid(newDocument.docText, true)) {
       const cleanedDoc = ObjectManager.cleanObject(newDocument, ModelNames.doc)
       console.log(cleanedDoc)
       await DocumentsManager.AddToDocumentsTable(currentUser, documents, newDocument)
 
       // Send Notification
-      if (Manager.isValid(shareWith)) {
+      if (Manager.IsValid(shareWith)) {
         await NotificationManager.sendToShareWith(
           shareWith,
           currentUser,
@@ -185,12 +193,12 @@ export default function NewDocument() {
   }
 
   const HandleShareWithSelection = (e) => {
-    const updated = Manager.handleShareWithSelection(e, currentUser, shareWith)
+    const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 
   const HandleCheckboxSelection = (e) => {
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         setDocType(e.toLowerCase())
@@ -219,7 +227,7 @@ export default function NewDocument() {
             <CheckboxGroup
               parentLabel={'Document Type'}
               required={true}
-              checkboxArray={Manager.buildCheckboxGroup({currentUser, customLabelArray: ['Document', 'Image']})}
+              checkboxArray={DomManager.BuildCheckboxGroup({currentUser, customLabelArray: ['Document', 'Image']})}
               onCheck={HandleCheckboxSelection}
             />
             <ShareWithCheckboxes required={false} onCheck={HandleShareWithSelection} containerClass={'share-with-coparents'} />

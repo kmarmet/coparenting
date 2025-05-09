@@ -8,7 +8,7 @@ const NotificationBadge = ({classes = ''}) => {
   const {theme, refreshKey} = state
   const {notifications} = useNotifications()
 
-  return <div className={`notification-badge ${classes} ${Manager.isValid(notifications) ? 'active' : ''} ${theme}`}></div>
+  return <div className={`notification-badge ${classes} ${Manager.IsValid(notifications) ? 'active' : ''} ${theme}`}></div>
 }
 
 export default NotificationBadge

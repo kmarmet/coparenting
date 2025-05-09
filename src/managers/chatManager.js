@@ -12,7 +12,7 @@ const ChatManager = {
     let tone = await ChatManager.getTone(message)
     let sentiment = await ChatManager.getSentiment(message)
 
-    if (!Manager.isValid(tone) || !Manager.isValid(sentiment)) {
+    if (!Manager.IsValid(tone) || !Manager.IsValid(sentiment)) {
       return false
     }
     let warningSentiments = ['sad']
@@ -99,7 +99,7 @@ const ChatManager = {
     try {
       let isPausedFor = securedChat.isPausedFor
 
-      if (!Manager.isValid(isPausedFor)) {
+      if (!Manager.IsValid(isPausedFor)) {
         isPausedFor = [currentUser?.key]
       } else {
         isPausedFor = [...isPausedFor, currentUser?.key]
@@ -141,9 +141,9 @@ const ChatManager = {
     newBookmark.messageId = messageId
 
     // Bookmarks exist already
-    if (Manager.isValid(existingBookmarks)) {
+    if (Manager.IsValid(existingBookmarks)) {
       const existingBookmark = await DB.find(existingBookmarks, ['messageId', messageId], false)
-      if (Manager.isValid(existingBookmark)) {
+      if (Manager.IsValid(existingBookmark)) {
         toAdd = existingBookmarks.filter((x) => x.messageId !== messageId)
       } else {
         toAdd = [...existingBookmarks, newBookmark]
@@ -164,7 +164,7 @@ const ChatManager = {
     const dbRef = ref(getDatabase())
     const currentChats = await DB.getTable(path)
     let toAdd
-    if (Manager.isValid(currentChats)) {
+    if (Manager.IsValid(currentChats)) {
       toAdd = [...currentChats, chat]
     } else {
       toAdd = [chat]
@@ -181,7 +181,7 @@ const ChatManager = {
     const dbRef = ref(getDatabase())
     const currentMessages = await DB.getTable(path)
     let toAdd = []
-    if (Manager.isValid(currentMessages)) {
+    if (Manager.IsValid(currentMessages)) {
       toAdd = [...currentMessages, message]
     } else {
       toAdd = [message]

@@ -2,7 +2,7 @@ import Manager from "../managers/manager"
 
 export default class DocumentHeader
   constructor: (
-    @id = Manager.getUid()
+    @id = Manager.GetUid()
     @headerText = ''
     @ownerKey = ''
   ) ->

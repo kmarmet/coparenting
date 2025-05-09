@@ -1,21 +1,23 @@
 // Path: src\components\shared\customChildInfo.jsx
-import React, {useContext, useState} from 'react'
-import globalState from '../../context'
-import Manager from '../../managers/manager'
-import DB_UserScoped from '../../database/db_userScoped'
 import moment from 'moment'
+import React, {useContext, useState} from 'react'
+import validator from 'validator'
+import DatetimeFormats from '../../constants/datetimeFormats'
+import InputTypes from '../../constants/inputTypes'
+import globalState from '../../context'
+import DB_UserScoped from '../../database/db_userScoped'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import AlertManager from '../../managers/alertManager'
+import DomManager from '../../managers/domManager'
+import Manager from '../../managers/manager'
+import NotificationManager from '../../managers/notificationManager.js'
+import StringManager from '../../managers/stringManager'
+import AddressInput from './addressInput'
 import CheckboxGroup from './checkboxGroup'
 import InputWrapper from './inputWrapper'
 import Modal from './modal'
-import AlertManager from '../../managers/alertManager'
 import ShareWithCheckboxes from './shareWithCheckboxes'
-import NotificationManager from '../../managers/notificationManager.js'
-import DatetimeFormats from '../../constants/datetimeFormats'
-import StringManager from '../../managers/stringManager'
 import ViewSelector from './viewSelector'
-import validator from 'validator'
-import InputTypes from '../../constants/inputTypes'
-import useCurrentUser from '../../hooks/useCurrentUser'
 
 export default function CustomChildInfo({hideCard, showCard, activeChild}) {
   const {state, setState} = useContext(globalState)
@@ -38,7 +40,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
 
     await DB_UserScoped.addUserChildProp(currentUser, activeChild, infoSection, StringManager.toCamelCase(title), value, shareWith)
 
-    if (Manager.isValid(shareWith)) {
+    if (Manager.IsValid(shareWith)) {
       await NotificationManager.sendToShareWith(
         shareWith,
         currentUser,
@@ -52,7 +54,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
   }
 
   const HandleInfoTypeSelection = (e) => {
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         setInfoType(e.toLowerCase())
@@ -66,7 +68,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
   }
 
   const HandleShareWithSelection = (e) => {
-    const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, shareWith)
+    const shareWithNumbers = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
     setShareWith(shareWithNumbers)
   }
 
@@ -76,7 +78,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
     setValue('')
     setInfoSection('')
     hideCard()
-    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: successMessage})
+    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
   }
 
   return (
@@ -103,7 +105,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
         <CheckboxGroup
           parentLabel="Type"
           required={true}
-          checkboxArray={Manager.buildCheckboxGroup({
+          checkboxArray={DomManager.BuildCheckboxGroup({
             currentUser,
             defaultLabels: ['Text'],
             customLabelArray: ['Text', 'Location', 'Date', 'Phone'],
@@ -147,8 +149,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
         {infoType === 'location' && (
           <>
             <InputWrapper inputType={InputTypes.text} labelText={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
-            <InputWrapper
-              inputType={InputTypes.address}
+            <AddressInput
               labelText={'Address'}
               required={true}
               onChange={(address) => {

@@ -15,13 +15,12 @@ import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {Fade} from 'react-awesome-reveal'
 import {IoAdd} from 'react-icons/io5'
 import {PiCheckBold, PiSwapDuotone} from 'react-icons/pi'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context.js'
-import DB_UserScoped from '../../database/db_userScoped.js'
+import useCoparents from '../../hooks/useCoparents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useSwapRequests from '../../hooks/useSwapRequests'
 import NavBar from '../navBar'
@@ -49,10 +48,11 @@ export default function SwapRequests() {
   const [includeChildren, setIncludeChildren] = useState(false)
   const [startDate, setStartDate] = useState('')
   const [declineReason, setDeclineReason] = useState('')
-  const [responseDueDate, setResponseDueDate] = useState('')
+  const [requestedResponseDate, setResponseDueDate] = useState('')
   const [requestTimeRemaining, setRequestTimeRemaining] = useState(0)
   const {currentUser} = useCurrentUser()
   const {swapRequests} = useSwapRequests()
+  const {coparents} = useCoparents()
 
   const ResetForm = async (showAlert = false) => {
     Manager.ResetForm('swap-request-wrapper')
@@ -60,19 +60,19 @@ export default function SwapRequests() {
     setSwapDuration('single')
     setIncludeChildren(false)
     setStartDate('')
-    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: showAlert ? 'Swap Request Updated' : null})
+    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: showAlert ? 'Swap Request Updated' : null})
   }
 
   const Update = async () => {
     // Fill -> overwrite
     let updatedRequest = {...activeRequest}
     updatedRequest.startDate = startDate
-    updatedRequest.responseDueDate = responseDueDate
+    updatedRequest.requestedResponseDate = requestedResponseDate
     updatedRequest.children = requestChildren
     updatedRequest.requestReason = requestReason
 
-    if (Manager.isValid(responseDueDate)) {
-      updatedRequest.responseDueDate = moment(responseDueDate).format(DatetimeFormats.dateForDb)
+    if (Manager.IsValid(requestedResponseDate)) {
+      updatedRequest.requestedResponseDate = moment(requestedResponseDate).format(DatetimeFormats.dateForDb)
     }
     const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.swapRequest)
     await DB.updateEntireRecord(`${DB.tables.swapRequests}/${currentUser?.key}`, cleanedRequest, cleanedRequest.id)
@@ -82,8 +82,8 @@ export default function SwapRequests() {
   }
 
   const SelectDecision = async (decision) => {
-    const recipient = await DB_UserScoped.getCoparentByKey(activeRequest.recipientKey, currentUser)
-    const recipientName = recipient.name
+    const recipient = coparents?.find((x) => x.userKey === activeRequest.recipientKey)
+    const recipientName = recipient?.name
     // Rejected
     if (decision === Decisions.declined) {
       activeRequest.status = 'declined'
@@ -104,7 +104,7 @@ export default function SwapRequests() {
       setShowDetails(false)
     }
 
-    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: `Decision Sent to ${recipientName}`})
+    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: `Decision Sent to ${StringManager.getFirstNameOnly(recipientName)}`})
   }
 
   const SetCurrentRequest = async (request) => {
@@ -121,7 +121,7 @@ export default function SwapRequests() {
 
   const HandleChildSelection = (e) => {
     let childrenArr = []
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         childrenArr = [...requestChildren, e]
@@ -136,20 +136,21 @@ export default function SwapRequests() {
 
   const DeleteRequest = async (action = 'deleted') => {
     if (action === 'deleted') {
-      AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
+      AlertManager.confirmAlert('Are you sure you would like to Delete this request?', "I'm Sure", true, async () => {
         await DB.deleteById(`${DB.tables.swapRequests}/${activeRequest?.ownerKey}`, activeRequest?.id)
-        setState({...state, refreshKey: Manager.getUid(), successAlertMessage: 'Swap Request Deleted'})
+        setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: 'Swap Request Deleted'})
         setShowDetails(false)
       })
     } else {
       if (activeRequest?.ownerKey === currentUser?.key) {
-        await DB.delete(`${DB.tables.swapRequests}/${activeRequest?.ownerKey}`, activeRequest?.id)
-        setState({...state, refreshKey: Manager.getUid(), successAlertMessage: 'Swap Request Deleted'})
+        const recordIndex = DB.GetTableIndexById(swapRequests, activeRequest?.id)
+        await DB.Delete(`${DB.tables.swapRequests}/${activeRequest?.ownerKey}/${recordIndex}`)
+        setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: 'Swap Request Deleted'})
       }
       setShowDetails(false)
     }
 
-    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: 'Swap Request Deleted'})
+    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: 'Swap Request Deleted'})
   }
 
   useEffect(() => {
@@ -163,17 +164,18 @@ export default function SwapRequests() {
   }, [])
 
   useEffect(() => {
-    if (Manager.isValid(currentUser)) {
+    if (Manager.IsValid(currentUser)) {
       setTimeout(() => {
-        DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight, 90)
+        DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight, 85)
+        DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
       }, 300)
     }
-  }, [currentUser])
+  }, [currentUser, view])
 
   useEffect(() => {
     if (showDetails) {
       DomManager.setDefaultView()
-      setRequestTimeRemaining(moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString())
+      setRequestTimeRemaining(moment(moment(activeRequest?.requestedResponseDate).startOf('day')).fromNow().toString())
     }
   }, [showDetails])
 
@@ -200,84 +202,82 @@ export default function SwapRequests() {
         showCard={showDetails}>
         {/* DETAILS */}
         {view === 'details' && (
-          <Fade direction={'up'} duration={800} triggerOnce={true}>
-            <div id="details" className={`content`}>
-              <hr className="top" />
-              <Spacer height={5} />
-              <div className="blocks">
-                {/* Swap Date(s) */}
-                <DetailBlock
-                  text={moment(activeRequest?.startDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                  title={Manager.isValid(activeRequest?.endDate) ? 'Swap Dates' : 'Swap Date'}
-                  valueToValidate={activeRequest?.startDate}
-                />
+          <div id="details" className={`content`}>
+            <hr className="top" />
+            <Spacer height={5} />
+            <div className="blocks">
+              {/* Swap Date(s) */}
+              <DetailBlock
+                text={moment(activeRequest?.startDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                title={Manager.IsValid(activeRequest?.endDate) ? 'Swap Dates' : 'Swap Date'}
+                valueToValidate={activeRequest?.startDate}
+              />
 
-                {/* Respond by */}
-                <DetailBlock
-                  text={moment(activeRequest?.responseDueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                  title={'Requested Response Date'}
-                  valueToValidate={activeRequest?.responseDueDate}
-                />
+              {/* Respond by */}
+              <DetailBlock
+                text={moment(activeRequest?.requestedResponseDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                title={'Requested Response Date'}
+                valueToValidate={activeRequest?.requestedResponseDate}
+              />
 
-                {/*  Time Remaining */}
-                <DetailBlock
-                  classes={requestTimeRemaining.toString().includes('ago') ? 'red' : 'green'}
-                  title={'Response Time Remaining'}
-                  text={`${requestTimeRemaining}`}
-                  valueToValidate={requestTimeRemaining}
-                />
+              {/*  Time Remaining */}
+              <DetailBlock
+                classes={requestTimeRemaining.toString().includes('ago') ? 'red' : 'green'}
+                title={'Response Time Remaining'}
+                text={`${requestTimeRemaining}`}
+                valueToValidate={requestTimeRemaining}
+              />
 
-                {/*  Created by */}
-                <DetailBlock
-                  text={activeRequest?.ownerName === currentUser?.name ? 'Me' : activeRequest?.ownerName}
-                  title={'Created By'}
-                  valueToValidate={activeRequest?.ownerName}
-                />
-                {/* Sent to */}
-                <DetailBlock
-                  text={activeRequest?.recipientName === currentUser?.name ? 'Me' : activeRequest?.recipientName}
-                  title={'Sent To'}
-                  valueToValidate={activeRequest?.recipientName}
-                />
+              {/*  Created by */}
+              <DetailBlock
+                text={activeRequest?.ownerName === currentUser?.name ? 'Me' : activeRequest?.ownerName}
+                title={'Created By'}
+                valueToValidate={activeRequest?.ownerName}
+              />
+              {/* Sent to */}
+              <DetailBlock
+                text={activeRequest?.recipientName === currentUser?.name ? 'Me' : activeRequest?.recipientName}
+                title={'Sent To'}
+                valueToValidate={activeRequest?.recipientName}
+              />
 
-                {/* Start time */}
-                <DetailBlock text={activeRequest?.fromHour} title={'Start Time'} valueToValidate={activeRequest?.fromHour} />
+              {/* Start time */}
+              <DetailBlock text={activeRequest?.fromHour} title={'Start Time'} valueToValidate={activeRequest?.fromHour} />
 
-                {/* End time */}
-                <DetailBlock text={activeRequest?.toHour} title={'End Time'} valueToValidate={activeRequest?.toHour} />
+              {/* End time */}
+              <DetailBlock text={activeRequest?.toHour} title={'End Time'} valueToValidate={activeRequest?.toHour} />
 
-                {/*  Children */}
-                {Manager.isValid(activeRequest?.children) && (
-                  <div className="block">
-                    {Manager.isValid(activeRequest?.children) &&
-                      activeRequest?.children.map((child, index) => {
-                        return (
-                          <p className="block-text" key={index}>
-                            {child}
-                          </p>
-                        )
-                      })}
-                    <p className="block-title">Children</p>
-                  </div>
-                )}
+              {/*  Children */}
+              {Manager.IsValid(activeRequest?.children) && (
+                <div className="block">
+                  {Manager.IsValid(activeRequest?.children) &&
+                    activeRequest?.children.map((child, index) => {
+                      return (
+                        <p className="block-text" key={index}>
+                          {child}
+                        </p>
+                      )
+                    })}
+                  <p className="block-title">Children</p>
+                </div>
+              )}
 
-                {/*  Reason */}
-                <DetailBlock
-                  text={activeRequest?.requestReason}
-                  isFullWidth={true}
-                  classes="long-text"
-                  title={'Reason'}
-                  valueToValidate={activeRequest?.requestReason}
-                />
-              </div>
-              <hr className="bottom" />
+              {/*  Reason */}
+              <DetailBlock
+                text={activeRequest?.requestReason}
+                isFullWidth={true}
+                classes="long-text"
+                title={'Reason'}
+                valueToValidate={activeRequest?.requestReason}
+              />
             </div>
-          </Fade>
+            <hr className="bottom" />
+          </div>
         )}
 
         {/* EDIT */}
         {view === 'edit' && (
-          <Fade direction={'up'} duration={600} triggerOnce={true}>
+          <>
             {/* SINGLE DATE */}
             {swapDuration === SwapDurations.single && (
               <InputWrapper
@@ -285,7 +285,7 @@ export default function SwapRequests() {
                 inputType={InputTypes.date}
                 labelText={'Date'}
                 uidClass="swap-request-date"
-                wrapperClasses={`${Manager.isValid(activeRequest?.startDate) ? 'show-label' : ''}`}
+                wrapperClasses={`${Manager.IsValid(activeRequest?.startDate) ? 'show-label' : ''}`}
                 onDateOrTimeSelection={(day) => setStartDate(moment(day).format(DatetimeFormats.dateForDb))}
               />
             )}
@@ -293,27 +293,27 @@ export default function SwapRequests() {
             {/* RESPONSE DUE DATE */}
             <InputWrapper
               uidClass="response-due-date"
-              wrapperClasses={`${Manager.isValid(activeRequest?.responseDueDate) ? 'show-label' : ''}`}
+              wrapperClasses={`${Manager.IsValid(activeRequest?.requestedResponseDate) ? 'show-label' : ''}`}
               inputType={InputTypes.date}
               labelText={'Requested Response Date'}
-              defaultValue={moment(activeRequest?.responseDueDate)}
+              defaultValue={moment(activeRequest?.requestedResponseDate)}
               onDateOrTimeSelection={(day) => setResponseDueDate(moment(day).format(DatetimeFormats.dateForDb))}
             />
 
             {/* INCLUDE CHILDREN */}
-            {Manager.isValid(currentUser?.children) && (
+            {Manager.IsValid(currentUser?.children) && (
               <div className="share-with-container">
                 <div className="flex">
                   <p>Include Child(ren)</p>
                   <ToggleButton
-                    isDefaultChecked={Manager.isValid(activeRequest?.children) || includeChildren}
+                    isDefaultChecked={Manager.IsValid(activeRequest?.children) || includeChildren}
                     onCheck={() => setIncludeChildren(!includeChildren)}
                     onUncheck={() => setIncludeChildren(!includeChildren)}
                   />
                 </div>
                 {(activeRequest?.children?.length > 0 || includeChildren) && (
                   <CheckboxGroup
-                    checkboxArray={Manager.buildCheckboxGroup({
+                    checkboxArray={DomManager.BuildCheckboxGroup({
                       currentUser,
                       defaultLabels: activeRequest?.children,
                       labelType: 'children',
@@ -355,88 +355,81 @@ export default function SwapRequests() {
                 </button>
               )}
             </div>
-          </Fade>
+          </>
         )}
       </Modal>
 
       {/* PAGE CONTAINER */}
       <div id="swap-requests" className={`${theme} page-container form`}>
         {swapRequests?.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
-        <Fade direction={'up'} duration={1000} triggerOnce={true} className={'swap-requests-fade-wrapper'}>
-          <div className="screen-intro-wrapper">
-            <p className="screen-title">Swap Requests </p>
-            {!DomManager.isMobile() && <IoAdd id={'Add-new-button'} className={'swap-requests'} onClick={() => setShowCard(true)} />}
-            <p className="text-screen-intro">
-              A request for your child(ren) to remain with you during the designated visitation time of your co-parent.
-            </p>
-          </div>
+        <p className="screen-title">Swap Requests </p>
+        {!DomManager.isMobile() && <IoAdd id={'Add-new-button'} className={'swap-requests'} onClick={() => setShowCard(true)} />}
+        <p className="text-screen-intro">A request for your child(ren) to remain with you during the designated visitation time of your co-parent.</p>
+        <Spacer height={15} />
 
-          {/* LOOP REQUESTS */}
-          <div id="swap-requests-container">
-            <Fade direction={'right'} duration={800} cascade={true} damping={0.2} triggerOnce={true}>
-              {Manager.isValid(swapRequests) &&
-                swapRequests?.map((request, index) => {
-                  return (
-                    <div onClick={() => SetCurrentRequest(request)} key={index} className="row">
-                      {/* REQUEST DATE */}
-                      <div id="primary-icon-wrapper" className="mr-10">
-                        <PiSwapDuotone id={'primary-row-icon'} />
+        {/* LOOP REQUESTS */}
+        <div id="swap-requests-container">
+          {Manager.IsValid(swapRequests) &&
+            swapRequests?.map((request, index) => {
+              return (
+                <div onClick={() => SetCurrentRequest(request)} key={index} className="row">
+                  {/* REQUEST DATE */}
+                  <div id="primary-icon-wrapper" className="mr-10">
+                    <PiSwapDuotone id={'primary-row-icon'} />
+                  </div>
+
+                  {/* CONTENT */}
+                  <div id="content" className={`${request?.requestReason?.length > 20 ? 'long-text' : ''}`}>
+                    {/* MULTIPLE */}
+                    {request?.duration === SwapDurations.multiple && (
+                      <div className="flex">
+                        <p id="title">
+                          {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)} to{' '}
+                          {moment(request?.endDate).format(DatetimeFormats.readableMonthAndDay)}
+                          {request?.ownerName === currentUser?.name && <span>Sent to {request?.recipientName}</span>}
+                          {request?.ownerName !== currentUser?.name && <span>from {request?.ownerName}</span>}
+                        </p>
+                        <span className={`${request?.status} status`} id="request-status">
+                          {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
+                        </span>
                       </div>
-
-                      {/* CONTENT */}
-                      <div id="content" className={`${request?.requestReason?.length > 20 ? 'long-text' : ''}`}>
-                        {/* MULTIPLE */}
-                        {request?.duration === SwapDurations.multiple && (
-                          <div className="flex">
-                            <p id="title">
-                              {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)} to{' '}
-                              {moment(request?.endDate).format(DatetimeFormats.readableMonthAndDay)}
-                              {request?.ownerName === currentUser?.name && <span>Sent to {request?.recipientName}</span>}
-                              {request?.ownerName !== currentUser?.name && <span>from {request?.ownerName}</span>}
-                            </p>
-                            <span className={`${request?.status} status`} id="request-status">
-                              {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
-                            </span>
-                          </div>
-                        )}
-                        {/* SINGLE */}
-                        <div className="flex">
-                          {request?.duration === SwapDurations.single && (
-                            <>
-                              <p id="title" className="row-title">
-                                {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)}
-                                {request?.ownerName === currentUser?.name && <span>Sent to {request?.recipientName}</span>}
-                                {request?.ownerName !== currentUser?.name && <span>from {request?.ownerName}</span>}
-                              </p>
-                              <span className={`${request?.status} status`} id="request-status">
-                                {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
-                              </span>
-                            </>
-                          )}
-                          {/* HOURS */}
-                          {request?.duration === SwapDurations.intra && (
-                            <>
-                              <p id="title" className="row-title">
-                                {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)}
-                              </p>
-                              <span className={`${request?.status} status`} id="request-status">
-                                {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
-                              </span>
-                            </>
-                          )}
-                        </div>
-                        {request?.duration === SwapDurations.intra && (
-                          <p id="subtitle">
-                            {request?.fromHour.replace(' ', '')} to {request?.toHour.replace(' ', '')}
+                    )}
+                    {/* SINGLE */}
+                    <div className="flex">
+                      {request?.duration === SwapDurations.single && (
+                        <>
+                          <p id="title" className="row-title">
+                            {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)}
+                            {request?.ownerName === currentUser?.name && <span>Sent to {request?.recipientName}</span>}
+                            {request?.ownerName !== currentUser?.name && <span>from {request?.ownerName}</span>}
                           </p>
-                        )}
-                      </div>
+                          <span className={`${request?.status} status`} id="request-status">
+                            {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
+                          </span>
+                        </>
+                      )}
+                      {/* HOURS */}
+                      {request?.duration === SwapDurations.intra && (
+                        <>
+                          <p id="title" className="row-title">
+                            {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)}
+                          </p>
+                          <span className={`${request?.status} status`} id="request-status">
+                            {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
+                          </span>
+                        </>
+                      )}
                     </div>
-                  )
-                })}
-            </Fade>
-          </div>
-        </Fade>
+                    {request?.duration === SwapDurations.intra && (
+                      <p id="subtitle">
+                        {request?.fromHour.replace(' ', '')} to {request?.toHour.replace(' ', '')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+        </div>
       </div>
       <NavBar />
     </>

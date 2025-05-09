@@ -1,16 +1,16 @@
 import React, {useContext, useEffect, useState} from 'react'
-import Modal from '../shared/modal'
 import CreationForms from '../../constants/creationForms'
+import ScreenNames from '../../constants/screenNames'
+import globalState from '../../context'
+import useChat from '../../hooks/useChat'
+import useCoparents from '../../hooks/useCoparents'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import AlertManager from '../../managers/alertManager'
+import DatasetManager from '../../managers/datasetManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
-import globalState from '../../context'
-import DB_UserScoped from '../../database/db_userScoped'
-import AlertManager from '../../managers/alertManager'
-import ScreenNames from '../../constants/screenNames'
+import Modal from '../shared/modal'
 import Spacer from '../shared/spacer'
-import useCurrentUser from '../../hooks/useCurrentUser'
-import useChat from '../../hooks/useChat'
-import DatasetManager from '../../managers/datasetManager'
 
 const NewChatSelector = () => {
   const {state, setState} = useContext(globalState)
@@ -18,6 +18,7 @@ const NewChatSelector = () => {
   const [activeChatKeys, setActiveChatKeys] = useState([])
   const {currentUser} = useCurrentUser()
   const {chats} = useChat()
+  const {coparents} = useCoparents()
 
   const GetSecuredChats = async () => {
     const members = DatasetManager.getUniqueArray(
@@ -33,8 +34,8 @@ const NewChatSelector = () => {
 
   const OpenMessageThread = async (coparent) => {
     // Check if thread member (coparent) profile exists in DB
-    let userCoparent = await DB_UserScoped.getCoparentByKey(coparent?.userKey, currentUser)
-    if (!Manager.isValid(userCoparent)) {
+    let userCoparent = coparents?.find((x) => x.userKey === coparent?.key)
+    if (!Manager.IsValid(userCoparent)) {
       AlertManager.oneButtonAlert(
         'Co-Parent Profile not Found',
         'This co-parent may have deactivated their profile, however, you can still view the messages',
@@ -49,7 +50,7 @@ const NewChatSelector = () => {
   }
 
   useEffect(() => {
-    if (Manager.isValid(currentUser) && creationFormToShow === CreationForms.chat && Manager.isValid(chats)) {
+    if (Manager.IsValid(currentUser) && creationFormToShow === CreationForms.chat && Manager.IsValid(chats)) {
       GetSecuredChats().then((r) => r)
     }
   }, [creationFormToShow, chats])
@@ -59,7 +60,7 @@ const NewChatSelector = () => {
       hasSubmitButton={false}
       className="new-chat"
       wrapperClass="new-chat"
-      onClose={() => setState({...state, showCreationMenu: false, creationFormToShow: null, refreshKey: Manager.getUid()})}
+      onClose={() => setState({...state, showCreationMenu: false, creationFormToShow: null, refreshKey: Manager.GetUid()})}
       showCard={creationFormToShow === CreationForms.chat}
       title={`${activeChatKeys.length === currentUser?.coparents?.length ? 'Unable to Create Chat' : 'Create Chat'}`}>
       <Spacer height={5} />
@@ -70,8 +71,8 @@ const NewChatSelector = () => {
         </>
       )}
       {/* COPARENTS */}
-      {Manager.isValid(activeChatKeys) &&
-        Manager.isValid(currentUser?.coparents) &&
+      {Manager.IsValid(activeChatKeys) &&
+        Manager.IsValid(currentUser?.coparents) &&
         currentUser?.coparents?.map((coparent, index) => {
           return (
             <div key={index} id="coparent-names">

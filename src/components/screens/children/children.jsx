@@ -13,17 +13,17 @@ import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
-import {HiDotsHorizontal} from 'react-icons/hi'
+import {HiOutlineChevronDoubleUp} from 'react-icons/hi2'
 import {IoClose, IoPersonAdd, IoPersonAddOutline, IoPersonRemove} from 'react-icons/io5'
 import {PiCameraRotateFill, PiListChecksFill} from 'react-icons/pi'
 import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
+import useActiveChild from '../../../hooks/useActiveChild'
 import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import CustomChildInfo from '../../shared/customChildInfo'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import Spacer from '../../shared/spacer'
-import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
 import AddOrUpdateTransferChecklists from './addOrUpdateTransferChecklists'
 import Checklist from './checklist'
 import Checklists from './checklists'
@@ -37,14 +37,15 @@ export default function Children() {
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
-  const [activeChild, setActiveChild] = useState(currentUser?.children?.[0])
+  const [activeChildId, setActiveChildId] = useState(currentUser?.children?.[0]?.id)
+  const {activeChild, activeChildIsLoading} = useActiveChild(activeChildId)
   const imgRef = useRef()
 
-  const UploadProfilePic = async (fromButton = false, childId = activeChild?.id) => {
+  const UploadProfilePic = async (fromButton = false) => {
     const uploadIcon = document.querySelector(`[data-id="${activeChild?.id}" ]`)
-    console.log(uploadIcon)
     const uploadButton = document.querySelector('#upload-image-input.from-button')
     let imgFiles = uploadIcon?.files
+
     if (fromButton) {
       imgFiles = uploadButton?.files
     }
@@ -52,7 +53,7 @@ export default function Children() {
       // AlertManager.throwError('Please choose an image')
       return false
     }
-    console.log(imgFiles)
+
     // Upload -> Set child/general/profilePic
     const uploadedImageUrl = await FirebaseStorage.upload(
       FirebaseStorage.directories.profilePics,
@@ -78,34 +79,24 @@ export default function Children() {
 
   // Set active child on page load
   useEffect(() => {
-    if (Manager.isValid(children)) {
-      setActiveChild(children?.[0])
+    if (Manager.IsValid(children) && !Manager.IsValid(activeChild)) {
+      setActiveChildId(children?.[0]?.id)
     }
   }, [children])
 
-  useEffect(() => {
-    if (!childrenAreLoading && !currentUserIsLoading) {
-      DomManager.ToggleAnimation('add', 'child-image', DomManager.AnimateClasses.names.zoomIn, 100)
-
-      setTimeout(() => {
-        DomManager.ToggleAnimation('add', 'info-section', DomManager.AnimateClasses.names.fadeInRight, 50)
-      }, 400)
-    }
-  }, [childrenAreLoading, currentUserIsLoading])
-
-  if (childrenAreLoading || currentUserIsLoading) {
-    return <StandaloneLoadingGif />
-  }
-
   return (
     <>
-      {Manager.isValid(activeChild) && (
+      {Manager.IsValid(activeChild) && (
         <>
           {/* CUSTOM INFO FORM */}
           <CustomChildInfo showCard={showInfoCard} activeChild={activeChild} hideCard={() => setShowInfoCard(false)} />
 
           {/* NEW CHECKLIST */}
-          <AddOrUpdateTransferChecklists activeChild={activeChild} showCard={showNewChecklistCard} hideCard={() => setShowNewChecklistCard(false)} />
+          <AddOrUpdateTransferChecklists
+            activeChildId={activeChild?.id}
+            showCard={showNewChecklistCard}
+            hideCard={() => setShowNewChecklistCard(false)}
+          />
 
           {/* VIEW CHECKLISTS */}
           <Checklists showCard={showChecklistsCard} hideCard={() => setShowChecklistsCard(false)} activeChild={activeChild} />
@@ -135,7 +126,7 @@ export default function Children() {
             </p>
           </div>
         </div>
-        {Manager.isValid(children) && (
+        {Manager.IsValid(children) && (
           <>
             {/* CUSTOM INFO */}
             <div
@@ -165,7 +156,7 @@ export default function Children() {
                   data-id={activeChild?.id}
                   placeholder=""
                   accept="image/*"
-                  onChange={() => UploadProfilePic(false, activeChild?.id)}
+                  onChange={() => UploadProfilePic(false)}
                 />
                 <div className="svg-wrapper">
                   <PiCameraRotateFill className={'profile-pic'} />
@@ -240,59 +231,61 @@ export default function Children() {
 
         <Spacer height={10} />
 
-        {/* CHILDREN WRAPPER */}
-        <div id="child-wrapper">
-          {Manager.isValid(children) &&
-            children?.map((child) => {
-              return (
-                <div key={child?.id}>
-                  {/* PROFILE PIC */}
-                  {Manager.isValid(child?.general?.profilePic) && (
-                    <div onClick={() => setActiveChild(child)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
-                      <div
-                        className="child-image"
-                        style={{backgroundImage: `url(${child?.general?.profilePic})`, transition: 'all .7s linear'}}></div>
-                      {/* CHILD NAME */}
-                      <span className="child-name">{StringManager.getFirstNameOnly(child?.general?.name)}</span>
-                    </div>
-                  )}
-
-                  {/* NO IMAGE */}
-                  {!Manager.isValid(child?.general?.profilePic, true) && (
-                    <div onClick={() => setActiveChild(child)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
-                      <div className="child-image no-image">
-                        <span>No Image</span>
+        <div style={DomManager.AnimateDelayStyle(1)} className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(true, '.fade-up-wrapper')}`}>
+          {/* CHILDREN WRAPPER */}
+          <div id="child-wrapper">
+            {Manager.IsValid(children) &&
+              children?.map((child) => {
+                return (
+                  <div key={child?.id}>
+                    {/* PROFILE PIC */}
+                    {Manager.IsValid(child?.general?.profilePic) && (
+                      <div onClick={() => setActiveChildId(child?.id)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
+                        <div
+                          className="child-image"
+                          style={{backgroundImage: `url(${child?.general?.profilePic})`, transition: 'all .7s linear'}}></div>
+                        {/* CHILD NAME */}
+                        <span className="child-name">{StringManager.getFirstNameOnly(child?.general?.name)}</span>
                       </div>
-                      {/* CHILD NAME */}
-                      <span className="child-name">{StringManager.getFirstNameOnly(child?.general?.name)}</span>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-        </div>
+                    )}
 
-        {/* INFO */}
-        <div id="child-info">
-          {Manager.isValid(activeChild) && Manager.isValid(currentUser) && (
-            <>
-              <General activeChild={activeChild} />
-              <Medical activeChild={activeChild} />
-              <Schooling activeChild={activeChild} />
-              <Behavior activeChild={activeChild} />
-              <Checklist activeChild={activeChild} fromOrTo={'from'} />
-              <Checklist activeChild={activeChild} fromOrTo={'to'} />
-            </>
-          )}
+                    {/* NO IMAGE */}
+                    {!Manager.IsValid(child?.general?.profilePic, true) && (
+                      <div onClick={() => setActiveChildId(child?.id)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
+                        <div className="child-image no-image">
+                          <span>No Image</span>
+                        </div>
+                        {/* CHILD NAME */}
+                        <span className="child-name">{StringManager.getFirstNameOnly(child?.general?.name)}</span>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+          </div>
+
+          {/* INFO */}
+          <div id="child-info">
+            {Manager.IsValid(activeChild) && Manager.IsValid(currentUser) && (
+              <>
+                <General activeChild={activeChild} />
+                <Medical activeChild={activeChild} />
+                <Schooling activeChild={activeChild} />
+                <Behavior activeChild={activeChild} />
+                <Checklist fromOrTo={'from'} activeChildId={activeChild?.id} />
+                <Checklist fromOrTo={'to'} activeChildId={activeChild?.id} />
+              </>
+            )}
+          </div>
         </div>
       </div>
       <NavBar navbarClass={'actions'}>
         <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
-          <HiDotsHorizontal className={'screen-actions-menu-icon'} />
+          <HiOutlineChevronDoubleUp className={'screen-actions-menu-icon more'} />
           <p>More</p>
         </div>
       </NavBar>
-      {!Manager.isValid(children) && (
+      {!Manager.IsValid(children) && (
         <NoDataFallbackText
           text={'Currently, no children have been added. To share events with your children or to store their information, please Add them here.'}
         />

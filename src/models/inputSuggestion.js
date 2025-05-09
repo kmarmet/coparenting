@@ -4,7 +4,7 @@ var InputSuggestion;
 import Manager from "../managers/manager";
 
 export default InputSuggestion = class InputSuggestion {
-  constructor(ownerKey = '', formName = '', suggestion = '', id = Manager.getUid()) {
+  constructor(ownerKey = '', formName = '', suggestion = '', id = Manager.GetUid()) {
     this.ownerKey = ownerKey;
     this.formName = formName;
     this.suggestion = suggestion;

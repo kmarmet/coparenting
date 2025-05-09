@@ -36,10 +36,7 @@
         @include row;
         margin-bottom: 20px;
         border: 0;
-
-        &:not(.animate__fadeInRight) {
-          opacity: 0;
-        }
+        opacity: 1;
 
         &.active {
           transition: all 0.3s ease-in;

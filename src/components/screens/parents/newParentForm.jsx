@@ -11,6 +11,7 @@ import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
+import DomManager from '../../../managers/domManager'
 import ObjectManager from '../../../managers/objectManager'
 import StringManager from '../../../managers/stringManager'
 import ModelNames from '../../../models/modelNames'
@@ -39,7 +40,7 @@ const NewParentForm = ({showCard, hideCard}) => {
     setAddress('')
     setEmail('')
     setParentType('')
-    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: successMessage})
+    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
     hideCard()
   }
 
@@ -58,11 +59,11 @@ const NewParentForm = ({showCard, hideCard}) => {
         value: email,
       },
     ])
-    if (Manager.isValid(errorString, true)) {
+    if (Manager.IsValid(errorString, true)) {
       AlertManager.throwError(errorString)
       return false
     }
-    if (parentHasAccount && !Manager.isValid(email)) {
+    if (parentHasAccount && !Manager.IsValid(email)) {
       AlertManager.throwError('If the parent has an account with us, their email is required')
       return false
     }
@@ -70,15 +71,15 @@ const NewParentForm = ({showCard, hideCard}) => {
     let newParent = new Parent()
 
     newParent.email = email
-    newParent.id = Manager.getUid()
+    newParent.id = Manager.GetUid()
     newParent.address = address
     newParent.name = StringManager.uppercaseFirstLetterOfAllWords(name.trim())
     newParent.parentType = parentType
-    newParent.userKey = Manager.getUid()
+    newParent.userKey = Manager.GetUid()
 
     // Link parent with an existing user/profile
-    if (Manager.isValid(existingParent) || parentHasAccount) {
-      newParent.id = Manager.getUid()
+    if (Manager.IsValid(existingParent) || parentHasAccount) {
+      newParent.id = Manager.GetUid()
       newParent.userKey = existingParent?.key
       newParent.phone = existingParent?.phone
       newParent.email = existingParent?.email
@@ -101,7 +102,7 @@ const NewParentForm = ({showCard, hideCard}) => {
 
   const HandleParentType = (e) => {
     const type = e.dataset['key']
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       () => {
         console.log(type)
@@ -117,7 +118,7 @@ const NewParentForm = ({showCard, hideCard}) => {
     <Modal
       onSubmit={Submit}
       submitText={name.length > 0 ? `Add ${StringManager.uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
-      title={`Add ${Manager.isValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} to Your Profile`}
+      title={`Add ${Manager.IsValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} to Your Profile`}
       wrapperClass="new-parent-card"
       showCard={showCard}
       onClose={ResetForm}>
@@ -152,7 +153,7 @@ const NewParentForm = ({showCard, hideCard}) => {
               parentLabel={'Parent Type'}
               className="parent-type"
               skipNameFormatting={true}
-              checkboxArray={Manager.buildCheckboxGroup({
+              checkboxArray={DomManager.BuildCheckboxGroup({
                 currentUser,
                 customLabelArray: ['Biological', 'Step-Parent', 'Guardian', 'Foster', 'Adoptive'],
               })}

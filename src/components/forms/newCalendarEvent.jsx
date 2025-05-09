@@ -96,7 +96,7 @@ export default function NewCalendarEvent() {
       ...state,
       showBottomMenu: false,
       creationFormToShow: '',
-      refreshKey: Manager.getUid(),
+      refreshKey: Manager.GetUid(),
       successAlertMessage: showSuccessAlert ? 'Event Created' : null,
     })
   }
@@ -105,7 +105,7 @@ export default function NewCalendarEvent() {
     try {
       //#region FILL NEW EVENT
       const newEvent = new CalendarEvent()
-      newEvent.id = Manager.getUid()
+      newEvent.id = Manager.GetUid()
 
       // Required
       newEvent.title = StringManager.formatEventTitle(eventName)
@@ -122,7 +122,7 @@ export default function NewCalendarEvent() {
       newEvent.endTime = moment(eventEndTime).format(DatetimeFormats.timeForDb)
 
       // Not Required
-      newEvent.directionsLink = Manager.getDirectionsLink(eventLocation)
+      newEvent.directionsLink = Manager.GetDirectionsLink(eventLocation)
       newEvent.location = eventLocation
       newEvent.children = eventChildren
       newEvent.ownerKey = currentUser?.key
@@ -135,13 +135,13 @@ export default function NewCalendarEvent() {
       newEvent.repeatInterval = recurringFrequency
       newEvent.fromVisitationSchedule = isVisitation
       newEvent.isRecurring = eventIsRecurring
-      newEvent.isCloned = Manager.isValid(clonedDates)
+      newEvent.isCloned = Manager.IsValid(clonedDates)
       newEvent.isDateRange = eventIsDateRange
       //#endregion FILL NEW EVENT
 
-      if (Manager.isValid(newEvent)) {
+      if (Manager.IsValid(newEvent)) {
         //#region VALIDATION
-        if (Manager.isValid(eventPhone, true)) {
+        if (Manager.IsValid(eventPhone, true)) {
           if (!validator.isMobilePhone(eventPhone)) {
             AlertManager.throwError('Phone number is not valid')
             return false
@@ -155,17 +155,17 @@ export default function NewCalendarEvent() {
           {name: 'Date', value: eventStartDate},
         ])
 
-        if (Manager.isValid(errorString)) {
+        if (Manager.IsValid(errorString)) {
           AlertManager.throwError(errorString)
           return false
         }
 
-        if (showReminders && !Manager.isValid(eventStartTime)) {
+        if (showReminders && !Manager.IsValid(eventStartTime)) {
           AlertManager.throwError('Please select a start time when using reminders')
           return false
         }
 
-        if (eventIsRecurring && !Manager.isValid(recurringFrequency)) {
+        if (eventIsRecurring && !Manager.IsValid(recurringFrequency)) {
           AlertManager.throwError('If event is recurring, please select a frequency')
           return false
         }
@@ -191,7 +191,7 @@ export default function NewCalendarEvent() {
         }
 
         // Add cloned dates
-        if (Manager.isValid(clonedDates)) {
+        if (Manager.IsValid(clonedDates)) {
           const dates = CalendarManager.buildArrayOfEvents(
             currentUser,
             newEvent,
@@ -237,9 +237,9 @@ export default function NewCalendarEvent() {
     }
   }
 
-  const handleChildSelection = (e) => {
+  const HandleChildSelection = (e) => {
     let childrenArr = []
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         childrenArr = [...eventChildren, e]
@@ -252,13 +252,13 @@ export default function NewCalendarEvent() {
     setEventChildren(childrenArr)
   }
 
-  const handleShareWithSelection = (e) => {
-    const shareWithNumbers = Manager.handleShareWithSelection(e, currentUser, eventShareWith)
+  const HandleShareWithSelection = (e) => {
+    const shareWithNumbers = DomManager.HandleShareWithSelection(e, currentUser, eventShareWith)
     setEventShareWith(shareWithNumbers)
   }
 
-  const handleReminderSelection = (e) => {
-    Manager.handleCheckboxSelection(
+  const HandleReminderSelection = (e) => {
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         let timeframe = CalendarMapper.reminderTimes(e)
@@ -273,8 +273,8 @@ export default function NewCalendarEvent() {
     )
   }
 
-  const handleRepeatingSelection = async (e) => {
-    Manager.handleCheckboxSelection(
+  const HandleRepeatingSelection = async (e) => {
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         let selection = ''
@@ -303,7 +303,7 @@ export default function NewCalendarEvent() {
     )
   }
 
-  const addDateInput = () => {
+  const AddDateInput = () => {
     const input = document.createElement('input')
     const cloneDateWrapper = document.querySelector('.cloned-date-wrapper')
     const removeInputButton = document.createElement('button')
@@ -357,7 +357,7 @@ export default function NewCalendarEvent() {
             defaultView={'Single Day'}
             labels={['Single Day', 'Multiple Days']}
             updateState={(labelText) => {
-              if (Manager.contains(labelText, 'Single')) {
+              if (Manager.Contains(labelText, 'Single')) {
                 setEventLength(EventLengths.single)
               } else {
                 setEventLength(EventLengths.multiple)
@@ -403,7 +403,7 @@ export default function NewCalendarEvent() {
               required={true}
               inputType={InputTypes.dateRange}
               onDateOrTimeSelection={(dateArray) => {
-                if (Manager.isValid(dateArray)) {
+                if (Manager.IsValid(dateArray)) {
                   setEventStartDate(moment(dateArray[0]).format(DatetimeFormats.dateForDb))
                   setEventEndDate(moment(dateArray[1]).format(DatetimeFormats.dateForDb))
                   setEventIsDateRange(true)
@@ -412,45 +412,53 @@ export default function NewCalendarEvent() {
             />
           )}
 
-          {/* EVENT WITH TIME */}
-          <InputWrapper
-            labelText={'Start Time'}
-            uidClass="event-start-time time"
-            inputType={InputTypes.time}
-            onDateOrTimeSelection={(e) => setEventStartTime(e)}
-          />
-          <InputWrapper
-            labelText={'End Time'}
-            uidClass="event-end-time time"
-            inputType={InputTypes.time}
-            onDateOrTimeSelection={(e) => setEventEndTime(e)}
-          />
+          {eventLength === EventLengths.single && (
+            <>
+              {/* EVENT WITH TIME */}
+              <InputWrapper
+                labelText={'Start Time'}
+                uidClass="event-start-time time"
+                inputType={InputTypes.time}
+                onDateOrTimeSelection={(e) => setEventStartTime(e)}
+              />
+              <InputWrapper
+                labelText={'End Time'}
+                uidClass="event-end-time time"
+                inputType={InputTypes.time}
+                onDateOrTimeSelection={(e) => setEventEndTime(e)}
+              />
+            </>
+          )}
           <Spacer height={5} />
 
           {/* Share with */}
-          <ShareWithCheckboxes required={false} onCheck={handleShareWithSelection} containerClass={`share-with`} />
+          <ShareWithCheckboxes required={false} onCheck={HandleShareWithSelection} containerClass={`share-with`} />
 
-          {/* REMINDER */}
-          <Accordion id={'checkboxes'} expanded={showReminders}>
-            <AccordionSummary>
-              <div className="flex">
-                <p className="label">Remind Me</p>
-                <ToggleButton onCheck={() => setShowReminders(true)} onUncheck={() => setShowReminders(false)} />
-              </div>
-            </AccordionSummary>
-            <AccordionDetails>
-              <CheckboxGroup
-                elClass={`${theme} reminder-times`}
-                checkboxArray={Manager.buildCheckboxGroup({
-                  currentUser,
-                  labelType: 'reminder-times',
-                })}
-                containerClass={'reminder-times'}
-                skipNameFormatting={true}
-                onCheck={handleReminderSelection}
-              />
-            </AccordionDetails>
-          </Accordion>
+          {eventLength === EventLengths.single && (
+            <>
+              {/* REMINDER */}
+              <Accordion id={'checkboxes'} expanded={showReminders}>
+                <AccordionSummary>
+                  <div className="flex">
+                    <p className="label">Remind Me</p>
+                    <ToggleButton onCheck={() => setShowReminders(true)} onUncheck={() => setShowReminders(false)} />
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <CheckboxGroup
+                    elClass={`${theme} reminder-times`}
+                    checkboxArray={DomManager.BuildCheckboxGroup({
+                      currentUser,
+                      labelType: 'reminder-times',
+                    })}
+                    containerClass={'reminder-times'}
+                    skipNameFormatting={true}
+                    onCheck={HandleReminderSelection}
+                  />
+                </AccordionDetails>
+              </Accordion>
+            </>
+          )}
 
           <Spacer height={1} />
 
@@ -465,7 +473,7 @@ export default function NewCalendarEvent() {
           <Spacer height={1} />
 
           {/* INCLUDING WHICH CHILDREN */}
-          {Manager.isValid(currentUser?.children) && (
+          {Manager.IsValid(currentUser?.children) && (
             <Accordion id={'checkboxes'} expanded={includeChildren}>
               <AccordionSummary>
                 <div className="flex">
@@ -481,69 +489,73 @@ export default function NewCalendarEvent() {
                 <CheckboxGroup
                   elClass={`${theme} children`}
                   skipNameFormatting={true}
-                  checkboxArray={Manager.buildCheckboxGroup({
+                  checkboxArray={DomManager.BuildCheckboxGroup({
                     currentUser,
                     labelType: 'children',
                   })}
-                  onCheck={handleChildSelection}
+                  onCheck={HandleChildSelection}
                 />
               </AccordionDetails>
             </Accordion>
           )}
 
           {/* RECURRING */}
-          <div id="repeating-container">
-            <Accordion id={'checkboxes'} expanded={eventIsRecurring}>
-              <AccordionSummary>
-                <div className="flex">
-                  <p className="label">Recurring</p>
-                  <ToggleButton onCheck={() => setEventIsRecurring(true)} onUncheck={() => setEventIsRecurring(false)} />
-                </div>
-              </AccordionSummary>
-              <AccordionDetails>
-                <CheckboxGroup
-                  elClass={`${theme}`}
-                  onCheck={handleRepeatingSelection}
-                  checkboxArray={Manager.buildCheckboxGroup({
-                    currentUser,
-                    labelType: 'recurring-intervals',
-                  })}
-                />
+          {eventLength === EventLengths.single && (
+            <div id="repeating-container">
+              <Accordion id={'checkboxes'} expanded={eventIsRecurring}>
+                <AccordionSummary>
+                  <div className="flex">
+                    <p className="label">Recurring</p>
+                    <ToggleButton onCheck={() => setEventIsRecurring(true)} onUncheck={() => setEventIsRecurring(false)} />
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <CheckboxGroup
+                    elClass={`${theme}`}
+                    onCheck={HandleRepeatingSelection}
+                    checkboxArray={DomManager.BuildCheckboxGroup({
+                      currentUser,
+                      labelType: 'recurring-intervals',
+                    })}
+                  />
 
-                {Manager.isValid(recurringFrequency) && (
-                  <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
-                    <MobileDatePicker className={`${theme}  w-100`} onChange={(e) => setEventEndDate(moment(e).format('MM-DD-yyyy'))} />
-                  </InputWrapper>
-                )}
-              </AccordionDetails>
-            </Accordion>
-          </div>
-
-          {/* CLONE */}
-          <>
-            <div className="flex">
-              <Label text={'Duplicate'} />
-              <ToggleButton
-                isDefaultChecked={false}
-                onCheck={() => {
-                  setShowCloneInput(true)
-                  const dateWrapperElements = document.querySelectorAll('.cloned-date-wrapper input')
-                  if (showCloneInput && dateWrapperElements.length === 0) {
-                    addDateInput()
-                  }
-                }}
-                onUncheck={() => setShowCloneInput(false)}
-              />
+                  {Manager.IsValid(recurringFrequency) && (
+                    <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
+                      <MobileDatePicker className={`${theme}  w-100`} onChange={(e) => setEventEndDate(moment(e).format('MM-DD-yyyy'))} />
+                    </InputWrapper>
+                  )}
+                </AccordionDetails>
+              </Accordion>
             </div>
+          )}
 
-            {/* CLONED INPUTS */}
-            <div className={`cloned-date-wrapper form  ${showCloneInput === true ? 'active' : ''}`}></div>
-            {showCloneInput && (
-              <button className="default button" id="add-date-button" onClick={addDateInput}>
-                Add Date
-              </button>
-            )}
-          </>
+          {/* DUPLICATE */}
+          {eventLength === EventLengths.single && (
+            <>
+              <div className="flex">
+                <Label text={'Duplicate'} />
+                <ToggleButton
+                  isDefaultChecked={false}
+                  onCheck={() => {
+                    setShowCloneInput(true)
+                    const dateWrapperElements = document.querySelectorAll('.cloned-date-wrapper input')
+                    if (showCloneInput && dateWrapperElements.length === 0) {
+                      AddDateInput()
+                    }
+                  }}
+                  onUncheck={() => setShowCloneInput(false)}
+                />
+              </div>
+
+              {/* CLONED INPUTS */}
+              <div className={`cloned-date-wrapper form  ${showCloneInput === true ? 'active' : ''}`}></div>
+              {showCloneInput && (
+                <button className="default button" id="add-date-button" onClick={AddDateInput}>
+                  Add Date
+                </button>
+              )}
+            </>
+          )}
 
           <Spacer height={5} />
 
@@ -552,7 +564,7 @@ export default function NewCalendarEvent() {
 
           {/* ADDRESS */}
           <AddressInput
-            wrapperClasses={Manager.isValid(eventLocation, true) ? 'show-label' : ''}
+            wrapperClasses={Manager.IsValid(eventLocation, true) ? 'show-label' : ''}
             labelText={'Location'}
             required={false}
             onChange={(address) => setEventLocation(address)}

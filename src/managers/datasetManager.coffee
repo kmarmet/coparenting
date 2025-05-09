@@ -14,12 +14,67 @@ DatasetManager = {
     else
       return Object.entries(arr).flat()
 
+  CombineArrays : (arrOne = [], arrTwo = [], isUnique = true, isFlattened = true) ->
+    returnArray = []
 
-    return arr
-  getValidArray: (arr) ->
-    if Manager.isValid(arr)
-      arr = Manager.convertToArray(arr)
-      arr.filter (x) -> x
+    arrOne = DatasetManager.GetValidArray(arrOne)
+    arrTwo = DatasetManager.GetValidArray(arrTwo)
+
+    if Manager.IsValid(arrOne)
+      returnArray = [arrOne...]
+
+
+    if Manager.IsValid(arrTwo)
+      returnArray = [returnArray..., arrTwo...]
+
+    if isUnique
+      returnArray = DatasetManager.getUniqueArray(returnArray)
+
+    if isFlattened
+      returnArray = returnArray.flat()
+
+    return returnArray
+
+  AddToArray: (arr, newItem) =>
+    returnArray = []
+
+    if not Manager.IsValid(arr)
+      returnArray = [newItem]
+
+    if Manager.IsValid(arr) and Array.isArray(arr) and  arr.length > 0
+      returnArray = [arr..., newItem]
+
+    if Manager.IsValid(arr) and Array.isArray(arr) and arr.length == 0
+      returnArray = [newItem]
+
+    if Manager.IsValid(arr) and not Array.isArray(arr)
+      returnArray = [newItem]
+
+    console.log(returnArray);
+    if Manager.IsValid(returnArray)
+       returnArray = DatasetManager.GetValidArray(returnArray)
+    console.log(returnArray);
+    return returnArray
+
+  GetValidArray: (source,  isUnique = true, isFlattened = true, getObjectValuesOnly = false) ->
+    returnArray = []
+
+    if Manager.IsValid source
+      if Array.isArray(source)
+        returnArray = source if source?
+      else if typeof source is 'object'
+        if getObjectValuesOnly
+          returnArray = Object.values(source)
+        else
+          returnArray = Object.entries(source)
+
+    if isUnique
+      returnArray = DatasetManager.getUniqueArray(returnArray)
+
+    if isFlattened
+      returnArray = returnArray.flat()
+
+    return returnArray
 
   getNestedObject: (table, objectPath) ->
     dataset = await DB.getTable(table)

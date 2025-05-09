@@ -24,11 +24,9 @@ div {
     }
     &.swal2-error {
       color: white !important;
-      border-color: white !important;
       &.swal2-icon-show {
         transform: scale(0.75);
         color: white !important;
-        border-color: white !important;
         .swal2-x-mark {
           animation-duration: 0.8s !important;
           transition: all 0.9s ease-in-out;
@@ -82,20 +80,21 @@ div {
 }
 
 .swal2-popup {
-  border-radius: 15px;
-  padding: 12px !important;
+  border-radius: 22px;
+  padding: 20px !important;
   margin: 0 !important;
   align-items: center !important;
   animation-duration: 0.8s !important;
   display: flex !important;
   flex-wrap: wrap;
   gap: 12px;
+  border-top: 5px solid $main;
   justify-content: center;
   @include bestShadow;
 
   &.swal2-icon-error {
     justify-content: center !important;
-
+    border: 0 !important;
     #swal2-title {
       font-size: 18px;
     }

@@ -84,7 +84,7 @@ export default function DocViewer() {
     }
 
     const domHeaders = document.querySelectorAll('.header')
-    if (Manager.isValid(domHeaders)) {
+    if (Manager.IsValid(domHeaders)) {
       // Loop through DOM headers
       for (let header of domHeaders) {
         let headerTextElement = header.querySelector('.header-text')
@@ -99,7 +99,7 @@ export default function DocViewer() {
           if (!_.isEmpty(headerTextElement) && StringManager.GetWordCount(headerTextElement) <= 10) {
             // Add header to headersInDocument
             if (!headersInDocument.includes(headerTextElement)) {
-              headersInDocument.push(Manager.generateHash(headerTextElement))
+              headersInDocument.push(Manager.GenerateHash(headerTextElement))
             }
           }
         }
@@ -108,7 +108,7 @@ export default function DocViewer() {
     const userHeadersMatchingHeadersInDocument = userHeaders.filter((x) => headersInDocument.includes(x))
     let allHeaders = []
 
-    if (Manager.isValid(userHeadersMatchingHeadersInDocument)) {
+    if (Manager.IsValid(userHeadersMatchingHeadersInDocument)) {
       allHeaders = userHeadersMatchingHeadersInDocument
     } else {
       allHeaders = headersInDocument
@@ -117,7 +117,7 @@ export default function DocViewer() {
   }
 
   const Search = async () => {
-    if (Manager.isValid(searchValue, true)) {
+    if (Manager.IsValid(searchValue, true)) {
       const docText = document.getElementById('doc-text')
       let textAsHtml = docText.innerHTML
       textAsHtml = searchTextHL.highlight(textAsHtml, searchValue)
@@ -151,7 +151,7 @@ export default function DocViewer() {
   const FormatImageDocument = async () => {
     try {
       // Insert text
-      if (Manager.isValid(docToView)) {
+      if (Manager.IsValid(docToView)) {
         setImgUrl(docToView.url)
 
         let text = docToView.docText
@@ -190,7 +190,7 @@ export default function DocViewer() {
   const FormatDocument = async () => {
     const url = docToView.url
     const docText = docToView.docText
-    if (!Manager.isValid(docToView) || !Manager.isValid(docText, true)) {
+    if (!Manager.IsValid(docToView) || !Manager.IsValid(docText, true)) {
       AlertManager.throwError('Unable to find or load document. Please try again after awhile.')
       setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
       return false
@@ -200,18 +200,18 @@ export default function DocViewer() {
     const relevantDoc = documents.find((x) => x?.name === docToView?.name)
 
     //#region VALIDATION
-    if (!Manager.isValid(relevantDoc)) {
+    if (!Manager.IsValid(relevantDoc)) {
       return false
     }
 
-    if (!Manager.isValid(documents)) {
+    if (!Manager.IsValid(documents)) {
       return false
     }
 
-    if (!Manager.isValid(coparents)) {
+    if (!Manager.IsValid(coparents)) {
       return false
     }
-    if (!Manager.isValid(relevantDoc)) {
+    if (!Manager.IsValid(relevantDoc)) {
       return false
     }
 
@@ -306,7 +306,7 @@ export default function DocViewer() {
     for (let header of userHeaders) {
       docText.innerHTML = docText.innerHTML.replaceAll(
         header,
-        `<div data-hashed-header=${Manager.generateHash(header).replaceAll(' ', '')} class="header">
+        `<div data-hashed-header=${Manager.GenerateHash(header).replaceAll(' ', '')} class="header">
                           <span class="header-text">${header}</span>
                         </div>`
       )
@@ -338,7 +338,7 @@ export default function DocViewer() {
     const text = DomManager.getSelectionText()
 
     let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
-    const alreadyExists = Manager.isValid(userHeaders.find((x) => x.headerText.includes(text)))
+    const alreadyExists = Manager.IsValid(userHeaders.find((x) => x.headerText.includes(text)))
 
     if (!alreadyExists) {
       if (text.length > 5 && currentScreen === ScreenNames.docViewer) {
@@ -369,9 +369,9 @@ export default function DocViewer() {
   const CloseSearch = async () => {
     setShowSearch(false)
     setSearchValue('')
-    setState({...state, refreshKey: Manager.getUid()})
+    setState({...state, refreshKey: Manager.GetUid()})
     const searchHighlights = document.querySelectorAll('.text-highlight')
-    if (Manager.isValid(searchHighlights)) {
+    if (Manager.IsValid(searchHighlights)) {
       for (let highlight of searchHighlights) {
         highlight.classList.remove('text-highlight')
       }
@@ -385,12 +385,12 @@ export default function DocViewer() {
   }
 
   const RenameFile = async () => {
-    if (Manager.isValid(newFileName, true)) {
+    if (Manager.IsValid(newFileName, true)) {
       const newName = `${newFileName}.${StringManager.GetFileExtension(docToView.name).toLowerCase()}`
       const recordIndex = DB.GetTableIndexById(documents, docToView?.id)
-      if (Manager.isValid(recordIndex)) {
+      if (Manager.IsValid(recordIndex)) {
         await DB.updateByPath(`${DB.tables.documents}/${currentUser?.key}/${recordIndex}/name`, newName)
-        setState({...state, refreshKey: Manager.getUid(), docToView: {...docToView, name: newName}})
+        setState({...state, refreshKey: Manager.GetUid(), docToView: {...docToView, name: newName}})
       }
       setShowRenameFile(false)
       setNewFileName('')
@@ -529,7 +529,7 @@ export default function DocViewer() {
                         }}
                         className={`toc-header`}
                         data-hashed-header={header}
-                        dangerouslySetInnerHTML={{__html: Manager.decodeHash(header)}}></p>
+                        dangerouslySetInnerHTML={{__html: Manager.DecodeHash(header)}}></p>
                     </div>
                   )
                 })}
@@ -552,7 +552,6 @@ export default function DocViewer() {
 
       {/* SCREEN ACTIONS */}
       <ScreenActionsMenu centeredActionItem={true}>
-        {/*<Fade direction={'right'} className={'fade-wrapper'} duration={800} damping={0.2} triggerOnce={false} cascade={true}>*/}
         {/* SCROLL TO TOP BUTTON */}
         <div
           className="action-item scroll-to-top"
@@ -639,7 +638,6 @@ export default function DocViewer() {
             </div>
           </LightGallery>
         )}
-        {/*</Fade>*/}
         <div id="close-icon-wrapper">
           <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
         </div>
@@ -652,7 +650,7 @@ export default function DocViewer() {
         </p>
         <hr className="documents" />
         <div id="doc-text"></div>
-        {Manager.isValid(searchValue, true) && (
+        {Manager.IsValid(searchValue, true) && (
           <button onClick={CloseSearch} id="close-search-button" className="default with-border">
             Close Search
           </button>

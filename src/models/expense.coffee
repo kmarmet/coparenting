@@ -4,7 +4,7 @@ import DateFormats from "../constants/datetimeFormats"
 
 export default class Expense
   constructor: (
-    @id = Manager.getUid(),
+    @id = Manager.GetUid(),
     @name = '',
     @imageName = '',
     @shareWith = [],

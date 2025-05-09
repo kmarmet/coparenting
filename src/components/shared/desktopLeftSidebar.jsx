@@ -35,8 +35,7 @@ export default function DesktopLeftSidebar() {
   const auth = getAuth()
 
   const changeCurrentScreen = (screen) => {
-    setState({...state, currentScreen: screen, updateKey: Manager.getUid(), menuIsOpen: false})
-    Manager.showPageContainer('show')
+    setState({...state, currentScreen: screen, updateKey: Manager.GetUid(), menuIsOpen: false})
   }
 
   const changeTheme = async (theme) => {

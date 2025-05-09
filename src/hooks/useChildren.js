@@ -1,6 +1,7 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useEffect, useState} from 'react'
 import DB from '../database/DB'
+import DatasetManager from '../managers/datasetManager'
 import Manager from '../managers/manager'
 import useCurrentUser from './useCurrentUser'
 
@@ -20,8 +21,8 @@ const useChildren = () => {
       dataRef,
       (snapshot) => {
         // console.Log('Children Updated')
-        const formattedChildren = Manager.convertToArray(snapshot.val()?.filter((x) => x))
-        if (Manager.isValid(currentUser) && Manager.isValid(formattedChildren)) {
+        const formattedChildren = DatasetManager.GetValidArray(snapshot.val()?.filter((x) => x))
+        if (Manager.IsValid(currentUser) && Manager.IsValid(formattedChildren)) {
           setChildren(formattedChildren)
           setChildrenAreLoading(false)
         } else {

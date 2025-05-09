@@ -205,7 +205,7 @@ const VisitationManager = {
     holidays.forEach((holiday) => {
       visitationRelatedHolidays.forEach((mainHoliday) => {
         if (StringManager.getFirstWord(mainHoliday) === StringManager.getFirstWord(holiday.name)) {
-          const exists = visitationHolidays.filter((x) => Manager.contains(x.name, holiday.name))
+          const exists = visitationHolidays.filter((x) => Manager.Contains(x.name, holiday.name))
           if (exists.length === 0) {
             if (holiday.name === 'Juneteenth National Independence Day') {
               holiday.name = 'Juneteenth'
@@ -222,7 +222,7 @@ const VisitationManager = {
         }
       })
     })
-    return Manager.getUniqueArray(visitationHolidays).flat()
+    return DatasetManager.getUniqueArray(visitationHolidays).flat()
   },
   setVisitationHolidays: async (currentUser, holidays) => {
     await VisitationManager.deleteAllHolidaysForUser(currentUser)
@@ -305,13 +305,13 @@ const VisitationManager = {
     })()
 
     // Formatted Date Arrays
-    const formattedSecondPeriodArray = Manager.getUniqueArray(secondPeriodArray.filter((x) => x !== 'Invalid date'))
+    const formattedSecondPeriodArray = DatasetManager.getUniqueArray(secondPeriodArray.filter((x) => x !== 'Invalid date'))
       .sort()
       .flat()
-    const formattedFirstPeriodArray = Manager.getUniqueArray(firstPeriodArray.filter((x) => x !== 'Invalid date'))
+    const formattedFirstPeriodArray = DatasetManager.getUniqueArray(firstPeriodArray.filter((x) => x !== 'Invalid date'))
       .sort()
       .flat()
-    const formattedThirdPeriodArray = Manager.getUniqueArray(thirdPeriodArray.filter((x) => x !== 'Invalid date')).flat()
+    const formattedThirdPeriodArray = DatasetManager.getUniqueArray(thirdPeriodArray.filter((x) => x !== 'Invalid date')).flat()
 
     // Combine arrays
     return [...formattedFirstPeriodArray, ...formattedSecondPeriodArray, ...formattedThirdPeriodArray].sort()
@@ -324,7 +324,7 @@ const VisitationManager = {
     const allEvents = await DB.getTable(dbPath)
     for (let event of allEvents) {
       if (event?.isHoliday && event?.ownerKey === currentUser?.key) {
-        await DB.delete(dbPath, event.id)
+        await DB.Delete(dbPath, event.id)
       }
     }
   },

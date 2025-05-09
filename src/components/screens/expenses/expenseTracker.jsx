@@ -3,7 +3,6 @@ import DatetimeFormats from '/src/constants/datetimeFormats.js'
 import ExpenseCategories from '/src/constants/expenseCategories'
 import globalState from '/src/context.js'
 import DatasetManager from '/src/managers/datasetManager'
-import DateManager from '/src/managers/dateManager.js'
 import DomManager from '/src/managers/domManager'
 import ExpenseManager from '/src/managers/expenseManager.js'
 import Manager from '/src/managers/manager'
@@ -91,7 +90,7 @@ export default function ExpenseTracker() {
     updatedExpense.recipientName = recipientName
     updatedExpense.name = name
 
-    if (!Manager.isValid(dueDate)) {
+    if (!Manager.IsValid(dueDate)) {
       updatedExpense.dueDate = moment(dueDate).format(DatetimeFormats.dateForDb)
     }
     const cleanedExpense = ObjectManager.cleanObject(updatedExpense, ModelNames.expense)
@@ -133,7 +132,7 @@ export default function ExpenseTracker() {
 
   const SendReminder = async (expense) => {
     const message = `This is a reminder to pay the ${expense?.name} expense?.  ${
-      Manager.isValid(expense?.dueDate) ? 'Due date is: ' + expense?.dueDate : ''
+      Manager.IsValid(expense?.dueDate) ? 'Due date is: ' + expense?.dueDate : ''
     }`
     NotificationManager.SendNotification(`Expense Reminder`, message, expense?.payer?.phone, currentUser, ActivityCategory.expenses)
     setState({...state, successAlertMessage: 'Reminder Sent'})
@@ -282,16 +281,10 @@ export default function ExpenseTracker() {
   }, [])
 
   useEffect(() => {
-    if (Manager.isValid(expenses)) {
+    if (Manager.IsValid(expenses)) {
       setSortedExpenses(expenses)
     }
   }, [expenses])
-
-  useEffect(() => {
-    setTimeout(() => {
-      DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight, 80)
-    }, 300)
-  }, [])
 
   if (expensesAreLoading || currentUserIsLoading) {
     return <img className="data-loading-gif" src={require('../../../img/loading.gif')} alt="Loading" />
@@ -317,13 +310,12 @@ export default function ExpenseTracker() {
         onClose={() => {
           setActiveExpense(null)
           setShowDetails(false)
-          setState({...state, refreshKey: Manager.getUid()})
+          setState({...state, refreshKey: Manager.GetUid()})
         }}
         onDelete={DeleteExpense}
         viewSelector={<ViewSelector labels={['details', 'edit']} updateState={(e) => setView(e.toLowerCase())} />}
         showCard={showDetails}>
         <div id="details" className={`content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
-          <hr />
           <Spacer height={5} />
           {/* DETAILS */}
           {view === 'details' && (
@@ -400,9 +392,9 @@ export default function ExpenseTracker() {
                 />
 
                 {/* CHILDREN */}
-                {Manager.isValid(activeExpense?.children) && (
+                {Manager.IsValid(activeExpense?.children) && (
                   <div className="block">
-                    {Manager.isValid(activeExpense?.children) &&
+                    {Manager.IsValid(activeExpense?.children) &&
                       activeExpense?.children?.map((child, index) => {
                         return (
                           <p className="block-text" key={index}>
@@ -418,7 +410,7 @@ export default function ExpenseTracker() {
                 <DetailBlock title={'Notes'} text={activeExpense?.notes} isFullWidth={true} valueToValidate={activeExpense?.notes} />
 
                 {/* EXPENSE IMAGE */}
-                {Manager.isValid(activeExpense?.imageUrl) && (
+                {Manager.IsValid(activeExpense?.imageUrl) && (
                   <>
                     <div id="expense-image" className="block">
                       <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
@@ -580,13 +572,13 @@ export default function ExpenseTracker() {
               {categoriesInUse.length > 0 && <Label isBold={true} text={'Category'} classes="mb-5"></Label>}
 
               {/* CATEGORIES */}
-              {Manager.isValid(categoriesInUse) && (
+              {Manager.IsValid(categoriesInUse) && (
                 <div className="filter-row">
                   <div className="buttons category">
                     {categoriesAsArray.map((cat, index) => {
                       return (
                         <>
-                          {categoriesInUse.includes(cat) && Manager.isValid(cat, true) && (
+                          {categoriesInUse.includes(cat) && Manager.IsValid(cat, true) && (
                             <button
                               key={index}
                               onClick={HandleCategorySelection}
@@ -614,7 +606,7 @@ export default function ExpenseTracker() {
 
         {/* LOOP EXPENSES */}
         <div id="expenses-container">
-          {Manager.isValid(sortedExpenses) &&
+          {Manager.IsValid(sortedExpenses) &&
             sortedExpenses.map((expense, index) => {
               let dueDate = moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay) ?? ''
               const readableDueDate = moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()
@@ -622,13 +614,14 @@ export default function ExpenseTracker() {
               const dueInADay = readableDueDate.toString().includes('in a day')
               const dueInHours = readableDueDate.toString().includes('hours')
 
-              if (!Manager.isValid(dueDate)) {
+              if (!Manager.IsValid(dueDate)) {
                 dueDate = ''
               }
               return (
                 <div
                   key={index}
-                  className="row"
+                  style={DomManager.AnimateDelayStyle(index)}
+                  className={`row ${DomManager.Animate.FadeInRight(sortedExpenses, '.row')}`}
                   onClick={() => {
                     setActiveExpense(expense)
                     setShowDetails(true)
@@ -665,17 +658,17 @@ export default function ExpenseTracker() {
 
                     {/* DATE */}
                     <div className="flex" id="below-title">
-                      {Manager.isValid(dueDate, true) && (
+                      {Manager.IsValid(dueDate, true) && (
                         <>
                           {!expense?.isRecurring && (
                             <p className={`due-date`}>
-                              {DateManager.formatDate(expense?.dueDate)} ({readableDueDate.toString()})
+                              {moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay)} ({readableDueDate.toString()})
                             </p>
                           )}
                           {expense?.isRecurring && <p className={`due-date`}>{GetRecurringDateText(expense)}</p>}
                         </>
                       )}
-                      {!Manager.isValid(dueDate, true) && <p className="due-date no-due-date">no due date</p>}
+                      {!Manager.IsValid(dueDate, true) && <p className="due-date no-due-date">no due date</p>}
                     </div>
                   </div>
                 </div>

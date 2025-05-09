@@ -2,7 +2,7 @@ import Manager from "../managers/manager"
 
 export default class Parent
   constructor: (
-    @id = Manager.getUid()
+    @id = Manager.GetUid()
     @userKey = ''
     @name = ''
     @email = ''

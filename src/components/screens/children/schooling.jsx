@@ -38,7 +38,7 @@ export default function Schooling({activeChild}) {
 
     // Delete Shared
     const sharedProps = sharing?.map((x) => x?.prop)
-    if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
+    if (Manager.IsValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
       const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
       await SetSelectedChild()
@@ -57,17 +57,17 @@ export default function Schooling({activeChild}) {
   const SetSelectedChild = async () => {
     const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
     let sharedValues = []
-    if (Manager.isValid(sharing)) {
+    if (Manager.IsValid(sharing)) {
       for (let obj of sharing) {
         sharedValues.push([obj.prop, obj.value, obj.sharedByName])
       }
     }
 
-    if (Manager.isValid(activeChild?.schooling)) {
+    if (Manager.IsValid(activeChild?.schooling)) {
       // Set info
       let values = Object.entries(activeChild?.schooling)
 
-      if (Manager.isValid(sharedValues)) {
+      if (Manager.IsValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
 
@@ -78,7 +78,7 @@ export default function Schooling({activeChild}) {
         setSchoolingValues(values)
       }
     } else {
-      if (Manager.isValid(sharedValues)) {
+      if (Manager.IsValid(sharedValues)) {
         setSchoolingValues(sharedValues)
       } else {
         setSchoolingValues([])
@@ -92,19 +92,19 @@ export default function Schooling({activeChild}) {
 
   return (
     <div className="info-section section schooling">
-      <Accordion className={`${theme} child-info`} disabled={!Manager.isValid(activeChild?.schooling)}>
+      <Accordion className={`${theme} child-info`} disabled={!Manager.IsValid(activeChild?.schooling)}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
-          className={!Manager.isValid(schoolingValues) ? 'disabled header schooling' : 'header schooling'}>
+          className={!Manager.IsValid(schoolingValues) ? 'disabled header schooling' : 'header schooling'}>
           <IoSchool className={'svg schooling'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
             Schooling
-            {!Manager.isValid(schoolingValues) ? '- no info' : ''}
-            {Manager.isValid(schoolingValues) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
+            {!Manager.IsValid(schoolingValues) ? '- no info' : ''}
+            {Manager.IsValid(schoolingValues) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>
-          {Manager.isValid(schoolingValues) &&
+          {Manager.IsValid(schoolingValues) &&
             schoolingValues.map((prop, index) => {
               let infoLabel = StringManager.uppercaseFirstLetterOfAllWords(StringManager.spaceBetweenWords(prop[0]))
               const value = prop.flat()[1]
@@ -123,7 +123,7 @@ export default function Schooling({activeChild}) {
                       <InputWrapper
                         hasBottomSpacer={false}
                         inputType={InputTypes.text}
-                        labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
+                        labelText={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
                         defaultValue={value}
                         onChange={(e) => Update(infoLabel, e.target.value)}
                       />

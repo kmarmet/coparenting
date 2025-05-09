@@ -7,8 +7,8 @@ import StringManager from "./stringManager"
 export default DocumentsManager =
   DeleteDocsWithIds: (idsToDelete, currentUser, callback = () => {}) ->
     for docId in idsToDelete
-      docs = DatasetManager.getValidArray(await DB.getTable("#{DB.tables.documents}/#{currentUser?.key}"))
-      if Manager.isValid(docs)
+      docs = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.documents}/#{currentUser?.key}"))
+      if Manager.IsValid(docs)
         for thisDoc in docs
           if thisDoc.id == docId
             await DB.deleteById("#{DB.tables.documents}/#{currentUser?.key}", docId)
@@ -19,7 +19,7 @@ export default DocumentsManager =
   AddToDocumentsTable: (currentUser, existingDocuments, data) ->
     dbRef = ref getDatabase()
 
-    if Manager.isValid (existingDocuments)
+    if Manager.IsValid (existingDocuments)
       existingDocuments = [existingDocuments..., data].filter (item) -> item
     else
       existingDocuments = [data].filter (item) -> item

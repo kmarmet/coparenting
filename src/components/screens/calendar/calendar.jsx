@@ -50,11 +50,11 @@ export default function EventCalendar() {
   const {calendarEvents, eventsAreLoading} = useCalendarEvents()
 
   // GET EVENTS
-  const GetSecuredEvents = async (activeDay) => {
+  const GetEvents = async (activeDay) => {
     let _eventsOfDay = []
     let dateToUse = activeDay
 
-    if (!Manager.isValid(currentMonth)) {
+    if (!Manager.IsValid(currentMonth)) {
       setCurrentMonth(moment(activeDay).format('MMMM'))
     }
 
@@ -63,11 +63,11 @@ export default function EventCalendar() {
     }
 
     // All secured events
-    const sortedEvents = DateManager.sortCalendarEvents(calendarEvents, 'startDate', 'startTime')
+    const sortedEvents = DateManager.SortCalendarEvents(calendarEvents, 'startDate', 'startTime')
 
     // Set events of day
     _eventsOfDay = sortedEvents.filter((x) => x.startDate === moment(dateToUse).format(DatetimeFormats.dateForDb))
-    _eventsOfDay = DateManager.sortCalendarEvents(_eventsOfDay, 'startTime', 'asc')
+    _eventsOfDay = DateManager.SortCalendarEvents(_eventsOfDay, 'startTime', 'asc')
 
     // Set Holidays
     const holidaysToLoop = holidays.filter(
@@ -78,6 +78,7 @@ export default function EventCalendar() {
 
     // ADD DAY INDICATORS
     await AddDayIndicators([...sortedEvents, ...holidays])
+    setState({...state, isLoading: false})
   }
 
   const AddDayIndicators = async (events) => {
@@ -119,7 +120,7 @@ export default function EventCalendar() {
       // HOLIDAYS
       for (let holiday of emojiHolidays) {
         // Add holiday emoji
-        if (Manager.isValid(holiday) && holiday?.startDate === dayEvent?.startDate) {
+        if (Manager.IsValid(holiday) && holiday?.startDate === dayEvent?.startDate) {
           const holidayEmoji = document.createElement('span')
           holidayEmoji.classList.add('holiday-emoji')
           switch (true) {
@@ -196,7 +197,7 @@ export default function EventCalendar() {
     let userVisitationHolidays = []
     if (currentUser.accountType === 'parent') {
       userVisitationHolidays = allEvents.filter(
-        (x) => x.isHoliday === true && x.ownerKey === currentUser?.key && Manager.contains(x.title.toLowerCase(), 'holiday')
+        (x) => x.isHoliday === true && x.ownerKey === currentUser?.key && Manager.Contains(x.title.toLowerCase(), 'holiday')
       )
     }
     userVisitationHolidays.forEach((holiday) => {
@@ -211,8 +212,8 @@ export default function EventCalendar() {
     setShowHolidaysCard(false)
     setSearchQuery('')
     setShowSearchCard(false)
-    GetSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString()).then((r) => r)
-    setState({...state, refreshKey: Manager.getUid()})
+    GetEvents(moment().format(DatetimeFormats.dateForDb).toString()).then((r) => r)
+    setState({...state, refreshKey: Manager.GetUid()})
   }
 
   const SetHolidaysState = async () => {
@@ -228,7 +229,7 @@ export default function EventCalendar() {
     let payEvents = []
     let dotClasses = []
     for (let event of dayEvents) {
-      if (Manager.isValid(event)) {
+      if (Manager.IsValid(event)) {
         const isCurrentUserDot = event?.ownerKey === currentUser?.key
         if (
           event?.title.toLowerCase().includes('pay') ||
@@ -238,7 +239,7 @@ export default function EventCalendar() {
         ) {
           payEvents.push(event.startDate)
         }
-        if (event?.isHoliday && !event.fromVisitationSchedule && !Manager.isValid(event.ownerKey)) {
+        if (event?.isHoliday && !event.fromVisitationSchedule && !Manager.IsValid(event.ownerKey)) {
           dotClasses.push('holiday-event-dot')
         }
         if (!event?.isHoliday && isCurrentUserDot) {
@@ -261,7 +262,7 @@ export default function EventCalendar() {
   const SetInitialActivities = async () => {
     const notifications = await DB.getTable(`${DB.tables.notifications}/${currentUser?.key}`)
     await AppManager.setAppBadge(notifications.length)
-    setState({...state, notificationCount: notifications.length, currentScreen: ScreenNames.calendar, isLoading: false, refreshKey: Manager.getUid()})
+    setState({...state, notificationCount: notifications.length, currentScreen: ScreenNames.calendar, refreshKey: Manager.GetUid()})
   }
 
   // SEARCH
@@ -278,18 +279,39 @@ export default function EventCalendar() {
       setSearchResults(searchResults)
       setEventsOfActiveDay(searchResults)
       setShowSearchCard(false)
-      setState({...state, refreshKey: Manager.getUid(), isLoading: false})
+      setState({...state, refreshKey: Manager.GetUid(), isLoading: false})
+    }
+  }
+
+  const HandleRefreshCheck = () => {
+    // Refresh check
+    const lastRefresh = localStorage.getItem('lastAutoRefresh')
+
+    // Last refresh exists
+    if (Manager.IsValid(lastRefresh)) {
+      const msSinceLastRefresh = moment(lastRefresh, DatetimeFormats.fullDatetime).diff() ?? 0
+      const hoursSinceRefresh = Math.abs(Math.ceil(msSinceLastRefresh / (1000 * 60 * 60)))
+
+      // If it has been more than 3 hours since the last refresh -> reload the page
+      if (hoursSinceRefresh > 3) {
+        localStorage.setItem('lastAutoRefresh', moment().format(DatetimeFormats.fullDatetime))
+        window.location.reload()
+        return false
+      }
+    }
+
+    // Last refresh does not exist -> set one
+    else {
+      localStorage.setItem('lastAutoRefresh', moment().format(DatetimeFormats.fullDatetime))
     }
   }
 
   useEffect(() => {
-    if (Manager.isValid(calendarEvents)) {
-      GetSecuredEvents().then((r) => r)
-    }
+    GetEvents().then((r) => r)
   }, [calendarEvents])
 
   useEffect(() => {
-    if (Manager.isValid(currentUser)) {
+    if (Manager.IsValid(currentUser)) {
       SetInitialActivities().then((r) => r)
     }
   }, [currentUser])
@@ -336,9 +358,13 @@ export default function EventCalendar() {
     }
   }, [currentScreen, currentUserIsLoading])
 
+  useEffect(() => {
+    HandleRefreshCheck()
+  }, [])
+
   return (
     <>
-      {currentUserIsLoading && !Manager.isValid(eventsOfActiveDay) && <StandaloneLoadingGif />}
+      {currentUserIsLoading && !Manager.IsValid(eventsOfActiveDay) && <StandaloneLoadingGif />}
       {/* CARDS */}
       <>
         {/* HOLIDAYS CARD */}
@@ -397,12 +423,15 @@ export default function EventCalendar() {
             maxDate={moment(`${moment().year()}-12-31`)}
             onMonthChange={async (month) => {
               setCurrentMonth(moment(month).format('MMMM'))
-              await GetSecuredEvents(moment(month).format(DatetimeFormats.dateForDb))
+              await GetEvents(moment(month).format(DatetimeFormats.dateForDb))
             }}
             onChange={async (day) => {
-              setSelectedDate(moment(day).format('YYYY-MM-DD'))
-              setState({...state, dateToEdit: moment(day).format(DatetimeFormats.dateForDb)})
-              await GetSecuredEvents(day).then((r) => r)
+              DomManager.Animate.RemoveAnimationClasses('.event-row', 'animate__fadeInRight')
+              setTimeout(async () => {
+                setSelectedDate(moment(day).format('YYYY-MM-DD'))
+                setState({...state, dateToEdit: moment(day).format(DatetimeFormats.dateForDb)})
+                await GetEvents(day).then((r) => r)
+              }, 100)
             }}
             slotProps={{
               actionBar: {
@@ -450,17 +479,17 @@ export default function EventCalendar() {
           <button
             className="button bottom-right default"
             onClick={async () => {
-              await GetSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
+              await GetEvents(moment().format(DatetimeFormats.dateForDb).toString())
               setShowHolidays(false)
             }}>
             Hide Holidays
           </button>
         )}
-        {Manager.isValid(searchResults) && (
+        {Manager.IsValid(searchResults) && (
           <button
             className="button default bottom-right with-border"
             onClick={async () => {
-              await GetSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
+              await GetEvents(moment().format(DatetimeFormats.dateForDb).toString())
               setSearchResults([])
               setSearchQuery('')
             }}>
@@ -485,7 +514,7 @@ export default function EventCalendar() {
             <p
               className="item"
               onClick={async () => {
-                await GetSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
+                await GetEvents(moment().format(DatetimeFormats.dateForDb).toString())
                 setShowHolidays(false)
               }}>
               <PiCalendarXDuotone /> Hide Holidays
@@ -505,7 +534,7 @@ export default function EventCalendar() {
               if (inputValue.length > 3) {
                 setSearchQuery(inputValue)
                 let results = []
-                if (Manager.isValid(calendarEvents)) {
+                if (Manager.IsValid(calendarEvents)) {
                   results = calendarEvents.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
                 }
                 if (results.length > 0) {
@@ -514,7 +543,7 @@ export default function EventCalendar() {
               } else {
                 if (inputValue.length === 0) {
                   setShowSearchCard(false)
-                  await GetSecuredEvents(moment().format(DatetimeFormats.dateForDb).toString())
+                  await GetEvents(moment().format(DatetimeFormats.dateForDb).toString())
                   e.target.value = ''
                   setSearchQuery('')
                 }

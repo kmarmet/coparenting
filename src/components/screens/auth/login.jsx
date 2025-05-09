@@ -9,7 +9,6 @@ import Manager from '/src/managers/manager'
 import {initializeApp} from 'firebase/app'
 import {browserLocalPersistence, getAuth, sendEmailVerification, setPersistence, signInWithEmailAndPassword} from 'firebase/auth'
 import React, {useContext, useEffect, useState} from 'react'
-import {Fade} from 'react-awesome-reveal'
 import {FaArrowCircleDown} from 'react-icons/fa'
 import {PiEyeClosedDuotone, PiEyeDuotone} from 'react-icons/pi'
 import Turnstile, {useTurnstile} from 'react-turnstile'
@@ -32,7 +31,7 @@ export default function Login() {
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
 
-  const ManualLogin = async () => {
+  const Login = async () => {
     // Validation
     if (!validator.isEmail(email)) {
       AlertManager.throwError('Email address is not valid')
@@ -44,7 +43,7 @@ export default function Login() {
       {name: 'Password', value: password},
     ])
 
-    if (Manager.isValid(errorString, true)) {
+    if (Manager.IsValid(errorString, true)) {
       AlertManager.throwError(errorString)
       setState({...state, isLoading: false})
       return false
@@ -71,10 +70,9 @@ export default function Login() {
               'Email Address Verification Needed',
               `For security purposes, we need to verify ${user.email}. Please ${DomManager.tapOrClick()} the link sent to your email and then login.`,
               'info',
-              () => {}
+              () => setState({...state, isLoading: false})
             )
             sendEmailVerification(user)
-            setState({...state, isLoading: false})
           }
 
           // EMAIL IS VERIFIED -> REDIRECT TO CALENDAR
@@ -83,8 +81,8 @@ export default function Login() {
               ...state,
               userIsLoggedIn: true,
               authUser: user,
-              isLoading: false,
-              currentScreen: ScreenNames.home,
+              isLoading: true,
+              currentScreen: ScreenNames.calendar,
             })
           }
         })
@@ -93,7 +91,7 @@ export default function Login() {
         .catch((error) => {
           setState({...state, isLoading: false})
           console.error('Sign in error:', error.message)
-          if (Manager.contains(error.message, 'user-not-found')) {
+          if (Manager.Contains(error.message, 'user-not-found')) {
             AlertManager.throwError(
               `No account with email ${email} found.`,
               `If you have forgotten your password, please ${DomManager.tapOrClick()} Reset Password`
@@ -133,89 +131,88 @@ export default function Login() {
             }}
           />
         )}
-        <Fade direction={'right'} duration={800} damping={0.2} cascade={true} triggerOnce={true}>
-          <img
-            onClick={() => setState({...state, currentScreen: ScreenNames.home})}
-            className="ml-auto mr-auto"
-            src={require('../../../img/logo.png')}
-            alt="Peaceful coParenting"
-          />
-          {/* QUOTE CONTAINER */}
-          <div id="quote-container">
-            <p id="quote">
-              Co-Parenting. It&#39;s not a competition between two homes. It&#39;s <b>a collaboration of parents doing what is best for the kids.</b>
-            </p>
-            <p id="author">~ Heather Hetchler</p>
-          </div>
-
-          {/* INSTALL BUTTON */}
-          <p
-            id="install-button"
-            className="mb-10 button mt-20"
-            onClick={() => {
-              setState({...state, menuIsOpen: false, currentScreen: ScreenNames.installApp})
-            }}>
-            Install <FaArrowCircleDown className={'fs-16 ml-10'} />
+        <img
+          onClick={() => setState({...state, currentScreen: ScreenNames.landing})}
+          className="ml-auto mr-auto"
+          src={require('../../../img/logo.png')}
+          alt="Peaceful coParenting"
+        />
+        {/* QUOTE CONTAINER */}
+        <div id="quote-container">
+          <p id="quote">
+            Co-Parenting. It&#39;s not a competition between two homes. It&#39;s <b>a collaboration of parents doing what is best for the kids.</b>
           </p>
+          <p id="author">~ Heather Hetchler</p>
+        </div>
 
-          {/* FORM/INPUTS */}
-          <div className="flex form-container">
-            <div className="form">
-              {/* EMAIL */}
+        {/* INSTALL BUTTON */}
+        <p
+          id="install-button"
+          className="mb-10 button mt-20"
+          onClick={() => {
+            setState({...state, menuIsOpen: false, currentScreen: ScreenNames.installApp})
+          }}>
+          Install <FaArrowCircleDown className={'fs-16 ml-10'} />
+        </p>
+
+        {/* FORM/INPUTS */}
+        <div className="flex form-container">
+          <div className="form">
+            {/* EMAIL */}
+            <InputWrapper
+              wrapperClasses="fade-in-right"
+              inputClasses="email login-input"
+              inputType={InputTypes.email}
+              required={true}
+              labelText={'Email Address'}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            {/* PASSWORD */}
+            <div className="flex">
               <InputWrapper
-                inputClasses="email login-input"
-                inputType={InputTypes.email}
+                inputType={viewPassword ? InputTypes.text : InputTypes.password}
                 required={true}
-                labelText={'Email Address'}
-                onChange={(e) => setEmail(e.target.value)}
+                hasBottomSpacer={false}
+                defaultValue={password}
+                wrapperClasses="password fade-in-right"
+                labelText={'Password'}
+                inputClasses="password login-input"
+                onChange={(e) => setPassword(e.target.value)}
               />
-              {/* PASSWORD */}
-              <div className="flex inputs">
-                <InputWrapper
-                  inputType={viewPassword ? InputTypes.text : InputTypes.password}
-                  required={true}
-                  hasBottomSpacer={false}
-                  defaultValue={password}
-                  wrapperClasses="password"
-                  labelText={'Password'}
-                  inputClasses="password login-input"
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                {!viewPassword && <PiEyeDuotone onClick={() => setViewPassword(true)} className={'blue eye-icon ml-10'} />}
-                {viewPassword && <PiEyeClosedDuotone onClick={() => setViewPassword(false)} className={'blue eye-icon ml-10'} />}
-              </div>
-
-              <div id="below-inputs-wrapper" className="flex space-between align-center">
-                {/* REMEMBER ME */}
-                <Checkbox text={'Remember Me'} onCheck={() => setIsPersistent(!isPersistent)} />
-                {/* FORGOT PASSWORD BUTTON */}
-                <p id="forgot-password-link" onClick={() => setState({...state, currentScreen: ScreenNames.resetPassword})}>
-                  Forgot Password
-                </p>
-              </div>
-
-              <Spacer height={10} />
-
-              {/* LOGIN BUTTONS */}
-              {challengeSolved && !window.location.href.includes('localhost') && (
-                <button className="button default green" id="login-button" onClick={ManualLogin}>
-                  Login
-                </button>
-              )}
-              {window.location.href.includes('localhost') && (
-                <button className="button default green" id="login-button" onClick={ManualLogin}>
-                  Login
-                </button>
-              )}
-
-              {!challengeSolved && !window.location.href.includes('localhost') && <p id="captcha-loading-text">Pre-Authentication in Progress...</p>}
+              {!viewPassword && <PiEyeDuotone onClick={() => setViewPassword(true)} className={'blue eye-icon ml-10'} />}
+              {viewPassword && <PiEyeClosedDuotone onClick={() => setViewPassword(false)} className={'blue eye-icon ml-10'} />}
             </div>
 
-            <p id="sign-up-link" onClick={() => setState({...state, currentScreen: ScreenNames.registration})}>
-              Don&#39;t have an account? <span>Sign Up</span>
-            </p>
+            <div id="below-inputs-wrapper" className="flex space-between align-center">
+              {/* REMEMBER ME */}
+              <Checkbox text={'Remember Me'} onCheck={() => setIsPersistent(!isPersistent)} />
+              {/* FORGOT PASSWORD BUTTON */}
+              <p id="forgot-password-link" onClick={() => setState({...state, currentScreen: ScreenNames.resetPassword})}>
+                Forgot Password
+              </p>
+            </div>
+
+            <Spacer height={10} />
+
+            {/* LOGIN BUTTONS */}
+            {challengeSolved && !window.location.href.includes('localhost') && (
+              <button className="button default green" id="login-button" onClick={Login}>
+                Login
+              </button>
+            )}
+            {window.location.href.includes('localhost') && (
+              <button className="button default green" id="login-button" onClick={Login}>
+                Login
+              </button>
+            )}
+
+            {!challengeSolved && !window.location.href.includes('localhost') && <p id="captcha-loading-text">Pre-Authentication in Progress...</p>}
           </div>
-        </Fade>
+
+          <p id="sign-up-link" onClick={() => setState({...state, currentScreen: ScreenNames.registration})}>
+            Don&#39;t have an account? <span>Sign Up</span>
+          </p>
+        </div>
       </div>
     </>
   )

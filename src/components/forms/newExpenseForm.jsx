@@ -30,6 +30,7 @@ import DB from '../../database/DB'
 import DB_UserScoped from '../../database/db_userScoped'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import DatasetManager from '../../managers/datasetManager.coffee'
+import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import Label from '../shared/label'
 import ToggleButton from '../shared/toggleButton'
@@ -73,11 +74,9 @@ export default function NewExpenseForm() {
     setRecurringFrequency('')
     setRepeatingEndDate('')
     setExpenseAmount('')
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     setState({
       ...state,
-      currentUser: updatedCurrentUser,
-      refreshKey: Manager.getUid(),
+      refreshKey: Manager.GetUid(),
       creationFormToShow: '',
       successAlertMessage: showAlert ? `${StringManager.FormatTitle(expenseName)} Added` : null,
     })
@@ -119,8 +118,8 @@ export default function NewExpenseForm() {
     newExpense.children = expenseChildren
     newExpense.amount = StringManager.FormatAsWholeNumber(expenseAmount)
     newExpense.category = expenseCategory
-    newExpense.dueDate = Manager.isValid(expenseDueDate) ? moment(expenseDueDate).format(DatetimeFormats.dateForDb) : ''
-    newExpense.creationDate = Manager.getCurrentDate()
+    newExpense.dueDate = Manager.IsValid(expenseDueDate) ? moment(expenseDueDate).format(DatetimeFormats.dateForDb) : ''
+    newExpense.creationDate = DateManager.GetCurrentJavascriptDate()
     newExpense.notes = expenseNotes
     newExpense.paidStatus = 'unpaid'
     newExpense.imageName = expenseImage.name ?? ''
@@ -141,13 +140,13 @@ export default function NewExpenseForm() {
 
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
 
-    if (Manager.isValid(activeRepeatIntervals) && activeRepeatIntervals.length > 0 && !expenseDueDate) {
+    if (Manager.IsValid(activeRepeatIntervals) && activeRepeatIntervals.length > 0 && !expenseDueDate) {
       AlertManager.throwError('When selecting a recurring frequency, you must also set a due date')
       return false
     }
 
     // IMAGE UPLOAD
-    if (Manager.isValid(expenseImage?.name)) {
+    if (Manager.IsValid(expenseImage?.name)) {
       await FirebaseStorage.upload(FirebaseStorage.directories.expenseImages, currentUser?.key, expenseImage, expenseImage.name).then((url) => {
         newExpense.imageUrl = url
       })
@@ -163,7 +162,7 @@ export default function NewExpenseForm() {
       }
 
       // Send notification
-      if (Manager.isValid(shareWith)) {
+      if (Manager.IsValid(shareWith)) {
         await NotificationManager.sendToShareWith(
           shareWith,
           currentUser,
@@ -182,21 +181,21 @@ export default function NewExpenseForm() {
     let expensesToPush = []
     let datesToRepeat = CalendarMapper.recurringEvents(recurringFrequency, expenseDueDate, repeatingEndDate)
 
-    if (Manager.isValid(datesToRepeat)) {
+    if (Manager.IsValid(datesToRepeat)) {
       datesToRepeat.forEach((date) => {
         const newExpense = new Expense()
-        newExpense.id = Manager.getUid()
+        newExpense.id = Manager.GetUid()
         newExpense.name = expenseName
         newExpense.children = expenseChildren
         newExpense.amount = expenseAmount
         newExpense.imageName = ''
         newExpense.phone = currentUser?.key
-        newExpense.dueDate = DateManager.dateIsValid(date) ? moment(date).format(DatetimeFormats.dateForDb) : ''
-        newExpense.creationDate = Manager.getCurrentDate()
+        newExpense.dueDate = DateManager.DateIsValid(date) ? moment(date).format(DatetimeFormats.dateForDb) : ''
+        newExpense.creationDate = DateManager.GetCurrentJavascriptDate()
         newExpense.notes = expenseNotes
         newExpense.paidStatus = 'unpaid'
         newExpense.createdBy = currentUser?.name
-        newExpense.shareWith = Manager.getUniqueArray(shareWith).flat()
+        newExpense.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
         newExpense.recipientName = StringManager.getFirstNameOnly(currentUser?.name)
         newExpense.isRecurring = true
         expensesToPush.push(newExpense)
@@ -207,7 +206,7 @@ export default function NewExpenseForm() {
 
   const HandleChildSelection = (e) => {
     const childName = e.getAttribute('data-label')
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       async () => {
         setExpenseChildren([...expenseChildren, childName])
@@ -220,22 +219,24 @@ export default function NewExpenseForm() {
   }
 
   const HandleShareWithSelection = (e) => {
-    const updated = Manager.handleShareWithSelection(e, currentUser, shareWith)
+    const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 
   const HandlePayerSelection = async (e) => {
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       async () => {
         const coparentKey = e.getAttribute('data-key')
 
-        const coparent = currentUser?.coparents?.filter((x) => x.key === coparentKey)[0]
-        const coparentName = coparent.name
-        setPayer({
-          key: coparentKey,
-          name: coparentName,
-        })
+        const coparent = currentUser?.coparents?.find((x) => x.userKey === coparentKey)
+        if (Manager.IsValid(coparent)) {
+          const coparentName = coparent.name
+          setPayer({
+            key: coparentKey,
+            name: coparentName,
+          })
+        }
       },
       async () => {
         setPayer({
@@ -253,7 +254,7 @@ export default function NewExpenseForm() {
     checkboxWrappers.forEach((wrapper) => {
       wrapper.classList.remove('active')
     })
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         let selection = ''
@@ -411,7 +412,7 @@ export default function NewExpenseForm() {
           <CheckboxGroup
             required={true}
             parentLabel={'Who will be paying the expense?'}
-            checkboxArray={Manager.buildCheckboxGroup({
+            checkboxArray={DomManager.BuildCheckboxGroup({
               currentUser,
               predefinedType: 'coparents',
             })}
@@ -430,7 +431,7 @@ export default function NewExpenseForm() {
               </div>
               {includeChildren && (
                 <CheckboxGroup
-                  checkboxArray={Manager.buildCheckboxGroup({
+                  checkboxArray={DomManager.BuildCheckboxGroup({
                     currentUser,
                     labelType: 'children',
                   })}
@@ -448,7 +449,7 @@ export default function NewExpenseForm() {
           {isRecurring && (
             <CheckboxGroup
               onCheck={HandleRecurringSelection}
-              checkboxArray={Manager.buildCheckboxGroup({
+              checkboxArray={DomManager.BuildCheckboxGroup({
                 currentUser,
                 labelType: 'recurring-intervals',
               })}

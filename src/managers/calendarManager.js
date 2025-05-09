@@ -39,14 +39,14 @@ export default CalendarManager = {
     var currentEvents, dbRef, error, event, i, len, multipleDatesId, toAdd;
     dbRef = ref(getDatabase());
     currentEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.key}`));
-    multipleDatesId = Manager.getUid();
+    multipleDatesId = Manager.GetUid();
     if (isRangeClonedOrRecurring = true) {
       for (i = 0, len = newEvents.length; i < len; i++) {
         event = newEvents[i];
         event.multipleDatesId = multipleDatesId;
       }
     }
-    if (!Manager.isValid(currentEvents)) {
+    if (!Manager.IsValid(currentEvents)) {
       toAdd = [...newEvents];
     } else {
       toAdd = [...currentEvents, ...newEvents];
@@ -75,14 +75,14 @@ export default CalendarManager = {
       dateObject = new CalendarEvent();
       // Required
       dateObject.title = eventObject.title;
-      dateObject.id = Manager.getUid();
+      dateObject.id = Manager.GetUid();
       dateObject.startDate = moment(date).format(DateFormats.dateForDb);
       dateObject.endDate = moment(endDate).format(DateFormats.dateForDb);
       if (arrayType === "range") {
         dateObject.staticStartDate = moment(datesToIterate[0]).format(DateFormats.dateForDb);
       }
       // Not Required
-      dateObject.directionsLink = Manager.getDirectionsLink(eventObject.location);
+      dateObject.directionsLink = Manager.GetDirectionsLink(eventObject.location);
       dateObject.location = eventObject.location;
       dateObject.children = eventObject.children;
       dateObject.ownerKey = currentUser != null ? currentUser.key : void 0;
@@ -96,10 +96,10 @@ export default CalendarManager = {
       //      dateObject.isCloned = Manager.isValid(clonedDates)
 
       // Times
-      if (Manager.isValid(eventObject.startTime)) {
+      if (Manager.IsValid(eventObject.startTime)) {
         dateObject.startTime = moment(eventObject.startTime).format(DateFormats.timeForDb);
       }
-      if (Manager.isValid(eventObject.endTime)) {
+      if (Manager.IsValid(eventObject.endTime)) {
         dateObject.endTime = moment(eventObject.endTime).format(DateFormats.timeForDb);
       }
       dateObject.reminderTimes = eventObject.reminderTimes;
@@ -133,7 +133,7 @@ export default CalendarManager = {
     });
     toAdd = [];
     try {
-      if (Manager.isValid(currentEvents)) {
+      if (Manager.IsValid(currentEvents)) {
         toAdd = [...currentEvents, newEvent];
       } else {
         toAdd = [newEvent];
@@ -163,11 +163,11 @@ export default CalendarManager = {
     idsToDelete = events.map(function(x) {
       return x.id;
     });
-    if (Manager.isValid(tableRecords)) {
+    if (Manager.IsValid(tableRecords)) {
       results = [];
       for (i = 0, len = tableRecords.length; i < len; i++) {
         record = tableRecords[i];
-        if (Manager.contains(idsToDelete, record.id)) {
+        if (Manager.Contains(idsToDelete, record.id)) {
           results.push((await CalendarManager.deleteEvent(currentUser, record.id)));
         } else {
           results.push(void 0);

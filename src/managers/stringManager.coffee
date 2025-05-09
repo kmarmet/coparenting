@@ -2,6 +2,11 @@ import lzstring from "lz-string"
 import Manager from "./manager"
 
 StringManager = {
+  IsNotAllSameNumber: (str) ->
+    unless /^\d+$/.test(str)
+      return true
+    not (new RegExp("^#{str[0]}+$").test(str))
+
   FormatAsWholeNumber: (number) ->
     asString = number.toString()
     if asString.indexOf('.') > -1
@@ -9,7 +14,7 @@ StringManager = {
       return parseInt(asString.substring(0, dotIndex))
 
   GetFirstNameAndLastInitial: (fullName) ->
-    if Manager.isValid(fullName, true)
+    if Manager.IsValid(fullName, true)
       names = fullName.split(" ")
       firstName = names[0]
       lastNameInitial = if names.length > 1 then names[names.length - 1][0] else ""
@@ -43,7 +48,7 @@ StringManager = {
     return input == input.toUpperCase()
 
   FormatPhone: (input) ->
-    if !Manager.isValid(input) or input?.length == 0
+    if !Manager.IsValid(input) or input?.length == 0
       return input
 
     input = input?.toString()
@@ -85,7 +90,7 @@ StringManager = {
     raw = JSON.stringify
       key: process.env.REACT_APP_SAPLER_TONE_API_KEY
       text: text
-      session_id: Manager.getUid()
+      session_id: Manager.GetUid()
       auto_apply: true
       lang: 'en'
       variety: 'us-variety'
@@ -128,7 +133,7 @@ StringManager = {
     input.replace(/\.[^/.]+$/, '')
 
   GetWordCount: (input) ->
-    if Manager.isValid input, true
+    if Manager.IsValid input, true
       return input?.trim()?.split(/\s+/)?.length
     else
       return 0
@@ -167,7 +172,7 @@ StringManager = {
     input.toString().replace(/ .*/, '')
 
   uppercaseFirstLetterOfAllWords: (input) ->
-    if !Manager.isValid(input, true)
+    if !Manager.IsValid(input, true)
       return input
     words = input?.toString()
     if words and words != undefined
@@ -190,7 +195,7 @@ StringManager = {
     if !title || title?.length == 0
       return title
 
-    if !Manager.isValid(title, true)
+    if !Manager.IsValid(title, true)
       return title
 
     if uppercase

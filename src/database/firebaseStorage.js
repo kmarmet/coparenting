@@ -46,7 +46,7 @@ const FirebaseStorage = {
       const storage = getStorage()
       await getDownloadURL(ref(storage, `${fileDirectory}/${id}/${filename}`))
         .then((url) => {
-          if (Manager.isValid(url)) {
+          if (Manager.IsValid(url)) {
             if (url.indexOf(id) > -1) {
               resolve(url)
             }
@@ -128,7 +128,7 @@ const FirebaseStorage = {
         firebaseUrls.forEach(async (url) => {
           const imageName = FirebaseStorage.GetImageNameFromUrl(url)
           const fileImageNames = imgFiles.map((x) => x.name)
-          if (fileImageNames.includes(Manager.decodeHash(imageName))) {
+          if (fileImageNames.includes(Manager.DecodeHash(imageName))) {
             urls.push(url)
           }
         })
@@ -224,7 +224,7 @@ const FirebaseStorage = {
   uploadMultiple: async (imgDirectory, id, images) => {
     const storage = getStorage()
     for (let i = 0; i < images.length; i++) {
-      const storageRef = ref(storage, `${imgDirectory}/${id}/${Manager.generateHash(images[i].name)}`.replace('//', '/'))
+      const storageRef = ref(storage, `${imgDirectory}/${id}/${Manager.GenerateHash(images[i].name)}`.replace('//', '/'))
       await uploadBytes(storageRef, images[i])
     }
   },
@@ -256,15 +256,13 @@ const FirebaseStorage = {
       })
       .catch((error) => {
         console.log(error)
-        if (recordToDeleteIfNoImage) {
-          DB.delete(DB.tables.users, recordToDeleteIfNoImage.id)
-        }
+        //TODO delete from FB Realtime if image does not exist
         // Uh-oh, an error occurred!
       })
   },
   deleteDirectory: async (directoryName, currentUserKey) => {
     const storage = getStorage()
-    // Create a reference to the folder you want to delete
+    // Create a reference to the folder you want to Delete
     const folderRef = ref(storage, `${directoryName}/${currentUserKey}`)
 
     // List all the files in the folder
@@ -321,7 +319,7 @@ const FirebaseStorage = {
     return exists
   },
   GetImageNameFromUrl: (name) => {
-    if (!Manager.isValid(name, true)) {
+    if (!Manager.IsValid(name, true)) {
       return false
     }
     const url = decodeURIComponent(name)

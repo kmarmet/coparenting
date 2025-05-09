@@ -8,7 +8,7 @@ import moment from 'moment';
 import DateFormats from '../constants/datetimeFormats';
 
 export default User = class User {
-  constructor(id = Manager.getUid(), key = '', name = '', email = '', phone = '', children = [], coparents = [], sharedDataUsers = [], parentType = '', accountType = '', homeAddress = '', location = {
+  constructor(id = Manager.GetUid(), creationDate = moment().format(DateFormats.dateForDb), key = '', name = '', email = '', phone = '', children = [], coparents = [], sharedDataUsers = [], parentType = '', accountType = '', homeAddress = '', location = {
       country: '',
       city: '',
       state: '',
@@ -30,6 +30,7 @@ export default User = class User {
       visitationHolidays: []
     }) {
     this.id = id;
+    this.creationDate = creationDate;
     this.key = key;
     this.name = name;
     this.email = email;

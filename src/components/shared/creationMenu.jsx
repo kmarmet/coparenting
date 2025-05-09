@@ -9,30 +9,26 @@ import CreationForms from '../../constants/creationForms'
 import globalState from '../../context'
 import DB_UserScoped from '../../database/db_userScoped'
 import useChat from '../../hooks/useChat'
+import useCurrentUser from '../../hooks/useCurrentUser'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import Overlay from './overlay'
 
 const CreationMenu = () => {
   const {state, setState} = useContext(globalState)
-  const {dateToEdit, showCreationMenu, userIsLoggedIn, authUser} = state
+  const {dateToEdit, showCreationMenu, refreshKey} = state
   const {chats} = useChat()
   const [showChatAction, setShowChatAction] = useState(false)
-  const [updatedCurrentUser, setUpdatedCurrentUser] = useState(null)
+  const {currentUser} = useCurrentUser()
 
   const CheckIfChatsShouldBeShown = async () => {
     const activeChatCount = chats?.length
-    await DB_UserScoped.getValidAccountsForUser(updatedCurrentUser).then((obj) => {
-      const coparentOnlyAccounts = obj.filter((x) => Manager.isValid(x?.accountType) && x?.accountType === 'parent')
+    await DB_UserScoped.getValidAccountsForUser(currentUser).then((obj) => {
+      const coparentOnlyAccounts = obj.filter((x) => Manager.IsValid(x?.accountType) && x?.accountType === 'parent')
       if (activeChatCount < coparentOnlyAccounts.length) {
         setShowChatAction(true)
       }
     })
-  }
-
-  const UpdateCurrentUser = async () => {
-    const updated = await DB_UserScoped.getCurrentUser(authUser?.email)
-    setUpdatedCurrentUser(updated)
   }
 
   useEffect(() => {
@@ -41,11 +37,6 @@ const CreationMenu = () => {
 
   useEffect(() => {
     const pageContainer = document.querySelector('.page-container')
-    if (showCreationMenu) {
-      DomManager.ToggleAnimation('add', 'action-item', DomManager.AnimateClasses.names.fadeInRight, 85)
-    } else {
-      DomManager.ToggleAnimation('remove', 'action-item', DomManager.AnimateClasses.names.fadeInRight, 85)
-    }
 
     if (pageContainer) {
       if (showCreationMenu) {
@@ -56,22 +47,17 @@ const CreationMenu = () => {
     }
   }, [showCreationMenu])
 
-  useEffect(() => {
-    if (userIsLoggedIn === true) {
-      UpdateCurrentUser().then()
-    }
-  }, [userIsLoggedIn])
-
   return (
     <Overlay show={showCreationMenu}>
       <div
+        key={refreshKey}
         className={`${showCreationMenu ? 'animate__animated animate__fadeInUp' : 'animate__animated animate__fadeOutDown'} bottom-menu-wrapper creation-menu`}>
         <div className="action-items centered">
-          <p className="bottom-menu-title">What Would You Like to Create?</p>
-          <hr />
           {/* CALENDAR */}
           <div
-            className="action-item"
+            key={Manager.GetUid()}
+            style={DomManager.AnimateDelayStyle(1)}
+            className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
             onClick={() => {
               setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.calendar, dateToEdit: dateToEdit})
             }}>
@@ -83,11 +69,13 @@ const CreationMenu = () => {
             </div>
           </div>
 
-          {updatedCurrentUser?.accountType === 'parent' && (
+          {currentUser?.accountType === 'parent' && (
             <>
               {/* EXPENSE */}
               <div
-                className="action-item"
+                key={Manager.GetUid()}
+                style={DomManager.AnimateDelayStyle(2)}
+                className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
                 onClick={() => {
                   setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.expense})
                 }}>
@@ -101,7 +89,9 @@ const CreationMenu = () => {
 
               {/* TRANSFER */}
               <div
-                className="action-item"
+                key={Manager.GetUid()}
+                style={DomManager.AnimateDelayStyle(2.2)}
+                className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
                 onClick={() => {
                   setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.transferRequest})
                 }}>
@@ -115,7 +105,9 @@ const CreationMenu = () => {
 
               {/* SWAPS */}
               <div
-                className="action-item"
+                key={Manager.GetUid()}
+                style={DomManager.AnimateDelayStyle(2.4)}
+                className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
                 onClick={() => {
                   setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.swapRequest})
                 }}>
@@ -131,7 +123,9 @@ const CreationMenu = () => {
 
           {/* MEMORY */}
           <div
-            className="action-item"
+            key={Manager.GetUid()}
+            style={DomManager.AnimateDelayStyle(2.6)}
+            className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
             onClick={() => {
               setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.memories})
             }}>
@@ -143,12 +137,14 @@ const CreationMenu = () => {
             </div>
           </div>
 
-          {updatedCurrentUser?.accountType === 'parent' && (
+          {currentUser?.accountType === 'parent' && (
             <>
               {/* CHAT */}
               {showChatAction === true && (
                 <div
-                  className="action-item"
+                  key={Manager.GetUid()}
+                  style={DomManager.AnimateDelayStyle(2.8)}
+                  className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
                   onClick={() => {
                     setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.chat})
                   }}>
@@ -163,7 +159,9 @@ const CreationMenu = () => {
 
               {/* DOCS */}
               <div
-                className="action-item"
+                key={Manager.GetUid()}
+                style={DomManager.AnimateDelayStyle(3)}
+                className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
                 onClick={() => {
                   setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.documents})
                 }}>

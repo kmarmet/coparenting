@@ -38,7 +38,7 @@ import Manager from "./manager";
 ObjectManager = {
   RecursivelyFindProperty: function(obj, key) {
     var prop, result;
-    if (Manager.isValid(obj) && typeof obj === 'object') {
+    if (Manager.IsValid(obj) && typeof obj === 'object') {
       if (obj.hasOwnProperty(key)) {
         return obj[key];
       }

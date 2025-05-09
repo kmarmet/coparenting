@@ -4,7 +4,7 @@ var ChatMessage;
 import Manager from "../../managers/manager";
 
 export default ChatMessage = class ChatMessage {
-  constructor(id = Manager.getUid(), sender = '', recipient = '', timestamp = '', message = '', recipientKey = '', senderKey = '', senderTimezone = '') {
+  constructor(id = Manager.GetUid(), sender = '', recipient = '', timestamp = '', message = '', recipientKey = '', senderKey = '', senderTimezone = '') {
     this.id = id;
     this.sender = sender;
     this.recipient = recipient;

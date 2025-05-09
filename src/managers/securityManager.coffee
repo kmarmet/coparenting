@@ -3,6 +3,7 @@ import DB from "../database/DB"
 import DateManager from "../managers/dateManager"
 import _ from "lodash"
 import DB_UserScoped from "../database/db_userScoped"
+import DatasetManager from "./datasetManager"
 
 SecurityManager =
   getSharedItems: (currentUser,  table) ->
@@ -10,48 +11,48 @@ SecurityManager =
     linkedAccountKeys = linkedAccounts.accountKeys
     sharedItems  = []
 
-    if Manager.isValid(currentUser) && Manager.isValid(linkedAccountKeys)
+    if Manager.IsValid(currentUser) && Manager.IsValid(linkedAccountKeys)
       for accountKey in linkedAccountKeys
         userAccountItems = await DB.getTable("#{table}/#{accountKey}")
         for item in userAccountItems
-          if Manager.isValid(item?.shareWith)
+          if Manager.IsValid(item?.shareWith)
             if item?.shareWith?.includes currentUser?.key
               sharedItems.push(item)
 
-    sharedItems
+    DatasetManager.GetValidArray(sharedItems)
 
   getShareWithItems: (currentUser, table) ->
     sharedItems  = []
 
 #   COPARENT ACCOUNTS
-    if Manager.isValid(currentUser) && Manager.isValid(currentUser?.coparents)
+    if Manager.IsValid(currentUser) && Manager.IsValid(currentUser?.coparents)
       for coparent in currentUser?.coparents
         coparentItems = await DB.getTable("#{table}/#{coparent?.userKey}")
         for item in coparentItems
-          if Manager.isValid(item?.shareWith)
+          if Manager.IsValid(item?.shareWith)
             if item?.shareWith?.includes currentUser?.key
               sharedItems.push(item)
 
 #   PARENT ACCOUNTS
-    if Manager.isValid(currentUser) && Manager.isValid(currentUser?.parents)
+    if Manager.IsValid(currentUser) && Manager.IsValid(currentUser?.parents)
       for parent in currentUser?.parents
         parentItems = await DB.getTable("#{table}/#{parent?.userKey}")
         for item in parentItems
-          if Manager.isValid(item?.shareWith)
+          if Manager.IsValid(item?.shareWith)
             if item?.shareWith?.includes currentUser?.key
               sharedItems.push(item)
 
     #   CHILD ACCOUNTS
-    if Manager.isValid(currentUser) && Manager.isValid(currentUser?.children)
+    if Manager.IsValid(currentUser) && Manager.IsValid(currentUser?.children)
       for child in currentUser?.children
         childItems = await DB.getTable("#{table}/#{child?.userKey}")
         for item in childItems
-          if Manager.isValid(item?.shareWith)
+          if Manager.IsValid(item?.shareWith)
             if item?.shareWith?.includes currentUser?.key
               sharedItems.push(item)
 
     sharedItems = _.flattenDeep(sharedItems)
-    sharedItems
+    DatasetManager.GetValidArray(sharedItems)
 
   getCalendarEvents: (currentUser) ->
     users = await DB.getTable(DB.tables.users)
@@ -59,126 +60,126 @@ SecurityManager =
     returnRecords = []
     allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.key}")
     sharedEvents = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents)
-    if Manager.isValid(allEvents)
+    if Manager.IsValid(allEvents)
       for event in allEvents
         if DateManager.isValidDate(event.startDate)
           if (event.ownerKey == currentUser?.key)
             returnRecords.push(event)
 
-    if Manager.isValid(sharedEvents)
+    if Manager.IsValid(sharedEvents)
       returnRecords = [sharedEvents..., returnRecords...]
 
-    return returnRecords
+    return DatasetManager.GetValidArray(returnRecords)
 
   getUserVisitationHolidays: (currentUser) ->
     returnRecords = []
     allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.key}")
     sharedEvents = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents)
-    if Manager.isValid(allEvents)
+    if Manager.IsValid(allEvents)
       for event in allEvents
         if DateManager.isValidDate(event.startDate)
           if (event.ownerKey == currentUser?.key)
             returnRecords.push(event)
 
-    if Manager.isValid(sharedEvents)
+    if Manager.IsValid(sharedEvents)
       returnRecords = [sharedEvents..., returnRecords...]
 
-    return returnRecords
+    return DatasetManager.GetValidArray(returnRecords)
 
   getExpenses: (currentUser) ->
     returnRecords = []
-    allExpenses = Manager.convertToArray(await DB.getTable("#{DB.tables.expenses}/#{currentUser?.key}")).flat()
+    allExpenses = DatasetManager.GetValidArray DB.getTable("#{DB.tables.expenses}/#{currentUser?.key}")
     sharedExpenses = await SecurityManager.getShareWithItems(currentUser, DB.tables.expenses)
 
-    if Manager.isValid(allExpenses)
+    if Manager.IsValid(allExpenses)
       for expense in allExpenses
         if (expense.ownerKey == currentUser?.key)
           returnRecords.push(expense)
-    if Manager.isValid(sharedExpenses)
+    if Manager.IsValid(sharedExpenses)
       returnRecords = [sharedExpenses..., returnRecords...]
-    return returnRecords
+    return DatasetManager.GetValidArray(returnRecords)
 
   getSwapRequests: (currentUser) ->
     returnRecords = []
-    allRequests = Manager.convertToArray(await DB.getTable("#{DB.tables.swapRequests}/#{currentUser?.key}")).flat()
+    allRequests = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.swapRequests}/#{currentUser?.key}"))
     sharedSwaps = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests)
 
-    if Manager.isValid(allRequests)
+    if Manager.IsValid(allRequests)
       for request in allRequests
         if (request.ownerKey == currentUser?.key)
           returnRecords.push(request)
 
-    if Manager.isValid(sharedSwaps)
+    if Manager.IsValid(sharedSwaps)
       returnRecords = [sharedSwaps..., returnRecords...]
-    return returnRecords
+    return DatasetManager.GetValidArray(returnRecords)
 
   getTransferChangeRequests: (currentUser) ->
     returnRecords = []
-    allRequests = Manager.convertToArray(await DB.getTable("#{DB.tables.transferChangeRequests}/#{currentUser?.key}")).flat()
+    allRequests = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.transferChangeRequests}/#{currentUser?.key}"))
     sharedTransfers = await SecurityManager.getShareWithItems(currentUser, DB.tables.transferChangeRequests)
 
-    if Manager.isValid(allRequests)
+    if Manager.IsValid(allRequests)
       for request in allRequests
         if (request.ownerKey == currentUser?.key)
           returnRecords.push(request)
 
-    if Manager.isValid(sharedTransfers)
+    if Manager.IsValid(sharedTransfers)
       returnRecords = [sharedTransfers..., returnRecords...]
-    return returnRecords.flat()
+    return DatasetManager.GetValidArray(returnRecords)
 
   getDocuments: (currentUser) ->
     returnRecords = []
-    allDocs = Manager.convertToArray(await DB.getTable("#{DB.tables.documents}/#{currentUser?.key}")).flat()
+    allDocs = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.documents}/#{currentUser?.key}"))
     sharedDocs = await SecurityManager.getShareWithItems(currentUser, DB.tables.documents)
 
-    if Manager.isValid(allDocs)
+    if Manager.IsValid(allDocs)
       for doc in allDocs
         if (doc.ownerKey == currentUser?.key)
           returnRecords.push(doc)
 
-    if Manager.isValid(sharedDocs)
+    if Manager.IsValid(sharedDocs)
       returnRecords = [sharedDocs..., returnRecords...]
-    return returnRecords.flat()
+    return DatasetManager.GetValidArray(returnRecords)
 
   getMemories: (currentUser) ->
     returnRecords = []
-    allMemories = Manager.convertToArray(await DB.getTable("#{DB.tables.memories}/#{currentUser?.key}")).flat()
+    allMemories = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.memories}/#{currentUser?.key}"))
     sharedMemories = await SecurityManager.getShareWithItems(currentUser, DB.tables.memories)
 
-    if Manager.isValid(allMemories)
+    if Manager.IsValid(allMemories)
       for memory in allMemories
         if (memory.ownerKey == currentUser?.key)
           returnRecords.push(memory)
-    if Manager.isValid(sharedMemories)
+    if Manager.IsValid(sharedMemories)
       returnRecords = [sharedMemories..., returnRecords...]
 
-    return returnRecords.flat()
+    return DatasetManager.GetValidArray(returnRecords)
 
   getInputSuggestions: (currentUser) ->
     returnRecords = []
-    suggestions = Manager.convertToArray(await DB.getTable(DB.tables.suggestions)).flat()
-    if Manager.isValid(suggestions)
+    suggestions = DatasetManager.GetValidArray(await DB.getTable(DB.tables.suggestions))
+    if Manager.IsValid(suggestions)
       for suggestion in suggestions
         if suggestion.ownerKey == currentUser?.key
           returnRecords.push(suggestion)
-    return returnRecords.flat()
+    return DatasetManager.GetValidArray(returnRecords)
 
   getChats: (currentUser) ->
-    chats = Manager.convertToArray(await DB.getTable("#{DB.tables.chats}/#{currentUser?.key}")).flat()
+    chats = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.chats}/#{currentUser?.key}"))
     securedChats = []
     # User does not have a chat with root access by phone
-    if Manager.isValid(chats)
+    if Manager.IsValid(chats)
       for chat in chats
         members = chat?.members?.map (x) -> x.key
         if currentUser?.key in members
           securedChats.push(chat)
-    return securedChats.flat()
+    return securedChats
 
   getCoparentChats: (currentUser) ->
     allChats = await DB.getTable('chats')
     activeChats = []
-    allChatsFlattened = allChats.flat()
-    if Manager.isValid(allChatsFlattened)
+    allChatsFlattened = allChats
+    if Manager.IsValid(allChatsFlattened)
       for chat in allChatsFlattened
         members = chat.members.map (x) -> x.key
         if currentUser?.key in members

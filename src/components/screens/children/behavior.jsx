@@ -38,7 +38,7 @@ export default function Behavior({activeChild}) {
 
     // Delete Shared
     const sharedProps = sharedChildInfo?.map((x) => x?.prop)
-    if (Manager.isValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
+    if (Manager.IsValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
       const scopedSharingObject = await DB.find(sharedChildInfo, ['prop', prop.toLowerCase()], false)
       await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharedChildInfo, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
       await SetSelectedChild()
@@ -48,7 +48,7 @@ export default function Behavior({activeChild}) {
     else {
       const childIndex = DB.GetChildIndex(currentUser?.children, activeChild?.id)
 
-      if (Manager.isValid(childIndex)) {
+      if (Manager.IsValid(childIndex)) {
         await DB_UserScoped.DeleteChildInfoProp(currentUser?.key, childIndex, 'behavior', StringManager.formatDbProp(prop))
         await SetSelectedChild()
       }
@@ -65,11 +65,11 @@ export default function Behavior({activeChild}) {
     for (let obj of sharedChildInfo) {
       sharedValues.push([obj.prop, obj.value, obj.sharedByName])
     }
-    if (Manager.isValid(activeChild.behavior)) {
+    if (Manager.IsValid(activeChild.behavior)) {
       // Set info
       let values = Object.entries(activeChild.behavior)
 
-      if (Manager.isValid(sharedValues)) {
+      if (Manager.IsValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
       const valuesArr = values.filter((x) => x[1].length === 0).map((x) => x[1])
@@ -96,14 +96,14 @@ export default function Behavior({activeChild}) {
   }
   return (
     <div className="info-section section behavior" key={refreshKey}>
-      <Accordion className={`${theme} child-info`} disabled={!Manager.isValid(activeChild?.behavior)}>
+      <Accordion className={`${theme} child-info`} disabled={!Manager.IsValid(activeChild?.behavior)}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
-          className={!Manager.isValid(activeChild.behavior) ? 'disabled header behavior' : 'header behavior'}>
+          className={!Manager.IsValid(activeChild.behavior) ? 'disabled header behavior' : 'header behavior'}>
           <FaBrain className={'svg behavior'} />
           <p id="toggle-button" className={showInputs ? 'active' : ''}>
-            Behavior {!Manager.isValid(behaviorValues) ? '- no info' : ''}
-            {Manager.isValid(behaviorValues) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
+            Behavior {!Manager.IsValid(behaviorValues) ? '- no info' : ''}
+            {Manager.IsValid(behaviorValues) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
           </p>
         </AccordionSummary>
         <AccordionDetails>
@@ -133,7 +133,7 @@ export default function Behavior({activeChild}) {
                         isDebounced={true}
                         inputType={InputTypes.text}
                         defaultValue={value}
-                        labelText={`${infoLabel} ${Manager.isValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
+                        labelText={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
                         onChange={async (e) => {
                           const inputValue = e.target.value
                           await Update(infoLabel, `${inputValue}`)

@@ -21,7 +21,7 @@ import {MdPersonPinCircle} from 'react-icons/md'
 import {PiCarProfileDuotone, PiCheckBold} from 'react-icons/pi'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context.js'
-import DB_UserScoped from '../../database/db_userScoped.js'
+import useCoparents from '../../hooks/useCoparents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useTransferRequests from '../../hooks/useTransferRequests'
 import NavBar from '../navBar'
@@ -50,12 +50,13 @@ export default function TransferRequests() {
   const [requestTime, setRequestTime] = useState('')
   const [requestLocation, setRequestLocation] = useState('')
   const [requestDate, setRequestDate] = useState('')
-  const [responseDueDate, setResponseDueDate] = useState('')
+  const [requestedResponseDate, setResponseDueDate] = useState('')
   const [sendWithAddress, setSendWithAddress] = useState(false)
   const [requestReason, setRequestReason] = useState('')
   const [requestTimeRemaining, setRequestTimeRemaining] = useState(false)
   const {transferRequests} = useTransferRequests()
   const {currentUser} = useCurrentUser()
+  const {coparents} = useCoparents()
 
   const ResetForm = async (successMessage = '') => {
     Manager.ResetForm('edit-event-form')
@@ -65,7 +66,7 @@ export default function TransferRequests() {
     setResponseDueDate('')
     setShowDetails(false)
     setView('details')
-    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: successMessage})
+    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
   }
 
   const Update = async () => {
@@ -73,14 +74,14 @@ export default function TransferRequests() {
     let updatedRequest = {...activeRequest}
     updatedRequest.time = requestTime
     updatedRequest.location = requestLocation
-    updatedRequest.directionsLink = Manager.getDirectionsLink(requestLocation)
+    updatedRequest.directionsLink = Manager.GetDirectionsLink(requestLocation)
     updatedRequest.date = requestDate
     updatedRequest.declineReason = declineReason
-    updatedRequest.responseDueDate = responseDueDate
+    updatedRequest.requestedResponseDate = requestedResponseDate
     updatedRequest.requestReason = requestReason
 
-    if (Manager.isValid(responseDueDate)) {
-      updatedRequest.responseDueDate = moment(responseDueDate).format(DatetimeFormats.dateForDb)
+    if (Manager.IsValid(requestedResponseDate)) {
+      updatedRequest.requestedResponseDate = moment(requestedResponseDate).format(DatetimeFormats.dateForDb)
     }
     const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.transferChangeRequest)
     await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, cleanedRequest, activeRequest.id)
@@ -91,17 +92,17 @@ export default function TransferRequests() {
 
   const DeleteRequest = async (action = 'deleted') => {
     if (action === 'deleted') {
-      AlertManager.confirmAlert('Are you sure you would like to delete this request?', "I'm Sure", true, async () => {
+      AlertManager.confirmAlert('Are you sure you would like to Delete this request?', "I'm Sure", true, async () => {
         await DB.deleteById(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, activeRequest?.id)
-        setState({...state, successAlertMessage: 'Transfer Change Request Deleted', refreshKey: Manager.getUid()})
+        setState({...state, successAlertMessage: 'Transfer Change Request Deleted', refreshKey: Manager.GetUid()})
         setShowDetails(false)
       })
     }
   }
 
   const SelectDecision = async (decision) => {
-    const recipient = await DB_UserScoped.getCoparentByKey(activeRequest.recipientKey, currentUser)
-    const recipientName = recipient.name
+    const recipient = coparents?.find((x) => x.userKey === activeRequest?.recipientKey)
+    const recipientName = recipient?.name
     // Rejected
     if (decision === Decisions.declined) {
       activeRequest.status = 'declined'
@@ -133,7 +134,7 @@ export default function TransferRequests() {
       )
     }
 
-    setState({...state, refreshKey: Manager.getUid(), successAlertMessage: `Decision Sent to ${recipientName}`})
+    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: `Decision Sent to ${recipientName}`})
   }
 
   const CheckIn = async () => {
@@ -176,17 +177,18 @@ export default function TransferRequests() {
   useEffect(() => {
     if (showDetails) {
       DomManager.setDefaultView()
-      setRequestTimeRemaining(moment(moment(activeRequest?.responseDueDate).startOf('day')).fromNow().toString())
+      setRequestTimeRemaining(moment(moment(activeRequest?.requestedResponseDate).startOf('day')).fromNow().toString())
     }
   }, [showDetails])
 
   useEffect(() => {
-    if (Manager.isValid(currentUser)) {
+    if (Manager.IsValid(currentUser)) {
       setTimeout(() => {
-        DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight, 90)
+        DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight, 85)
+        DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
       }, 300)
     }
-  }, [currentUser])
+  }, [currentUser, view])
 
   return (
     <>
@@ -235,9 +237,9 @@ export default function TransferRequests() {
 
                 {/*  Response Due Date */}
                 <DetailBlock
-                  valueToValidate={activeRequest?.responseDueDate}
+                  valueToValidate={activeRequest?.requestedResponseDate}
                   title={'Requested Response Date'}
-                  text={moment(activeRequest?.responseDueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                  text={moment(activeRequest?.requestedResponseDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
                 />
 
                 {/*  Time Remaining */}
@@ -319,7 +321,7 @@ export default function TransferRequests() {
 
               {/* RESPONSE DUE DATE */}
               <InputWrapper
-                defaultValue={activeRequest?.responseDueDate}
+                defaultValue={activeRequest?.requestedResponseDate}
                 onDateOrTimeSelection={(e) => setResponseDueDate(moment(e).format(DatetimeFormats.dateForDb))}
                 inputType={InputTypes.date}
                 uidClass="transfer-request-response-date"
@@ -385,7 +387,7 @@ export default function TransferRequests() {
         {/* LOOP REQUESTS */}
         {!showNewRequestCard && (
           <div id="all-transfer-requests-container">
-            {Manager.isValid(transferRequests) &&
+            {Manager.IsValid(transferRequests) &&
               transferRequests?.map((request, index) => {
                 return (
                   <div

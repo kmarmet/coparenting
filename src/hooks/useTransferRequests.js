@@ -23,10 +23,10 @@ const useTransferRequests = () => {
     const listener = onValue(
       dataRef,
       async (snapshot) => {
-        const formattedRequests = DatasetManager.getValidArray(snapshot.val()) || []
+        const formattedRequests = DatasetManager.GetValidArray(snapshot.val()) || []
         const shared = await SecurityManager.getSharedItems(currentUser, DB.tables.transferRequests)
-        const formattedShared = DatasetManager.getValidArray(shared) || []
-        if (Manager.isValid(formattedRequests) || Manager.isValid(formattedShared)) {
+        const formattedShared = DatasetManager.GetValidArray(shared) || []
+        if (Manager.IsValid(formattedRequests) || Manager.IsValid(formattedShared)) {
           setTransferRequests([...formattedRequests, ...formattedShared].filter((x) => x)?.flat())
         } else {
           setTransferRequests([])

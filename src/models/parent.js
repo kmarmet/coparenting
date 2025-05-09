@@ -4,7 +4,7 @@ var Parent;
 import Manager from "../managers/manager";
 
 export default Parent = class Parent {
-  constructor(id = Manager.getUid(), userKey = '', name = '', email = '', phone = '', address = '', parentType = '') {
+  constructor(id = Manager.GetUid(), userKey = '', name = '', email = '', phone = '', address = '', parentType = '') {
     this.id = id;
     this.userKey = userKey;
     this.name = name;

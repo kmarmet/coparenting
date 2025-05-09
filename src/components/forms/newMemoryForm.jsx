@@ -23,6 +23,7 @@ import globalState from '../../context'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useMemories from '../../hooks/useMemories'
 import DatasetManager from '../../managers/datasetManager'
+import DomManager from '../../managers/domManager'
 import InputWrapper from '../shared/inputWrapper'
 import Modal from '../shared/modal'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
@@ -32,22 +33,23 @@ export default function NewMemoryForm() {
   const {state, setState} = useContext(globalState)
   const {authUser, refreshKey, theme, creationFormToShow} = state
   const [images, setImages] = useState([])
-  const [newMemory, setNewMemory] = useState(new Memory())
   const {currentUser} = useCurrentUser()
   const {memories} = useMemories()
+  const [newMemory, setNewMemory] = useState(new Memory())
+  const [shareWith, setShareWith] = useState([])
 
   const ResetForm = async () => {
     Manager.ResetForm('new-memory-wrapper')
-    setState({...state, isLoading: false, refreshKey: Manager.getUid(), creationFormToShow: ''})
+    setState({...state, isLoading: false, refreshKey: Manager.GetUid(), creationFormToShow: ''})
   }
 
   const HandleShareWithSelection = (e) => {
-    const updated = Manager.handleShareWithSelection(e, currentUser, newMemory.shareWith)
-    setNewMemory((prevMemory) => ({...prevMemory, shareWith: updated}))
+    const updated = DomManager.HandleShareWithSelection(e, currentUser, newMemory.shareWith)
+    setShareWith(updated)
   }
 
   const Upload = async () => {
-    const validAccounts = currentUser?.sharedDataUsers
+    const validAccounts = currentUser?.sharedDataUsers?.length
     if (validAccounts === 0) {
       AlertManager.throwError(
         `No ${currentUser?.accountType === 'parent' ? 'co-parents or children' : 'parents'} to \n share memories with`,
@@ -56,11 +58,9 @@ export default function NewMemoryForm() {
       return false
     }
 
-    if (validAccounts > 0) {
-      if (newMemory.shareWith.length === 0) {
-        AlertManager.throwError('Please choose who you would like to share this memory with')
-        return false
-      }
+    if (validAccounts > 0 && !Manager.IsValid(shareWith)) {
+      AlertManager.throwError('Please choose who you would like to share this memory with')
+      return false
     }
 
     if (images !== undefined && images.length === 0) {
@@ -77,28 +77,35 @@ export default function NewMemoryForm() {
       return false
     }
 
-    let localImages = []
-    if (Manager.isValid(images)) {
+    let imagesToUpload = []
+    if (Manager.IsValid(images)) {
       for (let img of images) {
-        localImages.push(await ImageManager.compressImage(img))
+        imagesToUpload.push(await ImageManager.compressImage(img))
       }
     } else {
       return false
     }
 
     // Check for existing memory
-    DatasetManager.getValidArray(localImages).forEach((img) => {
-      const existingMemory = memories.find((x) => x.memoryName === img.name)
-      if (existingMemory) {
+    const validImgArray = DatasetManager.GetValidArray(imagesToUpload)
+    let shouldProceed = true
+    for (let img of validImgArray) {
+      const existingMemory = memories.find((x) => Manager.DecodeHash(x.memoryName) === Manager.GenerateHash(img.name))
+      if (Manager.IsValid(existingMemory)) {
         AlertManager.throwError('This memory already exists')
+        shouldProceed = false
         return false
       }
-    })
+    }
+
+    if (!shouldProceed) {
+      return false
+    }
 
     setState({...state, isLoading: true})
 
     // Upload Image
-    await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser?.key, localImages)
+    await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser?.key, imagesToUpload)
       .then(() => {
         const checkedCheckbox = document.querySelector('.share-with-container .box.active')
         if (checkedCheckbox) {
@@ -107,20 +114,20 @@ export default function NewMemoryForm() {
       })
       .finally(async () => {
         // Add memories to 'memories' property for currentUser
-        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.memories, currentUser?.key, localImages)
+        await FirebaseStorage.getUrlsFromFiles(FirebaseStorage.directories.memories, currentUser?.key, imagesToUpload)
           .then(async (urls) => {
             // Add to user memories object
             for (const url of urls) {
               const imageName = FirebaseStorage.GetImageNameFromUrl(url)
-              const cleanedObject = ObjectManager.cleanObject(newMemory, ModelNames.memory)
+              const cleanMemory = ObjectManager.cleanObject(newMemory, ModelNames.memory)
 
-              cleanedObject.url = url
-              cleanedObject.memoryName = Manager.generateHash(imageName)
-              cleanedObject.ownerKey = currentUser?.key
-              cleanedObject.id = Manager.getUid()
-
+              cleanMemory.url = url
+              cleanMemory.memoryName = Manager.GenerateHash(imageName)
+              cleanMemory.ownerKey = currentUser?.key
+              cleanMemory.id = Manager.GetUid()
+              cleanMemory.shareWith = shareWith
               // Add to Database
-              await DB.Add(`${DB.tables.memories}/${currentUser?.key}`, cleanedObject)
+              await DB.Add(`${DB.tables.memories}/${currentUser?.key}`, memories, cleanMemory)
             }
 
             // Send Notification

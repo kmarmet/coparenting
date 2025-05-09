@@ -17,6 +17,7 @@ import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
 import useCoparents from '../../hooks/useCoparents'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import DomManager from '../../managers/domManager'
 import AddressInput from '../shared/addressInput'
 import InputWrapper from '../shared/inputWrapper'
 import Label from '../shared/label'
@@ -35,7 +36,7 @@ export default function NewTransferChangeRequest() {
   const [requestDate, setRequestDate] = useState('')
   const [requestRecipientKey, setRequestRecipientKey] = useState('')
   const [preferredLocation, setPreferredLocation] = useState('')
-  const [responseDueDate, setResponseDueDate] = useState('')
+  const [requestedResponseDate, setResponseDueDate] = useState('')
   const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {coparents, coparentsAreLoading} = useCoparents()
 
@@ -48,12 +49,10 @@ export default function NewTransferChangeRequest() {
     setRequestDate('')
     setRequestRecipientKey('')
     setPreferredLocation('')
-    const updatedCurrentUser = await DB_UserScoped.getCurrentUser(authUser?.email)
     setState({
       ...state,
-      currentUser: updatedCurrentUser,
       creationFormToShow: '',
-      refreshKey: Manager.getUid(),
+      refreshKey: Manager.GetUid(),
       isLoading: false,
       successAlertMessage: showSuccessAlert ? 'Transfer Change Request Sent' : null,
     })
@@ -70,39 +69,39 @@ export default function NewTransferChangeRequest() {
       )
       return false
     }
-    if (!Manager.isValid(requestRecipientKey)) {
+    if (!Manager.IsValid(requestRecipientKey)) {
       AlertManager.throwError('Please choose who to Send the request to')
       return false
     }
-    if (!Manager.isValid(requestLocation) && !Manager.isValid(requestTime)) {
+    if (!Manager.IsValid(requestLocation) && !Manager.IsValid(requestTime)) {
       AlertManager.throwError('Please choose a new location or time')
       return false
     }
-    if (!Manager.isValid(requestDate)) {
+    if (!Manager.IsValid(requestDate)) {
       AlertManager.throwError('Please choose the day of the requested transfer change')
       return false
     }
     if (validAccounts > 0) {
-      if (!Manager.isValid(shareWith)) {
+      if (!Manager.IsValid(shareWith)) {
         AlertManager.throwError('Please choose who you would like to share this request with')
         return false
       }
     }
     //#endregion VALIDATION
 
-    const requestTimeIsValid = DateManager.dateIsValid(moment(requestTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb))
+    const requestTimeIsValid = DateManager.DateIsValid(moment(requestTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb))
     let newRequest = new TransferChangeRequest()
     newRequest.requestReason = requestReason
     newRequest.ownerKey = currentUser?.key
-    newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
+    newRequest.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
     newRequest.time = requestTimeIsValid ? requestTime : ''
     newRequest.location = requestLocation
     newRequest.startDate = moment(requestDate).format(DatetimeFormats.dateForDb)
-    newRequest.directionsLink = Manager.getDirectionsLink(requestLocation)
+    newRequest.directionsLink = Manager.GetDirectionsLink(requestLocation)
     newRequest.recipientKey = requestRecipientKey
     newRequest.status = 'pending'
     newRequest.preferredTransferLocation = requestLocation
-    newRequest.responseDueDate = responseDueDate
+    newRequest.requestedResponseDate = requestedResponseDate
 
     if (preferredLocation.length > 0) {
       const coparent = currentUser?.coparents.filter((x) => x.key === requestRecipientKey)[0]
@@ -126,7 +125,7 @@ export default function NewTransferChangeRequest() {
   }
 
   const HandleShareWithSelection = (e) => {
-    const updated = Manager.handleShareWithSelection(e, currentUser, shareWith)
+    const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 
@@ -200,7 +199,7 @@ export default function NewTransferChangeRequest() {
             <CheckboxGroup
               elClass="sending-to"
               parentLabel={'Who is the request being sent to?'}
-              checkboxArray={Manager.buildCheckboxGroup({
+              checkboxArray={DomManager.BuildCheckboxGroup({
                 currentUser,
                 predefinedType: 'coparents',
               })}
@@ -213,7 +212,7 @@ export default function NewTransferChangeRequest() {
               onCheck={HandleShareWithSelection}
               labelText={'Share with'}
               containerClass={'share-with-coparents'}
-              checkboxArray={Manager.buildCheckboxGroup({
+              checkboxArray={DomManager.BuildCheckboxGroup({
                 currentUser,
                 predefinedType: 'share-with',
               })}

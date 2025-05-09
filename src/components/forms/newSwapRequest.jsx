@@ -21,6 +21,7 @@ import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
 import useChildren from '../../hooks/useChildren'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import DomManager from '../../managers/domManager'
 import Label from '../shared/label'
 import Spacer from '../shared/spacer'
 import ToggleButton from '../shared/toggleButton'
@@ -38,7 +39,7 @@ export default function NewSwapRequest() {
   const [includeChildren, setIncludeChildren] = useState(false)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const [responseDueDate, setResponseDueDate] = useState('')
+  const [requestedResponseDate, setResponseDueDate] = useState('')
   const [recipientKey, setRecipientKey] = useState('')
   const [recipientName, setRecipientName] = useState()
   const {currentUser} = useCurrentUser()
@@ -57,7 +58,7 @@ export default function NewSwapRequest() {
     setEndDate('')
     setState({
       ...state,
-      refreshKey: Manager.getUid(),
+      refreshKey: Manager.GetUid(),
       isLoading: false,
       creationFormToShow: '',
       successAlertMessage: showSuccessAlert ? 'Swap Request Sent' : null,
@@ -75,7 +76,7 @@ export default function NewSwapRequest() {
         name: 'Date',
       },
       {
-        value: responseDueDate,
+        value: requestedResponseDate,
         name: 'Requested Response  Date',
       },
       {
@@ -83,7 +84,7 @@ export default function NewSwapRequest() {
         name: 'Request Recipient',
       },
     ])
-    if (Manager.isValid(errorString, true)) {
+    if (Manager.IsValid(errorString, true)) {
       AlertManager.throwError(errorString)
       return false
     }
@@ -99,7 +100,7 @@ export default function NewSwapRequest() {
     }
 
     if (validAccounts.length > 0) {
-      if (!Manager.isValid(shareWith)) {
+      if (!Manager.IsValid(shareWith)) {
         AlertManager.throwError('Please choose who you would like to share this request with')
         return false
       }
@@ -114,11 +115,11 @@ export default function NewSwapRequest() {
     newRequest.duration = swapDuration
     newRequest.ownerName = currentUser?.name
     newRequest.fromHour = requestFromHour
-    newRequest.responseDueDate = responseDueDate
+    newRequest.requestedResponseDate = requestedResponseDate
     newRequest.recipientName = recipientName
     newRequest.toHour = requestToHour
     newRequest.ownerKey = currentUser?.key
-    newRequest.shareWith = Manager.getUniqueArray(shareWith).flat()
+    newRequest.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
     newRequest.recipientKey = recipientKey
 
     const cleanObject = ObjectManager.cleanObject(newRequest, ModelNames.swapRequest)
@@ -140,7 +141,7 @@ export default function NewSwapRequest() {
 
   const HandleChildSelection = (e) => {
     const selectedValue = e.getAttribute('data-label')
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       () => {
         setRequestChildren([...requestChildren, selectedValue])
@@ -154,13 +155,13 @@ export default function NewSwapRequest() {
   }
 
   const HandleShareWithSelection = (e) => {
-    const updated = Manager.handleShareWithSelection(e, currentUser, shareWith)
+    const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
     setShareWith(updated)
   }
 
   const HandleRecipientSelection = (e) => {
     const coparentKey = e.getAttribute('data-key')
-    Manager.handleCheckboxSelection(
+    DomManager.HandleCheckboxSelection(
       e,
       (e) => {
         setRecipientKey(coparentKey)
@@ -248,7 +249,7 @@ export default function NewSwapRequest() {
           {swapDuration === SwapDurations.multiple && (
             <InputWrapper
               onDateOrTimeSelection={(dateArray) => {
-                if (Manager.isValid(dateArray)) {
+                if (Manager.IsValid(dateArray)) {
                   setStartDate(moment(dateArray[0]).format(DatetimeFormats.dateForDb))
                   setEndDate(moment(dateArray[1]).format(DatetimeFormats.dateForDb))
                 }
@@ -275,7 +276,7 @@ export default function NewSwapRequest() {
           <CheckboxGroup
             required={true}
             parentLabel={'Request Recipient'}
-            checkboxArray={Manager.buildCheckboxGroup({
+            checkboxArray={DomManager.BuildCheckboxGroup({
               currentUser,
               predefinedType: 'coparents',
             })}
@@ -288,7 +289,7 @@ export default function NewSwapRequest() {
           <ShareWithCheckboxes required={true} onCheck={HandleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
 
           {/* INCLUDE CHILDREN */}
-          {Manager.isValid(children) && (
+          {Manager.IsValid(children) && (
             <div className="share-with-container ">
               <div className="flex">
                 <Label text={'Include Child(ren)'} />
@@ -296,7 +297,7 @@ export default function NewSwapRequest() {
               </div>
               {includeChildren && (
                 <CheckboxGroup
-                  checkboxArray={Manager.buildCheckboxGroup({
+                  checkboxArray={DomManager.BuildCheckboxGroup({
                     currentUser,
                     labelType: 'children',
                   })}

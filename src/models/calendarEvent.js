@@ -4,7 +4,7 @@ var CalendarEvent;
 import Manager from "../managers/manager";
 
 export default CalendarEvent = class CalendarEvent {
-  constructor(id = Manager.getUid(), multipleDatesId = '', websiteUrl = '', notes = '', shareWith = [], endDate = '', startDate = '', staticStartDate = '', startTime = '', ownerKey = '', children = [], location = '', title = '', phone = '', createdBy = '', reminderTimes = [], coparentsToRemindPhones = [], directionsLink = '', endTime = '', fromVisitationSchedule = false, recurringInterval = '', sentReminders = [], visitationPeriodEndDate = '', visibleToAll = false, holidayName = '', visitationSchedule = '', isHoliday = false, isRecurring = false, isCloned = false, isDateRange = false) {
+  constructor(id = Manager.GetUid(), multipleDatesId = '', websiteUrl = '', notes = '', shareWith = [], endDate = '', startDate = '', staticStartDate = '', startTime = '', ownerKey = '', children = [], location = '', title = '', phone = '', createdBy = '', reminderTimes = [], coparentsToRemindPhones = [], directionsLink = '', endTime = '', fromVisitationSchedule = false, recurringInterval = '', sentReminders = [], visitationPeriodEndDate = '', visibleToAll = false, holidayName = '', visitationSchedule = '', isHoliday = false, isRecurring = false, isCloned = false, isDateRange = false) {
     this.id = id;
     this.multipleDatesId = multipleDatesId;
     this.websiteUrl = websiteUrl;

@@ -1,17 +1,17 @@
 // Path: src\components\screens\coparents\customCoparentInfo.jsx
-import React, {useContext, useState} from 'react'
-import globalState from '../../../context'
-import Manager from '../../../managers/manager'
-import DB_UserScoped from '../../../database/db_userScoped'
-import Modal from '../../shared/modal'
-import {FaWandMagicSparkles} from 'react-icons/fa6'
 import _ from 'lodash'
-import AlertManager from '../../../managers/alertManager'
-import InputWrapper from '../../shared/inputWrapper'
-import StringManager from '../../../managers/stringManager.coffee'
+import React, {useContext, useState} from 'react'
+import {FaWandMagicSparkles} from 'react-icons/fa6'
 import InputTypes from '../../../constants/inputTypes'
-import Spacer from '../../shared/spacer'
+import globalState from '../../../context'
+import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import AlertManager from '../../../managers/alertManager'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager.coffee'
+import InputWrapper from '../../shared/inputWrapper'
+import Modal from '../../shared/modal'
+import Spacer from '../../shared/spacer'
 
 export default function CustomCoparentInfo({hideCard, activeCoparent, showCard, onAdd = (coparent) => {}}) {
   const {state, setState} = useContext(globalState)
@@ -26,7 +26,7 @@ export default function CustomCoparentInfo({hideCard, activeCoparent, showCard, 
     setValue('')
     setState({
       ...state,
-      refreshKey: Manager.getUid(),
+      refreshKey: Manager.GetUid(),
       successAlertMessage: hasMessage ? `${StringManager.uppercaseFirstLetterOfAllWords(title)} Property Added` : null,
     })
     hideCard()

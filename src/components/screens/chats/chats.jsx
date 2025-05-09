@@ -45,7 +45,7 @@ const Chats = () => {
         onClose={() => setShowInvitationCard(false)}
         showCard={showInvitationCard}
         onSubmit={() => {
-          if (!Manager.isValid(inviteeEmail) || !Manager.isValid(inviteeName)) {
+          if (!Manager.IsValid(inviteeEmail) || !Manager.IsValid(inviteeName)) {
             AlertManager.throwError('Please fill out all fields')
             return false
           }
@@ -108,7 +108,7 @@ const Chats = () => {
         {/* CHAT ROWS */}
         {chats?.length > 0 &&
           chats?.map((chat, index) => {
-            return <ChatRow chat={chat} key={index} />
+            return <ChatRow key={index} chat={chat} index={index} />
           })}
         <NavBar />
       </div>

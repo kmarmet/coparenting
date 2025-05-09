@@ -4,18 +4,20 @@ import Manager from '/src/managers/manager'
 import Checklist from '/src/models/checklist.js'
 import React, {useContext, useEffect, useState} from 'react'
 import {CgMathPlus} from 'react-icons/cg'
-import {MdOutlineChecklist} from 'react-icons/md'
 import globalState from '../../../context'
+import DB_UserScoped from '../../../database/db_userScoped'
+import useActiveChild from '../../../hooks/useActiveChild'
 import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import AlertManager from '../../../managers/alertManager'
 import DatasetManager from '../../../managers/datasetManager'
+import DomManager from '../../../managers/domManager'
 import Modal from '../../shared/modal'
 import MyConfetti from '../../shared/myConfetti'
 import Spacer from '../../shared/spacer'
 import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
 
-export default function AddOrUpdateTransferChecklists({showCard, hideCard, activeChild}) {
+export default function AddOrUpdateTransferChecklists({showCard, hideCard, activeChildId}) {
   const {state, setState} = useContext(globalState)
   const {refreshKey} = state
   const [checkboxTextList, setCheckboxTextList] = useState([])
@@ -23,6 +25,7 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
   const [existingItems, setExistingItems] = useState([])
   const {currentUser} = useCurrentUser()
   const {children, childrenAreLoading} = useChildren()
+  const {activeChild, activeChildIsLoading} = useActiveChild(activeChildId)
 
   const AddInput = () => {
     const inputs = document.getElementById('inputs')
@@ -38,36 +41,42 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
   }
 
   const AddOrUpdate = async () => {
-    const childKey = DB.GetChildIndex(children, activeChild?.id)
-    const existingChecklist = DatasetManager.getValidArray(activeChild?.checklists)?.find((x) => x?.fromOrTo === view)
+    const childKey = DB.GetChildIndex(children, activeChildId)
+    const existingChecklist = activeChild?.checklists?.find((x) => x?.fromOrTo === view)
     const newChecklist = new Checklist()
-    newChecklist.checklistItems = DatasetManager.getUniqueArray(checkboxTextList, true)
+    newChecklist.items = DatasetManager.GetValidArray(checkboxTextList)
     newChecklist.fromOrTo = view
 
     if (childKey) {
       // UPDATE
-      if (Manager.isValid(existingChecklist)) {
-        const newItems = DatasetManager.getUniqueArray(checkboxTextList, true)
-        const existingIndex = DB.GetTableIndexById(activeChild?.checklists, existingChecklist?.id)
+      if (Manager.IsValid(existingChecklist)) {
+        const newItems = DatasetManager.GetValidArray(checkboxTextList)
+        const existingChecklistIndex = DB.GetTableIndexById(activeChild?.checklists, existingChecklist?.id)
 
-        if (!Manager.isValid(existingIndex)) {
+        if (!Manager.IsValid(existingChecklistIndex)) {
           return false
         }
-
-        existingChecklist.checklistItems = DatasetManager.getValidArray([...existingChecklist.checklistItems, ...newItems])
-        await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists/${existingIndex}`, existingChecklist)
-        setState({...state, successAlertMessage: 'Checklist Updated', refreshKey: Manager.getUid()})
+        existingChecklist.items = DatasetManager.CombineArrays(existingChecklist.items, newItems)
+        await DB_UserScoped.AddItemsToChecklist(
+          `${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists/${existingChecklistIndex}`,
+          existingChecklist
+        )
+        setState({...state, successAlertMessage: 'Checklist Updated', refreshKey: Manager.GetUid()})
       }
 
       // CREATE
       else {
-        if (Manager.isValid(newChecklist.checklistItems)) {
-          await DB.Add(`${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`, activeChild?.checklists, newChecklist)
+        if (Manager.IsValid(newChecklist.items)) {
+          await DB_UserScoped.AddChecklist(
+            `${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists`,
+            activeChild?.checklists || [],
+            newChecklist
+          )
+          setState({...state, successAlertMessage: 'Checklist Created', refreshKey: Manager.GetUid()})
         } else {
           AlertManager.throwError('Please enter at least one item')
           return false
         }
-        setState({...state, successAlertMessage: 'Checklist Created', refreshKey: Manager.getUid()})
       }
       hideCard()
       MyConfetti.fire()
@@ -76,19 +85,19 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
 
   const SetChecklists = async () => {
     if (activeChild) {
-      const checklists = DatasetManager.getValidArray(activeChild?.checklists)
+      const checklists = DatasetManager.GetValidArray(activeChild?.checklists)
       const fromChecklist = checklists?.find((x) => x?.fromOrTo === 'from')
       const toChecklist = checklists?.find((x) => x?.fromOrTo === 'to')
       if (view === 'from') {
         if (fromChecklist) {
-          setExistingItems(fromChecklist?.checklistItems)
+          setExistingItems(fromChecklist?.items)
         } else {
           setExistingItems([])
         }
       }
       if (view === 'to') {
         if (toChecklist) {
-          setExistingItems(toChecklist?.checklistItems)
+          setExistingItems(toChecklist?.items)
         } else {
           setExistingItems([])
         }
@@ -98,22 +107,24 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
 
   // SET EXISTING ITEMS BASED ON VIEW
   useEffect(() => {
-    SetChecklists().then((r) => r)
-  }, [view])
+    if (Manager.IsValid(activeChild)) {
+      SetChecklists().then((r) => r)
+    }
+  }, [view, activeChildId])
 
   // ON SHOW CARD
   useEffect(() => {
     const inputs = document.getElementById('inputs')
     const dynamicInputs = document.querySelectorAll('.dynamic-input')
-    if (inputs && Manager.isValid(dynamicInputs)) {
+    if (inputs && Manager.IsValid(dynamicInputs)) {
       dynamicInputs.forEach((input) => {
         input.remove()
       })
     }
     setCheckboxTextList([])
-    SetChecklists().then((r) => r)
 
     if (showCard) {
+      SetChecklists().then((r) => r)
       const threeButtonAlertConfig = AlertManager.ThreeButtonAlertConfig
       threeButtonAlertConfig.title = 'Choose Checklist Type'
       threeButtonAlertConfig.confirmButtonText = 'From Co-Parent'
@@ -122,10 +133,14 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
       threeButtonAlertConfig.onCancel = () => setView('to')
 
       AlertManager.threeButtonAlert(threeButtonAlertConfig)
+
+      setTimeout(() => {
+        DomManager.ToggleAnimation('add', 'existing-checklist-item', DomManager.AnimateClasses.names.fadeInUp, 100)
+      }, 300)
     }
   }, [showCard])
 
-  if (childrenAreLoading || !Manager.isValid(activeChild)) {
+  if (childrenAreLoading || activeChildIsLoading) {
     return <StandaloneLoadingGif />
   }
 
@@ -133,7 +148,6 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
     <Modal
       onSubmit={AddOrUpdate}
       wrapperClass="new-checklist"
-      submitIcon={<MdOutlineChecklist />}
       submitText={'DONE'}
       showCard={showCard}
       subtitle="Add a transfer checklist which will allow you and your child to ensure that nothing is left behind when transferring to or from your co-parent's home"
@@ -141,7 +155,7 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
       onClose={hideCard}>
       <Spacer height={10} />
       <div id="inputs" key={refreshKey}></div>
-      {Manager.isValid(existingItems) &&
+      {Manager.IsValid(existingItems) &&
         existingItems?.map((item, index) => {
           return (
             <p className="existing-checklist-item" key={index}>

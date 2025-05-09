@@ -12,19 +12,21 @@ import _ from "lodash";
 
 import DB_UserScoped from "../database/db_userScoped";
 
+import DatasetManager from "./datasetManager";
+
 SecurityManager = {
   getSharedItems: async function(currentUser, table) {
     var accountKey, i, item, j, len, len1, linkedAccountKeys, linkedAccounts, ref, sharedItems, userAccountItems;
     linkedAccounts = (await DB_UserScoped.getLinkedAccounts(currentUser));
     linkedAccountKeys = linkedAccounts.accountKeys;
     sharedItems = [];
-    if (Manager.isValid(currentUser) && Manager.isValid(linkedAccountKeys)) {
+    if (Manager.IsValid(currentUser) && Manager.IsValid(linkedAccountKeys)) {
       for (i = 0, len = linkedAccountKeys.length; i < len; i++) {
         accountKey = linkedAccountKeys[i];
         userAccountItems = (await DB.getTable(`${table}/${accountKey}`));
         for (j = 0, len1 = userAccountItems.length; j < len1; j++) {
           item = userAccountItems[j];
-          if (Manager.isValid(item != null ? item.shareWith : void 0)) {
+          if (Manager.IsValid(item != null ? item.shareWith : void 0)) {
             if (item != null ? (ref = item.shareWith) != null ? ref.includes(currentUser != null ? currentUser.key : void 0) : void 0 : void 0) {
               sharedItems.push(item);
             }
@@ -32,20 +34,20 @@ SecurityManager = {
         }
       }
     }
-    return sharedItems;
+    return DatasetManager.GetValidArray(sharedItems);
   },
   getShareWithItems: async function(currentUser, table) {
     var child, childItems, coparent, coparentItems, i, item, j, k, l, len, len1, len2, len3, len4, len5, m, n, parent, parentItems, ref, ref1, ref2, ref3, ref4, ref5, sharedItems;
     sharedItems = [];
     //   COPARENT ACCOUNTS
-    if (Manager.isValid(currentUser) && Manager.isValid(currentUser != null ? currentUser.coparents : void 0)) {
+    if (Manager.IsValid(currentUser) && Manager.IsValid(currentUser != null ? currentUser.coparents : void 0)) {
       ref = currentUser != null ? currentUser.coparents : void 0;
       for (i = 0, len = ref.length; i < len; i++) {
         coparent = ref[i];
         coparentItems = (await DB.getTable(`${table}/${coparent != null ? coparent.userKey : void 0}`));
         for (j = 0, len1 = coparentItems.length; j < len1; j++) {
           item = coparentItems[j];
-          if (Manager.isValid(item != null ? item.shareWith : void 0)) {
+          if (Manager.IsValid(item != null ? item.shareWith : void 0)) {
             if (item != null ? (ref1 = item.shareWith) != null ? ref1.includes(currentUser != null ? currentUser.key : void 0) : void 0 : void 0) {
               sharedItems.push(item);
             }
@@ -54,14 +56,14 @@ SecurityManager = {
       }
     }
     //   PARENT ACCOUNTS
-    if (Manager.isValid(currentUser) && Manager.isValid(currentUser != null ? currentUser.parents : void 0)) {
+    if (Manager.IsValid(currentUser) && Manager.IsValid(currentUser != null ? currentUser.parents : void 0)) {
       ref2 = currentUser != null ? currentUser.parents : void 0;
       for (k = 0, len2 = ref2.length; k < len2; k++) {
         parent = ref2[k];
         parentItems = (await DB.getTable(`${table}/${parent != null ? parent.userKey : void 0}`));
         for (l = 0, len3 = parentItems.length; l < len3; l++) {
           item = parentItems[l];
-          if (Manager.isValid(item != null ? item.shareWith : void 0)) {
+          if (Manager.IsValid(item != null ? item.shareWith : void 0)) {
             if (item != null ? (ref3 = item.shareWith) != null ? ref3.includes(currentUser != null ? currentUser.key : void 0) : void 0 : void 0) {
               sharedItems.push(item);
             }
@@ -70,14 +72,14 @@ SecurityManager = {
       }
     }
     //   CHILD ACCOUNTS
-    if (Manager.isValid(currentUser) && Manager.isValid(currentUser != null ? currentUser.children : void 0)) {
+    if (Manager.IsValid(currentUser) && Manager.IsValid(currentUser != null ? currentUser.children : void 0)) {
       ref4 = currentUser != null ? currentUser.children : void 0;
       for (m = 0, len4 = ref4.length; m < len4; m++) {
         child = ref4[m];
         childItems = (await DB.getTable(`${table}/${child != null ? child.userKey : void 0}`));
         for (n = 0, len5 = childItems.length; n < len5; n++) {
           item = childItems[n];
-          if (Manager.isValid(item != null ? item.shareWith : void 0)) {
+          if (Manager.IsValid(item != null ? item.shareWith : void 0)) {
             if (item != null ? (ref5 = item.shareWith) != null ? ref5.includes(currentUser != null ? currentUser.key : void 0) : void 0 : void 0) {
               sharedItems.push(item);
             }
@@ -86,7 +88,7 @@ SecurityManager = {
       }
     }
     sharedItems = _.flattenDeep(sharedItems);
-    return sharedItems;
+    return DatasetManager.GetValidArray(sharedItems);
   },
   getCalendarEvents: async function(currentUser) {
     var allEvents, event, i, len, returnRecords, sharedEvents, users;
@@ -97,7 +99,7 @@ SecurityManager = {
     returnRecords = [];
     allEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.key : void 0}`));
     sharedEvents = (await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents));
-    if (Manager.isValid(allEvents)) {
+    if (Manager.IsValid(allEvents)) {
       for (i = 0, len = allEvents.length; i < len; i++) {
         event = allEvents[i];
         if (DateManager.isValidDate(event.startDate)) {
@@ -107,17 +109,17 @@ SecurityManager = {
         }
       }
     }
-    if (Manager.isValid(sharedEvents)) {
+    if (Manager.IsValid(sharedEvents)) {
       returnRecords = [...sharedEvents, ...returnRecords];
     }
-    return returnRecords;
+    return DatasetManager.GetValidArray(returnRecords);
   },
   getUserVisitationHolidays: async function(currentUser) {
     var allEvents, event, i, len, returnRecords, sharedEvents;
     returnRecords = [];
     allEvents = (await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.key : void 0}`));
     sharedEvents = (await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents));
-    if (Manager.isValid(allEvents)) {
+    if (Manager.IsValid(allEvents)) {
       for (i = 0, len = allEvents.length; i < len; i++) {
         event = allEvents[i];
         if (DateManager.isValidDate(event.startDate)) {
@@ -127,17 +129,17 @@ SecurityManager = {
         }
       }
     }
-    if (Manager.isValid(sharedEvents)) {
+    if (Manager.IsValid(sharedEvents)) {
       returnRecords = [...sharedEvents, ...returnRecords];
     }
-    return returnRecords;
+    return DatasetManager.GetValidArray(returnRecords);
   },
   getExpenses: async function(currentUser) {
     var allExpenses, expense, i, len, returnRecords, sharedExpenses;
     returnRecords = [];
-    allExpenses = Manager.convertToArray((await DB.getTable(`${DB.tables.expenses}/${currentUser != null ? currentUser.key : void 0}`))).flat();
+    allExpenses = DatasetManager.GetValidArray(DB.getTable(`${DB.tables.expenses}/${currentUser != null ? currentUser.key : void 0}`));
     sharedExpenses = (await SecurityManager.getShareWithItems(currentUser, DB.tables.expenses));
-    if (Manager.isValid(allExpenses)) {
+    if (Manager.IsValid(allExpenses)) {
       for (i = 0, len = allExpenses.length; i < len; i++) {
         expense = allExpenses[i];
         if (expense.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
@@ -145,17 +147,17 @@ SecurityManager = {
         }
       }
     }
-    if (Manager.isValid(sharedExpenses)) {
+    if (Manager.IsValid(sharedExpenses)) {
       returnRecords = [...sharedExpenses, ...returnRecords];
     }
-    return returnRecords;
+    return DatasetManager.GetValidArray(returnRecords);
   },
   getSwapRequests: async function(currentUser) {
     var allRequests, i, len, request, returnRecords, sharedSwaps;
     returnRecords = [];
-    allRequests = Manager.convertToArray((await DB.getTable(`${DB.tables.swapRequests}/${currentUser != null ? currentUser.key : void 0}`))).flat();
+    allRequests = DatasetManager.GetValidArray((await DB.getTable(`${DB.tables.swapRequests}/${currentUser != null ? currentUser.key : void 0}`)));
     sharedSwaps = (await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests));
-    if (Manager.isValid(allRequests)) {
+    if (Manager.IsValid(allRequests)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
         if (request.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
@@ -163,17 +165,17 @@ SecurityManager = {
         }
       }
     }
-    if (Manager.isValid(sharedSwaps)) {
+    if (Manager.IsValid(sharedSwaps)) {
       returnRecords = [...sharedSwaps, ...returnRecords];
     }
-    return returnRecords;
+    return DatasetManager.GetValidArray(returnRecords);
   },
   getTransferChangeRequests: async function(currentUser) {
     var allRequests, i, len, request, returnRecords, sharedTransfers;
     returnRecords = [];
-    allRequests = Manager.convertToArray((await DB.getTable(`${DB.tables.transferChangeRequests}/${currentUser != null ? currentUser.key : void 0}`))).flat();
+    allRequests = DatasetManager.GetValidArray((await DB.getTable(`${DB.tables.transferChangeRequests}/${currentUser != null ? currentUser.key : void 0}`)));
     sharedTransfers = (await SecurityManager.getShareWithItems(currentUser, DB.tables.transferChangeRequests));
-    if (Manager.isValid(allRequests)) {
+    if (Manager.IsValid(allRequests)) {
       for (i = 0, len = allRequests.length; i < len; i++) {
         request = allRequests[i];
         if (request.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
@@ -181,17 +183,17 @@ SecurityManager = {
         }
       }
     }
-    if (Manager.isValid(sharedTransfers)) {
+    if (Manager.IsValid(sharedTransfers)) {
       returnRecords = [...sharedTransfers, ...returnRecords];
     }
-    return returnRecords.flat();
+    return DatasetManager.GetValidArray(returnRecords);
   },
   getDocuments: async function(currentUser) {
     var allDocs, doc, i, len, returnRecords, sharedDocs;
     returnRecords = [];
-    allDocs = Manager.convertToArray((await DB.getTable(`${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`))).flat();
+    allDocs = DatasetManager.GetValidArray((await DB.getTable(`${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`)));
     sharedDocs = (await SecurityManager.getShareWithItems(currentUser, DB.tables.documents));
-    if (Manager.isValid(allDocs)) {
+    if (Manager.IsValid(allDocs)) {
       for (i = 0, len = allDocs.length; i < len; i++) {
         doc = allDocs[i];
         if (doc.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
@@ -199,17 +201,17 @@ SecurityManager = {
         }
       }
     }
-    if (Manager.isValid(sharedDocs)) {
+    if (Manager.IsValid(sharedDocs)) {
       returnRecords = [...sharedDocs, ...returnRecords];
     }
-    return returnRecords.flat();
+    return DatasetManager.GetValidArray(returnRecords);
   },
   getMemories: async function(currentUser) {
     var allMemories, i, len, memory, returnRecords, sharedMemories;
     returnRecords = [];
-    allMemories = Manager.convertToArray((await DB.getTable(`${DB.tables.memories}/${currentUser != null ? currentUser.key : void 0}`))).flat();
+    allMemories = DatasetManager.GetValidArray((await DB.getTable(`${DB.tables.memories}/${currentUser != null ? currentUser.key : void 0}`)));
     sharedMemories = (await SecurityManager.getShareWithItems(currentUser, DB.tables.memories));
-    if (Manager.isValid(allMemories)) {
+    if (Manager.IsValid(allMemories)) {
       for (i = 0, len = allMemories.length; i < len; i++) {
         memory = allMemories[i];
         if (memory.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
@@ -217,16 +219,16 @@ SecurityManager = {
         }
       }
     }
-    if (Manager.isValid(sharedMemories)) {
+    if (Manager.IsValid(sharedMemories)) {
       returnRecords = [...sharedMemories, ...returnRecords];
     }
-    return returnRecords.flat();
+    return DatasetManager.GetValidArray(returnRecords);
   },
   getInputSuggestions: async function(currentUser) {
     var i, len, returnRecords, suggestion, suggestions;
     returnRecords = [];
-    suggestions = Manager.convertToArray((await DB.getTable(DB.tables.suggestions))).flat();
-    if (Manager.isValid(suggestions)) {
+    suggestions = DatasetManager.GetValidArray((await DB.getTable(DB.tables.suggestions)));
+    if (Manager.IsValid(suggestions)) {
       for (i = 0, len = suggestions.length; i < len; i++) {
         suggestion = suggestions[i];
         if (suggestion.ownerKey === (currentUser != null ? currentUser.key : void 0)) {
@@ -234,14 +236,14 @@ SecurityManager = {
         }
       }
     }
-    return returnRecords.flat();
+    return DatasetManager.GetValidArray(returnRecords);
   },
   getChats: async function(currentUser) {
     var chat, chats, i, len, members, ref, ref1, securedChats;
-    chats = Manager.convertToArray((await DB.getTable(`${DB.tables.chats}/${currentUser != null ? currentUser.key : void 0}`))).flat();
+    chats = DatasetManager.GetValidArray((await DB.getTable(`${DB.tables.chats}/${currentUser != null ? currentUser.key : void 0}`)));
     securedChats = [];
     // User does not have a chat with root access by phone
-    if (Manager.isValid(chats)) {
+    if (Manager.IsValid(chats)) {
       for (i = 0, len = chats.length; i < len; i++) {
         chat = chats[i];
         members = chat != null ? (ref = chat.members) != null ? ref.map(function(x) {
@@ -252,14 +254,14 @@ SecurityManager = {
         }
       }
     }
-    return securedChats.flat();
+    return securedChats;
   },
   getCoparentChats: async function(currentUser) {
     var activeChats, allChats, allChatsFlattened, chat, i, len, members, ref;
     allChats = (await DB.getTable('chats'));
     activeChats = [];
-    allChatsFlattened = allChats.flat();
-    if (Manager.isValid(allChatsFlattened)) {
+    allChatsFlattened = allChats;
+    if (Manager.IsValid(allChatsFlattened)) {
       for (i = 0, len = allChatsFlattened.length; i < len; i++) {
         chat = allChatsFlattened[i];
         members = chat.members.map(function(x) {

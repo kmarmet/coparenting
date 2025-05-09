@@ -23,7 +23,7 @@ const useCurrentUser = () => {
     const listener = onValue(
       dataRef,
       (snapshot) => {
-        if (Manager.isValid(snapshot.val())) {
+        if (Manager.IsValid(snapshot.val())) {
           setCurrentUser(snapshot.val())
         } else {
           setCurrentUser(null)
@@ -39,7 +39,7 @@ const useCurrentUser = () => {
     return () => {
       off(dataRef, 'value', listener)
     }
-  }, [path, authUser, dbUser])
+  }, [path, authUser, dbUser, users])
 
   return {
     currentUser,

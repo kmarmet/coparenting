@@ -8,6 +8,34 @@ import CalendarManager from "./calendarManager"
 import FirebaseStorage from "../database/firebaseStorage"
 
 export default AppManager =
+  OperatingSystems: {
+    Windows: 'Windows',
+    Linux: 'Linux',
+    Mac: 'Mac',
+    iOS: 'iOS',
+    Android: 'Android'
+  },
+  GetOS: () ->
+    userAgent = window.navigator.userAgent
+    platform = window.navigator.platform
+    macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K']
+    windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE']
+    iosPlatforms = ['iPhone', 'iPad', 'iPod']
+    os = null
+
+    if macosPlatforms.indexOf(platform) isnt -1
+      os = AppManager.OperatingSystems.Mac
+    else if iosPlatforms.indexOf(platform) isnt -1
+      os = AppManager.OperatingSystems.iOS
+    else if windowsPlatforms.indexOf(platform) isnt -1
+      os = AppManager.OperatingSystems.Windows
+    else if /Android/.test(userAgent)
+      os = AppManager.OperatingSystems.Android
+    else if not os and /Linux/.test(platform)
+      os = AppManager.OperatingSystems.Linux
+
+    return os
+
   getIPAddress: () ->
     ipAddress = ''
     myHeaders = new Headers()
@@ -83,7 +111,7 @@ export default AppManager =
   getQueryStringParams: (queryStringName) ->
     searchParams = new URLSearchParams(window.location.search);
 
-    if Manager.isValid(queryStringName, true)
+    if Manager.IsValid(queryStringName, true)
       return searchParams.get(queryStringName)
 
     return searchParams
@@ -100,8 +128,8 @@ export default AppManager =
     location.hostname == 'localhost'
 
   getAccountType: (currentUser) =>
-    if Manager.isValid(currentUser)
-      if Manager.isValid(currentUser.accountType)
+    if Manager.IsValid(currentUser)
+      if Manager.IsValid(currentUser.accountType)
         if currentUser.accountType == 'parent'
           return 'parent'
         else
@@ -110,7 +138,7 @@ export default AppManager =
 
   deleteExpiredCalendarEvents: (currentUser) ->
     events = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.key}")
-    if Manager.isValid(events)
+    if Manager.IsValid(events)
       events = events.filter (x) -> x?
       events = events.flat()
       for event in events
@@ -135,7 +163,7 @@ export default AppManager =
       updateAvailable= false
       set(child(dbRef, "updateAvailable"), updateObject)
       return false
-    if !Manager.isValid(updateAvailable) || updateAvailable == false
+    if !Manager.IsValid(updateAvailable) || updateAvailable == false
       updateObject.updateAvailable = true
       set(child(dbRef, "updateAvailable"), updateObject )
 
@@ -145,10 +173,10 @@ export default AppManager =
 
   deleteExpiredMemories: (currentUser) ->
     memories = await DB.getTable(DB.tables.memories)
-    if Manager.isValid(memories)
+    if Manager.IsValid(memories)
       for memory in memories
         daysPassed = moment().diff(event.creationDate, 'days')
         if daysPassed >= 30
-          await DB.delete( "#{DB.tables.memories}/#{currentUser?.key}", memory.id)
-          if Manager.isValid(memory?.memoryName)
+          await DB.Delete( "#{DB.tables.memories}/#{currentUser?.key}", memory.id)
+          if Manager.IsValid(memory?.memoryName)
             await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser?.key, memory?.memoryName)

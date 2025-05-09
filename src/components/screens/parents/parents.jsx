@@ -6,11 +6,12 @@ import DB_UserScoped from '/src/database/db_userScoped'
 import AlertManager from '/src/managers/alertManager'
 import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
+
 import React, {useContext, useEffect, useState} from 'react'
 import {Fade} from 'react-awesome-reveal'
 import {BsFillSendFill} from 'react-icons/bs'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
-import {HiDotsHorizontal} from 'react-icons/hi'
+import {HiOutlineChevronDoubleUp} from 'react-icons/hi2'
 import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
@@ -56,14 +57,13 @@ export default function Parents() {
   }
 
   const ExecuteAnimations = () => {
-    DomManager.ToggleAnimation('add', 'parent', DomManager.AnimateClasses.names.zoomIn, 0)
     setTimeout(() => {
-      DomManager.ToggleAnimation('add', 'info-row', DomManager.AnimateClasses.names.fadeInRight, 50)
-    }, 200)
+      DomManager.ToggleAnimation('add', 'animation-wrapper', DomManager.AnimateClasses.names.fadeInUp, 50)
+    }, 300)
   }
 
   useEffect(() => {
-    if (Manager.isValid(parents)) {
+    if (Manager.IsValid(parents)) {
       ExecuteAnimations()
       setActiveParent(parents[0])
     }
@@ -98,13 +98,13 @@ export default function Parents() {
             <p>
               Add a Parent
               <span className="subtitle">
-                Store information and provide sharing permissions <b>for a parent who that has not been added to your profile</b> yet
+                Store information and provide sharing permissions for a parent who that has not been added to your profile yet
               </span>
             </p>
           </div>
         </div>
 
-        {Manager.isValid(parents) && (
+        {Manager.IsValid(parents) && (
           <>
             {/*  REMOVE PARENT */}
             <div
@@ -180,7 +180,7 @@ export default function Parents() {
         onClose={() => setShowInvitationForm(false)}
         showCard={showInvitationForm}
         onSubmit={() => {
-          if (!Manager.isValid(invitedParentEmail) || !Manager.isValid(invitedParentName)) {
+          if (!Manager.IsValid(invitedParentEmail) || !Manager.IsValid(invitedParentName)) {
             AlertManager.throwError('Please fill out all fields')
             return false
           }
@@ -208,75 +208,83 @@ export default function Parents() {
           <p>Maintain accessible records of important information regarding your parent(s).</p>
         </Fade>
 
-        {/* PARENT ICONS CONTAINER */}
-        <div id="parent-container">
-          {Manager.isValid(parents) &&
-            parents?.map((parent, index) => {
-              const parentKey = activeParent?.userKey
-              return (
-                <div
-                  onClick={() => setActiveParent(parent)}
-                  className={parentKey && parentKey === parent.userKey ? 'active parent' : 'parent'}
-                  key={index}>
-                  <span className="parent-name">{StringManager.getFirstNameOnly(parent.name)[0]}</span>
-                </div>
-              )
-            })}
-        </div>
+        <div className="animation-wrapper">
+          <>
+            {/* PARENT ICONS CONTAINER */}
+            <div id="parent-container">
+              {Manager.IsValid(parents) &&
+                parents?.map((parent, index) => {
+                  const parentKey = activeParent?.userKey
+                  return (
+                    <div
+                      onClick={() => setActiveParent(parent)}
+                      className={parentKey && parentKey === parent.userKey ? 'active parent' : 'parent'}
+                      key={index}>
+                      <span className="parent-name">{StringManager.getFirstNameOnly(parent.name)[0]}</span>
+                    </div>
+                  )
+                })}
+            </div>
 
-        {/* NO DATA FALLBACK */}
-        {!Manager.isValid(parents) && <NoDataFallbackText text={'You have not added or linked any parents to your profile yet'} />}
+            {/* NO DATA FALLBACK */}
+            {!Manager.IsValid(parents) && <NoDataFallbackText text={'You have not added or linked any parents to your profile yet'} />}
 
-        {/* PARENT INFO */}
-        <div id="parent-info" key={activeParent?.key}>
-          <p id="parent-name-primary">{StringManager.getFirstNameOnly(activeParent?.name)}</p>
-          <p id="parent-type-primary"> {activeParent?.parentType}</p>
-          {/* ITERATE PARENT INFO */}
-          {Manager.isValid(activeParent) &&
-            Object.entries(activeParent).map((propArray, index) => {
-              let infoLabel = propArray[0]
-              infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
-              infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
-              infoLabel = StringManager.FormatTitle(infoLabel, true)
-              const value = propArray[1]
-              const inputsToSkip = ['address', 'key', 'id', 'user key']
+            {/* PARENT INFO */}
+            <div id="parent-info" key={activeParent?.key}>
+              <p id="parent-name-primary">{StringManager.getFirstNameOnly(activeParent?.name)}</p>
+              <p id="parent-type-primary"> {activeParent?.parentType}</p>
+              {/* ITERATE PARENT INFO */}
+              {Manager.IsValid(activeParent) &&
+                Object.entries(activeParent).map((propArray, index) => {
+                  let infoLabel = propArray[0]
+                  infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
+                  infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
+                  infoLabel = StringManager.FormatTitle(infoLabel, true)
+                  const value = propArray[1]
+                  const inputsToSkip = ['address', 'key', 'id', 'user key']
 
-              return (
-                <div key={index} className="info-row">
-                  {/* ADDRESS */}
-                  {infoLabel.toLowerCase().includes('address') && (
-                    <AddressInput defaultValue={value} labelText={'Home Address'} onChange={(address) => Update('address', address).then((r) => r)} />
-                  )}
-
-                  {/* TEXT INPUT */}
-                  {!inputsToSkip.includes(infoLabel.toLowerCase()) && !infoLabel.toLowerCase().includes('address') && (
-                    <>
-                      <div className="flex input">
-                        <InputWrapper
-                          hasBottomSpacer={false}
+                  return (
+                    <div key={index} className="info-row">
+                      {/* ADDRESS */}
+                      {infoLabel.toLowerCase().includes('address') && (
+                        <AddressInput
                           defaultValue={value}
-                          onChange={(e) => {
-                            const inputValue = e.target.value
-                            Update(infoLabel, `${inputValue}`).then((r) => r)
-                          }}
-                          inputType={InputTypes.text}
-                          labelText={infoLabel}
+                          labelText={'Home Address'}
+                          onChange={(address) => Update('address', address).then((r) => r)}
                         />
-                        <PiTrashSimpleDuotone className="delete-icon fs-24" onClick={() => DeleteProp(infoLabel)} />
-                      </div>
-                      <Spacer height={5} />
-                    </>
-                  )}
-                </div>
-              )
-            })}
+                      )}
+
+                      {/* TEXT INPUT */}
+                      {!inputsToSkip.includes(infoLabel.toLowerCase()) && !infoLabel.toLowerCase().includes('address') && (
+                        <>
+                          <div className="flex input">
+                            <InputWrapper
+                              hasBottomSpacer={false}
+                              defaultValue={value}
+                              onChange={(e) => {
+                                const inputValue = e.target.value
+                                Update(infoLabel, `${inputValue}`).then((r) => r)
+                              }}
+                              inputType={InputTypes.text}
+                              labelText={infoLabel}
+                            />
+                            <PiTrashSimpleDuotone className="delete-icon fs-24" onClick={() => DeleteProp(infoLabel)} />
+                          </div>
+                          <Spacer height={5} />
+                        </>
+                      )}
+                    </div>
+                  )
+                })}
+            </div>
+          </>
         </div>
       </div>
 
       {/* NAVBAR */}
       <NavBar navbarClass={'actions'}>
         <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
-          <HiDotsHorizontal className={'screen-actions-menu-icon'} />
+          <HiOutlineChevronDoubleUp className={'screen-actions-menu-icon'} />
           <p>More</p>
         </div>
       </NavBar>

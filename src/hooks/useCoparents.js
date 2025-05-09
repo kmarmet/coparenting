@@ -24,8 +24,8 @@ const useCoparents = () => {
       dataRef,
       (snapshot) => {
         // console.Log('Children Updated')
-        const formattedCoparents = DatasetManager.getValidArray(snapshot.val())
-        if (Manager.isValid(currentUser) && Manager.isValid(formattedCoparents)) {
+        const formattedCoparents = DatasetManager.GetValidArray(snapshot.val())
+        if (Manager.IsValid(currentUser) && Manager.IsValid(formattedCoparents)) {
           setCoparents(formattedCoparents)
         } else {
           setCoparents([])

@@ -1,8 +1,10 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useContext, useEffect, useState} from 'react'
-import Manager from '../managers/manager'
 import globalState from '../context'
 import DB from '../database/DB'
+import DatasetManager from '../managers/datasetManager'
+import Manager from '../managers/manager'
+
 import useCurrentUser from './useCurrentUser'
 
 const useSharedChildInfo = () => {
@@ -21,8 +23,8 @@ const useSharedChildInfo = () => {
     const listener = onValue(
       dataRef,
       async (snapshot) => {
-        const formatted = Manager.convertToArray(snapshot.val()).flat()
-        if (Manager.isValid(formatted)) {
+        const formatted = DatasetManager.GetValidArray(snapshot.val())
+        if (Manager.IsValid(formatted)) {
           setSharedChildInfo(formatted)
         } else {
           setSharedChildInfo([])

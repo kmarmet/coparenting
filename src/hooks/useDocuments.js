@@ -22,8 +22,8 @@ const useDocuments = () => {
       (snapshot) => {
         const data = snapshot.val()
 
-        const formatted = DatasetManager.getValidArray(data)
-        if (Manager.isValid(currentUser) && Manager.isValid(formatted)) {
+        const formatted = DatasetManager.GetValidArray(data)
+        if (Manager.IsValid(currentUser) && Manager.IsValid(formatted)) {
           setDocuments(formatted.filter((x) => x))
           setDocumentsAreLoading(false)
         } else {

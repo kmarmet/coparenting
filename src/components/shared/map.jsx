@@ -38,7 +38,7 @@ export default function Map({locationString}) {
   }, [])
 
   const retrySetMapCenter = () => {
-    if (Manager.isValid(locationString, true)) {
+    if (Manager.IsValid(locationString, true)) {
       fromAddress(locationString).then(({results}) => {
         const location = results[0].geometry.location
         setMapCenter({
@@ -77,7 +77,7 @@ export default function Map({locationString}) {
         zoom={zoom}
         onLoad={onLoad}
         onUnmount={onUnmount}>
-        {Manager.isValid(mapCenter) && <MarkerF position={{lat: mapCenter.lat, lng: mapCenter.lng}} onClick={markerClicked}></MarkerF>}
+        {Manager.IsValid(mapCenter) && <MarkerF position={{lat: mapCenter.lat, lng: mapCenter.lng}} onClick={markerClicked}></MarkerF>}
       </GoogleMap>
     </div>
   ) : (

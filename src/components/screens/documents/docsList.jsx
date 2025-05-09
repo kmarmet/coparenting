@@ -24,7 +24,7 @@ export default function DocsList() {
 
   const DeleteDoc = async (checkbox) => {
     const id = checkbox.currentTarget?.previousSibling?.getAttribute('data-id')
-    AlertManager.confirmAlert('Are you sure you want to delete this document?', "I'm Sure", true, async () => {
+    AlertManager.confirmAlert('Are you sure you want to Delete this document?', "I'm Sure", true, async () => {
       await DocumentsManager.DeleteDocsWithIds([id], currentUser)
     })
   }
@@ -46,9 +46,9 @@ export default function DocsList() {
           shared with a co-parent.
         </p>
 
-        {!Manager.isValid(selectedDoc) && Manager.isValid(documents) && (
+        {!Manager.IsValid(selectedDoc) && Manager.IsValid(documents) && (
           <div className="sections">
-            {Manager.isValid(documents) &&
+            {Manager.IsValid(documents) &&
               documents.map((doc, index) => {
                 const documentExts = ['doc', 'docx', 'pdf', 'txt', 'odt']
                 const fileType = documentExts.includes(StringManager.GetFileExtension(doc.name).toString()) ? 'Document' : 'Image'
@@ -57,7 +57,7 @@ export default function DocsList() {
                     className="row"
                     key={index}
                     onClick={(e) => {
-                      if (!Manager.contains(e.target.classList, 'delete')) {
+                      if (!Manager.Contains(e.target.classList, 'delete')) {
                         setSelectedDoc(doc)
                         setState({...state, docToView: doc, currentScreen: ScreenNames.docViewer})
                       }

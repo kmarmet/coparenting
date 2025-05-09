@@ -11,12 +11,12 @@ export default function AddressInput({onChange = (e) => {}, defaultValue, labelT
   const {refreshKey} = state
   return (
     <>
-      {Manager.isValid(process.env.REACT_APP_GOOGLE_MAPS_API_KEY, true) && (
+      {Manager.IsValid(process.env.REACT_APP_GOOGLE_MAPS_API_KEY, true) && (
         <>
           <div key={refreshKey} id="address-input-wrapper" className={`${wrapperClasses}`}>
             {/* LABEL */}
-            {Manager.isValid(labelText, true) && (
-              <Label classes={Manager.isValid(defaultValue) ? 'active' : ''} text={`${labelText}`} required={required} />
+            {Manager.IsValid(labelText, true) && (
+              <Label classes={Manager.IsValid(defaultValue) ? 'active' : ''} text={`${labelText}`} required={required} />
             )}
 
             {/* INPUT */}
@@ -31,7 +31,7 @@ export default function AddressInput({onChange = (e) => {}, defaultValue, labelT
                 isClearable: true,
 
                 onChange: (e) => {
-                  if (Manager.isValid(e?.label, true)) {
+                  if (Manager.IsValid(e?.label, true)) {
                     onChange(e?.label)
                   } else {
                     onChange('')

@@ -25,6 +25,8 @@ StateObj =
   successAlertMessage: null
   users: []
   activeChatId: ''
+  registrationExitStep: ""
+  setRegistrationExitStep: (step) ->
   setActiveChatId: (id) ->
   setUsers: (users) ->
   setSuccessAlertMessage: (message) ->

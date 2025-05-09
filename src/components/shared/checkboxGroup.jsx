@@ -1,11 +1,11 @@
 // Path: src\components\shared\checkboxGroup.jsx
-import Manager from '../../managers/manager'
 import React, {useContext} from 'react'
-import globalState from '../../context'
-import StringManager from '../../managers/stringManager.js'
 import {IoCloseOutline} from 'react-icons/io5'
-import Label from './label.jsx'
+import globalState from '../../context'
+import Manager from '../../managers/manager'
+import StringManager from '../../managers/stringManager.js'
 import Checkbox from './checkbox.jsx'
+import Label from './label.jsx'
 
 export default function CheckboxGroup({
   onCheck = (e) => {},
@@ -25,10 +25,10 @@ export default function CheckboxGroup({
         {parentLabel.length > 0 && <Label classes="standalone-label-wrapper" text={parentLabel} required={required} icon={icon ? icon : ''} />}
         {/*<Spacer height={2} />*/}
         <div id="checkboxes" className={checkboxArray.length > 2 ? 'more-than-two-checkboxes' : 'two-checkboxes'}>
-          {Manager.isValid(checkboxArray) &&
+          {Manager.IsValid(checkboxArray) &&
             checkboxArray.map((obj, index) => {
               let label = obj.label
-              if (Manager.isValid(label) && !StringManager.stringHasNumbers(label) && !skipNameFormatting) {
+              if (Manager.IsValid(label) && !StringManager.stringHasNumbers(label) && !skipNameFormatting) {
                 label = StringManager.getFirstNameOnly(label.toString())
               }
               return (
