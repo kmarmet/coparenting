@@ -98,11 +98,11 @@ export default function EventCalendar() {
       let formattedDay = moment(DateManager.msToDate(dayAsMs)).format(DatetimeFormats.dateForDb)
       let daysEventsObject = GetEventsFromDate(formattedDay, events)
       const {dotClasses, payEvents} = daysEventsObject
-      const dayEvent = events.filter((x) => x?.startDate === formattedDay)[0]
-      const holiday = holidays.filter((x) => x?.startDate === formattedDay)[0]
+      const dayEvent = events.find((x) => moment(x?.startDate).format(DatetimeFormats.dateForDb) === formattedDay)
+      const holiday = holidays.find((x) => x?.startDate === formattedDay)
 
       // APPEND INVISIBLE DOTS AND SKIP DAY WITHOUT EVENT
-      if (!dayEvent && !holiday) {
+      if (!Manager.IsValid(daysEventsObject.dayEvents) || !Manager.IsValid(daysEventsObject.dayEvent) || dayEvent === undefined) {
         const invisibleDots = document.createElement('span')
         invisibleDots.classList.add('invisible-dots')
 
@@ -360,6 +360,7 @@ export default function EventCalendar() {
 
   useEffect(() => {
     HandleRefreshCheck()
+    setState({...state, isLoading: false})
   }, [])
 
   return (

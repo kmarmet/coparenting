@@ -59,14 +59,25 @@ DatasetManager = {
   GetValidArray: (source,  isUnique = true, isFlattened = true, getObjectValuesOnly = false) ->
     returnArray = []
 
-    if Manager.IsValid source
+    if not Manager.IsValid(source)
+      return []
+
+    asArray = (key) ->
+      id: key
+      source[key]
+
+    asArray = Object.keys(source).map(asArray)
+
+    returnArray = asArray
+
+    if not Manager.IsValid asArray
+      # NOT Array
+      if not Array.isArray(source)
+        source = [source]
+
+      # Array
       if Array.isArray(source)
-        returnArray = source if source?
-      else if typeof source is 'object'
-        if getObjectValuesOnly
-          returnArray = Object.values(source)
-        else
-          returnArray = Object.entries(source)
+        returnArray = returnArray.filter (x) -> x
 
     if isUnique
       returnArray = DatasetManager.getUniqueArray(returnArray)
@@ -74,7 +85,7 @@ DatasetManager = {
     if isFlattened
       returnArray = returnArray.flat()
 
-    return returnArray
+    return returnArray.filter (x) -> x
 
   getNestedObject: (table, objectPath) ->
     dataset = await DB.getTable(table)

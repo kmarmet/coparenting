@@ -26,7 +26,7 @@ export default function ViewSelector({labels, updateState, wrapperClasses = ''})
       {Manager.IsValid(labels) &&
         labels.map((label, index) => {
           return (
-            <p
+            <button
               key={index}
               data-label-id={index}
               className={`${index === 0 ? 'active view' : 'view'}`}
@@ -35,7 +35,7 @@ export default function ViewSelector({labels, updateState, wrapperClasses = ''})
                 ToggleActive(el.target)
               }}>
               {label}
-            </p>
+            </button>
           )
         })}
     </div>

@@ -23,7 +23,7 @@ const DetailBlock = ({
   return (
     <>
       {Manager.IsValid(valueToValidate?.toString()) && (
-        <div style={DomManager.AnimateDelayStyle(1, 0.009)} className={`block ${classes} ${isFullWidth ? 'w-100 full-width' : ''}`}>
+        <div style={DomManager.AnimateDelayStyle(1)} className={`block ${classes} ${isFullWidth ? 'w-100 full-width' : ''}`}>
           {/* CUSTOM */}
           {isCustom && children}
 

@@ -45,7 +45,7 @@ const NewParentForm = ({showCard, hideCard}) => {
   }
 
   const Submit = async () => {
-    if (!validator.isEmail(email)) {
+    if ((!validator.isEmail(email) || !Manager.IsValid(email)) && parentHasAccount) {
       AlertManager.throwError('Email address is not valid')
       return false
     }
@@ -53,10 +53,6 @@ const NewParentForm = ({showCard, hideCard}) => {
       {
         name: 'Name',
         value: name,
-      },
-      {
-        name: 'Email',
-        value: email,
       },
     ])
     if (Manager.IsValid(errorString, true)) {

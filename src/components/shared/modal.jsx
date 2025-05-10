@@ -51,6 +51,14 @@ export default function Modal({
   }
 
   useEffect(() => {
+    if (showCard) {
+      const allActiveFadeInUp = document.querySelectorAll('.animate__animated.animate__fadeInUp')
+      if (Manager.IsValid(allActiveFadeInUp)) {
+        setTimeout(() => {
+          DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
+        }, 300)
+      }
+    }
     let modalWrapper = document.querySelector(`.${wrapperClass}#modal-wrapper.active`)
 
     // Check if creationFormToShow is valid and if so, find the modal wrapper
@@ -127,7 +135,7 @@ export default function Modal({
             </button>
           )}
           {hasDelete && (
-            <button className={'Delete-button default warning card-button'} onClick={onDelete}>
+            <button className={'delete-button default card-button'} onClick={onDelete}>
               {deleteButtonText}
             </button>
           )}

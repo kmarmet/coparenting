@@ -77,11 +77,12 @@ export default function Login() {
 
           // EMAIL IS VERIFIED -> REDIRECT TO CALENDAR
           else {
+            console.log('login')
             setState({
               ...state,
               userIsLoggedIn: true,
               authUser: user,
-              isLoading: true,
+              isLoading: false,
               currentScreen: ScreenNames.calendar,
             })
           }

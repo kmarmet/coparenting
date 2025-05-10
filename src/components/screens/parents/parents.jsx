@@ -8,7 +8,6 @@ import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
 
 import React, {useContext, useEffect, useState} from 'react'
-import {Fade} from 'react-awesome-reveal'
 import {BsFillSendFill} from 'react-icons/bs'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiOutlineChevronDoubleUp} from 'react-icons/hi2'
@@ -56,15 +55,8 @@ export default function Parents() {
     setActiveParent(parents[0])
   }
 
-  const ExecuteAnimations = () => {
-    setTimeout(() => {
-      DomManager.ToggleAnimation('add', 'animation-wrapper', DomManager.AnimateClasses.names.fadeInUp, 50)
-    }, 300)
-  }
-
   useEffect(() => {
     if (Manager.IsValid(parents)) {
-      ExecuteAnimations()
       setActiveParent(parents[0])
     }
   }, [parents])
@@ -201,14 +193,12 @@ export default function Parents() {
 
       {/* COPARENTS CONTAINER */}
       <div id="parents-container" className={`${theme} page-container parents-wrapper`}>
-        <Fade direction={'up'} duration={1000} className={'parents-fade-wrapper'} triggerOnce={true}>
-          <div className="flex" id="screen-title-wrapper">
-            <p className="screen-title beside-action-button">Parents</p>
-          </div>
-          <p>Maintain accessible records of important information regarding your parent(s).</p>
-        </Fade>
+        <div className="flex" id="screen-title-wrapper">
+          <p className="screen-title beside-action-button">Parents</p>
+        </div>
+        <p>Maintain accessible records of important information regarding your parent(s).</p>
 
-        <div className="animation-wrapper">
+        <div className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(true, '.fade-up-wrapper')}`}>
           <>
             {/* PARENT ICONS CONTAINER */}
             <div id="parent-container">
@@ -225,9 +215,6 @@ export default function Parents() {
                   )
                 })}
             </div>
-
-            {/* NO DATA FALLBACK */}
-            {!Manager.IsValid(parents) && <NoDataFallbackText text={'You have not added or linked any parents to your profile yet'} />}
 
             {/* PARENT INFO */}
             <div id="parent-info" key={activeParent?.key}>
@@ -280,6 +267,8 @@ export default function Parents() {
           </>
         </div>
       </div>
+      {/* NO DATA FALLBACK */}
+      {!Manager.IsValid(parents) && <NoDataFallbackText text={'You have not added or linked any parents to your profile yet'} />}
 
       {/* NAVBAR */}
       <NavBar navbarClass={'actions'}>

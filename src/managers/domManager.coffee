@@ -90,6 +90,13 @@ DomManager = {
 
   ToggleAnimation:(addOrRemove, itemsClass, animateName, delay = 80) ->
     allMenuItems = document.querySelectorAll(".#{itemsClass}")
+
+    AddClasses = (item) ->
+      if addOrRemove is 'add'
+        item.classList.add(DomManager.AnimateClasses[animateName].enter)
+      else
+        item.classList.add(DomManager.AnimateClasses[animateName].exit)
+
     if Manager.IsValid(allMenuItems)
 
       allMenuItems.forEach (item) ->
@@ -98,12 +105,12 @@ DomManager = {
         item.classList.remove(DomManager.AnimateClasses[animateName].enter)
 
       allMenuItems.forEach (item, index) ->
-        setTimeout ->
-          if addOrRemove is 'add'
-            item.classList.add(DomManager.AnimateClasses[animateName].enter)
-          else
-            item.classList.add(DomManager.AnimateClasses[animateName].exit)
-        , index * delay
+        if index == 0
+          item.classList.add(DomManager.AnimateClasses[animateName].enter)
+        else
+          setTimeout ->
+            AddClasses(item)
+          , index * delay
 
   SetDefaultCheckboxes: (checkboxContainerClass, object, propName, isArray = false, values) ->
     # Share With

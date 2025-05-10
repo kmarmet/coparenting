@@ -70,7 +70,6 @@ export default function App() {
   const stateToUpdate = {state, setState}
   const {userIsLoggedIn, firebaseUser, setFirebaseUser} = state
   const myCanvas = document.createElement('canvas')
-
   const fullscreenScreens = [ScreenNames.login, ScreenNames.landing, ScreenNames.registration]
   const screensToHideSidebar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.landing]
   const screensToHideBrandbar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.landing]
@@ -187,6 +186,7 @@ export default function App() {
               currentUser: currentUserFromDb,
               currentScreen: screenToNavigateTo,
               userIsLoggedIn: true,
+              isLoading: false,
               loadingText: '',
               theme: currentUserFromDb?.settings?.theme,
               notificationCount: notifications?.length,

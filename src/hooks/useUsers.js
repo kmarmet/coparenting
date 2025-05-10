@@ -8,7 +8,7 @@ const useUsers = () => {
   const [users, setUsers] = useState(null)
   const [usersAreLoading, setUsersAreLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [path, setPath] = useState(DB.tables.users)
+  const path = `${DB.tables.users}/`
 
   const queryKey = ['realtime', path]
 

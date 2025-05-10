@@ -68,19 +68,29 @@ DatasetManager = {
     return returnArray;
   },
   GetValidArray: function(source, isUnique = true, isFlattened = true, getObjectValuesOnly = false) {
-    var returnArray;
+    var asArray, returnArray;
     returnArray = [];
-    if (Manager.IsValid(source)) {
+    if (!Manager.IsValid(source)) {
+      return [];
+    }
+    asArray = function(key) {
+      ({
+        id: key
+      });
+      return source[key];
+    };
+    asArray = Object.keys(source).map(asArray);
+    returnArray = asArray;
+    if (!Manager.IsValid(asArray)) {
+      // NOT Array
+      if (!Array.isArray(source)) {
+        source = [source];
+      }
+      // Array
       if (Array.isArray(source)) {
-        if (source != null) {
-          returnArray = source;
-        }
-      } else if (typeof source === 'object') {
-        if (getObjectValuesOnly) {
-          returnArray = Object.values(source);
-        } else {
-          returnArray = Object.entries(source);
-        }
+        returnArray = returnArray.filter(function(x) {
+          return x;
+        });
       }
     }
     if (isUnique) {
@@ -89,7 +99,9 @@ DatasetManager = {
     if (isFlattened) {
       returnArray = returnArray.flat();
     }
-    return returnArray;
+    return returnArray.filter(function(x) {
+      return x;
+    });
   },
   getNestedObject: async function(table, objectPath) {
     var dataset;

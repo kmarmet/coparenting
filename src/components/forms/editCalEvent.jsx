@@ -392,9 +392,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       }
       wrapperClass={`edit-calendar-event ${event?.ownerKey === currentUser?.key ? 'owner' : 'non-owner'}`}>
       <div id="edit-cal-event-container" className={`${theme} edit-event-form'`}>
+        <Spacer height={5} />
         {/* DETAILS */}
         <div id="details" className={view === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
-          <hr className="top" />
           <div className="blocks">
             {/*  Date */}
             <DetailBlock
@@ -456,24 +456,31 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             {/*  Notes */}
             <DetailBlock valueToValidate={event?.notes} text={event?.notes} isFullWidth={true} title={'Notes'} />
           </div>
-          <hr className="bottom" />
 
-          <div className="blocks">
-            {/*  Phone */}
-            <DetailBlock valueToValidate={event?.phone} isPhone={true} text={StringManager.FormatPhone(event?.phone)} title={'Call'} />
+          {(Manager.IsValid(event?.location) || Manager.IsValid(event?.phone) || Manager.IsValid(event?.websiteUrl)) && (
+            <div className="blocks">
+              {/*  Phone */}
+              <DetailBlock valueToValidate={event?.phone} isPhone={true} text={StringManager.FormatPhone(event?.phone)} title={'Call'} />
 
-            {/*  Website */}
-            <DetailBlock
-              valueToValidate={event?.websiteUrl}
-              linkUrl={event?.websiteUrl}
-              text={decodeURIComponent(event?.websiteUrl)}
-              isLink={true}
-              title={'Website/Link'}
-            />
+              {/*  Website */}
+              <DetailBlock
+                valueToValidate={event?.websiteUrl}
+                linkUrl={event?.websiteUrl}
+                text={decodeURIComponent(event?.websiteUrl)}
+                isLink={true}
+                title={'Website/Link'}
+              />
 
-            {/*  Location */}
-            <DetailBlock valueToValidate={event?.location} isNavLink={true} text={event?.location} linkUrl={event?.location} title={'Go'} />
-          </div>
+              {Manager.IsValid(event?.location) && (
+                <>
+                  <Spacer height={5} />
+                  {/*  Location */}
+                  <DetailBlock valueToValidate={event?.location} isNavLink={true} text={event?.location} linkUrl={event?.location} title={'Go'} />
+                  <Spacer height={5} />
+                </>
+              )}
+            </div>
+          )}
 
           {/* Recurring Frequency */}
           {event?.isRecurring && (
@@ -489,7 +496,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           {/* Map */}
           {Manager.IsValid(event?.location) && <Map locationString={event?.location} />}
         </div>
-
         {/* EDIT */}
         <div id="edit" className={view === 'edit' ? 'view-wrapper edit active content' : 'view-wrapper content'}>
           <Spacer height={5} />

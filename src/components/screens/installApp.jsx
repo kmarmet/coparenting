@@ -35,7 +35,7 @@ export default function InstallApp() {
               <b>{operatingSystem}</b>. Follow the steps below for that operating system.
             </p>
           )}
-          <Spacer height={5} />
+          <Spacer height={10} />
           {/* IOS */}
           <p className="accordion-header apple">
             iOS <FaApple className={'apple-logo'} />
@@ -76,6 +76,7 @@ export default function InstallApp() {
             </div>
           </div>
 
+          <Spacer height={20} />
           {/* ANDROID */}
           <p className="accordion-header android">
             Android <BsAndroid2 />
@@ -111,7 +112,7 @@ export default function InstallApp() {
               </div>
             </div>
           </div>
-
+          <Spacer height={20} />
           {/* DESKTOP */}
           <p className="accordion-header desktop">
             Windows/Mac <GrPersonalComputer />

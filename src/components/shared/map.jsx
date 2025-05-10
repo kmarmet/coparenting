@@ -17,7 +17,6 @@ export default function Map({locationString}) {
     width: '100%',
     height: '350px',
     borderRadius: '15px',
-    border: '2px solid #e5e5e5',
   }
 
   // GoogleMaps loading instructions
@@ -54,7 +53,7 @@ export default function Map({locationString}) {
   }, [locationString])
 
   // Function executed when a marker is clicked
-  const markerClicked = (marker) => {
+  const MarkerClicked = (marker) => {
     console.log('map value on marker click: ')
     console.log(map)
     // This stores the marker coordinates
@@ -68,16 +67,24 @@ export default function Map({locationString}) {
     setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY)
   }, [])
 
+  if (!isLoaded) {
+    return null
+  }
+
   return isLoaded ? (
     <div key={refreshKey}>
       <GoogleMap
         // options={{ mapTypeControl: false, streetViewControl: false }}
         mapContainerStyle={mapStyle}
         center={mapCenter}
+        options={{
+          disableDefaultUI: false,
+          fullscreenControl: true,
+        }}
         zoom={zoom}
         onLoad={onLoad}
         onUnmount={onUnmount}>
-        {Manager.IsValid(mapCenter) && <MarkerF position={{lat: mapCenter.lat, lng: mapCenter.lng}} onClick={markerClicked}></MarkerF>}
+        {Manager.IsValid(mapCenter) && <MarkerF position={{lat: mapCenter.lat, lng: mapCenter.lng}} onClick={MarkerClicked}></MarkerF>}
       </GoogleMap>
     </div>
   ) : (

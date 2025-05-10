@@ -126,8 +126,15 @@ DomManager = {
     }, 100);
   },
   ToggleAnimation: function(addOrRemove, itemsClass, animateName, delay = 80) {
-    var allMenuItems;
+    var AddClasses, allMenuItems;
     allMenuItems = document.querySelectorAll(`.${itemsClass}`);
+    AddClasses = function(item) {
+      if (addOrRemove === 'add') {
+        return item.classList.add(DomManager.AnimateClasses[animateName].enter);
+      } else {
+        return item.classList.add(DomManager.AnimateClasses[animateName].exit);
+      }
+    };
     if (Manager.IsValid(allMenuItems)) {
       allMenuItems.forEach(function(item) {
         item.classList.add('animate__animated');
@@ -135,13 +142,13 @@ DomManager = {
         return item.classList.remove(DomManager.AnimateClasses[animateName].enter);
       });
       return allMenuItems.forEach(function(item, index) {
-        return setTimeout(function() {
-          if (addOrRemove === 'add') {
-            return item.classList.add(DomManager.AnimateClasses[animateName].enter);
-          } else {
-            return item.classList.add(DomManager.AnimateClasses[animateName].exit);
-          }
-        }, index * delay);
+        if (index === 0) {
+          return item.classList.add(DomManager.AnimateClasses[animateName].enter);
+        } else {
+          return setTimeout(function() {
+            return AddClasses(item);
+          }, index * delay);
+        }
       });
     }
   },

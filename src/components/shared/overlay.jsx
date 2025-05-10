@@ -32,8 +32,8 @@ const Overlay = ({children, show}) => {
       className={`${show ? 'active' : ''} overlay-wrapper`}
       onClick={(e) => {
         const overlay = e.target
-        console.log(overlay)
         if ((Manager.IsValid(overlay) && overlay?.classList.contains('overlay-wrapper')) || overlay?.classList.contains('creation-menu')) {
+          console.log(overlay)
           const allFadeElements = overlay?.querySelectorAll('.animate__fadeInUp')
           if (Manager.IsValid(allFadeElements)) {
             for (let el of allFadeElements) {

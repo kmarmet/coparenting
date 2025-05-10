@@ -299,6 +299,7 @@
               }
             }
 
+            // DAY
             .MuiPickersDay-root {
               color: $primaryText !important;
               flex-wrap: wrap;
@@ -312,39 +313,24 @@
               background: transparent;
               position: relative;
               z-index: 99;
+              font-weight: $fwMedium !important;
 
+              // TODAY
               &.MuiPickersDay-today {
-                color: $main !important;
+                border-radius: 0 !important;
+                color: $green !important;
                 font-weight: $fwBold !important;
-                //                &:after {
-                //                  content: '';
-                //                  position: absolute;
-                //                  top: 15px;
-                //                  left: 0;
-                //                  width: 35px;
-                //                  @include centerHoriz;
-                //                  height: 18px;
-                //                  z-index: -1;
-                //                  border-radius: 12px;
-                //                  border: 1px solid $main;
-                //                }
+                transform: scale(1.1);
               }
 
+              // SELECTED
               &.Mui-selected {
-                color: white !important;
-                &:after {
-                  content: '';
-                  position: absolute;
-                  top: 6.45px;
-                  left: 0;
-                  width: 35px;
-                  @include centerHoriz;
-                  height: 18px;
-                  z-index: -1;
-                  border: 0;
-                  border-radius: 12px;
-                  background: $accent;
-                }
+                color: $accent !important;
+                font-weight: $fwBold !important;
+                padding-bottom: 2px !important;
+                padding-top: 2px !important;
+                border-radius: 0 !important;
+                transform: scale(1.2);
               }
 
               // Weekend
