@@ -3,28 +3,18 @@ import {useContext, useEffect, useState} from 'react'
 import globalState from '../context'
 import DB from '../database/DB'
 import Manager from '../managers/manager'
-import useUsers from './useUsers'
+import useCurrentUser from './useCurrentUser'
 
 const useChat = (chatIdInput) => {
   const {state, setState} = useContext(globalState)
   const {messageRecipient, authUser} = state
-  const {users} = useUsers()
-  const [currentUser, setCurrentUser] = useState()
+  const {currentUser} = useCurrentUser()
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [path, setPath] = useState(`${DB.tables.chats}/${currentUser?.key}`)
-  const queryKey = ['realtime', path]
   const [chats, setChats] = useState([])
   const [chat, setChat] = useState()
-
-  // Get current user and set path
-  useEffect(() => {
-    if (Manager.IsValid(users)) {
-      const user = users?.find((u) => u?.email === authUser?.email)
-      setPath(`${DB.tables.chats}/${user?.key}`)
-      setCurrentUser(user)
-    }
-  }, [users])
+  const path = `${DB.tables.chats}/${currentUser?.key}`
+  const queryKey = ['realtime', path]
 
   useEffect(() => {
     const database = getDatabase()
@@ -35,11 +25,12 @@ const useChat = (chatIdInput) => {
       async (snapshot) => {
         const chats = snapshot.val()
         setChats(chats)
-        if (Manager.IsValid(chats)) {
+        if (Manager.IsValid(chats) && Manager.IsValid(currentUser) && Manager.IsValid(messageRecipient)) {
           for (let _chat of chats) {
             const memberKeys = _chat?.members?.map((x) => x?.key)
             if (Manager.IsValid(memberKeys) && memberKeys.includes(messageRecipient?.key) && memberKeys.includes(currentUser?.key)) {
               setChat(_chat)
+              break
             }
           }
         } else {

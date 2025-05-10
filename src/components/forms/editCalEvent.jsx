@@ -19,7 +19,7 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {BsCalendar2CheckFill} from 'react-icons/bs'
+import {BsCalendar2CheckFill, BsCalendarCheckFill} from 'react-icons/bs'
 import {MdEventRepeat} from 'react-icons/md'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
@@ -39,6 +39,7 @@ import ViewSelector from '../shared/viewSelector'
 export default function EditCalEvent({event, showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey, dateToEdit} = state
+
   const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {calendarEvents, eventsAreLoading} = useCalendarEvents(event?.ownerKey)
   const {users, usersAreLoading} = useUsers()
@@ -357,6 +358,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
   return (
     <Modal
+      titleIcon={<BsCalendarCheckFill />}
       onDelete={() => {
         AlertManager.confirmAlert(
           SetLocalConfirmMessage(),

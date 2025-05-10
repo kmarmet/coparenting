@@ -114,10 +114,12 @@ export default function Modal({
           id="modal-card"
           className={`${DomManager.Animate.FadeInUp(showCard, '.modal-fade-wrapper')} modal-fade-wrapper`}>
           <div id="modal">
-            <div id="modal-title-and-text" className={Manager.IsValid(subtitle, true) ? 'with-subtitle' : ''}>
-              <p id="modal-title">
-                {title}
+            <div
+              id="modal-title-and-text"
+              className={`${Manager.IsValid(subtitle, true) ? 'with-subtitle' : ''} ${StringManager.GetWordCount(title) > 3 ? 'long-title' : ''}`}>
+              <p id="modal-title" className={StringManager.GetWordCount(title) > 3 ? 'long-title' : ''}>
                 {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
+                {title}
               </p>
               <Spacer height={3} />
               {Manager.IsValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}

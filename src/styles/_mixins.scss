@@ -1037,7 +1037,7 @@
     width: 100vw;
     border-radius: 35px 35px 0 0;
     overflow: auto;
-    border-top: 4px solid $accent;
+    border-top: 6px solid $accent;
     box-shadow: $boxShadow_float;
 
     &.active {
@@ -2721,7 +2721,7 @@
     background: white;
     max-height: 70vh;
     overflow: hidden;
-    border-radius: 24px;
+    border-radius: 30px;
     box-shadow: $boxShadow_bottom_only_dark;
     width: calc(100vw - 20px);
     transition: all 0.8s ease-out;
@@ -2751,31 +2751,33 @@
         width: unset;
 
         #modal-title {
-          text-align: center;
+          text-align: left;
+          left: -10px;
+          position: relative;
           font-size: 24px;
           color: $main;
           margin: 0 auto;
           display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: flex-start;
           border-radius: 25px 25px 0 0;
           font-weight: $fwMediumBold;
-          line-height: 1.3;
-          padding: 0 10px;
+          line-height: 1;
+
+          &.long-title {
+            align-items: flex-start;
+          }
 
           .svg-wrapper {
-            height: 35px;
-            width: 35px;
-            background: $grey;
-            padding: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            border: 1px solid $lightBorderColor;
+            height: min-content;
+            overflow: hidden;
+            width: 50px;
             svg {
-              font-size: 28px;
-              color: $primaryText;
+              transform: scale(0.8);
+              color: $accent;
 
               &.document {
                 font-size: 20px;
@@ -2785,6 +2787,7 @@
 
           &.long-title {
             line-height: 1.3;
+            font-size: 20px;
           }
         }
       }

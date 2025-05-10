@@ -24,7 +24,7 @@ const useDocuments = () => {
 
         const formatted = DatasetManager.GetValidArray(data)
         if (Manager.IsValid(currentUser) && Manager.IsValid(formatted)) {
-          setDocuments(formatted.filter((x) => x))
+          setDocuments(formatted)
           setDocumentsAreLoading(false)
         } else {
           setDocuments([])

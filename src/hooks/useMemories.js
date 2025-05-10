@@ -23,11 +23,12 @@ const useMemories = () => {
     const listener = onValue(
       dataRef,
       async (snapshot) => {
-        const formattedMemories = DatasetManager.GetValidArray(snapshot.val()).flat()
+        const formattedMemories = DatasetManager.GetValidArray(snapshot.val())
         const shared = await SecurityManager.getSharedItems(currentUser, DB.tables.memories)
-        const formattedShared = DatasetManager.GetValidArray(shared).flat()
+        const formattedShared = DatasetManager.GetValidArray(shared)
         if (Manager.IsValid(formattedMemories) || Manager.IsValid(formattedShared)) {
-          setMemories([...formattedMemories, ...shared].filter((x) => x)?.flat())
+          const combined = DatasetManager.CombineArrays(formattedMemories, formattedShared)
+          setMemories(DatasetManager.GetValidArray(combined))
         } else {
           setMemories([])
         }

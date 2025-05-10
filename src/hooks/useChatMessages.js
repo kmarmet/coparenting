@@ -1,10 +1,11 @@
 import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useEffect, useState} from 'react'
 import DB from '../database/DB'
+import DatasetManager from '../managers/datasetManager'
 import Manager from '../managers/manager'
 
 const useChatMessages = (chatId) => {
-  const [isLoading, setIsLoading] = useState(true)
+  const [chatMessagesAreLoading, setChatMessagesAreLoading] = useState(true)
   const [error, setError] = useState(null)
   const path = `${DB.tables.chatMessages}/${chatId}`
   const queryKey = ['realtime', path]
@@ -21,7 +22,7 @@ const useChatMessages = (chatId) => {
       async (snapshot) => {
         const messages = snapshot.val()
         if (Manager.IsValid(messages)) {
-          setChatMessages(messages)
+          setChatMessages(DatasetManager.GetValidArray(messages))
         } else {
           setChatMessages([])
         }
@@ -29,7 +30,7 @@ const useChatMessages = (chatId) => {
       (err) => {
         console.log(`useChatMessages Error: ${err}`)
         setError(err)
-        setIsLoading(false)
+        setChatMessagesAreLoading(false)
       }
     )
 
@@ -40,7 +41,7 @@ const useChatMessages = (chatId) => {
 
   return {
     chatMessages,
-    isLoading,
+    chatMessagesAreLoading,
     error,
     queryKey,
   }

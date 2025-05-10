@@ -24,7 +24,7 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
 
   const handlers = useSwipeable({
     delta: {
-      down: 200,
+      down: 250,
       left: 120,
       right: 120,
     },

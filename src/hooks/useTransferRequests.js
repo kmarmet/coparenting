@@ -27,7 +27,8 @@ const useTransferRequests = () => {
         const shared = await SecurityManager.getSharedItems(currentUser, DB.tables.transferRequests)
         const formattedShared = DatasetManager.GetValidArray(shared) || []
         if (Manager.IsValid(formattedRequests) || Manager.IsValid(formattedShared)) {
-          setTransferRequests([...formattedRequests, ...formattedShared].filter((x) => x)?.flat())
+          const combined = DatasetManager.CombineArrays(formattedRequests, formattedShared)
+          setTransferRequests(combined)
         } else {
           setTransferRequests([])
         }

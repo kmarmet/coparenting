@@ -6,19 +6,16 @@ import DatasetManager from '../managers/datasetManager'
 import Manager from '../managers/manager'
 import SecurityManager from '../managers/securityManager'
 import useCurrentUser from './useCurrentUser'
-import useUsers from './useUsers'
 
 const useExpenses = () => {
   const {state, setState} = useContext(globalState)
   const {authUser} = state
-  const {users} = useUsers()
+  const {currentUser} = useCurrentUser()
   const [expenses, setExpenses] = useState(null)
   const [expensesAreLoading, setExpensesAreLoading] = useState(true)
   const [error, setError] = useState(null)
-  const dbUser = users?.find((u) => u?.email === authUser?.email)
-  const path = `${DB.tables.expenses}/${dbUser?.key}`
+  const path = `${DB.tables.expenses}/${currentUser?.key}`
   const queryKey = ['realtime', path]
-  const {currentUser} = useCurrentUser()
 
   useEffect(() => {
     const database = getDatabase()
@@ -36,10 +33,10 @@ const useExpenses = () => {
           localExpenses = formattedExpenses?.flat()
         }
         if (Manager.IsValid(shared)) {
-          localExpenses = [...localExpenses, ...shared]?.flat()
+          localExpenses = DatasetManager.CombineArrays(localExpenses, shared)
         }
         if (Manager.IsValid(localExpenses)) {
-          setExpenses(localExpenses)
+          setExpenses(DatasetManager.GetValidArray(localExpenses))
         } else {
           setExpenses([])
         }

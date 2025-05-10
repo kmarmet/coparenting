@@ -21,7 +21,7 @@ const useChildren = () => {
       dataRef,
       (snapshot) => {
         // console.Log('Children Updated')
-        const formattedChildren = DatasetManager.GetValidArray(snapshot.val()?.filter((x) => x))
+        const formattedChildren = DatasetManager.GetValidArray(snapshot.val())
         if (Manager.IsValid(currentUser) && Manager.IsValid(formattedChildren)) {
           setChildren(formattedChildren)
           setChildrenAreLoading(false)

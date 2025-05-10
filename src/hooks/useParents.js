@@ -4,17 +4,16 @@ import globalState from '../context'
 import DB from '../database/DB'
 import DatasetManager from '../managers/datasetManager'
 import Manager from '../managers/manager'
-import useUsers from './useUsers'
+import useCurrentUser from './useCurrentUser'
 
 const useParents = () => {
   const {state, setState} = useContext(globalState)
   const {authUser} = state
-  const {users} = useUsers()
+  const {currentUser} = useCurrentUser()
   const [isLoading, setIsLoading] = useState(true)
   const [parents, setParents] = useState([])
   const [error, setError] = useState(null)
-  const dbUser = users?.find((u) => u?.email === authUser?.email)
-  const path = `${DB.tables.users}/${dbUser?.key}/parents`
+  const path = `${DB.tables.users}/${currentUser?.key}/parents`
   const queryKey = ['realtime', path]
 
   useEffect(() => {
@@ -25,8 +24,8 @@ const useParents = () => {
       dataRef,
       (snapshot) => {
         // console.Log('Children Updated')
-        const formattedParents = DatasetManager.GetValidArray(snapshot.val()?.filter((x) => x))
-        if (Manager.IsValid(dbUser) && Manager.IsValid(formattedParents)) {
+        const formattedParents = DatasetManager.GetValidArray(snapshot.val())
+        if (Manager.IsValid(currentUser) && Manager.IsValid(formattedParents)) {
           setParents(formattedParents)
           setIsLoading(false)
         } else {
@@ -43,7 +42,7 @@ const useParents = () => {
     return () => {
       off(dataRef, 'value', listener)
     }
-  }, [path, dbUser])
+  }, [path, currentUser])
 
   return {
     parents,

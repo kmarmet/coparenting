@@ -2,18 +2,14 @@
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import 'lightgallery/css/lightgallery.css'
 import React, {useContext, useEffect, useState} from 'react'
 import {IoHeart} from 'react-icons/io5'
 import {LuMinus, LuPlus} from 'react-icons/lu'
 import globalState from '../../context'
 import DB from '../../database/DB'
 import FirebaseStorage from '../../database/firebaseStorage'
-import useChildren from '../../hooks/useChildren'
-import useCoparents from '../../hooks/useCoparents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useMemories from '../../hooks/useMemories'
-import useParents from '../../hooks/useParents'
 import DomManager from '../../managers/domManager'
 import ImageManager from '../../managers/imageManager'
 import Manager from '../../managers/manager'
@@ -29,9 +25,6 @@ export default function Memories() {
   const {theme} = state
   const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {memories, memoriesAreLoading} = useMemories()
-  const {coparents} = useCoparents()
-  const {parents} = useParents()
-  const {children} = useChildren()
   const [showDisclaimer, setShowDisclaimer] = useState(false)
   const [showSlideshow, setShowSlideshow] = useState(false)
   const [activeImgIndex, setActiveImgIndex] = useState(0)

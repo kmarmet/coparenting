@@ -22,6 +22,7 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
+import {BsCalendarPlusFill} from 'react-icons/bs'
 import validator from 'validator'
 import CreationForms from '../../constants/creationForms'
 import InputTypes from '../../constants/inputTypes'
@@ -344,6 +345,7 @@ export default function NewCalendarEvent() {
     <>
       {/* FORM WRAPPER */}
       <Modal
+        titleIcon={<BsCalendarPlusFill />}
         submitText={`Create Event`}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={ResetForm}
