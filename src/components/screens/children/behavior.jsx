@@ -130,7 +130,6 @@ export default function Behavior({activeChild}) {
                       <InputWrapper
                         hasBottomSpacer={false}
                         customDebounceDelay={1200}
-                        isDebounced={true}
                         inputType={InputTypes.text}
                         defaultValue={value}
                         labelText={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}

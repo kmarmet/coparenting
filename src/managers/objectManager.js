@@ -43,6 +43,41 @@ ObjectManager = {
     obj = ObjectManager.GetModelValidatedObject(obj, ModelNames.child);
     return obj;
   },
+  RemoveUndefinedValues: function(obj) {
+    var i, len, prop;
+    for (i = 0, len = obj.length; i < len; i++) {
+      prop = obj[i];
+      if (obj[prop] === void 0) {
+        delete obj[prop];
+      }
+    }
+    return obj;
+  },
+  UpdateObjectByModel: function(obj, updatedPropOrPath, updatedValue, modelObject) {
+    var afterUpdate, keys, prop, updated;
+    console.log(modelObject);
+    for (prop in modelObject) {
+      if (modelObject[prop] === void 0) {
+        delete modelObject[prop];
+      }
+      if (modelObject[prop] === null) {
+        delete modelObject[prop];
+      }
+    }
+    keys = Object.keys(modelObject);
+    updated = _.merge(modelObject, obj);
+    afterUpdate = _.set(updated, updatedPropOrPath, updatedValue);
+    updated = _.merge(afterUpdate, updated);
+    for (prop in updated) {
+      if (obj[prop] === void 0) {
+        delete obj[prop];
+      }
+      if (!keys.includes(prop)) {
+        delete updated[prop];
+      }
+    }
+    return updated;
+  },
   UpdateAndReturnObject: function(obj, path, value) {
     var e, updated;
     try {
@@ -115,6 +150,38 @@ ObjectManager = {
         return Object.keys(new Parent());
       case ModelNames.doc:
         return Object.keys(new Doc());
+    }
+  },
+  GetModel: function(modelName) {
+    switch (modelName) {
+      case ModelNames.calendarEvent:
+        return new CalendarEvent();
+      case ModelNames.expense:
+        return new Expense();
+      case ModelNames.memory:
+        return new Memory();
+      case ModelNames.transferChangeRequest:
+        return new TransferChangeRequest();
+      case ModelNames.swapRequest:
+        return new SwapRequest();
+      case ModelNames.inputSuggestion:
+        return new InputSuggestion();
+      case ModelNames.user:
+        return new User();
+      case ModelNames.coparent:
+        return new Coparent();
+      case ModelNames.chatThread:
+        return new ChatThread();
+      case ModelNames.chatMessage:
+        return new ChatMessage();
+      case ModelNames.childUser:
+        return new ChildUser();
+      case ModelNames.child:
+        return new Child();
+      case ModelNames.parent:
+        return new Parent();
+      case ModelNames.doc:
+        return new Doc();
     }
   },
   GetModelValidatedObject: function(object, modelName) {

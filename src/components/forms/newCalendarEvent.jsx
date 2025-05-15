@@ -373,7 +373,6 @@ export default function NewCalendarEvent() {
             labelText={'Event Name'}
             defaultValue={eventName}
             required={true}
-            isDebounced={false}
             inputValueType="input"
             inputValue={eventName}
             onChange={async (e) => {

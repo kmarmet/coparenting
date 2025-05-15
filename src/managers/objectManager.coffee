@@ -23,6 +23,33 @@ ObjectManager = {
     obj = ObjectManager.GetModelValidatedObject(obj, ModelNames.child)
     return obj
 
+  RemoveUndefinedValues: (obj) ->
+    for prop in obj
+      if obj[prop] is undefined
+        delete obj[prop]
+    return obj
+
+  UpdateObjectByModel: (obj, updatedPropOrPath, updatedValue, modelObject) ->
+    console.log(modelObject);
+    for prop of modelObject
+      if modelObject[prop] is undefined
+        delete modelObject[prop]
+      if modelObject[prop] is null
+        delete modelObject[prop]
+
+    keys = Object.keys(modelObject)
+    updated = _.merge(modelObject, obj)
+    afterUpdate  = _.set(updated, updatedPropOrPath, updatedValue)
+    updated = _.merge(afterUpdate, updated)
+
+    for prop of updated
+      if obj[prop] is undefined
+        delete obj[prop]
+      unless keys.includes(prop)
+        delete updated[prop]
+
+    return updated
+
   UpdateAndReturnObject: (obj, path, value) ->
     try
       updated = _.set(obj, path, value)
@@ -80,6 +107,37 @@ ObjectManager = {
         Object.keys(new Parent())
       when ModelNames.doc
         Object.keys(new Doc())
+
+  GetModel: (modelName) ->
+    switch modelName
+      when ModelNames.calendarEvent
+        new CalendarEvent()
+      when ModelNames.expense
+        new Expense()
+      when ModelNames.memory
+        new Memory()
+      when ModelNames.transferChangeRequest
+        new TransferChangeRequest()
+      when ModelNames.swapRequest
+        new SwapRequest()
+      when ModelNames.inputSuggestion
+        new InputSuggestion()
+      when ModelNames.user
+        new User()
+      when ModelNames.coparent
+        new Coparent()
+      when ModelNames.chatThread
+        new ChatThread()
+      when ModelNames.chatMessage
+        new ChatMessage()
+      when ModelNames.childUser
+        new ChildUser()
+      when ModelNames.child
+        new Child()
+      when ModelNames.parent
+        new Parent()
+      when ModelNames.doc
+        new Doc()
 
   GetModelValidatedObject: (object, modelName) ->
     returnObject = switch modelName

@@ -572,7 +572,6 @@ const Chats = () => {
                   <InputWrapper
                     placeholder={'Message...'}
                     inputType={InputTypes.textarea}
-                    isDebounced={false}
                     inputClasses="message-input"
                     hasBottomSpacer={false}
                     wrapperClasses="chat-input-wrapper"

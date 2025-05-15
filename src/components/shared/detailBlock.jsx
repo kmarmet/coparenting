@@ -23,6 +23,8 @@ const DetailBlock = ({
   isEmail = false,
   isInviteButton = false,
   onClick = () => {},
+  topSpacerMargin = 0,
+  bottomSpacerMargin = 0,
 }) => {
   return (
     <>
@@ -62,6 +64,7 @@ const DetailBlock = ({
               {/*  INVITE BUTTON */}
               {!isNavLink && !isLink && !isPhone && isInviteButton && (
                 <>
+                  <Spacer height={topSpacerMargin > 0 ? topSpacerMargin : 0} />
                   <button onClick={onClick} className="block-text invite-button">
                     <RiUserSharedFill className={'invite-icon'} />
                   </button>
@@ -72,6 +75,7 @@ const DetailBlock = ({
               {/*  PHONE */}
               {isPhone && (
                 <>
+                  <Spacer height={topSpacerMargin > 0 ? topSpacerMargin : 0} />
                   <a href={`tel:${text}`} target="_blank" className={'block-text phone'} rel="noreferrer">
                     <HiPhoneArrowUpRight className={'phone'} />
                   </a>
@@ -82,6 +86,7 @@ const DetailBlock = ({
               {/*  EMAIL */}
               {isEmail && (
                 <>
+                  <Spacer height={topSpacerMargin > 0 ? topSpacerMargin : 0} />
                   <a href={`mailto:${text}`} target="_blank" className={'block-text email'} rel="noreferrer">
                     <MdEmail className={'email'} />
                   </a>
@@ -93,6 +98,7 @@ const DetailBlock = ({
 
           {/* TITLE */}
           <p className="block-title">{title}</p>
+          <Spacer height={bottomSpacerMargin > 0 ? bottomSpacerMargin : 0} />
         </div>
       )}
     </>

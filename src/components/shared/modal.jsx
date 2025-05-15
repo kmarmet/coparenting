@@ -117,23 +117,23 @@ export default function Modal({
           id="modal-card"
           className={`${DomManager.Animate.FadeInUp(showCard, '.modal-fade-wrapper')} modal-fade-wrapper ${activeView}`}>
           <div id="modal">
-            <IoClose
-              id={'close-button'}
-              onClick={() => {
-                onClose()
-                HideCard()
-              }}
-            />
+            <div className="header">
+              <p id="modal-title" className={StringManager.GetWordCount(title) > 3 ? 'long-title' : ''}>
+                {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
+                {title}
+              </p>
+              {Manager.IsValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}
+              <IoClose
+                id={'close-button'}
+                onClick={() => {
+                  onClose()
+                  HideCard()
+                }}
+              />
+            </div>
 
             <div id="relative-wrapper">
-              <div id="content">
-                <p id="modal-title" className={StringManager.GetWordCount(title) > 3 ? 'long-title' : ''}>
-                  {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
-                  {title}
-                </p>
-                {Manager.IsValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}
-                {children}
-              </div>
+              <div id="content">{children}</div>
             </div>
           </div>
         </div>

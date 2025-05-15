@@ -23,12 +23,12 @@ function InputWrapper({
   hasBottomSpacer = true,
   onKeyUp = (e) => {},
   onDateOrTimeSelection = (e) => {},
-  isDebounced = true,
   timeViews = ['hours', 'minutes'],
   dateViews = ['month', 'day'],
   placeholder = '',
   dateFormat = DatetimeFormats.readableMonthAndDay,
   inputName = '',
+  customDebounceDelay = 1000,
 }) {
   const {state, setState} = useContext(globalState)
   const {refreshKey, theme} = state
@@ -65,7 +65,7 @@ function InputWrapper({
             className={`${inputClasses}`}
             onChange={onChange}
             name={inputName}
-            debounceTimeout={isDebounced ? 1000 : 0}
+            debounceTimeout={customDebounceDelay !== 1000 ? customDebounceDelay : 1000}
             key={refreshKey}
           />
         )}

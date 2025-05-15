@@ -20,14 +20,13 @@ const useChildren = () => {
     const listener = onValue(
       dataRef,
       (snapshot) => {
-        // console.Log('Children Updated')
         const formattedChildren = DatasetManager.GetValidArray(snapshot.val())
         if (Manager.IsValid(currentUser) && Manager.IsValid(formattedChildren)) {
           setChildren(formattedChildren)
-          setChildrenAreLoading(false)
         } else {
           setChildren([])
         }
+        setChildrenAreLoading(false)
       },
       (err) => {
         console.log(`useChildren Error: ${err}`)

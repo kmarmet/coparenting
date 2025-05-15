@@ -409,7 +409,11 @@ export default function EventCalendar() {
 
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme}`}>
-        <p className="screen-title mb-0">Calendar</p>
+        <div className="screen-header">
+          <div className="text">
+            <p className="screen-title">Calendar</p>
+          </div>
+        </div>
 
         {/* STATIC CALENDAR */}
         <div id="static-calendar" className={theme}>

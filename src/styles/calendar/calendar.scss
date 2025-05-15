@@ -263,8 +263,9 @@
         }
 
         .MuiDateCalendar-root {
-          width: calc(100vw - 20px);
           height: unset;
+          margin: 0;
+          width: 100vw;
           overflow: auto;
           max-height: unset;
 
@@ -285,12 +286,12 @@
           }
 
           [role='row'] {
-            width: calc(100vw - 20px);
+            width: 100vw;
             display: grid !important;
             grid-template-columns: repeat(7, 1fr) !important;
 
             &.MuiDayCalendar-header {
-              width: calc(100vw - 20px);
+              width: 100vw;
               justify-content: center !important;
               * {
                 color: $darkGrey !important;
@@ -305,15 +306,16 @@
               flex-wrap: wrap;
               justify-content: center;
               align-items: center;
-              margin-bottom: 8px;
               display: flex;
-              width: 100%;
               border-radius: 0 !important;
               font-size: 14px !important;
               background: transparent;
               position: relative;
               z-index: 99;
+              gap: 0 !important;
+              margin: 0 0 8px 0 !important;
               font-weight: $fwMedium !important;
+              width: calc(100vw / 7) !important;
 
               // TODAY
               &.MuiPickersDay-today {

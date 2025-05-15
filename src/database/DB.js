@@ -50,9 +50,10 @@ const DB = {
   },
   GetTableIndexById: (arr, id) => {
     if (Manager.IsValid(arr)) {
-      return Object.entries(arr)
-        ?.filter((x) => x[1]?.id === id)
-        .flat()[0]
+      // return Object.entries(arr)
+      //   ?.filter((x) => x[1]?.id === id)
+      //   .flat()[0]
+      return arr.findIndex((x) => x?.id === id)
     }
   },
   GetChildIndex: (children, childId) => {
