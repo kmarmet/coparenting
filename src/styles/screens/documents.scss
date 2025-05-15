@@ -11,7 +11,10 @@
     #doc-text {
       * {
         text-decoration: unset !important;
-        line-height: 1.4;
+        line-height: 1.6 !important;
+        text-align: left !important;
+        font-size: 16px !important;
+        text-indent: 0 !important;
       }
 
       .text-highlight {
@@ -92,7 +95,7 @@
 
       span {
         text-decoration: none !important;
-        font-family: 'Quicksand', sans-serif !important;
+        font-family: 'Inter', sans-serif !important;
       }
 
       a {
@@ -128,7 +131,7 @@
         opacity: 1;
         max-width: 95%;
         word-break: break-word;
-        font-family: 'Nunito', sans-serif !important;
+        font-family: 'Inter', sans-serif !important;
         &.delete-header-button {
           font-size: 12px;
         }

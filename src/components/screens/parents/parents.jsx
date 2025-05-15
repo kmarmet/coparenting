@@ -210,7 +210,7 @@ export default function Parents() {
                       onClick={() => setActiveParent(parent)}
                       className={parentKey && parentKey === parent.userKey ? 'active parent' : 'parent'}
                       key={index}>
-                      <span className="parent-name">{StringManager.getFirstNameOnly(parent.name)[0]}</span>
+                      <span className="parent-name">{StringManager.GetFirstNameOnly(parent.name)[0]}</span>
                     </div>
                   )
                 })}
@@ -218,7 +218,7 @@ export default function Parents() {
 
             {/* PARENT INFO */}
             <div id="parent-info" key={activeParent?.key}>
-              <p id="parent-name-primary">{StringManager.getFirstNameOnly(activeParent?.name)}</p>
+              <p id="parent-name-primary">{StringManager.GetFirstNameOnly(activeParent?.name)}</p>
               <p id="parent-type-primary"> {activeParent?.parentType}</p>
               {/* ITERATE PARENT INFO */}
               {Manager.IsValid(activeParent) &&

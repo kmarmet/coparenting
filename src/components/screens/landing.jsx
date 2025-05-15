@@ -58,24 +58,19 @@ export default function Landing() {
     }
   }
 
+  const GetFadeUpClass = (element) => {
+    const scrollWrapper = document.querySelector('#wrapper')
+    if (DomManager.mostIsInViewport(scrollWrapper, element)) {
+      if (!Manager.Contains(element.classList, DomManager.AnimateClasses.names.fadeInUp)) {
+        return `${DomManager.AnimateClasses.names.fadeInUp} ${DomManager.AnimateClasses.names.default}`
+      }
+    }
+  }
+
   const HandleScroll = () => {
     const firstViewableBox = document.querySelector('#first-scroll-button-candidate')
     const scrollWrapper = document.querySelector('#wrapper')
     const scrollToTopButton = document.querySelector('#scroll-to-top-button-wrapper')
-    const allFadeUpWrappers = document.querySelectorAll('.fade-up-wrapper')
-
-    if (Manager.IsValid(allFadeUpWrappers)) {
-      for (let wrapper of allFadeUpWrappers) {
-        if (DomManager.mostIsInViewport(scrollWrapper, wrapper)) {
-          if (
-            !wrapper.classList.contains(DomManager.AnimateClasses.names.default) &&
-            !wrapper.classList.contains(DomManager.AnimateClasses.fadeInUp.enter)
-          ) {
-            wrapper.classList.add(DomManager.AnimateClasses.fadeInUp.enter, DomManager.AnimateClasses.names.default)
-          }
-        }
-      }
-    }
 
     if (DomManager.mostIsInViewport(scrollWrapper, firstViewableBox)) {
       scrollToTopButton.classList.remove('hide')
@@ -255,7 +250,7 @@ export default function Landing() {
           <img className={'image'} src={require('/src/img/homepage/child-info.png')} alt="Child Info" />
         </div>
       </div>
-
+      <Spacer height={20} />
       {/* PAGE CONTAINER */}
       <div id="below-fold-intro-text" className="section">
         <p>
@@ -268,7 +263,7 @@ export default function Landing() {
 
       {/* BELOW FOLD */}
       <div id="below-fold-wrapper">
-        <div className="flex boxes section" data-section={1}>
+        <div className="flex boxes section below-fold" data-section={1}>
           <div className="text-box">
             <PiCalendarDotsDuotone />
             <p className="text-box-title">Streamline your Parenting Schedule </p>
@@ -279,11 +274,16 @@ export default function Landing() {
             </p>
           </div>
 
-          <div className="text-box with-bg fade-up-wrapper" style={DomManager.AnimateDelayStyle(1)} id="first-scroll-button-candidate">
+          {/* EFFECTIVE COMMUNICATION */}
+          <div
+            className={`${GetFadeUpClass(document.querySelector('.below-fold'))} text-box`}
+            style={DomManager.AnimateDelayStyle(1)}
+            id="first-scroll-button-candidate">
             <AiTwotoneMessage />
             <p className="text-box-title">Effective Communication without Conflict </p>
             <p className="text-box-subtitle">Clear Messaging for Healthier Conversations</p>
             <p className="text-box-main-text">Facilitate positive communication with in-app messaging designed to reduce misunderstandings.</p>
+            <Spacer height={10} />
             <div id="emotion-meter-wrapper">
               <p>Emotion Meter 😃</p>
               <p className="description">
@@ -300,10 +300,10 @@ export default function Landing() {
             </div>
           </div>
         </div>
-        <hr className="hr" />
+        <hr className="landing" />
 
         {/* UNIQUE FEATURES */}
-        <div className="fade-up-wrapper">
+        <div>
           <div className="section full-width-box unique-features" data-section={2}>
             <div id="text-content">
               <p className="title">
@@ -652,10 +652,10 @@ export default function Landing() {
             </div>
           </div>
         </div>
-        <hr className="hr" />
+        <hr className="landing" />
 
         {/* DOCUMENTS */}
-        <div className="fade-up-wrapper">
+        <div>
           <div id="documents" className="section text-box documents">
             <div className="flex text-columns">
               <div className="text-wrapper left">
@@ -704,7 +704,7 @@ export default function Landing() {
           </div>
         </div>
 
-        <hr className="hr" />
+        <hr className="landing" />
         {/* EXPENSES */}
         <div id="expenses-wrapper" className="section expenses">
           <div className="text-wrapper">
@@ -724,10 +724,10 @@ export default function Landing() {
           />
         </div>
 
-        <hr className="hr" />
+        <hr className="landing" />
 
         {/* COLLABORATION */}
-        <div className="fade-up-wrapper">
+        <div>
           <div id="collaboration" className="section text-box">
             {/*<FaRegHandshake />*/}
             <div className="text-wrapper">
@@ -749,9 +749,10 @@ export default function Landing() {
             <LazyLoadImage onClick={() => setShowCollabSlideshow(true)} className={'image'} src={require('/src/img/homepage/menu.png')} alt="Menu" />
           </div>
         </div>
-        <hr className="hr" />
+        <hr className="landing" />
+
         {/* SECURITY & PRIVACY */}
-        <div className="fade-up-wrapper">
+        <div>
           <div className="box section security-and-privacy with-bg">
             <AiTwotoneSafetyCertificate />
             <div className="content text-wrapper">
@@ -768,9 +769,10 @@ export default function Landing() {
             </div>
           </div>
         </div>
-        <hr className="hr" />
+        <hr className="landing" />
+
         {/* COMPATIBLE */}
-        <div className="fade-up-wrapper">
+        <div>
           <div className="section text-box all-devices" id="all-devices">
             <TbSunMoon />
             <p className="title">Compatible & Accessible</p>
@@ -827,8 +829,10 @@ export default function Landing() {
             </p>
           </div>
         </div>
-        <hr className="hr" />
-        <div className="fade-up-wrapper">
+        <hr className="landing" />
+
+        {/*  CO-PARENTING TOOLS */}
+        <div>
           <div className="flex" id="double">
             <div className="text-wrapper text-only box">
               <AiTwotoneTool />

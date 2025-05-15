@@ -149,7 +149,7 @@ export default function Vault() {
       for (const chat of chats) {
         let coparent = chat.members.find((x) => x.key !== currentUser?.key)
         activeChats.push({
-          name: StringManager.getFirstNameOnly(coparent?.name),
+          name: StringManager.GetFirstNameOnly(coparent?.name),
           id: chat.id,
         })
       }

@@ -1,6 +1,5 @@
 import React, {useContext, useEffect} from 'react'
 import globalState from '../../context'
-import Manager from '../../managers/manager'
 
 const Overlay = ({children, show}) => {
   const {state, setState} = useContext(globalState)
@@ -31,23 +30,24 @@ const Overlay = ({children, show}) => {
       id="overlay"
       className={`${show ? 'active' : ''} overlay-wrapper`}
       onClick={(e) => {
-        const overlay = e.target
-        if ((Manager.IsValid(overlay) && overlay?.classList.contains('overlay-wrapper')) || overlay?.classList.contains('creation-menu')) {
-          console.log(overlay)
-          const allFadeElements = overlay?.querySelectorAll('.animate__fadeInUp')
-          if (Manager.IsValid(allFadeElements)) {
-            for (let el of allFadeElements) {
-              el.classList.remove('animate__animated', 'animate__fadeInUp')
-            }
-          }
-          setState({
-            ...state,
-            menuIsOpen: false,
-            creationFormToShow: null,
-            showCreationMenu: false,
-            showScreenActions: false,
-          })
-        }
+        // const overlay = e.currentTarget
+        // if (Manager.IsValid(overlay) && (overlay?.classList.contains('overlay-wrapper') || overlay?.classList.contains('creation-menu'))) {
+        //   const allFadeElements = overlay?.querySelectorAll('.animate__fadeInUp')
+        //   console.log(overlay)
+        //   if (Manager.IsValid(allFadeElements)) {
+        //     for (let el of allFadeElements) {
+        //       el.classList.remove('animate__fadeInUp')
+        //       el.classList.remove('animate__animated', 'animate__fadeOutDown')
+        //     }
+        //   }
+        //   setState({
+        //     ...state,
+        //     menuIsOpen: false,
+        //     creationFormToShow: null,
+        //     showCreationMenu: false,
+        //     showScreenActions: false,
+        //   })
+        // }
       }}>
       {children}
     </div>

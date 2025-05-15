@@ -4,6 +4,7 @@ import _ from 'lodash'
 import DatasetManager from '../managers/datasetManager'
 import LogManager from '../managers/logManager.js'
 import Manager from '../managers/manager'
+import ObjectManager from '../managers/objectManager'
 
 const DB = {
   tables: {
@@ -14,8 +15,8 @@ const DB = {
     transferChangeRequests: 'transferChangeRequests',
     documents: 'documents',
     memories: 'memories',
-    notificationSubscribers: 'notificationSubscribers',
-    notifications: 'notifications',
+    updateSubscribers: 'updateSubscribers',
+    updates: 'updates',
     sharedChildInfo: 'sharedChildInfo',
     chatBookmarks: 'chatBookmarks',
     chats: 'chats',
@@ -215,10 +216,24 @@ const DB = {
     } else {
       toUpdate = tableRecords.filter((x) => x.id === recordToUpdate.id)[0]
     }
-    console.log(toUpdate, prop)
     toUpdate[prop] = value
     try {
       // set(child(dbRef, tableName), tableRecords)
+    } catch (error) {
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
+    }
+  },
+  ReplaceEntireRecord: async (path, updatedRow) => {
+    try {
+      const dbRef = getDatabase()
+      // console.log('updatedRow', updatedRow)
+      updatedRow = ObjectManager.GetValidObject(updatedRow)
+      // console.log('DB', updatedRow)
+      update(ref(dbRef, path), updatedRow)
+        .then()
+        .catch((error) => {
+          console.log(error)
+        })
     } catch (error) {
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }

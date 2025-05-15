@@ -86,14 +86,14 @@ const NewParentForm = ({showCard, hideCard}) => {
       await DB_UserScoped.addSharedDataUser(currentUser, newParent.userKey)
     }
 
-    const cleanParent = ObjectManager.cleanObject(newParent, ModelNames.parent)
+    const cleanParent = ObjectManager.GetModelValidatedObject(newParent, ModelNames.parent)
     try {
       await DB_UserScoped.AddParent(currentUser, cleanParent)
     } catch (error) {
       console.log(error)
       // LogManager.Log(error.message, LogManager.LogTypes.error)
     }
-    await ResetForm(`${StringManager.getFirstNameOnly(name)} Added!`)
+    await ResetForm(`${StringManager.GetFirstNameOnly(name)} Added!`)
   }
 
   const HandleParentType = (e) => {

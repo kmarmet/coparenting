@@ -13,7 +13,7 @@ import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import DB from '../../database/DB'
 import useCurrentUser from '../../hooks/useCurrentUser'
-import useNotifications from '../../hooks/useNotifications'
+import useUpdates from '../../hooks/useUpdates'
 import AppManager from '../../managers/appManager.coffee'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
@@ -24,22 +24,22 @@ import Label from '../shared/label'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import Spacer from '../shared/spacer'
 
-export default function Notifications() {
+export default function Updates() {
   const {state, setState} = useContext(globalState)
   const {theme} = state
   const [legendIsExpanded, setLegendIsExpanded] = useState(false)
   const {currentUser} = useCurrentUser()
-  const {notifications} = useNotifications()
+  const {updates} = useUpdates()
   const criticalCategories = [ActivityCategory.expenses, ActivityCategory.childInfo.medical]
 
-  const SetAppBadge = async () => await AppManager.setAppBadge(notifications?.length)
+  const SetAppBadge = async () => await AppManager.setAppBadge(updates?.length)
 
-  const ClearAll = async () => await DB.DeleteByPath(`${DB.tables.notifications}/${currentUser?.key}`)
+  const ClearAll = async () => await DB.DeleteByPath(`${DB.tables.updates}/${currentUser?.key}`)
 
   const ClearNotification = async (activity) => {
-    const recordIndex = DB.GetTableIndexById(notifications, activity?.id)
+    const recordIndex = DB.GetTableIndexById(updates, activity?.id)
     if (Manager.IsValid(recordIndex)) {
-      await DB.DeleteByPath(`${DB.tables.notifications}/${currentUser?.key}/${recordIndex}`)
+      await DB.DeleteByPath(`${DB.tables.updates}/${currentUser?.key}/${recordIndex}`)
     }
   }
 
@@ -91,7 +91,7 @@ export default function Notifications() {
 
       default:
         return {
-          screen: ScreenNames.notifications,
+          screen: ScreenNames.updates,
           className: 'normal',
           category: 'normal',
         }
@@ -106,31 +106,30 @@ export default function Notifications() {
   }
 
   useEffect(() => {
-    if (Manager.IsValid(notifications)) {
+    if (Manager.IsValid(updates)) {
       setTimeout(() => {
         DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight)
       }, 300)
       SetAppBadge().then()
     }
-  }, [notifications])
+  }, [updates])
 
   return (
     <>
       <div id="activity-wrapper" className={`${theme} page-container`}>
-        <p className="screen-title">Notifications</p>
-        <p className="screen-intro-text">Stay updated with all developments and notifications as they happen.</p>
+        <p className="screen-title">Updates</p>
+        <p className="screen-intro-text">Stay updated with all developments for members in your circle, as they happen.</p>
 
         {/* LEGEND */}
-        <Spacer height={15} />
+        <Spacer height={10} />
         {Manager.IsValid(currentUser?.accountType) && currentUser?.accountType === 'parent' && (
           <div className="flex">
-            <Accordion id={'legend'} expanded={legendIsExpanded} className={`${theme} accordion`}>
+            <Accordion id={'updates-legend'} expanded={legendIsExpanded} className={`${theme} accordion white-bg`}>
               <AccordionSummary>
                 <button className="button default grey" onClick={() => setLegendIsExpanded(!legendIsExpanded)}>
                   <Label text={'Legend'} /> {legendIsExpanded ? <FaMinus /> : <FaPlus />}
                 </button>
               </AccordionSummary>
-              <Spacer height={5} />
               <AccordionDetails>
                 <div className="flex">
                   <div className="box medical"></div>
@@ -149,7 +148,7 @@ export default function Notifications() {
         <Spacer height={5} />
 
         {/* CLEAR ALL BUTTON */}
-        {notifications?.length > 0 && (
+        {updates?.length > 0 && (
           <button className="button default bottom-right" onClick={ClearAll}>
             Clear All <MdClearAll className={'ml-5 fs-25'} />
           </button>
@@ -157,8 +156,8 @@ export default function Notifications() {
         {/* LOOP ACTIVITIES */}
 
         <div id="activity-cards">
-          {Manager.IsValid(notifications) &&
-            notifications?.map((activity, index) => {
+          {Manager.IsValid(updates) &&
+            updates?.map((activity, index) => {
               const {text, title, creationDate} = activity
               const categoryObject = GetCategory(activity)
               const {screen, category, className} = categoryObject
@@ -178,7 +177,7 @@ export default function Notifications() {
             })}
         </div>
       </div>
-      {notifications?.length === 0 && <NoDataFallbackText text={'You have no notifications awaiting your attention'} />}
+      {updates?.length === 0 && <NoDataFallbackText text={'You have no updates awaiting your attention'} />}
       <NavBar navbarClass={'activity no-Add-new-button'}></NavBar>
     </>
   )

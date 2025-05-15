@@ -77,7 +77,6 @@ export default function Login() {
 
           // EMAIL IS VERIFIED -> REDIRECT TO CALENDAR
           else {
-            console.log('login')
             setState({
               ...state,
               userIsLoggedIn: true,

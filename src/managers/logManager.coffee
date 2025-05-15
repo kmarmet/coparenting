@@ -7,8 +7,10 @@ LogManager = {
     fatal: 'Fatal'
   }
   Log: (message, type = LogManager.LogTypes.error, stackTrace) ->
-    if not !window.location.href.includes( 'localhost' )
+    if not window.location.href.includes( 'localhost' )
       Sentry.captureException("Error: #{message} | Type: #{type} | Stacktrace: #{stackTrace}")
+    else
+      console.log("Error: #{message} | Type: #{type} | Stacktrace: #{stackTrace}")
 }
 
 export default LogManager

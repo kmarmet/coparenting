@@ -10,8 +10,8 @@ import useCurrentUser from '../../hooks/useCurrentUser'
 import AlertManager from '../../managers/alertManager'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
-import NotificationManager from '../../managers/notificationManager.js'
 import StringManager from '../../managers/stringManager'
+import UpdateManager from '../../managers/updateManager.js'
 import AddressInput from './addressInput'
 import CheckboxGroup from './checkboxGroup'
 import InputWrapper from './inputWrapper'
@@ -41,7 +41,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
     await DB_UserScoped.addUserChildProp(currentUser, activeChild, infoSection, StringManager.toCamelCase(title), value, shareWith)
 
     if (Manager.IsValid(shareWith)) {
-      await NotificationManager.sendToShareWith(
+      await UpdateManager.sendToShareWith(
         shareWith,
         currentUser,
         `${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Updated for ${activeChild?.general?.name}`,

@@ -10,6 +10,10 @@
     }
   }
 
+  .MuiPickersLayout-root {
+    background: transparent !important;
+  }
+
   // MUI PARENT
   .MuiPaper-root:not(.MuiAccordion-root) {
     background-color: $lightBg;

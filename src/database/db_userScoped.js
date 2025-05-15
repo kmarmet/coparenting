@@ -155,7 +155,7 @@ const DB_UserScoped = {
   },
   getNameFromKey: async (currentUser, key) => {
     if (key === currentUser.key) {
-      return StringManager.getFirstNameOnly(currentUser?.name)
+      return StringManager.GetFirstNameOnly(currentUser?.name)
     } else {
       return currentUser?.coparents.find((c) => c.key === key)?.name
     }
@@ -322,7 +322,7 @@ const DB_UserScoped = {
     newUser.name = StringManager.uppercaseFirstLetterOfAllWords(name).trim()
     newUser.accountType = accountType.toLowerCase()
     newUser.phone = StringManager.FormatPhone(phone)
-    const cleanUser = ObjectManager.cleanObject(newUser, accountType === 'parent' ? ModelNames.user : ModelNames.childUser)
+    const cleanUser = ObjectManager.GetModelValidatedObject(newUser, accountType === 'parent' ? ModelNames.user : ModelNames.childUser)
     // Insert
     await set(child(dbRef, `${DB.tables.users}/${key}`), cleanUser).catch((error) => {
       console.log(error)
@@ -373,6 +373,7 @@ const DB_UserScoped = {
     const dbRef = ref(getDatabase())
     await set(child(dbRef, `${DB.tables.users}/${keyOrUid}/${propPath}`), value)
   },
+
   updateByPath: async (path, newValue) => {
     const dbRef = ref(getDatabase())
     await set(child(dbRef, path), newValue)
@@ -432,26 +433,30 @@ const DB_UserScoped = {
     let removalKey = await DB.getNestedSnapshotKey(`${DB.tables.users}/${currentUser?.key}/parents/`, parent, 'userKey')
     await remove(child(dbRef, `${DB.tables.users}/${currentUser?.key}/parents/${removalKey}/${StringManager.formatDbProp(prop)}`))
   },
-  DeleteCoparent: async (currentUserKey, coparentIndex) => {
+  DeleteCoparent: async (currentUser, coparentIndex, coparentUserKey) => {
     try {
       const dbRef = ref(getDatabase())
-      console.log(`${DB.tables.users}/${currentUserKey}/coparents/${coparentIndex}`)
-      await remove(child(dbRef, `${DB.tables.users}/${currentUserKey}/coparents/${coparentIndex}`))
+      // console.log(`${DB.tables.users}/${currentUser?.key}/coparents/${coparentIndex}`)
+      await DB_UserScoped.DeleteSharedDataUserKey(currentUser, coparentUserKey)
+      await remove(child(dbRef, `${DB.tables.users}/${currentUser?.key}/coparents/${coparentIndex}`))
     } catch (error) {
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
-  DeleteParent: async (currentUser, parent) => {
+  DeleteParent: async (currentUser, parentIndex, parentUserKey) => {
     const dbRef = ref(getDatabase())
-    const key = await DB.getSnapshotKey(`${DB.tables.users}/${currentUser?.key}/parents`, parent, 'userKey')
-    await remove(child(dbRef, `${DB.tables.users}/${currentUser?.key}/parents/${key}`))
-    await DB_UserScoped.deleteSharedDataUser(currentUser, parent?.userKey)
+    try {
+      await remove(child(dbRef, `${DB.tables.users}/${currentUser?.key}/parents/${parentIndex}`))
+      await DB_UserScoped.DeleteSharedDataUserKey(currentUser, parentUserKey)
+    } catch (error) {
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
+    }
   },
-  DeleteChild: async (currentUser, childToUnlink) => {
+  DeleteChild: async (currentUser, childIndex, childUserKey) => {
     const dbRef = ref(getDatabase())
-    const childKey = DB.GetChildIndex(currentUser?.children, childToUnlink?.id)
-    await DB_UserScoped.DeleteSharedDataUserKey(currentUser, childToUnlink?.userKey)
-    await remove(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children/${childKey}`))
+    console.log(currentUser, childIndex, childUserKey)
+    await DB_UserScoped.DeleteSharedDataUserKey(currentUser, childUserKey)
+    await remove(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children/${childIndex}`))
   },
   DeleteUser: async (userIndex) => {
     const dbRef = ref(getDatabase())
@@ -468,15 +473,15 @@ const DB_UserScoped = {
       (x) =>
         x?.ownerKey === currentUser?.key ||
         x?.phone === currentUser?.key ||
-        StringManager.getFirstNameOnly(x?.createdBy) === StringManager.getFirstNameOnly(currentUser?.name)
+        StringManager.GetFirstNameOnly(x?.createdBy) === StringManager.GetFirstNameOnly(currentUser?.name)
     )
 
     // Delete subscriber from DB
-    const subscriber = await DB.find(DB.tables.notificationSubscribers, ['phone', currentUser.key], true)
+    const subscriber = await DB.find(DB.tables.Updatesubscribers, ['phone', currentUser.key], true)
 
     if (Manager.IsValid(subscriber)) {
-      const notifSubDeleteKey = await DB.getSnapshotKey(DB.tables.notificationSubscribers, subscriber, 'id')
-      DB.DeleteByPath(`${DB.tables.notificationSubscribers}/${notifSubDeleteKey}`)
+      const notifSubDeleteKey = await DB.getSnapshotKey(DB.tables.Updatesubscribers, subscriber, 'id')
+      DB.DeleteByPath(`${DB.tables.Updatesubscribers}/${notifSubDeleteKey}`)
     }
     for (let record of scopedToCurrentUser) {
       // eslint-disable-next-line no-prototype-builtins

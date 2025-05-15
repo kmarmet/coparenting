@@ -127,9 +127,10 @@ const ChatManager = {
     }
   },
   getBookmarks: async (chatId) => {
-    const existingBookmarks = await DB.getTable(`${DB.tables.chatBookmarks}/${chatId}`)
+    let existingBookmarks = await DB.getTable(`${DB.tables.chatBookmarks}/${chatId}`)
+    existingBookmarks = DatasetManager.GetValidArray(existingBookmarks)
 
-    return existingBookmarks ?? []
+    return existingBookmarks
   },
   toggleMessageBookmark: async (currentUser, messageToUser, messageId, chatId) => {
     const dbRef = ref(getDatabase())

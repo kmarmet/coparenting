@@ -10,6 +10,8 @@ import ScheduleTypes from '../../../constants/scheduleTypes'
 import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import AlertManager from '../../../managers/alertManager'
+import DatasetManager from '../../../managers/datasetManager'
+import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 import VisitationManager from '../../../managers/visitationManager'
@@ -31,7 +33,7 @@ export default function CustomWeekends({hide, showCard}) {
     hide()
   }
 
-  const handleFifthWeekendSelection = (e) => {
+  const HandleFifthWeekendSelection = (e) => {
     DomManager.HandleCheckboxSelection(
       e,
       (e) => {
@@ -42,7 +44,7 @@ export default function CustomWeekends({hide, showCard}) {
     )
   }
 
-  const handleSpecificWeekendSelection = (e) => {
+  const HandleSpecificWeekendSelection = (e) => {
     DomManager.HandleCheckboxSelection(
       e,
       (e) => {
@@ -57,7 +59,7 @@ export default function CustomWeekends({hide, showCard}) {
     )
   }
 
-  const addSpecificWeekendsToCalendar = async () => {
+  const AddSpecificWeekendsToCalendar = async () => {
     if (!Manager.IsValid(defaultSelectedWeekends) || !Manager.IsValid(fifthWeekendSelection)) {
       AlertManager.throwError('Please choose default weekends and a five-month weekend')
       return false
@@ -72,7 +74,7 @@ export default function CustomWeekends({hide, showCard}) {
     weekends.flat().forEach((date) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
+      dateObject.title = `${StringManager.GetFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
       dateObject.startDate = moment(date).format(DatetimeFormats.dateForDb)
       // Not Required
       dateObject.ownerKey = currentUser?.key
@@ -106,7 +108,7 @@ export default function CustomWeekends({hide, showCard}) {
     <Modal
       submitText={'Add Schedule'}
       className={'long-title form'}
-      onSubmit={addSpecificWeekendsToCalendar}
+      onSubmit={AddSpecificWeekendsToCalendar}
       hasSubmitButton={Manager.IsValid(defaultSelectedWeekends)}
       wrapperClass="custom-weekends-schedule"
       title={'Custom Weekends Schedule'}
@@ -115,7 +117,7 @@ export default function CustomWeekends({hide, showCard}) {
       <hr className="mt-5" />
       <CheckboxGroup
         parentLabel={'Weekend YOU will have the child(ren)'}
-        onCheck={handleSpecificWeekendSelection}
+        onCheck={HandleSpecificWeekendSelection}
         checkboxArray={DomManager.BuildCheckboxGroup({
           currentUser,
           customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend'],
@@ -124,7 +126,7 @@ export default function CustomWeekends({hide, showCard}) {
       <Spacer height={5} />
       <CheckboxGroup
         parentLabel={'Month with 5 weekends - extra weekend'}
-        onCheck={handleFifthWeekendSelection}
+        onCheck={HandleFifthWeekendSelection}
         checkboxArray={DomManager.BuildCheckboxGroup({
           currentUser,
           customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend'],

@@ -37,10 +37,10 @@ export default function InstallApp() {
           )}
           <Spacer height={10} />
           {/* IOS */}
-          <p className="accordion-header apple">
-            iOS <FaApple className={'apple-logo'} />
-          </p>
           <div className="os-container apple">
+            <p className="accordion-header apple">
+              iOS <FaApple className={'apple-logo'} />
+            </p>
             <div className="flex steps">
               <div className="flex">
                 <span className="step-number">1.</span>
@@ -76,12 +76,12 @@ export default function InstallApp() {
             </div>
           </div>
 
-          <Spacer height={20} />
+          <Spacer height={5} />
           {/* ANDROID */}
-          <p className="accordion-header android">
-            Android <BsAndroid2 />
-          </p>
           <div className="os-container android">
+            <p className="accordion-header android">
+              Android <BsAndroid2 />
+            </p>
             <div className="flex steps">
               <div className="flex">
                 <span className="step-number">1.</span>
@@ -112,12 +112,12 @@ export default function InstallApp() {
               </div>
             </div>
           </div>
-          <Spacer height={20} />
+          <Spacer height={5} />
           {/* DESKTOP */}
-          <p className="accordion-header desktop">
-            Windows/Mac <GrPersonalComputer />
-          </p>
           <div className="os-container desktop">
+            <p className="accordion-header desktop">
+              Windows/Mac <GrPersonalComputer />
+            </p>
             <div className="flex steps">
               <div className="flex">
                 <span className="step-number">1.</span>

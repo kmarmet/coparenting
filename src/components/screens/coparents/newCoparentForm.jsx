@@ -92,14 +92,14 @@ const NewCoparentForm = ({showCard, hideCard}) => {
       await DB_UserScoped.addSharedDataUser(currentUser, newCoparent.userKey)
     }
 
-    const cleanCoparent = ObjectManager.cleanObject(newCoparent, ModelNames.coparent)
+    const cleanCoparent = ObjectManager.GetModelValidatedObject(newCoparent, ModelNames.coparent)
     try {
       await DB_UserScoped.addCoparent(currentUser, cleanCoparent)
     } catch (error) {
       console.log(error)
       // LogManager.Log(error.message, LogManager.LogTypes.error)
     }
-    await ResetForm(`${StringManager.getFirstNameOnly(name)} Added!`)
+    await ResetForm(`${StringManager.GetFirstNameOnly(name)} Added!`)
   }
 
   const HandleCoparentType = (e) => {
@@ -119,7 +119,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
     <Modal
       onSubmit={Submit}
       submitText={name.length > 0 ? `Add ${StringManager.uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
-      title={`Add ${Manager.IsValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} to Your Profile`}
+      title={`Add ${Manager.IsValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} Contact`}
       wrapperClass="new-coparent-card"
       showCard={showCard}
       onClose={ResetForm}>

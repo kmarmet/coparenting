@@ -162,8 +162,8 @@ export default function DesktopLeftSidebar() {
               </div>
               {/* NOTIFICATIONS */}
               <div
-                className={`menu-item notifications ${currentScreen === ScreenNames.notifications ? 'active' : ''}`}
-                onClick={() => changeCurrentScreen(ScreenNames.notifications)}>
+                className={`menu-item notifications ${currentScreen === ScreenNames.updates ? 'active' : ''}`}
+                onClick={() => changeCurrentScreen(ScreenNames.updates)}>
                 <RxActivityLog />
                 <p className="flex">Notifications</p>
                 {notificationCount > 0 && <span>{notificationCount}</span>}

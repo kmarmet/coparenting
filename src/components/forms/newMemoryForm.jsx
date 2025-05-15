@@ -8,9 +8,9 @@ import AlertManager from '/src/managers/alertManager'
 import AppManager from '/src/managers/appManager'
 import ImageManager from '/src/managers/imageManager'
 import Manager from '/src/managers/manager'
-import NotificationManager from '/src/managers/notificationManager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
+import UpdateManager from '/src/managers/updateManager'
 import ActivityCategory from '/src/models/activityCategory'
 import Memory from '/src/models/memory.js'
 import ModelNames from '/src/models/modelNames'
@@ -119,7 +119,7 @@ export default function NewMemoryForm() {
             // Add to user memories object
             for (const url of urls) {
               const imageName = FirebaseStorage.GetImageNameFromUrl(url)
-              const cleanMemory = ObjectManager.cleanObject(newMemory, ModelNames.memory)
+              const cleanMemory = ObjectManager.GetModelValidatedObject(newMemory, ModelNames.memory)
 
               cleanMemory.url = url
               cleanMemory.memoryName = Manager.GenerateHash(imageName)
@@ -131,11 +131,11 @@ export default function NewMemoryForm() {
             }
 
             // Send Notification
-            await NotificationManager.sendToShareWith(
+            await UpdateManager.sendToShareWith(
               newMemory.shareWith,
               currentUser,
               `New Memory`,
-              `${StringManager.getFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
+              `${StringManager.GetFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
               ActivityCategory.memories
             )
           })

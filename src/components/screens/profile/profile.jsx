@@ -17,8 +17,8 @@ import useCurrentUser from '../../../hooks/useCurrentUser'
 import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
-import NotificationManager from '../../../managers/notificationManager'
 import StringManager from '../../../managers/stringManager.coffee'
+import UpdateManager from '../../../managers/updateManager'
 import NavBar from '../../navBar'
 import AddressInput from '../../shared/addressInput'
 import InputWrapper from '../../shared/inputWrapper'
@@ -148,10 +148,10 @@ export default function Profile() {
             }
 
             // Delete from OneSignal
-            const subscriber = await DB.find(DB.tables.notificationSubscribers, ['key', currentUser.key], true)
+            const subscriber = await DB.find(DB.tables.Updatesubscribers, ['key', currentUser.key], true)
 
             if (subscriber) {
-              await NotificationManager.deleteUser(subscriber?.oneSignalId, subscriber?.subscriptionId)
+              await UpdateManager.deleteUser(subscriber?.oneSignalId, subscriber?.subscriptionId)
             }
 
             // Delete from Realtime Database
@@ -264,7 +264,7 @@ export default function Profile() {
         <p className="screen-title">My Profile</p>
         <Spacer height={10} />
         <p id="user-name">
-          Hey {StringManager.getFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
+          Hey {StringManager.GetFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
         </p>
         <div className="sections">
           {/* HOME ADDRESS */}

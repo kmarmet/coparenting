@@ -318,19 +318,47 @@
               // TODAY
               &.MuiPickersDay-today {
                 border-radius: 0 !important;
-                color: $green !important;
+                color: $darkGreen !important;
                 font-weight: $fwBold !important;
-                transform: scale(1.1);
+                &:after {
+                  transition: all 0.3s ease-in-out;
+                  width: 80%;
+                  z-index: -1;
+                  content: '';
+                  position: absolute;
+                  top: 5px;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  @include centerHoriz;
+                  height: 20px;
+                  border-radius: 50px !important;
+                  background: $bootstrapBgGreen;
+                }
               }
 
               // SELECTED
               &.Mui-selected {
-                color: $accent !important;
+                color: white !important;
                 font-weight: $fwBold !important;
                 padding-bottom: 2px !important;
                 padding-top: 2px !important;
                 border-radius: 0 !important;
-                transform: scale(1.2);
+                &:after {
+                  transition: all 0.3s ease-in-out;
+                  width: 80%;
+                  z-index: -1;
+                  content: '';
+                  position: absolute;
+                  top: 6px;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  @include centerHoriz;
+                  height: 20px;
+                  border-radius: 50px !important;
+                  background: $accent;
+                }
               }
 
               // Weekend

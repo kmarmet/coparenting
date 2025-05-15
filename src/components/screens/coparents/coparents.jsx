@@ -133,7 +133,7 @@ export default function Coparents() {
                 </div>
                 <p>
                   Add your Own Info
-                  <span className="subtitle">Include personalized details about {StringManager.getFirstNameOnly(activeCoparent?.name)}</span>
+                  <span className="subtitle">Include personalized details about {StringManager.GetFirstNameOnly(activeCoparent?.name)}</span>
                 </p>
               </div>
             </div>
@@ -144,7 +144,7 @@ export default function Coparents() {
               onClick={() => {
                 setState({...state, showScreenActions: false})
                 AlertManager.confirmAlert(
-                  `Are you sure you would like to unlink ${StringManager.getFirstNameOnly(activeCoparent?.name)} from your profile?`,
+                  `Are you sure you would like to unlink ${StringManager.GetFirstNameOnly(activeCoparent?.name)} from your profile?`,
                   "I'm Sure",
                   true,
                   async () => {
@@ -158,9 +158,9 @@ export default function Coparents() {
                 </div>
 
                 <p>
-                  Unlink {StringManager.getFirstNameOnly(activeCoparent?.name)} from Your Profile
+                  Unlink {StringManager.GetFirstNameOnly(activeCoparent?.name)} from Your Profile
                   <span className="subtitle">
-                    Remove sharing permissions for {StringManager.getFirstNameOnly(activeCoparent?.name)} along with the information stored about them
+                    Remove sharing permissions for {StringManager.GetFirstNameOnly(activeCoparent?.name)} along with the information stored about them
                   </span>
                 </p>
               </div>

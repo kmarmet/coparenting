@@ -1,7 +1,8 @@
 import React from 'react'
 import {FaDirections} from 'react-icons/fa'
 import {HiPhoneArrowUpRight} from 'react-icons/hi2'
-import {MdWebAsset} from 'react-icons/md'
+import {MdEmail, MdWebAsset} from 'react-icons/md'
+import {RiUserSharedFill} from 'react-icons/ri'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
@@ -19,6 +20,9 @@ const DetailBlock = ({
   isNavLink = false,
   children,
   isCustom = false,
+  isEmail = false,
+  isInviteButton = false,
+  onClick = () => {},
 }) => {
   return (
     <>
@@ -31,7 +35,7 @@ const DetailBlock = ({
           {!isCustom && (
             <>
               {/* TEXT */}
-              {!isLink && !isPhone && !isNavLink && (
+              {!isLink && !isPhone && !isNavLink && !isEmail && (
                 <p className={StringManager.GetWordCount(text) < 10 ? 'block-text center' : 'block-text'}>{text}</p>
               )}
 
@@ -55,11 +59,31 @@ const DetailBlock = ({
                 </>
               )}
 
+              {/*  INVITE BUTTON */}
+              {!isNavLink && !isLink && !isPhone && isInviteButton && (
+                <>
+                  <button onClick={onClick} className="block-text invite-button">
+                    <RiUserSharedFill className={'invite-icon'} />
+                  </button>
+                  <Spacer height={2} />
+                </>
+              )}
+
               {/*  PHONE */}
               {isPhone && (
                 <>
                   <a href={`tel:${text}`} target="_blank" className={'block-text phone'} rel="noreferrer">
                     <HiPhoneArrowUpRight className={'phone'} />
+                  </a>
+                  <Spacer height={2} />
+                </>
+              )}
+
+              {/*  EMAIL */}
+              {isEmail && (
+                <>
+                  <a href={`mailto:${text}`} target="_blank" className={'block-text email'} rel="noreferrer">
+                    <MdEmail className={'email'} />
                   </a>
                   <Spacer height={2} />
                 </>

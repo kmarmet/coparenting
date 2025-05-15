@@ -10,8 +10,10 @@ LogManager = {
     fatal: 'Fatal'
   },
   Log: function(message, type = LogManager.LogTypes.error, stackTrace) {
-    if (!!window.location.href.includes('localhost')) {
+    if (!window.location.href.includes('localhost')) {
       return Sentry.captureException(`Error: ${message} | Type: ${type} | Stacktrace: ${stackTrace}`);
+    } else {
+      return console.log(`Error: ${message} | Type: ${type} | Stacktrace: ${stackTrace}`);
     }
   }
 };

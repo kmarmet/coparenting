@@ -29,7 +29,7 @@ export default function CheckboxGroup({
             checkboxArray.map((obj, index) => {
               let label = obj.label
               if (Manager.IsValid(label) && !StringManager.stringHasNumbers(label) && !skipNameFormatting) {
-                label = StringManager.getFirstNameOnly(label.toString())
+                label = StringManager.GetFirstNameOnly(label.toString())
               }
               return (
                 <Checkbox key={index} text={label} dataKey={obj?.key} dataLabel={label} isActive={obj.isActive} onCheck={onCheck}>

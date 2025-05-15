@@ -88,14 +88,14 @@ const NewChildForm = ({hideCard, showCard}) => {
       _profilePic = await ImageManager.compressImage(profilePic)
       await FirebaseStorage.upload(
         FirebaseStorage.directories.profilePics,
-        `${currentUser?.key}/${StringManager.getFirstNameOnly(name)}`,
+        `${currentUser?.key}/${StringManager.GetFirstNameOnly(name)}`,
         _profilePic,
         'profilePic'
       ).then(async (url) => {
         newChild.general.profilePic = url
       })
     }
-    const cleanChild = ObjectManager.cleanObject(newChild, ModelNames.child)
+    const cleanChild = ObjectManager.GetModelValidatedObject(newChild, ModelNames.child)
 
     // Add Child's Birthday to Calendar
     if (Manager.IsValid(dateOfBirth, true)) {
@@ -109,7 +109,7 @@ const NewChildForm = ({hideCard, showCard}) => {
     // Add child to DB
     await DB_UserScoped.AddChildToParentProfile(currentUser, cleanChild)
 
-    await ResetForm(`${StringManager.getFirstNameOnly(StringManager.FormatTitle(name, true))} Added to Your Profile`)
+    await ResetForm(`${StringManager.GetFirstNameOnly(StringManager.FormatTitle(name, true))} Added to Your Profile`)
   }
 
   return (
@@ -118,7 +118,7 @@ const NewChildForm = ({hideCard, showCard}) => {
       onSubmit={Submit}
       className="new-child-wrapper"
       wrapperClass="new-child-card"
-      title={`Add ${name.length > 0 ? StringManager.getFirstNameOnly(name) : 'Child'} to Your Profile`}
+      title={`Create ${name.length > 0 ? StringManager.GetFirstNameOnly(name) : 'Child'} Contact`}
       showCard={showCard}
       onClose={ResetForm}>
       <div id="new-child-container" className={`${theme}  form`}>
@@ -156,7 +156,7 @@ const NewChildForm = ({hideCard, showCard}) => {
             <ToggleButton onCheck={() => setChildHasAccount(true)} onUncheck={() => setChildHasAccount(false)} />
           </div>
 
-          <Spacer height={15} />
+          <Spacer height={5} />
 
           <Label classes="standalone-label-wrapper" text={'Photo'} />
           {/* UPLOAD BUTTON */}

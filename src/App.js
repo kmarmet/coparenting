@@ -24,12 +24,12 @@ import Help from '/src/components/screens/help'
 import InstallApp from '/src/components/screens/installApp.jsx'
 import Landing from '/src/components/screens/landing'
 import Memories from '/src/components/screens/memories.jsx'
-import Notifications from '/src/components/screens/notifications'
 import Profile from '/src/components/screens/profile/profile.jsx'
 import ResetPassword from '/src/components/screens/profile/resetPassword.jsx'
 import Settings from '/src/components/screens/settings/settings.jsx'
 import SwapRequests from '/src/components/screens/swapRequests.jsx'
 import TransferRequests from '/src/components/screens/transferRequests.jsx'
+import Updates from '/src/components/screens/updates'
 import Vault from '/src/components/screens/vault.jsx'
 import Visitation from '/src/components/screens/visitation.jsx'
 import BrandBar from '/src/components/shared/brandBar'
@@ -54,13 +54,14 @@ import {getAuth, onAuthStateChanged} from 'firebase/auth'
 import moment from 'moment'
 import React, {useEffect, useState} from 'react'
 import NewChat from './components/forms/newChat'
+import Contacts from './components/screens/contacts/contacts'
 import Parents from './components/screens/parents/parents'
 import CreationMenu from './components/shared/creationMenu'
 import SuccessAlert from './components/shared/successAlert'
 import CreationForms from './constants/creationForms'
 import DatetimeFormats from './constants/datetimeFormats'
 import DB from './database/DB'
-import NotificationManager from './managers/notificationManager'
+import UpdateManager from './managers/updateManager'
 
 export default function App() {
   // Initialize Firebase
@@ -140,7 +141,7 @@ export default function App() {
           await AppManager.clearAppBadge()
           const users = await DB.getTable(DB.tables.users)
 
-          let notifications = []
+          let updates = []
           let currentUserFromDb
           currentUserFromDb = users?.find((u) => u?.email === user?.email)
           // User Exists
@@ -170,8 +171,8 @@ export default function App() {
 
             // Get notifications
             if (!window.location.href.includes('localhost')) {
-              NotificationManager.init(currentUserFromDb)
-              notifications = await DB.getTable(`${DB.tables.notifications}/${currentUserFromDb?.key}`)
+              UpdateManager.init(currentUserFromDb)
+              updates = await DB.getTable(`${DB.tables.updates}/${currentUserFromDb?.key}`)
             }
 
             // Back to Log in if user's email is not verified
@@ -189,7 +190,7 @@ export default function App() {
               isLoading: false,
               loadingText: '',
               theme: currentUserFromDb?.settings?.theme,
-              notificationCount: notifications?.length,
+              notificationCount: updates?.length,
             })
           }
         } else {
@@ -279,7 +280,7 @@ export default function App() {
             {/* STANDARD */}
             {currentScreen === ScreenNames.installApp && <InstallApp />}
             {currentScreen === ScreenNames.landing && !isLoading && <Landing />}
-            {currentScreen === ScreenNames.notifications && <Notifications />}
+            {currentScreen === ScreenNames.updates && <Updates />}
             {currentScreen === ScreenNames.calendar && <EventCalendar />}
             {currentScreen === ScreenNames.settings && <Settings />}
             {currentScreen === ScreenNames.profile && <Profile />}
@@ -294,6 +295,7 @@ export default function App() {
             {currentScreen === ScreenNames.chat && <Chat />}
             {currentScreen === ScreenNames.chats && <Chats />}
             {currentScreen === ScreenNames.visitation && <Visitation />}
+            {currentScreen === ScreenNames.contacts && <Contacts />}
             {currentScreen === ScreenNames.help && <Help />}
           </div>
         </globalState.Provider>

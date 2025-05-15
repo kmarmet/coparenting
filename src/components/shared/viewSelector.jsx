@@ -1,10 +1,12 @@
 // Path: src\components\shared\viewSelector.jsx
 import DomManager from '/src/managers/domManager'
 import React, {useContext, useEffect} from 'react'
+import {CgDetailsMore} from 'react-icons/cg'
+import {MdModeEditOutline} from 'react-icons/md'
 import globalState from '../../context'
 import Manager from '../../managers/manager'
 
-export default function ViewSelector({labels, updateState, wrapperClasses = ''}) {
+export default function ViewSelector({labels, updateState, wrapperClasses = '', onloadState = ''}) {
   // APP STATE
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
@@ -19,7 +21,7 @@ export default function ViewSelector({labels, updateState, wrapperClasses = ''})
 
   useEffect(() => {
     DomManager.setDefaultView()
-  }, [])
+  }, [onloadState])
 
   return (
     <div key={refreshKey} className={`${wrapperClasses} views-wrapper`}>
@@ -35,6 +37,8 @@ export default function ViewSelector({labels, updateState, wrapperClasses = ''})
                 ToggleActive(el.target)
               }}>
               {label}
+              {label === 'edit' && <MdModeEditOutline />}
+              {label === 'details' && <CgDetailsMore />}
             </button>
           )
         })}

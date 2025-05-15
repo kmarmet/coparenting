@@ -8,9 +8,9 @@ import DB from '/src/database/DB'
 import AlertManager from '/src/managers/alertManager'
 import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
-import NotificationManager from '/src/managers/notificationManager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
+import UpdateManager from '/src/managers/updateManager'
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
 import moment from 'moment'
@@ -74,7 +74,7 @@ export default function SwapRequests() {
     if (Manager.IsValid(requestedResponseDate)) {
       updatedRequest.requestedResponseDate = moment(requestedResponseDate).format(DatetimeFormats.dateForDb)
     }
-    const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.swapRequest)
+    const cleanedRequest = ObjectManager.GetModelValidatedObject(updatedRequest, ModelNames.swapRequest)
     await DB.updateEntireRecord(`${DB.tables.swapRequests}/${currentUser?.key}`, cleanedRequest, cleanedRequest.id)
     setActiveRequest(updatedRequest)
     setShowDetails(false)
@@ -90,21 +90,21 @@ export default function SwapRequests() {
       activeRequest.declineReason = declineReason
       await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerKey}`, activeRequest, activeRequest.id)
 
-      const message = NotificationManager.templates.swapRequestRejection(activeRequest, recipientName)
-      NotificationManager.SendNotification('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
+      const message = UpdateManager.templates.swapRequestRejection(activeRequest, recipientName)
+      UpdateManager.SendNotification('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
       setShowDetails(false)
     }
     // Approved
     if (decision === Decisions.approved) {
-      const message = NotificationManager.templates.swapRequestApproval(activeRequest, recipientName)
+      const message = UpdateManager.templates.swapRequestApproval(activeRequest, recipientName)
       activeRequest.status = 'approved'
       await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerKey}`, activeRequest, activeRequest.id)
 
-      NotificationManager.SendNotification('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
+      UpdateManager.SendNotification('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
       setShowDetails(false)
     }
 
-    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: `Decision Sent to ${StringManager.getFirstNameOnly(recipientName)}`})
+    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: `Decision Sent to ${StringManager.GetFirstNameOnly(recipientName)}`})
   }
 
   const SetCurrentRequest = async (request) => {
@@ -198,12 +198,11 @@ export default function SwapRequests() {
           setActiveRequest(null)
           await ResetForm()
         }}
-        viewSelector={<ViewSelector labels={['Details', 'Edit']} visibleLabels={['Details']} updateState={(e) => setView(e.toLowerCase())} />}
+        viewSelector={<ViewSelector labels={['details', 'edit']} visibleLabels={['details']} updateState={(e) => setView(e.toLowerCase())} />}
         showCard={showDetails}>
         {/* DETAILS */}
         {view === 'details' && (
           <div id="details" className={`content`}>
-            <hr className="top" />
             <Spacer height={5} />
             <div className="blocks">
               {/* Swap Date(s) */}
@@ -271,7 +270,6 @@ export default function SwapRequests() {
                 valueToValidate={activeRequest?.requestReason}
               />
             </div>
-            <hr className="bottom" />
           </div>
         )}
 

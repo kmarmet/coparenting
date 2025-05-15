@@ -1,4 +1,4 @@
-export default class NotificationSubscribers
+export default class UpdateSubscriber
   constructor: (
     @id= ''
     @key = ''

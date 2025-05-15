@@ -50,6 +50,7 @@ export default function EventCalendar() {
   const {calendarEvents, eventsAreLoading} = useCalendarEvents()
 
   // GET EVENTS
+
   const GetEvents = async (activeDay) => {
     let _eventsOfDay = []
     let dateToUse = activeDay
@@ -103,13 +104,9 @@ export default function EventCalendar() {
 
       // APPEND INVISIBLE DOTS AND SKIP DAY WITHOUT EVENT
       if (!Manager.IsValid(daysEventsObject.dayEvents) || !Manager.IsValid(daysEventsObject.dayEvent) || dayEvent === undefined) {
-        const invisibleDots = document.createElement('span')
-        invisibleDots.classList.add('invisible-dots')
-
-        // ADD INVISIBLE DOTS
-        if (dayElement.innerHTML.indexOf('invisible') === -1) {
-          dayElement.append(invisibleDots)
-        }
+        const dotWrapper = document.createElement('span')
+        dotWrapper.classList.add('dot-wrapper')
+        dayElement.append(dotWrapper)
         continue
       }
 
@@ -179,7 +176,6 @@ export default function EventCalendar() {
         dotToAppend.classList.add('payday-dot', 'dot')
         dotWrapper.append(dotToAppend)
       }
-
       // APPEND DOT WRAPPER
       dayElement.append(dotWrapper)
     }
@@ -260,7 +256,7 @@ export default function EventCalendar() {
   }
 
   const SetInitialActivities = async () => {
-    const notifications = await DB.getTable(`${DB.tables.notifications}/${currentUser?.key}`)
+    const notifications = await DB.getTable(`${DB.tables.updates}/${currentUser?.key}`)
     await AppManager.setAppBadge(notifications.length)
     setState({...state, notificationCount: notifications.length, currentScreen: ScreenNames.calendar, refreshKey: Manager.GetUid()})
   }
@@ -478,7 +474,7 @@ export default function EventCalendar() {
         {/* HIDE BUTTONS */}
         {showHolidays && (
           <button
-            className="button bottom-right default"
+            className="button bottom-right default smaller"
             onClick={async () => {
               await GetEvents(moment().format(DatetimeFormats.dateForDb).toString())
               setShowHolidays(false)
@@ -488,7 +484,7 @@ export default function EventCalendar() {
         )}
         {Manager.IsValid(searchResults) && (
           <button
-            className="button default bottom-right with-border"
+            className="button default bottom-right with-border smaller"
             onClick={async () => {
               await GetEvents(moment().format(DatetimeFormats.dateForDb).toString())
               setSearchResults([])

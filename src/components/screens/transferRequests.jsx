@@ -8,9 +8,9 @@ import DB from '/src/database/DB'
 import AlertManager from '/src/managers/alertManager'
 import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
-import NotificationManager from '/src/managers/notificationManager.js'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
+import UpdateManager from '/src/managers/updateManager.js'
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
 import moment from 'moment'
@@ -83,7 +83,7 @@ export default function TransferRequests() {
     if (Manager.IsValid(requestedResponseDate)) {
       updatedRequest.requestedResponseDate = moment(requestedResponseDate).format(DatetimeFormats.dateForDb)
     }
-    const cleanedRequest = ObjectManager.cleanObject(updatedRequest, ModelNames.transferChangeRequest)
+    const cleanedRequest = ObjectManager.GetModelValidatedObject(updatedRequest, ModelNames.transferChangeRequest)
     await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, cleanedRequest, activeRequest.id)
     setActiveRequest(updatedRequest)
     setShowDetails(false)
@@ -108,8 +108,8 @@ export default function TransferRequests() {
       activeRequest.status = 'declined'
       activeRequest.declineReason = declineReason
       await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.ownerKey}`, activeRequest, activeRequest.id)
-      const message = NotificationManager.templates.transferRequestRejection(activeRequest, recipientName)
-      await NotificationManager.SendNotification(
+      const message = UpdateManager.templates.transferRequestRejection(activeRequest, recipientName)
+      await UpdateManager.SendNotification(
         'Transfer Request Decision',
         message,
         activeRequest?.ownerKey,
@@ -123,9 +123,9 @@ export default function TransferRequests() {
     if (decision === Decisions.approved) {
       activeRequest.status = 'approved'
       await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.ownerKey}`, activeRequest, activeRequest.id)
-      const message = NotificationManager.templates.transferRequestApproval(activeRequest, recipientName)
+      const message = UpdateManager.templates.transferRequestApproval(activeRequest, recipientName)
       setShowDetails(false)
-      await NotificationManager.SendNotification(
+      await UpdateManager.SendNotification(
         'Transfer Request Decision',
         message,
         activeRequest?.ownerKey,
@@ -146,13 +146,7 @@ export default function TransferRequests() {
       notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
     }
     const recipientKey = activeRequest?.ownerKey === currentUser?.key ? activeRequest.recipientKey : currentUser?.key
-    await NotificationManager.SendNotification(
-      'Transfer Destination Arrival',
-      notificationMessage,
-      recipientKey,
-      currentUser,
-      ActivityCategory.expenses
-    )
+    await UpdateManager.SendNotification('Transfer Destination Arrival', notificationMessage, recipientKey, currentUser, ActivityCategory.expenses)
     setState({...state, successAlertMessage: 'Arrival Notification Sent'})
   }
 
@@ -207,7 +201,6 @@ export default function TransferRequests() {
         onClose={ResetForm}
         showCard={showDetails}>
         <div id="details" className={`content ${activeRequest?.requestReason?.length > 20 ? 'long-text' : ''}`}>
-          <hr className="top" />
           <Spacer height={8} />
 
           {view === 'details' && (
@@ -261,8 +254,6 @@ export default function TransferRequests() {
                   isFullWidth={true}
                   title={'Reason for Request'}
                 />
-
-                <hr className="bottom" />
 
                 {/* BUTTONS */}
 
@@ -414,7 +405,7 @@ export default function TransferRequests() {
                       {request?.recipientKey !== currentUser?.key && (
                         <p id="subtitle">
                           to&nbsp;
-                          {StringManager.getFirstNameOnly(currentUser?.coparents?.find((x) => x?.userKey === request?.recipientKey)?.name)}
+                          {StringManager.GetFirstNameOnly(currentUser?.coparents?.find((x) => x?.userKey === request?.recipientKey)?.name)}
                         </p>
                       )}
                     </div>

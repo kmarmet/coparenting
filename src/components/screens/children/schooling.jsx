@@ -123,7 +123,7 @@ export default function Schooling({activeChild}) {
                       <InputWrapper
                         hasBottomSpacer={false}
                         inputType={InputTypes.text}
-                        labelText={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
+                        labelText={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
                         defaultValue={value}
                         onChange={(e) => Update(infoLabel, e.target.value)}
                       />

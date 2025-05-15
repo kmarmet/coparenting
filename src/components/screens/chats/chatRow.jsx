@@ -98,7 +98,7 @@ export default function ChatRow({chat, index}) {
         {/* COPARENT NAME */}
         <div className="flex">
           <div className="column left">
-            <p className="coparent-name">{StringManager.getFirstNameOnly(otherMember?.name)}</p>
+            <p className="coparent-name">{StringManager.GetFirstNameOnly(otherMember?.name)}</p>
             <p className="last-message">{lastMessage}</p>
           </div>
           <div className="column right">

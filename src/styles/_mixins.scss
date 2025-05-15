@@ -7,7 +7,7 @@
 @mixin pageContainer {
   max-width: 100vw;
   transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
-  background: white;
+  background: $lightBg;
   height: 100vh;
   padding: 65px 15px 200px 15px;
   width: 100%;
@@ -65,10 +65,10 @@
   position: relative;
   text-align: center;
   opacity: 1;
-  color: $accent;
+  color: $combo;
   font-weight: $fwBold;
   width: max-content;
-  margin: 0 auto 15px auto;
+  margin: 0 auto 10px auto;
   padding-bottom: 4px;
   border-bottom: 2px solid rgba(79, 98, 238, 0.27);
 
@@ -196,6 +196,7 @@
   font-optical-sizing: auto;
   font-style: normal;
   font-family: 'Inter', sans-serif;
+  letter-spacing: 0;
 }
 
 /*#region  FORM*/
@@ -300,6 +301,12 @@
     margin-right: unset;
   }
 
+  &.smaller {
+    padding: 10px 15px;
+    border-radius: $borderRadius;
+    height: unset;
+  }
+
   &.bottom-right {
     &.default {
       position: fixed;
@@ -316,7 +323,7 @@
 
   &.default {
     color: $darkerGrey;
-    background: $grey;
+    background: white;
 
     &.grey {
       color: $darkestGrey;
@@ -340,6 +347,11 @@
 
     &.red {
       background: $red;
+      color: white;
+    }
+
+    &.purple {
+      background: $coparentPurple;
       color: white;
     }
 
@@ -368,10 +380,13 @@
     color: white;
     width: unset;
     display: inline;
-    transform: scale(1);
+    transform: scale(0.8);
 
+    &.email {
+      transform: scale(0.9);
+    }
     &.phone {
-      transform: scale(0.8);
+      transform: scale(0.7);
     }
     &.website,
     &.nav-link {
@@ -383,6 +398,17 @@
 /*#endregion  BUTTONS*/
 
 /*#region  EFFECTS*/
+@mixin mainColorsGradient {
+  background-image: linear-gradient(
+    315deg,
+    hsl(233deg 82% 62%) 0%,
+    hsl(236deg 86% 64%) 29%,
+    hsl(239deg 89% 66%) 43%,
+    hsl(243deg 93% 67%) 57%,
+    hsl(247deg 96% 67%) 71%,
+    hsl(250deg 100% 67%) 100%
+  );
+}
 @mixin fadeEdges {
   box-shadow: 0 0 5px 5px white inset;
 }
@@ -864,7 +890,7 @@
           border-radius: 4px;
           transition: 0.3s ease all;
           left: 39px;
-          background-color: white;
+          background-color: #c2c2cb;
           content: '';
           z-index: 2;
         }
@@ -928,7 +954,7 @@
 
   .layer {
     width: 100%;
-    background-color: #eef0f4;
+    background-color: white;
     transition: 0.3s ease all;
     z-index: 1;
     margin-left: auto;
@@ -1037,8 +1063,7 @@
     width: 100vw;
     border-radius: 35px 35px 0 0;
     overflow: auto;
-    border-top: 6px solid $accent;
-    box-shadow: $boxShadow_float;
+    box-shadow: $boxShadow_top_only;
 
     &.active {
       transition: all 0.8s ease-in;
@@ -1059,21 +1084,22 @@
     }
 
     #close-icon-wrapper {
-      display: flex;
-      justify-content: center;
       align-items: center;
-      margin-top: 15px;
-      width: 100vw;
+      position: absolute;
+      top: 0;
+      right: 0;
+      cursor: pointer;
+      transform: scale(0.7);
+      margin: 12px;
+      display: block;
 
       .close-button {
-        color: #929292;
-        background: $grey;
-        height: 35px;
-        width: 35px;
-        border-radius: 50%;
-        padding: 4px;
-        border: 1px solid $lightBorderColor;
-        transform: scale(1.2);
+        color: #858585;
+      }
+    }
+
+    #close-icon-wrapper {
+      .close-button {
       }
     }
 
@@ -1354,6 +1380,10 @@
     &.hide {
       display: none;
     }
+
+    svg {
+      margin-left: 5px;
+    }
   }
 }
 
@@ -1626,8 +1656,11 @@
 
   label {
     font-weight: $fwMedium;
+    font-size: 14px;
     margin: 0;
+    text-transform: uppercase;
     line-height: 1.3;
+    letter-spacing: 0;
     color: $labelText;
 
     svg {
@@ -1653,17 +1686,17 @@
   width: 100%;
   transition: all 0.1s ease-in-out;
   overflow: hidden;
-  background: $mediumGrey;
+  background: white;
   padding: 10px 10px 8px 10px;
   border-radius: $borderRadius;
 
   &.active {
-    border-top: 2px solid $accent;
+    border-top: 2px solid $combo;
   }
 
   * {
     line-height: 1 !important;
-    background: $mediumGrey;
+    background: white;
   }
 
   &.chat-input-wrapper {
@@ -2074,11 +2107,11 @@
     &::file-selector-button {
       padding: 10px 20px;
       border-radius: $buttonBorderRadius;
-      background: $grey;
+      background: white;
       border: 1px solid $lightBorderColor;
       color: $labelText;
       margin-right: 10px;
-      margin-top: 5px;
+      margin-top: 2px;
       font-size: 14px;
       font-weight: $fwMediumBold;
     }
@@ -2159,21 +2192,16 @@
     line-height: 1;
     background: transparent;
     color: $primaryText;
-    padding: 10px 0 10px 0;
+    padding: 0;
     font-weight: $fwMediumBold;
     width: 100%;
 
     svg {
       color: white;
       position: relative;
-      right: -5px;
-      transform: scale(1.3);
-      margin-right: 5px;
     }
 
     &.android {
-      border-top: 3px solid #a4c639;
-
       color: #a4c639;
 
       svg {
@@ -2182,7 +2210,6 @@
     }
 
     &.apple {
-      border-top: 3px solid $main;
       color: $main;
 
       svg {
@@ -2191,7 +2218,6 @@
     }
 
     &.desktop {
-      border-top: 3px solid $primaryText;
       color: $primaryText;
 
       svg {
@@ -2313,8 +2339,14 @@
   }
 
   .os-container {
+    background: white;
+    padding: 10px 20px 20px 20px;
+    border-radius: $bigBorderRadius;
+    border: 1px solid $greyBorderColor;
     &.apple {
+      border-top: 4px solid $main;
       .steps {
+        margin-top: 8px;
         a {
           color: $main;
         }
@@ -2326,7 +2358,9 @@
       }
     }
     &.desktop {
+      border-top: 4px solid $primaryText;
       .steps {
+        margin-top: 8px;
         a {
           color: $primaryText;
         }
@@ -2338,7 +2372,9 @@
       }
     }
     &.android {
+      border-top: 4px solid #a4c639;
       .steps {
+        margin-top: 8px;
         a {
           color: #a4c639;
           border-color: #a4c639;
@@ -2631,10 +2667,15 @@
 
   &.active {
     opacity: 1;
-    z-index: 9999999;
+    z-index: 99999;
     .modal-fade-wrapper {
       z-index: 999;
     }
+  }
+
+  hr {
+    margin: 0 auto 15px auto;
+    opacity: 0.45;
   }
 
   /*#region  SPECIFIC MODALS*/
@@ -2718,14 +2759,18 @@
     position: relative;
     align-self: center;
     display: flex;
-    background: white;
+    background: $lightBg;
     max-height: 70vh;
     overflow: hidden;
-    border-radius: 30px;
-    box-shadow: $boxShadow_bottom_only_dark;
+    border-radius: 20px;
     width: calc(100vw - 20px);
     transition: all 0.8s ease-out;
-    border-top: 6px solid $accent;
+    opacity: 0;
+    min-height: 20vh;
+
+    &.details {
+      //      background: white;
+    }
 
     /*#region  MODAL*/
     #modal {
@@ -2737,57 +2782,55 @@
       flex-direction: column;
       flex-grow: 1;
 
+      #close-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 10px;
+        transform: scale(0.7);
+        color: $darkerGrey;
+        z-index: 99999;
+      }
+
       #subtitle {
         font-size: 15px;
         color: $darkestGrey;
+        padding-top: 8px;
       }
 
-      #modal-title-and-text {
-        padding: 15px 15px 0 15px;
-        position: sticky;
-        top: 0;
-        z-index: 9999999;
-        background: white;
-        width: unset;
+      #modal-title {
+        text-align: center;
+        position: relative;
+        font-size: 25px;
+        color: $accent;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: $fwMedium;
+        line-height: 1;
+        width: calc(100% - 20px);
+        margin: 0 auto 10px auto;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(79, 98, 238, 0.35);
 
-        #modal-title {
-          text-align: left;
-          left: -10px;
-          position: relative;
-          font-size: 24px;
-          color: $main;
-          margin: 0 auto;
+        &.long-title {
+          align-items: flex-start;
+        }
+
+        .svg-wrapper {
           display: flex;
           align-items: center;
-          justify-content: flex-start;
-          border-radius: 25px 25px 0 0;
-          font-weight: $fwMediumBold;
-          line-height: 1;
+          justify-content: center;
+          height: min-content;
+          overflow: hidden;
+          width: 50px;
+          svg {
+            transform: scale(0.8);
+            color: $accent;
 
-          &.long-title {
-            align-items: flex-start;
-          }
-
-          .svg-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: min-content;
-            overflow: hidden;
-            width: 50px;
-            svg {
-              transform: scale(0.8);
-              color: $accent;
-
-              &.document {
-                font-size: 20px;
-              }
+            &.document {
+              font-size: 20px;
             }
-          }
-
-          &.long-title {
-            line-height: 1.3;
-            font-size: 20px;
           }
         }
       }
@@ -2830,7 +2873,7 @@
 
   #relative-wrapper {
     position: relative;
-    padding: 0 15px 15px 15px;
+    padding: 20px 15px;
     height: 100%;
     margin-bottom: auto;
     display: block;
@@ -2859,6 +2902,12 @@
       }
 
       #details {
+        .no-details {
+          color: $darkerGrey;
+          text-align: center;
+          opacity: 1;
+          margin-bottom: 10px;
+        }
         hr {
           width: 90%;
           background-color: #ecedef;
@@ -2874,7 +2923,7 @@
           display: flex;
           flex-wrap: wrap;
           align-items: center;
-          gap: 15px 0;
+          gap: 25px 0;
           justify-content: center;
 
           .block {
@@ -2923,10 +2972,24 @@
               }
             }
 
+            .invite-button {
+              @include cardIconButton;
+              padding: 0;
+              svg {
+                transform: scale(1.3);
+                margin: 0;
+                width: 20px;
+                height: 100%;
+                font-size: unset;
+              }
+            }
+
             a {
               border: 0;
 
               &.nav-link,
+              &.invite-button,
+              &.email,
               &.phone,
               &.website {
                 @include cardIconButton;
@@ -3239,7 +3302,7 @@
       justify-self: flex-start;
       line-height: 1;
       font-weight: $fwMediumBold;
-      font-size: 16px;
+      font-size: 14px;
       border: 0;
       color: white;
       height: unset;
@@ -3247,7 +3310,7 @@
       background-color: transparent;
       padding: 0 0 5px 0;
       text-align: center;
-      border-bottom: 1px solid white;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.65);
       box-shadow: none;
       text-transform: uppercase;
     }
@@ -3255,6 +3318,7 @@
     .card-button {
       color: white;
       z-index: 10000;
+
       position: relative;
       -ms-transform: none;
       transform: none;
@@ -3265,7 +3329,7 @@
       justify-self: flex-start;
       line-height: 1;
       font-weight: $fwMediumBold;
-      font-size: 16px;
+      font-size: 14px;
       height: unset;
       background-color: transparent;
       text-align: center;
@@ -3286,8 +3350,8 @@
       }
 
       &.submit {
-        color: $brightGreen;
-        border-bottom: 1px solid $brightGreen;
+        color: $green;
+        border-bottom: 1px solid rgba(42, 192, 138, 0.65);
       }
 
       &.blue {
@@ -3303,8 +3367,8 @@
       &.delete-button,
       &.red {
         border: 0;
-        color: $red;
-        border-bottom: 1px solid $red;
+        color: #ff4e3c;
+        border-bottom: 1px solid rgba(203, 67, 53, 0.65);
 
         &.with-bg {
           background: $red;
@@ -4061,12 +4125,10 @@
   justify-content: center;
   align-items: center;
   border-radius: 35px 35px 0 0;
-  border-top: 5px solid $accent;
-  box-shadow: $boxShadow_float;
   padding: 30px 0 60px 0;
   bottom: 0;
   max-height: 90vh;
-
+  box-shadow: $boxShadow_top_only;
   .svg-wrapper {
     &.admin {
       background: $green;
@@ -4089,39 +4151,20 @@
     align-items: center;
     max-height: 90vh;
     overflow: auto;
+    overflow-x: hidden;
   }
 
-  #close-icon-wrapper,
-  #admin-icon-wrapper {
+  #close-icon-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 25px;
-    height: 35px;
-    width: 35px;
-    border-radius: 100%;
-    border: 1px solid $lightBorderColor;
-    background: $grey;
-    padding: 5px;
-
-    &#admin-icon-wrapper {
-      background: $green;
-      position: fixed;
-      bottom: 80px;
-      right: 10px;
-    }
-    #close-icon,
-    #admin-icon {
-      color: #858585;
-
-      transform: scale(1.2);
-
-      &#admin-icon {
-        color: white;
-
-        transform: scale(0.9);
-      }
-    }
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    transform: scale(0.75);
+    margin: 20px;
+    color: $darkerGrey;
   }
 
   .menu-title {
@@ -4312,13 +4355,14 @@
 @mixin navBar {
   width: 100vw;
   position: fixed;
-  background: white;
   transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
-  bottom: 0;
+  bottom: -1px;
   opacity: 1;
   z-index: 99999;
   left: 0;
   padding-bottom: 5vh;
+  backdrop-filter: blur(10px);
+  background-color: transparent;
 
   &.hidden {
     bottom: -200px;
@@ -4364,7 +4408,7 @@
   /*#endregion  SVGS BY CLASS*/
 
   #svg-wrapper {
-    background-color: $main;
+    background-color: $combo;
     height: 60px;
     display: flex;
     justify-content: center;
@@ -4372,7 +4416,7 @@
     opacity: 1;
     position: relative;
     bottom: 10px;
-    box-shadow: 0 6px 10px 6px rgba(76, 114, 197, 0.6);
+    box-shadow: 0 6px 10px 6px rgba(79, 98, 238, 0.44);
 
     svg {
       transform: scale(1.5, 1.2);
@@ -4389,12 +4433,17 @@
   }
 
   #menu-items {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
     justify-content: space-between;
     align-items: center;
     width: 100vw;
     height: 55px;
-    background: white;
+    background-color: transparent;
+    backdrop-filter: blur(10px);
+    position: relative;
+    top: 10px;
+    padding: 0 5px;
 
     .menu-item {
       flex-wrap: wrap;
@@ -4403,15 +4452,15 @@
       display: flex;
       color: black;
       position: relative;
-      width: calc(100vw / 5);
 
       &.menu-button {
         #svg-wrapper {
-          width: 60px;
-          position: relative;
-          left: 5px;
+          min-width: 60px;
+          min-height: 60px;
           border-radius: 19px;
-          margin: 0;
+          width: 100%;
+          margin: 0 15px;
+          height: 100%;
           svg {
             color: white;
           }
@@ -4449,13 +4498,13 @@
           position: absolute;
           color: $darkGrey;
           padding-top: 5px;
-          font-size: 10px;
-          font-weight: $fwMedium;
+          font-size: 13px;
+          font-weight: $fwMediumBold;
         }
       }
 
-      &.notifications {
-        left: 5px;
+      &.updates {
+        //        left: 15px;
 
         .badge {
           background: $red;

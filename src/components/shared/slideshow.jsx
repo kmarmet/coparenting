@@ -1,6 +1,6 @@
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {FaChevronLeft, FaChevronRight} from 'react-icons/fa'
+import {IoChevronBackCircleSharp, IoChevronForwardCircleSharp} from 'react-icons/io5'
 import {LazyLoadImage} from 'react-lazy-load-image-component'
 import {useSwipeable} from 'react-swipeable'
 import DatetimeFormats from '../../constants/datetimeFormats'
@@ -97,18 +97,7 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
   return (
     <Overlay show={show}>
       <div {...handlers} id="slideshow-wrapper" style={DomManager.AnimateDelayStyle(1)} className={show ? 'active' : ''}>
-        <div className="navigation">
-          {images?.length > 1 && (
-            <div className="arrows">
-              <FaChevronLeft onClick={() => Navigate('left')} />
-              {activeImageIndex + 1} <span className="op-8">of</span> {images?.length}
-              <FaChevronRight onClick={() => Navigate('right')} />
-            </div>
-          )}
-          <span className="close" onClick={hide}>
-            CLOSE
-          </span>
-        </div>
+        {/* LOOP IMAGES */}
         {Manager.IsValid(images) &&
           images.map((imageData, index) => {
             return (
@@ -127,6 +116,20 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
               </div>
             )
           })}
+
+        {/* NAVIGATION */}
+        <div className="navigation">
+          {images?.length > 1 && (
+            <div className="arrows">
+              <IoChevronBackCircleSharp onClick={() => Navigate('left')} />
+              {activeImageIndex + 1} <span className="op-8">of</span> {images?.length}
+              <IoChevronForwardCircleSharp onClick={() => Navigate('right')} />
+            </div>
+          )}
+          <span className="close" onClick={hide}>
+            CLOSE
+          </span>
+        </div>
       </div>
     </Overlay>
   )

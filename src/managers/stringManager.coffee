@@ -1,7 +1,28 @@
 import lzstring from "lz-string"
 import Manager from "./manager"
-
+#if (firstOccurrence) {
+#  return str.substring(0, firstIndex + target.length) +
+#    str.substring(firstIndex + target.length).replaceAll(target, replacement);
+#}
+#
+#return str.substring(0, firstIndex).replaceAll(target, replacement) +
+#  str.substring(firstIndex);
 StringManager = {
+  ReplaceAllButFirst:  (str, target, replacement, firstOccurrence = true) ->
+    firstIndex = str.indexOf target
+    returnString = ""
+    if firstIndex is -1
+      return str # Target string not found
+
+    if firstOccurrence
+      substring =  str.substring(0, firstIndex)
+      returnString = substring.replace(target, replacement) + str.substring(firstIndex)
+      return  returnString
+
+    return str.substring(0, firstIndex).replace(target, replacement) +
+      str.substring(firstIndex)
+
+
   IsNotAllSameNumber: (str) ->
     unless /^\d+$/.test(str)
       return true
@@ -34,7 +55,7 @@ StringManager = {
 
     return formattedPhone
 
-  getFirstNameOnly: (name) ->
+  GetFirstNameOnly: (name) ->
     return name if !name
     returnString = name.toString()
     return returnString if !returnString  or returnString.length == 0

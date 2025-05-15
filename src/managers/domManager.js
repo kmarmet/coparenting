@@ -85,7 +85,8 @@ DomManager = {
       slideInLeft: 'slideInLeft',
       slideInRight: 'slideInRight',
       fadeIn: 'fadeIn',
-      zoomIn: 'zoomIn'
+      zoomIn: 'zoomIn',
+      default: 'animate__animated'
     },
     zoomIn: {
       enter: 'animate__zoomIn',
@@ -314,18 +315,13 @@ DomManager = {
     return DatasetManager.GetValidArray(checkboxGroup);
   },
   setDefaultView: function() {
-    var activeModal, allViews, detailsView;
-    activeModal = document.querySelector('#modal.active');
+    var activeModal, allViews;
+    activeModal = document.querySelector('#modal-wrapper.active');
     if (activeModal) {
-      detailsView = activeModal.querySelector('.view.active');
-      if (detailsView) {
-        allViews = activeModal.querySelectorAll('.view');
-        if (Manager.IsValid(allViews)) {
-          if (detailsView) {
-            detailsView.click();
-            return allViews[0].classList.add('active');
-          }
-        }
+      allViews = activeModal.querySelectorAll('.view');
+      if (Manager.IsValid(allViews[0])) {
+        allViews[0].click();
+        return allViews[0].classList.add('active');
       }
     }
   },

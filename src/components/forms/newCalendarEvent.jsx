@@ -9,7 +9,6 @@ import EventLengths from '/src/constants/eventLengths'
 import AlertManager from '/src/managers/alertManager'
 import DatasetManager from '/src/managers/datasetManager'
 import Manager from '/src/managers/manager'
-import NotificationManager from '/src/managers/notificationManager.js'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
 import CalendarMapper from '/src/mappers/calMapper'
@@ -22,7 +21,6 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {BsCalendarPlusFill} from 'react-icons/bs'
 import validator from 'validator'
 import CreationForms from '../../constants/creationForms'
 import InputTypes from '../../constants/inputTypes'
@@ -31,6 +29,7 @@ import useCurrentUser from '../../hooks/useCurrentUser'
 import CalendarManager from '../../managers/calendarManager'
 import DomManager from '../../managers/domManager.coffee'
 import LogManager from '../../managers/logManager'
+import UpdateManager from '../../managers/updateManager'
 import AddressInput from '../shared/addressInput'
 import Label from '../shared/label'
 import Spacer from '../shared/spacer.jsx'
@@ -176,7 +175,7 @@ export default function NewCalendarEvent() {
         MyConfetti.fire()
         setState({...state, creationFormToShow: ''})
 
-        const cleanedObject = ObjectManager.cleanObject(newEvent, ModelNames.calendarEvent)
+        const cleanedObject = ObjectManager.GetModelValidatedObject(newEvent, ModelNames.calendarEvent)
 
         //#region MULTIPLE DATES
         // Date Range
@@ -222,7 +221,7 @@ export default function NewCalendarEvent() {
           await CalendarManager.addCalendarEvent(currentUser, cleanedObject)
 
           // Send notification
-          await NotificationManager.sendToShareWith(
+          await UpdateManager.sendToShareWith(
             eventShareWith,
             currentUser,
             `New Event 📅`,
@@ -345,7 +344,6 @@ export default function NewCalendarEvent() {
     <>
       {/* FORM WRAPPER */}
       <Modal
-        titleIcon={<BsCalendarPlusFill />}
         submitText={`Create Event`}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={ResetForm}
@@ -368,7 +366,6 @@ export default function NewCalendarEvent() {
           />
         }>
         <div id="calendar-event-form-container" className={`form ${theme}`}>
-          <Spacer height={8} />
           {/* EVENT NAME */}
           <InputWrapper
             inputClasses="event-title-input"

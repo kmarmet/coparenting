@@ -6,8 +6,9 @@ import {BsHouses, BsImages} from 'react-icons/bs'
 import {GrInstallOption, GrSettingsOption, GrUserAdmin} from 'react-icons/gr'
 import {IoChatbubblesOutline, IoClose} from 'react-icons/io5'
 import {LiaFileInvoiceDollarSolid} from 'react-icons/lia'
-import {LuBellRing, LuCalendarDays} from 'react-icons/lu'
-import {PiFiles, PiIdentificationCard, PiSealQuestion, PiSwap, PiUsers, PiVault} from 'react-icons/pi'
+import {LuCalendarDays} from 'react-icons/lu'
+import {MdOutlineContacts} from 'react-icons/md'
+import {PiFiles, PiNotificationFill, PiSealQuestion, PiSwap, PiUsers, PiUsersThree, PiVault} from 'react-icons/pi'
 import {RiAccountPinCircleLine, RiParentLine} from 'react-icons/ri'
 import {TbTransferIn} from 'react-icons/tb'
 import ScreenNames from '../constants/screenNames'
@@ -91,15 +92,15 @@ export default function FullMenu() {
               </div>
             )}
 
-            {/* NOTIFICATIONS */}
+            {/* UPDATES */}
             <div
-              className={`menu-item notifications ${currentScreen === ScreenNames.notifications ? 'active' : ''}`}
-              onClick={(e) => ChangeCurrentScreen(ScreenNames.notifications, e)}>
+              className={`menu-item updates ${currentScreen === ScreenNames.updates ? 'active' : ''}`}
+              onClick={(e) => ChangeCurrentScreen(ScreenNames.updates, e)}>
               <NotificationBadge classes={'menu'} />
               <div className="svg-wrapper">
-                <LuBellRing />
+                <PiNotificationFill />
               </div>
-              <p>Notifications</p>
+              <p>Updates</p>
             </div>
           </div>
 
@@ -108,6 +109,15 @@ export default function FullMenu() {
           <div
             style={DomManager.AnimateDelayStyle(1, 0.35)}
             className={`menu-items info-storage ${DomManager.Animate.FadeInUp(menuIsOpen, '.menu-items')}`}>
+            {/* CONTACTS */}
+            <div
+              className={`menu-item contacts ${currentScreen === ScreenNames.contacts ? 'active' : ''}`}
+              onClick={(e) => ChangeCurrentScreen(ScreenNames.contacts, e)}>
+              <div className="svg-wrapper">
+                <MdOutlineContacts />
+              </div>
+              <p>Contacts</p>
+            </div>
             {/* CHILD - PARENTS */}
             {currentUser?.accountType === 'child' && (
               <div
@@ -128,7 +138,7 @@ export default function FullMenu() {
                   className={`menu-item child-info ${currentScreen === ScreenNames.children ? 'active' : ''}`}
                   onClick={(e) => ChangeCurrentScreen(ScreenNames.children, e)}>
                   <div className="svg-wrapper">
-                    <PiIdentificationCard />
+                    <PiUsersThree />
                   </div>
                   <p>Children</p>
                 </div>

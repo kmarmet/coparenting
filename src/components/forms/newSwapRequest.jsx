@@ -8,9 +8,9 @@ import SwapDurations from '/src/constants/swapDurations'
 import DB from '/src/database/DB'
 import AlertManager from '/src/managers/alertManager'
 import Manager from '/src/managers/manager'
-import NotificationManager from '/src/managers/notificationManager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
+import UpdateManager from '/src/managers/updateManager'
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
 import SwapRequest from '/src/models/swapRequest'
@@ -122,15 +122,15 @@ export default function NewSwapRequest() {
     newRequest.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
     newRequest.recipientKey = recipientKey
 
-    const cleanObject = ObjectManager.cleanObject(newRequest, ModelNames.swapRequest)
+    const cleanObject = ObjectManager.GetModelValidatedObject(newRequest, ModelNames.swapRequest)
 
     // Send Notification
     await DB.Add(`${DB.tables.swapRequests}/${currentUser?.key}`, cleanObject).finally(() => {
-      NotificationManager.sendToShareWith(
+      UpdateManager.sendToShareWith(
         shareWith,
         currentUser,
         'New Swap Request',
-        `${StringManager.getFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
+        `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
         ActivityCategory.swapRequest
       )
       setSwapDuration(SwapDurations.single)
@@ -203,7 +203,6 @@ export default function NewSwapRequest() {
       showCard={creationFormToShow === creationForms.swapRequest}
       onClose={ResetForm}>
       <div id="new-swap-request-container" className={`${theme} form`}>
-        <Spacer height={8} />
         {/* FORM */}
         <div id="request-form" className="form single">
           {/* SINGLE DATE */}

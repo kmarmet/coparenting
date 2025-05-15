@@ -136,7 +136,7 @@ export default function Medical({activeChild}) {
                         hasBottomSpacer={false}
                         inputType={InputTypes.text}
                         labelText={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
-                          Manager.IsValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''
+                          Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''
                         }`}
                         defaultValue={value}
                         debounceTimeout={1000}

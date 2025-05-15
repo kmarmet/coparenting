@@ -1,11 +1,12 @@
 // Path: src\components\shared\modal.jsx
 import Manager from '/src/managers/manager.js'
 import React, {useContext, useEffect} from 'react'
+import {IoClose} from 'react-icons/io5'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager'
 import StringManager from '../../managers/stringManager'
+
 import Overlay from './overlay'
-import Spacer from './spacer'
 
 export default function Modal({
   submitText,
@@ -15,6 +16,7 @@ export default function Modal({
   children,
   title,
   subtitle = '',
+  activeView = 'details',
   showCard = false,
   hasDelete = false,
   hasSubmitButton = true,
@@ -95,6 +97,7 @@ export default function Modal({
       }
 
       // Set MUI datetime picker placeholders
+
       const startTimeInput = document.querySelector('#input-wrapper.start-time .MuiInputBase-input')
       const endTimeInput = document.querySelector('#input-wrapper.end-time .MuiInputBase-input')
 
@@ -112,20 +115,25 @@ export default function Modal({
         <div
           style={DomManager.AnimateDelayStyle(1, 0.002)}
           id="modal-card"
-          className={`${DomManager.Animate.FadeInUp(showCard, '.modal-fade-wrapper')} modal-fade-wrapper`}>
+          className={`${DomManager.Animate.FadeInUp(showCard, '.modal-fade-wrapper')} modal-fade-wrapper ${activeView}`}>
           <div id="modal">
-            <div
-              id="modal-title-and-text"
-              className={`${Manager.IsValid(subtitle, true) ? 'with-subtitle' : ''} ${StringManager.GetWordCount(title) > 3 ? 'long-title' : ''}`}>
-              <p id="modal-title" className={StringManager.GetWordCount(title) > 3 ? 'long-title' : ''}>
-                {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
-                {title}
-              </p>
-              <Spacer height={3} />
-              {Manager.IsValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}
-            </div>
+            <IoClose
+              id={'close-button'}
+              onClick={() => {
+                onClose()
+                HideCard()
+              }}
+            />
+
             <div id="relative-wrapper">
-              <div id="content">{children}</div>
+              <div id="content">
+                <p id="modal-title" className={StringManager.GetWordCount(title) > 3 ? 'long-title' : ''}>
+                  {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
+                  {title}
+                </p>
+                {Manager.IsValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}
+                {children}
+              </div>
             </div>
           </div>
         </div>
@@ -141,15 +149,6 @@ export default function Modal({
               {deleteButtonText}
             </button>
           )}
-
-          <button
-            id="cancel-button"
-            onClick={() => {
-              onClose()
-              HideCard()
-            }}>
-            Close
-          </button>
         </div>
       </div>
     </Overlay>

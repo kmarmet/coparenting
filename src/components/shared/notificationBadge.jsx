@@ -1,14 +1,14 @@
 import React, {useContext} from 'react'
 import globalState from '../../context'
-import useNotifications from '../../hooks/useNotifications'
+import useUpdates from '../../hooks/useUpdates'
 import Manager from '../../managers/manager'
 
 const NotificationBadge = ({classes = ''}) => {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
-  const {notifications} = useNotifications()
+  const {updates} = useUpdates()
 
-  return <div className={`notification-badge ${classes} ${Manager.IsValid(notifications) ? 'active' : ''} ${theme}`}></div>
+  return <div className={`notification-badge ${classes} ${Manager.IsValid(updates) ? 'active' : ''} ${theme}`}></div>
 }
 
 export default NotificationBadge

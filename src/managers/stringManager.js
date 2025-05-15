@@ -5,7 +5,28 @@ import lzstring from "lz-string";
 
 import Manager from "./manager";
 
+//if (firstOccurrence) {
+//  return str.substring(0, firstIndex + target.length) +
+//    str.substring(firstIndex + target.length).replaceAll(target, replacement);
+//}
+
+//return str.substring(0, firstIndex).replaceAll(target, replacement) +
+//  str.substring(firstIndex);
 StringManager = {
+  ReplaceAllButFirst: function(str, target, replacement, firstOccurrence = true) {
+    var firstIndex, returnString, substring;
+    firstIndex = str.indexOf(target);
+    returnString = "";
+    if (firstIndex === -1) {
+      return str; // Target string not found
+    }
+    if (firstOccurrence) {
+      substring = str.substring(0, firstIndex);
+      returnString = substring.replace(target, replacement) + str.substring(firstIndex);
+      return returnString;
+    }
+    return str.substring(0, firstIndex).replace(target, replacement) + str.substring(firstIndex);
+  },
   IsNotAllSameNumber: function(str) {
     if (!/^\d+$/.test(str)) {
       return true;
@@ -42,7 +63,7 @@ StringManager = {
     }
     return formattedPhone;
   },
-  getFirstNameOnly: function(name) {
+  GetFirstNameOnly: function(name) {
     var returnString;
     if (!name) {
       return name;

@@ -6,23 +6,23 @@ import DatasetManager from '/src/managers/datasetManager'
 import DomManager from '/src/managers/domManager'
 import ExpenseManager from '/src/managers/expenseManager.js'
 import Manager from '/src/managers/manager'
-import NotificationManager from '/src/managers/notificationManager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
+import UpdateManager from '/src/managers/updateManager'
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
-// Path: src\components\screens\expenses\expenseTracker.jsx
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import MenuItem from '@mui/material/MenuItem'
 import 'lightgallery/css/lightgallery.css'
-import LightGallery from 'lightgallery/react'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {AiOutlineFileAdd} from 'react-icons/ai'
+import {BsCardImage} from 'react-icons/bs'
 import {MdOutlineEventRepeat} from 'react-icons/md'
 import {RxUpdate} from 'react-icons/rx'
+import {LazyLoadImage} from 'react-lazy-load-image-component'
 import InputTypes from '../../../constants/inputTypes'
 import DB from '../../../database/DB.js'
 import useCurrentUser from '../../../hooks/useCurrentUser'
@@ -36,6 +36,7 @@ import Label from '../../shared/label.jsx'
 import Modal from '../../shared/modal.jsx'
 import NoDataFallbackText from '../../shared/noDataFallbackText.jsx'
 import SelectDropdown from '../../shared/selectDropdown.jsx'
+import Slideshow from '../../shared/slideshow'
 import Spacer from '../../shared/spacer'
 import ViewSelector from '../../shared/viewSelector.jsx'
 import PaymentOptions from './paymentOptions.jsx'
@@ -74,12 +75,13 @@ export default function ExpenseTracker() {
   const [sortedExpenses, setSortedExpenses] = useState([])
   const {expenses, expensesAreLoading} = useExpenses()
   const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const [showSlideshow, setShowSlideshow] = useState(false)
 
   const Update = async () => {
     // Fill/overwrite
     let updatedExpense = {...activeExpense}
     updatedExpense.category = category
-    updatedExpense.amount = amount.toString()
+    updatedExpense.amount = amount?.toString()
     updatedExpense.payer = payer
     updatedExpense.notes = notes
     updatedExpense.dueDate = dueDate
@@ -93,7 +95,7 @@ export default function ExpenseTracker() {
     if (!Manager.IsValid(dueDate)) {
       updatedExpense.dueDate = moment(dueDate).format(DatetimeFormats.dateForDb)
     }
-    const cleanedExpense = ObjectManager.cleanObject(updatedExpense, ModelNames.expense)
+    const cleanedExpense = ObjectManager.GetModelValidatedObject(updatedExpense, ModelNames.expense)
     cleanedExpense.ownerKey = activeExpense.ownerKey
     const updateIndex = DB.GetTableIndexById(expenses, activeExpense?.id)
     await ExpenseManager.UpdateExpense(currentUser?.key, updateIndex, cleanedExpense)
@@ -108,7 +110,7 @@ export default function ExpenseTracker() {
     activeExpense.paidStatus = updatedStatus
     const updateIndex = DB.GetTableIndexById(expenses, activeExpense?.id)
     await ExpenseManager.UpdateExpense(currentUser?.key, updateIndex, activeExpense).then(async () => {
-      NotificationManager.SendNotification(
+      UpdateManager.SendNotification(
         `Expense Paid`,
         `An expense has been marked ${updatedStatus.toUpperCase()} by ${currentUser?.name} \nExpense Name: ${activeExpense?.name}`,
         payer?.key,
@@ -134,7 +136,7 @@ export default function ExpenseTracker() {
     const message = `This is a reminder to pay the ${expense?.name} expense?.  ${
       Manager.IsValid(expense?.dueDate) ? 'Due date is: ' + expense?.dueDate : ''
     }`
-    NotificationManager.SendNotification(`Expense Reminder`, message, expense?.payer?.phone, currentUser, ActivityCategory.expenses)
+    UpdateManager.SendNotification(`Expense Reminder`, message, expense?.payer?.phone, currentUser, ActivityCategory.expenses)
     setState({...state, successAlertMessage: 'Reminder Sent'})
     setShowDetails(false)
   }
@@ -298,6 +300,15 @@ export default function ExpenseTracker() {
       {/* PAYMENT OPTIONS */}
       <PaymentOptions onClose={() => setShowPaymentOptionsCard(false)} showPaymentOptionsCard={showPaymentOptionsCard} />
 
+      {/* SLIDESHOW  */}
+      <Slideshow
+        show={showSlideshow}
+        hide={() => setShowSlideshow(false)}
+        activeIndex={0}
+        wrapperClasses="expense-slideshow"
+        images={[{url: activeExpense?.imageUrl}]}
+      />
+
       {/* DETAILS CARD */}
       <Modal
         submitText={'Update'}
@@ -313,7 +324,7 @@ export default function ExpenseTracker() {
           setState({...state, refreshKey: Manager.GetUid()})
         }}
         onDelete={DeleteExpense}
-        viewSelector={<ViewSelector labels={['details', 'edit']} updateState={(e) => setView(e.toLowerCase())} />}
+        viewSelector={<ViewSelector onloadState={showDetails} labels={['details', 'edit']} updateState={(e) => setView(e.toLowerCase())} />}
         showCard={showDetails}>
         <div id="details" className={`content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
           <Spacer height={5} />
@@ -367,15 +378,15 @@ export default function ExpenseTracker() {
                 {/*  Pay To */}
                 <DetailBlock
                   title={'Pay To'}
-                  text={StringManager.getFirstNameOnly(activeExpense?.recipientName)}
-                  valueToValidate={StringManager.getFirstNameOnly(activeExpense?.recipientName)}
+                  text={StringManager.GetFirstNameOnly(activeExpense?.recipientName)}
+                  valueToValidate={StringManager.GetFirstNameOnly(activeExpense?.recipientName)}
                 />
 
                 {/*  Payer */}
                 <DetailBlock
                   title={'Payer'}
-                  text={StringManager.getFirstNameOnly(payer?.name)}
-                  valueToValidate={StringManager.getFirstNameOnly(payer?.name)}
+                  text={StringManager.GetFirstNameOnly(payer?.name)}
+                  valueToValidate={StringManager.GetFirstNameOnly(payer?.name)}
                 />
 
                 {/*  Recurring */}
@@ -413,13 +424,16 @@ export default function ExpenseTracker() {
                 {Manager.IsValid(activeExpense?.imageUrl) && (
                   <>
                     <div id="expense-image" className="block">
-                      <LightGallery elementClassNames={'light-gallery'} speed={500} selector={'#img-container'}>
-                        <div
-                          style={{backgroundImage: `url(${activeExpense?.imageUrl})`}}
-                          data-src={activeExpense?.imageUrl}
-                          id="img-container"
-                          className="flex"></div>
-                      </LightGallery>
+                      <LazyLoadImage
+                        style={{backgroundImage: `url(${activeExpense?.imageUrl})`}}
+                        src={activeExpense?.imageUrl}
+                        id="img-container"
+                        className="flex"
+                        onClick={() => {
+                          setShowDetails(false)
+                          setShowSlideshow(true)
+                        }}
+                      />
                       <p className="block-text">Image</p>
                     </div>
                   </>
@@ -427,7 +441,6 @@ export default function ExpenseTracker() {
 
                 <Spacer height={5} />
               </div>
-              <hr className="bottom" />
             </>
           )}
 
@@ -525,7 +538,7 @@ export default function ExpenseTracker() {
         <Spacer height={8} />
 
         {/* FILTERS */}
-        <Accordion expanded={showFilters} id={'expenses-accordion'} className={`${showFilters ? 'open' : 'closed'} ${theme}`}>
+        <Accordion expanded={showFilters} id={'expenses-accordion'} className={`${showFilters ? 'open' : 'closed'} ${theme} white-bg`}>
           <AccordionSummary onClick={() => setShowFilters(!showFilters)} className={showFilters ? 'open' : 'closed'}>
             <AccordionTitle titleText={'Filters'} toggleState={showFilters} onClick={() => setShowFilters(!showFilters)} />
           </AccordionSummary>
@@ -636,6 +649,7 @@ export default function ExpenseTracker() {
                       <p className="name row-title">
                         {StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}
                         {expense?.isRecurring && <MdOutlineEventRepeat />}
+                        {Manager.IsValid(expense?.imageName) && <BsCardImage />}
                       </p>
 
                       {/*  STATUS */}

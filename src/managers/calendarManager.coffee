@@ -81,7 +81,7 @@ export default CalendarManager =
 
       dateObject.reminderTimes = eventObject.reminderTimes
       dateObject.recurrenceInterval = eventObject.repeatInterval
-      dateObject = ObjectManager.cleanObject(dateObject, ModelNames.calendarEvent)
+      dateObject = ObjectManager.GetModelValidatedObject(dateObject, ModelNames.calendarEvent)
       datesToPush.push dateObject
 
     console.log datesToPush

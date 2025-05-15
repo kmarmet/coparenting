@@ -65,8 +65,9 @@ export default function DocViewer() {
     const fileType = `.${StringManager.GetFileExtension(docToView.name)}`.toLowerCase()
     const nonImageFileTypes = ['.docx', '.doc', '.pdf', '.odt', '.txt']
     if (currentUser && nonImageFileTypes.includes(fileType)) {
-      setDocType('document')
-      await FormatDocument()
+      setTimeout(async () => {
+        await FormatDocument()
+      }, 1000)
     } else {
       setDocType('image')
       await FormatImageDocument()
@@ -187,8 +188,22 @@ export default function DocViewer() {
     }
   }
 
+  const AppendText = () => {
+    const docText = docToView.docText
+    const textContainer = document.getElementById('doc-text')
+
+    if (!Manager.IsValid(docToView) || !Manager.IsValid(docText, true)) {
+      AlertManager.throwError('Unable to find or load document. Please try again after awhile.')
+      setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+      return false
+    }
+    // APPEND HTML
+    if (Manager.IsValid(textContainer)) {
+      textContainer.innerHTML = docText
+    }
+  }
+
   const FormatDocument = async () => {
-    const url = docToView.url
     const docText = docToView.docText
     if (!Manager.IsValid(docToView) || !Manager.IsValid(docText, true)) {
       AlertManager.throwError('Unable to find or load document. Please try again after awhile.')
@@ -217,12 +232,10 @@ export default function DocViewer() {
 
     //#endregion VALIDATION
 
-    // APPEND HTML
-    textContainer.innerHTML = docText
+    AppendText()
 
     //#region STYLING/FORMATTING
     const allElements = textContainer.querySelectorAll('*')
-
     for (let element of allElements) {
       const computedStyle = window.getComputedStyle(element)
       const fontWeight = computedStyle.fontWeight
@@ -250,14 +263,13 @@ export default function DocViewer() {
           let parText = ''
 
           if (parFontWeight !== '700') {
-            element.style.marginBottom = '15px'
+            element.style.marginBottom = '0 !important'
           }
 
           // Get text and remove spans
           for (let span of spans) {
             const spanStyles = window.getComputedStyle(span)
             const fontWeight = spanStyles.fontWeight
-            span.innerHTML = span.innerHTML.replace(/&nbsp;/g, '')
 
             // Bold titles
             if (fontWeight === '700') {
@@ -288,6 +300,8 @@ export default function DocViewer() {
       }
     }
 
+    const docTextWrapper = document.getElementById('doc-text')
+    docTextWrapper.innerHTML = docTextWrapper.innerHTML.replace(/&nbsp;/g, '')
     await AddAndFormatHeaders()
     CorrectTextErrors()
     await SetTableOfContentsHeaders()
@@ -648,7 +662,6 @@ export default function DocViewer() {
         <p className="screen-title accent">
           {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(docToView?.name)).replaceAll('-', ' ')}
         </p>
-        <hr className="documents" />
         <div id="doc-text"></div>
         {Manager.IsValid(searchValue, true) && (
           <button onClick={CloseSearch} id="close-search-button" className="default with-border">

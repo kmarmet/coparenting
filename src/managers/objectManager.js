@@ -35,7 +35,24 @@ import Parent from "../models/parent";
 
 import Manager from "./manager";
 
+import LogManager from "./logManager";
+
 ObjectManager = {
+  SetObjectPropertyByPath: function(obj, path, value) {
+    obj[path] = value;
+    obj = ObjectManager.GetModelValidatedObject(obj, ModelNames.child);
+    return obj;
+  },
+  UpdateAndReturnObject: function(obj, path, value) {
+    var e, updated;
+    try {
+      updated = _.set(obj, path, value);
+      return ObjectManager.GetValidObject(updated);
+    } catch (error) {
+      e = error;
+      return LogManager.Log(e.message, LogManager.LogTypes.error, e.stack);
+    }
+  },
   RecursivelyFindProperty: function(obj, key) {
     var prop, result;
     if (Manager.IsValid(obj) && typeof obj === 'object') {
@@ -51,7 +68,56 @@ ObjectManager = {
     }
     return void 0;
   },
-  cleanObject: function(object, modelName) {
+  GetValidObject: function(obj) {
+    return Object.fromEntries(Object.entries(obj).filter(function([_, value]) {
+      return Manager.IsValid(value);
+    }));
+  },
+  RemoveUnusedProperties: function(obj, modelKeys) {
+    var i, key, len;
+    console.log(obj, modelKeys);
+    for (i = 0, len = obj.length; i < len; i++) {
+      key = obj[i];
+      console.log(modelKeys, key);
+      if (!modelKeys.includes(key)) {
+        delete obj[key];
+      }
+    }
+    return obj;
+  },
+  GetModelKeys: function(modelName) {
+    switch (modelName) {
+      case ModelNames.calendarEvent:
+        return Object.keys(new CalendarEvent());
+      case ModelNames.expense:
+        return Object.keys(new Expense());
+      case ModelNames.memory:
+        return Object.keys(new Memory());
+      case ModelNames.transferChangeRequest:
+        return Object.keys(new TransferChangeRequest());
+      case ModelNames.swapRequest:
+        return Object.keys(new SwapRequest());
+      case ModelNames.inputSuggestion:
+        return Object.keys(new InputSuggestion());
+      case ModelNames.user:
+        return Object.keys(new User());
+      case ModelNames.coparent:
+        return Object.keys(new Coparent());
+      case ModelNames.chatThread:
+        return Object.keys(new ChatThread());
+      case ModelNames.chatMessage:
+        return Object.keys(new ChatMessage());
+      case ModelNames.childUser:
+        return Object.keys(new ChildUser());
+      case ModelNames.child:
+        return Object.keys(new Child());
+      case ModelNames.parent:
+        return Object.keys(new Parent());
+      case ModelNames.doc:
+        return Object.keys(new Doc());
+    }
+  },
+  GetModelValidatedObject: function(object, modelName) {
     var prop, ref, ref1, returnObject;
     returnObject = (function() {
       switch (modelName) {
@@ -97,6 +163,7 @@ ObjectManager = {
       }
       returnObject[prop] = object[prop];
     }
+    //    returnObject = ObjectManager.GetValidObject(returnObject)
     return returnObject;
   },
   merge: function(objectWithValuesToKeep, objectWithValuesToAdd) {

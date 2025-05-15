@@ -6,8 +6,8 @@ import DB_UserScoped from '/src/database/db_userScoped'
 import AlertManager from '/src/managers/alertManager'
 import DateManager from '/src/managers/dateManager'
 import Manager from '/src/managers/manager'
-import NotificationManager from '/src/managers/notificationManager.js'
 import StringManager from '/src/managers/stringManager'
+import UpdateManager from '/src/managers/updateManager.js'
 import ActivityCategory from '/src/models/activityCategory'
 import TransferChangeRequest from '/src/models/transferChangeRequest.js'
 import moment from 'moment'
@@ -113,9 +113,9 @@ export default function NewTransferChangeRequest() {
     await DB.Add(`${DB.tables.transferChangeRequests}/${currentUser.key}`, newRequest)
 
     // Notify
-    await NotificationManager.SendNotification(
+    await UpdateManager.SendNotification(
       `Transfer Change Request`,
-      `${StringManager.getFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
+      `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
       requestRecipientKey,
       currentUser,
       ActivityCategory.transferRequest

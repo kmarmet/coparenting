@@ -80,7 +80,7 @@ div {
 }
 
 .swal2-popup {
-  border-radius: 22px;
+  border-radius: $bigBorderRadius;
   padding: 20px !important;
   margin: 0 !important;
   align-items: center !important;
@@ -88,7 +88,6 @@ div {
   display: flex !important;
   flex-wrap: wrap;
   gap: 12px;
-  border-top: 5px solid $main;
   justify-content: center;
   @include bestShadow;
 

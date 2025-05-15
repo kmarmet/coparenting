@@ -6,13 +6,13 @@ import DatasetManager from '../managers/datasetManager'
 import Manager from '../managers/manager'
 import useCurrentUser from './useCurrentUser'
 
-const useNotifications = () => {
+const useUpdates = () => {
   const {state, setState} = useContext(globalState)
   const {currentUser} = useCurrentUser()
   const [isLoading, setIsLoading] = useState(true)
-  const [notifications, setNotifications] = useState([])
+  const [updates, setUpdates] = useState([])
   const [error, setError] = useState(null)
-  const path = `${DB.tables.notifications}/${currentUser?.key}`
+  const path = `${DB.tables.updates}/${currentUser?.key}`
   const queryKey = ['realtime', path]
 
   const ClearAppBadge = () => {
@@ -31,12 +31,12 @@ const useNotifications = () => {
         // console.Log('Children Updated')
         const formattedNotifications = DatasetManager.GetValidArray(snapshot.val())
         if (Manager.IsValid(currentUser) && Manager.IsValid(formattedNotifications)) {
-          setNotifications(formattedNotifications)
+          setUpdates(formattedNotifications)
           setIsLoading(false)
         } else {
           ClearAppBadge()
 
-          setNotifications([])
+          setUpdates([])
         }
       },
       (err) => {
@@ -52,11 +52,11 @@ const useNotifications = () => {
   }, [path, currentUser])
 
   return {
-    notifications,
+    updates,
     isLoading,
     error,
     queryKey,
   }
 }
 
-export default useNotifications
+export default useUpdates

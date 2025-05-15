@@ -46,7 +46,7 @@ export default function ShareWithCheckboxes({
           <div className="flex" id="checkboxes">
             {Manager.IsValid(shareWith) &&
               shareWith?.map((user, index) => {
-                let name = StringManager.getFirstNameOnly(user?.name)
+                let name = StringManager.GetFirstNameOnly(user?.name)
                 let key = user?.key
 
                 if (!Manager.IsValid(key)) {
@@ -54,7 +54,7 @@ export default function ShareWithCheckboxes({
                 }
 
                 if (!Manager.IsValid(name)) {
-                  name = StringManager.getFirstNameOnly(user?.general?.name)
+                  name = StringManager.GetFirstNameOnly(user?.general?.name)
                 }
 
                 return (

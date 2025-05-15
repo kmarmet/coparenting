@@ -68,7 +68,7 @@ export default function Children() {
 
   const DeleteChild = async () => {
     AlertManager.confirmAlert(
-      `Are you sure you want to unlink ${StringManager.getFirstNameOnly(activeChild?.general?.name)} from your profile?`,
+      `Are you sure you want to unlink ${StringManager.GetFirstNameOnly(activeChild?.general?.name)} from your profile?`,
       `I'm Sure`,
       true,
       async () => {
@@ -164,7 +164,7 @@ export default function Children() {
                 <p>
                   Manage Profile Picture
                   <span className="subtitle">
-                    Add a profile picture of {StringManager.getFirstNameOnly(activeChild?.general?.name)}. Or replace it if a picture has already been
+                    Add a profile picture of {StringManager.GetFirstNameOnly(activeChild?.general?.name)}. Or replace it if a picture has already been
                     uploaded
                   </span>
                 </p>
@@ -245,7 +245,7 @@ export default function Children() {
                           className="child-image"
                           style={{backgroundImage: `url(${child?.general?.profilePic})`, transition: 'all .7s linear'}}></div>
                         {/* CHILD NAME */}
-                        <span className="child-name">{StringManager.getFirstNameOnly(child?.general?.name)}</span>
+                        <span className="child-name">{StringManager.GetFirstNameOnly(child?.general?.name)}</span>
                       </div>
                     )}
 
@@ -256,7 +256,7 @@ export default function Children() {
                           <span>No Image</span>
                         </div>
                         {/* CHILD NAME */}
-                        <span className="child-name">{StringManager.getFirstNameOnly(child?.general?.name)}</span>
+                        <span className="child-name">{StringManager.GetFirstNameOnly(child?.general?.name)}</span>
                       </div>
                     )}
                   </div>

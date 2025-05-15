@@ -1,12 +1,12 @@
 import DB from '../../src/database/DB'
 import OneSignal from 'react-onesignal'
 import Manager from "./manager.js"
-import NotificationSubscriber from "../models/notificationSubscriber"
-import Notification from "../models/notification"
 import moment from "moment"
 import DateFormats from "../constants/datetimeFormats"
+import UpdateSubscriber from "../models/updateSubscriber"
 
-export default NotificationManager =
+
+export default UpdateManager =
   currentUser: null
   lineBreak: '\r\n'
   # Define message templates
@@ -29,17 +29,17 @@ export default NotificationManager =
 
   # Template for swap request decision
     swapRequestApproval: (request, recipientName) ->
-      "Swap Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{NotificationManager.lineBreak}#{NotificationManager.lineBreak}"
+      "Swap Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{UpdateManager.lineBreak}#{UpdateManager.lineBreak}"
 
     swapRequestRejection: (request, recipientName) ->
-      "Swap Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{NotificationManager.lineBreak}#{NotificationManager.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed with the
+      "Swap Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{UpdateManager.lineBreak}#{UpdateManager.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed with the
  request, please contact #{recipientName} to negotiate a potential agreement"
 
     transferRequestApproval: (request, recipientName) ->
-      "Transfer Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{NotificationManager.lineBreak}#{NotificationManager.lineBreak}"
+      "Transfer Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{UpdateManager.lineBreak}#{UpdateManager.lineBreak}"
 
     transferRequestRejection: (request, recipientName) ->
-      "Transfer Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{NotificationManager.lineBreak}#{NotificationManager.lineBreak} Reason: #{request.declineReason}. If you
+      "Transfer Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{UpdateManager.lineBreak}#{UpdateManager.lineBreak} Reason: #{request.declineReason}. If you
  would still
  prefer to proceed
  with the
@@ -55,32 +55,32 @@ export default NotificationManager =
 
   init: (currentUser) ->
 
-    NotificationManager.currentUser = currentUser
+    UpdateManager.currentUser = currentUser
     window.OneSignalDeferred = window.OneSignalDeferred or []
     OneSignalDeferred.push ->
       OneSignal.init
-        appId: NotificationManager.appId
+        appId: UpdateManager.appId
       .then () ->
-        OneSignal.User.PushSubscription.addEventListener 'change', NotificationManager.eventListener
+        OneSignal.User.PushSubscription.addEventListener 'change', UpdateManager.eventListener
 
   eventListener: (event) ->
     userSubscribed = OneSignal.User.PushSubscription.optedIn
     subId = event?.current?.id
 
     if userSubscribed && subId
-      newSubscriber = new NotificationSubscriber()
+      newSubscriber = new UpdateSubscriber()
 
       setTimeout  ->
-        newSubscriber.email = NotificationManager?.currentUser?.email
-        newSubscriber.key = NotificationManager?.currentUser?.key
+        newSubscriber.email = UpdateManager?.currentUser?.email
+        newSubscriber.key = UpdateManager?.currentUser?.key
         newSubscriber.id = Manager.GetUid()
         newSubscriber.subscriptionId = subId
 
-        fetch("https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}/user/identity")
+        fetch("https://api.onesignal.com/apps/#{UpdateManager.appId}/subscriptions/#{subId}/user/identity")
           .then (identity) ->
             userIdentity = await identity.json()
             newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
-            existingSubscriber = await DB.find(DB.tables.notificationSubscribers, ["email", NotificationManager?.currentUser?.email], true)
+            existingSubscriber = await DB.find(DB.tables.notificationSubscribers, ["email", UpdateManager?.currentUser?.email], true)
 
             # If user already exists -> replace record
             if Manager.IsValid(existingSubscriber)
@@ -98,19 +98,19 @@ export default NotificationManager =
     existingRecord?.subscriptionId
 
   deleteUser: (oneSignalId, subId) ->
-    fetch "https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}",
+    fetch "https://api.onesignal.com/apps/#{UpdateManager.appId}/subscriptions/#{subId}",
       method: 'DELETE'
       headers:
         'accept': 'application/json'
 
-    fetch "https://api.onesignal.com/apps/#{NotificationManager.appId}/users/by/onesignal_id/#{oneSignalId}",
+    fetch "https://api.onesignal.com/apps/#{UpdateManager.appId}/users/by/onesignal_id/#{oneSignalId}",
       method: 'DELETE'
 
-  SendNotification: (title, message, recipientKey, currentUser = null, category = '') ->
+  SendUpdate: (title, message, recipientKey, currentUser = null, category = '') ->
     myHeaders = new Headers()
     myHeaders.append "Accept", "application/json"
     myHeaders.append "Content-Type", "application/json"
-    myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
+    myHeaders.append "Authorization", "Basic #{UpdateManager.apiKey}"
     allSubs = await DB.getTable("#{DB.tables.notificationSubscribers}")
     subIdRecord = allSubs.find (sub) -> sub.key == recipientKey
 
@@ -128,7 +128,7 @@ export default NotificationManager =
       target_channel: "push"
       isAnyWeb: true
       include_subscription_ids: [subId]
-      app_id: NotificationManager.appId
+      app_id: UpdateManager.appId
 
     requestOptions = {
       method: "POST"
@@ -150,7 +150,7 @@ export default NotificationManager =
     await DB.Add "#{DB.tables.notifications}/#{recipientKey}", [],newNotification
     console.log("Sent to #{recipientKey}")
     # Do not send notification in dev
-    if !window.location.href.includes("localhosssst")
+    if !window.location.href.includes("localhost")
       fetch "https://api.onesignal.com/notifications", requestOptions
         .then (response) -> response.text()
         .then (result) ->
@@ -161,15 +161,15 @@ export default NotificationManager =
   sendToShareWith: (shareWithKeys, currentUser, title, message, category = '') ->
     if Manager.IsValid(shareWithKeys)
       for key in shareWithKeys
-        await NotificationManager.SendNotification(title, message, key, currentUser, category)
+        await UpdateManager.SendNotification(title, message, key, currentUser, category)
 
   enableNotifications: (subId) ->
     myHeaders = new Headers()
     myHeaders.append "Accept", "application/json"
     myHeaders.append "Content-Type", "application/json"
-    myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
+    myHeaders.append "Authorization", "Basic #{UpdateManager.apiKey}"
 
-    url = "https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}"
+    url = "https://api.onesignal.com/apps/#{UpdateManager.appId}/subscriptions/#{subId}"
 
     raw = JSON.stringify({
       "subscription": {
@@ -194,9 +194,9 @@ export default NotificationManager =
     myHeaders = new Headers()
     myHeaders.append "Accept", "application/json"
     myHeaders.append "Content-Type", "application/json"
-    myHeaders.append "Authorization", "Basic #{NotificationManager.apiKey}"
+    myHeaders.append "Authorization", "Basic #{UpdateManager.apiKey}"
 
-    url = "https://api.onesignal.com/apps/#{NotificationManager.appId}/subscriptions/#{subId}"
+    url = "https://api.onesignal.com/apps/#{UpdateManager.appId}/subscriptions/#{subId}"
 
     raw = JSON.stringify({
       "subscription": {

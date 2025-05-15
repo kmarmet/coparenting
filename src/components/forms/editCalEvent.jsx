@@ -8,9 +8,9 @@ import DB from '/src/database/DB'
 import AlertManager from '/src/managers/alertManager'
 import CalendarManager from '/src/managers/calendarManager.js'
 import Manager from '/src/managers/manager'
-import NotificationManager from '/src/managers/notificationManager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
+import UpdateManager from '/src/managers/updateManager'
 import {default as CalendarMapper, default as CalMapper} from '/src/mappers/calMapper'
 import ActivityCategory from '/src/models/activityCategory'
 import ModelNames from '/src/models/modelNames'
@@ -19,7 +19,7 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {BsCalendar2CheckFill, BsCalendarCheckFill} from 'react-icons/bs'
+import {BsCalendar2CheckFill} from 'react-icons/bs'
 import {MdEventRepeat} from 'react-icons/md'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
@@ -115,7 +115,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       await CalendarManager.UpdateEvent(event?.ownerKey, updateIndex, event)
       // Add cloned event for currentUser
       await CalendarManager.addCalendarEvent(currentUser, _updatedEvent)
-      NotificationManager.sendToShareWith(
+      UpdateManager.sendToShareWith(
         shareWithWithoutCurrentUser,
         currentUser,
         'Event Updated',
@@ -179,7 +179,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           return false
         }
 
-        const cleanedEvent = ObjectManager.cleanObject(updatedEvent, ModelNames.calendarEvent)
+        const cleanedEvent = ObjectManager.GetModelValidatedObject(updatedEvent, ModelNames.calendarEvent)
         const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
 
         // Events with multiple days
@@ -219,13 +219,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         }
         if (event?.ownerKey === currentUser?.key) {
           if (Manager.IsValid(eventShareWith)) {
-            NotificationManager.sendToShareWith(
-              eventShareWith,
-              currentUser,
-              'Event Updated',
-              `${eventName} has been updated`,
-              ActivityCategory.calendar
-            )
+            UpdateManager.sendToShareWith(eventShareWith, currentUser, 'Event Updated', `${eventName} has been updated`, ActivityCategory.calendar)
           }
         }
       }
@@ -305,7 +299,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     // Get shareWith Names
     const securedShareWith = event?.shareWith?.filter((x) => x !== currentUser?.key && currentUser?.sharedDataUsers.includes(x)) || event?.shareWith
     let mappedShareWithNames = Manager.MapKeysToUsers(securedShareWith, users)
-    mappedShareWithNames = mappedShareWithNames.filter((x) => x?.name !== StringManager.getFirstNameOnly(currentUser?.name)).flat()
+    mappedShareWithNames = mappedShareWithNames.filter((x) => x?.name !== StringManager.GetFirstNameOnly(currentUser?.name)).flat()
     setShareWithNames(mappedShareWithNames)
 
     // Repeating
@@ -345,7 +339,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       if (event?.ownerKey === currentUser?.key) {
         return 'Me'
       } else {
-        return StringManager.getFirstNameOnly(event?.createdBy)
+        return StringManager.GetFirstNameOnly(event?.createdBy)
       }
     }
   }
@@ -358,7 +352,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
   return (
     <Modal
-      titleIcon={<BsCalendarCheckFill />}
       onDelete={() => {
         AlertManager.confirmAlert(
           SetLocalConfirmMessage(),
@@ -386,6 +379,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       viewSelector={
         <ViewSelector
           key={refreshKey}
+          onloadState={showCard}
           labels={['details', 'edit']}
           updateState={(labelText) => {
             setView(labelText)
@@ -394,9 +388,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       }
       wrapperClass={`edit-calendar-event ${event?.ownerKey === currentUser?.key ? 'owner' : 'non-owner'}`}>
       <div id="edit-cal-event-container" className={`${theme} edit-event-form'`}>
-        <Spacer height={5} />
         {/* DETAILS */}
         <div id="details" className={view === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
+          <Spacer height={5} />
           <div className="blocks">
             {/*  Date */}
             <DetailBlock
@@ -460,28 +454,31 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           </div>
 
           {(Manager.IsValid(event?.location) || Manager.IsValid(event?.phone) || Manager.IsValid(event?.websiteUrl)) && (
-            <div className="blocks">
-              {/*  Phone */}
-              <DetailBlock valueToValidate={event?.phone} isPhone={true} text={StringManager.FormatPhone(event?.phone)} title={'Call'} />
+            <>
+              <Spacer height={8} />
+              <div className="blocks">
+                {/*  Phone */}
+                <DetailBlock valueToValidate={event?.phone} isPhone={true} text={StringManager.FormatPhone(event?.phone)} title={'Call'} />
 
-              {/*  Website */}
-              <DetailBlock
-                valueToValidate={event?.websiteUrl}
-                linkUrl={event?.websiteUrl}
-                text={decodeURIComponent(event?.websiteUrl)}
-                isLink={true}
-                title={'Website/Link'}
-              />
+                {/*  Website */}
+                <DetailBlock
+                  valueToValidate={event?.websiteUrl}
+                  linkUrl={event?.websiteUrl}
+                  text={decodeURIComponent(event?.websiteUrl)}
+                  isLink={true}
+                  title={'Website/Link'}
+                />
 
-              {Manager.IsValid(event?.location) && (
-                <>
-                  <Spacer height={5} />
-                  {/*  Location */}
-                  <DetailBlock valueToValidate={event?.location} isNavLink={true} text={event?.location} linkUrl={event?.location} title={'Go'} />
-                  <Spacer height={5} />
-                </>
-              )}
-            </div>
+                {Manager.IsValid(event?.location) && (
+                  <>
+                    <Spacer height={1} />
+                    {/*  Location */}
+                    <DetailBlock valueToValidate={event?.location} isNavLink={true} text={event?.location} linkUrl={event?.location} title={'Go'} />
+                    <Spacer height={1} />
+                  </>
+                )}
+              </div>
+            </>
           )}
 
           {/* Recurring Frequency */}

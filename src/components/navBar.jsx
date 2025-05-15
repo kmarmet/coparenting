@@ -5,7 +5,7 @@ import {BsCalendar} from 'react-icons/bs'
 import {HiOutlineMenu} from 'react-icons/hi'
 import {IoMdImages} from 'react-icons/io'
 import {IoAdd, IoChatbubblesOutline} from 'react-icons/io5'
-import {PiBellSimpleRinging} from 'react-icons/pi'
+import {PiNotificationFill} from 'react-icons/pi'
 import ScreenNames from '../constants/screenNames'
 import globalState from '../context'
 import useCurrentUser from '../hooks/useCurrentUser'
@@ -47,7 +47,7 @@ export default function NavBar({children, navbarClass}) {
             className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'}`}>
             <div id="calendar-and-month">
               <BsCalendar className={'calendar'} />
-              <span>{moment().format('MMM')}</span>
+              <span>{moment().format('DD')}</span>
             </div>
             <p>Calendar</p>
           </div>
@@ -84,10 +84,10 @@ export default function NavBar({children, navbarClass}) {
           {/* NOTIFICATIONS */}
           {currentUser?.accountType === 'parent' && (
             <div
-              onClick={() => changeCurrentScreen(ScreenNames.notifications)}
-              className={`${currentScreen === ScreenNames.notifications ? 'active menu-item notifications' : 'menu-item notifications'}`}>
-              <PiBellSimpleRinging className={'notifications active'} />
-              <p>Notifications</p>
+              onClick={() => changeCurrentScreen(ScreenNames.updates)}
+              className={`${currentScreen === ScreenNames.updates ? 'active menu-item notifications' : 'menu-item notifications'}`}>
+              <PiNotificationFill className={'notifications active'} />
+              <p>Updates</p>
               <NotificationBadge classes={'navbar'} />
             </div>
           )}

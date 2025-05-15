@@ -11,9 +11,9 @@ import DocumentConversionManager from '/src/managers/documentConversionManager.j
 import DocumentsManager from '/src/managers/documentsManager'
 import ImageManager from '/src/managers/imageManager'
 import Manager from '/src/managers/manager.js'
-import NotificationManager from '/src/managers/notificationManager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
+import UpdateManager from '/src/managers/updateManager'
 import ActivityCategory from '/src/models/activityCategory'
 import Doc from '/src/models/doc'
 import ModelNames from '/src/models/modelNames'
@@ -155,17 +155,17 @@ export default function NewDocument() {
     newDocument.name = StringManager.formatFileName(docNameToUse)
 
     if (Manager.IsValid(newDocument.docText, true)) {
-      const cleanedDoc = ObjectManager.cleanObject(newDocument, ModelNames.doc)
+      const cleanedDoc = ObjectManager.GetModelValidatedObject(newDocument, ModelNames.doc)
       console.log(cleanedDoc)
       await DocumentsManager.AddToDocumentsTable(currentUser, documents, newDocument)
 
       // Send Notification
       if (Manager.IsValid(shareWith)) {
-        await NotificationManager.sendToShareWith(
+        await UpdateManager.sendToShareWith(
           shareWith,
           currentUser,
           `New Document`,
-          `${StringManager.getFirstNameOnly(currentUser?.name)} has uploaded a new document`,
+          `${StringManager.GetFirstNameOnly(currentUser?.name)} has uploaded a new document`,
           ActivityCategory.documents
         )
       }

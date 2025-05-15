@@ -52,6 +52,7 @@ DomManager = {
       slideInRight: 'slideInRight'
       fadeIn: 'fadeIn'
       zoomIn: 'zoomIn'
+      default: 'animate__animated'
 
     zoomIn:
       enter: 'animate__zoomIn',
@@ -235,16 +236,12 @@ DomManager = {
     return DatasetManager.GetValidArray(checkboxGroup)
 
   setDefaultView: () ->
-    activeModal = document.querySelector('#modal.active')
+    activeModal = document.querySelector('#modal-wrapper.active')
     if activeModal
-      detailsView = activeModal.querySelector('.view.active')
-      if detailsView
-        allViews = activeModal.querySelectorAll('.view')
-
-        if Manager.IsValid(allViews)
-          if detailsView
-            detailsView.click()
-            allViews[0].classList.add('active')
+      allViews = activeModal.querySelectorAll('.view')
+      if Manager.IsValid(allViews[0])
+        allViews[0].click()
+        allViews[0].classList.add('active')
 
   ScrollToTopOfPage: () ->
     window.scrollTo(0, 0)

@@ -133,7 +133,7 @@ export default function Behavior({activeChild}) {
                         isDebounced={true}
                         inputType={InputTypes.text}
                         defaultValue={value}
-                        labelText={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.getFirstNameOnly(prop[2])})` : ''}`}
+                        labelText={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
                         onChange={async (e) => {
                           const inputValue = e.target.value
                           await Update(infoLabel, `${inputValue}`)

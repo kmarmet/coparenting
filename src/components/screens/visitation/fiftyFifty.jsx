@@ -63,7 +63,7 @@ export default function FiftyFifty({hide, showCard}) {
     scheduleDates.forEach((date) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
+      dateObject.title = `${StringManager.GetFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
       dateObject.startDate = moment(date).format(DatetimeFormats.dateForDb)
       // Not Required
       dateObject.ownerKey = currentUser?.key

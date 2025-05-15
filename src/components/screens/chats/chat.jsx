@@ -31,7 +31,7 @@ import useChatMessages from '../../../hooks/useChatMessages'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import AppManager from '../../../managers/appManager'
 import DateManager from '../../../managers/dateManager'
-import NotificationManager from '../../../managers/notificationManager'
+import UpdateManager from '../../../managers/updateManager'
 import ActivityCategory from '../../../models/activityCategory'
 import Spacer from '../../shared/spacer'
 
@@ -127,7 +127,7 @@ const Chats = () => {
     _chat.ownerKey = currentUser?.key
     _chat.isPausedFor = []
 
-    const cleanedChat = ObjectManager.cleanObject(_chat, ModelNames.chatThread)
+    const cleanedChat = ObjectManager.GetModelValidatedObject(_chat, ModelNames.chatThread)
     cleanedChat.isPausedFor = []
     let cleanedRecipientChat = {...cleanedChat}
     cleanedRecipientChat.isPausedFor = []
@@ -144,7 +144,7 @@ const Chats = () => {
     chatMessage.message = messageText
     chatMessage.notificationSent = false
 
-    const cleanMessage = ObjectManager.cleanObject(chatMessage, ModelNames.chatMessage)
+    const cleanMessage = ObjectManager.GetModelValidatedObject(chatMessage, ModelNames.chatMessage)
     //#endregion FILL MODELS
 
     //#region ADD TO DB
@@ -162,9 +162,9 @@ const Chats = () => {
 
     // SEND NOTIFICATION - Only Send if it is not paused for the recipient
     if (!chat?.isPausedFor?.includes(messageRecipient?.key)) {
-      NotificationManager.SendNotification(
+      UpdateManager.SendNotification(
         'New Message 🗯️',
-        `You have an unread message from ${StringManager.getFirstNameOnly(currentUser.name)}`,
+        `You have an unread message from ${StringManager.GetFirstNameOnly(currentUser.name)}`,
         messageRecipient?.key,
         currentUser,
         ActivityCategory.chats
@@ -187,11 +187,9 @@ const Chats = () => {
   const DefineBookmarks = async () => {
     let bookmarkRecords = await ChatManager.getBookmarks(chat?.id)
     let bookmarkedRecordIds = bookmarkRecords.map((x) => x.messageId)
-
     // Set bookmarks
     if (Manager.IsValid(bookmarkRecords)) {
       let bookmarksToLoop = chatMessages.filter((x) => bookmarkedRecordIds.includes(x.id))
-
       setBookmarks(bookmarksToLoop)
     } else {
       setShowBookmarks(false)
@@ -299,6 +297,16 @@ const Chats = () => {
     }
   }, [chat])
 
+  useEffect(() => {
+    if (showBookmarks) {
+      DomManager.ToggleAnimation('add', 'bookmark-message', DomManager.AnimateClasses.names.fadeInUp)
+    }
+  }, [showBookmarks])
+
+  useEffect(() => {
+    DefineBookmarks().then((r) => r)
+  }, [])
+
   return (
     <>
       <Modal
@@ -352,7 +360,7 @@ const Chats = () => {
                 setState({...state, currentScreen: ScreenNames.chats})
               }}>
               <IoChevronBack />
-              <p id="user-name">{StringManager.getFirstNameOnly(messageRecipient?.name)}</p>
+              <p id="user-name">{StringManager.GetFirstNameOnly(messageRecipient?.name)}</p>
             </div>
             <div id="right-side" className="flex">
               {inSearchMode ? (
@@ -387,13 +395,16 @@ const Chats = () => {
             {Manager.IsValid(searchResults) &&
               searchResults.map((messageObj, index) => {
                 let sender
-                if (StringManager.getFirstNameOnly(messageObj.sender) === StringManager.getFirstNameOnly(currentUser?.name)) {
+                if (StringManager.GetFirstNameOnly(messageObj.sender) === StringManager.GetFirstNameOnly(currentUser?.name)) {
                   sender = 'ME'
                 } else {
-                  sender = StringManager.getFirstNameOnly(messageObj.sender)
+                  sender = StringManager.GetFirstNameOnly(messageObj.sender)
                 }
                 return (
-                  <div className="message-wrapper search" key={index}>
+                  <div
+                    key={index}
+                    className={`message-wrapper search-message-wrapper ${DomManager.Animate.FadeInUp(searchResults, '.message-wrapper')}`}
+                    style={DomManager.AnimateDelayStyle(index, 0.002)}>
                     <p className={messageObj.sender === currentUser?.name ? 'message from' : 'to message'}>{messageObj.message}</p>
                     <span className={messageObj.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
                       From {sender} on&nbsp;{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD (hh:mma)')}
@@ -410,13 +421,13 @@ const Chats = () => {
             {bookmarks.map((bookmark, index) => {
               let sender
 
-              if (StringManager.getFirstNameOnly(bookmark.sender) === StringManager.getFirstNameOnly(currentUser?.name)) {
+              if (StringManager.GetFirstNameOnly(bookmark.sender) === StringManager.GetFirstNameOnly(currentUser?.name)) {
                 sender = 'ME'
               } else {
-                sender = StringManager.getFirstNameOnly(bookmark.sender)
+                sender = StringManager.GetFirstNameOnly(bookmark.sender)
               }
               return (
-                <div {...bind()} key={index} className={'message-wrapper'}>
+                <div {...bind()} key={index} className={'message-wrapper bookmark-message'}>
                   {/* LONGPRESS MENU */}
                   <div className="longpress-menu">
                     <button
@@ -448,8 +459,12 @@ const Chats = () => {
                       Cancel <MdCancel className={'cancel-icon'} />
                     </button>
                   </div>
-                  <div className="flex">
-                    <p className={bookmark.sender === currentUser?.name ? 'message from' : 'to message'}>{bookmark.message}</p>
+                  <div className={`flex`}>
+                    <p
+                      style={DomManager.AnimateDelayStyle(index)}
+                      className={`${DomManager.Animate.FadeInUp(bookmark, '.message-wrapper')} ${bookmark.sender === currentUser?.name ? 'message from' : 'to message'}`}>
+                      {bookmark.message}
+                    </p>
                   </div>
                   <span className={bookmark.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
                     From {sender} on&nbsp; {moment(bookmark.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD (hh:mma)')}
@@ -460,6 +475,7 @@ const Chats = () => {
           </div>
         )}
 
+        {/* MESSAGES */}
         {!showBookmarks && searchResults.length === 0 && (
           <>
             {/* ITERATE DEFAULT MESSAGES */}
@@ -591,7 +607,7 @@ const Chats = () => {
       {!DomManager.isMobile() && (
         <Fade direction={'up'} duration={1000} className={'conversation-sidebar-fade-wrapper chats-desktop-sidebar'} triggerOnce={true}>
           <div className="top-buttons top">
-            <p id="user-name">{StringManager.getFirstNameOnly(messageRecipient.name)}</p>
+            <p id="user-name">{StringManager.GetFirstNameOnly(messageRecipient.name)}</p>
             <p id="view-bookmarks" className="item menu-item" onClick={(e) => ViewBookmarks(e)}>
               <PiBookmarksSimpleDuotone
                 id="chat-bookmark-icon"

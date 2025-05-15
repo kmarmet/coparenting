@@ -10,7 +10,7 @@ StateObj =
   currentScreen: ScreenNames.landing
   currentUser: {}
   docToView: ''
-  isLoading: true
+  isLoading: false
   loadingText: 'Preparing your pathway to peace...'
   menuIsOpen: false
   messageToUser: null

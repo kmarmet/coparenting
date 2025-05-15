@@ -82,7 +82,7 @@ const NewChatSelector = () => {
                   onClick={() => {
                     OpenMessageThread(coparent).then((r) => r)
                   }}>
-                  {StringManager.getFirstNameOnly(coparent?.name)}
+                  {StringManager.GetFirstNameOnly(coparent?.name)}
                 </div>
               )}
             </div>

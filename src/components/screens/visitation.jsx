@@ -79,7 +79,7 @@ export default function Visitation() {
     weekends.flat().forEach((date) => {
       const dateObject = new CalendarEvent()
       // Required
-      dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
+      dateObject.title = `${StringManager.GetFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
       dateObject.startDate = moment(date).format(DatetimeFormats.dateForDb)
       // Not Required
       dateObject.ownerKey = currentUser?.key
@@ -107,7 +107,7 @@ export default function Visitation() {
         const dateObject = new CalendarEvent()
         const holidayName = CalendarMapper.holidayDateToName(moment(holidayDateString).format('MM/DD'))
         // Required
-        dateObject.title = `${StringManager.getFirstNameOnly(currentUser?.name)}'s Holiday Visitation`
+        dateObject.title = `${StringManager.GetFirstNameOnly(currentUser?.name)}'s Holiday Visitation`
         dateObject.startDate = moment(holidayDateString).format(DatetimeFormats.dateForDb)
         dateObject.holidayName = holidayName
         // Not Required
@@ -117,7 +117,7 @@ export default function Visitation() {
         dateObject.isHoliday = true
         dateObject.id = Manager.GetUid()
         dateObject.shareWith = DatasetManager.getUniqueArray(shareWith, true)
-        const cleanedObject = ObjectManager.cleanObject(dateObject, ModelNames.calendarEvent)
+        const cleanedObject = ObjectManager.GetModelValidatedObject(dateObject, ModelNames.calendarEvent)
         events.push(cleanedObject)
       })
       // Upload to DB

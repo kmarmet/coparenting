@@ -1,7 +1,8 @@
 import DateFormats from "../constants/datetimeFormats"
 import moment from "moment"
 
-export default class Notification
+Update = null
+export default class Update
   constructor: (
     @id = ''
     @creationDate = moment().format(DateFormats.fullDatetime)

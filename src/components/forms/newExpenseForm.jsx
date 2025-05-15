@@ -11,9 +11,9 @@ import FirebaseStorage from '/src/database/firebaseStorage'
 import AlertManager from '/src/managers/alertManager'
 import DateManager from '/src/managers/dateManager'
 import ImageManager from '/src/managers/imageManager'
-import NotificationManager from '/src/managers/notificationManager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager.coffee'
+import UpdateManager from '/src/managers/updateManager'
 import CalendarMapper from '/src/mappers/calMapper'
 import ActivityCategory from '/src/models/activityCategory'
 import Expense from '/src/models/expense.js'
@@ -136,7 +136,7 @@ export default function NewExpenseForm() {
     }
 
     // Get coparent name
-    newExpense.recipientName = StringManager.getFirstNameOnly(currentUser?.name)
+    newExpense.recipientName = StringManager.GetFirstNameOnly(currentUser?.name)
 
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
 
@@ -152,7 +152,7 @@ export default function NewExpenseForm() {
       })
     }
 
-    const cleanObject = ObjectManager.cleanObject(newExpense, ModelNames.expense)
+    const cleanObject = ObjectManager.GetModelValidatedObject(newExpense, ModelNames.expense)
 
     // Add to DB
     await DB.Add(`${DB.tables.calendarEvents}/${currentUser?.key}`, cleanObject).finally(async () => {
@@ -163,10 +163,10 @@ export default function NewExpenseForm() {
 
       // Send notification
       if (Manager.IsValid(shareWith)) {
-        await NotificationManager.sendToShareWith(
+        await UpdateManager.sendToShareWith(
           shareWith,
           currentUser,
-          `${StringManager.getFirstNameOnly(currentUser?.name)} has created a new expense`,
+          `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a new expense`,
           `${expenseName} - $${expenseAmount}`,
           ActivityCategory.calendarEvents
         )
@@ -196,7 +196,7 @@ export default function NewExpenseForm() {
         newExpense.paidStatus = 'unpaid'
         newExpense.createdBy = currentUser?.name
         newExpense.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
-        newExpense.recipientName = StringManager.getFirstNameOnly(currentUser?.name)
+        newExpense.recipientName = StringManager.GetFirstNameOnly(currentUser?.name)
         newExpense.isRecurring = true
         expensesToPush.push(newExpense)
       })
@@ -335,37 +335,37 @@ export default function NewExpenseForm() {
 
           {/* DEFAULT EXPENSE AMOUNTS */}
           <div id="default-expense-amounts">
-            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
+            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
               $5
             </button>
-            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
+            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
               $10
             </button>
-            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
+            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
               $20
             </button>
-            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
+            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
               $30
             </button>
-            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
+            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
               $40
             </button>
-            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
+            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
               $50
             </button>
-            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
+            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
               $60
             </button>
-            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
+            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
               $70
             </button>
-            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
+            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
               $80
             </button>
-            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
+            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
               $90
             </button>
-            <button className="default-amount-button default grey button" onClick={OnDefaultAmountPress}>
+            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
               $100
             </button>
             <button

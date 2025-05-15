@@ -41,7 +41,7 @@ const Chats = () => {
         submitText={'Send Invitation'}
         wrapperClass="invite-coparent-card"
         title={'Invite Co-Parent'}
-        subtitle="Extend an invitation to a co-parent sto facilitate the sharing of essential information with them"
+        subtitle="Extend an invitation to a co-parent to facilitate the sharing of essential information with them"
         onClose={() => setShowInvitationCard(false)}
         showCard={showInvitationCard}
         onSubmit={() => {
@@ -86,7 +86,6 @@ const Chats = () => {
               <Label text={'Invite Co-Parent'} /> {showInfo ? <LuMinus /> : <LuPlus />}
             </button>
           </AccordionSummary>
-          <Spacer height={5} />
           <AccordionDetails>
             <p>
               Currently, your account is linked to {currentUser?.coparents?.length} {currentUser?.coparents?.length > 1 ? 'co-parents' : 'co-parent'}.
@@ -94,7 +93,7 @@ const Chats = () => {
             </p>
 
             <button
-              className="default"
+              className="default smaller"
               id="send-invite-button"
               onClick={() => {
                 setShowInvitationCard(true)

@@ -206,7 +206,7 @@ export default function Registration() {
       const phoneCode = Manager.GetUid().slice(0, 6)
       setVerificationCode(phoneCode)
       setState({...state, isLoading: true, loadingText: 'Sending access code to your parent...'})
-      await SmsManager.Send(parentPhone, SmsManager.getParentVerificationTemplate(StringManager.getFirstNameOnly(name), phoneCode))
+      await SmsManager.Send(parentPhone, SmsManager.getParentVerificationTemplate(StringManager.GetFirstNameOnly(name), phoneCode))
       setState({...state, isLoading: false})
       setActiveStep(Steps.VerifyParentAccessCode)
     }
@@ -249,7 +249,7 @@ export default function Registration() {
             await DB.updateByPath(`${DB.tables.users}/${existingParentAccount?.key}/sharedDataUsers`, updatedSharedDataUsers)
 
             // Add child to parent's children array
-            const cleanChild = ObjectManager.cleanObject(childToAdd, ModelNames.child)
+            const cleanChild = ObjectManager.GetModelValidatedObject(childToAdd, ModelNames.child)
             await DB_UserScoped.AddChildToParentProfile(existingParentAccount, cleanChild)
           }
 
@@ -272,7 +272,7 @@ export default function Registration() {
             userKey: existingParentAccount?.key,
             email: existingParentAccount?.email,
           }
-          const cleanParent = ObjectManager.cleanObject(newParent, ModelNames.parent)
+          const cleanParent = ObjectManager.GetModelValidatedObject(newParent, ModelNames.parent)
           await DB_UserScoped.AddParent(currentUserToUse, cleanParent)
           await DB_UserScoped.updateUserRecord(currentUserToUse?.key, 'parentAccessGranted', true)
           await DB_UserScoped.updateUserRecord(currentUserToUse?.key, 'sharedDataUsers', [existingParentAccount?.key])

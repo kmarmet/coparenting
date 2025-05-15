@@ -6,7 +6,7 @@ import DatetimeFormats from '/src/constants/datetimeFormats'
 import DB from '/src/database/DB'
 import DB_UserScoped from '/src/database/db_userScoped'
 import DateManager from '/src/managers/dateManager'
-import NotificationManager from '/src/managers/notificationManager.js'
+import UpdateManager from '/src/managers/updateManager.js'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import InputTypes from '../../../constants/inputTypes'
@@ -47,14 +47,14 @@ export default function Settings() {
 
   const toggleNotifications = async () => {
     setNotificationsToggled(!notificationsToggled)
-    const subscriber = await DB.find(DB.tables.notificationSubscribers, ['key', currentUser.key], true)
+    const subscriber = await DB.find(DB.tables.Updatesubscribers, ['key', currentUser.key], true)
     const {subscriptionId} = subscriber
     await DB_UserScoped.updateUserRecord(currentUser?.key, 'settings/notificationsEnabled', !currentUser?.settings?.notificationsEnabled)
 
     if (notificationsToggled === true) {
-      await NotificationManager.enableNotifications(subscriptionId)
+      await UpdateManager.enableNotifications(subscriptionId)
     } else {
-      await NotificationManager.disableNotifications(subscriptionId)
+      await UpdateManager.disableNotifications(subscriptionId)
     }
   }
 
