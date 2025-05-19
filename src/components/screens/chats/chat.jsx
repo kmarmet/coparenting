@@ -355,7 +355,7 @@ const Chats = () => {
       <div key={refreshKey} id="chat-wrapper" className={`${theme} conversation`} {...handlers}>
         {/* LONG PRESS MENU */}
         {showLongpressMenu && (
-          <div className="longpress-menu">
+          <div className="long-press-menu">
             <button
               id="copy"
               onClick={() => {
@@ -467,7 +467,7 @@ const Chats = () => {
               return (
                 <div {...bind()} key={index} className={'message-wrapper bookmark-message'}>
                   {/* LONGPRESS MENU */}
-                  <div className="longpress-menu">
+                  <div className="long-press-menu">
                     <button
                       id="copy"
                       onClick={(e) => {

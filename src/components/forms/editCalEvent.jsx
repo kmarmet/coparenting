@@ -18,7 +18,7 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
-import React, {Suspense, useContext, useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {BsCalendar2CheckFill} from 'react-icons/bs'
 import {MdEventRepeat} from 'react-icons/md'
 import InputTypes from '../../constants/inputTypes'
@@ -30,7 +30,6 @@ import DomManager from '../../managers/domManager'
 import LogManager from '../../managers/logManager'
 import AddressInput from '../shared/addressInput'
 import DetailBlock from '../shared/detailBlock'
-import Loading from '../shared/loading'
 import Map from '../shared/map'
 import MultilineDetailBlock from '../shared/multilineDetailBlock'
 import Spacer from '../shared/spacer.jsx'
@@ -353,7 +352,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
   return (
     <>
-      <Suspense fallback={<Loading />}>Hey</Suspense>
       <Modal
         onDelete={() => {
           AlertManager.confirmAlert(

@@ -1,3 +1,15 @@
+/*#region  PRIMARY COLORS */
+$lightAccent: rgba(116, 88, 255, 0.2);
+$lightSecondaryAccent: rgba(108, 115, 200, 0.2);
+$lightMain: rgba(76, 111, 255, 0.2);
+$lightBlend: rgba(95, 87, 255, 0.2);
+$accent: #7458ff;
+$secondaryAccent: #6c73c8;
+$main: #4c6fff;
+$blend: #5f57ff;
+$linkColor: #3659c2;
+/*#endregion  PRIMARY COLORS */
+
 /*#region  BASE COLORS */
 
 // GREEN
@@ -26,21 +38,10 @@ $orange: #c0742d;
 // PURPLE
 $lightPurple: #f5f0ff;
 $purple: #856ab8;
-$mediumPurple: #6c73c8;
 $darkPurple: #2c1d52;
 
 // PRIMARY COLORS
-$lightAccentBlue: #dae5fc;
-$lightAccent: rgba(97, 113, 234, 0.15);
-$accent: #6257ff;
-//$combo: #5c5ef4;
-$main: #4c6fff;
-$combo: #5f57ff;
-$darkBlue: #0865fe;
-$linkColor: $accent;
-$lightBlue: #00a2eb;
-//$accent: #2c4dff;
-//$linkColor: #0667f6;
+
 /*#endregion  BASE COLORS */
 
 /*#region  BLACKS (NOT NEGROS)*/
@@ -53,11 +54,21 @@ $translucentLightest: rgba(255, 255, 255, 0.09);
 $darkGrey: #a1a1aa;
 $darkerGrey: #86868f;
 $darkestGrey: #5e5e67;
+
 $grey: #f3f4f6;
-$lightGrey: #f9fafb;
-$mediumGrey: #f7f8f9;
+//$lightGrey: #f9fafb;
+$mediumGrey: #e9ecef;
+$lightGrey: #f8f9fa;
+//$mediumGrey: #f7f8f9;
 $greyBorderColor: #d6d6d6;
 /*#endregion  GREYS*/
+
+/*#region  WHITES */
+$offWhite: #faf9f6;
+$tanWhite: #f9f7f3;
+$transWhite: rgba(255, 255, 255, 0.55);
+$darkerTransWhite: rgba(255, 255, 255, 0.45);
+/*#endregion  WHITES */
 
 /*#region  VISITATION COLORS*/
 $coparentPurple: #7458ff;

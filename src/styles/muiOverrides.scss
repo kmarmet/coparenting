@@ -169,7 +169,7 @@
       }
 
       &.Mui-selected {
-        background-color: $lightAccentBlue !important;
+        background-color: $lightMain !important;
         width: 55px !important;
         height: 45px !important;
         color: $main !important;
@@ -195,7 +195,7 @@
         align-items: center !important;
         display: flex !important;
         justify-content: center !important;
-        background: $lightAccentBlue !important;
+        background: $lightMain !important;
 
         button {
           height: auto !important;
@@ -427,7 +427,7 @@
               color: $primaryText !important;
 
               &.Mui-selected {
-                background: $lightAccentBlue !important;
+                background: $lightMain !important;
                 opacity: 1;
                 color: $main !important;
               }
@@ -453,7 +453,7 @@
 
           @media screen and (min-width: 650px) {
             &:hover {
-              background: $lightAccentBlue !important;
+              background: $lightMain !important;
               color: $accent !important;
             }
           }

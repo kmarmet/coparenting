@@ -323,8 +323,8 @@
               // TODAY
               &.MuiPickersDay-today {
                 border-radius: 0 !important;
-                color: $darkGreen !important;
-                font-weight: $fwBold !important;
+                color: $blend !important;
+                font-weight: $fwMedium !important;
                 &:after {
                   transition: all 0.3s ease-in-out;
                   width: 80%;
@@ -338,7 +338,7 @@
                   @include centerHoriz;
                   height: 20px;
                   border-radius: 50px !important;
-                  background: $bootstrapBgGreen;
+                  background: $lightBlend;
                 }
               }
 
@@ -362,7 +362,7 @@
                   @include centerHoriz;
                   height: 20px;
                   border-radius: 50px !important;
-                  background: $accent;
+                  background: $blend;
                 }
               }
 

@@ -175,47 +175,6 @@
           font-weight: $fwBold;
         }
       }
-
-      .pills {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-
-        .pill {
-          @include pillButton;
-          color: $main;
-          border: 1px solid $main;
-          background: $grey;
-          border-radius: 50px;
-          text-align: center;
-          font-weight: $fwRegular;
-          line-height: 1;
-          padding: 6.5px 15px;
-          font-size: 12px;
-          align-items: center;
-          justify-content: center;
-          -webkit-user-select: none;
-          -moz-user-select: none;
-          -ms-user-select: none;
-          user-select: none;
-          transition: all 0.3s ease-in-out;
-          letter-spacing: 0.8px;
-          display: inline-flex;
-          margin-right: 8px;
-
-          &.active {
-            background: $lightAccentBlue;
-            color: $main;
-          }
-
-          svg {
-            font-size: 12px;
-            width: 0;
-            transition: all 0.3s linear;
-          }
-        }
-      }
     }
 
     .action-pills {

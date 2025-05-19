@@ -15,9 +15,9 @@
   z-index: 99999;
   overscroll-behavior: none;
   padding: 0 0 25vh 0;
-  position: fixed;
+  position: sticky;
   top: 0;
-
+  @include mainColorsGradient;
   .screen-content {
     padding: 0 15px 200px 15px;
   }
@@ -26,7 +26,7 @@
     width: 100%;
     padding: 55px 15px 25px 15px;
     z-index: 99999;
-    @include mainColorsGradient;
+    //    @include mainColorsGradient;
     position: relative;
 
     .text {
@@ -102,7 +102,7 @@
   position: relative;
   text-align: center;
   opacity: 1;
-  color: $combo;
+  color: $blend;
   font-weight: $fwBold;
   width: max-content;
   font-size: 35px;
@@ -1203,7 +1203,7 @@
           }
 
           .svg-wrapper {
-            background: $lightAccentBlue;
+            background: $lightMain;
           }
         }
       }
@@ -1216,7 +1216,7 @@
           }
 
           .svg-wrapper {
-            background: $lightAccentBlue;
+            background: $lightMain;
           }
         }
       }
@@ -1229,7 +1229,7 @@
           }
 
           .svg-wrapper {
-            background: $lightAccentBlue;
+            background: $lightMain;
           }
         }
       }
@@ -1367,6 +1367,7 @@
   overflow: auto;
   overscroll-behavior: none;
   justify-content: flex-start;
+  margin-bottom: 5px;
 
   &.child-info {
     overflow: auto;
@@ -1382,7 +1383,7 @@
     text-transform: uppercase;
     display: flex;
     line-height: 1;
-    font-size: 14px;
+    font-size: 16px;
     position: relative;
     justify-content: center;
     align-items: center;
@@ -1392,7 +1393,6 @@
     color: rgba(161, 161, 170, 0.26);
     color: white;
     flex: 0;
-    @include hover;
     background: transparent;
     opacity: 0.5;
     border-radius: $bigBorderRadius;
@@ -1400,6 +1400,7 @@
     width: min-content;
     padding: 0;
     height: unset;
+    @include hover;
 
     &.active {
       opacity: 1;
@@ -1591,6 +1592,7 @@
     line-height: 1;
     font-size: 14px;
     color: $darkerGrey;
+    color: $transWhite;
 
     &.calendar {
       margin-left: 20px;
@@ -1724,7 +1726,7 @@
   border-radius: $borderRadius;
 
   &.active {
-    border-top: 2px solid $combo;
+    border-top: 2px solid $blend;
   }
 
   * {
@@ -2734,7 +2736,7 @@
     padding-left: 15px;
 
     #close-button {
-      font-size: 22px;
+      font-size: 26px;
       color: $greyBorderColor;
       z-index: 99999;
       display: flex;
@@ -2862,10 +2864,8 @@
           overflow: hidden;
           width: 100%;
           text-overflow: ellipsis;
-          padding-left: 15px;
           white-space: nowrap;
           font-weight: $fwMedium;
-          line-height: 1;
 
           &.long-title {
             align-items: flex-start;
@@ -2937,6 +2937,7 @@
     overscroll-behavior: none;
     border-radius: 0 0 20px 20px;
     z-index: 999;
+
     #share-with-checkbox-group {
       .flex {
         margin-bottom: 0;
@@ -3687,7 +3688,7 @@
 
       .no-image {
         height: 110px;
-        background: $lightAccentBlue;
+        background: $lightMain;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -4411,6 +4412,7 @@
   left: 0;
   padding-bottom: 5vh;
   background-color: $lightBg;
+  background: transparent;
 
   &.hidden {
     bottom: -200px;
@@ -4457,7 +4459,7 @@
 
   // MENU BUTTON
   #svg-wrapper {
-    background-color: $combo;
+    background-color: $blend;
     height: 60px;
     display: flex;
     justify-content: center;
@@ -4489,6 +4491,7 @@
     width: 100vw;
     height: 55px;
     background-color: $lightBg;
+    background: transparent;
     position: relative;
     top: 10px;
     padding: 0 5px;
@@ -4590,7 +4593,7 @@
 
         p,
         svg {
-          color: $accent;
+          color: $blend;
           opacity: 1;
           font-weight: $fwMediumBold;
         }

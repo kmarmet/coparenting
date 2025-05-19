@@ -148,48 +148,6 @@
   }
 }
 
-// REACT REVEAL
-.css-zvi4ix {
-  width: 100%;
-
-  &.page-container-fade-wrapper {
-    display: flex;
-
-    .with-padding {
-      width: 100%;
-    }
-
-    @media screen and (max-width: 600px) {
-      width: 100%;
-    }
-  }
-
-  &.memories-fade-wrapper {
-    &:has(> #instructions-wrapper) {
-    }
-    @media screen and (max-width: 800px) {
-      .lg-react-element {
-        .memory {
-          width: 100%;
-        }
-      }
-    }
-  }
-
-  &.side-navbar-fade-wrapper {
-    align-self: stretch;
-  }
-
-  &.conversation-fade-wrapper {
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  &.side-navbar-fade-wrapper,
-  &.conversation-sidebar-fade-wrapper {
-  }
-}
-
 #external-overrides {
   // MENU
   .full-menu {
@@ -228,6 +186,7 @@
     background: $grey;
     overflow: hidden;
     height: 100vh;
+    @include mainColorsGradient;
 
     //    #home-indicator {
     //      position: fixed;
@@ -769,7 +728,7 @@
     #app-content-with-sidebar {
       margin: 0 15px;
       max-width: calc(100vw - 30px);
-      position: fixed;
+      position: relative;
       gap: 25px;
       transition: all 0.5s ease-in-out;
       height: 100vh;
