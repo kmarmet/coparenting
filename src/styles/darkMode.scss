@@ -522,7 +522,7 @@
           padding: 0;
 
           .memory-image {
-            .delete-icon {
+            .close-x {
               background-color: unset;
               color: $red;
             }
@@ -1186,7 +1186,7 @@
                 bottom: 10px;
               }
 
-              .delete-icon {
+              .close-x {
                 opacity: 1;
               }
               button {

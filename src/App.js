@@ -109,12 +109,6 @@ export default function App() {
   // State to include in App.js
   const {isLoading, currentScreen, loadingText, currentUser, theme, authUser, creationFormToShow} = state
 
-  useEffect(() => {
-    setTimeout(() => {
-      DomManager.ToggleAnimation('add', 'screen-header .text', DomManager.AnimateClasses.names.fadeInUp)
-    }, 500)
-  }, [currentScreen])
-
   // ON PAGE LOAD
   useEffect(() => {
     // setState({...state, isLoading: true})

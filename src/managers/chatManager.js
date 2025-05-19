@@ -132,9 +132,8 @@ const ChatManager = {
 
     return existingBookmarks
   },
-  toggleMessageBookmark: async (currentUser, messageToUser, messageId, chatId) => {
+  toggleMessageBookmark: async (currentUser, messageToUser, messageId, chatId, existingBookmarks) => {
     const dbRef = ref(getDatabase())
-    const existingBookmarks = await DB.getTable(`${DB.tables.chatBookmarks}/${chatId}`)
     let toAdd = []
 
     const newBookmark = new ChatBookmark()
@@ -143,20 +142,18 @@ const ChatManager = {
 
     // Bookmarks exist already
     if (Manager.IsValid(existingBookmarks)) {
-      const existingBookmark = await DB.find(existingBookmarks, ['messageId', messageId], false)
+      const existingBookmark = existingBookmarks.find((x) => x?.messageId === messageId)
       if (Manager.IsValid(existingBookmark)) {
-        toAdd = existingBookmarks.filter((x) => x.messageId !== messageId)
+        toAdd = existingBookmarks.filter((x) => x?.messageId !== messageId)
       } else {
-        toAdd = [...existingBookmarks, newBookmark]
+        toAdd = DatasetManager.AddToArray(existingBookmarks, newBookmark)
       }
     } else {
       toAdd = [newBookmark]
     }
 
     try {
-      await set(child(dbRef, `${DB.tables.chatBookmarks}/${chatId}`), toAdd).catch((error) => {
-        console.log(error)
-      })
+      await set(child(dbRef, `${DB.tables.chatBookmarks}/${chatId}`), toAdd)
     } catch (error) {
       LogManager.Log(error.message, LogManager.LogTypes.error)
     }

@@ -22,6 +22,7 @@ import ActivityCategory from '../../models/activityCategory'
 import NavBar from '../navBar'
 import Label from '../shared/label'
 import NoDataFallbackText from '../shared/noDataFallbackText'
+import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer'
 
 export default function Updates() {
@@ -117,64 +118,69 @@ export default function Updates() {
   return (
     <>
       <div id="activity-wrapper" className={`${theme} page-container`}>
-        <p className="screen-title">Updates</p>
-        <p className="screen-intro-text">Stay updated with all developments for members in your circle, as they happen.</p>
+        <ScreenHeader
+          screenName={ScreenNames.updates}
+          screenDescription="Stay updated with all developments for your contacts, as they happen."
+          title={'Updates'}
+        />
 
-        {/* LEGEND */}
-        <Spacer height={10} />
-        {Manager.IsValid(currentUser?.accountType) && currentUser?.accountType === 'parent' && (
-          <div className="flex">
-            <Accordion id={'updates-legend'} expanded={legendIsExpanded} className={`${theme} accordion white-bg`}>
-              <AccordionSummary>
-                <button className="button default grey" onClick={() => setLegendIsExpanded(!legendIsExpanded)}>
-                  <Label text={'Legend'} /> {legendIsExpanded ? <FaMinus /> : <FaPlus />}
-                </button>
-              </AccordionSummary>
-              <AccordionDetails>
-                <div className="flex">
-                  <div className="box medical"></div>
-                  <p>Child Related - Medical</p>
-                </div>
-
-                <div className="flex">
-                  <div className="box expenses"></div>
-                  <p>Expenses</p>
-                </div>
-              </AccordionDetails>
-            </Accordion>
-          </div>
-        )}
-
-        <Spacer height={5} />
-
-        {/* CLEAR ALL BUTTON */}
-        {updates?.length > 0 && (
-          <button className="button default bottom-right" onClick={ClearAll}>
-            Clear All <MdClearAll className={'ml-5 fs-25'} />
-          </button>
-        )}
-        {/* LOOP ACTIVITIES */}
-
-        <div id="activity-cards">
-          {Manager.IsValid(updates) &&
-            updates?.map((activity, index) => {
-              const {text, title, creationDate} = activity
-              const categoryObject = GetCategory(activity)
-              const {screen, category, className} = categoryObject
-
-              return (
-                <div key={index} className="flex" id="row-wrapper">
-                  <div className={`activity-row row ${className}`} onClick={() => ChangeScreen(screen, activity)}>
-                    <p className={`card-title ${className}`}>
-                      {criticalCategories.includes(category) && <PiSealWarningDuotone />} {StringManager.uppercaseFirstLetterOfAllWords(title)}
-                    </p>
-                    <p className="text">{text}</p>
-                    <p id="date">{moment(creationDate, DatetimeFormats.fullDatetime).format(DatetimeFormats.readableDatetime)}</p>
+        <div className="screen-content">
+          {/* LEGEND */}
+          <Spacer height={10} />
+          {Manager.IsValid(currentUser?.accountType) && currentUser?.accountType === 'parent' && (
+            <div className="flex">
+              <Accordion id={'updates-legend'} expanded={legendIsExpanded} className={`${theme} accordion white-bg`}>
+                <AccordionSummary>
+                  <button className="button default grey" onClick={() => setLegendIsExpanded(!legendIsExpanded)}>
+                    <Label text={'Legend'} /> {legendIsExpanded ? <FaMinus /> : <FaPlus />}
+                  </button>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <div className="flex">
+                    <div className="box medical"></div>
+                    <p>Child Related - Medical</p>
                   </div>
-                  <IoMdCheckmarkCircleOutline className={'row-checkmark'} onClick={() => ClearNotification(activity)} />
-                </div>
-              )
-            })}
+
+                  <div className="flex">
+                    <div className="box expenses"></div>
+                    <p>Expenses</p>
+                  </div>
+                </AccordionDetails>
+              </Accordion>
+            </div>
+          )}
+
+          <Spacer height={5} />
+
+          {/* CLEAR ALL BUTTON */}
+          {updates?.length > 0 && (
+            <button className="button default bottom-right" onClick={ClearAll}>
+              Clear All <MdClearAll className={'ml-5 fs-25'} />
+            </button>
+          )}
+
+          {/* LOOP ACTIVITIES */}
+          <div id="activity-cards">
+            {Manager.IsValid(updates) &&
+              updates?.map((activity, index) => {
+                const {text, title, creationDate} = activity
+                const categoryObject = GetCategory(activity)
+                const {screen, category, className} = categoryObject
+
+                return (
+                  <div key={index} className="flex" id="row-wrapper">
+                    <div className={`activity-row row ${className}`} onClick={() => ChangeScreen(screen, activity)}>
+                      <p className={`card-title ${className}`}>
+                        {criticalCategories.includes(category) && <PiSealWarningDuotone />} {StringManager.uppercaseFirstLetterOfAllWords(title)}
+                      </p>
+                      <p className="text">{text}</p>
+                      <p id="date">{moment(creationDate, DatetimeFormats.fullDatetime).format(DatetimeFormats.readableDatetime)}</p>
+                    </div>
+                    <IoMdCheckmarkCircleOutline className={'row-checkmark'} onClick={() => ClearNotification(activity)} />
+                  </div>
+                )
+              })}
+          </div>
         </div>
       </div>
       {updates?.length === 0 && <NoDataFallbackText text={'You have no updates awaiting your attention'} />}

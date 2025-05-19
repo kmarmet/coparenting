@@ -54,7 +54,8 @@ const Chats = () => {
   const [chatId, setChatId] = useState(null)
   const {chatMessages} = useChatMessages(chatId)
   const [messagesToLoop, setMessagesToLoop] = useState(chatMessages)
-
+  const [showLongpressMenu, setShowLongpressMenu] = useState(false)
+  const [activeMessage, setActiveMessage] = useState()
   const handlers = useSwipeable({
     delta: {
       right: 170,
@@ -66,16 +67,18 @@ const Chats = () => {
   })
 
   const bind = useLongPress((element) => {
-    navigator.clipboard.writeText(element.target.textContent)
-    const longpressMenu = element.target.parentNode.previousSibling
-
-    if (Manager.IsValid(longpressMenu)) {
-      longpressMenu.classList.add('active')
+    const longPressMenu = element.target.parentNode.previousSibling
+    const message = element.target
+    const messageId = message.getAttribute('data-id')
+    const thisMessage = messagesToLoop.find((x) => x.id === messageId)
+    if (Manager.IsValid(thisMessage?.message)) {
+      setActiveMessage(thisMessage)
+      setShowLongpressMenu(true)
     }
   })
 
-  const ToggleBookmark = async (messageObject) => {
-    await ChatManager.toggleMessageBookmark(currentUser, messageRecipient, messageObject.id, chat?.id).finally(async () => {
+  const ToggleBookmark = async () => {
+    await ChatManager.toggleMessageBookmark(currentUser, messageRecipient, activeMessage?.id, chat?.id, bookmarks).finally(async () => {
       await DefineBookmarks()
     })
   }
@@ -350,6 +353,41 @@ const Chats = () => {
 
       {/* PAGE CONTAINER */}
       <div key={refreshKey} id="chat-wrapper" className={`${theme} conversation`} {...handlers}>
+        {/* LONG PRESS MENU */}
+        {showLongpressMenu && (
+          <div className="longpress-menu">
+            <button
+              id="copy"
+              onClick={() => {
+                navigator.clipboard.writeText(Manager.IsValid(activeMessage) ? activeMessage?.message : '')
+                setShowLongpressMenu(false)
+                setState({...state, successAlertMessage: 'Message Copied'})
+              }}>
+              Copy <IoCopy />
+            </button>
+            <button
+              id="bookmark"
+              className={`${Manager.IsValid(bookmarks?.find((x) => x?.id === activeMessage?.id)) ? 'remove' : 'add'}`}
+              onClick={(e) => {
+                const isBookmarked = Manager.IsValid(bookmarks?.find((x) => x?.id === activeMessage?.id))
+                e.target.parentNode.classList.remove('active')
+                ToggleBookmark(isBookmarked).then((r) => r)
+                setShowLongpressMenu(false)
+              }}>
+              {Manager.IsValid(bookmarks?.find((x) => x?.id === activeMessage?.id)) ? 'Remove' : 'Add'}
+              {Manager.IsValid(bookmarks?.find((x) => x?.id === activeMessage?.id)) ? <BsBookmarkDashFill /> : <BsBookmarkStarFill />}
+            </button>
+
+            <button
+              id="cancel"
+              onClick={(e) => {
+                e.target.parentNode.classList.remove('active')
+                setShowLongpressMenu(false)
+              }}>
+              Cancel <MdCancel className={'cancel-icon'} />
+            </button>
+          </div>
+        )}
         {/* TOP BAR */}
         {!showSearchInput && DomManager.isMobile() && (
           <div className="flex top-buttons">
@@ -497,56 +535,16 @@ const Chats = () => {
                   }
                   return (
                     <div
-                      {...bind()}
                       key={index}
                       className={`message-wrapper ${DomManager.Animate.FadeInUp(messagesToLoop, '.message-wrapper')}`}
                       style={DomManager.AnimateDelayStyle(index, 0.002)}>
-                      {/* LONG PRESS MENU */}
-                      <div className="longpress-menu">
-                        <button
-                          id="copy"
-                          onClick={(e) => {
-                            const message = e.target.parentNode.parentNode.querySelector('.message')
-                            navigator.clipboard.writeText(message.textContent)
-                            e.target.parentNode.classList.remove('active')
-                            setState({...state, successAlertMessage: 'Message Copied'})
-                          }}>
-                          Copy <IoCopy />
-                        </button>
-                        {isBookmarked && (
-                          <button
-                            id="bookmark"
-                            onClick={(e) => {
-                              e.target.parentNode.classList.remove('active')
-
-                              ToggleBookmark(message).then((r) => r)
-                            }}>
-                            Remove Bookmark
-                            <BsBookmarkDashFill className={'active'} />
-                          </button>
-                        )}
-
-                        {!isBookmarked && (
-                          <button
-                            id="bookmark"
-                            onClick={(e) => {
-                              e.target.parentNode.classList.remove('active')
-                              ToggleBookmark(message, false).then((r) => r)
-                            }}>
-                            Bookmark <BsBookmarkStarFill />
-                          </button>
-                        )}
-
-                        <button
-                          id="cancel"
-                          onClick={(e) => {
-                            e.target.parentNode.classList.remove('active')
-                          }}>
-                          Cancel <MdCancel className={'cancel-icon'} />
-                        </button>
-                      </div>
                       <div className="flex">
-                        <p className={message?.senderKey === currentUser?.key ? 'from message' : 'to message'}>{message?.message}</p>
+                        <p
+                          {...bind(message?.id)}
+                          data-id={message?.id}
+                          className={message?.senderKey === currentUser?.key ? 'from message' : 'to message'}>
+                          {message?.message}
+                        </p>
                         {isBookmarked && (
                           <FaStar className={message?.senderKey === currentUser?.key ? 'from bookmarked-icon' : 'to bookmarked-icon'} />
                         )}

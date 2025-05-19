@@ -12,11 +12,15 @@
       background: $lightBg !important;
 
       &.white-bg {
+        .MuiCollapse-root {
+          background: white;
+          padding: 0 10px 10px 10px !important;
+        }
+        .MuiAccordionDetails-root {
+        }
         .MuiCollapse-entered {
-          background: white !important;
-
+          overflow: hidden !important;
           .MuiAccordionDetails-root {
-            padding: 0 10px 10px 10px !important;
           }
         }
       }

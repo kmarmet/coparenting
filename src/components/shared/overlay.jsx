@@ -29,7 +29,7 @@ const Overlay = ({children, show}) => {
     <div
       id="overlay"
       className={`${show ? 'active' : ''} overlay-wrapper`}
-      onClick={(e) => {
+      onClick={() => {
         // const overlay = e.currentTarget
         // if (Manager.IsValid(overlay) && (overlay?.classList.contains('overlay-wrapper') || overlay?.classList.contains('creation-menu'))) {
         //   const allFadeElements = overlay?.querySelectorAll('.animate__fadeInUp')

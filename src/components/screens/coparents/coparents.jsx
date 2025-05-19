@@ -8,11 +8,12 @@ import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
 import React, {useContext, useEffect, useState} from 'react'
 import {BsFillSendFill} from 'react-icons/bs'
+import {CgClose} from 'react-icons/cg'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiOutlineChevronDoubleUp} from 'react-icons/hi2'
 import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
-import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
+import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
 import useCoparents from '../../../hooks/useCoparents'
@@ -22,6 +23,7 @@ import EmailManager from '../../../managers/emailManager'
 import AddressInput from '../../shared/addressInput'
 import Modal from '../../shared/modal'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
+import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 import CustomCoparentInfo from './customCoparentInfo'
 import NewCoparentForm from './newCoparentForm'
@@ -223,77 +225,79 @@ export default function Coparents() {
 
       {/* COPARENTS CONTAINER */}
       <div id="coparents-container" className={`${theme} page-container parents-wrapper`}>
-        <div className="flex" id="screen-title-wrapper">
-          <p className="screen-title beside-action-button">Co-Parents</p>
-        </div>
-        <p className="screen-intro-text">Maintain accessible records of important information regarding your co-parent.</p>
+        <ScreenHeader
+          screenDescription="Maintain accessible records of important information regarding your co-parent."
+          title={'Co-Parents'}
+          screenName={ScreenNames.coparents}
+        />
+        <div className="screen-content">
+          <div style={DomManager.AnimateDelayStyle(1)} className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(true, '.fade-up-wrapper')}`}>
+            {/* COPARENT ICONS CONTAINER */}
+            <div id="coparent-container">
+              {Manager.IsValid(coparents) &&
+                coparents?.map((coparent, index) => {
+                  const coparentKey = activeCoparent?.userKey
+                  return (
+                    <div
+                      onClick={() => setActiveCoparent(coparent)}
+                      className={coparentKey && coparentKey === coparent?.userKey ? 'active coparent' : 'coparent'}
+                      key={index}>
+                      <span className="coparent-name">{StringManager.GetFirstNameAndLastInitial(coparent?.name)?.[0]}</span>
+                    </div>
+                  )
+                })}
+            </div>
 
-        <div style={DomManager.AnimateDelayStyle(1)} className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(true, '.fade-up-wrapper')}`}>
-          {/* COPARENT ICONS CONTAINER */}
-          <div id="coparent-container">
-            {Manager.IsValid(coparents) &&
-              coparents?.map((coparent, index) => {
-                const coparentKey = activeCoparent?.userKey
-                return (
-                  <div
-                    onClick={() => setActiveCoparent(coparent)}
-                    className={coparentKey && coparentKey === coparent?.userKey ? 'active coparent' : 'coparent'}
-                    key={index}>
-                    <span className="coparent-name">{StringManager.GetFirstNameAndLastInitial(coparent?.name)?.[0]}</span>
-                  </div>
-                )
-              })}
-          </div>
+            {/* COPARENT INFO */}
+            <div id="coparent-info" key={activeCoparent?.userKey}>
+              <p id="coparent-name-primary">{StringManager.GetFirstNameAndLastInitial(activeCoparent?.name)}</p>
+              <p id="coparent-type-primary"> {activeCoparent?.parentType}</p>
+              {/* ITERATE COPARENT INFO */}
+              {Manager.IsValid(activeCoparent) &&
+                Object.entries(activeCoparent).map((propArray, index) => {
+                  let infoLabel = propArray[0]
+                  infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
+                  infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
+                  infoLabel = StringManager.FormatTitle(infoLabel, true)
+                  const value = propArray[1]
+                  const inputsToSkip = ['address', 'key', 'id', 'user key']
 
-          {/* COPARENT INFO */}
-          <div id="coparent-info" key={activeCoparent?.userKey}>
-            <p id="coparent-name-primary">{StringManager.GetFirstNameAndLastInitial(activeCoparent?.name)}</p>
-            <p id="coparent-type-primary"> {activeCoparent?.parentType}</p>
-            {/* ITERATE COPARENT INFO */}
-            {Manager.IsValid(activeCoparent) &&
-              Object.entries(activeCoparent).map((propArray, index) => {
-                let infoLabel = propArray[0]
-                infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
-                infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
-                infoLabel = StringManager.FormatTitle(infoLabel, true)
-                const value = propArray[1]
-                const inputsToSkip = ['address', 'key', 'id', 'user key']
+                  return (
+                    <div key={index} className="info-row">
+                      {/* ADDRESS */}
+                      {infoLabel.toLowerCase().includes('address') && (
+                        <AddressInput
+                          className={'address-input'}
+                          defaultValue={value}
+                          labelText="Home Address"
+                          onChange={(address) => Update('address', address)}
+                        />
+                      )}
 
-                return (
-                  <div key={index} className="info-row">
-                    {/* ADDRESS */}
-                    {infoLabel.toLowerCase().includes('address') && (
-                      <AddressInput
-                        className={'address-input'}
-                        defaultValue={value}
-                        labelText="Home Address"
-                        onChange={(address) => Update('address', address)}
-                      />
-                    )}
-
-                    {/* TEXT INPUT */}
-                    {!inputsToSkip.includes(infoLabel.toLowerCase()) && !infoLabel.toLowerCase().includes('address') && (
-                      <>
-                        <div className="flex input">
-                          <InputWrapper
-                            hasBottomSpacer={false}
-                            defaultValue={value}
-                            onChange={async (e) => {
-                              const inputValue = e.target.value
-                              await Update(infoLabel, `${inputValue}`).then((r) => r)
-                              setActiveCoparent(activeCoparent)
-                            }}
-                            inputType={InputTypes.text}
-                            labelText={infoLabel}
-                          />
-                          <PiTrashSimpleDuotone className="delete-icon fs-24" onClick={() => DeleteProp(infoLabel)} />
-                        </div>
-                        <Spacer height={5} />
-                      </>
-                    )}
-                  </div>
-                )
-              })}
+                      {/* TEXT INPUT */}
+                      {!inputsToSkip.includes(infoLabel.toLowerCase()) && !infoLabel.toLowerCase().includes('address') && (
+                        <>
+                          <div className="flex input">
+                            <InputWrapper
+                              hasBottomSpacer={false}
+                              defaultValue={value}
+                              onChange={async (e) => {
+                                const inputValue = e.target.value
+                                await Update(infoLabel, `${inputValue}`).then((r) => r)
+                                setActiveCoparent(activeCoparent)
+                              }}
+                              inputType={InputTypes.text}
+                              labelText={infoLabel}
+                            />
+                            <CgClose className="close-x fs-24" onClick={() => DeleteProp(infoLabel)} />
+                          </div>
+                          <Spacer height={5} />
+                        </>
+                      )}
+                    </div>
+                  )
+                })}
+            </div>
           </div>
         </div>
       </div>

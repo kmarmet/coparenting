@@ -3,9 +3,10 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import React, {useContext, useEffect, useState} from 'react'
+import {CgClose} from 'react-icons/cg'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {IoCheckmarkCircleSharp} from 'react-icons/io5'
-import {PiListChecksFill, PiTrashSimpleDuotone} from 'react-icons/pi'
+import {PiListChecksFill} from 'react-icons/pi'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
 import useActiveChild from '../../../hooks/useActiveChild'
@@ -122,7 +123,7 @@ export default function Checklist({fromOrTo, activeChildId}) {
                       {activeItems.includes(item.toLowerCase()) && <IoCheckmarkCircleSharp className={'checkmark'} />}
                       {StringManager.uppercaseFirstLetterOfAllWords(item)}
                     </p>
-                    <PiTrashSimpleDuotone className={'delete-icon'} onClick={DeleteItem} />
+                    <CgClose className={'close-x children'} onClick={DeleteItem} />
                   </div>
                 )
               })}

@@ -1,7 +1,7 @@
 // Path: src\components\screens\documents\docsList.jsx
 import React, {useContext, useEffect, useState} from 'react'
+import {CgClose} from 'react-icons/cg'
 import {FaFileImage} from 'react-icons/fa'
-import {HiDocumentRemove} from 'react-icons/hi'
 import {HiDocumentText} from 'react-icons/hi2'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
@@ -14,6 +14,7 @@ import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 import NavBar from '../../navBar'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
+import ScreenHeader from '../../shared/screenHeader'
 
 export default function DocsList() {
   const {state, setState} = useContext(globalState)
@@ -38,44 +39,45 @@ export default function DocsList() {
   return (
     <>
       <div id="doc-selection-container" className={`${theme} page-container`}>
-        <div className="flex" id="screen-title-wrapper">
-          <p className="screen-title">Documents</p>
-        </div>
-        <p className="screen-intro-text">
-          You may upload legal documents, such as a separation agreement or custody agreement, among others. If you wish, these documents can also be
-          shared with a co-parent.
-        </p>
+        <ScreenHeader
+          title={'Documents'}
+          screenName={ScreenNames.docsList}
+          screenDescription="You may upload legal documents, such as a separation agreement or custody agreement, among others. If you wish, these documents can also be
+          shared with a co-parent."
+        />
 
-        {!Manager.IsValid(selectedDoc) && Manager.IsValid(documents) && (
-          <div className="sections">
-            {Manager.IsValid(documents) &&
-              documents.map((doc, index) => {
-                const documentExts = ['doc', 'docx', 'pdf', 'txt', 'odt']
-                const fileType = documentExts.includes(StringManager.GetFileExtension(doc.name).toString()) ? 'Document' : 'Image'
-                return (
-                  <div
-                    className="row"
-                    key={index}
-                    onClick={(e) => {
-                      if (!Manager.Contains(e.target.classList, 'delete')) {
-                        setSelectedDoc(doc)
-                        setState({...state, docToView: doc, currentScreen: ScreenNames.docViewer})
-                      }
-                    }}>
-                    <div className="flex section">
-                      <p data-id={doc.id}>
-                        {fileType === 'Document' ? <HiDocumentText className={'file-type'} /> : <FaFileImage className={'file-type'} />}
-                        {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
-                      </p>
-                      <div className={`checkbox delete`} onClick={DeleteDoc}>
-                        <HiDocumentRemove className={'delete-icon'} />
+        <div className="screen-content">
+          {!Manager.IsValid(selectedDoc) && Manager.IsValid(documents) && (
+            <div className="sections">
+              {Manager.IsValid(documents) &&
+                documents.map((doc, index) => {
+                  const documentExts = ['doc', 'docx', 'pdf', 'txt', 'odt']
+                  const fileType = documentExts.includes(StringManager.GetFileExtension(doc.name).toString()) ? 'Document' : 'Image'
+                  return (
+                    <div
+                      className="row"
+                      key={index}
+                      onClick={(e) => {
+                        if (!Manager.Contains(e.target.classList, 'delete')) {
+                          setSelectedDoc(doc)
+                          setState({...state, docToView: doc, currentScreen: ScreenNames.docViewer})
+                        }
+                      }}>
+                      <div className="flex section">
+                        <p data-id={doc.id}>
+                          {fileType === 'Document' ? <HiDocumentText className={'file-type'} /> : <FaFileImage className={'file-type'} />}
+                          {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
+                        </p>
+                        <div className={`checkbox delete`} onClick={DeleteDoc}>
+                          <CgClose className={'close-x'} />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )
-              })}
-          </div>
-        )}
+                  )
+                })}
+            </div>
+          )}
+        </div>
       </div>
       {documents.length === 0 && <NoDataFallbackText text={'There are currently no documents'} />}
       <NavBar navbarClass={'documents'} />

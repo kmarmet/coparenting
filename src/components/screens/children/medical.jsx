@@ -7,9 +7,9 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import React, {useContext, useEffect, useState} from 'react'
+import {CgClose} from 'react-icons/cg'
 import {FaBriefcaseMedical} from 'react-icons/fa'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
-import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
 import useChildren from '../../../hooks/useChildren'
@@ -127,7 +127,7 @@ export default function Medical({activeChild}) {
                       <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
                         {infoLabel}: {value}
                       </a>
-                      <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
+                      <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
                     </>
                   )}
                   {!infoLabel.toLowerCase().includes('phone') && (
@@ -145,7 +145,7 @@ export default function Medical({activeChild}) {
                           Update(infoLabel, `${inputValue}`).then((r) => r)
                         }}
                       />
-                      <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
+                      <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
                     </>
                   )}
                 </div>

@@ -7,8 +7,9 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import React, {useContext, useEffect, useState} from 'react'
+import {CgClose} from 'react-icons/cg'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
-import {PiIdentificationCardFill, PiTrashSimpleDuotone} from 'react-icons/pi'
+import {PiIdentificationCardFill} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
@@ -124,9 +125,7 @@ function General({activeChild}) {
                                 await Update(infoLabel, inputValue)
                               }}
                             />
-                            {infoLabel.toLowerCase() !== 'name' && (
-                              <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
-                            )}
+                            {infoLabel.toLowerCase() !== 'name' && <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />}
                           </>
                         )}
                       </>

@@ -53,6 +53,9 @@ DomManager = {
       fadeIn: 'fadeIn'
       zoomIn: 'zoomIn'
       default: 'animate__animated'
+      slow: 'animate__slow'
+      faster: 'animate__faster'
+      slower: 'animate__slower'
 
     zoomIn:
       enter: 'animate__zoomIn',
@@ -89,17 +92,18 @@ DomManager = {
         datetimeParent.classList.add(currentUser?.settings?.theme)
     , 100
 
-  ToggleAnimation:(addOrRemove, itemsClass, animateName, delay = 80) ->
+  ToggleAnimation:(addOrRemove, itemsClass, animateName, delay = 80, slower=false) ->
     allMenuItems = document.querySelectorAll(".#{itemsClass}")
 
     AddClasses = (item) ->
       if addOrRemove is 'add'
         item.classList.add(DomManager.AnimateClasses[animateName].enter)
+        if slower
+          item.classList.add(DomManager.AnimateClasses.names.slow)
       else
         item.classList.add(DomManager.AnimateClasses[animateName].exit)
 
     if Manager.IsValid(allMenuItems)
-
       allMenuItems.forEach (item) ->
         item.classList.add('animate__animated')
         item.classList.remove(DomManager.AnimateClasses[animateName].exit)

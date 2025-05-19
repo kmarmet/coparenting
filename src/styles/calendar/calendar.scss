@@ -78,8 +78,6 @@
         position: relative;
 
         &.MuiPaper-root {
-          margin: 15px auto 0 !important;
-
           &:before {
             display: none;
           }
@@ -89,6 +87,7 @@
             background: $lightGrey !important;
             border-radius: $bigBorderRadius !important;
             border: 1px solid $lightBorderColor !important;
+            margin: 0 auto 20px auto !important;
           }
         }
 
@@ -173,7 +172,8 @@
     /*#region  STATIC CALENDAR*/
     #static-calendar {
       width: 100vw !important;
-
+      position: relative;
+      top: -20px;
       .MuiDayCalendar-monthContainer {
         position: unset !important;
       }
@@ -257,7 +257,10 @@
       // PARENT/ROOT CALENDAR WRAPPER
       .MuiPickersLayout-contentWrapper {
         max-width: 100% !important;
-
+        top: 10px;
+        position: relative;
+        width: 100vw;
+        overflow: hidden;
         * {
           max-width: 100% !important;
         }
@@ -266,7 +269,7 @@
           height: unset;
           margin: 0;
           width: 100vw;
-          overflow: auto;
+          overflow: hidden;
           max-height: unset;
 
           .MuiMonthCalendar-root {
@@ -410,7 +413,7 @@
       }
 
       .MuiPickersArrowSwitcher-root {
-        display: none !important;
+        //        display: none !important;
       }
 
       .MuiPickersToolbar-root {
@@ -419,24 +422,31 @@
 
       // CALENDAR CELLS
       .MuiPickersCalendarHeader-root {
-        justify-content: center !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        max-height: 28px !important;
-        min-height: 0 !important;
-        margin-bottom: 5px !important;
-        margin-top: 5px !important;
+        //        justify-content: center !important;
+        //        padding: 0 !important;
+        //        margin: 0 !important;
+        //        min-height: 10px !important;
+        //        position: relative !important;
+        //        z-index: 99999 !important;
+        //        display: block !important;
+        //        text-align: right !important;
+        //        margin-left: auto !important;
+        //        top: 0;
+        //        right: 5px;
         .MuiPickersCalendarHeader-labelContainer {
           margin: 0 auto !important;
           .MuiPickersCalendarHeader-label {
-            font-weight: $fwMedium !important;
-            color: $darkerGrey;
+            //            font-weight: $fwRegular !important;
+            //            font-size: 12px !important;
+            //            color: white !important;
+            //            opacity: 0.8 !important;
           }
         }
         .MuiPickersCalendarHeader-switchViewIcon {
-          opacity: 0.6 !important;
-          position: relative;
-          bottom: 3px;
+          //          opacity: 0.6 !important;
+          //          position: relative;
+          //          color: white !important;
+          //          display: none !important;
         }
       }
     }
@@ -451,6 +461,7 @@
       justify-content: center;
       position: relative;
       width: 100vw;
+      font-weight: $fwMedium;
 
       .MuiPickersArrowSwitcher-root {
         gap: 3px;

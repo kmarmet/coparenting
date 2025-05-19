@@ -54,6 +54,7 @@ const DetailBlock = ({
               {/*  NAV LINK */}
               {isNavLink && !isLink && (
                 <>
+                  <Spacer height={topSpacerMargin > 0 ? topSpacerMargin : 0} />
                   <a href={Manager.GetDirectionsLink(linkUrl)} target="_blank" className={'block-text nav-link'} rel="noreferrer">
                     <FaDirections className={'nav-link'} />
                   </a>

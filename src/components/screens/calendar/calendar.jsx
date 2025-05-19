@@ -5,7 +5,6 @@ import InputWrapper from '/src/components/shared/inputWrapper'
 import Modal from '/src/components/shared/modal'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import globalState from '/src/context.js'
-import firebaseConfig from '/src/firebaseConfig.js'
 import AlertManager from '/src/managers/alertManager'
 import AppManager from '/src/managers/appManager'
 import DatasetManager from '/src/managers/datasetManager'
@@ -13,17 +12,17 @@ import DateManager from '/src/managers/dateManager'
 import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
 import {StaticDatePicker} from '@mui/x-date-pickers-pro'
-import {initializeApp} from 'firebase/app'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {BsStars} from 'react-icons/bs'
 import {LuCalendarSearch} from 'react-icons/lu'
-import {PiCalendarPlusDuotone, PiCalendarXDuotone} from 'react-icons/pi'
+import {PiCalendarXDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
 import DB from '../../../database/DB.js'
 import useCalendarEvents from '../../../hooks/useCalendarEvents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
 import CalendarEvents from './calendarEvents.jsx'
@@ -32,7 +31,7 @@ import DesktopLegend from './desktopLegend.jsx'
 
 export default function EventCalendar() {
   const {state, setState} = useContext(globalState)
-  const {theme, currentScreen, refreshKey, userIsLoggedIn} = state
+  const {theme, currentScreen, refreshKey} = state
   const [eventsOfActiveDay, setEventsOfActiveDay] = useState([])
   const [searchResults, setSearchResults] = useState([])
   const [holidays, setHolidays] = useState([])
@@ -40,12 +39,11 @@ export default function EventCalendar() {
   const [searchQuery, setSearchQuery] = useState('')
   const [eventToEdit, setEventToEdit] = useState(null)
   const [showEditCard, setShowEditCard] = useState(false)
-  const [showNewEventCard, setShowNewEventCard] = useState(false)
   const [showHolidaysCard, setShowHolidaysCard] = useState(false)
   const [showSearchCard, setShowSearchCard] = useState(false)
   const [showHolidays, setShowHolidays] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(null)
-  const app = initializeApp(firebaseConfig)
+  // const app = initializeApp(firebaseConfig)
   const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {calendarEvents, eventsAreLoading} = useCalendarEvents()
 
@@ -67,19 +65,33 @@ export default function EventCalendar() {
     const sortedEvents = DateManager.SortCalendarEvents(calendarEvents, 'startDate', 'startTime')
 
     // Set events of day
-    _eventsOfDay = sortedEvents.filter((x) => x.startDate === moment(dateToUse).format(DatetimeFormats.dateForDb))
+    _eventsOfDay = sortedEvents?.filter((x) => x.startDate === moment(dateToUse).format(DatetimeFormats.dateForDb))
     _eventsOfDay = DateManager.SortCalendarEvents(_eventsOfDay, 'startTime', 'asc')
 
     // Set Holidays
     const holidaysToLoop = holidays.filter(
       (x) => moment(x.startDate).format(DatetimeFormats.dateForDb) === moment(dateToUse).format(DatetimeFormats.dateForDb)
     )
-    _eventsOfDay = [..._eventsOfDay, ...holidaysToLoop]
+    _eventsOfDay = DatasetManager.CombineArrays(_eventsOfDay, holidaysToLoop)
     setEventsOfActiveDay(_eventsOfDay)
 
     // ADD DAY INDICATORS
-    await AddDayIndicators([...sortedEvents, ...holidays])
-    setState({...state, isLoading: false})
+    const combined = DatasetManager.CombineArrays(sortedEvents, holidaysToLoop)
+    await AddDayIndicators(combined)
+  }
+  const AddMonthText = (updatedMonth = moment().format('MMMM')) => {
+    const leftArrow = document.querySelector('.MuiPickersArrowSwitcher-previousIconButton')
+    const arrows = document.querySelector('.MuiPickersArrowSwitcher-root')
+    if (Manager.IsValid(leftArrow) && Manager.IsValid(arrows)) {
+      const existingNodes = arrows.querySelectorAll('#calendar-month')
+      if (Manager.IsValid(existingNodes)) {
+        existingNodes.forEach((node) => node.remove())
+      }
+      const month = document.createElement('span')
+      month.id = 'calendar-month'
+      month.innerText = updatedMonth
+      leftArrow.insertAdjacentElement('afterend', month)
+    }
   }
 
   const AddDayIndicators = async (events) => {
@@ -100,7 +112,6 @@ export default function EventCalendar() {
       let daysEventsObject = GetEventsFromDate(formattedDay, events)
       const {dotClasses, payEvents} = daysEventsObject
       const dayEvent = events.find((x) => moment(x?.startDate).format(DatetimeFormats.dateForDb) === formattedDay)
-      const holiday = holidays.find((x) => x?.startDate === formattedDay)
 
       // APPEND INVISIBLE DOTS AND SKIP DAY WITHOUT EVENT
       if (!Manager.IsValid(daysEventsObject.dayEvents) || !Manager.IsValid(daysEventsObject.dayEvent) || dayEvent === undefined) {
@@ -357,6 +368,9 @@ export default function EventCalendar() {
   useEffect(() => {
     HandleRefreshCheck()
     setState({...state, isLoading: false})
+    setTimeout(() => {
+      AddMonthText()
+    }, 500)
   }, [])
 
   return (
@@ -409,22 +423,20 @@ export default function EventCalendar() {
 
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme}`}>
-        <div className="screen-header">
-          <div className="text">
-            <p className="screen-title">Calendar</p>
-          </div>
-        </div>
+        <ScreenHeader title={'Calendar'} screenName={ScreenNames.calendar} />
+        <Spacer height={5} />
 
         {/* STATIC CALENDAR */}
-        <div id="static-calendar" className={theme}>
+        <div id="static-calendar" className={`${theme}`}>
           <StaticDatePicker
-            showDaysOutsideCurrentMonth={true}
+            showDaysOutsideCurrentMonth={false}
             views={['month', 'day']}
             minDate={moment(`${moment().year()}-01-01`)}
             maxDate={moment(`${moment().year()}-12-31`)}
             onMonthChange={async (month) => {
               setCurrentMonth(moment(month).format('MMMM'))
               await GetEvents(moment(month).format(DatetimeFormats.dateForDb))
+              AddMonthText(moment(month).format('MMMM'))
             }}
             onChange={async (day) => {
               DomManager.Animate.RemoveAnimationClasses('.event-row', 'animate__fadeInRight')
@@ -438,10 +450,10 @@ export default function EventCalendar() {
               actionBar: {
                 actions: ['today'],
               },
+              // calendarHeader: {sx: {width: '100px', border: '1px solid red !important', display: 'flex', alignItems: 'center'}},
             }}
           />
         </div>
-
         {/* LEGEND */}
         <CalendarLegend />
 
@@ -462,7 +474,7 @@ export default function EventCalendar() {
         )}
 
         {/* CONTENT WITH PADDING */}
-        <div className="with-padding">
+        <div className="screen-content">
           {/* MAP/LOOP EVENTS */}
           {!eventsAreLoading && (
             <CalendarEvents
@@ -502,9 +514,9 @@ export default function EventCalendar() {
       {/* DESKTOP SIDEBAR */}
       {!DomManager.isMobile() && (
         <div id="calendar-sidebar">
-          <p className="item" id="new-event" onClick={() => setShowNewEventCard(true)}>
-            <PiCalendarPlusDuotone className={'new-event'} id={'Add-new-button'} /> New Event
-          </p>
+          {/*<p className="item" id="new-event" onClick={() => setShowNewEventCard(true)}>*/}
+          {/*  <PiCalendarPlusDuotone className={'new-event'} id={'Add-new-button'} /> New Event*/}
+          {/*</p>*/}
           {!showHolidays && (
             <p className="item" id="holidays-button" onClick={() => setShowHolidaysCard(true)}>
               <BsStars />

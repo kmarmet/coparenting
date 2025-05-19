@@ -8,9 +8,9 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import React, {useContext, useEffect, useState} from 'react'
+import {CgClose} from 'react-icons/cg'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {IoSchool} from 'react-icons/io5'
-import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
@@ -115,7 +115,7 @@ export default function Schooling({activeChild}) {
                       <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
                         {infoLabel}: {value}
                       </a>
-                      <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
+                      <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
                     </>
                   )}
                   {!infoLabel.toLowerCase().includes('phone') && (
@@ -127,7 +127,7 @@ export default function Schooling({activeChild}) {
                         defaultValue={value}
                         onChange={(e) => Update(infoLabel, e.target.value)}
                       />
-                      <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
+                      <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
                     </>
                   )}
                 </div>

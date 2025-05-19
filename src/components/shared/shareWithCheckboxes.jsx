@@ -27,7 +27,8 @@ export default function ShareWithCheckboxes({
   const SetShareWithUsers = async () => {
     const sharedDataUsers = currentUser?.sharedDataUsers
     const sharedDataUsersAccounts = users?.filter((x) => sharedDataUsers?.includes(x.key))
-    // console.log(users)
+    // const shared = DatasetManager.GetValidArray(AccountsMapper.GetShareWithNames(currentUser, users, sharedDataUsers))
+    // setShareWithNames(shared)
     setShareWith(DatasetManager.GetValidArray(sharedDataUsersAccounts))
   }
 

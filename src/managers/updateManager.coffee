@@ -80,21 +80,21 @@ export default UpdateManager =
           .then (identity) ->
             userIdentity = await identity.json()
             newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
-            existingSubscriber = await DB.find(DB.tables.notificationSubscribers, ["email", UpdateManager?.currentUser?.email], true)
+            existingSubscriber = await DB.find(DB.tables.updateSubscribers, ["email", UpdateManager?.currentUser?.email], true)
 
             # If user already exists -> replace record
             if Manager.IsValid(existingSubscriber)
-              deleteKey = await DB.getSnapshotKey("#{DB.tables.notificationSubscribers}", existingSubscriber, "id")
-              await DB.DeleteByPath("#{DB.tables.notificationSubscribers}/#{deleteKey}")
-              await DB.Add("/#{DB.tables.notificationSubscribers}", newSubscriber)
+              deleteKey = await DB.getSnapshotKey("#{DB.tables.updateSubscribers}", existingSubscriber, "id")
+              await DB.DeleteByPath("#{DB.tables.updateSubscribers}/#{deleteKey}")
+              await DB.Add("/#{DB.tables.updateSubscribers}", newSubscriber)
 
             # Else create new record
             else
-              await DB.Add("/#{DB.tables.notificationSubscribers}", newSubscriber)
+              await DB.Add("/#{DB.tables.updateSubscribers}", newSubscriber)
       , 500
 
   getUserSubId: (currentUserPhoneOrEmail, phoneOrEmail = "email") ->
-    existingRecord = await DB.find(DB.tables.notificationSubscribers, [phoneOrEmail, currentUserPhoneOrEmail], true)
+    existingRecord = await DB.find(DB.tables.updateSubscribers, [phoneOrEmail, currentUserPhoneOrEmail], true)
     existingRecord?.subscriptionId
 
   deleteUser: (oneSignalId, subId) ->
@@ -111,7 +111,7 @@ export default UpdateManager =
     myHeaders.append "Accept", "application/json"
     myHeaders.append "Content-Type", "application/json"
     myHeaders.append "Authorization", "Basic #{UpdateManager.apiKey}"
-    allSubs = await DB.getTable("#{DB.tables.notificationSubscribers}")
+    allSubs = await DB.getTable("#{DB.tables.updateSubscribers}")
     subIdRecord = allSubs.find (sub) -> sub.key == recipientKey
 
     #    If user is not subscribed, do not send notification

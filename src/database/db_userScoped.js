@@ -527,7 +527,7 @@ const DB_UserScoped = {
     let updatedObject
     for (const key in obj) {
       // NOTIFICATION SUBSCRIBERS
-      if (key === 'notificationSubscribers' && propNameToUpdate === 'phone') {
+      if (key === 'updateSubscribers' && propNameToUpdate === 'phone') {
         let updatedPushAlertSubs = {}
         for (let prop in obj[key]) {
           if (prop === currentValue) {
@@ -537,7 +537,7 @@ const DB_UserScoped = {
             updatedPushAlertSubs[prop] = obj[key][currentValue]
           }
         }
-        obj['notificationSubscribers'] = updatedPushAlertSubs
+        obj['updateSubscribers'] = updatedPushAlertSubs
       }
 
       // USERS

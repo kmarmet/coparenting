@@ -157,7 +157,7 @@ const Manager = {
     if (Manager.IsValid(keys)) {
       let names = []
       for (let key of keys) {
-        let shareWithUser = dbUsers.find((x) => x?.key === key || x?.userKey === key)
+        let shareWithUser = dbUsers?.find((x) => x?.key === key || x?.userKey === key)
         if (Manager.IsValid(shareWithUser)) {
           names.push(StringManager.GetFirstNameOnly(shareWithUser?.name))
         }

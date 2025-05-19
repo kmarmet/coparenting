@@ -9,35 +9,47 @@
   transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
   background: $lightBg;
   height: 100vh;
-  padding: 65px 15px 200px 15px;
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
   z-index: 99999;
   overscroll-behavior: none;
+  padding: 0 0 25vh 0;
+  position: fixed;
+  top: 0;
+
+  .screen-content {
+    padding: 0 15px 200px 15px;
+  }
 
   .screen-header {
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
-    right: 0;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    padding: 55px 15px 25px 15px;
     z-index: 99999;
-    flex-wrap: wrap;
     @include mainColorsGradient;
-    height: 160px;
+    position: relative;
 
     .text {
-      opacity: 0;
+      p {
+        &.screen-title {
+          font-size: 35px;
+          padding-bottom: 0;
+          margin: 0;
+          border: 0;
+          line-height: 1;
+          white-space: nowrap;
+        }
+        &.screen-description {
+          padding-top: 10px;
+          margin: 0 auto;
+          width: 100%;
+          text-align: left;
+        }
+      }
     }
 
     * {
       color: white;
-      text-align: center;
       width: 100%;
     }
   }
@@ -49,23 +61,6 @@
       padding-bottom: 0;
       background-color: white;
       overflow: hidden;
-    }
-  }
-
-  &.contacts,
-  &.calendar {
-    padding: 20px 0 100px 0;
-    margin-top: 150px;
-
-    p {
-      &.screen-title {
-        margin: 0;
-        border: 0;
-      }
-    }
-
-    .screen-content {
-      padding: 0 15px 200px 15px;
     }
   }
 
@@ -98,7 +93,6 @@
 
 // SCREEN TITLE
 @mixin screenTitle {
-  font-size: 26px;
   word-break: break-word;
   transition: all 0.6s linear;
   line-height: 1;
@@ -111,9 +105,11 @@
   color: $combo;
   font-weight: $fwBold;
   width: max-content;
-  margin: 0 auto 10px auto;
-  padding-bottom: 4px;
-  border-bottom: 2px solid rgba(79, 98, 238, 0.27);
+  font-size: 35px;
+  padding-bottom: 0;
+  margin: 0;
+  border: 0;
+  white-space: nowrap;
 
   &.active {
     transform: scale(1);
@@ -443,15 +439,7 @@
 
 /*#region  EFFECTS*/
 @mixin mainColorsGradient {
-  background-image: linear-gradient(
-    315deg,
-    hsl(233deg 82% 62%) 0%,
-    hsl(236deg 86% 64%) 29%,
-    hsl(239deg 89% 66%) 43%,
-    hsl(243deg 93% 67%) 57%,
-    hsl(247deg 96% 67%) 71%,
-    hsl(250deg 100% 67%) 100%
-  );
+  background: linear-gradient(168deg, rgba(76, 111, 255, 1) 0%, rgba(116, 88, 255, 1) 100%);
 }
 @mixin fadeEdges {
   box-shadow: 0 0 5px 5px white inset;
@@ -463,7 +451,6 @@
     &:hover {
       transition: all 0.3s ease-in-out;
       cursor: pointer;
-      //      filter: brightness(58%);
     }
   }
 }
@@ -1160,6 +1147,10 @@
 
       .content {
         margin-left: 25px;
+
+        &.align-center {
+          align-items: center;
+        }
       }
 
       /*#region  ROW COLORS*/
@@ -1182,11 +1173,11 @@
         .content {
           svg,
           p {
-            color: $darkPurple;
+            color: $coparentPurple;
           }
 
           .svg-wrapper {
-            background: $lightPurple;
+            background: rgba(116, 88, 255, 0.16);
           }
         }
       }
@@ -1195,11 +1186,11 @@
         .content {
           svg,
           p {
-            color: $accent;
+            color: #c29323;
           }
 
           .svg-wrapper {
-            background: $lightAccentBlue;
+            background: #fff3cd;
           }
         }
       }
@@ -1208,11 +1199,11 @@
         .content {
           svg,
           p {
-            color: $darkPurple;
+            color: $main;
           }
 
           .svg-wrapper {
-            background: $lightPurple;
+            background: $lightAccentBlue;
           }
         }
       }
@@ -1221,11 +1212,11 @@
         .content {
           svg,
           p {
-            color: #c29323;
+            color: $accent;
           }
 
           .svg-wrapper {
-            background: #fff3cd;
+            background: $lightAccentBlue;
           }
         }
       }
@@ -1376,8 +1367,6 @@
   overflow: auto;
   overscroll-behavior: none;
   justify-content: flex-start;
-  padding-left: 15px;
-  padding-bottom: 10px;
 
   &.child-info {
     overflow: auto;
@@ -2721,6 +2710,38 @@
     margin: 0 auto 15px auto;
     opacity: 0.45;
   }
+  .view-wrapper {
+    opacity: 0;
+    max-height: 0;
+    transition: all 0.3s ease-in-out;
+    z-index: -1;
+    position: relative;
+    overflow: hidden;
+
+    &.active {
+      z-index: 9;
+      max-height: 1000px;
+      transition: all 0.5s ease-in-out;
+      opacity: 1;
+    }
+  }
+  .above-card {
+    display: grid;
+    grid-template-columns: 6fr 1fr;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    padding-left: 15px;
+
+    #close-button {
+      font-size: 22px;
+      color: $greyBorderColor;
+      z-index: 99999;
+      display: flex;
+      position: relative;
+      right: -20px;
+    }
+  }
 
   /*#region  SPECIFIC MODALS*/
   &.transfer-change {
@@ -2812,10 +2833,6 @@
     opacity: 0;
     min-height: 20vh;
 
-    &.details {
-      //      background: white;
-    }
-
     /*#region  MODAL*/
     #modal {
       overflow: auto;
@@ -2825,6 +2842,7 @@
       align-items: stretch;
       flex-direction: column;
       flex-grow: 1;
+      z-index: 999;
 
       #subtitle {
         color: $grey;
@@ -2834,21 +2852,8 @@
       .header {
         padding: 12px 15px;
         @include mainColorsGradient;
-        width: 100%;
         position: relative;
-        border-bottom: 2px solid $greyBorderColor;
-        #close-button {
-          justify-self: flex-end;
-          font-size: 25px;
-          color: $greyBorderColor;
-          z-index: 99999;
-          float: right;
-          display: flex;
-          justify-content: flex-end;
-          @include centerVert;
-          position: absolute;
-          right: 8px;
-        }
+
         #modal-title {
           text-align: center;
           position: relative;
@@ -2857,7 +2862,7 @@
           overflow: hidden;
           width: 100%;
           text-overflow: ellipsis;
-          padding-left: 30px;
+          padding-left: 15px;
           white-space: nowrap;
           font-weight: $fwMedium;
           line-height: 1;
@@ -2930,7 +2935,8 @@
     overflow: auto;
     top: 0;
     overscroll-behavior: none;
-
+    border-radius: 0 0 20px 20px;
+    z-index: 999;
     #share-with-checkbox-group {
       .flex {
         margin-bottom: 0;
@@ -3193,22 +3199,6 @@
     }
   }
 
-  .view-wrapper {
-    opacity: 0;
-    max-height: 0;
-    transition: all 0.3s ease-in-out;
-    z-index: -1;
-    position: relative;
-    overflow: hidden;
-
-    &.active {
-      z-index: 9;
-      max-height: 1000px;
-      transition: all 0.5s ease-in-out;
-      opacity: 1;
-    }
-  }
-
   #details {
     .flex {
       gap: 10px;
@@ -3331,7 +3321,7 @@
     z-index: 9999999;
     align-self: center;
     justify-content: flex-end;
-    padding-top: 30px;
+    padding-top: 15px;
     margin-left: auto;
     gap: 0 20px;
     padding-right: 10px;
@@ -3446,7 +3436,7 @@
     #checklist-item-row {
       align-items: center;
 
-      .delete-icon {
+      .close-x {
         color: $red;
         margin-left: 10px;
         font-size: 26px;
@@ -4169,7 +4159,6 @@
 
 @mixin fullMenu {
   grid-template-columns: repeat(2, 1fr);
-  position: fixed;
   overflow: auto;
   width: 100%;
   margin: 0;
@@ -4178,12 +4167,17 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   border-radius: 35px 35px 0 0;
-  padding: 30px 0 60px 0;
+  padding: 0 0 60px 0;
   bottom: 0;
   max-height: 90vh;
   box-shadow: $boxShadow_top_only;
+
+  &.animate__fadeInUp {
+    z-index: 999999999;
+  }
+
   .svg-wrapper {
     &.admin {
       background: $green;
@@ -4210,16 +4204,16 @@
   }
 
   #close-icon-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    right: 0;
-    cursor: pointer;
-    transform: scale(0.75);
-    margin: 20px;
+    width: 50px;
+    position: relative;
+    right: 10px;
+    margin-left: auto;
+    transform: scale(0.7);
     color: $darkerGrey;
+    margin-top: 10px;
+    overflow: hidden;
+    height: 30px;
+    @include hover;
   }
 
   .menu-title {
@@ -4416,8 +4410,7 @@
   z-index: 99999;
   left: 0;
   padding-bottom: 5vh;
-  backdrop-filter: blur(10px);
-  background-color: transparent;
+  background-color: $lightBg;
 
   &.hidden {
     bottom: -200px;
@@ -4477,7 +4470,6 @@
 
     svg {
       transform: scale(1.5, 1.2);
-      color: white;
     }
 
     &.close {
@@ -4496,8 +4488,7 @@
     align-items: center;
     width: 100vw;
     height: 55px;
-    background-color: transparent;
-    backdrop-filter: blur(10px);
+    background-color: $lightBg;
     position: relative;
     top: 10px;
     padding: 0 5px;
@@ -4509,6 +4500,7 @@
       display: flex;
       color: black;
       position: relative;
+      opacity: 0;
 
       &.menu-button {
         #svg-wrapper {
@@ -4519,7 +4511,7 @@
           margin: 0 15px;
           height: 100%;
           svg {
-            color: white;
+            color: $lightBorderColor;
           }
         }
       }
@@ -4553,9 +4545,10 @@
         justify-content: center;
         span {
           position: absolute;
-          color: $darkGrey;
+          color: $darkerGrey;
           padding-top: 5px;
           font-size: 13px;
+          padding-right: 1px;
           font-weight: $fwMediumBold;
         }
       }
@@ -4584,7 +4577,7 @@
       }
 
       &.active {
-        opacity: 1;
+        //        opacity: 1;
         color: $accent;
         position: relative;
         transition: all 0.3s ease-in-out;

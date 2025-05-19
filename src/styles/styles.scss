@@ -411,6 +411,24 @@
       font-weight: 600;
     }
 
+    .close-x {
+      color: $darkerGrey;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      margin: 0;
+      padding: 0;
+      line-height: 1;
+      max-width: max-content;
+      max-height: max-content;
+
+      &.children {
+        margin-left: 15px;
+        transform: scale(1.2);
+      }
+    }
+
     .screen-title {
       @include screenTitle;
     }
@@ -580,7 +598,7 @@
       z-index: -1;
       position: fixed;
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
       opacity: 0;
       background-color: rgba(0, 0, 0, 0.85);
@@ -592,11 +610,25 @@
       height: 100vh;
       backdrop-filter: blur(6px);
       transition: all 0.4s ease-out;
+      flex-wrap: wrap;
+      flex-direction: column;
 
       &.active {
         opacity: 1;
         transition: all 0.4s ease-in;
-        z-index: 9999999999999;
+        z-index: 99999999;
+      }
+
+      .swipe-bar {
+        display: block;
+        background: rgba(255, 255, 255, 0.71);
+        z-index: 999999999999;
+        position: relative;
+        align-self: flex-end;
+        height: 4px;
+        border-radius: 20px;
+        width: 90px;
+        margin: auto auto 8px auto;
       }
 
       .navigation {
@@ -660,11 +692,11 @@
       color: $darkGrey;
     }
 
-    .bottom-menu-wrapper {
+    .slide-up-card-wrapper {
       @include bottomMenuWrapper;
     }
 
-    #full-menu {
+    #full-menu-wrapper {
       @include fullMenu;
     }
 

@@ -14,8 +14,9 @@ import StringManager from '/src/managers/stringManager'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiOutlineChevronDoubleUp} from 'react-icons/hi2'
-import {IoClose, IoPersonAdd, IoPersonAddOutline, IoPersonRemove} from 'react-icons/io5'
+import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import {PiCameraRotateFill, PiListChecksFill} from 'react-icons/pi'
+import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
 import useActiveChild from '../../../hooks/useActiveChild'
@@ -23,6 +24,7 @@ import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import CustomChildInfo from '../../shared/customChildInfo'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
+import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 import AddOrUpdateTransferChecklists from './addOrUpdateTransferChecklists'
 import Checklist from './checklist'
@@ -31,14 +33,14 @@ import Checklists from './checklists'
 export default function Children() {
   const {state, setState} = useContext(globalState)
   const {theme} = state
-  const {currentUser, currentUserIsLoading} = useCurrentUser()
-  const {children, childrenAreLoading} = useChildren()
+  const {currentUser} = useCurrentUser()
+  const {children} = useChildren()
   const [showInfoCard, setShowInfoCard] = useState(false)
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
   const [activeChildId, setActiveChildId] = useState(currentUser?.children?.[0]?.id)
-  const {activeChild, activeChildIsLoading} = useActiveChild(activeChildId)
+  const {activeChild} = useActiveChild(activeChildId)
   const imgRef = useRef()
 
   const UploadProfilePic = async (fromButton = false) => {
@@ -217,65 +219,62 @@ export default function Children() {
 
       {/* PAGE CONTAINER */}
       <div id="child-info-container" className={`${theme} page-container child-info form`}>
-        <div className="flex" id="screen-title-wrapper">
-          <p className="screen-title beside-action-button">Children</p>
+        <ScreenHeader
+          title={'Children'}
+          screenName={ScreenNames.children}
+          screenDescription="You can store and access all relevant information about your child, particularly essential details that you may need to retrieve at any
+          moment."
+        />
 
-          {/* ADD NEW BUTTON - DESKTOP */}
-          {!DomManager.isMobile() && <IoPersonAddOutline onClick={() => setShowNewChildForm(true)} id={'Add-new-button'} />}
-        </div>
+        <Spacer height={15} />
 
-        <p className="screen-intro-text">
-          You can store and access all relevant information about your child, particularly essential details that you may need to retrieve at any
-          moment.
-        </p>
-
-        <Spacer height={10} />
-
-        <div style={DomManager.AnimateDelayStyle(1)} className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(true, '.fade-up-wrapper')}`}>
-          {/* CHILDREN WRAPPER */}
-          <div id="child-wrapper">
-            {Manager.IsValid(children) &&
-              children?.map((child) => {
-                return (
-                  <div key={child?.id}>
-                    {/* PROFILE PIC */}
-                    {Manager.IsValid(child?.general?.profilePic) && (
-                      <div onClick={() => setActiveChildId(child?.id)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
-                        <div
-                          className="child-image"
-                          style={{backgroundImage: `url(${child?.general?.profilePic})`, transition: 'all .7s linear'}}></div>
-                        {/* CHILD NAME */}
-                        <span className="child-name">{StringManager.GetFirstNameOnly(child?.general?.name)}</span>
-                      </div>
-                    )}
-
-                    {/* NO IMAGE */}
-                    {!Manager.IsValid(child?.general?.profilePic, true) && (
-                      <div onClick={() => setActiveChildId(child?.id)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
-                        <div className="child-image no-image">
-                          <span>No Image</span>
+        <div className="screen-content">
+          <div style={DomManager.AnimateDelayStyle(1)} className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(true, '.fade-up-wrapper')}`}>
+            {/* CHILDREN WRAPPER */}
+            <div id="child-wrapper">
+              {Manager.IsValid(children) &&
+                children?.map((child) => {
+                  return (
+                    <div key={child?.id}>
+                      {/* PROFILE PIC */}
+                      {Manager.IsValid(child?.general?.profilePic) && (
+                        <div onClick={() => setActiveChildId(child?.id)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
+                          <div
+                            className="child-image"
+                            style={{backgroundImage: `url(${child?.general?.profilePic})`, transition: 'all .7s linear'}}></div>
+                          {/* CHILD NAME */}
+                          <span className="child-name">{StringManager.GetFirstNameOnly(child?.general?.name)}</span>
                         </div>
-                        {/* CHILD NAME */}
-                        <span className="child-name">{StringManager.GetFirstNameOnly(child?.general?.name)}</span>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-          </div>
+                      )}
 
-          {/* INFO */}
-          <div id="child-info">
-            {Manager.IsValid(activeChild) && Manager.IsValid(currentUser) && (
-              <>
-                <General activeChild={activeChild} />
-                <Medical activeChild={activeChild} />
-                <Schooling activeChild={activeChild} />
-                <Behavior activeChild={activeChild} />
-                <Checklist fromOrTo={'from'} activeChildId={activeChild?.id} />
-                <Checklist fromOrTo={'to'} activeChildId={activeChild?.id} />
-              </>
-            )}
+                      {/* NO IMAGE */}
+                      {!Manager.IsValid(child?.general?.profilePic, true) && (
+                        <div onClick={() => setActiveChildId(child?.id)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
+                          <div className="child-image no-image">
+                            <span>No Image</span>
+                          </div>
+                          {/* CHILD NAME */}
+                          <span className="child-name">{StringManager.GetFirstNameOnly(child?.general?.name)}</span>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+            </div>
+
+            {/* INFO */}
+            <div id="child-info">
+              {Manager.IsValid(activeChild) && Manager.IsValid(currentUser) && (
+                <>
+                  <General activeChild={activeChild} />
+                  <Medical activeChild={activeChild} />
+                  <Schooling activeChild={activeChild} />
+                  <Behavior activeChild={activeChild} />
+                  <Checklist fromOrTo={'from'} activeChildId={activeChild?.id} />
+                  <Checklist fromOrTo={'to'} activeChildId={activeChild?.id} />
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

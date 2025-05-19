@@ -7,6 +7,7 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import React, {useContext, useState} from 'react'
 import {LuMinus, LuPlus} from 'react-icons/lu'
 import InputTypes from '../../../constants/inputTypes'
+import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
 import useChat from '../../../hooks/useChat'
 import useCurrentUser from '../../../hooks/useCurrentUser'
@@ -16,6 +17,7 @@ import InputWrapper from '../../shared/inputWrapper'
 import Label from '../../shared/label'
 import Modal from '../../shared/modal'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
+import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
 import ChatRow from './chatRow.jsx'
@@ -64,51 +66,53 @@ const Chats = () => {
         />
       </Modal>
 
+      {/* NO DATA FALLBACK */}
+      {chats?.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
+
       {/* PAGE CONTAINER */}
       <div id="chats-container" className={`${theme} page-container`}>
-        {/*<VideoCall />*/}
+        <ScreenHeader
+          screenName={ScreenNames.chats}
+          title={'Chats'}
+          screenDescription="Your space to peacefully chat with your co-parent and pass along any important info they need to know, or to seek clarification on
+          information that is unfamiliar to you."
+        />
 
-        {chats?.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
-        <div className="flex" id="screen-title-wrapper">
-          <p className="screen-title">Chats</p>
+        <Spacer height={8} />
+        <div className="screen-content">
+          {/* INVITE BUTTON */}
+          <Accordion expanded={showInfo} className={`${theme} white-bg invite-accordion accordion`}>
+            <AccordionSummary>
+              <button className="button default grey" onClick={() => setShowInfo(!showInfo)}>
+                <div id="circle" className="circle"></div>
+                <Label text={'Invite Co-Parent'} /> {showInfo ? <LuMinus /> : <LuPlus />}
+              </button>
+            </AccordionSummary>
+            <AccordionDetails>
+              <p>
+                Currently, your account is linked to {currentUser?.coparents?.length}{' '}
+                {currentUser?.coparents?.length > 1 ? 'co-parents' : 'co-parent'}. If you wish to communicate with another co-parent, feel free to
+                Send them an invitation.
+              </p>
+
+              <button
+                className="default smaller"
+                id="send-invite-button"
+                onClick={() => {
+                  setShowInvitationCard(true)
+                  setShowInfo(false)
+                }}>
+                Send Invite
+              </button>
+            </AccordionDetails>
+          </Accordion>
+          <Spacer height={8} />
+          {/* CHAT ROWS */}
+          {chats?.length > 0 &&
+            chats?.map((chat, index) => {
+              return <ChatRow key={index} chat={chat} index={index} />
+            })}
         </div>
-        <p className="screen-intro-text">
-          Your space to peacefully chat with your co-parent and pass along any important info they need to know, or to seek clarification on
-          information that is unfamiliar to you.
-        </p>
-
-        <Spacer height={8} />
-        {/* INVITE BUTTON */}
-        <Accordion expanded={showInfo} className={`${theme} invite-accordion accordion`}>
-          <AccordionSummary>
-            <button className="button default grey" onClick={() => setShowInfo(!showInfo)}>
-              <div id="circle" className="circle"></div>
-              <Label text={'Invite Co-Parent'} /> {showInfo ? <LuMinus /> : <LuPlus />}
-            </button>
-          </AccordionSummary>
-          <AccordionDetails>
-            <p>
-              Currently, your account is linked to {currentUser?.coparents?.length} {currentUser?.coparents?.length > 1 ? 'co-parents' : 'co-parent'}.
-              If you wish to communicate with another co-parent, feel free to Send them an invitation.
-            </p>
-
-            <button
-              className="default smaller"
-              id="send-invite-button"
-              onClick={() => {
-                setShowInvitationCard(true)
-                setShowInfo(false)
-              }}>
-              Send Invite
-            </button>
-          </AccordionDetails>
-        </Accordion>
-        <Spacer height={8} />
-        {/* CHAT ROWS */}
-        {chats?.length > 0 &&
-          chats?.map((chat, index) => {
-            return <ChatRow key={index} chat={chat} index={index} />
-          })}
         <NavBar />
       </div>
     </>

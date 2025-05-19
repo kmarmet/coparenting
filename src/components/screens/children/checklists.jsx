@@ -5,7 +5,7 @@ import Manager from '/src/managers/manager'
 import Checklist from '/src/models/checklist.js'
 import React, {useContext, useEffect, useState} from 'react'
 import {MdOutlineChecklist} from 'react-icons/md'
-import {PiListChecksFill, PiTrashSimpleDuotone} from 'react-icons/pi'
+import {PiListChecksFill, PiTrashSimpleFill} from 'react-icons/pi'
 import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import DomManager from '../../../managers/domManager'
@@ -172,7 +172,7 @@ export default function Checklists({showCard, hideCard}) {
                 {activeItems.includes(item.toLowerCase()) && <PiListChecksFill />}
                 {StringManager.uppercaseFirstLetterOfAllWords(item)}
               </p>
-              <PiTrashSimpleDuotone className={'delete-icon'} onClick={deleteItem} />
+              <PiTrashSimpleFill className={'close-x'} onClick={deleteItem} />
             </div>
           )
         })}

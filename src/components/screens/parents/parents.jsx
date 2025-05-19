@@ -12,7 +12,6 @@ import {BsFillSendFill} from 'react-icons/bs'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiOutlineChevronDoubleUp} from 'react-icons/hi2'
 import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
-import {PiTrashSimpleDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
@@ -255,7 +254,7 @@ export default function Parents() {
                               inputType={InputTypes.text}
                               labelText={infoLabel}
                             />
-                            <PiTrashSimpleDuotone className="delete-icon fs-24" onClick={() => DeleteProp(infoLabel)} />
+                            <PiTrashSimpleFill className="close-x fs-24" onClick={() => DeleteProp(infoLabel)} />
                           </div>
                           <Spacer height={5} />
                         </>

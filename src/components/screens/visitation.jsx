@@ -27,6 +27,7 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
+import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import useCalendarEvents from '../../hooks/useCalendarEvents'
 import useCurrentUser from '../../hooks/useCurrentUser'
@@ -34,6 +35,7 @@ import DomManager from '../../managers/domManager'
 import NavBar from '../navBar'
 import AccordionTitle from '../shared/accordionTitle'
 import Label from '../shared/label'
+import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer'
 
 export default function Visitation() {
@@ -304,133 +306,145 @@ export default function Visitation() {
 
       {/* PAGE CONTAINER */}
       <div id="visitation-container" className={`${theme} page-container form`}>
-        {/* SCREEN TITLE */}
-        <p className="screen-title">Visitation</p>
+        <ScreenHeader
+          title={'Visitation'}
+          screenName={ScreenNames.visitation}
+          screenDescription="Oversee all aspects of visitation, including scheduling, holiday visits, and additional matters."
+        />
+        <Spacer height={10} />
+        <div className="screen-content">
+          {/* ALREADY HAS EXISTING SCHEDULE */}
+          {existingScheduleEvents.length > 0 && (
+            <>
+              <p>
+                You currently have a 50/50 visitation schedule added to your calendar. If you would like to modify the current schedule or switch to
+                another schedule, please delete the current schedule first.
+              </p>
 
-        {/* ALREADY HAS EXISTING SCHEDULE */}
-        {existingScheduleEvents.length > 0 && (
-          <>
-            <p>
-              You currently have a 50/50 visitation schedule added to your calendar. If you would like to modify the current schedule or switch to
-              another schedule, please delete the current schedule first.
-            </p>
-
-            {showDeleteButton && (
-              <>
-                <Spacer height={10} />
-                <button
-                  className="button red default center"
-                  onClick={() => {
-                    AlertManager.confirmAlert(
-                      'Are you sure you would like to permanently Delete your current visitation schedule?',
-                      "I'm Sure",
-                      true,
-                      async () => {
-                        await DeleteSchedule()
-                      },
-                      setScheduleType('')
-                    )
-                  }}>
-                  Delete Current Schedule
-                </button>
-              </>
-            )}
-          </>
-        )}
-        {/* NO EXISTING SCHEDULE */}
-        {existingScheduleEvents.length === 0 && (
-          <div className="sections">
-            {/* VISITATION SCHEDULE */}
-            <div className="note-container">
-              <Note
-                message={'When you establish a visitation schedule, it will be displayed on the calendar for you and anyone you permit to access it.'}
-              />
-            </div>
-
-            <Spacer height={10} />
-            <div
-              style={DomManager.AnimateDelayStyle(1, 0.2)}
-              className={`visitation-section ${DomManager.Animate.FadeInUp('d', '.visitation-section')}`}>
-              {/*  VISITATION SECTION */}
-              <Accordion id={'visitation-section'} expanded={showVisitationSection}>
-                <AccordionSummary id={'visitation-section-accordion-title'}>
-                  <AccordionTitle
-                    titleText={'Schedule & Transfer Location'}
-                    onClick={() => setShowVisitationSection(!showVisitationSection)}
-                    toggleState={showVisitationSection}
-                  />
-                </AccordionSummary>
-                <p className="fs-15">Choose a visitation schedule and agreed upon transfer location</p>
-                <AccordionDetails>
-                  {/* SCHEDULE SELECTION */}
-                  <div className="section visitation-schedule">
-                    <CheckboxGroup
-                      elClass="schedule-type-checkboxes"
-                      onCheck={HandleScheduleTypeSelection}
-                      skipNameFormatting={true}
-                      checkboxArray={DomManager.BuildCheckboxGroup({
-                        currentUser,
-                        labelType: 'visitation',
-                      })}
-                    />
-                  </div>
-
-                  {/* LOCATION */}
-                  <Label classes="address-label" text={'Preferred Transfer Location'} />
-                  <GooglePlacesAutocomplete
-                    selectProps={{
-                      className: 'address-input',
-                      placeholder: currentUser?.visitation?.transferAddress,
-                      onChange: (e) =>
-                        UpdateDefaultTransferLocation(e?.label, Manager.GetDirectionsLink(e?.label)).then(() =>
-                          setTimeout(() => {
-                            setState({...state, successAlertMessage: 'Preferred Transfer Location Set'})
-                          }, 300)
-                        ),
-                      isClearable: false,
-                    }}
-                  />
-                  <Spacer height={5} />
-                </AccordionDetails>
-              </Accordion>
-            </div>
-          </div>
-        )}
-
-        <Spacer height={5} />
-        <div
-          style={DomManager.AnimateDelayStyle(1, 0.35)}
-          className={`visitation-section ${DomManager.Animate.FadeInUp('d', '.visitation-section')}`}>
-          {/*  HOLIDAYS */}
-          <Accordion id={'visitation-holidays-section'} expanded={showHolidaysSection}>
-            <AccordionSummary id={'visitation-holidays-section-accordion-title'}>
-              <AccordionTitle titleText={'Holidays'} onClick={() => setShowHolidaysSection(!showHolidaysSection)} toggleState={showHolidaysSection} />
-            </AccordionSummary>
-            <p className="fs-15">Select the holidays YOU have your child(ren) this year</p>
-            <Spacer height={5} />
-            <AccordionDetails>
-              {/* HOLIDAY SELECTION */}
-              <CheckboxGroup
-                containerClass="holidays"
-                elClass={'holiday-checkboxes-wrapper'}
-                onCheck={HandleHolidaySelection}
-                skipNameFormatting={true}
-                checkboxArray={DomManager.BuildCheckboxGroup({
-                  currentUser,
-                  customLabelArray: holidaysFromApi.map((x) => x.name),
-                  defaultLabels: userHolidays,
-                })}
-              />
-
-              {showUpdateHolidaysButton && (
-                <button className="button default green center" onClick={() => SetHolidaysInDatabase()}>
-                  Update Holidays
-                </button>
+              {showDeleteButton && (
+                <>
+                  <Spacer height={10} />
+                  <button
+                    className="button red default center"
+                    onClick={() => {
+                      AlertManager.confirmAlert(
+                        'Are you sure you would like to permanently Delete your current visitation schedule?',
+                        "I'm Sure",
+                        true,
+                        async () => {
+                          await DeleteSchedule()
+                        },
+                        setScheduleType('')
+                      )
+                    }}>
+                    Delete Current Schedule
+                  </button>
+                </>
               )}
+            </>
+          )}
 
+          {/* NO EXISTING SCHEDULE */}
+          {existingScheduleEvents.length === 0 && (
+            <div className="sections">
+              {/* VISITATION SCHEDULE */}
+              <div className="note-container">
+                <Note
+                  message={
+                    'When you establish a visitation schedule, it will be displayed on the calendar for you and anyone you permit to access it.'
+                  }
+                />
+              </div>
+
+              <Spacer height={10} />
+              <div
+                style={DomManager.AnimateDelayStyle(1, 0.2)}
+                className={`visitation-section ${DomManager.Animate.FadeInUp('d', '.visitation-section')}`}>
+                {/*  VISITATION SECTION */}
+                <Accordion className={'white-bg'} id={'visitation-section'} expanded={showVisitationSection}>
+                  <AccordionSummary id={'visitation-section-accordion-title'}>
+                    <AccordionTitle
+                      titleText={'Schedule & Transfer Location'}
+                      onClick={() => setShowVisitationSection(!showVisitationSection)}
+                      toggleState={showVisitationSection}
+                    />
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <p className="fs-15">Choose a visitation schedule and agreed upon transfer location</p>
+                    <Spacer height={5} />
+                    {/* SCHEDULE SELECTION */}
+                    <div className="section visitation-schedule">
+                      <CheckboxGroup
+                        elClass="schedule-type-checkboxes"
+                        onCheck={HandleScheduleTypeSelection}
+                        skipNameFormatting={true}
+                        checkboxArray={DomManager.BuildCheckboxGroup({
+                          currentUser,
+                          labelType: 'visitation',
+                        })}
+                      />
+                    </div>
+
+                    {/* LOCATION */}
+                    <Label classes="address-label" text={'Preferred Transfer Location'} />
+                    <GooglePlacesAutocomplete
+                      selectProps={{
+                        className: 'address-input',
+                        placeholder: currentUser?.visitation?.transferAddress,
+                        onChange: (e) =>
+                          UpdateDefaultTransferLocation(e?.label, Manager.GetDirectionsLink(e?.label)).then(() =>
+                            setTimeout(() => {
+                              setState({...state, successAlertMessage: 'Preferred Transfer Location Set'})
+                            }, 300)
+                          ),
+                        isClearable: false,
+                      }}
+                    />
+                    <Spacer height={5} />
+                  </AccordionDetails>
+                </Accordion>
+              </div>
+            </div>
+          )}
+
+          <div
+            style={DomManager.AnimateDelayStyle(1, 0.35)}
+            className={`visitation-section ${DomManager.Animate.FadeInUp('d', '.visitation-section')}`}>
+            {/*  HOLIDAYS */}
+            <Accordion className={'white-bg'} id={'visitation-holidays-section'} expanded={showHolidaysSection}>
+              <AccordionSummary id={'visitation-holidays-section-accordion-title'}>
+                <AccordionTitle
+                  titleText={'Holidays'}
+                  onClick={() => setShowHolidaysSection(!showHolidaysSection)}
+                  toggleState={showHolidaysSection}
+                />
+              </AccordionSummary>
+              <p className="fs-15">Select the holidays YOU have your child(ren) this year</p>
               <Spacer height={5} />
-            </AccordionDetails>
-          </Accordion>
+              <AccordionDetails>
+                {/* HOLIDAY SELECTION */}
+                <CheckboxGroup
+                  containerClass="holidays"
+                  elClass={'holiday-checkboxes-wrapper'}
+                  onCheck={HandleHolidaySelection}
+                  skipNameFormatting={true}
+                  checkboxArray={DomManager.BuildCheckboxGroup({
+                    currentUser,
+                    customLabelArray: holidaysFromApi.map((x) => x.name),
+                    defaultLabels: userHolidays,
+                  })}
+                />
+
+                {showUpdateHolidaysButton && (
+                  <button className="button default green center" onClick={() => SetHolidaysInDatabase()}>
+                    Update Holidays
+                  </button>
+                )}
+
+                <Spacer height={5} />
+              </AccordionDetails>
+            </Accordion>
+          </div>
         </div>
       </div>
       {!showEveryOtherWeekendCard && !showCustomWeekendsCard && !showFiftyFiftyCard && <NavBar navbarClass={'visitation no-Add-new-button'}></NavBar>}

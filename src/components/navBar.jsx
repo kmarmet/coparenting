@@ -9,6 +9,7 @@ import {PiNotificationFill} from 'react-icons/pi'
 import ScreenNames from '../constants/screenNames'
 import globalState from '../context'
 import useCurrentUser from '../hooks/useCurrentUser'
+import DomManager from '../managers/domManager'
 import Manager from '../managers/manager'
 import NotificationBadge from './shared/NotificationBadge'
 
@@ -43,8 +44,9 @@ export default function NavBar({children, navbarClass}) {
         <div id="menu-items" className="flex">
           {/* CALENDAR */}
           <div
+            style={DomManager.AnimateDelayStyle(1, 0.02)}
             onClick={() => changeCurrentScreen(ScreenNames.calendar)}
-            className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'}`}>
+            className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
             <div id="calendar-and-month">
               <BsCalendar className={'calendar'} />
               <span>{moment().format('DD')}</span>
@@ -55,16 +57,20 @@ export default function NavBar({children, navbarClass}) {
           {/* CHATS */}
           {currentUser && currentUser?.accountType === 'parent' && (
             <div
+              style={DomManager.AnimateDelayStyle(1, 0.03)}
               id="chat-menu-item"
               onClick={() => changeCurrentScreen(ScreenNames.chats)}
-              className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
+              className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
               <IoChatbubblesOutline className={'chats'} />
               <p>Chats</p>
             </div>
           )}
 
           {/* MENU BUTTON */}
-          <div className="menu-button menu-item" onClick={() => setState({...state, menuIsOpen: true})}>
+          <div
+            style={DomManager.AnimateDelayStyle(1, 0.04)}
+            className={`menu-button menu-item  ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}
+            onClick={() => setState({...state, menuIsOpen: true})}>
             <div id="svg-wrapper">
               <HiOutlineMenu className={'menu'} />
             </div>
@@ -73,9 +79,10 @@ export default function NavBar({children, navbarClass}) {
           {/* MEMORIES */}
           {currentUser?.accountType === 'child' && currentScreen !== ScreenNames.parents && (
             <div
+              style={DomManager.AnimateDelayStyle(1, 0.05)}
               id="memories-menu-item"
               onClick={() => changeCurrentScreen(ScreenNames.memories)}
-              className={`${currentScreen === ScreenNames.memories ? 'active menu-item' : 'menu-item'}`}>
+              className={`${currentScreen === ScreenNames.memories ? 'active menu-item' : 'menu-item'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
               <IoMdImages />
               <p>Memories</p>
             </div>
@@ -84,8 +91,9 @@ export default function NavBar({children, navbarClass}) {
           {/* NOTIFICATIONS */}
           {currentUser?.accountType === 'parent' && (
             <div
+              style={DomManager.AnimateDelayStyle(1, 0.06)}
               onClick={() => changeCurrentScreen(ScreenNames.updates)}
-              className={`${currentScreen === ScreenNames.updates ? 'active menu-item notifications' : 'menu-item notifications'}`}>
+              className={`${currentScreen === ScreenNames.updates ? 'active menu-item notifications' : 'menu-item notifications'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
               <PiNotificationFill className={'notifications active'} />
               <p>Updates</p>
               <NotificationBadge classes={'navbar'} />
@@ -93,7 +101,10 @@ export default function NavBar({children, navbarClass}) {
           )}
 
           {/* CREATE */}
-          <div onClick={() => setState({...state, showCreationMenu: true})} className={`menu-item create`}>
+          <div
+            style={DomManager.AnimateDelayStyle(1, 0.07)}
+            onClick={() => setState({...state, showCreationMenu: true})}
+            className={`menu-item create ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
             <IoAdd className={'create'} />
             <p>Create</p>
           </div>

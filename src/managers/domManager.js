@@ -86,7 +86,10 @@ DomManager = {
       slideInRight: 'slideInRight',
       fadeIn: 'fadeIn',
       zoomIn: 'zoomIn',
-      default: 'animate__animated'
+      default: 'animate__animated',
+      slow: 'animate__slow',
+      faster: 'animate__faster',
+      slower: 'animate__slower'
     },
     zoomIn: {
       enter: 'animate__zoomIn',
@@ -126,12 +129,15 @@ DomManager = {
       }
     }, 100);
   },
-  ToggleAnimation: function(addOrRemove, itemsClass, animateName, delay = 80) {
+  ToggleAnimation: function(addOrRemove, itemsClass, animateName, delay = 80, slower = false) {
     var AddClasses, allMenuItems;
     allMenuItems = document.querySelectorAll(`.${itemsClass}`);
     AddClasses = function(item) {
       if (addOrRemove === 'add') {
-        return item.classList.add(DomManager.AnimateClasses[animateName].enter);
+        item.classList.add(DomManager.AnimateClasses[animateName].enter);
+        if (slower) {
+          return item.classList.add(DomManager.AnimateClasses.names.slow);
+        }
       } else {
         return item.classList.add(DomManager.AnimateClasses[animateName].exit);
       }

@@ -81,15 +81,15 @@ export default UpdateManager = {
           var deleteKey, existingSubscriber, ref3, ref4, userIdentity;
           userIdentity = (await identity.json());
           newSubscriber.oneSignalId = userIdentity != null ? (ref3 = userIdentity.identity) != null ? ref3.onesignal_id : void 0 : void 0;
-          existingSubscriber = (await DB.find(DB.tables.notificationSubscribers, ["email", UpdateManager != null ? (ref4 = UpdateManager.currentUser) != null ? ref4.email : void 0 : void 0], true));
+          existingSubscriber = (await DB.find(DB.tables.updateSubscribers, ["email", UpdateManager != null ? (ref4 = UpdateManager.currentUser) != null ? ref4.email : void 0 : void 0], true));
           // If user already exists -> replace record
           if (Manager.IsValid(existingSubscriber)) {
-            deleteKey = (await DB.getSnapshotKey(`${DB.tables.notificationSubscribers}`, existingSubscriber, "id"));
-            await DB.DeleteByPath(`${DB.tables.notificationSubscribers}/${deleteKey}`);
-            return (await DB.Add(`/${DB.tables.notificationSubscribers}`, newSubscriber));
+            deleteKey = (await DB.getSnapshotKey(`${DB.tables.updateSubscribers}`, existingSubscriber, "id"));
+            await DB.DeleteByPath(`${DB.tables.updateSubscribers}/${deleteKey}`);
+            return (await DB.Add(`/${DB.tables.updateSubscribers}`, newSubscriber));
           } else {
             // Else create new record
-            return (await DB.Add(`/${DB.tables.notificationSubscribers}`, newSubscriber));
+            return (await DB.Add(`/${DB.tables.updateSubscribers}`, newSubscriber));
           }
         });
       }, 500);
@@ -97,7 +97,7 @@ export default UpdateManager = {
   },
   getUserSubId: async function(currentUserPhoneOrEmail, phoneOrEmail = "email") {
     var existingRecord;
-    existingRecord = (await DB.find(DB.tables.notificationSubscribers, [phoneOrEmail, currentUserPhoneOrEmail], true));
+    existingRecord = (await DB.find(DB.tables.updateSubscribers, [phoneOrEmail, currentUserPhoneOrEmail], true));
     return existingRecord != null ? existingRecord.subscriptionId : void 0;
   },
   deleteUser: function(oneSignalId, subId) {
@@ -117,7 +117,7 @@ export default UpdateManager = {
     myHeaders.append("Accept", "application/json");
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `Basic ${UpdateManager.apiKey}`);
-    allSubs = (await DB.getTable(`${DB.tables.notificationSubscribers}`));
+    allSubs = (await DB.getTable(`${DB.tables.updateSubscribers}`));
     subIdRecord = allSubs.find(function(sub) {
       return sub.key === recipientKey;
     });

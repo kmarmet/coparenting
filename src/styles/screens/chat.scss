@@ -248,25 +248,19 @@
   padding-top: 45px;
   display: grid;
   grid-template-rows: auto 2fr auto;
+  position: relative;
 
   .longpress-menu {
-    z-index: -1;
     background: white;
-    border-radius: $bigBorderRadius;
-    box-shadow: $boxShadow_bottom_only_dark;
-    opacity: 0;
+    border-radius: $buttonBorderRadius;
     transition: all 0.3s ease-out;
-    min-width: 180px;
-    position: fixed;
-    top: -80px;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    &.active {
-      opacity: 1;
-      z-index: 99999;
-      transition: all 0.3s ease-in;
-    }
+    position: absolute;
+    @include deadCenter;
+    width: 50vw;
+    height: auto;
+    z-index: 99999;
+    box-shadow: $boxShadow_float;
+    top: 40%;
 
     button {
       &#copy,
@@ -283,7 +277,6 @@
         justify-content: space-between;
         font-size: 14px;
         padding: 0 10px;
-
         svg {
           transform: scale(1);
           color: white;
@@ -297,18 +290,24 @@
         }
 
         &#copy {
-          background: $accent;
+          background: $main;
           color: white;
-          border-radius: $bigBorderRadius $bigBorderRadius 0 0;
+          border-radius: $buttonBorderRadius $buttonBorderRadius 0 0;
         }
         &#bookmark {
-          background: $green;
           color: white;
+          &.add {
+            background: $green;
+          }
+
+          &.remove {
+            background: $red;
+          }
         }
         &#cancel {
           background: $grey;
           color: $darkerGrey;
-          border-radius: 0 0 $bigBorderRadius $bigBorderRadius;
+          border-radius: 0 0 $buttonBorderRadius $buttonBorderRadius;
         }
       }
     }

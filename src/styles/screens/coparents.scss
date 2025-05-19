@@ -22,9 +22,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: $grey;
+      background: white;
       padding: 8px;
-      border: 1px solid $lightBorderColor;
       @include hover;
       height: 80px;
       width: 80px;
@@ -59,7 +58,7 @@
       // ACTIVE
       &.active {
         transition: all 0.3s ease-in;
-        background: $accent;
+        @include mainColorsGradient;
 
         * {
           transition: all 0.2s ease-in;
@@ -128,12 +127,6 @@
         width: 100%;
         align-items: center;
         gap: 15px;
-        .delete-icon {
-          position: relative;
-          display: block;
-          font-size: 20px;
-          color: $red;
-        }
       }
     }
   }

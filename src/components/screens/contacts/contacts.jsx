@@ -1,6 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react'
 import {GrEdit} from 'react-icons/gr'
-import {RiUserAddLine} from 'react-icons/ri'
+import {HiOutlineChevronDoubleUp} from 'react-icons/hi2'
+import {IoClose, IoPersonAdd} from 'react-icons/io5'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
@@ -25,6 +26,8 @@ import InputWrapper from '../../shared/inputWrapper'
 import Label from '../../shared/label'
 import Map from '../../shared/map'
 import Modal from '../../shared/modal'
+import ScreenActionsMenu from '../../shared/screenActionsMenu'
+import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 import ViewSelector from '../../shared/viewSelector'
 import NewChildForm from '../children/newChildForm'
@@ -56,18 +59,17 @@ const Contacts = () => {
 
   // CONTACT UPDATE STATE
   const UpdateContact = async () => {
-    const {model, propertyPath, inputValue, activeContactAccountType} = updateObject
+    const {model, propertyPath, inputValue} = updateObject
     let userIndex = DB.GetTableIndexById(children, activeContact?.id)
     let groupType = 'children'
-
     // Parents
-    if (currentUser?.accountType === 'child' && activeContactAccountType === 'parent') {
+    if (currentUser?.accountType === 'child' && GetAccountType() === 'parent') {
       userIndex = DB.GetTableIndexById(parents, activeContact?.id)
       groupType = 'parents'
     }
 
     // Coparents
-    else if (currentUser?.accountType === 'parent' && activeContactAccountType === 'parent') {
+    else if (currentUser?.accountType === 'parent' && GetAccountType() === 'parent') {
       userIndex = DB.GetTableIndexById(coparents, activeContact?.id)
       groupType = 'coparents'
     }
@@ -126,19 +128,6 @@ const Contacts = () => {
     )
   }
 
-  // Remove view from the active modal
-  useEffect(() => {
-    if (showNewCoparentCard || showNewParentCard || showNewChildCard) {
-      const activeModal = document.querySelector('#modal-wrapper.active')
-      if (Manager.IsValid(activeModal)) {
-        const modalCard = activeModal.querySelector('#modal-card')
-        if (Manager.IsValid(modalCard)) {
-          modalCard.classList.remove('details')
-        }
-      }
-    }
-  }, [showNewCoparentCard, showNewParentCard, showNewChildCard])
-
   const GetContactName = () => {
     let name = activeContact?.name
     if (!Manager.IsValid(activeContact?.name)) {
@@ -163,6 +152,28 @@ const Contacts = () => {
     return phone
   }
 
+  const GetAccountType = () => {
+    // eslint-disable-next-line no-prototype-builtins
+    if (activeContact?.hasOwnProperty('general')) {
+      return 'child'
+    } else {
+      return 'parent'
+    }
+  }
+
+  // Remove view from the active modal
+  useEffect(() => {
+    if (showNewCoparentCard || showNewParentCard || showNewChildCard) {
+      const activeModal = document.querySelector('#modal-wrapper.active')
+      if (Manager.IsValid(activeModal)) {
+        const modalCard = activeModal.querySelector('#modal-card')
+        if (Manager.IsValid(modalCard)) {
+          modalCard.classList.remove('details')
+        }
+      }
+    }
+  }, [showNewCoparentCard, showNewParentCard, showNewChildCard])
+
   return (
     <>
       {/* NEW */}
@@ -174,7 +185,7 @@ const Contacts = () => {
       <Modal
         submitText={'Send Invitation'}
         wrapperClass="invitation-card"
-        title={`Invite ${activeContact?.name}`}
+        title={`Invite ${GetContactName()}`}
         subtitle="Extend an invitation to facilitate the sharing of essential information with them"
         onClose={() => setShowInvitationCard(false)}
         showCard={showInvitationCard}
@@ -225,10 +236,11 @@ const Contacts = () => {
           <div className="blocks">
             <DetailBlock isCustom={true} isFullWidth={true} valueToValidate={activeContact} text={''} title={''}>
               <p>
-                Add custom information about {GetContactName()} at&nbsp;
+                Add custom information about {GetContactName()} at&nbsp; the&nbsp;
                 <span className="link" onClick={() => setState({...state, currentScreen: ScreenNames.children})}>
-                  Children
+                  {GetAccountType()}
                 </span>
+                &nbsp;page
               </p>
             </DetailBlock>
             <DetailBlock valueToValidate={activeContact?.relationshipToMe} text={activeContact?.relationshipToMe} title={'Relationship'} />
@@ -284,13 +296,11 @@ const Contacts = () => {
             onChange={async (e) => {
               const inputValue = e.target.value
               if (inputValue.length > 1) {
-                let propertyPath = 'name'
-                let model = new Coparent()
-                let activeContactAccountType = 'parent'
+                let propertyPath = GetAccountType() === 'parent' ? 'name' : 'general.name'
+                let model = GetAccountType() === 'parent' ? new Coparent() : new Child()
 
                 if (activeContact?.accountType === 'child') {
                   model = new Child()
-                  activeContactAccountType = 'child'
                   propertyPath = 'general.name'
                 }
 
@@ -298,7 +308,7 @@ const Contacts = () => {
                   return {...prevState, name: inputValue}
                 })
                 setUpdateObject((prevState) => {
-                  return {...prevState, model, propertyPath, inputValue, activeContactAccountType}
+                  return {...prevState, model, propertyPath, inputValue}
                 })
               }
             }}
@@ -314,22 +324,15 @@ const Contacts = () => {
               required={true}
               onChange={async (e) => {
                 const inputValue = e.target.value
-                let propertyPath = 'email'
-                let model = new Coparent()
-                let activeContactAccountType = 'parent'
-
-                if (activeContact?.accountType === 'child') {
-                  model = new Child()
-                  propertyPath = 'general.email'
-                  activeContactAccountType = 'child'
-                }
+                let propertyPath = GetAccountType() === 'parent' ? 'email' : 'general.email'
+                let model = GetAccountType() === 'parent' ? new Coparent() : new Child()
 
                 if (inputValue.length > 1) {
                   setActiveContact((prevState) => {
                     return {...prevState, email: inputValue}
                   })
                   setUpdateObject((prevState) => {
-                    return {...prevState, model, propertyPath, inputValue, activeContactAccountType}
+                    return {...prevState, model, propertyPath, inputValue}
                   })
                 }
               }}
@@ -346,22 +349,15 @@ const Contacts = () => {
               required={true}
               onChange={async (e) => {
                 const inputValue = e.target.value
-                let propertyPath = 'phone'
-                let model = new Coparent()
-                let activeContactAccountType = 'parent'
-
-                if (activeContact?.accountType === 'child') {
-                  model = new Child()
-                  propertyPath = 'general.phone'
-                  activeContactAccountType = 'child'
-                }
+                let propertyPath = GetAccountType() === 'parent' ? 'phone' : 'general.phone'
+                let model = GetAccountType() === 'parent' ? new Coparent() : new Child()
 
                 if (inputValue.length > 1) {
                   setActiveContact((prevState) => {
                     return {...prevState, phone: inputValue}
                   })
                   setUpdateObject((prevState) => {
-                    return {...prevState, model, propertyPath, inputValue, activeContactAccountType}
+                    return {...prevState, model, propertyPath, inputValue}
                   })
                 }
               }}
@@ -370,62 +366,116 @@ const Contacts = () => {
         </div>
       </Modal>
 
+      {/* SCREEN ACTIONS */}
+      <ScreenActionsMenu>
+        {/* CREATE CONTACT */}
+        {currentUser?.accountType === 'parent' && (
+          <>
+            {/* NEW CHILD CONTACT */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setShowNewChildCard(true)
+                setState({...state, showScreenActions: false})
+              }}>
+              <div className="content align-center">
+                <div className="svg-wrapper">
+                  <IoPersonAdd className={'checklist'} />
+                </div>
+                <p>Create Child Contact</p>
+              </div>
+            </div>
+
+            {/* NEW COPARENT CONTACT */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setShowNewCoparentCard(true)
+                setState({...state, showScreenActions: false})
+              }}>
+              <div className="content align-center">
+                <div className="svg-wrapper">
+                  <IoPersonAdd className={'checklist'} />
+                </div>
+                <p>Create Co-Parent Contact</p>
+              </div>
+            </div>
+
+            {/* MANAGE CHILDREN */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setState({...state, currentScreen: ScreenNames.children, showScreenActions: false})
+              }}>
+              <div className="content align-center">
+                <div className="svg-wrapper">
+                  <IoPersonAdd className={'checklist'} />
+                </div>
+                <p>Manage Children</p>
+              </div>
+            </div>
+
+            {/* MANAGE COPARENTS */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setState({...state, currentScreen: ScreenNames.coparents, showScreenActions: false})
+              }}>
+              <div className="content align-center">
+                <div className="svg-wrapper">
+                  <IoPersonAdd className={'checklist'} />
+                </div>
+                <p>Manage Co-Parents</p>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* NEW PARENT CONTACT */}
+        {currentUser?.accountType === 'child' && (
+          <>
+            <div
+              className="action-item"
+              onClick={() => {
+                setShowNewParentCard(true)
+                setState({...state, showScreenActions: false})
+              }}>
+              <div className="content align-center">
+                <div className="svg-wrapper">
+                  <IoPersonAdd className={'checklist'} />
+                </div>
+                <p>Create Parent Contact</p>
+              </div>
+            </div>
+            {/* MANAGE COPARENTS */}
+            <div
+              className="action-item"
+              onClick={() => {
+                setState({...state, currentScreen: ScreenNames.parents, showScreenActions: false})
+              }}>
+              <div className="content align-center">
+                <div className="svg-wrapper">
+                  <IoPersonAdd className={'checklist'} />
+                </div>
+                <p>Manage Parents</p>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div id="close-icon-wrapper">
+          <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
+        </div>
+      </ScreenActionsMenu>
+
       {/* PAGE CONTAINER */}
       <div id="contacts-wrapper" className={`${theme} contacts page-container`}>
-        <div className="screen-header">
-          <div className="text">
-            <p className="screen-title">Contacts</p>
-            <p className={`${theme} text-screen-intro`}>Access and manage all essential and personal contact details for each of your contacts.</p>
-          </div>
-        </div>
+        <ScreenHeader
+          title={'Contacts'}
+          screenDescription="Access and manage all essential and personal contact details for each of your contacts."
+        />
         <Spacer height={8} />
         <div className="screen-content">
-          <Label text={'Create Contact'} />
-          <Spacer height={2} />
-
-          {/* CREATION BUTTONS */}
-          {currentUser?.accountType === 'parent' && (
-            <div className="contact-create-buttons">
-              <button className="button default accent smaller" onClick={() => setShowNewCoparentCard(true)}>
-                Co-Parent <RiUserAddLine />
-              </button>
-              <button className="button default accent smaller" onClick={() => setShowNewChildCard(true)}>
-                Child <RiUserAddLine />
-              </button>
-            </div>
-          )}
-          {currentUser?.accountType === 'child' && (
-            <button className="button default accent smaller" onClick={() => setShowNewParentCard(true)}>
-              Parent <RiUserAddLine />
-            </button>
-          )}
-          <Spacer height={8} />
-
-          {/* PAGE LINKS */}
-          <Label text={'full details & management'} />
-          <div id="page-links">
-            {/* PARENT CURRENT USER */}
-            {currentUser?.accountType === 'parent' && (
-              <>
-                <div className="page-link" onClick={() => setState({...state, currentScreen: ScreenNames.coparents})}>
-                  <p className="page-link-text">Co-Parents</p>
-                </div>
-                <span className="separator">|</span>
-                <div className="page-link" onClick={() => setState({...state, currentScreen: ScreenNames.children})}>
-                  <p className="page-link-text">Children</p>
-                </div>
-              </>
-            )}
-
-            {/* CHILD CURRENT USER */}
-            {currentUser?.accountType === 'child' && (
-              <div className="page-link" onClick={() => setState({...state, currentScreen: ScreenNames.parents})}>
-                <p className="page-link-text">Parents</p>
-              </div>
-            )}
-          </div>
-          <Spacer height={8} />
-
           {/* COPARENTS */}
           {currentUser?.accountType === 'parent' && (
             <div id="contacts-wrapper">
@@ -540,7 +590,12 @@ const Contacts = () => {
           )}
         </div>
       </div>
-      <NavBar />
+      <NavBar navbarClass={'actions'}>
+        <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
+          <HiOutlineChevronDoubleUp className={'screen-actions-menu-icon more'} />
+          <p>More</p>
+        </div>
+      </NavBar>
     </>
   )
 }

@@ -29,6 +29,7 @@
         <item url="file://$PROJECT_DIR$/src/managers/smsManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/stringManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/updateManager.js" />
+        <item url="file://$PROJECT_DIR$/src/mappers/accountsMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
         <item url="file://$PROJECT_DIR$/src/models/activityCategory.js" />
@@ -91,6 +92,7 @@
       <root url="file://$PROJECT_DIR$/src/managers/stringManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/updateManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/vaultManager.js" />
+      <root url="file://$PROJECT_DIR$/src/mappers/accountsMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
       <root url="file://$PROJECT_DIR$/src/models/activityCategory.js" />

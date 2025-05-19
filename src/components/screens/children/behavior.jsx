@@ -8,8 +8,9 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import React, {useContext, useEffect, useState} from 'react'
+import {CgClose} from 'react-icons/cg'
 import {FaBrain, FaMinus, FaPlus} from 'react-icons/fa6'
-import {PiTrashSimpleDuotone} from 'react-icons/pi'
+
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
@@ -122,7 +123,7 @@ export default function Behavior({activeChild}) {
                         </a>
                       </div>
                       <Spacer height={5} />
-                      <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
+                      <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
                     </>
                   )}
                   {!infoLabel.toLowerCase().includes('phone') && (
@@ -138,7 +139,7 @@ export default function Behavior({activeChild}) {
                           await Update(infoLabel, `${inputValue}`)
                         }}
                       />
-                      <PiTrashSimpleDuotone className={'delete-icon'} onClick={() => DeleteProp(infoLabel)} />
+                      <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
                     </>
                   )}
                 </div>
