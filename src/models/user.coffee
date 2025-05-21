@@ -2,7 +2,7 @@ import Manager from "../managers/manager"
 import moment from 'moment'
 import DateFormats from '../constants/datetimeFormats'
 
-export default class User
+class User
   constructor: (
     @id = Manager.GetUid()
     @creationDate = moment().format(DateFormats.dateForDb)
@@ -41,3 +41,5 @@ export default class User
       visitationHolidays: []
     }
   ) ->
+
+export default User

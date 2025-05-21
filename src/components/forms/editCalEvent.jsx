@@ -18,7 +18,7 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import {BsCalendar2CheckFill} from 'react-icons/bs'
 import {MdEventRepeat} from 'react-icons/md'
 import InputTypes from '../../constants/inputTypes'
@@ -26,8 +26,10 @@ import globalState from '../../context'
 import useCalendarEvents from '../../hooks/useCalendarEvents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useUsers from '../../hooks/useUsers'
+import DatasetManager from '../../managers/datasetManager'
 import DomManager from '../../managers/domManager'
 import LogManager from '../../managers/logManager'
+import CalendarEvent from '../../models/calendarEvent'
 import AddressInput from '../shared/addressInput'
 import DetailBlock from '../shared/detailBlock'
 import Map from '../shared/map'
@@ -41,50 +43,28 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const {theme, refreshKey, dateToEdit} = state
 
   // Hooks
-  const {currentUser, currentUserIsLoading} = useCurrentUser()
-  const {calendarEvents, eventsAreLoading} = useCalendarEvents(event?.ownerKey)
-  const {users, usersAreLoading} = useUsers()
+  const {currentUser} = useCurrentUser()
+  const {calendarEvents} = useCalendarEvents(event?.ownerKey)
+  const {users} = useUsers()
 
   // Event Details
-  const [eventStartDate, setEventStartDate] = useState('')
-  const [eventLocation, setEventLocation] = useState('')
-  const [eventName, setEventName] = useState('')
-  const [eventWebsiteUrl, setEventWebsiteUrl] = useState('')
-  const [eventStartTime, setEventStartTime] = useState('')
-  const [eventNotes, setEventNotes] = useState('')
-  const [eventEndDate, setEventEndDate] = useState('')
-  const [eventEndTime, setEventEndTime] = useState('')
-  const [eventPhone, setEventPhone] = useState('')
-  const [eventChildren, setEventChildren] = useState(event?.children || [])
-  const [eventReminderTimes, setEventReminderTimes] = useState([])
-  const [eventShareWith, setEventShareWith] = useState(event?.shareWith || [])
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
   const [eventIsRecurring, setEventIsRecurring] = useState(false)
   const [eventIsCloned, setEventIsCloned] = useState(false)
-  const [recurrenceFrequency, setRecurrenceFrequency] = useState('')
 
   // State
-  const [clonedDates, setClonedDates] = useState([])
   const [includeChildren, setIncludeChildren] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
-  const [view, setView] = useState('details')
   const [shareWithNames, setShareWithNames] = useState([])
-  const [updateObject, setUpdateObject] = useState({})
+  const [clonedDates, setClonedDates] = useState([])
+  const [view, setView] = useState('details')
+
+  // REF
+  const updatedEvent = useRef(new CalendarEvent({...event, startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)}))
 
   const ResetForm = async (alertMessage = '') => {
     Manager.ResetForm('edit-event-form')
-    setEventStartDate('')
-    setEventLocation('')
-    setEventName('')
-    setEventWebsiteUrl('')
-    setEventStartTime('')
-    setEventNotes('')
-    setEventEndDate('')
-    setEventEndTime('')
-    setEventChildren([])
-    setEventReminderTimes([])
-    setEventShareWith([])
     setEventIsDateRange(false)
     setClonedDates([])
     setIncludeChildren(false)
@@ -92,13 +72,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setIsVisitation(false)
     setEventIsRecurring(false)
     setEventIsCloned(false)
-    setEventPhone('')
-
-    setRecurrenceFrequency('')
 
     setState({
       ...state,
-
       successAlertMessage: alertMessage,
       dateToEdit: moment().format(DatetimeFormats.dateForDb),
       refreshKey: Manager.GetUid(),
@@ -107,19 +83,19 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   }
 
   const EditNonOwnerEvent = async (_updatedEvent) => {
-    if (Manager.IsValid(event?.shareWith)) {
+    if (Manager.IsValid(updatedEvent?.current?.shareWith)) {
       // Remove currentUser from original event shareWith
       const shareWithWithoutCurrentUser = event.shareWith.filter((x) => x !== currentUser?.key)
       event.shareWith = shareWithWithoutCurrentUser
-      const updateIndex = DB.GetTableIndexById(calendarEvents, event?.id)
-      await CalendarManager.UpdateEvent(event?.ownerKey, updateIndex, event)
+      const updateIndex = DB.GetTableIndexById(calendarEvents, updatedEvent?.current?.id)
+      await CalendarManager.UpdateEvent(updatedEvent?.current?.ownerKey, updateIndex, event)
       // Add cloned event for currentUser
       await CalendarManager.addCalendarEvent(currentUser, _updatedEvent)
-      UpdateManager.sendToShareWith(
+      UpdateManager.SendToShareWith(
         shareWithWithoutCurrentUser,
         currentUser,
         'Event Updated',
-        `${eventName} has been updated`,
+        `${updatedEvent?.current?.title} has been updated`,
         ActivityCategory.calendar
       )
     }
@@ -129,63 +105,48 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const Submit = async () => {
     try {
       // Set new event values
-      const updatedEvent = {...event}
+      const updated = {...event}
 
       // Required
-      updatedEvent.title = eventName
-      updatedEvent.reminderTimes = eventReminderTimes
-      updatedEvent.shareWith = eventShareWith
-      updatedEvent.startDate = moment(eventStartDate).format(DatetimeFormats.dateForDb)
-      updatedEvent.endDate = moment(eventEndDate).format(DatetimeFormats.dateForDb)
-      updatedEvent.phone = StringManager.FormatPhone(eventPhone)
-      updatedEvent.repeatInterval = recurrenceFrequency
-      updatedEvent.isDateRange = eventIsDateRange
-      updatedEvent.isCloned = eventIsCloned
-      updatedEvent.isRecurring = eventIsRecurring
+      updated.isDateRange = eventIsDateRange
+      updated.isCloned = eventIsCloned
+      updated.isRecurring = eventIsRecurring
 
-      if (Manager.IsValid(eventStartTime) || Manager.IsValid(eventEndTime)) {
-        updatedEvent.startTime = moment(eventStartTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
-        updatedEvent.endTime = moment(eventEndTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
+      if (Manager.IsValid(updatedEvent?.current?.startTime) || Manager.IsValid(updatedEvent?.current?.endTime)) {
+        updated.startTime = moment(updatedEvent?.current?.startTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
+        updated.endTime = moment(updatedEvent?.current?.endTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
       }
 
       // Not Required
-      updatedEvent.ownerKey = currentUser?.key
-      updatedEvent.createdBy = currentUser?.name
-      updatedEvent.notes = eventNotes
-      updatedEvent.reminderTimes = eventReminderTimes || []
-      updatedEvent.children = eventChildren
-      updatedEvent.directionsLink = Manager.GetDirectionsLink(eventLocation)
-      updatedEvent.location = eventLocation
+      updated.ownerKey = currentUser?.key
+      updated.createdBy = currentUser?.name
+      updated.directionsLink = Manager.GetDirectionsLink(updatedEvent?.current?.address)
 
       // Add birthday cake
-      if (Manager.Contains(eventName, 'birthday')) {
-        updatedEvent.title += ' 🎂'
+      if (Manager.Contains(updatedEvent?.current?.title, 'birthday')) {
+        updated.title += ' 🎂'
       }
 
-      updatedEvent.websiteUrl = eventWebsiteUrl
-      updatedEvent.fromVisitationSchedule = isVisitation
-      updatedEvent.morningSummaryReminderSent = false
-      updatedEvent.eveningSummaryReminderSent = false
-      updatedEvent.sentReminders = []
+      updated.websiteUrl = updatedEvent?.current?.websiteUrl
+      updated.fromVisitationSchedule = isVisitation
 
-      if (Manager.IsValid(updatedEvent)) {
-        if (!Manager.IsValid(eventName)) {
+      if (Manager.IsValid(updated)) {
+        if (!Manager.IsValid(updatedEvent?.current?.title)) {
           AlertManager.throwError('Event name is required')
           return false
         }
 
-        if (!Manager.IsValid(eventStartDate)) {
+        if (!Manager.IsValid(updatedEvent?.current?.startDate)) {
           AlertManager.throwError('Please select a date for this event')
           return false
         }
 
-        const cleanedEvent = ObjectManager.GetModelValidatedObject(updatedEvent, ModelNames.calendarEvent)
+        const cleanedEvent = ObjectManager.GetModelValidatedObject(updated, ModelNames.calendarEvent)
         const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
 
         // Events with multiple days
-        if (event?.isRecurring || event?.isDateRange || event?.isCloned) {
-          const allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
-          const existing = allEvents.filter((x) => x.multipleDatesId === event?.multipleDatesId)
+        if (updatedEvent?.current?.isRecurring || updatedEvent?.current?.isDateRange || updatedEvent?.current?.isCloned) {
+          const existing = calendarEvents.filter((x) => x.multipleDatesId === updatedEvent?.current?.multipleDatesId)
 
           if (!Manager.IsValid(existing)) {
             return false
@@ -197,13 +158,25 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           }
 
           if (eventIsDateRange) {
-            const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'range', existing[0].startDate, eventEndDate)
+            const dates = await CalendarManager.buildArrayOfEvents(
+              currentUser,
+              updated,
+              'range',
+              existing[0].startDate,
+              updatedEvent?.current?.endDate
+            )
             await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
           }
 
           // Add repeating dates
           if (eventIsRecurring) {
-            const dates = await CalendarManager.buildArrayOfEvents(currentUser, updatedEvent, 'recurring', existing[0]?.startDate, eventEndDate)
+            const dates = await CalendarManager.buildArrayOfEvents(
+              currentUser,
+              updated,
+              'recurring',
+              existing[0]?.startDate,
+              updatedEvent?.current?.endDate
+            )
             await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
           }
 
@@ -213,19 +186,25 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
         // Update Single Event
         else {
-          if (event?.ownerKey === currentUser?.key) {
-            await DB.updateEntireRecord(`${dbPath}`, cleanedEvent, updatedEvent.id)
+          if (updatedEvent?.current?.ownerKey === currentUser?.key) {
+            await DB.updateEntireRecord(`${dbPath}`, cleanedEvent, updated.id)
           }
         }
-        if (event?.ownerKey === currentUser?.key) {
-          if (Manager.IsValid(eventShareWith)) {
-            UpdateManager.sendToShareWith(eventShareWith, currentUser, 'Event Updated', `${eventName} has been updated`, ActivityCategory.calendar)
+        if (updatedEvent?.current?.ownerKey === currentUser?.key) {
+          if (Manager.IsValid(updatedEvent?.current?.shareWith)) {
+            UpdateManager.SendToShareWith(
+              updatedEvent?.current?.shareWith,
+              currentUser,
+              'Event Updated',
+              `${updatedEvent?.current?.title} has been updated`,
+              ActivityCategory.calendar
+            )
           }
         }
       }
 
-      if (event?.ownerKey !== currentUser?.key) {
-        await EditNonOwnerEvent(updatedEvent)
+      if (updatedEvent?.current?.ownerKey !== currentUser?.key) {
+        await EditNonOwnerEvent(updated)
       }
       await ResetForm('Event Updated')
     } catch (error) {
@@ -239,20 +218,18 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     DomManager.HandleCheckboxSelection(
       e,
       (e) => {
-        childrenArr = [...eventChildren, e]
-        setEventChildren(childrenArr)
+        childrenArr = [...updatedEvent.current.children, e]
+        updatedEvent.current.children = childrenArr
       },
       (e) => {
-        let filtered = eventChildren.filter((x) => x !== e)
-        setEventChildren(filtered)
+        updatedEvent.current.children = updatedEvent?.current?.children?.filter((x) => x !== e)
       },
       true
     )
   }
 
   const HandleShareWithSelection = (e) => {
-    const shareWithNumbers = DomManager.HandleShareWithSelection(e, currentUser, eventShareWith)
-    setEventShareWith(shareWithNumbers)
+    updatedEvent.current.shareWith = DomManager.HandleShareWithSelection(e, currentUser, updatedEvent?.current?.shareWith)
   }
 
   const HandleReminderSelection = async (e) => {
@@ -260,18 +237,18 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       e,
       (e) => {
         let timeframe = CalendarMapper.reminderTimes(e)
-        if (eventReminderTimes?.length === 0) {
-          setEventReminderTimes([timeframe])
+        if (updatedEvent?.current?.reminderTimes?.length === 0) {
+          updatedEvent?.current?.reminderTimes([timeframe])
         } else {
-          if (!eventReminderTimes?.includes(timeframe)) {
-            setEventReminderTimes([...eventReminderTimes, timeframe])
+          if (!updatedEvent?.current?.reminderTimes?.includes(timeframe)) {
+            updatedEvent.current.reminderTimes = DatasetManager.AddToArray(updatedEvent?.current?.reminderTimes, timeframe)
           }
         }
       },
       (e) => {
         let mapped = CalendarMapper.reminderTimes(e)
-        let filtered = eventReminderTimes?.filter((x) => x !== mapped)
-        setEventReminderTimes(filtered)
+        let filtered = updatedEvent?.current?.reminderTimes?.filter((x) => x !== mapped)
+        updatedEvent.current.reminderTimes = filtered
       },
       true
     )
@@ -279,37 +256,27 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
   const SetDefaultValues = async () => {
     setView('details')
-    setEventName(event?.title)
-    setEventStartDate(event?.startDate)
-    setEventEndDate(event?.endDate)
-    setEventLocation(event?.location)
-    setEventReminderTimes(event?.reminderTimes || [])
-    setEventStartTime(event?.startTime)
-    setEventEndTime(event?.endTime)
-    setEventNotes(event?.notes)
-    setEventShareWith(event?.shareWith ?? [])
-    setEventIsRecurring(event?.isRecurring)
-    setEventPhone(event?.phone)
-    setRecurrenceFrequency(event?.repeatInterval)
-    setEventIsDateRange(event?.isDateRange)
-    setEventWebsiteUrl(event?.websiteUrl)
-    setIncludeChildren(Manager.IsValid(event?.children))
-    setShowReminders(Manager.IsValid(event?.reminderTimes))
+    setEventIsRecurring(updatedEvent?.current?.isRecurring)
+    setEventIsDateRange(updatedEvent?.current?.isDateRange)
+    setIncludeChildren(Manager.IsValid(updatedEvent?.current?.children))
+    setShowReminders(Manager.IsValid(updatedEvent?.current?.reminderTimes))
 
     // Get shareWith Names
-    const securedShareWith = event?.shareWith?.filter((x) => x !== currentUser?.key && currentUser?.sharedDataUsers.includes(x)) || event?.shareWith
+    const securedShareWith =
+      updatedEvent?.current?.shareWith?.filter((x) => x !== currentUser?.key && currentUser?.sharedDataUsers.includes(x)) ||
+      updatedEvent?.current?.shareWith
     let mappedShareWithNames = Manager.MapKeysToUsers(securedShareWith, users)
     mappedShareWithNames = mappedShareWithNames.filter((x) => x?.name !== StringManager.GetFirstNameOnly(currentUser?.name)).flat()
-    setShareWithNames(mappedShareWithNames)
+    setShareWithNames(DatasetManager.GetValidArray(mappedShareWithNames))
 
     // Repeating
-    if (Manager.IsValid(event?.recurringInterval)) {
-      DomManager.SetDefaultCheckboxes('repeating', event, 'repeatInterval', false).then((r) => r)
+    if (Manager.IsValid(updatedEvent?.current?.recurringInterval)) {
+      DomManager.SetDefaultCheckboxes('repeating', event, 'recurringInterval', false).then((r) => r)
     }
   }
 
   const DeleteEvent = async () => {
-    const eventCount = calendarEvents.filter((x) => x?.title.toLowerCase() === eventName.toLowerCase())?.length
+    const eventCount = calendarEvents.filter((x) => x?.title.toLowerCase() === updatedEvent?.current?.title.toLowerCase())?.length
 
     if (eventCount === 1) {
       await CalendarManager.deleteEvent(currentUser, event.id)
@@ -317,7 +284,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     } else {
       let clonedEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
       if (Manager.IsValid(clonedEvents)) {
-        clonedEvents = clonedEvents.filter((x) => x.title === event?.title)
+        clonedEvents = clonedEvents.filter((x) => x.title === updatedEvent?.current?.title)
         await CalendarManager.deleteMultipleEvents(clonedEvents, currentUser)
         await ResetForm('Event Deleted')
       }
@@ -327,7 +294,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const SetLocalConfirmMessage = () => {
     let message = 'Are you sure you want to Delete this event?'
 
-    if (event?.isRecurring || event?.isCloned || event?.isDateRange) {
+    if (updatedEvent?.current?.isRecurring || updatedEvent?.current?.isCloned || updatedEvent?.current?.isDateRange) {
       message = 'Are you sure you would like to Delete ALL events with these details?'
     }
 
@@ -335,17 +302,26 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   }
 
   const GetCreatedBy = () => {
-    if (Manager.IsValid(event?.createdBy)) {
-      if (event?.ownerKey === currentUser?.key) {
+    if (Manager.IsValid(updatedEvent?.current?.createdBy)) {
+      if (updatedEvent?.current?.ownerKey === currentUser?.key) {
         return 'Me'
       } else {
-        return StringManager.GetFirstNameOnly(event?.createdBy)
+        return StringManager.GetFirstNameOnly(updatedEvent?.current?.createdBy)
       }
     }
   }
 
+  const GetReadableReminder = (timeframe) => {
+    let readable = timeframe
+    readable = CalMapper.readableReminderBeforeTimeframes(readable).replace('before', '')
+    readable = readable.replace('At', '')
+    readable = StringManager.uppercaseFirstLetterOfAllWords(readable)
+    return readable
+  }
+
   useEffect(() => {
     if (Manager.IsValid(event)) {
+      updatedEvent.current = event
       SetDefaultValues().then((r) => r)
     }
   }, [event])
@@ -365,7 +341,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             theme
           )
         }}
-        hasDelete={currentUser?.key === event?.ownerKey}
+        hasDelete={currentUser?.key === updatedEvent?.current?.ownerKey}
         onSubmit={Submit}
         submitText={'Update Event'}
         submitIcon={<BsCalendar2CheckFill className={'edit-calendar-icon'} />}
@@ -373,7 +349,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         onClose={async () => {
           await ResetForm()
         }}
-        title={StringManager.formatEventTitle(StringManager.uppercaseFirstLetterOfAllWords(event?.title))}
+        title={StringManager.formatEventTitle(StringManager.uppercaseFirstLetterOfAllWords(updatedEvent?.current?.title))}
         showCard={showCard}
         deleteButtonText="Delete Event"
         className="edit-calendar-event"
@@ -387,98 +363,91 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             }}
           />
         }
-        wrapperClass={`edit-calendar-event ${event?.ownerKey === currentUser?.key ? 'owner' : 'non-owner'}`}>
+        wrapperClass={`edit-calendar-event ${updatedEvent?.current?.ownerKey === currentUser?.key ? 'owner' : 'non-owner'}`}>
         <div id="edit-cal-event-container" className={`${theme} edit-event-form'`}>
           {/* DETAILS */}
           <div id="details" className={view === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
-            <Spacer height={5} />
             <div className="blocks">
               {/*  Date */}
               <DetailBlock
-                valueToValidate={event?.isDateRange ? event?.staticStartDate : event?.startDate}
-                text={moment(event?.isDateRange ? event?.staticStartDate : event?.startDate).format(
+                valueToValidate={updatedEvent?.current?.isDateRange ? updatedEvent?.current?.staticStartDate : updatedEvent?.current?.startDate}
+                text={moment(updatedEvent?.current?.isDateRange ? updatedEvent?.current?.staticStartDate : updatedEvent?.current?.startDate).format(
                   DatetimeFormats.readableMonthAndDayWithDayDigitOnly
                 )}
-                title={event?.isDateRange ? 'Start Date' : 'Date'}
+                title={updatedEvent?.current?.isDateRange ? 'Start Date' : 'Date'}
               />
 
               {/*  End Date */}
               <DetailBlock
-                valueToValidate={event?.endDate}
-                text={moment(event?.endDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                valueToValidate={updatedEvent?.current?.endDate}
+                text={moment(updatedEvent?.current?.endDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
                 title={'End Date'}
               />
 
               {/*  Start Time */}
               <DetailBlock
-                valueToValidate={event?.startTime}
-                text={moment(event?.startTime, DatetimeFormats.timeForDb).format('h:mma')}
+                valueToValidate={updatedEvent?.current?.startTime}
+                text={moment(updatedEvent?.current?.startTime, DatetimeFormats.timeForDb).format('h:mma')}
                 title={'Start Time'}
               />
 
               {/*  End Time */}
               <DetailBlock
-                valueToValidate={event?.endTime}
-                text={moment(event?.endTime, DatetimeFormats.timeForDb).format('h:mma')}
+                valueToValidate={updatedEvent?.current?.endTime}
+                text={moment(updatedEvent?.current?.endTime, DatetimeFormats.timeForDb).format('h:mma')}
                 title={'End time'}
               />
 
               {/*  Created By */}
-              <DetailBlock valueToValidate={event?.createdBy} text={GetCreatedBy()} title={'Created By'} />
+              <DetailBlock valueToValidate={updatedEvent?.current?.createdBy} text={GetCreatedBy()} title={'Creator'} />
 
               {/*  Shared With */}
-              <MultilineDetailBlock title={'Shared With'} array={shareWithNames} />
+              <MultilineDetailBlock title={'Shared with'} array={shareWithNames} />
 
               {/* Reminders */}
-              {Manager.IsValid(event?.reminderTimes) && (
-                <div className="block">
-                  {Manager.IsValid(event?.reminderTimes) &&
-                    event?.reminderTimes.map((time, index) => {
-                      time = CalMapper.readableReminderBeforeTimeframes(time).replace('before', '')
-                      time = time.replace('At', '')
-                      time = StringManager.uppercaseFirstLetterOfAllWords(time)
-                      return (
-                        <p className="block-text" key={index}>
-                          {time}
-                        </p>
-                      )
-                    })}
-                  <p className="block-title">Reminders</p>
-                </div>
-              )}
+              <MultilineDetailBlock title={'Reminders'} array={updatedEvent?.current?.reminderTimes?.map((x) => GetReadableReminder(x))} />
 
               {/* Children */}
-              <MultilineDetailBlock title={'Children'} array={event?.children} />
+              <MultilineDetailBlock title={'Children'} array={updatedEvent?.current?.children} />
 
               {/*  Notes */}
-              <DetailBlock valueToValidate={event?.notes} text={event?.notes} isFullWidth={true} title={'Notes'} />
+              <DetailBlock valueToValidate={updatedEvent?.current?.notes} text={updatedEvent?.current?.notes} isFullWidth={true} title={'Notes'} />
             </div>
 
-            {(Manager.IsValid(event?.location) || Manager.IsValid(event?.phone) || Manager.IsValid(event?.websiteUrl)) && (
+            {(Manager.IsValid(updatedEvent?.current?.address) ||
+              Manager.IsValid(updatedEvent?.current?.phone) ||
+              Manager.IsValid(updatedEvent?.current?.websiteUrl)) && (
               <>
                 <div className="blocks">
                   {/*  Phone */}
-                  <DetailBlock valueToValidate={event?.phone} isPhone={true} text={StringManager.FormatPhone(event?.phone)} title={'Call'} />
+                  <DetailBlock
+                    valueToValidate={updatedEvent?.current?.phone}
+                    isPhone={true}
+                    text={StringManager.FormatPhone(updatedEvent?.current?.phone)}
+                    title={'Call'}
+                    topSpacerMargin={8}
+                    bottomSpacerMargin={8}
+                  />
 
                   {/*  Website */}
                   <DetailBlock
-                    valueToValidate={event?.websiteUrl}
-                    linkUrl={event?.websiteUrl}
-                    text={decodeURIComponent(event?.websiteUrl)}
+                    valueToValidate={updatedEvent?.current?.websiteUrl}
+                    linkUrl={updatedEvent?.current?.websiteUrl}
+                    text={decodeURIComponent(updatedEvent?.current?.websiteUrl)}
                     isLink={true}
                     title={'Website/Link'}
                   />
 
-                  {Manager.IsValid(event?.location) && (
+                  {Manager.IsValid(updatedEvent?.current?.address) && (
                     <>
                       {/*  Location */}
                       <DetailBlock
                         topSpacerMargin={8}
                         bottomSpacerMargin={8}
-                        valueToValidate={event?.location}
+                        valueToValidate={updatedEvent?.current?.address}
                         isNavLink={true}
-                        text={event?.location}
-                        linkUrl={event?.location}
+                        text={updatedEvent?.current?.address}
+                        linkUrl={updatedEvent?.current?.address}
                         title={'Go'}
                       />
                     </>
@@ -488,19 +457,20 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             )}
 
             {/* Recurring Frequency */}
-            {event?.isRecurring && (
+            {updatedEvent?.current?.isRecurring && (
               <div className="flex">
                 <b>
                   <MdEventRepeat />
                   DatetimeFormats
                 </b>
-                <span>{StringManager.uppercaseFirstLetterOfAllWords(event?.recurringFrequency)}</span>
+                <span>{StringManager.uppercaseFirstLetterOfAllWords(updatedEvent?.current?.recurringFrequency)}</span>
               </div>
             )}
 
             {/* Map */}
-            {Manager.IsValid(event?.location) && <Map locationString={event?.location} />}
+            {Manager.IsValid(updatedEvent?.current?.address) && <Map locationString={updatedEvent?.current?.address} />}
           </div>
+
           {/* EDIT */}
           <div id="edit" className={view === 'edit' ? 'view-wrapper edit active content' : 'view-wrapper content'}>
             <Spacer height={5} />
@@ -508,17 +478,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             <InputWrapper
               inputType={InputTypes.text}
               labelText={'Event Name'}
-              defaultValue={event?.title}
+              defaultValue={updatedEvent.current?.title}
               wrapperClasses="show-label"
               required={true}
               onChange={async (e) => {
                 const inputValue = e.target.value
                 if (inputValue.length > 1) {
-                  setEventName(inputValue)
-
-                  setUpdateObject((prevState) => {
-                    return {...prevState, title: inputValue}
-                  })
+                  updatedEvent.current.title = StringManager.formatEventTitle(inputValue)
                 }
               }}
             />
@@ -529,8 +495,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 labelText={'Date'}
                 required={true}
                 inputType={InputTypes.date}
-                onDateOrTimeSelection={(date) => setEventStartDate(date)}
-                defaultValue={dateToEdit}
+                onDateOrTimeSelection={(date) => (updatedEvent.current.startDate = moment(date).format(DatetimeFormats.dateForDb))}
+                defaultValue={updatedEvent.current.startDate}
               />
             )}
 
@@ -544,8 +510,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   uidClass="event-start-time"
                   required={false}
                   inputType={InputTypes.time}
-                  defaultValue={event?.startTime}
-                  onDateOrTimeSelection={(e) => setEventStartTime(e)}
+                  defaultValue={updatedEvent?.current?.startTime}
+                  onDateOrTimeSelection={(e) => (updatedEvent.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}
                 />
 
                 {/* END TIME */}
@@ -554,9 +520,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   wrapperClasses="end-time"
                   labelText={'End Time'}
                   required={false}
-                  defaultValue={event?.endTime}
+                  defaultValue={updatedEvent?.current?.endTime}
                   inputType={InputTypes.time}
-                  onDateOrTimeSelection={(e) => setEventEndTime(e)}
+                  onDateOrTimeSelection={(e) => (updatedEvent.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}
                 />
               </>
             )}
@@ -565,7 +531,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
             {/* Share with */}
             <ShareWithCheckboxes
-              defaultKeys={event?.shareWith}
+              defaultKeys={updatedEvent?.current?.shareWith}
               required={false}
               onCheck={HandleShareWithSelection}
               containerClass={`share-with-parents`}
@@ -577,7 +543,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 <div className="flex reminder-times-toggle">
                   <p className="label">Remind Me</p>
                   <ToggleButton
-                    isDefaultChecked={Manager.IsValid(event?.reminderTimes)}
+                    isDefaultChecked={Manager.IsValid(updatedEvent?.current?.reminderTimes)}
                     onCheck={() => setShowReminders(true)}
                     onUncheck={() => setShowReminders(false)}
                   />
@@ -588,7 +554,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   checkboxArray={DomManager.BuildCheckboxGroup({
                     currentUser,
                     labelType: 'reminder-times',
-                    defaultLabels: event?.reminderTimes,
+                    defaultLabels: updatedEvent?.current?.reminderTimes,
                   })}
                   elClass={`${theme}`}
                   containerClass={'reminder-times'}
@@ -602,7 +568,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             <div className="flex visitation-toggle">
               <p className="label">Visitation Event</p>
               <ToggleButton
-                isDefaultChecked={event?.fromVisitationSchedule}
+                isDefaultChecked={updatedEvent?.current?.fromVisitationSchedule}
                 onCheck={() => setIsVisitation(!isVisitation)}
                 onUncheck={() => setIsVisitation(!isVisitation)}
               />
@@ -615,7 +581,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   <div className="flex children-toggle">
                     <p className="label">Include Children</p>
                     <ToggleButton
-                      isDefaultChecked={event?.children?.length > 0}
+                      isDefaultChecked={updatedEvent?.current?.children?.length > 0}
                       onCheck={() => setIncludeChildren(!includeChildren)}
                       onUncheck={() => setIncludeChildren(!includeChildren)}
                     />
@@ -627,7 +593,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                       checkboxArray={DomManager.BuildCheckboxGroup({
                         currentUser,
                         labelType: 'children',
-                        defaultLabels: event?.children,
+                        defaultLabels: updatedEvent?.current?.children,
                       })}
                       elClass={`${theme} `}
                       containerClass={'include-children-checkbox-container'}
@@ -642,42 +608,37 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
             {/* URL/WEBSITE */}
             <InputWrapper
-              defaultValue={event?.websiteUrl}
+              defaultValue={updatedEvent?.current?.websiteUrl}
               labelText={'URL/Website'}
-              wrapperClasses={Manager.IsValid(event?.websiteUrl) ? 'show-label' : ''}
+              wrapperClasses={Manager.IsValid(updatedEvent?.current?.websiteUrl) ? 'show-label' : ''}
               required={false}
               inputType={InputTypes.url}
-              onChange={(e) => setEventWebsiteUrl(e.target.value)}
+              onChange={(e) => (updatedEvent.current.websiteUrl = e.target.value)}
             />
-            {/* LOCATION/ADDRESS */}
-            {/*<InputWrapper*/}
-            {/*  defaultValue={event?.location}*/}
-            {/*  wrapperClasses={Manager.IsValid(event?.location) ? 'show-label' : ''}*/}
-            {/*  labelText={'Location'}*/}
-            {/*  required={false}*/}
-            {/*  onChange={(address) => setEventLocation(address)}*/}
-            {/*  inputType={InputTypes.address}*/}
-            {/*/>*/}
 
-            <AddressInput defaultValue={event?.location} labelText={'Location'} onChange={(address) => setEventLocation(address)} />
+            <AddressInput
+              defaultValue={updatedEvent?.current?.address}
+              labelText={'Location'}
+              onChange={(address) => (updatedEvent.current.address = address)}
+            />
 
             {/* PHONE */}
             <InputWrapper
-              wrapperClasses={Manager.IsValid(event?.phone) ? 'show-label' : ''}
-              defaultValue={event?.phone}
+              wrapperClasses={Manager.IsValid(updatedEvent?.current?.phone) ? 'show-label' : ''}
+              defaultValue={updatedEvent?.current?.phone}
               inputType={InputTypes.phone}
               labelText={'Phone'}
-              onChange={(e) => setEventPhone(e.target.value)}
+              onChange={(e) => (updatedEvent.current.phone = StringManager.FormatPhone(e.target.value))}
             />
 
             {/* NOTES */}
             <InputWrapper
-              defaultValue={event?.notes}
+              defaultValue={updatedEvent?.current?.notes}
               labelText={'Notes'}
               required={false}
-              wrapperClasses={Manager.IsValid(event?.notes) ? 'show-label textarea' : 'textarea'}
+              wrapperClasses={Manager.IsValid(updatedEvent?.current?.notes) ? 'show-label textarea' : 'textarea'}
               inputType={InputTypes.textarea}
-              onChange={(e) => setEventNotes(e.target.value)}
+              onChange={(e) => (updatedEvent.current.notes = e.target.value)}
             />
           </div>
         </div>

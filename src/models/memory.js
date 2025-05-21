@@ -7,7 +7,7 @@ import moment from "moment";
 
 import Manager from "../managers/manager";
 
-export default Memory = class Memory {
+Memory = class Memory {
   constructor(id = Manager.GetUid(), creationDate = moment().format(DateFormats.dateForDb), memoryName = '', memoryCaptureDate = '', notes = '', shareWith = [], title = '', url = '', ownerKey = '') {
     this.id = id;
     this.creationDate = creationDate;
@@ -21,5 +21,7 @@ export default Memory = class Memory {
   }
 
 };
+
+export default Memory;
 
 //# sourceMappingURL=memory.js.map

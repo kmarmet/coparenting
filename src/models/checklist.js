@@ -3,7 +3,7 @@ var Checklist;
 
 import Manager from "/src/managers/manager";
 
-export default Checklist = class Checklist {
+Checklist = class Checklist {
   constructor(id = Manager.GetUid(), items = [], fromOrTo = "from") {
     this.id = id;
     this.items = items;
@@ -11,5 +11,7 @@ export default Checklist = class Checklist {
   }
 
 };
+
+export default Checklist;
 
 //# sourceMappingURL=checklist.js.map

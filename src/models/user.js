@@ -7,7 +7,7 @@ import moment from 'moment';
 
 import DateFormats from '../constants/datetimeFormats';
 
-export default User = class User {
+User = class User {
   constructor(id = Manager.GetUid(), creationDate = moment().format(DateFormats.dateForDb), key = '', name = '', email = '', phone = '', children = [], coparents = [], sharedDataUsers = [], parentType = '', accountType = '', homeAddress = '', location = {
       country: '',
       city: '',
@@ -48,5 +48,7 @@ export default User = class User {
   }
 
 };
+
+export default User;
 
 //# sourceMappingURL=user.js.map

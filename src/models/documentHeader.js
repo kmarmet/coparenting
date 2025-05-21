@@ -3,7 +3,7 @@ var DocumentHeader;
 
 import Manager from "../managers/manager";
 
-export default DocumentHeader = class DocumentHeader {
+DocumentHeader = class DocumentHeader {
   constructor(id = Manager.GetUid(), headerText = '', ownerKey = '') {
     this.id = id;
     this.headerText = headerText;
@@ -11,5 +11,7 @@ export default DocumentHeader = class DocumentHeader {
   }
 
 };
+
+export default DocumentHeader;
 
 //# sourceMappingURL=documentHeader.js.map

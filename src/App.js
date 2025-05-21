@@ -2,7 +2,7 @@
 import EditCalEvent from '/src/components/forms/editCalEvent.jsx'
 import NewCalendarEvent from '/src/components/forms/newCalendarEvent.jsx'
 import NewExpenseForm from '/src/components/forms/newExpenseForm.jsx'
-import NewMemoryForm from '/src/components/forms/newMemoryForm.jsx'
+import {NewMemoryForm} from '/src/components/forms/newMemoryForm.jsx'
 import NewSwapRequest from '/src/components/forms/newSwapRequest.jsx'
 import NewTransferChangeRequest from '/src/components/forms/newTransferRequest.jsx'
 import FullMenu from '/src/components/fullMenu'
@@ -69,7 +69,6 @@ export default function App() {
   const auth = getAuth(app)
   const [state, setState] = useState(StateObj)
   const stateToUpdate = {state, setState}
-  const {userIsLoggedIn, firebaseUser, setFirebaseUser} = state
   const myCanvas = document.createElement('canvas')
   const fullscreenScreens = [ScreenNames.login, ScreenNames.landing, ScreenNames.registration]
   const screensToHideSidebar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.landing]
@@ -89,6 +88,7 @@ export default function App() {
 
   // Init EmailJS
   emailjs.init({
+    // eslint-disable-next-line no-undef
     publicKey: process.env.REACT_EMAILJS_API_KEY,
     // Do not allow headless browsers
     blockHeadless: true,
@@ -209,7 +209,7 @@ export default function App() {
         console.log(`Error: ${error} | Code File: App.js  | Function: useEffect |`)
       }
     })
-
+    // eslint-disable-next-line no-undef
     LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
   }, [])
 

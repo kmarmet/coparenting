@@ -6,11 +6,11 @@ import DB_UserScoped from '/src/database/db_userScoped'
 import AlertManager from '/src/managers/alertManager'
 import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
-
 import React, {useContext, useEffect, useState} from 'react'
 import {BsFillSendFill} from 'react-icons/bs'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
-import {HiOutlineChevronDoubleUp} from 'react-icons/hi2'
+import {HiDotsHorizontal} from 'react-icons/hi'
+
 import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
@@ -272,7 +272,7 @@ export default function Parents() {
       {/* NAVBAR */}
       <NavBar navbarClass={'actions'}>
         <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
-          <HiOutlineChevronDoubleUp className={'screen-actions-menu-icon'} />
+          <HiDotsHorizontal className={'screen-actions-menu-icon'} />
           <p>More</p>
         </div>
       </NavBar>

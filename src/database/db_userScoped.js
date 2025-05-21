@@ -404,6 +404,9 @@ const DB_UserScoped = {
   DeleteChildInfoProp: async (currentUserKey, childIndex, section, prop) => {
     try {
       const dbRef = ref(getDatabase())
+      if (!Manager.IsValid(childIndex) || !Manager.IsValid(section) || !Manager.IsValid(prop)) {
+        return false
+      }
       await remove(child(dbRef, `${DB.tables.users}/${currentUserKey}/children/${childIndex}/${section}/${prop}`))
     } catch (error) {
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
@@ -455,7 +458,9 @@ const DB_UserScoped = {
   DeleteChild: async (currentUser, childIndex, childUserKey) => {
     const dbRef = ref(getDatabase())
     console.log(currentUser, childIndex, childUserKey)
-    await DB_UserScoped.DeleteSharedDataUserKey(currentUser, childUserKey)
+    if (Manager.IsValid(childUserKey)) {
+      await DB_UserScoped.DeleteSharedDataUserKey(currentUser, childUserKey)
+    }
     await remove(child(dbRef, `${DB.tables.users}/${currentUser?.key}/children/${childIndex}`))
   },
   DeleteUser: async (userIndex) => {

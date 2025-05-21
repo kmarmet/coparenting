@@ -7,7 +7,7 @@ import DateFormats from "../constants/datetimeFormats";
 
 import moment from "moment";
 
-export default SwapRequest = class SwapRequest {
+SwapRequest = class SwapRequest {
   constructor(id = Manager.GetUid(), startDate = '', shareWith = [], endDate = '', creationDate = moment().format(DateFormats.dateForDb), recipientKey = '', requestReason = '', duration = '', ownerKey = '', recipientName = '', ownerName = '', children = '', fromHour = '', toHour = '', status = 'pending', declineReason = '', responseDate = '', range = [], requestedResponseDate = '') {
     this.id = id;
     this.startDate = startDate;
@@ -31,5 +31,7 @@ export default SwapRequest = class SwapRequest {
   }
 
 };
+
+export default SwapRequest;
 
 //# sourceMappingURL=swapRequest.js.map

@@ -2,7 +2,7 @@ import Manager from "../managers/manager"
 import DateFormats from "../constants/datetimeFormats"
 import moment from "moment"
 
-export default class SwapRequest
+class SwapRequest
   constructor: (
     @id = Manager.GetUid(),
     @startDate = ''
@@ -24,3 +24,5 @@ export default class SwapRequest
     @range = []
     @requestedResponseDate = ''
   ) ->
+
+export default SwapRequest

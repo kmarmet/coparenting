@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react'
 import {GrEdit} from 'react-icons/gr'
-import {HiOutlineChevronDoubleUp} from 'react-icons/hi2'
+import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoClose, IoPersonAdd} from 'react-icons/io5'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
@@ -229,8 +229,6 @@ const Contacts = () => {
         subtitle={`${!users?.map((x) => x?.key).includes(activeContact?.userKey) ? `${GetContactName()} has not created an account with us yet. Invite them to create an account to begin sharing with and receiving information from them.` : ''}`}
         title={`${GetContactName()}`}
         showCard={showModal}>
-        {view === 'details' && <Spacer height={10} />}
-
         {/* DETAILS */}
         <div id="details" className={view === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
           <div className="blocks">
@@ -591,8 +589,11 @@ const Contacts = () => {
         </div>
       </div>
       <NavBar navbarClass={'actions'}>
-        <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
-          <HiOutlineChevronDoubleUp className={'screen-actions-menu-icon more'} />
+        <div
+          style={DomManager.AnimateDelayStyle(1, 0.06)}
+          onClick={() => setState({...state, showScreenActions: true})}
+          className={`menu-item ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
+          <HiDotsHorizontal className={'screen-actions-menu-icon more'} />
           <p>More</p>
         </div>
       </NavBar>

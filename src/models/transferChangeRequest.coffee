@@ -1,6 +1,6 @@
 import Manager from "../managers/manager"
 
-export default class TransferChangeRequest
+class TransferChangeRequest
   constructor: (
     @id = Manager.GetUid()
     @startDate = ''
@@ -17,3 +17,6 @@ export default class TransferChangeRequest
     @responseDate = ''
     @preferredTransferLocation = ''
   ) ->
+
+
+export default TransferChangeRequest

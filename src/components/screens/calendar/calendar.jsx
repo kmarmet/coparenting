@@ -22,7 +22,6 @@ import ScreenNames from '../../../constants/screenNames'
 import DB from '../../../database/DB.js'
 import useCalendarEvents from '../../../hooks/useCalendarEvents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
-import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
 import CalendarEvents from './calendarEvents.jsx'
@@ -423,13 +422,12 @@ export default function EventCalendar() {
 
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme}`}>
-        <ScreenHeader title={'Calendar'} screenName={ScreenNames.calendar} />
-        <Spacer height={5} />
+        <Spacer height={32.5} />
 
         {/* STATIC CALENDAR */}
         <div id="static-calendar" className={`${theme}`}>
           <StaticDatePicker
-            showDaysOutsideCurrentMonth={false}
+            showDaysOutsideCurrentMonth={true}
             views={['month', 'day']}
             minDate={moment(`${moment().year()}-01-01`)}
             maxDate={moment(`${moment().year()}-12-31`)}

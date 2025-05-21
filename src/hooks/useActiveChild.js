@@ -12,14 +12,13 @@ const useActiveChild = (activeChildId) => {
   const [activeChild, setActiveChild] = useState(children?.[0])
   const [activeChildIsLoading, setActiveChildIsLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [childIndex, setChildIndex] = useState(null)
-  const path = `${DB.tables.users}/${currentUser?.key}/children/${childIndex}`
+  const [activeChildIndex, setActiveChildIndex] = useState(null)
+  const path = `${DB.tables.users}/${currentUser?.key}/children/${activeChildIndex}`
   const queryKey = ['realtime', path]
 
   useEffect(() => {
     const database = getDatabase()
     const dataRef = ref(database, path)
-
     const listener = onValue(
       dataRef,
       (snapshot) => {
@@ -31,7 +30,7 @@ const useActiveChild = (activeChildId) => {
           setActiveChildIsLoading(false)
         }
 
-        setChildIndex(index)
+        setActiveChildIndex(index)
 
         if (Manager.IsValid(snapshot.val())) {
           if (Manager.IsValid(currentUser) && Manager.IsValid(children) && Manager.IsValid(activeChildId)) {
@@ -55,6 +54,7 @@ const useActiveChild = (activeChildId) => {
   }, [path, children, currentUser, activeChildId])
 
   return {
+    activeChildIndex,
     activeChild,
     activeChildIsLoading,
     error,

@@ -12,7 +12,7 @@ DomManager = {
         for element in classOfElementsToAnimate
           element.classList.remove(classToRemove)
 
-    FadeInRight: (variableToCheck, classOfElementsToAnimate, fastSlowOrDefault = "") ->
+    FadeInRight: (variableToCheck,  fastSlowOrDefault = "") ->
       if typeof variableToCheck == 'boolean'
         if (variableToCheck == true)
           return "animate__animated animate__fadeInRight #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
@@ -23,7 +23,7 @@ DomManager = {
       else
         return 'animate__animated animate__fadeOut'
 
-    FadeInUp: (variableToCheck, classOfElementsToAnimate, fastSlowOrDefault = "") ->
+    FadeInUp: (variableToCheck,  fastSlowOrDefault = "") ->
       if typeof variableToCheck == 'boolean'
         if (variableToCheck == true)
           return "animate__animated animate__fadeInUp #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
@@ -33,6 +33,39 @@ DomManager = {
         return "animate__animated animate__fadeInUp #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
       else
         return 'animate__animated animate__fadeOutDown'
+
+    FadeInDown: (variableToCheck,  fastSlowOrDefault = "") ->
+      if typeof variableToCheck == 'boolean'
+        if (variableToCheck == true)
+          return "animate__animated animate__fadeInDown #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+        else
+          return 'animate__animated animate__fadeOutDown'
+      if Manager.IsValid(variableToCheck)
+        return "animate__animated animate__fadeInDown #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+      else
+        return 'animate__animated animate__fadeOutDown'
+
+    ZoomIn: (variableToCheck,  fastSlowOrDefault = "") ->
+      if typeof variableToCheck == 'boolean'
+        if (variableToCheck == true)
+          return "animate__animated animate__zoomIn #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+        else
+          return 'animate__animated animate__zoomOut'
+      if Manager.IsValid(variableToCheck)
+        return "animate__animated animate__zoomIn #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+      else
+        return 'animate__animated animate__zoomOut'
+
+    ZoomInDown: (variableToCheck,  fastSlowOrDefault = "") ->
+      if typeof variableToCheck == 'boolean'
+        if (variableToCheck == true)
+          return "animate__animated animate__zoomInDown #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+        else
+          return 'animate__animated animate__zoomOutDown'
+      if Manager.IsValid(variableToCheck)
+        return "animate__animated animate__zoomInDown #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+      else
+        return 'animate__animated animate__zoomOutDown'
 
     FadeIn: (variableToCheck, fastSlowOrDefault = "") ->
       if Manager.IsValid(variableToCheck)
@@ -56,10 +89,15 @@ DomManager = {
       slow: 'animate__slow'
       faster: 'animate__faster'
       slower: 'animate__slower'
+      zoomInDown: 'zoomInDown'
 
     zoomIn:
       enter: 'animate__zoomIn',
       exit: 'animate__zoomOut'
+
+    zoomInDown:
+      enter: 'animate__zoomInDown',
+      exit: 'animate__zoomOutDown'
 
     fadeIn:
       enter: 'animate__fadeIn',
@@ -96,7 +134,7 @@ DomManager = {
     allMenuItems = document.querySelectorAll(".#{itemsClass}")
 
     AddClasses = (item) ->
-      if addOrRemove is 'add'
+      if addOrRemove is 'add' && Manager.IsValid(item)
         item.classList.add(DomManager.AnimateClasses[animateName].enter)
         if slower
           item.classList.add(DomManager.AnimateClasses.names.slow)
@@ -120,9 +158,9 @@ DomManager = {
   SetDefaultCheckboxes: (checkboxContainerClass, object, propName, isArray = false, values) ->
     # Share With
     if checkboxContainerClass == 'share-with'
-      for phone in values
-        console.log ".#{checkboxContainerClass} [data-phone='#{phone}'] .box"
-        document.querySelector(".#{checkboxContainerClass} [data-phone='#{phone}'] .box").classList.add('active')
+      if Manager.IsValid(values)
+        for phone in values
+          document.querySelector(".#{checkboxContainerClass} [data-phone='#{phone}'] .box").classList.add('active')
 
     # Repeating
     if checkboxContainerClass == 'repeating'
@@ -161,18 +199,13 @@ DomManager = {
     # UNCHECK
     else if onCheckRemoval? then onCheckRemoval(label)
 
-  HandleShareWithSelection: (e, currentUser, shareWith) ->
+  HandleShareWithSelection: (e, currentUser, shareWith, refToUpdate) ->
     clickedEl = e.currentTarget
-    key = clickedEl.getAttribute('data-key')
-
+    key = e.currentTarget.dataset['key']
+    updated = DatasetManager.ToggleInArray(refToUpdate?.current?.shareWith, key)
     DomManager.toggleActive(clickedEl)
 
-    if key in shareWith
-      shareWith = shareWith.filter (x) -> x isnt key
-    else
-      shareWith = [shareWith..., key]
-
-    return DatasetManager.GetValidArray(shareWith)
+    return DatasetManager.GetValidArray(updated)
 
   BuildCheckboxGroup: ({currentUser, labelType, defaultLabels = [], customLabelArray = [], labelProp, uidProp, predefinedType}) ->
     checkboxLabels = []

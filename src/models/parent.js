@@ -3,7 +3,7 @@ var Parent;
 
 import Manager from "../managers/manager";
 
-export default Parent = class Parent {
+Parent = class Parent {
   constructor(id = Manager.GetUid(), userKey = '', name = '', email = '', phone = '', address = '', parentType = '') {
     this.id = id;
     this.userKey = userKey;
@@ -15,5 +15,7 @@ export default Parent = class Parent {
   }
 
 };
+
+export default Parent;
 
 //# sourceMappingURL=parent.js.map

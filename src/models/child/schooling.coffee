@@ -1,2 +1,4 @@
-export default class Schooling
+class Schooling
   constructor: (@schoolName = '', @grade = '') ->
+
+export default class Schooling

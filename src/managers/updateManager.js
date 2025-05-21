@@ -13,6 +13,8 @@ import DateFormats from "../constants/datetimeFormats";
 
 import UpdateSubscriber from "../models/updateSubscriber";
 
+import Update from "../models/update";
+
 export default UpdateManager = {
   currentUser: null,
   lineBreak: '\r\n',
@@ -144,7 +146,7 @@ export default UpdateManager = {
       redirect: "follow"
     };
     // Add notification to database
-    newNotification = new Notification();
+    newNotification = new Update();
     newNotification.id = Manager.GetUid();
     newNotification.recipientKey = recipientKey;
     newNotification.ownerKey = currentUser != null ? currentUser.key : void 0;
@@ -152,7 +154,7 @@ export default UpdateManager = {
     newNotification.title = title;
     newNotification.text = message;
     newNotification.category = category;
-    await DB.Add(`${DB.tables.notifications}/${recipientKey}`, [], newNotification);
+    await DB.Add(`${DB.tables.updates}/${recipientKey}`, [], newNotification);
     console.log(`Sent to ${recipientKey}`);
     if (!window.location.href.includes("localhost")) {
       return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
@@ -165,13 +167,13 @@ export default UpdateManager = {
       });
     }
   },
-  sendToShareWith: async function(shareWithKeys, currentUser, title, message, category = '') {
+  SendToShareWith: async function(shareWithKeys, currentUser, title, message, category = '') {
     var i, key, len, results;
     if (Manager.IsValid(shareWithKeys)) {
       results = [];
       for (i = 0, len = shareWithKeys.length; i < len; i++) {
         key = shareWithKeys[i];
-        results.push((await UpdateManager.SendNotification(title, message, key, currentUser, category)));
+        results.push((await UpdateManager.SendUpdate(title, message, key, currentUser, category)));
       }
       return results;
     }

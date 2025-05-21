@@ -45,7 +45,7 @@ DatasetManager = {
     }
     return returnArray;
   },
-  AddToArray: (arr, newItem) => {
+  AddToArray: (arr, newItem, removeIfExistsAlready = false) => {
     var returnArray;
     returnArray = [];
     if (!Manager.IsValid(arr)) {
@@ -60,12 +60,28 @@ DatasetManager = {
     if (Manager.IsValid(arr) && !Array.isArray(arr)) {
       returnArray = [newItem];
     }
-    console.log(returnArray);
+    if (removeIfExistsAlready && arr.includes(newItem)) {
+      returnArray = returnArray.filter(function(x) {
+        return x !== newItem;
+      });
+    }
     if (Manager.IsValid(returnArray)) {
       returnArray = DatasetManager.GetValidArray(returnArray);
     }
-    console.log(returnArray);
     return returnArray;
+  },
+  ToggleInArray: function(arr, key) {
+    if (!Manager.IsValid(arr)) {
+      return [key];
+    } else {
+      if (arr.includes(key)) {
+        return arr.filter(function(x) {
+          return x !== key;
+        });
+      } else {
+        return [...arr, key];
+      }
+    }
   },
   GetValidArray: function(source, isUnique = true, isFlattened = true, getObjectValuesOnly = false) {
     var asArray, returnArray;

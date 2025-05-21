@@ -313,9 +313,10 @@
       margin-top: 10px;
       #forgot-password-link {
         font-size: 16px;
-        color: $accent;
-        width: 50%;
-        text-align: right;
+        color: $linkColor;
+        width: max-content;
+        border-bottom: 1px solid $linkColor;
+        padding-bottom: 2px;
       }
 
       #checkbox-group {
@@ -330,24 +331,25 @@
     }
 
     #install-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
       width: 150px;
+      font-weight: $fwMediumBold;
       font-size: 13px;
       margin: 0 auto;
       min-width: 0;
       z-index: 10000;
-      color: white;
+      color: $blend;
       height: 50px;
-      background: $accent;
+      background: white;
       border-radius: $buttonBorderRadius;
       @include hover;
+      @include shadow;
+      box-shadow: $boxShadow_bottom_only;
     }
 
     .eye-icon {
       position: relative;
+      margin-left: 10px;
+      color: $secondaryAccent;
       @include hover;
     }
 
@@ -391,13 +393,13 @@
         width: 100%;
         text-align: center;
         font-style: italic;
-        color: $primaryText;
+        color: white;
 
         &#author {
           width: 100%;
           text-align: center;
           font-size: 14px;
-          color: $darkerGrey;
+          color: $mediumGrey;
         }
       }
     }
@@ -439,7 +441,10 @@
 
         span {
           font-weight: $fwBold;
-          color: $accent;
+          color: $linkColor;
+          width: max-content;
+          border-bottom: 1px solid $linkColor;
+          padding-bottom: 2px;
         }
       }
 

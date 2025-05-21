@@ -112,6 +112,7 @@ function InputWrapper({
             class={`${theme} ${inputClasses}`}
             value={Manager.IsValid(defaultValue) ? moment(defaultValue) : null}
             key={refreshKey}
+            multiple={true}
             format={dateFormat}
             onAccept={onDateOrTimeSelection}
           />

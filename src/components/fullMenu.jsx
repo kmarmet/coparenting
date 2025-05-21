@@ -3,7 +3,6 @@ import {getAuth, signOut} from 'firebase/auth'
 import React, {useContext} from 'react'
 import {AiOutlineLogout} from 'react-icons/ai'
 import {BsHouses, BsImages} from 'react-icons/bs'
-import {CgClose} from 'react-icons/cg'
 import {GrInstallOption, GrSettingsOption, GrUserAdmin} from 'react-icons/gr'
 import {IoChatbubblesOutline} from 'react-icons/io5'
 import {LiaFileInvoiceDollarSolid} from 'react-icons/lia'
@@ -62,19 +61,23 @@ export default function FullMenu() {
   return (
     <Overlay show={menuIsOpen}>
       <div className="swipe-bar"></div>
-      <div id="full-menu-wrapper" {...handlers}>
+      <div
+        style={DomManager.AnimateDelayStyle(1, 0.1)}
+        id="full-menu-wrapper"
+        {...handlers}
+        className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(menuIsOpen, '.fade-up-wrapper')}`}>
         <div
           id="full-menu"
           style={DomManager.AnimateDelayStyle(1, 0.1)}
           className={`full-menu-wrapper ${DomManager.Animate.FadeInUp(menuIsOpen, '.full-menu-wrapper')}`}>
-          <div id="close-icon-wrapper">
-            <CgClose
-              onClick={() => {
-                setState({...state, menuIsOpen: false})
-              }}
-              id={'close-icon'}
-            />
-          </div>
+          {/*<div id="close-icon-wrapper">*/}
+          {/*  <CgClose*/}
+          {/*    onClick={() => {*/}
+          {/*      setState({...state, menuIsOpen: false})*/}
+          {/*    }}*/}
+          {/*    id={'close-icon'}*/}
+          {/*  />*/}
+          {/*</div>*/}
           <div id="menu-sections">
             {/* SHARING */}
             <p className="menu-title sharing">Sharing</p>

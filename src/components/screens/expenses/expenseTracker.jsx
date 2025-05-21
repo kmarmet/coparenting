@@ -18,7 +18,6 @@ import MenuItem from '@mui/material/MenuItem'
 import 'lightgallery/css/lightgallery.css'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {AiOutlineFileAdd} from 'react-icons/ai'
 import {BsCardImage} from 'react-icons/bs'
 import {MdOutlineEventRepeat} from 'react-icons/md'
 import {RxUpdate} from 'react-icons/rx'
@@ -35,6 +34,7 @@ import InputWrapper from '../../shared/inputWrapper.jsx'
 import Label from '../../shared/label.jsx'
 import Modal from '../../shared/modal.jsx'
 import NoDataFallbackText from '../../shared/noDataFallbackText.jsx'
+import ScreenHeader from '../../shared/screenHeader'
 import SelectDropdown from '../../shared/selectDropdown.jsx'
 import Slideshow from '../../shared/slideshow'
 import Spacer from '../../shared/spacer'
@@ -110,7 +110,7 @@ export default function ExpenseTracker() {
     activeExpense.paidStatus = updatedStatus
     const updateIndex = DB.GetTableIndexById(expenses, activeExpense?.id)
     await ExpenseManager.UpdateExpense(currentUser?.key, updateIndex, activeExpense).then(async () => {
-      UpdateManager.SendNotification(
+      UpdateManager.SendUpdate(
         `Expense Paid`,
         `An expense has been marked ${updatedStatus.toUpperCase()} by ${currentUser?.name} \nExpense Name: ${activeExpense?.name}`,
         payer?.key,
@@ -136,7 +136,7 @@ export default function ExpenseTracker() {
     const message = `This is a reminder to pay the ${expense?.name} expense?.  ${
       Manager.IsValid(expense?.dueDate) ? 'Due date is: ' + expense?.dueDate : ''
     }`
-    UpdateManager.SendNotification(`Expense Reminder`, message, expense?.payer?.phone, currentUser, ActivityCategory.expenses)
+    UpdateManager.SendUpdate(`Expense Reminder`, message, expense?.payer?.phone, currentUser, ActivityCategory.expenses)
     setState({...state, successAlertMessage: 'Reminder Sent'})
     setShowDetails(false)
   }
@@ -521,173 +521,173 @@ export default function ExpenseTracker() {
 
       {/* PAGE CONTAINER */}
       <div id="expense-tracker" className={`${theme} page-container form`}>
-        <div className="flex" id="screen-title-wrapper">
-          <p className="screen-title">Expense Tracker </p>
-          {!DomManager.isMobile() && <AiOutlineFileAdd onClick={() => setShowNewExpenseCard(true)} id={'Add-new-button'} />}
-        </div>
-        <p className={`${theme} text-screen-intro`}>
-          Incorporate expenses that your co-parent is responsible for. Should a new expense arise that requires your payment, you will have the option
-          to either approve or decline it.
-        </p>
+        <ScreenHeader
+          title={'Expense Tracker'}
+          screenDescription="Incorporate expenses that your co-parent is responsible for. Should a new expense arise that requires your payment, you will have the option
+          to either approve or decline it"
+        />
         <Spacer height={8} />
 
-        {/* PAYMENT OPTIONS */}
-        <p className="payment-options-link" onClick={() => setShowPaymentOptionsCard(true)}>
-          Bill Payment & Money Transfer Options
-        </p>
-        <Spacer height={8} />
+        <div className="screen-content">
+          {/* PAYMENT OPTIONS */}
+          <p className="payment-options-link" onClick={() => setShowPaymentOptionsCard(true)}>
+            Bill Payment & Money Transfer Options
+          </p>
+          <Spacer height={8} />
 
-        {/* FILTERS */}
-        <Accordion expanded={showFilters} id={'expenses-accordion'} className={`${showFilters ? 'open' : 'closed'} ${theme} white-bg`}>
-          <AccordionSummary onClick={() => setShowFilters(!showFilters)} className={showFilters ? 'open' : 'closed'}>
-            <AccordionTitle titleText={'Filters'} toggleState={showFilters} onClick={() => setShowFilters(!showFilters)} />
-          </AccordionSummary>
-          <AccordionDetails>
-            <div id="filters">
-              <div className="filter-row">
-                <Label isBold={true} text={'Type'} classes="mb-5"></Label>
-                <div className="buttons flex type">
-                  <button className={`${expenseDateType === 'all' ? 'active' : ''} button default`} onClick={() => HandleExpenseTypeSelection('all')}>
-                    All
-                  </button>
-                  <button
-                    className={`${expenseDateType === 'single' ? 'active' : ''} button default`}
-                    onClick={() => HandleExpenseTypeSelection('single')}>
-                    One-time
-                  </button>
-                  <button
-                    className={`${expenseDateType === 'recurring' ? 'active' : ''} button default`}
-                    onClick={() => HandleExpenseTypeSelection('recurring')}>
-                    Recurring
-                  </button>
-                </div>
-              </div>
-              <div className="filter-row">
-                <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
-                <div className="buttons type flex">
-                  <button
-                    className={paidStatus === 'all' ? 'active button default' : 'button default'}
-                    onClick={() => HandlePaidStatusSelection('all')}>
-                    All
-                  </button>
-                  <button
-                    className={paidStatus === 'unpaid' ? 'active button default' : 'button default'}
-                    onClick={() => HandlePaidStatusSelection('unpaid')}>
-                    Unpaid
-                  </button>
-                  <button
-                    className={paidStatus === 'paid' ? 'active button default' : 'button default'}
-                    onClick={() => HandlePaidStatusSelection('paid')}>
-                    Paid
-                  </button>
-                </div>
-              </div>
-              {categoriesInUse.length > 0 && <Label isBold={true} text={'Category'} classes="mb-5"></Label>}
-
-              {/* CATEGORIES */}
-              {Manager.IsValid(categoriesInUse) && (
+          {/* FILTERS */}
+          <Accordion expanded={showFilters} id={'expenses-accordion'} className={`${showFilters ? 'open' : 'closed'} ${theme} white-bg`}>
+            <AccordionSummary onClick={() => setShowFilters(!showFilters)} className={showFilters ? 'open' : 'closed'}>
+              <AccordionTitle titleText={'Filters'} toggleState={showFilters} onClick={() => setShowFilters(!showFilters)} />
+            </AccordionSummary>
+            <AccordionDetails>
+              <div id="filters">
                 <div className="filter-row">
-                  <div className="buttons category">
-                    {categoriesAsArray.map((cat, index) => {
-                      return (
-                        <>
-                          {categoriesInUse.includes(cat) && Manager.IsValid(cat, true) && (
-                            <button
-                              key={index}
-                              onClick={HandleCategorySelection}
-                              className={category === cat ? 'button default active' : 'button default'}>
-                              {cat}
-                            </button>
-                          )}
-                        </>
-                      )
-                    })}
+                  <Label isBold={true} text={'Type'} classes="mb-5"></Label>
+                  <div className="buttons flex type">
+                    <button
+                      className={`${expenseDateType === 'all' ? 'active' : ''} button default`}
+                      onClick={() => HandleExpenseTypeSelection('all')}>
+                      All
+                    </button>
+                    <button
+                      className={`${expenseDateType === 'single' ? 'active' : ''} button default`}
+                      onClick={() => HandleExpenseTypeSelection('single')}>
+                      One-time
+                    </button>
+                    <button
+                      className={`${expenseDateType === 'recurring' ? 'active' : ''} button default`}
+                      onClick={() => HandleExpenseTypeSelection('recurring')}>
+                      Recurring
+                    </button>
                   </div>
                 </div>
-              )}
-              <Label text={''} classes="sorting" />
-              <SelectDropdown wrapperClasses={'sorting-accordion'} selectValue={sortMethod} labelText={'Sort by'} onChange={HandleSortBySelection}>
-                <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
-                <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
-                <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
-                <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
-              </SelectDropdown>
-            </div>
-          </AccordionDetails>
-        </Accordion>
-        {/* FILTERS */}
-
-        {/* LOOP EXPENSES */}
-        <div id="expenses-container">
-          {Manager.IsValid(sortedExpenses) &&
-            sortedExpenses.map((expense, index) => {
-              let dueDate = moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay) ?? ''
-              const readableDueDate = moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()
-              const isPastDue = readableDueDate.toString().includes('ago')
-              const dueInADay = readableDueDate.toString().includes('in a day')
-              const dueInHours = readableDueDate.toString().includes('hours')
-
-              if (!Manager.IsValid(dueDate)) {
-                dueDate = ''
-              }
-              return (
-                <div
-                  key={index}
-                  style={DomManager.AnimateDelayStyle(index)}
-                  className={`row ${DomManager.Animate.FadeInRight(sortedExpenses, '.row')}`}
-                  onClick={() => {
-                    setActiveExpense(expense)
-                    setShowDetails(true)
-                  }}>
-                  <div id="primary-icon-wrapper">
-                    <span className="amount">${expense?.amount}</span>
+                <div className="filter-row">
+                  <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
+                  <div className="buttons type flex">
+                    <button
+                      className={paidStatus === 'all' ? 'active button default' : 'button default'}
+                      onClick={() => HandlePaidStatusSelection('all')}>
+                      All
+                    </button>
+                    <button
+                      className={paidStatus === 'unpaid' ? 'active button default' : 'button default'}
+                      onClick={() => HandlePaidStatusSelection('unpaid')}>
+                      Unpaid
+                    </button>
+                    <button
+                      className={paidStatus === 'paid' ? 'active button default' : 'button default'}
+                      onClick={() => HandlePaidStatusSelection('paid')}>
+                      Paid
+                    </button>
                   </div>
+                </div>
+                {categoriesInUse.length > 0 && <Label isBold={true} text={'Category'} classes="mb-5"></Label>}
 
-                  <div id="content" data-expense-id={expense?.id} className={`expense wrap`}>
-                    {/* EXPENSE NAME */}
-                    <div id="name-wrapper" className="flex align-center">
-                      <p className="name row-title">
-                        {StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}
-                        {expense?.isRecurring && <MdOutlineEventRepeat />}
-                        {Manager.IsValid(expense?.imageName) && <BsCardImage />}
-                      </p>
+                {/* CATEGORIES */}
+                {Manager.IsValid(categoriesInUse) && (
+                  <div className="filter-row">
+                    <div className="buttons category">
+                      {categoriesAsArray.map((cat, index) => {
+                        return (
+                          <>
+                            {categoriesInUse.includes(cat) && Manager.IsValid(cat, true) && (
+                              <button
+                                key={index}
+                                onClick={HandleCategorySelection}
+                                className={category === cat ? 'button default active' : 'button default'}>
+                                {cat}
+                              </button>
+                            )}
+                          </>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+                <Label text={''} classes="sorting" />
+                <SelectDropdown wrapperClasses={'sorting-accordion'} selectValue={sortMethod} labelText={'Sort by'} onChange={HandleSortBySelection}>
+                  <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
+                  <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
+                  <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
+                  <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
+                </SelectDropdown>
+              </div>
+            </AccordionDetails>
+          </Accordion>
 
-                      {/*  STATUS */}
-                      {!expense?.isRecurring && (
-                        <>
-                          {!dueInADay && !dueInHours && (
-                            <span className={`${expense?.paidStatus} status`} id="request-status">
-                              {isPastDue ? 'PAST DUE' : StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
-                            </span>
-                          )}
-                          {dueInADay ||
-                            (dueInHours && (
-                              <span className={`status soon`} id="request-status">
-                                Soon
+          {/* LOOP EXPENSES */}
+          <div id="expenses-container">
+            {Manager.IsValid(sortedExpenses) &&
+              sortedExpenses.map((expense, index) => {
+                let dueDate = moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay) ?? ''
+                const readableDueDate = moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()
+                const isPastDue = readableDueDate.toString().includes('ago')
+                const dueInADay = readableDueDate.toString().includes('in a day')
+                const dueInHours = readableDueDate.toString().includes('hours')
+
+                if (!Manager.IsValid(dueDate)) {
+                  dueDate = ''
+                }
+                return (
+                  <div
+                    key={index}
+                    style={DomManager.AnimateDelayStyle(index)}
+                    className={`row ${DomManager.Animate.FadeInRight(sortedExpenses, '.row')}`}
+                    onClick={() => {
+                      setActiveExpense(expense)
+                      setShowDetails(true)
+                    }}>
+                    <div id="primary-icon-wrapper">
+                      <span className="amount">${expense?.amount}</span>
+                    </div>
+
+                    <div id="content" data-expense-id={expense?.id} className={`expense wrap`}>
+                      {/* EXPENSE NAME */}
+                      <div id="name-wrapper" className="flex align-center">
+                        <p className="name row-title">
+                          {StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}
+                          {expense?.isRecurring && <MdOutlineEventRepeat />}
+                          {Manager.IsValid(expense?.imageName) && <BsCardImage />}
+                        </p>
+
+                        {/*  STATUS */}
+                        {!expense?.isRecurring && (
+                          <>
+                            {!dueInADay && !dueInHours && (
+                              <span className={`${expense?.paidStatus} status`} id="request-status">
+                                {isPastDue ? 'PAST DUE' : StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
                               </span>
-                            ))}
-                        </>
-                      )}
-                    </div>
+                            )}
+                            {dueInADay ||
+                              (dueInHours && (
+                                <span className={`status soon`} id="request-status">
+                                  Soon
+                                </span>
+                              ))}
+                          </>
+                        )}
+                      </div>
 
-                    {/* DATE */}
-                    <div className="flex" id="below-title">
-                      {Manager.IsValid(dueDate, true) && (
-                        <>
-                          {!expense?.isRecurring && (
-                            <p className={`due-date`}>
-                              {moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay)} ({readableDueDate.toString()})
-                            </p>
-                          )}
-                          {expense?.isRecurring && <p className={`due-date`}>{GetRecurringDateText(expense)}</p>}
-                        </>
-                      )}
-                      {!Manager.IsValid(dueDate, true) && <p className="due-date no-due-date">no due date</p>}
+                      {/* DATE */}
+                      <div className="flex" id="below-title">
+                        {Manager.IsValid(dueDate, true) && (
+                          <>
+                            {!expense?.isRecurring && (
+                              <p className={`due-date`}>
+                                {moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay)} ({readableDueDate.toString()})
+                              </p>
+                            )}
+                            {expense?.isRecurring && <p className={`due-date`}>{GetRecurringDateText(expense)}</p>}
+                          </>
+                        )}
+                        {!Manager.IsValid(dueDate, true) && <p className="due-date no-due-date">no due date</p>}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )
-            })}
+                )
+              })}
+          </div>
         </div>
       </div>
       <NavBar navbarClass={'expenses'} />

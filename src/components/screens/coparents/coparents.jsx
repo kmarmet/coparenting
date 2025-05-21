@@ -10,7 +10,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import {BsFillSendFill} from 'react-icons/bs'
 import {CgClose} from 'react-icons/cg'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
-import {HiOutlineChevronDoubleUp} from 'react-icons/hi2'
+import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
@@ -306,8 +306,11 @@ export default function Coparents() {
 
       {/* NAVBAR */}
       <NavBar navbarClass={'actions'}>
-        <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
-          <HiOutlineChevronDoubleUp className={'screen-actions-menu-icon'} />
+        <div
+          style={DomManager.AnimateDelayStyle(1, 0.06)}
+          onClick={() => setState({...state, showScreenActions: true})}
+          className={`menu-item ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
+          <HiDotsHorizontal className={'screen-actions-menu-icon'} />
           <p>More</p>
         </div>
       </NavBar>

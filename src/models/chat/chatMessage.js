@@ -3,7 +3,7 @@ var ChatMessage;
 
 import Manager from "../../managers/manager";
 
-export default ChatMessage = class ChatMessage {
+ChatMessage = class ChatMessage {
   constructor(id = Manager.GetUid(), sender = '', recipient = '', timestamp = '', message = '', recipientKey = '', senderKey = '', senderTimezone = '') {
     this.id = id;
     this.sender = sender;
@@ -16,5 +16,7 @@ export default ChatMessage = class ChatMessage {
   }
 
 };
+
+export default ChatMessage;
 
 //# sourceMappingURL=chatMessage.js.map

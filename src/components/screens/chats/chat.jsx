@@ -165,7 +165,7 @@ const Chats = () => {
 
     // SEND NOTIFICATION - Only Send if it is not paused for the recipient
     if (!chat?.isPausedFor?.includes(messageRecipient?.key)) {
-      UpdateManager.SendNotification(
+      UpdateManager.SendUpdate(
         'New Message 🗯️',
         `You have an unread message from ${StringManager.GetFirstNameOnly(currentUser.name)}`,
         messageRecipient?.key,

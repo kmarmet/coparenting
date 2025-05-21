@@ -13,8 +13,6 @@ import TransferChangeRequest from "../models/transferChangeRequest";
 
 import SwapRequest from "../models/swapRequest";
 
-import InputSuggestion from "../models/inputSuggestion";
-
 import User from "../models/user";
 
 import Coparent from "../models/coparent";
@@ -132,8 +130,6 @@ ObjectManager = {
         return Object.keys(new TransferChangeRequest());
       case ModelNames.swapRequest:
         return Object.keys(new SwapRequest());
-      case ModelNames.inputSuggestion:
-        return Object.keys(new InputSuggestion());
       case ModelNames.user:
         return Object.keys(new User());
       case ModelNames.coparent:

@@ -42,7 +42,7 @@ export default function ShareWithCheckboxes({
     <>
       {Manager.IsValid(shareWith) && (
         <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass}`}>
-          <Label text={`${labelText.length === 0 ? 'Share with' : labelText}`} required={required} />
+          <Label text={`${labelText.length === 0 ? 'Contacts to share with' : labelText}`} required={required} />
           <Spacer height={2} />
           <div className="flex" id="checkboxes">
             {Manager.IsValid(shareWith) &&

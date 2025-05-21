@@ -1,4 +1,4 @@
-export default class ChatRecoveryRequest
+class ChatRecoveryRequest
   constructor: (
     @id= ''
     @members= []
@@ -7,3 +7,5 @@ export default class ChatRecoveryRequest
     @createdBy = ''
     @reason = ''
   ) ->
+
+export default ChatRecoveryRequest

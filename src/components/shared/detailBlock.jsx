@@ -5,7 +5,6 @@ import {MdEmail, MdWebAsset} from 'react-icons/md'
 import {RiUserSharedFill} from 'react-icons/ri'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
-import StringManager from '../../managers/stringManager'
 import Spacer from './spacer'
 
 const DetailBlock = ({
@@ -29,7 +28,7 @@ const DetailBlock = ({
   return (
     <>
       {Manager.IsValid(valueToValidate?.toString()) && (
-        <div style={DomManager.AnimateDelayStyle(1)} className={`block ${classes} ${isFullWidth ? 'w-100 full-width' : ''}`}>
+        <div style={DomManager.AnimateDelayStyle(1)} className={`block ${classes} ${isFullWidth ? 'full-width' : ''}`}>
           {/* CUSTOM */}
           {isCustom && children}
 
@@ -37,9 +36,7 @@ const DetailBlock = ({
           {!isCustom && (
             <>
               {/* TEXT */}
-              {!isLink && !isPhone && !isNavLink && !isEmail && (
-                <p className={StringManager.GetWordCount(text) < 10 ? 'block-text center' : 'block-text'}>{text}</p>
-              )}
+              {!isLink && !isPhone && !isNavLink && !isEmail && <p className={'block-text'}>{text}</p>}
 
               {/*  LINK */}
               {isLink && (
@@ -98,7 +95,7 @@ const DetailBlock = ({
           )}
 
           {/* TITLE */}
-          <p className="block-title">{title}</p>
+          <p className={`block-title ${isFullWidth ? 'full-width' : ''}`}>{title}</p>
           <Spacer height={bottomSpacerMargin > 0 ? bottomSpacerMargin : 0} />
         </div>
       )}

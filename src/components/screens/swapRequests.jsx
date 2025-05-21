@@ -91,7 +91,7 @@ export default function SwapRequests() {
       await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerKey}`, activeRequest, activeRequest.id)
 
       const message = UpdateManager.templates.swapRequestRejection(activeRequest, recipientName)
-      UpdateManager.SendNotification('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
+      UpdateManager.SendUpdate('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
       setShowDetails(false)
     }
     // Approved
@@ -100,7 +100,7 @@ export default function SwapRequests() {
       activeRequest.status = 'approved'
       await DB.updateEntireRecord(`${DB.tables.swapRequests}/${activeRequest.ownerKey}`, activeRequest, activeRequest.id)
 
-      UpdateManager.SendNotification('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
+      UpdateManager.SendUpdate('Swap Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.swapRequest)
       setShowDetails(false)
     }
 

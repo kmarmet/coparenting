@@ -161,7 +161,7 @@ export default function NewDocument() {
 
       // Send Notification
       if (Manager.IsValid(shareWith)) {
-        await UpdateManager.sendToShareWith(
+        await UpdateManager.SendToShareWith(
           shareWith,
           currentUser,
           `New Document`,

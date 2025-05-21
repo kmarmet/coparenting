@@ -13,10 +13,9 @@ import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
-import {HiOutlineChevronDoubleUp} from 'react-icons/hi2'
+import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import {PiCameraRotateFill, PiListChecksFill} from 'react-icons/pi'
-import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
 import useActiveChild from '../../../hooks/useActiveChild'
@@ -33,14 +32,14 @@ import Checklists from './checklists'
 export default function Children() {
   const {state, setState} = useContext(globalState)
   const {theme} = state
-  const {currentUser} = useCurrentUser()
-  const {children} = useChildren()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {children, childrenAreLoading} = useChildren()
   const [showInfoCard, setShowInfoCard] = useState(false)
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
   const [activeChildId, setActiveChildId] = useState(currentUser?.children?.[0]?.id)
-  const {activeChild} = useActiveChild(activeChildId)
+  const {activeChild, activeChildIsLoading} = useActiveChild(activeChildId)
   const imgRef = useRef()
 
   const UploadProfilePic = async (fromButton = false) => {
@@ -221,12 +220,11 @@ export default function Children() {
       <div id="child-info-container" className={`${theme} page-container child-info form`}>
         <ScreenHeader
           title={'Children'}
-          screenName={ScreenNames.children}
           screenDescription="You can store and access all relevant information about your child, particularly essential details that you may need to retrieve at any
           moment."
         />
 
-        <Spacer height={15} />
+        <Spacer height={10} />
 
         <div className="screen-content">
           <div style={DomManager.AnimateDelayStyle(1)} className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(true, '.fade-up-wrapper')}`}>
@@ -241,7 +239,7 @@ export default function Children() {
                         <div onClick={() => setActiveChildId(child?.id)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
                           <div
                             className="child-image"
-                            style={{backgroundImage: `url(${child?.general?.profilePic})`, transition: 'all .7s linear'}}></div>
+                            style={{backgroundImage: `url(${child?.general?.profilePic})`, transition: 'all .3s linear'}}></div>
                           {/* CHILD NAME */}
                           <span className="child-name">{StringManager.GetFirstNameOnly(child?.general?.name)}</span>
                         </div>
@@ -279,8 +277,11 @@ export default function Children() {
         </div>
       </div>
       <NavBar navbarClass={'actions'}>
-        <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
-          <HiOutlineChevronDoubleUp className={'screen-actions-menu-icon more'} />
+        <div
+          style={DomManager.AnimateDelayStyle(1, 0.06)}
+          onClick={() => setState({...state, showScreenActions: true})}
+          className={`menu-item ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
+          <HiDotsHorizontal className={'screen-actions-menu-icon more'} />
           <p>More</p>
         </div>
       </NavBar>

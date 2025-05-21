@@ -2,7 +2,7 @@ import Manager from "../managers/manager"
 import moment from "moment"
 import DateFormats from "../constants/datetimeFormats"
 
-export default class Expense
+class Expense
   constructor: (
     @id = Manager.GetUid(),
     @name = '',
@@ -25,3 +25,5 @@ export default class Expense
       name: ''
     }
   ) ->
+
+export default Expense

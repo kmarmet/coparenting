@@ -28,6 +28,7 @@ import DatasetManager from '../../../managers/datasetManager.coffee'
 import NavBar from '../../navBar'
 import Label from '../../shared/label.jsx'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
+import ScreenHeader from '../../shared/screenHeader'
 
 export default function DocViewer() {
   const predefinedHeaders = DocumentConversionManager.tocHeaders
@@ -659,10 +660,10 @@ export default function DocViewer() {
 
       {/* PAGE CONTAINER / TEXT */}
       <div id="documents-container" className={`${theme} page-container form documents`}>
-        <p className="screen-title accent">
-          {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(docToView?.name)).replaceAll('-', ' ')}
-        </p>
-        <div id="doc-text"></div>
+        <ScreenHeader title={StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(docToView?.name)).replaceAll('-', ' ')} />
+        <div className="screen-content">
+          <div id="doc-text"></div>
+        </div>
         {Manager.IsValid(searchValue, true) && (
           <button onClick={CloseSearch} id="close-search-button" className="default with-border">
             Close Search
@@ -673,7 +674,10 @@ export default function DocViewer() {
       {/* NAV BAR */}
       {DomManager.isMobile() && (
         <NavBar navbarClass={'actions'}>
-          <div onClick={() => setState({...state, showScreenActions: true})} className={`menu-item`}>
+          <div
+            style={DomManager.AnimateDelayStyle(1, 0.07)}
+            onClick={() => setState({...state, showScreenActions: true})}
+            className={`menu-item ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
             <HiDotsHorizontal className={'screen-actions-menu-icon'} />
             <p>More</p>
           </div>

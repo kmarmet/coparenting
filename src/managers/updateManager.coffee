@@ -4,6 +4,7 @@ import Manager from "./manager.js"
 import moment from "moment"
 import DateFormats from "../constants/datetimeFormats"
 import UpdateSubscriber from "../models/updateSubscriber"
+import Update from "../models/update"
 
 
 export default UpdateManager =
@@ -138,7 +139,7 @@ export default UpdateManager =
     }
 
     # Add notification to database
-    newNotification = new Notification()
+    newNotification = new Update()
     newNotification.id = Manager.GetUid()
     newNotification.recipientKey = recipientKey
     newNotification.ownerKey = currentUser?.key
@@ -147,7 +148,7 @@ export default UpdateManager =
     newNotification.text = message
     newNotification.category = category
 
-    await DB.Add "#{DB.tables.notifications}/#{recipientKey}", [],newNotification
+    await DB.Add "#{DB.tables.updates}/#{recipientKey}", [],newNotification
     console.log("Sent to #{recipientKey}")
     # Do not send notification in dev
     if !window.location.href.includes("localhost")
@@ -158,10 +159,10 @@ export default UpdateManager =
           console.log("Sent to #{subId}")
         .catch (error) -> console.error error
 
-  sendToShareWith: (shareWithKeys, currentUser, title, message, category = '') ->
+  SendToShareWith: (shareWithKeys, currentUser, title, message, category = '') ->
     if Manager.IsValid(shareWithKeys)
       for key in shareWithKeys
-        await UpdateManager.SendNotification(title, message, key, currentUser, category)
+        await UpdateManager.SendUpdate(title, message, key, currentUser, category)
 
   enableNotifications: (subId) ->
     myHeaders = new Headers()

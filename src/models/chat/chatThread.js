@@ -13,7 +13,7 @@ member = {
   id: ''
 };
 
-export default ChatThread = class ChatThread {
+ChatThread = class ChatThread {
   constructor(id = Manager.GetUid(), members = [member], creationTimestamp = moment().format(DateFormats.dateForDb), ownerKey = '', isPausedFor = []) {
     this.id = id;
     this.members = members;
@@ -23,5 +23,7 @@ export default ChatThread = class ChatThread {
   }
 
 };
+
+export default ChatThread;
 
 //# sourceMappingURL=chatThread.js.map

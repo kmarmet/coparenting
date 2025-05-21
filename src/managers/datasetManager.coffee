@@ -35,7 +35,7 @@ DatasetManager = {
 
     return returnArray
 
-  AddToArray: (arr, newItem) =>
+  AddToArray: (arr, newItem, removeIfExistsAlready = false) =>
     returnArray = []
 
     if not Manager.IsValid(arr)
@@ -50,11 +50,22 @@ DatasetManager = {
     if Manager.IsValid(arr) and not Array.isArray(arr)
       returnArray = [newItem]
 
-    console.log(returnArray);
+    if removeIfExistsAlready && arr.includes(newItem)
+      returnArray = returnArray.filter (x) -> x != newItem
+
     if Manager.IsValid(returnArray)
        returnArray = DatasetManager.GetValidArray(returnArray)
-    console.log(returnArray);
+
     return returnArray
+
+  ToggleInArray: (arr, key) ->
+    if !Manager.IsValid(arr)
+      return [key]
+    else
+      if arr.includes(key)
+        return arr.filter (x) -> x isnt key
+      else
+        return [arr..., key]
 
   GetValidArray: (source,  isUnique = true, isFlattened = true, getObjectValuesOnly = false) ->
     returnArray = []

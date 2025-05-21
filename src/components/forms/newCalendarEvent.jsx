@@ -7,7 +7,6 @@ import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import EventLengths from '/src/constants/eventLengths'
 import AlertManager from '/src/managers/alertManager'
-import DatasetManager from '/src/managers/datasetManager'
 import Manager from '/src/managers/manager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
@@ -20,7 +19,7 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import validator from 'validator'
 import CreationForms from '../../constants/creationForms'
 import InputTypes from '../../constants/inputTypes'
@@ -43,18 +42,7 @@ export default function NewCalendarEvent() {
 
   // EVENT STATE
   const [eventLength, setEventLength] = useState(EventLengths.single)
-  const [eventStartDate, setEventStartDate] = useState(moment(dateToEdit).format(DatetimeFormats.dateForDb))
-  const [eventEndDate, setEventEndDate] = useState('')
-  const [eventLocation, setEventLocation] = useState('')
-  const [eventName, setEventName] = useState('')
-  const [eventWebsite, setEventWebsite] = useState('')
-  const [eventNotes, setEventNotes] = useState('')
-
   const [recurringFrequency, setRecurringFrequency] = useState('')
-  const [eventStartTime, setEventStartTime] = useState('')
-  const [eventEndTime, setEventEndTime] = useState('')
-  const [eventPhone, setEventPhone] = useState('')
-  const [eventShareWith, setEventShareWith] = useState([])
   const [clonedDates, setClonedDates] = useState([])
   const [eventChildren, setEventChildren] = useState([])
   const [eventReminderTimes, setEventReminderTimes] = useState([])
@@ -69,21 +57,12 @@ export default function NewCalendarEvent() {
   const [includeChildren, setIncludeChildren] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
 
+  // REF
+  const newEvent = useRef(new CalendarEvent({startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)}))
+
   const ResetForm = async (showSuccessAlert = false) => {
-    Manager.ResetForm('new-event-form')
     setEventLength(EventLengths.single)
-    setEventStartDate('')
-    setEventEndDate('')
-    setEventLocation('')
-    setEventName('')
-    setEventWebsite('')
-    setEventNotes('')
-    setRecurringFrequency('')
-    setEventStartTime('')
-    setEventEndTime('')
-    setEventShareWith([])
     setClonedDates([])
-    setEventPhone('')
     setEventChildren([])
     setEventReminderTimes([])
     setEventIsDateRange(false)
@@ -104,55 +83,38 @@ export default function NewCalendarEvent() {
   const Submit = async () => {
     try {
       //#region FILL NEW EVENT
-      const newEvent = new CalendarEvent()
-      newEvent.id = Manager.GetUid()
 
-      // Required
-      newEvent.title = StringManager.formatEventTitle(eventName)
       if (isVisitation) {
-        newEvent.title = `${StringManager.formatEventTitle(eventName)} (Visitation)`
+        newEvent.current.title = `${StringManager.formatEventTitle(newEvent.current.title)} (Visitation)`
       }
-      if (DomManager.isMobile()) {
-        newEvent.startDate = moment(eventStartDate).format(DatetimeFormats.dateForDb)
-      } else {
-        newEvent.startDate = moment(eventEndDate).format(DatetimeFormats.dateForDb)
-      }
-      newEvent.endDate = moment(eventEndDate).format(DatetimeFormats.dateForDb)
-      newEvent.startTime = moment(eventStartTime).format(DatetimeFormats.timeForDb)
-      newEvent.endTime = moment(eventEndTime).format(DatetimeFormats.timeForDb)
+      newEvent.current.directionsLink = Manager.GetDirectionsLink(newEvent.current.address)
+      newEvent.current.children = eventChildren
+      newEvent.current.ownerKey = currentUser?.key
+      newEvent.current.createdBy = StringManager.GetFirstNameOnly(currentUser?.name)
+      newEvent.current.reminderTimes = eventReminderTimes
+      newEvent.current.recurringInterval = recurringFrequency
+      newEvent.current.fromVisitationSchedule = isVisitation
+      newEvent.current.isRecurring = eventIsRecurring
+      newEvent.current.isCloned = Manager.IsValid(clonedDates)
+      newEvent.current.isDateRange = eventIsDateRange
 
-      // Not Required
-      newEvent.directionsLink = Manager.GetDirectionsLink(eventLocation)
-      newEvent.location = eventLocation
-      newEvent.children = eventChildren
-      newEvent.ownerKey = currentUser?.key
-      newEvent.createdBy = currentUser?.name
-      newEvent.shareWith = DatasetManager.getUniqueArray(eventShareWith, true)
-      newEvent.notes = eventNotes
-      newEvent.phone = StringManager.FormatPhone(eventPhone)
-      newEvent.websiteUrl = eventWebsite
-      newEvent.reminderTimes = eventReminderTimes
-      newEvent.repeatInterval = recurringFrequency
-      newEvent.fromVisitationSchedule = isVisitation
-      newEvent.isRecurring = eventIsRecurring
-      newEvent.isCloned = Manager.IsValid(clonedDates)
-      newEvent.isDateRange = eventIsDateRange
+      const cleaned = ObjectManager.GetModelValidatedObject(newEvent.current, ModelNames.calendarEvent)
+
+      console.log(cleaned)
       //#endregion FILL NEW EVENT
 
-      if (Manager.IsValid(newEvent)) {
+      if (Manager.IsValid(newEvent.current)) {
         //#region VALIDATION
-        if (Manager.IsValid(eventPhone, true)) {
-          if (!validator.isMobilePhone(eventPhone)) {
+        if (Manager.IsValid(newEvent.current.phone, true)) {
+          if (!validator.isMobilePhone(newEvent.current.phone)) {
             AlertManager.throwError('Phone number is not valid')
             return false
           }
-        } else {
-          newEvent.phone = eventPhone
         }
 
         const errorString = Manager.GetInvalidInputsErrorString([
-          {name: 'Event Name', value: eventName},
-          {name: 'Date', value: eventStartDate},
+          {name: 'Event Name', value: newEvent.current.title},
+          {name: 'Date', value: newEvent.current.startDate},
         ])
 
         if (Manager.IsValid(errorString)) {
@@ -160,7 +122,7 @@ export default function NewCalendarEvent() {
           return false
         }
 
-        if (showReminders && !Manager.IsValid(eventStartTime)) {
+        if (showReminders && !Manager.IsValid(newEvent.current.startTime)) {
           AlertManager.throwError('Please select a start time when using reminders')
           return false
         }
@@ -175,17 +137,15 @@ export default function NewCalendarEvent() {
         MyConfetti.fire()
         setState({...state, creationFormToShow: ''})
 
-        const cleanedObject = ObjectManager.GetModelValidatedObject(newEvent, ModelNames.calendarEvent)
-
         //#region MULTIPLE DATES
         // Date Range
         if (eventIsDateRange) {
           const dates = CalendarManager.buildArrayOfEvents(
             currentUser,
-            newEvent,
+            newEvent.current,
             'range',
-            moment(eventStartDate).format(DatetimeFormats.dateForDb),
-            moment(eventEndDate).format(DatetimeFormats.dateForDb)
+            newEvent.current.startDate,
+            newEvent.current.endDate
           )
           await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
         }
@@ -194,7 +154,7 @@ export default function NewCalendarEvent() {
         if (Manager.IsValid(clonedDates)) {
           const dates = CalendarManager.buildArrayOfEvents(
             currentUser,
-            newEvent,
+            newEvent.current,
             'cloned',
             moment(clonedDates[0]).format(DatetimeFormats.dateForDb),
             moment(clonedDates[clonedDates.length - 1]).format(DatetimeFormats.dateForDb)
@@ -206,10 +166,10 @@ export default function NewCalendarEvent() {
         if (eventIsRecurring) {
           const dates = CalendarManager.buildArrayOfEvents(
             currentUser,
-            newEvent,
+            newEvent.current,
             'recurring',
-            moment(eventStartDate).format(DatetimeFormats.dateForDb),
-            moment(eventEndDate).format(DatetimeFormats.dateForDb)
+            newEvent.current.startDate,
+            newEvent.current.endDate
           )
           await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
         }
@@ -218,14 +178,14 @@ export default function NewCalendarEvent() {
 
         //#region SINGLE DATE
         if (!eventIsRecurring && !eventIsDateRange && !eventIsCloned) {
-          await CalendarManager.addCalendarEvent(currentUser, cleanedObject)
+          await CalendarManager.addCalendarEvent(currentUser, cleaned)
 
           // Send notification
-          await UpdateManager.sendToShareWith(
-            eventShareWith,
+          await UpdateManager.SendToShareWith(
+            newEvent.current.shareWith,
             currentUser,
             `New Event 📅`,
-            `${eventName} on ${moment(eventStartDate).format(DatetimeFormats.readableMonthAndDay)}`,
+            `${newEvent.current.title} on ${moment(newEvent.current.startDate).format(DatetimeFormats.readableMonthAndDay)}`,
             ActivityCategory.calendar
           )
         }
@@ -253,8 +213,7 @@ export default function NewCalendarEvent() {
   }
 
   const HandleShareWithSelection = (e) => {
-    const shareWithNumbers = DomManager.HandleShareWithSelection(e, currentUser, eventShareWith)
-    setEventShareWith(shareWithNumbers)
+    newEvent.current.shareWith = DomManager.HandleShareWithSelection(e, currentUser, newEvent.current.shareWith, newEvent)
   }
 
   const HandleReminderSelection = (e) => {
@@ -336,7 +295,7 @@ export default function NewCalendarEvent() {
 
   useEffect(() => {
     if (dateToEdit) {
-      setEventStartDate(moment(dateToEdit).format(DatetimeFormats.dateForDb))
+      newEvent.current.startDate = moment(dateToEdit).format(DatetimeFormats.dateForDb)
     }
   }, [dateToEdit])
 
@@ -371,13 +330,12 @@ export default function NewCalendarEvent() {
             inputClasses="event-title-input"
             inputType={InputTypes.text}
             labelText={'Event Name'}
-            defaultValue={eventName}
             required={true}
             inputValueType="input"
-            inputValue={eventName}
+            inputValue={newEvent.current.title}
             onChange={async (e) => {
               const inputValue = e.target.value
-              setEventName(inputValue)
+              newEvent.current.title = StringManager.formatEventTitle(inputValue)
             }}
           />
 
@@ -389,7 +347,9 @@ export default function NewCalendarEvent() {
               uidClass="event-start-date"
               inputType={InputTypes.date}
               required={true}
-              onDateOrTimeSelection={(e) => setEventStartDate(e)}
+              onDateOrTimeSelection={(e) => {
+                newEvent.current.startDate = moment(e).format(DatetimeFormats.dateForDb)
+              }}
             />
           )}
 
@@ -402,8 +362,7 @@ export default function NewCalendarEvent() {
               inputType={InputTypes.dateRange}
               onDateOrTimeSelection={(dateArray) => {
                 if (Manager.IsValid(dateArray)) {
-                  setEventStartDate(moment(dateArray[0]).format(DatetimeFormats.dateForDb))
-                  setEventEndDate(moment(dateArray[1]).format(DatetimeFormats.dateForDb))
+                  newEvent.current.startDate = moment(dateArray[0]).format(DatetimeFormats.dateForDb)
                   setEventIsDateRange(true)
                 }
               }}
@@ -417,13 +376,13 @@ export default function NewCalendarEvent() {
                 labelText={'Start Time'}
                 uidClass="event-start-time time"
                 inputType={InputTypes.time}
-                onDateOrTimeSelection={(e) => setEventStartTime(e)}
+                onDateOrTimeSelection={(e) => (newEvent.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}
               />
               <InputWrapper
                 labelText={'End Time'}
                 uidClass="event-end-time time"
                 inputType={InputTypes.time}
-                onDateOrTimeSelection={(e) => setEventEndTime(e)}
+                onDateOrTimeSelection={(e) => (newEvent.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}
               />
             </>
           )}
@@ -519,7 +478,10 @@ export default function NewCalendarEvent() {
 
                   {Manager.IsValid(recurringFrequency) && (
                     <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
-                      <MobileDatePicker className={`${theme}  w-100`} onChange={(e) => setEventEndDate(moment(e).format('MM-DD-yyyy'))} />
+                      <MobileDatePicker
+                        className={`${theme}  w-100`}
+                        onChange={(e) => (newEvent.current.endDate = moment(e).format(DatetimeFormats.dateForDb))}
+                      />
                     </InputWrapper>
                   )}
                 </AccordionDetails>
@@ -558,25 +520,34 @@ export default function NewCalendarEvent() {
           <Spacer height={5} />
 
           {/* URL/WEBSITE */}
-          <InputWrapper labelText={'Website/Link'} required={false} inputType={InputTypes.url} onChange={(e) => setEventWebsite(e.target.value)} />
+          <InputWrapper
+            labelText={'Website/Link'}
+            required={false}
+            inputType={InputTypes.url}
+            onChange={(e) => (newEvent.current.websiteUrl = e.target.value)}
+          />
 
           {/* ADDRESS */}
           <AddressInput
-            wrapperClasses={Manager.IsValid(eventLocation, true) ? 'show-label' : ''}
+            wrapperClasses={Manager.IsValid(newEvent.current.address, true) ? 'show-label' : ''}
             labelText={'Location'}
             required={false}
-            onChange={(address) => setEventLocation(address)}
+            onChange={(address) => (newEvent.current.address = address)}
           />
 
           {/* PHONE */}
-          <InputWrapper inputType={InputTypes.phone} labelText={'Phone'} onChange={(e) => setEventPhone(e.target.value)} />
+          <InputWrapper
+            inputType={InputTypes.phone}
+            labelText={'Phone'}
+            onChange={(e) => (newEvent.current.phone = StringManager.FormatPhone(e.target.value))}
+          />
 
           {/* NOTES */}
           <InputWrapper
             labelText={'Notes'}
             required={false}
             inputType={InputTypes.textarea}
-            onChange={(e) => setEventNotes(e.target.value)}></InputWrapper>
+            onChange={(e) => (newEvent.current.notes = e.target.value)}></InputWrapper>
         </div>
       </Modal>
     </>

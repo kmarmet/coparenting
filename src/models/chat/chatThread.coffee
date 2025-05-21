@@ -8,7 +8,7 @@ member = {
   id: ''
 }
 
-export default class ChatThread
+class ChatThread
   constructor: (
     @id = Manager.GetUid(),
     @members = [member],
@@ -16,3 +16,5 @@ export default class ChatThread
     @ownerKey = '',
     @isPausedFor = []
   ) ->
+
+export default ChatThread

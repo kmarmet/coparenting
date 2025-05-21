@@ -3,7 +3,7 @@ var TransferChangeRequest;
 
 import Manager from "../managers/manager";
 
-export default TransferChangeRequest = class TransferChangeRequest {
+TransferChangeRequest = class TransferChangeRequest {
   constructor(id = Manager.GetUid(), startDate = '', endDate = '', time = '', ownerKey = '', location = '', directionsLink = '', shareWith = [], requestReason = '', declineReason = '', recipientKey = '', requestedResponseDate = '', responseDate = '', preferredTransferLocation = '') {
     this.id = id;
     this.startDate = startDate;
@@ -22,5 +22,7 @@ export default TransferChangeRequest = class TransferChangeRequest {
   }
 
 };
+
+export default TransferChangeRequest;
 
 //# sourceMappingURL=transferChangeRequest.js.map

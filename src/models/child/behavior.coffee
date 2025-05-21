@@ -1,2 +1,4 @@
-export default class Behavior
+class Behavior
   constructor: () ->
+
+export default Behavior

@@ -3,6 +3,7 @@ import React from 'react'
 import '../src/styles/bundle.scss'
 import {createRoot} from 'react-dom/client'
 import {ErrorBoundary} from 'react-error-boundary'
+import {FaSadTear} from 'react-icons/fa'
 import {IoEllipsisVerticalSharp} from 'react-icons/io5'
 import App from './App'
 import Spacer from './components/shared/spacer'
@@ -132,7 +133,9 @@ root.render(
   <ErrorBoundary
     fallback={
       <div className="active error-boundary" id="error-screen">
-        <p id="screen-title-wrapper">Oops! Something went wrong</p>
+        <p id="screen-title-wrapper">
+          Oops! Something went wrong <FaSadTear />
+        </p>
         <Spacer height={5} />
         <div id="text-container">
           <div className="flex support-email">

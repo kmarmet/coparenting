@@ -38,7 +38,7 @@ export default function ViewSelector({labels, updateState, wrapperClasses = '', 
               }}>
               {label}
               {label === 'edit' && <MdModeEditOutline />}
-              {label === 'details' && <CgDetailsMore />}
+              {label === 'details' && <CgDetailsMore className="details-icon" />}
             </button>
           )
         })}

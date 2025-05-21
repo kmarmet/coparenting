@@ -19,7 +19,6 @@ import Modal from '../../shared/modal'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
-import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
 import ChatRow from './chatRow.jsx'
 
 const Chats = () => {
@@ -31,10 +30,6 @@ const Chats = () => {
   const [inviteeEmail, setInviteeEmail] = useState('')
   const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {chats} = useChat()
-
-  if (currentUserIsLoading) {
-    return <StandaloneLoadingGif />
-  }
 
   return (
     <>

@@ -46,6 +46,9 @@
 html {
   background-color: $lightBg !important;
   overflow: hidden;
+  p:not(#doc-text p) {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 #root {

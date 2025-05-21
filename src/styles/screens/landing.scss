@@ -181,7 +181,6 @@
       height: 100px;
       width: auto;
       border-radius: 100%;
-      background: #f9f9f9;
       @media screen and (max-width: 600px) {
         height: 80px;
       }
@@ -667,7 +666,7 @@
       }
 
       &.with-bg {
-        background: $grey;
+        background: white;
         border: 1px solid $lightBorderColor;
       }
     }
@@ -1177,12 +1176,12 @@
         .text-box {
           border-radius: $bigBorderRadius;
           width: 50%;
-          border: 1px solid $greyBorderColor;
           display: flex;
           flex-direction: column;
           justify-content: flex-start;
+          background: white;
           @media screen and (max-width: 600px) {
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             width: 100%;
           }
 

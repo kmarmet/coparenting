@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import {BsCalendarWeekFill} from 'react-icons/bs'
 import {FaDonate, FaFileUpload} from 'react-icons/fa'
 import {IoMdPhotos} from 'react-icons/io'
-import {IoChatbubbles, IoClose} from 'react-icons/io5'
+import {IoChatbubbles} from 'react-icons/io5'
 import {MdSwapHorizontalCircle} from 'react-icons/md'
 import {RiMapPinTimeFill} from 'react-icons/ri'
 import {useSwipeable} from 'react-swipeable'
@@ -63,7 +63,8 @@ const CreationMenu = () => {
         <div
           key={refreshKey}
           {...handlers}
-          className={`${showCreationMenu ? 'animate__animated animate__fadeInUp' : 'animate__animated animate__fadeOutDown'} bottom-menu-wrapper creation-menu`}>
+          style={DomManager.AnimateDelayStyle(1, 0.1)}
+          className={`${DomManager.Animate.FadeInUp(showCreationMenu, '.fade-up-wrapper')} bottom-menu-wrapper creation-menu fade-up-wrapper`}>
           <div className="action-items centered">
             {/* CALENDAR */}
             <div
@@ -186,9 +187,9 @@ const CreationMenu = () => {
                 </div>
               </>
             )}
-            <div id="close-icon-wrapper">
-              <IoClose className={'close-button'} onClick={() => setState({...state, showCreationMenu: false, creationFormToShow: ''})} />
-            </div>
+            {/*<div id="close-icon-wrapper">*/}
+            {/*  <IoClose className={'close-button'} onClick={() => setState({...state, showCreationMenu: false, creationFormToShow: ''})} />*/}
+            {/*</div>*/}
           </div>
         </div>
       </div>

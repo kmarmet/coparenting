@@ -4,7 +4,6 @@ import Expense from "../models/expense"
 import Memory from "../models/memory"
 import TransferChangeRequest from "../models/transferChangeRequest"
 import SwapRequest from "../models/swapRequest"
-import InputSuggestion from "../models/inputSuggestion"
 import User from "../models/user"
 import Coparent from "../models/coparent"
 import ChatThread from "../models/chat/chatThread"
@@ -89,8 +88,6 @@ ObjectManager = {
         Object.keys(new TransferChangeRequest())
       when ModelNames.swapRequest
         Object.keys(new SwapRequest())
-      when ModelNames.inputSuggestion
-        Object.keys(new InputSuggestion())
       when ModelNames.user
         Object.keys(new User())
       when ModelNames.coparent

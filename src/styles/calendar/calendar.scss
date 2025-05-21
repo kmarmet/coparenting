@@ -181,7 +181,7 @@
       .MuiMonthCalendar-root {
         margin: 0 auto 20px auto !important;
         background: white !important;
-        border-radius: 20px !important;
+        border-radius: $cardBorderRadius !important;
         @include shadow;
         .MuiPickersMonth-root {
           button {

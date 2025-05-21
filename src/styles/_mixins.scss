@@ -17,7 +17,7 @@
   padding: 0 0 25vh 0;
   position: sticky;
   top: 0;
-  @include mainColorsGradient;
+
   .screen-content {
     padding: 0 15px 200px 15px;
   }
@@ -26,24 +26,55 @@
     width: 100%;
     padding: 55px 15px 25px 15px;
     z-index: 99999;
-    //    @include mainColorsGradient;
+    @include mainColorsGradient;
     position: relative;
+    min-height: 20vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 4px;
+      background: none;
+      backdrop-filter: blur(100px);
+      opacity: 0.4;
+    }
+
+    &.login-header {
+      flex-wrap: wrap;
+      img {
+        width: 120px;
+        background: white;
+      }
+      * {
+        width: 100%;
+      }
+    }
 
     .text {
       p {
         &.screen-title {
-          font-size: 35px;
+          font-size: 30px;
           padding-bottom: 0;
           margin: 0;
           border: 0;
-          line-height: 1;
-          white-space: nowrap;
+          white-space: wrap;
+          line-height: 1.3;
         }
+
         &.screen-description {
-          padding-top: 10px;
           margin: 0 auto;
+          font-size: 17px;
+          line-height: 1.3;
           width: 100%;
-          text-align: left;
+          text-align: center;
+          color: $lighterTransWhite;
         }
       }
     }
@@ -100,16 +131,16 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  text-align: center;
   opacity: 1;
   color: $blend;
   font-weight: $fwBold;
-  width: max-content;
   font-size: 35px;
-  padding-bottom: 0;
   margin: 0;
   border: 0;
   white-space: nowrap;
+  padding: 0 0 10px 0;
+  text-align: center;
+  width: 100%;
 
   &.active {
     transform: scale(1);
@@ -302,7 +333,7 @@
   border: 1px solid $main;
   color: $main;
   padding: 2px 15px;
-  border-radius: 20px;
+  border-radius: $cardBorderRadius;
   transition: all 0.3s ease-in-out;
   text-align: center;
   @include hover;
@@ -438,9 +469,14 @@
 /*#endregion  BUTTONS*/
 
 /*#region  EFFECTS*/
+@mixin ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 @mixin mainColorsGradient {
   background: linear-gradient(168deg, rgba(76, 111, 255, 1) 0%, rgba(116, 88, 255, 1) 100%);
 }
+
 @mixin fadeEdges {
   box-shadow: 0 0 5px 5px white inset;
 }
@@ -1360,7 +1396,7 @@
   display: flex;
   align-items: stretch;
   border-radius: $borderRadius;
-  gap: 0 20px;
+  gap: 0 25px;
   margin-left: auto;
   width: 100%;
   max-width: 100vw;
@@ -1417,6 +1453,10 @@
 
     svg {
       margin-left: 5px;
+
+      &.details-icon {
+        transform: scale(1.2);
+      }
     }
   }
 }
@@ -1552,7 +1592,7 @@
   .status {
     margin-left: auto;
     padding: 5px 10px 4px 10px;
-    border-radius: 20px;
+    border-radius: $cardBorderRadius;
     font-size: 10px;
     font-weight: $fwMediumBold;
     display: flex;
@@ -1592,7 +1632,6 @@
     line-height: 1;
     font-size: 14px;
     color: $darkerGrey;
-    color: $transWhite;
 
     &.calendar {
       margin-left: 20px;
@@ -2028,7 +2067,7 @@
   display: flex;
   gap: 5px;
   padding: 6px 15px;
-  border-radius: 20px;
+  border-radius: $cardBorderRadius;
   border: 1px solid $darkGrey;
 
   &.center {
@@ -2203,8 +2242,15 @@
 }
 
 @mixin installApp {
-  $cardRed: #cf436e;
   transition: all 0.5s ease-in-out;
+  .back-to-login-button {
+    &.button {
+      &.default {
+        margin: 0 auto;
+        border: 1px solid $greyBorderColor;
+      }
+    }
+  }
 
   .steps {
     svg {
@@ -2221,43 +2267,23 @@
 
   .accordion-header {
     opacity: 1;
-    font-size: 18px;
+    font-size: 22px;
     display: flex;
     align-items: center;
     line-height: 1;
     background: transparent;
-    color: $primaryText;
+    color: white;
     padding: 0;
     font-weight: $fwMediumBold;
     width: 100%;
 
+    * {
+      color: white;
+    }
+
     svg {
       color: white;
       position: relative;
-    }
-
-    &.android {
-      color: #a4c639;
-
-      svg {
-        color: #a4c639;
-      }
-    }
-
-    &.apple {
-      color: $main;
-
-      svg {
-        color: $main;
-      }
-    }
-
-    &.desktop {
-      color: $primaryText;
-
-      svg {
-        color: $primaryText;
-      }
     }
   }
 
@@ -2375,62 +2401,79 @@
 
   .os-container {
     background: white;
-    padding: 10px 20px 20px 20px;
-    border-radius: $bigBorderRadius;
-    border: 1px solid $greyBorderColor;
+    padding: 20px;
+    border-radius: 22px;
+    border-top: 5px solid $greyBorderColor;
+
+    img {
+      border-radius: $buttonBorderRadius;
+      @include shadow;
+    }
+
+    .logo {
+      transform: scale(1.3);
+      position: relative;
+      right: -5px;
+      top: -5px;
+    }
+
+    .steps {
+      margin-top: 8px;
+      * {
+        color: white;
+      }
+      .step-number {
+        margin-right: 8px;
+        font-weight: $fwMediumBold;
+        background: white;
+        padding: 5px;
+        height: 25px;
+        width: 25px;
+        border-radius: 5px;
+        color: $blend;
+        display: flex;
+        font-size: 14px;
+        align-items: center;
+        justify-content: center;
+        min-width: 30px;
+      }
+      a {
+        border-bottom: 1px solid white;
+        padding-bottom: 2px;
+      }
+
+      p {
+        display: inline-block;
+      }
+    }
+
     &.apple {
-      border-top: 4px solid $main;
-      .steps {
-        margin-top: 8px;
-        a {
-          color: $main;
-        }
-        .flex {
-          .step-number {
-            color: $main;
-          }
-        }
-      }
+      background: $main;
     }
+
     &.desktop {
-      border-top: 4px solid $primaryText;
+      background: $blend;
+
       .steps {
-        margin-top: 8px;
-        a {
-          color: $primaryText;
-        }
-        .flex {
-          .step-number {
-            color: $primaryText;
-          }
+        .step-number {
+          color: $blend;
         }
       }
     }
+
     &.android {
-      border-top: 4px solid #a4c639;
+      background: #a4c639;
+
       .steps {
-        margin-top: 8px;
-        a {
+        .step-number {
           color: #a4c639;
-          border-color: #a4c639;
-        }
-        .flex {
-          .step-number {
-            color: #a4c639;
-          }
         }
       }
-    }
-    .while-viewing {
-      text-align-last: left;
-      font-weight: $fwBold;
-      margin-bottom: 5px;
     }
 
     .emphasize {
-      color: $accent;
-      font-weight: $fwBold;
-      padding-left: 5px;
+      font-weight: $fwMediumBold;
+      font-style: italic;
 
       &.no-bold {
         font-weight: 400;
@@ -2461,11 +2504,6 @@
 
         &:last-child {
           margin-bottom: 0;
-        }
-
-        .step-number {
-          font-weight: bold;
-          margin-right: 10px;
         }
       }
     }
@@ -2712,6 +2750,7 @@
     margin: 0 auto 15px auto;
     opacity: 0.45;
   }
+
   .view-wrapper {
     opacity: 0;
     max-height: 0;
@@ -2727,22 +2766,12 @@
       opacity: 1;
     }
   }
-  .above-card {
-    display: grid;
-    grid-template-columns: 6fr 1fr;
-    justify-content: space-between;
-    width: 100%;
-    align-items: center;
-    padding-left: 15px;
 
-    #close-button {
-      font-size: 26px;
-      color: $greyBorderColor;
-      z-index: 99999;
-      display: flex;
-      position: relative;
-      right: -20px;
-    }
+  .above-card {
+    display: flex;
+    justify-content: space-between;
+    width: calc(100% - 20px);
+    align-items: center;
   }
 
   /*#region  SPECIFIC MODALS*/
@@ -2829,11 +2858,12 @@
     background: $lightBg;
     max-height: 70vh;
     overflow: hidden;
-    border-radius: 20px;
+    border-radius: $cardBorderRadius;
     width: calc(100vw - 20px);
     transition: all 0.8s ease-out;
     opacity: 0;
     min-height: 20vh;
+    @include bestShadow;
 
     /*#region  MODAL*/
     #modal {
@@ -2848,11 +2878,14 @@
 
       #subtitle {
         color: $grey;
-        padding-top: 8px;
+        text-align: center;
+        width: 100%;
+        line-height: 1.3;
+        padding-bottom: 5px;
       }
 
       .header {
-        padding: 12px 15px;
+        padding: 15px;
         @include mainColorsGradient;
         position: relative;
 
@@ -2928,7 +2961,7 @@
 
   #relative-wrapper {
     position: relative;
-    padding: 8px 15px 20px 15px;
+    padding: 15px;
     height: 100%;
     margin-bottom: auto;
     display: block;
@@ -2980,7 +3013,7 @@
           display: flex;
           flex-wrap: wrap;
           align-items: center;
-          gap: 25px 0;
+          gap: 20px 0;
           justify-content: center;
 
           .block {
@@ -2991,14 +3024,27 @@
             justify-content: center;
             opacity: 0;
 
-            &:last-child {
-              margin-bottom: 0;
+            .block-text {
+              .ellipsis {
+                &.hide {
+                  display: none;
+                }
+              }
+            }
+            .rest-of-list-items {
+              opacity: 0;
+              max-height: 0;
+              transition: all 0.3s ease-out;
+
+              &.active {
+                opacity: 1;
+                max-height: 10000px;
+                transition: all 0.3s ease-in;
+              }
             }
 
-            *:not(.card-icon-button) {
-              width: 100%;
-              text-align: center;
-              line-height: 1;
+            &:last-child {
+              margin-bottom: 0;
             }
 
             &.red {
@@ -3014,22 +3060,25 @@
             }
 
             &.full-width {
+              width: 100%;
               p {
                 max-width: 100%;
-                line-height: 1.5;
-                text-align: center;
+                line-height: 1.3;
                 font-weight: $fwRegular;
                 font-size: 16px;
                 &.block-text {
                   max-width: 100%;
-                  line-height: 1.5;
+                  line-height: 1.3;
                   text-align: left;
                   font-weight: $fwRegular;
                   font-size: 16px;
-
+                  width: 100%;
                   &.center {
                     text-align: center;
                   }
+                }
+                &.block-title {
+                  width: 100%;
                 }
               }
             }
@@ -3064,6 +3113,21 @@
                 font-size: 18px;
                 font-weight: $fwMediumBold;
                 line-height: 1.3;
+                width: 100%;
+                text-align: center;
+
+                &.list {
+                  color: $primaryText;
+                  font-weight: $fwMediumBold;
+                  overflow: hidden;
+                  line-height: 1.3;
+                  @include ellipsis;
+
+                  &.active {
+                    text-overflow: unset;
+                    white-space: wrap;
+                  }
+                }
               }
               &.block-title {
                 font-size: 13px;
@@ -3072,6 +3136,9 @@
                 margin-top: auto;
                 line-height: 1.3;
                 display: block;
+                padding-top: 2px;
+                width: 100%;
+                text-align: center;
               }
             }
           }
@@ -3326,6 +3393,7 @@
     margin-left: auto;
     gap: 0 20px;
     padding-right: 10px;
+    margin-top: 10px;
 
     * {
       line-height: 1;
@@ -3338,27 +3406,6 @@
 
     &.has-delete {
       padding: 10px 10px 0 10px;
-    }
-
-    #cancel-button {
-      position: relative;
-      bottom: 0;
-      z-index: 99999999999;
-      white-space: nowrap;
-      justify-self: flex-start;
-      line-height: 1;
-      font-weight: $fwMediumBold;
-      font-size: 14px;
-      border: 0;
-      color: white;
-      height: unset;
-      border-radius: 0;
-      background-color: transparent;
-      padding: 0 0 5px 0;
-      text-align: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.65);
-      box-shadow: none;
-      text-transform: uppercase;
     }
 
     .card-button {
@@ -3427,6 +3474,40 @@
         border: 1px solid $lightDarkGrey;
         color: $lightDarkGrey;
       }
+    }
+
+    #cancel-button {
+      position: relative;
+      bottom: 0;
+      z-index: 99999999999;
+      white-space: nowrap;
+      justify-self: flex-start;
+      line-height: 1;
+      font-weight: $fwMediumBold;
+      font-size: 14px;
+      border: 0;
+      color: white;
+      height: unset;
+      border-radius: 0;
+      background-color: transparent;
+      padding: 0 0 5px 0;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow: none;
+      text-transform: uppercase;
+    }
+
+    #close-button {
+      font-size: 26px;
+      color: $greyBorderColor;
+      z-index: 99999;
+      display: flex;
+      position: relative;
+      right: 0;
+      padding: 0;
+      justify-self: flex-end;
+      margin-left: auto;
+      bottom: 2px;
     }
   }
 
@@ -3740,7 +3821,7 @@
     #info-type {
       display: flex;
       align-items: center;
-      border-radius: 20px;
+      border-radius: $cardBorderRadius;
       margin-bottom: 20px;
       gap: 10px;
       margin-top: 10px;
@@ -4170,7 +4251,7 @@
   justify-content: center;
   align-items: flex-end;
   border-radius: 35px 35px 0 0;
-  padding: 0 0 60px 0;
+  padding: 20px 0 60px 0;
   bottom: 0;
   max-height: 90vh;
   box-shadow: $boxShadow_top_only;
@@ -4412,7 +4493,6 @@
   left: 0;
   padding-bottom: 5vh;
   background-color: $lightBg;
-  background: transparent;
 
   &.hidden {
     bottom: -200px;
@@ -4459,7 +4539,6 @@
 
   // MENU BUTTON
   #svg-wrapper {
-    background-color: $blend;
     height: 60px;
     display: flex;
     justify-content: center;
@@ -4491,7 +4570,6 @@
     width: 100vw;
     height: 55px;
     background-color: $lightBg;
-    background: transparent;
     position: relative;
     top: 10px;
     padding: 0 5px;
@@ -4581,13 +4659,13 @@
 
       &.active {
         //        opacity: 1;
-        color: $accent;
+        color: $blend;
         position: relative;
         transition: all 0.3s ease-in-out;
 
         #calendar-and-month {
           span {
-            color: $accent;
+            color: $blend;
           }
         }
 

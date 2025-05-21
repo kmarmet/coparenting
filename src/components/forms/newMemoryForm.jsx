@@ -1,51 +1,49 @@
 // Path: src\components\forms\newMemoryForm.jsx
-import MyConfetti from '/src/components/shared/myConfetti'
 import UploadInputs from '/src/components/shared/uploadInputs'
-import DatetimeFormats from '/src/constants/datetimeFormats'
-import DB from '/src/database/DB'
-import FirebaseStorage from '/src/database/firebaseStorage'
 import AlertManager from '/src/managers/alertManager'
-import AppManager from '/src/managers/appManager'
 import ImageManager from '/src/managers/imageManager'
 import Manager from '/src/managers/manager'
-import ObjectManager from '/src/managers/objectManager'
-import StringManager from '/src/managers/stringManager'
-import UpdateManager from '/src/managers/updateManager'
-import ActivityCategory from '/src/models/activityCategory'
-import Memory from '/src/models/memory.js'
-import ModelNames from '/src/models/modelNames'
 import moment from 'moment'
-import React, {useContext, useState} from 'react'
+import React, {useContext, useRef, useState} from 'react'
 import {LuImagePlus} from 'react-icons/lu'
 import creationForms from '../../constants/creationForms'
+import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
+import DB from '../../database/DB'
+import FirebaseStorage from '../../database/firebaseStorage'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useMemories from '../../hooks/useMemories'
+import AppManager from '../../managers/appManager'
 import DatasetManager from '../../managers/datasetManager'
-import DomManager from '../../managers/domManager'
+import ObjectManager from '../../managers/objectManager'
+import StringManager from '../../managers/stringManager'
+import UpdateManager from '../../managers/updateManager'
+import ActivityCategory from '../../models/activityCategory'
+import Memory from '../../models/memory'
+import ModelNames from '../../models/modelNames'
 import InputWrapper from '../shared/inputWrapper'
 import Modal from '../shared/modal'
+import MyConfetti from '../shared/myConfetti'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import Spacer from '../shared/spacer'
 
-export default function NewMemoryForm() {
+export function NewMemoryForm() {
   const {state, setState} = useContext(globalState)
-  const {authUser, refreshKey, theme, creationFormToShow} = state
+  const {theme, creationFormToShow} = state
   const [images, setImages] = useState([])
   const {currentUser} = useCurrentUser()
   const {memories} = useMemories()
-  const [newMemory, setNewMemory] = useState(new Memory())
-  const [shareWith, setShareWith] = useState([])
+  const newMemory = useRef(new Memory())
 
   const ResetForm = async () => {
-    Manager.ResetForm('new-memory-wrapper')
+    // Manager.ResetForm('new-memory-wrapper')
     setState({...state, isLoading: false, refreshKey: Manager.GetUid(), creationFormToShow: ''})
   }
 
   const HandleShareWithSelection = (e) => {
-    const updated = DomManager.HandleShareWithSelection(e, currentUser, newMemory.shareWith)
-    setShareWith(updated)
+    const key = e.currentTarget.dataset['key']
+    newMemory.current.shareWith = DatasetManager.ToggleInArray(newMemory.current.shareWith, key)
   }
 
   const Upload = async () => {
@@ -58,7 +56,7 @@ export default function NewMemoryForm() {
       return false
     }
 
-    if (validAccounts > 0 && !Manager.IsValid(shareWith)) {
+    if (validAccounts > 0 && !Manager.IsValid(newMemory.current.shareWith)) {
       AlertManager.throwError('Please choose who you would like to share this memory with')
       return false
     }
@@ -89,6 +87,7 @@ export default function NewMemoryForm() {
     // Check for existing memory
     const validImgArray = DatasetManager.GetValidArray(imagesToUpload)
     let shouldProceed = true
+
     for (let img of validImgArray) {
       const existingMemory = memories.find((x) => Manager.DecodeHash(x.memoryName) === Manager.GenerateHash(img.name))
       if (Manager.IsValid(existingMemory)) {
@@ -103,6 +102,8 @@ export default function NewMemoryForm() {
     }
 
     setState({...state, isLoading: true})
+
+    const clean = ObjectManager.GetModelValidatedObject(newMemory.current, ModelNames.memory)
 
     // Upload Image
     await FirebaseStorage.uploadMultiple(`${FirebaseStorage.directories.memories}/`, currentUser?.key, imagesToUpload)
@@ -119,20 +120,18 @@ export default function NewMemoryForm() {
             // Add to user memories object
             for (const url of urls) {
               const imageName = FirebaseStorage.GetImageNameFromUrl(url)
-              const cleanMemory = ObjectManager.GetModelValidatedObject(newMemory, ModelNames.memory)
 
-              cleanMemory.url = url
-              cleanMemory.memoryName = Manager.GenerateHash(imageName)
-              cleanMemory.ownerKey = currentUser?.key
-              cleanMemory.id = Manager.GetUid()
-              cleanMemory.shareWith = shareWith
+              clean.url = url
+              clean.memoryName = Manager.GenerateHash(imageName)
+              clean.ownerKey = currentUser?.key
+              clean.id = Manager.GetUid()
               // Add to Database
-              await DB.Add(`${DB.tables.memories}/${currentUser?.key}`, memories, cleanMemory)
+              await DB.Add(`${DB.tables.memories}/${currentUser?.key}`, memories, clean)
             }
 
             // Send Notification
-            await UpdateManager.sendToShareWith(
-              newMemory.shareWith,
+            await UpdateManager.SendToShareWith(
+              clean.shareWith,
               currentUser,
               `New Memory`,
               `${StringManager.GetFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
@@ -170,7 +169,9 @@ export default function NewMemoryForm() {
             <InputWrapper
               inputType={InputTypes.text}
               labelText={'Title'}
-              onChange={(e) => setNewMemory((prevMemory) => ({...prevMemory, title: e.target.value}))}
+              onChange={(e) => {
+                newMemory.current.title = e.target.value
+              }}
             />
 
             {/* DATE */}
@@ -178,17 +179,14 @@ export default function NewMemoryForm() {
               uidClass="memory-capture-date-uid"
               labelText={'Capture Date'}
               inputType={InputTypes.date}
-              onDateOrTimeSelection={(e) =>
-                setNewMemory((prevMemory) => ({...prevMemory, memoryCaptureDate: moment(e).format(DatetimeFormats.dateForDb)}))
-              }
+              onDateOrTimeSelection={(e) => {
+                newMemory.current.memoryCaptureDate = moment(e).format(DatetimeFormats.dateForDb)
+              }}
             />
 
             {/* NOTES */}
-            <InputWrapper
-              onChange={(e) => setNewMemory((prevMemory) => ({...prevMemory, notes: e.target.value}))}
-              inputType={InputTypes.textarea}
-              labelText={'Notes'}
-            />
+            <InputWrapper onChange={(e) => (newMemory.current.notes = e.target.value)} inputType={InputTypes.textarea} labelText={'Notes'} />
+
             {/* UPLOAD BUTTON */}
             <UploadInputs
               containerClass={`${theme} new-memory-card`}

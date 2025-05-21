@@ -43,7 +43,7 @@ export default CalendarManager =
   # REPEATING
     if arrayType == "recurring"
       datesToIterate = CalendarMapper.recurringEvents(
-        eventObject.repeatInterval,
+        eventObject.recurringInterval,
         moment(startDate).format(DateFormats.monthDayYear),
         endDate
       )
@@ -80,7 +80,7 @@ export default CalendarManager =
         dateObject.endTime = moment(eventObject.endTime).format(DateFormats.timeForDb)
 
       dateObject.reminderTimes = eventObject.reminderTimes
-      dateObject.recurrenceInterval = eventObject.repeatInterval
+      dateObject.recurrenceInterval = eventObject.recurringInterval
       dateObject = ObjectManager.GetModelValidatedObject(dateObject, ModelNames.calendarEvent)
       datesToPush.push dateObject
 

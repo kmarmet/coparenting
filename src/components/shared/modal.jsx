@@ -111,16 +111,7 @@ export default function Modal({
   return (
     <Overlay show={showCard}>
       <div key={refreshKey} id="modal-wrapper" className={`${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
-        <div className="above-card">
-          {viewSelector}
-          <IoClose
-            id={'close-button'}
-            onClick={() => {
-              onClose()
-              HideCard()
-            }}
-          />
-        </div>
+        <div className="above-card">{viewSelector}</div>
         <div
           style={DomManager.AnimateDelayStyle(1, 0.002)}
           id="modal-card"
@@ -151,6 +142,13 @@ export default function Modal({
               {deleteButtonText}
             </button>
           )}
+          <IoClose
+            id={'close-button'}
+            onClick={() => {
+              onClose()
+              HideCard()
+            }}
+          />
         </div>
       </div>
     </Overlay>

@@ -1,7 +1,9 @@
-export default class UpdateSubscriber
+class UpdateSubscriber
   constructor: (
     @id= ''
     @key = ''
     @email = ''
     @subscriptionId = ''
   ) ->
+
+export default UpdateSubscriber

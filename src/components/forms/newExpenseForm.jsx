@@ -163,7 +163,7 @@ export default function NewExpenseForm() {
 
       // Send notification
       if (Manager.IsValid(shareWith)) {
-        await UpdateManager.sendToShareWith(
+        await UpdateManager.SendToShareWith(
           shareWith,
           currentUser,
           `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a new expense`,

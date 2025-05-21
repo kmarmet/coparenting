@@ -113,7 +113,7 @@ export default function NewTransferChangeRequest() {
     await DB.Add(`${DB.tables.transferChangeRequests}/${currentUser.key}`, newRequest)
 
     // Notify
-    await UpdateManager.SendNotification(
+    await UpdateManager.SendUpdate(
       `Transfer Change Request`,
       `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
       requestRecipientKey,

@@ -5,8 +5,7 @@
 #external-overrides {
   #calendar-container {
     .events {
-      //      background: $lightBg;
-
+      background: $lightBg;
       border-radius: 25px 25px 0 0;
 
       #no-events-text {
@@ -72,15 +71,13 @@
 
         #icon-row {
           align-items: flex-start;
-          gap: 3px;
+          gap: 5px;
           display: flex;
           justify-content: center;
           position: relative;
           top: -3px;
-
           svg {
-            color: #afafb8;
-            color: $darkerTransWhite;
+            color: #b3b7be;
             padding: 0;
             margin: 0;
             font-size: 17px;
@@ -137,7 +134,7 @@
               opacity: 1;
               font-style: normal;
               font-weight: $fwRegular;
-              color: $primaryText;
+              color: $headerText;
 
               .event-type-dot {
                 height: 8px;

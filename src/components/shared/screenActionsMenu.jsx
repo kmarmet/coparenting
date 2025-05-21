@@ -21,9 +21,9 @@ const ScreenActionsMenu = ({children, centeredActionItem}) => {
     const pageContainer = document.querySelector('.page-container')
 
     if (showScreenActions) {
-      DomManager.ToggleAnimation('add', 'action-item', DomManager.AnimateClasses.names.fadeInRight, 30)
+      DomManager.ToggleAnimation('add', 'action-item', DomManager.AnimateClasses.names.fadeInUp, 30)
     } else {
-      DomManager.ToggleAnimation('remove', 'action-item', DomManager.AnimateClasses.names.fadeInRight, 50)
+      DomManager.ToggleAnimation('remove', 'action-item', DomManager.AnimateClasses.names.fadeInUp, 50)
     }
 
     if (pageContainer) {
@@ -41,7 +41,8 @@ const ScreenActionsMenu = ({children, centeredActionItem}) => {
         <div className="swipe-bar"></div>
         <div
           {...handlers}
-          className={`bottom-menu-wrapper screen-actions ${showScreenActions ? 'active' : ''} ${showScreenActions ? 'animate__animated animate__fadeInUp' : 'animate__animated animate__fadeOutDown'}`}>
+          style={DomManager.AnimateDelayStyle(1, 0.1)}
+          className={`bottom-menu-wrapper screen-actions ${DomManager.Animate.FadeInUp(showScreenActions, '.fade-up-wrapper')}`}>
           <div className={centeredActionItem ? 'centered action-items' : 'action-items'}>
             <Spacer height={4} />
             {children}

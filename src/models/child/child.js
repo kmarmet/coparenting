@@ -11,18 +11,19 @@ import Schooling from './schooling';
 
 import Behavior from './behavior';
 
-export default Child = class Child {
-  constructor(id = Manager.GetUid(), general = new General(), medical = new Medical(), schooling = new Schooling(), behavior = new Behavior(), sharing = [], checklists = [], userKey = '') {
+Child = class Child {
+  constructor(id = Manager.GetUid(), general = new General(), medical = new Medical(), schooling = new Schooling(), behavior = new Behavior(), checklists = [], userKey = '') {
     this.id = id;
     this.general = general;
     this.medical = medical;
     this.schooling = schooling;
     this.behavior = behavior;
-    this.sharing = sharing;
     this.checklists = checklists;
     this.userKey = userKey;
   }
 
 };
+
+export default Child;
 
 //# sourceMappingURL=child.js.map

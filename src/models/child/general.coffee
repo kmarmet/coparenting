@@ -1,2 +1,4 @@
-export default class General
+class General
   constructor: (@dateOfBirth = '', @address = '', @phone = '', @name = '', @profilePic = '', @email = '') ->
+
+export default General

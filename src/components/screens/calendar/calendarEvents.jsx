@@ -4,9 +4,9 @@ import Manager from '/src/managers/manager'
 import moment from 'moment'
 import React, {useContext} from 'react'
 import {BiSolidBellRing} from 'react-icons/bi'
-import {FaChildren} from 'react-icons/fa6'
+import {FaChildren, FaNoteSticky} from 'react-icons/fa6'
 import {MdAssistantNavigation, MdEventRepeat, MdLocalPhone} from 'react-icons/md'
-import {PiLinkBold, PiNotepadDuotone} from 'react-icons/pi'
+import {PiLinkBold} from 'react-icons/pi'
 import globalState from '../../../context.js'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import DatasetManager from '../../../managers/datasetManager.coffee'
@@ -81,7 +81,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
       Manager.IsValid(event?.notes) ||
       Manager.IsValid(event?.websiteUrl) ||
       Manager.IsValid(event?.phone) ||
-      Manager.IsValid(event?.location) ||
+      Manager.IsValid(event?.address) ||
       Manager.IsValid(event?.children) ||
       event?.isRecurring
     )
@@ -162,10 +162,10 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
                 {HasRowIcons(event) && (
                   <div id="icon-row">
                     {Manager.IsValid(event?.reminderTimes) && <BiSolidBellRing />}
-                    {Manager.IsValid(event?.notes) && <PiNotepadDuotone />}
+                    {Manager.IsValid(event?.notes) && <FaNoteSticky />}
                     {Manager.IsValid(event?.websiteUrl) && <PiLinkBold className="website-icon" />}
                     {Manager.IsValid(event?.phone) && <MdLocalPhone />}
-                    {Manager.IsValid(event?.location) && <MdAssistantNavigation className="location-icon" />}
+                    {Manager.IsValid(event?.address) && <MdAssistantNavigation className="address-icon" />}
                     {Manager.IsValid(event?.children) && <FaChildren />}
                     {event?.isRecurring && <MdEventRepeat />}
                   </div>

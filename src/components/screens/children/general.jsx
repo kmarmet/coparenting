@@ -16,14 +16,13 @@ import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useSharedChildInfo from '../../../hooks/useSharedChildInfo'
 import AddressInput from '../../shared/addressInput'
-import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
 
 function General({activeChild}) {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
-  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {currentUser} = useCurrentUser()
   const {sharedChildInfo} = useSharedChildInfo()
-  const [generalValues, setGeneralValues] = useState(Object.entries(activeChild?.general))
+  const [generalValues, setGeneralValues] = useState(Manager.IsValid(activeChild?.general) ? Object.entries(activeChild?.general) : [])
   const [showInputs, setShowInputs] = useState(false)
 
   const DeleteProp = async (prop) => {
@@ -53,7 +52,7 @@ function General({activeChild}) {
       if (Manager.IsValid(sharedValues)) {
         values = [...values, ...sharedValues]
       }
-      const valuesArr = values.filter((x) => x[1].length === 0).map((x) => x[1])
+      const valuesArr = values.filter((x) => x[1]?.length === 0)?.map((x) => x[1])
       if (valuesArr.length === values.length) {
         setGeneralValues([])
       } else {
@@ -76,10 +75,6 @@ function General({activeChild}) {
   useEffect(() => {
     SetSelectedChildData().then()
   }, [activeChild, sharedChildInfo])
-
-  if (currentUserIsLoading) {
-    return <StandaloneLoadingGif />
-  }
 
   return (
     <div className="info-section section general form" key={refreshKey}>

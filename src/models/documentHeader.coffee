@@ -1,8 +1,10 @@
 import Manager from "../managers/manager"
 
-export default class DocumentHeader
+class DocumentHeader
   constructor: (
     @id = Manager.GetUid()
     @headerText = ''
     @ownerKey = ''
   ) ->
+
+export default DocumentHeader

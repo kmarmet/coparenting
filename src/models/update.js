@@ -7,10 +7,10 @@ import moment from "moment";
 
 Update = null;
 
-export default Update = class Update {
-  constructor(id = '', creationDate = moment().format(DateFormats.fullDatetime), category = '', recipientKey = '', ownerKey = '', title = '', text = '') {
+Update = class Update {
+  constructor(id = '', timestamp = moment().format(DateFormats.fullDatetime), category = '', recipientKey = '', ownerKey = '', title = '', text = '') {
     this.id = id;
-    this.creationDate = creationDate;
+    this.timestamp = timestamp;
     this.category = category;
     this.recipientKey = recipientKey;
     this.ownerKey = ownerKey;
@@ -19,5 +19,7 @@ export default Update = class Update {
   }
 
 };
+
+export default Update;
 
 //# sourceMappingURL=update.js.map

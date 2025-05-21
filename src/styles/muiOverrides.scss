@@ -41,7 +41,7 @@
   // MUI PARENT
   .MuiPaper-root:not(.MuiAccordion-root) {
     background-color: $lightBg;
-    border-radius: 20px !important;
+    border-radius: $cardBorderRadius !important;
     margin: 0 !important;
     width: calc(100vw - 20px) !important;
     max-width: calc(100vw - 20px) !important;

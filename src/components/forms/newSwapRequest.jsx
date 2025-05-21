@@ -126,7 +126,7 @@ export default function NewSwapRequest() {
 
     // Send Notification
     await DB.Add(`${DB.tables.swapRequests}/${currentUser?.key}`, cleanObject).finally(() => {
-      UpdateManager.sendToShareWith(
+      UpdateManager.SendToShareWith(
         shareWith,
         currentUser,
         'New Swap Request',

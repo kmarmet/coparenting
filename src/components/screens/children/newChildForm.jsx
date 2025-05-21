@@ -1,6 +1,7 @@
 // Path: src\components\screens\childInfo\newChildForm.jsx
 import moment from 'moment'
-import React, {useContext, useState} from 'react'
+import React, {useContext, useRef, useState} from 'react'
+import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
@@ -15,7 +16,6 @@ import ObjectManager from '../../../managers/objectManager'
 import StringManager from '../../../managers/stringManager.js'
 import CalendarEvent from '../../../models/calendarEvent'
 import Child from '../../../models/child/child'
-import General from '../../../models/child/general'
 import ModelNames from '../../../models/modelNames'
 import AddressInput from '../../shared/addressInput'
 import InputWrapper from '../../shared/inputWrapper'
@@ -30,50 +30,40 @@ const NewChildForm = ({hideCard, showCard}) => {
   const {theme} = state
   const {currentUser} = useCurrentUser()
   const {users} = useUsers()
-  const [email, setEmail] = useState(false)
+
   // State
-  const [name, setName] = useState('')
-  const [address, setAddress] = useState('')
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [dateOfBirth, setDateOfBirth] = useState('')
-  const [profilePic, setProfilePic] = useState(null)
   const [childHasAccount, setChildHasAccount] = useState(false)
+
+  const newChild = useRef(new Child())
 
   const ResetForm = async (successMessage = '') => {
     Manager.ResetForm('new-child-wrapper')
     hideCard()
-    setDateOfBirth('')
-    setProfilePic(null)
-    setPhoneNumber('')
     setChildHasAccount(false)
-    setAddress('')
-    setName('')
     setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
   }
 
   const Submit = async () => {
-    const errorString = Manager.GetInvalidInputsErrorString([{name: "Child's Name", value: name}])
+    console.log(newChild)
+    const errorString = Manager.GetInvalidInputsErrorString([{name: "Child's Name", value: newChild.current.general.name}])
 
     if (Manager.IsValid(errorString, true)) {
       AlertManager.throwError(errorString)
       return false
     }
 
-    if (childHasAccount && !Manager.IsValid(email)) {
+    if (childHasAccount && !Manager.IsValid(newChild.current.general.email)) {
       AlertManager.throwError('If the child has an account with us, their email is required')
       return false
     }
-    let _profilePic = profilePic
-    const newChild = new Child()
-    const general = new General()
-    general.address = address
-    general.phone = phoneNumber
-    general.name = StringManager.FormatTitle(name, true)
-    general.dateOfBirth = dateOfBirth
-    newChild.general = general
-    newChild.general.profilePic = ''
-    newChild.userKey = Manager.GetUid()
-    const existingChildRecord = users.find((x) => x?.email === email)
+    let _profilePic = newChild.current.general.profilePic
+    newChild.current.general.profilePic = ''
+
+    if (childHasAccount) {
+      newChild.current.userKey = Manager.GetUid()
+    }
+
+    const existingChildRecord = users.find((x) => x?.email === newChild.current.general.email)
 
     // Link to existing account
     if (Manager.IsValid(existingChildRecord) || childHasAccount || !ObjectManager.isEmpty(existingChildRecord)) {
@@ -85,20 +75,27 @@ const NewChildForm = ({hideCard, showCard}) => {
 
     // Add profile pic
     if (Manager.IsValid(_profilePic)) {
-      _profilePic = await ImageManager.compressImage(profilePic)
-      await FirebaseStorage.upload(
-        FirebaseStorage.directories.profilePics,
-        `${currentUser?.key}/${StringManager.GetFirstNameOnly(name)}`,
-        _profilePic,
-        'profilePic'
-      ).then(async (url) => {
-        newChild.general.profilePic = url
-      })
+      _profilePic = await ImageManager.compressImage(newChild.current.general.profilePic)
+      if (Manager.IsValid(_profilePic)) {
+        await FirebaseStorage.upload(
+          FirebaseStorage.directories.profilePics,
+          `${currentUser?.key}/${newChild.current.id}`,
+          _profilePic,
+          'profilePic'
+        ).then(async (url) => {
+          if (!Manager.IsValid(url)) {
+            return false
+          }
+          newChild.current.general.profilePic = url
+        })
+      }
     }
-    const cleanChild = ObjectManager.GetModelValidatedObject(newChild, ModelNames.child)
+
+    // Get valid objected
+    const cleanChild = ObjectManager.GetModelValidatedObject(newChild.current, ModelNames.child)
 
     // Add Child's Birthday to Calendar
-    if (Manager.IsValid(dateOfBirth, true)) {
+    if (Manager.IsValid(newChild.current.general.dateOfBirth, true)) {
       const childBirthdayEvent = new CalendarEvent()
       childBirthdayEvent.title = `${cleanChild.general.name}'s Birthday`
       childBirthdayEvent.startDate = cleanChild.general.dateOfBirth
@@ -125,14 +122,19 @@ const NewChildForm = ({hideCard, showCard}) => {
         <Spacer height={5} />
         <div className="form new-child-form">
           {/* NAME */}
-          <InputWrapper labelText={'Name'} inputType={InputTypes.text} required={true} onChange={(e) => setName(e.target.value)} />
+          <InputWrapper
+            labelText={'Name'}
+            inputType={InputTypes.text}
+            required={true}
+            onChange={(e) => (newChild.current.general.name = StringManager.FormatTitle(e.target.value, true))}
+          />
 
           {/* EMAIL */}
           <InputWrapper
             labelText={'Email Address'}
             required={childHasAccount}
             inputType={InputTypes.email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => (newChild.current.general.email = e.target.value)}
           />
 
           {/* DATE OF BIRTH */}
@@ -141,14 +143,19 @@ const NewChildForm = ({hideCard, showCard}) => {
             labelText={'Date of Birth'}
             dateViews={['year', 'month', 'day']}
             inputType={InputTypes.date}
-            onDateOrTimeSelection={(e) => setDateOfBirth(moment(e).format('MM/DD/YYYY'))}
+            onDateOrTimeSelection={(e) => (newChild.current.general.dateOfBirth = moment(e).format(DatetimeFormats.monthDayYear))}
           />
 
           {/* ADDRESS */}
-          <AddressInput labelText={'Home Address'} onChange={(address) => setAddress(address)} />
+          <AddressInput labelText={'Home Address'} onChange={(address) => (newChild.current.general.address = address)} />
 
           {/* PHONE NUMBER */}
-          <InputWrapper labelText={'Phone Number'} inputType={InputTypes.phone} required={false} onChange={(e) => setPhoneNumber(e.target.value)} />
+          <InputWrapper
+            labelText={'Phone Number'}
+            inputType={InputTypes.phone}
+            required={false}
+            onChange={(e) => (newChild.current.general.phone = e.target.value)}
+          />
 
           {/* SHOULD LINK CHILD TOGGLE */}
           <div className="flex">
@@ -166,7 +173,7 @@ const NewChildForm = ({hideCard, showCard}) => {
             uploadType={'image'}
             actualUploadButtonText={'Upload'}
             getImages={(files) => {
-              setProfilePic(files[0])
+              newChild.current.general.profilePic = files[0]
             }}
             uploadButtonText={`Choose`}
             upload={() => {}}

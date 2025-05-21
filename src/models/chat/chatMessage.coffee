@@ -1,6 +1,6 @@
 import Manager from "../../managers/manager"
 
-export default class ChatMessage
+class ChatMessage
   constructor: (
     @id = Manager.GetUid()
     @sender = ''
@@ -11,3 +11,5 @@ export default class ChatMessage
     @senderKey = ''
     @senderTimezone = ''
   ) ->
+
+export default ChatMessage

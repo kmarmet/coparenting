@@ -109,13 +109,7 @@ export default function TransferRequests() {
       activeRequest.declineReason = declineReason
       await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.ownerKey}`, activeRequest, activeRequest.id)
       const message = UpdateManager.templates.transferRequestRejection(activeRequest, recipientName)
-      await UpdateManager.SendNotification(
-        'Transfer Request Decision',
-        message,
-        activeRequest?.ownerKey,
-        currentUser,
-        ActivityCategory.transferRequest
-      )
+      await UpdateManager.SendUpdate('Transfer Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.transferRequest)
       setShowDetails(false)
     }
 
@@ -125,13 +119,7 @@ export default function TransferRequests() {
       await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.ownerKey}`, activeRequest, activeRequest.id)
       const message = UpdateManager.templates.transferRequestApproval(activeRequest, recipientName)
       setShowDetails(false)
-      await UpdateManager.SendNotification(
-        'Transfer Request Decision',
-        message,
-        activeRequest?.ownerKey,
-        currentUser,
-        ActivityCategory.transferRequest
-      )
+      await UpdateManager.SendUpdate('Transfer Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.transferRequest)
     }
 
     setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: `Decision Sent to ${recipientName}`})
@@ -146,7 +134,7 @@ export default function TransferRequests() {
       notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
     }
     const recipientKey = activeRequest?.ownerKey === currentUser?.key ? activeRequest.recipientKey : currentUser?.key
-    await UpdateManager.SendNotification('Transfer Destination Arrival', notificationMessage, recipientKey, currentUser, ActivityCategory.expenses)
+    await UpdateManager.SendUpdate('Transfer Destination Arrival', notificationMessage, recipientKey, currentUser, ActivityCategory.expenses)
     setState({...state, successAlertMessage: 'Arrival Notification Sent'})
   }
 

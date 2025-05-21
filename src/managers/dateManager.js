@@ -305,7 +305,6 @@ const DateManager = {
       newEvent.holidayName = holiday.name
       newEvent.startDate = moment(holiday.date).format(DatetimeFormats.dateForDb)
       newEvent.isHoliday = true
-      newEvent.visibleToAll = true
       newEvent = ObjectManager.GetModelValidatedObject(newEvent, ModelNames.calendarEvent)
       holidayEvents.push(newEvent)
     }

@@ -3,7 +3,7 @@ var Doc;
 
 import Manager from "../managers/manager";
 
-export default Doc = class Doc {
+Doc = class Doc {
   constructor(name = '', type = '', shareWith = [], url = '', id = Manager.GetUid(), ownerKey = '', docText = '') {
     this.name = name;
     this.type = type;
@@ -15,5 +15,7 @@ export default Doc = class Doc {
   }
 
 };
+
+export default Doc;
 
 //# sourceMappingURL=doc.js.map
