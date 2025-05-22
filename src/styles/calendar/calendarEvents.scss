@@ -31,16 +31,9 @@
       }
 
       .event-row {
-        transition: all 0.3s ease-in;
         @include row;
         margin-bottom: 20px;
         border: 0;
-        opacity: 1;
-
-        &.active {
-          transition: all 0.3s ease-in;
-          opacity: 1;
-        }
 
         .delete-event-button {
           background: $red;

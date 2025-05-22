@@ -20,10 +20,10 @@ import {PiCalendarXDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
 import DB from '../../../database/DB.js'
+import useAppUpdates from '../../../hooks/useAppUpdates'
 import useCalendarEvents from '../../../hooks/useCalendarEvents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import Spacer from '../../shared/spacer'
-import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
 import CalendarEvents from './calendarEvents.jsx'
 import CalendarLegend from './calendarLegend.jsx'
 import DesktopLegend from './desktopLegend.jsx'
@@ -42,9 +42,9 @@ export default function EventCalendar() {
   const [showSearchCard, setShowSearchCard] = useState(false)
   const [showHolidays, setShowHolidays] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(null)
-  // const app = initializeApp(firebaseConfig)
   const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {calendarEvents, eventsAreLoading} = useCalendarEvents()
+  const {appUpdates} = useAppUpdates()
 
   // GET EVENTS
 
@@ -72,12 +72,13 @@ export default function EventCalendar() {
       (x) => moment(x.startDate).format(DatetimeFormats.dateForDb) === moment(dateToUse).format(DatetimeFormats.dateForDb)
     )
     _eventsOfDay = DatasetManager.CombineArrays(_eventsOfDay, holidaysToLoop)
-    setEventsOfActiveDay(_eventsOfDay)
+    setEventsOfActiveDay(DatasetManager.GetValidArray(_eventsOfDay))
 
     // ADD DAY INDICATORS
     const combined = DatasetManager.CombineArrays(sortedEvents, holidaysToLoop)
     await AddDayIndicators(combined)
   }
+
   const AddMonthText = (updatedMonth = moment().format('MMMM')) => {
     const leftArrow = document.querySelector('.MuiPickersArrowSwitcher-previousIconButton')
     const arrows = document.querySelector('.MuiPickersArrowSwitcher-root')
@@ -289,29 +290,6 @@ export default function EventCalendar() {
     }
   }
 
-  const HandleRefreshCheck = () => {
-    // Refresh check
-    const lastRefresh = localStorage.getItem('lastAutoRefresh')
-
-    // Last refresh exists
-    if (Manager.IsValid(lastRefresh)) {
-      const msSinceLastRefresh = moment(lastRefresh, DatetimeFormats.fullDatetime).diff() ?? 0
-      const hoursSinceRefresh = Math.abs(Math.ceil(msSinceLastRefresh / (1000 * 60 * 60)))
-
-      // If it has been more than 3 hours since the last refresh -> reload the page
-      if (hoursSinceRefresh > 3) {
-        localStorage.setItem('lastAutoRefresh', moment().format(DatetimeFormats.fullDatetime))
-        window.location.reload()
-        return false
-      }
-    }
-
-    // Last refresh does not exist -> set one
-    else {
-      localStorage.setItem('lastAutoRefresh', moment().format(DatetimeFormats.fullDatetime))
-    }
-  }
-
   useEffect(() => {
     GetEvents().then((r) => r)
   }, [calendarEvents])
@@ -365,16 +343,30 @@ export default function EventCalendar() {
   }, [currentScreen, currentUserIsLoading])
 
   useEffect(() => {
-    HandleRefreshCheck()
+    // setTimeout(() => {
+    //   setState({...state, successAlertMessage: 'testing bro'})
+    // }, 1000)
+
     setState({...state, isLoading: false})
     setTimeout(() => {
       AddMonthText()
     }, 500)
   }, [])
 
+  useEffect(() => {
+    if (Manager.IsValid(appUpdates)) {
+      UpdateOrRefreshIfNecessary().then((r) => r)
+    }
+  }, [appUpdates])
+
+  const UpdateOrRefreshIfNecessary = async () => {
+    let currentVersion = appUpdates[appUpdates.length - 1]?.currentVersion
+    AppManager.UpdateOrRefreshIfNecessary(currentUser, currentVersion)
+    setState({...state, successAlertMessage: 'App Updated'})
+  }
+
   return (
     <>
-      {currentUserIsLoading && !Manager.IsValid(eventsOfActiveDay) && <StandaloneLoadingGif />}
       {/* CARDS */}
       <>
         {/* HOLIDAYS CARD */}
@@ -385,7 +377,6 @@ export default function EventCalendar() {
           onClose={ViewAllEvents}
           showCard={showHolidaysCard}
           title={'View Holidays ✨'}>
-          <Spacer height={10} />
           <div id="holiday-card-buttons">
             <button className="default button green" id="view-all-holidays-item" onClick={ShowAllHolidays}>
               All
@@ -448,7 +439,6 @@ export default function EventCalendar() {
               actionBar: {
                 actions: ['today'],
               },
-              // calendarHeader: {sx: {width: '100px', border: '1px solid red !important', display: 'flex', alignItems: 'center'}},
             }}
           />
         </div>

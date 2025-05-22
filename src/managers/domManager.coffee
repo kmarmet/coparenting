@@ -5,6 +5,9 @@ import CalMapper from "../mappers/calMapper"
 import DateManager from "./dateManager"
 
 DomManager = {
+  AnimateDelayStyle: (index, delay = .2) ->
+    return {animationDelay: "#{index * delay}s"}
+
   Animate:
     RemoveAnimationClasses: (classOfElementsToAnimate, classToRemove) ->
       if Manager.IsValid(classOfElementsToAnimate)
@@ -39,11 +42,11 @@ DomManager = {
         if (variableToCheck == true)
           return "animate__animated animate__fadeInDown #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
         else
-          return 'animate__animated animate__fadeOutDown'
+          return 'animate__animated animate__fadeOutUp'
       if Manager.IsValid(variableToCheck)
         return "animate__animated animate__fadeInDown #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
       else
-        return 'animate__animated animate__fadeOutDown'
+        return 'animate__animated animate__fadeOutUp'
 
     ZoomIn: (variableToCheck,  fastSlowOrDefault = "") ->
       if typeof variableToCheck == 'boolean'
@@ -72,9 +75,8 @@ DomManager = {
         return "animate__animated animate__fadeIn animate__#{fastSlowOrDefault}"
       else
         return 'animate__animated animate__fadeOut'
-
-  AnimateDelayStyle: (index, delay = .2) ->
-    return {animationDelay: "#{index * delay}s"}
+    AnimateDelayStyle: (index, delay = .2) ->
+      return {animationDelay: "#{index * delay}s"}
 
   AnimateClasses:
     names:

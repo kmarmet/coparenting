@@ -303,7 +303,7 @@ export default function NewCalendarEvent() {
     <>
       {/* FORM WRAPPER */}
       <Modal
-        submitText={`Create Event`}
+        submitText={`Create`}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={ResetForm}
         onSubmit={Submit}

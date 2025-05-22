@@ -8,7 +8,9 @@ import moment from 'moment';
 import DateFormats from '../constants/datetimeFormats';
 
 User = class User {
-  constructor(id = Manager.GetUid(), creationDate = moment().format(DateFormats.dateForDb), key = '', name = '', email = '', phone = '', children = [], coparents = [], sharedDataUsers = [], parentType = '', accountType = '', homeAddress = '', location = {
+  constructor(id = Manager.GetUid(), creationDate = moment().format(DateFormats.dateForDb), key = '', name = '', email = '', phone = '', children = [], coparents = [], sharedDataUsers = [], parentType = '', accountType = '', homeAddress = '', app = {
+      lastVersionSeen: 1
+    }, location = {
       country: '',
       city: '',
       state: '',
@@ -41,6 +43,7 @@ User = class User {
     this.parentType = parentType;
     this.accountType = accountType;
     this.homeAddress = homeAddress;
+    this.app = app;
     this.location = location;
     this.settings = settings;
     this.dailySummaries = dailySummaries;

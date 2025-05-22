@@ -2,7 +2,7 @@
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import Manager from '/src/managers/manager'
 import moment from 'moment'
-import React, {useContext} from 'react'
+import React, {useContext, useEffect} from 'react'
 import {BiSolidBellRing} from 'react-icons/bi'
 import {FaChildren, FaNoteSticky} from 'react-icons/fa6'
 import {MdAssistantNavigation, MdEventRepeat, MdLocalPhone} from 'react-icons/md'
@@ -87,6 +87,12 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
     )
   }
 
+  useEffect(() => {
+    if (Manager.IsValid(eventsOfActiveDay)) {
+      DomManager.ToggleAnimation('add', 'event-row', DomManager.AnimateClasses.names.fadeInUp, 120)
+    }
+  }, [eventsOfActiveDay])
+
   return (
     <>
       <div className="events">
@@ -104,12 +110,10 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
               <div
                 onClick={() => HandleEventRowClick(event).then((r) => r)}
                 key={index}
-                style={DomManager.AnimateDelayStyle(index, 0.2)}
                 data-event-id={event?.id}
                 data-from-date={startDate}
-                className={`row ${DomManager.Animate.FadeInRight(eventsOfActiveDay, '.event-row')} ${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className} ${
-                  index === eventsOfActiveDay.length - 2 ? 'last-child' : ''
-                }`}>
+                className={`row ${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className}
+                `}>
                 <div className="text flex space-between">
                   {/* EVENT NAME */}
                   <div className="flex space-between" id="title-wrapper">

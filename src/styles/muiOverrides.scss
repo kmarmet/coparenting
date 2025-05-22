@@ -527,11 +527,11 @@
 
   /*#region  PICKER ARROWS*/
   .MuiPickersCalendarHeader-root {
-    margin-top: 0 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    padding: 10px !important;
+    padding: 0 15px 0 10px !important;
+    margin: 0 !important;
 
     button {
       height: unset !important;

@@ -10,45 +10,60 @@ $blend: #5e65ff;
 $linkColor: #4c6fff;
 /*#endregion  PRIMARY COLORS */
 
-/*#region  BASE COLORS */
-
-// GREEN
+/*#region  GREENS */
 $green: #2ac08a;
+$tertiaryGreen: #2ecc71;
 $brightGreen: #42ffb8;
-$bootstrapBgGreen: #d1e7dd;
+$bootstrapGreenBg: #d1e7dd;
 $bootstrapGreenBorder: rgba(96, 122, 114, 0.3);
-$bootstrapGreenColor: #0f5132;
-$lightestGreen: rgba(112, 217, 155, 0.65);
+$bootstrapGreen: #0f5132;
+$darkGreen: #239960;
+$secondaryGreen: #30c67d;
+$greenForWhiteText: #2aa76a;
+/*#endregion  GREENS */
 
-// RED
-$red: #ec4e3d;
+/*#region  REDS */
 $bootstrapRedBorder: #f5c2c7;
-$bootstrapRedColor: #c71436;
-$bootstrapBgRed: #ffe3e8;
-$bootstrapBgRed2: #fff6f7;
+$bootstrapRedBg: #ffe3e8;
+$bootstrapRed: #c71436;
+$red: #ee4b2b;
+/*#endregion  REDS */
 
-// YELLOW
+/*#region  YELLOWS */
 $bootstrapYellowBg: #fff3cd;
 $bootstrapYellowBorder: #cebb87;
-$bootstrapYellowColor: #897235;
+$bootstrapYellow: #897235;
 $yellow: #fbd872;
 $gold: #ffcb6b;
-$orange: #c0742d;
+$brightYellow: #ffe75b;
+/*#endregion  YELLOWS */
 
-// PURPLE
+/*#region  ORANGES */
+$orange: #c0742d;
+$holidayOrange: #cc8411;
+/*#endregion  ORANGES */
+
+/*#region PURPLES */
 $lightPurple: #f5f0ff;
 $purple: #856ab8;
+$coparentPurple: #7458ff;
 $darkPurple: #2c1d52;
+/*#endregion PURPLES */
 
-// PRIMARY COLORS
-
-/*#endregion  BASE COLORS */
-
-/*#region  BLACKS (NOT NEGROS)*/
+/*#region  BLACKS (NOT NIGGAS)*/
 $black: #18181b;
 $lightBlack: #1c1c1c;
 $translucentLightest: rgba(255, 255, 255, 0.09);
-/*#endregion  BLACKS (NOT NEGROS)*/
+/*#endregion  BLACKS (NOT NIGGAS)*/
+
+/*#region  WHITES (NOT CAUCS) */
+$offWhite: #faf9f6;
+$tanWhite: #f9f7f3;
+$transWhite: rgba(255, 255, 255, 0.55);
+$darkerTransWhite: rgba(255, 255, 255, 0.45);
+$mediumTransWhite: rgba(255, 255, 255, 0.8);
+$lighterTransWhite: rgba(255, 255, 255, 0.9);
+/*#endregion  WHITES (NOT CAUCS) */
 
 /*#region  GREYS*/
 $darkGrey: #a1a1aa;
@@ -63,19 +78,6 @@ $lightGrey: #f8f9fa;
 $greyBorderColor: #d6d6d6;
 /*#endregion  GREYS*/
 
-/*#region  WHITES */
-$offWhite: #faf9f6;
-$tanWhite: #f9f7f3;
-$transWhite: rgba(255, 255, 255, 0.55);
-$darkerTransWhite: rgba(255, 255, 255, 0.45);
-$lighterTransWhite: rgba(255, 255, 255, 0.9);
-/*#endregion  WHITES */
-
-/*#region  VISITATION COLORS*/
-$coparentPurple: #7458ff;
-$holidayOrange: #cc8411;
-/*#endregion  VISITATION COLORS*/
-
 /*#region DARK THEME*/
 $darkBlueDarkest: #121735;
 $darkBg: black;
@@ -87,8 +89,6 @@ $darkLightPurple: #aaa8cc;
 $darkLightBg: #13112f;
 $darkGreen: $green;
 $darkBlue: #5c8df7;
-$darkGreen: #239960;
-$darkGreenButtonText: #30c67d;
 $darkBlueMedium: #4c6fff;
 $darkMainBlue: $darkBlueMedium;
 $darkBlueLight: cornflowerblue;
@@ -100,16 +100,9 @@ $darkBorderColor: rgba(59, 59, 59, 0.26);
 /*#endregion DARK THEME*/
 
 /*#region  LIGHT THEME*/
-//$lightAccent: #4c75a3;
 $lightBg: #eef0f4;
 $lightBlackLight: #1c1c1c;
-$lightBlueDark: #00319f;
-$lightBlueLightDark: #0049be;
-$lightBlueMedium: #4c6fff;
 $lightBorderColor: #e5e5e5;
 $lightDarkGrey: rgba(0, 0, 0, 0.44);
-$lightDesktopBg: #f3f7fa;
 $lightIconBgBlue: #dde5ff;
-$lightMenuBg: white;
-$lightestBlue: #d3eafd;
 /*#endregion  LIGHT THEME*/

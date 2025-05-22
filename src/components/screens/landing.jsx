@@ -18,7 +18,6 @@ import {TbSunMoon} from 'react-icons/tb'
 import {LazyLoadImage} from 'react-lazy-load-image-component'
 import {useLongPress} from 'use-long-press'
 import globalState from '../../context'
-import Logo from '../../img/logo.png'
 import Slideshow from '../shared/slideshow'
 import Spacer from '../shared/spacer'
 
@@ -26,7 +25,7 @@ export default function Landing() {
   const {state, setState} = useContext(globalState)
   const {theme, currentScreen, authUser} = state
   const [showTrioSlideshow, setShowTrioSlideshow] = useState(false)
-  const [showDocumentsSlidehow, setShowDocumentsSlideshow] = useState(false)
+  const [showDocumentsSlideshow, setShowDocumentsSlideshow] = useState(false)
   const [showEmotionMeterSlideshow, setShowEmotionMeterSlideshow] = useState(false)
   const [showExpensesSlideshow, setShowExpensesSlideshow] = useState(false)
   const [showDevicesSlideshow, setShowDevicesSlideshow] = useState(false)
@@ -122,7 +121,7 @@ export default function Landing() {
 
       {/* Documents */}
       <Slideshow
-        show={showDocumentsSlidehow}
+        show={showDocumentsSlideshow}
         hide={() => setShowDocumentsSlideshow(false)}
         activeIndex={0}
         images={[
@@ -220,17 +219,8 @@ export default function Landing() {
 
       <div id="above-fold-wrapper" className="section above-fold">
         <div id="home-navbar" className="flex">
-          <img src={Logo} id="logo" {...bind()} alt="Logo" />
+          <img src={require('/src/img/logo.png')} id="logo" {...bind()} alt="Logo" />
           <div id="login-buttons">
-            {/*<button id="register-button" onClick={() => setState({ ...state, currentScreen: ScreenNames.registration })}>*/}
-            {/*  Sign Up <IoPersonAddOutline />*/}
-            {/*</button>*/}
-            {/*<button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>*/}
-            {/*  Log In <AiTwotoneUnlock />*/}
-            {/*</button>*/}
-            {/*<button id="login-button" className="default default button" onClick={() => setState({ ...state, currentScreen: ScreenNames.login })}>*/}
-            {/*  Get Started*/}
-            {/*</button>*/}
             <div id="choose-peace-text" className="flex">
               <p id="choose-peace-text">
                 <span className="emphasize">Choose Peace</span>
@@ -243,6 +233,7 @@ export default function Landing() {
           <p id="title">Peaceful Co-Parenting</p>
           <p id="subtitle">Built for Families - Focused on Peace</p>
         </div>
+        <Spacer height={10} />
 
         <div className="flex" id="images" onClick={() => setShowTrioSlideshow(true)}>
           <img className={'image'} src={require('/src/img/homepage/memories.png')} alt="Memories" />
@@ -759,8 +750,8 @@ export default function Landing() {
               <p className="title">Security & Privacy</p>
               <p className="text subtitle center">Transparency in Shared Financial Responsibilities</p>
               <p className="text">
-                <b>Custom Sharing: </b> Keep control over what co-parents see by selecting the &#34;share with&#34; checkbox for events,
-                calendarEvents , and important information.
+                <b>Custom Sharing: </b> Keep control over what co-parents see by selecting only the co-parents you want to share with. This includes
+                calendar events, expenses and other important information.
               </p>
               <p className="text">
                 <b>Enhanced Protection: </b> Enjoy peace of mind with SMS code verification for password recovery, and secure registration for both
@@ -845,11 +836,11 @@ export default function Landing() {
                 reminders.
               </p>
               <p className="text">
-                <b>Expense Tracker:</b> Stay on top of shared costs by uploading receipts, tracking calendarEvents with live due date countdowns, and
+                <b>Expense Tracker:</b> Stay on top of shared costs by uploading receipts, tracking expenses with live due date countdowns, and
                 sending reminders to the responsible co-parent.
               </p>
             </div>
-            <div className="text-wrapper text-only  box">
+            <div className="text-wrapper text-only box">
               <AiTwotoneMessage />
               <p className="title">Streamlined Communication</p>
               <p className="text">

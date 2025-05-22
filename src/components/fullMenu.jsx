@@ -23,7 +23,7 @@ import Overlay from './shared/overlay'
 export default function FullMenu() {
   const {state, setState} = useContext(globalState)
   const {currentScreen, menuIsOpen} = state
-  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {currentUser} = useCurrentUser()
 
   const handlers = useSwipeable({
     swipeDuration: 300,
@@ -54,10 +54,6 @@ export default function FullMenu() {
       })
   }
 
-  if (currentUserIsLoading) {
-    return null
-  }
-
   return (
     <Overlay show={menuIsOpen}>
       <div className="swipe-bar"></div>
@@ -66,24 +62,13 @@ export default function FullMenu() {
         id="full-menu-wrapper"
         {...handlers}
         className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(menuIsOpen, '.fade-up-wrapper')}`}>
-        <div
-          id="full-menu"
-          style={DomManager.AnimateDelayStyle(1, 0.1)}
-          className={`full-menu-wrapper ${DomManager.Animate.FadeInUp(menuIsOpen, '.full-menu-wrapper')}`}>
-          {/*<div id="close-icon-wrapper">*/}
-          {/*  <CgClose*/}
-          {/*    onClick={() => {*/}
-          {/*      setState({...state, menuIsOpen: false})*/}
-          {/*    }}*/}
-          {/*    id={'close-icon'}*/}
-          {/*  />*/}
-          {/*</div>*/}
+        <div id="full-menu" className={`full-menu-wrapper ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
           <div id="menu-sections">
             {/* SHARING */}
-            <p className="menu-title sharing">Sharing</p>
-            <div
-              style={DomManager.AnimateDelayStyle(1, 0.2)}
-              className={`menu-items sharing ${DomManager.Animate.FadeInUp(menuIsOpen, '.menu-items')}`}>
+            <p style={DomManager.AnimateDelayStyle(1, 0.3)} className={`menu-title sharing ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
+              Sharing
+            </p>
+            <div style={DomManager.AnimateDelayStyle(1, 0.3)} className={`menu-items sharing ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
               {/* CALENDAR */}
               <div
                 className={`menu-item calendar ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
@@ -128,10 +113,12 @@ export default function FullMenu() {
             </div>
 
             {/* INFORMATION DATABASE */}
-            <p className="menu-title info-storage">Information Database</p>
+            <p style={DomManager.AnimateDelayStyle(2, 0.3)} className={`menu-title info-storage ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
+              Information Database
+            </p>
             <div
-              style={DomManager.AnimateDelayStyle(1, 0.35)}
-              className={`menu-items info-storage ${DomManager.Animate.FadeInUp(menuIsOpen, '.menu-items')}`}>
+              style={DomManager.AnimateDelayStyle(2, 0.3)}
+              className={`menu-items info-storage ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
               {/* CONTACTS */}
               <div
                 className={`menu-item contacts ${currentScreen === ScreenNames.contacts ? 'active' : ''}`}
@@ -202,10 +189,12 @@ export default function FullMenu() {
             {/* CO-PARENTING */}
             {currentUser?.accountType === 'parent' && (
               <>
-                <p className="menu-title coparenting">Co-Parenting</p>
+                <p style={DomManager.AnimateDelayStyle(3, 0.3)} className={`menu-title coparenting ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
+                  Co-Parenting
+                </p>
                 <div
-                  style={DomManager.AnimateDelayStyle(1, 0.45)}
-                  className={`menu-items coparenting ${DomManager.Animate.FadeInUp(menuIsOpen, '.menu-items')}`}>
+                  style={DomManager.AnimateDelayStyle(3, 0.3)}
+                  className={`menu-items coparenting ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
                   {/* TRANSFER CHANGE */}
                   <div
                     className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
@@ -249,10 +238,14 @@ export default function FullMenu() {
               </>
             )}
             {/* PROFILE SETTINGS & SUPPORT */}
-            <p className="menu-title profile-settings-support">Settings & Support</p>
+            <p
+              style={DomManager.AnimateDelayStyle(4, 0.3)}
+              className={`menu-title profile-settings-support ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
+              Settings & Support
+            </p>
             <div
-              style={DomManager.AnimateDelayStyle(1, 0.55)}
-              className={`menu-items profile-settings-support ${DomManager.Animate.FadeInUp(menuIsOpen, '.menu-items')}`}>
+              style={DomManager.AnimateDelayStyle(4, 0.3)}
+              className={`menu-items profile-settings-support ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
               {/* PROFILE */}
               <div
                 className={`menu-item profile ${currentScreen === ScreenNames.profile ? 'active' : ''}`}

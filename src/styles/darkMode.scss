@@ -6,7 +6,7 @@
   #memories-container {
     &.dark {
       .MuiAccordionDetails-root {
-        background: $bootstrapYellowColor;
+        background: $bootstrapYellow;
         border: 0;
         * {
           color: $bootstrapYellowBg !important;
@@ -51,7 +51,7 @@
             }
           }
           &.red {
-            background: $bootstrapRedColor;
+            background: $bootstrapRed;
             * {
               color: white;
             }
@@ -136,7 +136,7 @@
         &.default {
           &.green {
             background: transparent;
-            color: $darkGreenButtonText;
+            color: $secondaryGreen;
             border: 1px solid $darkGreen;
           }
         }
@@ -430,7 +430,7 @@
         }
 
         &.active {
-          background: $bootstrapGreenColor;
+          background: $bootstrapGreen;
 
           p {
             color: white;
@@ -1297,15 +1297,15 @@
   #chats-container {
     &.dark {
       .MuiAccordionDetails-root {
-        background: $bootstrapGreenColor !important;
+        background: $bootstrapGreen !important;
 
         p,
         button {
-          color: $bootstrapBgGreen !important;
+          color: $bootstrapGreenBg !important;
         }
 
         button {
-          border: 1px solid $bootstrapBgGreen !important;
+          border: 1px solid $bootstrapGreenBg !important;
         }
       }
     }

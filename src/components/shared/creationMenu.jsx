@@ -66,11 +66,12 @@ const CreationMenu = () => {
           style={DomManager.AnimateDelayStyle(1, 0.1)}
           className={`${DomManager.Animate.FadeInUp(showCreationMenu, '.fade-up-wrapper')} bottom-menu-wrapper creation-menu fade-up-wrapper`}>
           <div className="action-items centered">
+            <p className="slide-up-header">Create Resource</p>
             {/* CALENDAR */}
             <div
               key={Manager.GetUid()}
               style={DomManager.AnimateDelayStyle(1)}
-              className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
+              className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
               onClick={() => {
                 setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.calendar, dateToEdit: dateToEdit})
               }}>
@@ -88,7 +89,7 @@ const CreationMenu = () => {
                 <div
                   key={Manager.GetUid()}
                   style={DomManager.AnimateDelayStyle(2)}
-                  className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
+                  className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
                   onClick={() => {
                     setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.expense})
                   }}>
@@ -104,7 +105,7 @@ const CreationMenu = () => {
                 <div
                   key={Manager.GetUid()}
                   style={DomManager.AnimateDelayStyle(2.2)}
-                  className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
+                  className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
                   onClick={() => {
                     setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.transferRequest})
                   }}>
@@ -120,7 +121,7 @@ const CreationMenu = () => {
                 <div
                   key={Manager.GetUid()}
                   style={DomManager.AnimateDelayStyle(2.4)}
-                  className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
+                  className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
                   onClick={() => {
                     setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.swapRequest})
                   }}>
@@ -138,7 +139,7 @@ const CreationMenu = () => {
             <div
               key={Manager.GetUid()}
               style={DomManager.AnimateDelayStyle(2.6)}
-              className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
+              className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
               onClick={() => {
                 setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.memories})
               }}>
@@ -157,7 +158,7 @@ const CreationMenu = () => {
                   <div
                     key={Manager.GetUid()}
                     style={DomManager.AnimateDelayStyle(2.8)}
-                    className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
+                    className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
                     onClick={() => {
                       setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.chat})
                     }}>
@@ -174,7 +175,7 @@ const CreationMenu = () => {
                 <div
                   key={Manager.GetUid()}
                   style={DomManager.AnimateDelayStyle(3)}
-                  className={`action-item ${DomManager.Animate.FadeInRight(showCreationMenu, '.action-item')}`}
+                  className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
                   onClick={() => {
                     setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.documents})
                   }}>

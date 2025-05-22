@@ -92,7 +92,7 @@ export default function ChatRow({chat, index}) {
       }}
       data-thread-id={chat?.id}
       style={DomManager.AnimateDelayStyle(index)}
-      className={`chats row chats-animation-row ${DomManager.Animate.FadeInRight(['.'], '.chats-animation-row')}`}>
+      className={`chats row chats-animation-row ${DomManager.Animate.FadeInUp(chat?.id)}`}>
       {/* THREAD ITEM */}
       <div className={`flex thread-item wrap`}>
         {/* COPARENT NAME */}

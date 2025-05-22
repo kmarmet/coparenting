@@ -1,11 +1,9 @@
 // Path: src\components\shared\modal.jsx
 import Manager from '/src/managers/manager.js'
 import React, {useContext, useEffect} from 'react'
-import {IoClose} from 'react-icons/io5'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager'
 import StringManager from '../../managers/stringManager'
-
 import Overlay from './overlay'
 
 export default function Modal({
@@ -130,25 +128,26 @@ export default function Modal({
             </div>
           </div>
         </div>
-
-        <div className={`flex buttons`}>
+        <div className={`flex card-buttons`}>
           {hasSubmitButton && (
             <button className={`button card-button submit`} onClick={onSubmit}>
               {submitText}
             </button>
           )}
+
           {hasDelete && (
             <button className={'delete-button default card-button'} onClick={onDelete}>
               {deleteButtonText}
             </button>
           )}
-          <IoClose
-            id={'close-button'}
+          <button
+            className="button card-button close"
             onClick={() => {
               onClose()
               HideCard()
-            }}
-          />
+            }}>
+            Cancel
+          </button>
         </div>
       </div>
     </Overlay>

@@ -850,19 +850,19 @@
 
               &:nth-child(2) {
                 background: #3b964a;
-                background: $bootstrapBgGreen;
+                background: $bootstrapGreenBg;
 
                 p,
                 li,
                 .box-svg {
-                  color: $bootstrapGreenColor;
+                  color: $bootstrapGreen;
                 }
                 .feature-title-wrapper {
                   .feature-title {
-                    color: $bootstrapGreenColor;
+                    color: $bootstrapGreen;
                   }
                   svg {
-                    background: $bootstrapGreenColor;
+                    background: $bootstrapGreen;
                   }
                 }
               }

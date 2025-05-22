@@ -88,7 +88,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       const shareWithWithoutCurrentUser = event.shareWith.filter((x) => x !== currentUser?.key)
       event.shareWith = shareWithWithoutCurrentUser
       const updateIndex = DB.GetTableIndexById(calendarEvents, updatedEvent?.current?.id)
+
+      if (!Manager.IsValid(updateIndex)) {
+        return false
+      }
+
       await CalendarManager.UpdateEvent(updatedEvent?.current?.ownerKey, updateIndex, event)
+
       // Add cloned event for currentUser
       await CalendarManager.addCalendarEvent(currentUser, _updatedEvent)
       UpdateManager.SendToShareWith(
@@ -104,31 +110,21 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   // SUBMIT
   const Submit = async () => {
     try {
-      // Set new event values
       const updated = {...event}
 
-      // Required
       updated.isDateRange = eventIsDateRange
       updated.isCloned = eventIsCloned
       updated.isRecurring = eventIsRecurring
-
-      if (Manager.IsValid(updatedEvent?.current?.startTime) || Manager.IsValid(updatedEvent?.current?.endTime)) {
-        updated.startTime = moment(updatedEvent?.current?.startTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
-        updated.endTime = moment(updatedEvent?.current?.endTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
-      }
-
-      // Not Required
       updated.ownerKey = currentUser?.key
       updated.createdBy = currentUser?.name
       updated.directionsLink = Manager.GetDirectionsLink(updatedEvent?.current?.address)
+      updated.websiteUrl = updatedEvent?.current?.websiteUrl
+      updated.fromVisitationSchedule = isVisitation
 
       // Add birthday cake
       if (Manager.Contains(updatedEvent?.current?.title, 'birthday')) {
         updated.title += ' 🎂'
       }
-
-      updated.websiteUrl = updatedEvent?.current?.websiteUrl
-      updated.fromVisitationSchedule = isVisitation
 
       if (Manager.IsValid(updated)) {
         if (!Manager.IsValid(updatedEvent?.current?.title)) {
@@ -351,7 +347,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         }}
         title={StringManager.formatEventTitle(StringManager.uppercaseFirstLetterOfAllWords(updatedEvent?.current?.title))}
         showCard={showCard}
-        deleteButtonText="Delete Event"
+        deleteButtonText="Delete"
         className="edit-calendar-event"
         viewSelector={
           <ViewSelector

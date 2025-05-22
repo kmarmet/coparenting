@@ -5,7 +5,7 @@ import DomManager from '../../managers/domManager'
 import Overlay from './overlay'
 import Spacer from './spacer'
 
-const ScreenActionsMenu = ({children, centeredActionItem}) => {
+const ScreenActionsMenu = ({children, centeredActionItem, title = 'Parent'}) => {
   const {state, setState} = useContext(globalState)
   const {theme, showScreenActions} = state
 
@@ -44,7 +44,8 @@ const ScreenActionsMenu = ({children, centeredActionItem}) => {
           style={DomManager.AnimateDelayStyle(1, 0.1)}
           className={`bottom-menu-wrapper screen-actions ${DomManager.Animate.FadeInUp(showScreenActions, '.fade-up-wrapper')}`}>
           <div className={centeredActionItem ? 'centered action-items' : 'action-items'}>
-            <Spacer height={4} />
+            <p className="slide-up-header">{title}</p>
+            <Spacer height={10} />
             {children}
           </div>
         </div>

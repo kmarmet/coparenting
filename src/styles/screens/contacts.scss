@@ -61,7 +61,7 @@
         svg {
           margin-left: auto;
           transform: scale(0.55);
-          color: $darkerGrey;
+          color: $darkGrey;
         }
 
         .contact-card-pic {
@@ -76,7 +76,7 @@
 
           &.no-pic {
             border: 0;
-            background: $accent;
+            @include mainColorsGradient;
 
             span {
               font-weight: $fwMediumBold;

@@ -361,9 +361,9 @@ const DB_UserScoped = {
       await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/sharedDataUsers`), toAdd)
     }
   },
-  UpdateCoparent: async (currentUserKey, coparentKey, prop, value) => {
+  UpdateCoparent: async (currentUserKey, coparentIndex, prop, value) => {
     const dbRef = ref(getDatabase())
-    await set(child(dbRef, `${DB.tables.users}/${currentUserKey}/coparents/${coparentKey}/${StringManager.formatDbProp(prop)}`), value)
+    await set(child(dbRef, `${DB.tables.users}/${currentUserKey}/coparents/${coparentIndex}/${StringManager.formatDbProp(prop)}`), value)
   },
   UpdateParent: async (currentUserKey, parentIndex, prop, value) => {
     const dbRef = ref(getDatabase())
@@ -373,7 +373,6 @@ const DB_UserScoped = {
     const dbRef = ref(getDatabase())
     await set(child(dbRef, `${DB.tables.users}/${keyOrUid}/${propPath}`), value)
   },
-
   updateByPath: async (path, newValue) => {
     const dbRef = ref(getDatabase())
     await set(child(dbRef, path), newValue)

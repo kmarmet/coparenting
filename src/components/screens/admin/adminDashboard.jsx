@@ -5,17 +5,22 @@ import DateManager from '/src/managers/dateManager'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
+import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import JSONPretty from 'react-json-pretty'
 import JSONPrettyMon from 'react-json-pretty/dist/monikai'
 import {useLongPress} from 'use-long-press'
+import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
+import useAppUpdates from '../../../hooks/useAppUpdates'
 import useCalendarEvents from '../../../hooks/useCalendarEvents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
+import Manager from '../../../managers/manager'
 import SmsManager from '../../../managers/smsManager'
 import StringManager from '../../../managers/stringManager'
+import AppUpdate from '../../../models/appUpdate'
 import InputWrapper from '../../shared/inputWrapper'
 import Spacer from '../../shared/spacer'
 
@@ -32,9 +37,12 @@ export default function AdminDashboard() {
   const [textBalance, setTextBalance] = useState(0)
   const [recordPropToCheck, setRecordPropToCheck] = useState('User Email')
   const [recordsAsJson, setRecordsAsJson] = useState(false)
+  const [applicationVersion, setApplicationVersion] = useState(0)
   const {currentUser} = useCurrentUser()
   const {users} = useUsers()
   const {calendarEvents} = useCalendarEvents()
+  const {appUpdates} = useAppUpdates()
+
   const bind = useLongPress((element) => {
     navigator.clipboard.writeText(element.target.textContent)
     setState({...state, successAlertMessage: 'Copied to clipboard'})
@@ -79,11 +87,42 @@ export default function AdminDashboard() {
     })
   }, [])
 
+  const UpdateAppVersion = async () => {
+    let latestVersion = appUpdates[appUpdates?.length - 1]?.currentVersion
+    const newVersion = latestVersion + 1
+    await DB.Add(
+      `${DB.tables.appUpdates}`,
+      appUpdates,
+      new AppUpdate({currentVersion: newVersion, timestamp: moment().format(DatetimeFormats.dateForDb)})
+    )
+    setState({...state, successAlertMessage: `New Version Updated`})
+  }
+
+  useEffect(() => {
+    if (Manager.IsValid(appUpdates)) {
+      const latestVersion = appUpdates[appUpdates.length - 1]
+      setApplicationVersion(latestVersion.currentVersion)
+    }
+  }, [appUpdates])
+
   return (
     <div id="admin-dashboard-wrapper" className="page-container form">
-      <p className="screen-title">Admin</p>
+      <img src="https://i.redd.it/16o63vp3mpg91.jpg" alt="" />
       <Spacer height={10} />
-      <div className="flex grid gap-10">
+
+      {/* TOOLBOXES */}
+      <div className="flex grid gap-10 screen-content">
+        {/* UPDATE */}
+        <div className="tool-box">
+          <p className="box-title">App Updates</p>
+          <p className="center-text">Current Version: {applicationVersion}</p>
+          <div className="buttons">
+            <button className="button" onClick={UpdateAppVersion}>
+              Update Version
+            </button>
+          </div>
+        </div>
+
         {/* Get Database Record */}
         <div className="tool-box get-records">
           <p className="box-title">Get Records</p>

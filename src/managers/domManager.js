@@ -12,6 +12,11 @@ import CalMapper from "../mappers/calMapper";
 import DateManager from "./dateManager";
 
 DomManager = {
+  AnimateDelayStyle: function(index, delay = .2) {
+    return {
+      animationDelay: `${index * delay}s`
+    };
+  },
   Animate: {
     RemoveAnimationClasses: function(classOfElementsToAnimate, classToRemove) {
       var element, i, len, results;
@@ -71,7 +76,7 @@ DomManager = {
             [`animate__${fastSlowOrDefault}`]: ''
           }}`;
         } else {
-          return 'animate__animated animate__fadeOutDown';
+          return 'animate__animated animate__fadeOutUp';
         }
       }
       if (Manager.IsValid(variableToCheck)) {
@@ -79,7 +84,7 @@ DomManager = {
           [`animate__${fastSlowOrDefault}`]: ''
         }}`;
       } else {
-        return 'animate__animated animate__fadeOutDown';
+        return 'animate__animated animate__fadeOutUp';
       }
     },
     ZoomIn: function(variableToCheck, fastSlowOrDefault = "") {
@@ -126,12 +131,12 @@ DomManager = {
       } else {
         return 'animate__animated animate__fadeOut';
       }
+    },
+    AnimateDelayStyle: function(index, delay = .2) {
+      return {
+        animationDelay: `${index * delay}s`
+      };
     }
-  },
-  AnimateDelayStyle: function(index, delay = .2) {
-    return {
-      animationDelay: `${index * delay}s`
-    };
   },
   AnimateClasses: {
     names: {

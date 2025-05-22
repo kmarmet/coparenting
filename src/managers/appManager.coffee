@@ -3,6 +3,7 @@ import DB from "../database/DB"
 import moment from "moment"
 import { child, getDatabase, ref, set } from 'firebase/database'
 import DateFormats from "../constants/datetimeFormats"
+import DatetimeFormats from "../constants/datetimeFormats"
 import DB_UserScoped from "../database/db_userScoped"
 import CalendarManager from "./calendarManager"
 import FirebaseStorage from "../database/firebaseStorage"
@@ -15,6 +16,39 @@ export default AppManager =
     iOS: 'iOS',
     Android: 'Android'
   },
+
+  RefreshIfNecessary: () ->
+    # Refresh check
+    lastRefresh = localStorage.getItem 'lastAutoRefresh'
+
+    # Last refresh exists
+    if Manager.IsValid lastRefresh
+      msSinceLastRefresh = moment(lastRefresh, DatetimeFormats.fullDatetime).diff() ? 0
+      hoursSinceRefresh = Math.abs Math.ceil msSinceLastRefresh / (1000 * 60 * 60)
+
+      # If it has been more than 3 hours since the last refresh -> reload the page
+      if hoursSinceRefresh > 3
+        localStorage.setItem 'lastAutoRefresh', moment().format(DatetimeFormats.fullDatetime)
+        window.location.reload()
+        return false
+
+    # Last refresh does not exist -> set one
+    else
+      localStorage.setItem 'lastAutoRefresh', moment().format(DatetimeFormats.fullDatetime)
+
+  UpdateOrRefreshIfNecessary: (currentUser, currentVersion) ->
+    AppManager.RefreshIfNecessary();
+
+    if Manager.IsValid currentUser
+      if Manager.IsValid(currentVersion) && currentVersion != currentUser?.app?.lastVersionSeen
+        await DB_UserScoped.updateByPath("#{DB.tables.users}/#{currentUser?.key}/app/lastVersionSeen", currentVersion)
+        setTimeout () ->
+          window.location.reload()
+        , 1000
+
+    else
+      await DB_UserScoped.updateByPath("#{DB.tables.users}/#{currentUser?.key}/app/lastVersionSeen", currentVersion)
+
   GetOS: () ->
     userAgent = window.navigator.userAgent
     platform = window.navigator.platform
@@ -129,8 +163,8 @@ export default AppManager =
 
   getAccountType: (currentUser) =>
     if Manager.IsValid(currentUser)
-      if Manager.IsValid(currentUser.accountType)
-        if currentUser.accountType == 'parent'
+      if Manager.IsValid(currentUser?.accountType)
+        if currentUser?.accountType == 'parent'
           return 'parent'
         else
           return 'child'

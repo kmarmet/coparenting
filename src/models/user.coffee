@@ -16,6 +16,9 @@ class User
     @parentType = ''
     @accountType = ''
     @homeAddress = ''
+    @app = {
+      lastVersionSeen: 1
+    }
     @location = {
       country: ''
       city: ''

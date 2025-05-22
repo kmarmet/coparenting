@@ -33,6 +33,7 @@
         <item url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
         <item url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
         <item url="file://$PROJECT_DIR$/src/models/activityCategory.js" />
+        <item url="file://$PROJECT_DIR$/src/models/appUpdate.js" />
         <item url="file://$PROJECT_DIR$/src/models/calendarEvent.js" />
         <item url="file://$PROJECT_DIR$/src/models/chat/chatBookmark.js" />
         <item url="file://$PROJECT_DIR$/src/models/chat/chatMessage.js" />
@@ -96,6 +97,7 @@
       <root url="file://$PROJECT_DIR$/src/mappers/calMapper.js" />
       <root url="file://$PROJECT_DIR$/src/mappers/visitationMapper.js" />
       <root url="file://$PROJECT_DIR$/src/models/activityCategory.js" />
+      <root url="file://$PROJECT_DIR$/src/models/appUpdate.js" />
       <root url="file://$PROJECT_DIR$/src/models/calendarEvent.js" />
       <root url="file://$PROJECT_DIR$/src/models/chat/chatBookmark.js" />
       <root url="file://$PROJECT_DIR$/src/models/chat/chatMessage.js" />

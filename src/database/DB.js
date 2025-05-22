@@ -23,7 +23,7 @@ const DB = {
     chatMessages: 'chatMessages',
     holidayEvents: 'holidayEvents',
     documentHeaders: 'documentHeaders',
-    mapper: 'mapper',
+    appUpdates: 'appUpdates',
   },
   find: async (arrayOrTable, matchArray, isFromDb = true, filterFunction = null) => {
     if (filterFunction) {

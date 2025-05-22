@@ -1,6 +1,6 @@
 @import '../palette';
 @import '../variables';
-
+@import '../mixins';
 #external-overrides {
   #admin-dashboard-wrapper {
     .buttons {
@@ -13,13 +13,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: $accent;
         color: white;
         border-radius: $borderRadius;
         font-size: 16px;
         text-align: center;
         border: 0;
+        @include mainColorsGradient;
         width: calc(100% / 3);
+        min-width: max-content;
 
         &.red {
           background: $red;
@@ -59,6 +60,12 @@
         margin-bottom: 15px;
         height: 100%;
         border: 1px solid $lightBorderColor;
+        background: white;
+
+        input {
+          border-bottom: 1px solid $lightBorderColor !important;
+          padding: 5px !important;
+        }
 
         &.get-records {
         }

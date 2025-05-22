@@ -374,7 +374,7 @@ const Chats = () => {
                 ToggleBookmark(isBookmarked).then((r) => r)
                 setShowLongpressMenu(false)
               }}>
-              {Manager.IsValid(bookmarks?.find((x) => x?.id === activeMessage?.id)) ? 'Remove' : 'Add'}
+              {Manager.IsValid(bookmarks?.find((x) => x?.id === activeMessage?.id)) ? 'Remove Bookmark' : 'Add Bookmark'}
               {Manager.IsValid(bookmarks?.find((x) => x?.id === activeMessage?.id)) ? <BsBookmarkDashFill /> : <BsBookmarkStarFill />}
             </button>
 
@@ -390,14 +390,14 @@ const Chats = () => {
         )}
         {/* TOP BAR */}
         {!showSearchInput && DomManager.isMobile() && (
-          <div className="flex top-buttons">
-            <div
-              className="flex"
-              id="user-info"
-              onClick={() => {
-                setState({...state, currentScreen: ScreenNames.chats})
-              }}>
-              <IoChevronBack />
+          <div className="top-buttons">
+            <div className="flex" id="user-info">
+              <IoChevronBack
+                className="back-arrow"
+                onClick={() => {
+                  setState({...state, currentScreen: ScreenNames.chats})
+                }}
+              />
               <p id="user-name">{StringManager.GetFirstNameOnly(messageRecipient?.name)}</p>
             </div>
             <div id="right-side" className="flex">

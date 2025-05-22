@@ -14,7 +14,7 @@ import StringManager from '/src/managers/stringManager'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiDotsHorizontal} from 'react-icons/hi'
-import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
+import {IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import {PiCameraRotateFill, PiListChecksFill} from 'react-icons/pi'
 import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
@@ -107,7 +107,7 @@ export default function Children() {
       {/* NEW CHILD  */}
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
 
-      <ScreenActionsMenu>
+      <ScreenActionsMenu title="Manage Children">
         {/* ADD CHILD */}
         <div
           className="action-item"
@@ -210,10 +210,6 @@ export default function Children() {
             </div>
           </>
         )}
-
-        <div id="close-icon-wrapper">
-          <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
-        </div>
       </ScreenActionsMenu>
 
       {/* PAGE CONTAINER */}

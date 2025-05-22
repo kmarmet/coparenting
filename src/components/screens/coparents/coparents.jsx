@@ -1,19 +1,19 @@
 // Path: src\components\screens\parents\parents.jsx
 import NavBar from '/src/components/navBar.jsx'
+
 import InputWrapper from '/src/components/shared/inputWrapper'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import DB_UserScoped from '/src/database/db_userScoped'
 import AlertManager from '/src/managers/alertManager'
 import Manager from '/src/managers/manager'
 import StringManager from '/src/managers/stringManager'
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import {BsFillSendFill} from 'react-icons/bs'
 import {CgClose} from 'react-icons/cg'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiDotsHorizontal} from 'react-icons/hi'
-import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
+import {IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import InputTypes from '../../../constants/inputTypes'
-import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
 import useCoparents from '../../../hooks/useCoparents'
@@ -31,16 +31,16 @@ import NewCoparentForm from './newCoparentForm'
 export default function Coparents() {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
-  const {currentUser, currentUserIsLoading} = useCurrentUser()
-  const {coparents, coparentsAreLoading} = useCoparents()
+  const {currentUser} = useCurrentUser()
+  const {coparents} = useCoparents()
 
   // State
   const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
   const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
   const [activeCoparent, setActiveCoparent] = useState(coparents?.[0])
   const [showInvitationForm, setShowInvitationForm] = useState(false)
-  const [invitedCoparentName, setInvitedCoparentName] = useState('')
-  const [invitedCoparentEmail, setInvitedCoparentEmail] = useState('')
+
+  const invite = useRef({name: '', email: ''})
 
   const DeleteProp = async (prop) => {
     const coparentIndex = DB.GetTableIndexByUserKey(coparents, activeCoparent?.userKey)
@@ -98,7 +98,7 @@ export default function Coparents() {
       <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
 
       {/*  SCREEN ACTIONS */}
-      <ScreenActionsMenu>
+      <ScreenActionsMenu title="Manage Co-Parents">
         {/* ADD COPARENT */}
         <div
           className="action-item"
@@ -181,13 +181,10 @@ export default function Coparents() {
               <BsFillSendFill className={'paper-airplane'} />
             </div>
             <p>
-              Invite Another Co-Parent{' '}
+              Invite Another Co-Parent
               <span className="subtitle">Send invitation to a co-parent you would like to share essential information with</span>
             </p>
           </div>
-        </div>
-        <div id="close-icon-wrapper">
-          <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
         </div>
       </ScreenActionsMenu>
 
@@ -199,11 +196,11 @@ export default function Coparents() {
         onClose={() => setShowInvitationForm(false)}
         showCard={showInvitationForm}
         onSubmit={() => {
-          if (!Manager.IsValid(invitedCoparentEmail) || !Manager.IsValid(invitedCoparentName)) {
+          if (!Manager.IsValid(invite.current.name) || !Manager.IsValid(invite.current.email)) {
             AlertManager.throwError('Please fill out all fields')
             return false
           }
-          EmailManager.SendEmailToUser(EmailManager.Templates.coparentInvitation, '', invitedCoparentEmail, invitedCoparentName)
+          EmailManager.SendEmailToUser(EmailManager.Templates.coparentInvitation, '', invite.current.name, invite.current.email)
           AlertManager.successAlert('Invitation Sent!')
           setShowInvitationForm(false)
         }}
@@ -213,25 +210,22 @@ export default function Coparents() {
           inputType={InputTypes.text}
           labelText={'Co-Parent Name'}
           required={true}
-          onChange={(e) => setInvitedCoparentName(e.target.value)}
+          onChange={(e) => (invite.current.name = e.target.value)}
         />
         <InputWrapper
           inputType={InputTypes.text}
           labelText={'Co-Parent Email Address'}
           required={true}
-          onChange={(e) => setInvitedCoparentEmail(e.target.value)}
+          onChange={(e) => (invite.current.email = e.target.value)}
         />
       </Modal>
 
       {/* COPARENTS CONTAINER */}
       <div id="coparents-container" className={`${theme} page-container parents-wrapper`}>
-        <ScreenHeader
-          screenDescription="Maintain accessible records of important information regarding your co-parent."
-          title={'Co-Parents'}
-          screenName={ScreenNames.coparents}
-        />
-        <div className="screen-content">
-          <div style={DomManager.AnimateDelayStyle(1)} className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(true, '.fade-up-wrapper')}`}>
+        <ScreenHeader title={'Co-Parents'} screenDescription=" Maintain accessible records of important information regarding your co-parent." />
+        <Spacer height={10} />
+        <div style={DomManager.AnimateDelayStyle(1)} className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(true, '.fade-up-wrapper')}`}>
+          <div className="screen-content">
             {/* COPARENT ICONS CONTAINER */}
             <div id="coparent-container">
               {Manager.IsValid(coparents) &&
@@ -249,7 +243,7 @@ export default function Coparents() {
             </div>
 
             {/* COPARENT INFO */}
-            <div id="coparent-info" key={activeCoparent?.userKey}>
+            <div id="coparent-info" key={activeCoparent?.current?.userKey}>
               <p id="coparent-name-primary">{StringManager.GetFirstNameAndLastInitial(activeCoparent?.name)}</p>
               <p id="coparent-type-primary"> {activeCoparent?.parentType}</p>
               {/* ITERATE COPARENT INFO */}
@@ -289,7 +283,7 @@ export default function Coparents() {
                               inputType={InputTypes.text}
                               labelText={infoLabel}
                             />
-                            <CgClose className="close-x fs-24" onClick={() => DeleteProp(infoLabel)} />
+                            <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
                           </div>
                           <Spacer height={5} />
                         </>
@@ -310,7 +304,7 @@ export default function Coparents() {
           style={DomManager.AnimateDelayStyle(1, 0.06)}
           onClick={() => setState({...state, showScreenActions: true})}
           className={`menu-item ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
-          <HiDotsHorizontal className={'screen-actions-menu-icon'} />
+          <HiDotsHorizontal className={'screen-actions-menu-icon more'} />
           <p>More</p>
         </div>
       </NavBar>

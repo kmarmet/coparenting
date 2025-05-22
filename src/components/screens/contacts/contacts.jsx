@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react'
-import {GrEdit} from 'react-icons/gr'
+import {FaUserEdit} from 'react-icons/fa'
 import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoClose, IoPersonAdd} from 'react-icons/io5'
 import InputTypes from '../../../constants/inputTypes'
@@ -494,7 +494,7 @@ const Contacts = () => {
                       <div className="header">
                         <div
                           className={`contact-card-pic ${!Manager.IsValid(contact?.profilePic) ? 'no-pic' : ''}`}
-                          style={{backgroundImage: `url(${contact?.profilePic})`}}>
+                          style={{backgroundImage: Manager.IsValid(contact?.general?.profilePic) ? `url(${contact?.profilePic})` : ''}}>
                           {!Manager.IsValid(contact?.profilePic) && <span>{StringManager.GetFirstNameOnly(contact?.name)[0]}</span>}
                         </div>
                         <p className="contact-card-name">
@@ -502,7 +502,7 @@ const Contacts = () => {
                           {!users?.map((x) => x?.key).includes(contact?.userKey) && <span className="no-account">no account - invite them now</span>}
                         </p>
 
-                        <GrEdit />
+                        <FaUserEdit />
                       </div>
                     </div>
                   )
@@ -531,7 +531,7 @@ const Contacts = () => {
                       <div className="header">
                         <div
                           className={`contact-card-pic ${!Manager.IsValid(contact?.general?.profilePic) ? 'no-pic' : ''}`}
-                          style={{backgroundImage: `url(${contact?.general?.profilePic})`}}>
+                          style={{backgroundImage: Manager.IsValid(contact?.general?.profilePic) ? `url(${contact?.general?.profilePic})` : ''}}>
                           {!Manager.IsValid(contact?.general?.profilePic) && (
                             <span>{StringManager.GetFirstNameOnly(contact?.general?.name)[0]} </span>
                           )}
@@ -541,7 +541,7 @@ const Contacts = () => {
                           {!users?.map((x) => x?.key).includes(contact?.userKey) && <span className="no-account">no account - invite them now</span>}
                         </p>
 
-                        <GrEdit />
+                        <FaUserEdit />
                       </div>
                     </div>
                   )
@@ -570,7 +570,7 @@ const Contacts = () => {
                       <div className="header">
                         <div
                           className={`contact-card-pic ${!Manager.IsValid(contact?.profilePic) ? 'no-pic' : ''}`}
-                          style={{backgroundImage: `url(${contact?.profilePic})`}}>
+                          style={{backgroundImage: Manager.IsValid(contact?.general?.profilePic) ? `url(${contact?.profilePic})` : ''}}>
                           {' '}
                           {!Manager.IsValid(contact?.profilePic) && <span>{StringManager.GetFirstNameOnly(contact?.name)[0]}</span>}
                         </div>
@@ -579,7 +579,7 @@ const Contacts = () => {
                           {!users?.map((x) => x?.key).includes(contact?.userKey) && <span className="no-account">no account - invite them now</span>}
                         </p>
 
-                        <GrEdit />
+                        <FaUserEdit />
                       </div>
                     </div>
                   )

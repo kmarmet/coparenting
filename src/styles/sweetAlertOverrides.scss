@@ -155,8 +155,8 @@ div {
   &.yellow,
   &.success-alert {
     &.success-alert {
-      background: $bootstrapBgGreen !important;
-      color: $bootstrapGreenColor !important;
+      background: $bootstrapGreenBg !important;
+      color: $bootstrapGreen !important;
 
       .swal2-html-container {
         text-align: center !important;
@@ -170,7 +170,7 @@ div {
       .swal2-html-container {
         border: 1px solid $bootstrapYellowBorder !important;
         background: $bootstrapYellowBg !important;
-        color: $bootstrapYellowColor;
+        color: $bootstrapYellow;
         padding: 15px;
         border-radius: $borderRadius;
       }
@@ -179,7 +179,7 @@ div {
         .swal2-title {
           border: 1px solid $bootstrapYellowBorder !important;
           background: $bootstrapYellowBg !important;
-          color: $bootstrapYellowColor;
+          color: $bootstrapYellow;
           padding: 15px;
           border-radius: $borderRadius;
         }
@@ -199,7 +199,7 @@ div {
 
     .swal2-confirm {
       //      background: $gold !important;
-      //      color: $bootstrapYellowColor !important;
+      //      color: $bootstrapYellow !important;
     }
     .swal2-deny {
       //      background: $grey !important;

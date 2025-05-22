@@ -9,14 +9,15 @@ import {PiNotificationFill} from 'react-icons/pi'
 import ScreenNames from '../constants/screenNames'
 import globalState from '../context'
 import useCurrentUser from '../hooks/useCurrentUser'
+import useUpdates from '../hooks/useUpdates'
 import DomManager from '../managers/domManager'
 import Manager from '../managers/manager'
-import NotificationBadge from './shared/NotificationBadge'
 
 export default function NavBar({children, navbarClass}) {
   const {state, setState} = useContext(globalState)
   const {currentScreen, menuIsOpen, theme} = state
   const {currentUser} = useCurrentUser()
+  const {updates} = useUpdates()
 
   const changeCurrentScreen = async (screen) => {
     setState({
@@ -88,15 +89,15 @@ export default function NavBar({children, navbarClass}) {
             </div>
           )}
 
-          {/* NOTIFICATIONS */}
+          {/* UPDATES */}
           {currentUser?.accountType === 'parent' && (
             <div
               style={DomManager.AnimateDelayStyle(1, 0.06)}
               onClick={() => changeCurrentScreen(ScreenNames.updates)}
-              className={`${currentScreen === ScreenNames.updates ? 'active menu-item notifications' : 'menu-item notifications'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
-              <PiNotificationFill className={'notifications active'} />
+              className={`${Manager.IsValid(updates) ? 'unread' : ''} ${currentScreen === ScreenNames.updates ? 'active menu-item updates' : 'menu-item updates'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
+              <PiNotificationFill className={'updates active'} />
               <p>Updates</p>
-              <NotificationBadge classes={'navbar'} />
+              {/*<NotificationBadge classes={'navbar'} />*/}
             </div>
           )}
 

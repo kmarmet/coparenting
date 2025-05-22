@@ -26,31 +26,34 @@ const Overlay = ({children, show}) => {
   }, [show])
 
   return (
-    <div
-      id="overlay"
-      className={`overlay-wrapper${show ? ' active' : ''}`}
-      onClick={() => {
-        // const overlay = e.currentTarget
-        // if (Manager.IsValid(overlay) && (overlay?.classList.contains('overlay-wrapper') || overlay?.classList.contains('creation-menu'))) {
-        //   const allFadeElements = overlay?.querySelectorAll('.animate__fadeInUp')
-        //   console.log(overlay)
-        //   if (Manager.IsValid(allFadeElements)) {
-        //     for (let el of allFadeElements) {
-        //       el.classList.remove('animate__fadeInUp')
-        //       el.classList.remove('animate__animated', 'animate__fadeOutDown')
-        //     }
-        //   }
-        //   setState({
-        //     ...state,
-        //     menuIsOpen: false,
-        //     creationFormToShow: null,
-        //     showCreationMenu: false,
-        //     showScreenActions: false,
-        //   })
-        // }
-      }}>
-      {children}
-    </div>
+    <>
+      <div className="overlay-color-bg"></div>
+      <div
+        id="overlay"
+        className={`overlay-wrapper${show ? ' active' : ''}`}
+        onClick={() => {
+          // const overlay = e.currentTarget
+          // if (Manager.IsValid(overlay) && (overlay?.classList.contains('overlay-wrapper') || overlay?.classList.contains('creation-menu'))) {
+          //   const allFadeElements = overlay?.querySelectorAll('.animate__fadeInUp')
+          //   console.log(overlay)
+          //   if (Manager.IsValid(allFadeElements)) {
+          //     for (let el of allFadeElements) {
+          //       el.classList.remove('animate__fadeInUp')
+          //       el.classList.remove('animate__animated', 'animate__fadeOutDown')
+          //     }
+          //   }
+          //   setState({
+          //     ...state,
+          //     menuIsOpen: false,
+          //     creationFormToShow: null,
+          //     showCreationMenu: false,
+          //     showScreenActions: false,
+          //   })
+          // }
+        }}>
+        {children}
+      </div>
+    </>
   )
 }
 

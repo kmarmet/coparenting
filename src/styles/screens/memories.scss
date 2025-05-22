@@ -27,13 +27,13 @@
       padding: 10px !important;
       border: 1px solid $bootstrapYellowBorder;
       p {
-        color: $bootstrapYellowColor !important;
+        color: $bootstrapYellow !important;
         text-align: center;
         font-size: 15px;
 
         b {
           font-weight: $fwBold;
-          color: $bootstrapYellowColor !important;
+          color: $bootstrapYellow !important;
         }
       }
     }
@@ -108,20 +108,20 @@
 
         #download-text,
         #delete-button {
-          color: $bootstrapGreenColor;
+          color: $bootstrapGreen;
           font-size: 12px;
           font-weight: $fwBold;
           line-height: 1;
           margin: 0;
           padding: 8px 10px;
-          background: $bootstrapBgGreen;
+          background: $bootstrapGreenBg;
           border-radius: 6px;
           text-align: center;
           @include hover;
 
           &#delete-button {
-            background: $bootstrapBgRed;
-            color: $bootstrapRedColor;
+            background: $bootstrapRedBg;
+            color: $bootstrapRed;
           }
         }
       }
