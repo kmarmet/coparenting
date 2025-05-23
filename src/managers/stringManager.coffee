@@ -22,6 +22,8 @@ StringManager = {
     return str.substring(0, firstIndex).replace(target, replacement) +
       str.substring(firstIndex)
 
+  ContainsOnlyNumbers: (str) ->
+    return /^\d+$/.test(str)
 
   IsNotAllSameNumber: (str) ->
     unless /^\d+$/.test(str)

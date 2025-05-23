@@ -102,10 +102,15 @@ export default function Help() {
           <Spacer height={10} />
           <div id="feature-request-container" className={`${theme} form`}>
             <div className="form">
-              <InputWrapper labelText={'Feature Name'} required={true} onChange={(e) => setFeatureName(e.target.value)} inputType={InputTypes.text} />
+              <InputWrapper
+                placeholder={'Feature Name'}
+                required={true}
+                onChange={(e) => setFeatureName(e.target.value)}
+                inputType={InputTypes.text}
+              />
               <InputWrapper
                 inputType={InputTypes.textarea}
-                labelText={'Request Details'}
+                placeholder={'Request Details'}
                 required={true}
                 onChange={(e) => setFeatureDescription(e.target.value)}
               />
@@ -130,7 +135,7 @@ export default function Help() {
             <div className="form">
               <InputWrapper
                 inputType={InputTypes.textarea}
-                labelText={'App Feedback'}
+                placeholder={'App Feedback'}
                 required={true}
                 onChange={(e) => setFeedback(e.target.value)}
                 type="text"
@@ -156,7 +161,7 @@ export default function Help() {
             <div className="form">
               <InputWrapper
                 inputType={InputTypes.textarea}
-                labelText={'Describe the issue'}
+                placeholder={'Describe the issue'}
                 required={true}
                 onChange={(e) => setSupportNotes(e.target.value)}
               />

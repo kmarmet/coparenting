@@ -1,8 +1,11 @@
 // Path: src\components\shared\inputWrapper.jsx
 import {MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
-import React, {useContext, useEffect} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {DebounceInput} from 'react-debounce-input'
+import {MdEmail, MdNotes} from 'react-icons/md'
+import {PiArrowBendLeftUpFill, PiLinkSimpleHorizontalBold} from 'react-icons/pi'
+import {RiPhoneFill} from 'react-icons/ri'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context.js'
@@ -10,7 +13,6 @@ import useCurrentUser from '../../hooks/useCurrentUser'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import Label from './label'
-import Spacer from './spacer'
 
 function InputWrapper({
   wrapperClasses = '',
@@ -20,7 +22,6 @@ function InputWrapper({
   onChange,
   defaultValue = null,
   inputClasses = '',
-  hasBottomSpacer = true,
   onKeyUp = (e) => {},
   onDateOrTimeSelection = (e) => {},
   timeViews = ['hours', 'minutes'],
@@ -29,10 +30,13 @@ function InputWrapper({
   dateFormat = DatetimeFormats.readableMonthAndDay,
   inputName = '',
   customDebounceDelay = 1000,
+  errorMessage = '',
 }) {
   const {state, setState} = useContext(globalState)
   const {refreshKey, theme} = state
   const {currentUser} = useCurrentUser()
+  const [error, setError] = useState('')
+
   useEffect(() => {
     DomManager.AddThemeToDatePickers(currentUser)
   }, [refreshKey])
@@ -50,13 +54,60 @@ function InputWrapper({
           const wrapper = e.currentTarget
           wrapper.classList.remove('active')
         }}
-        id="input-wrapper"
-        className={`${wrapperClasses} ${inputType} ${Manager.IsValid(defaultValue) ? 'show-label' : ''}`}>
-        {/* LABEL */}
-        {Manager.IsValid(labelText, true) && (
-          <Label classes={Manager.IsValid(defaultValue) ? 'active' : ''} text={`${labelText}`} required={required} />
+        className={`input-wrapper ${wrapperClasses} ${inputType} ${Manager.IsValid(defaultValue) ? 'show-label' : ''}`}>
+        {/* DATE */}
+        {inputType === InputTypes.date && (
+          <MobileDatePicker
+            showDaysOutsideCurrentMonth={true}
+            label={labelText}
+            onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
+            views={dateViews}
+            name={inputName}
+            class={`${theme} ${inputClasses}`}
+            value={Manager.IsValid(defaultValue) ? moment(defaultValue) : null}
+            key={refreshKey}
+            multiple={true}
+            placeholder={'test'}
+            format={dateFormat}
+            onAccept={onDateOrTimeSelection}
+          />
         )}
 
+        {/* DATE RANGE */}
+        {inputType === InputTypes.dateRange && (
+          <MobileDateRangePicker
+            onAccept={onDateOrTimeSelection}
+            defaultValue={Manager.IsValid(defaultValue) ? moment(defaultValue) : null}
+            slots={{field: SingleInputDateRangeField}}
+            key={refreshKey}
+            onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
+            label={labelText}
+            name="allowedRange"
+          />
+        )}
+
+        {/* TIME */}
+        {inputType === InputTypes.time && (
+          <>
+            <Label text={labelText} classes="time" />
+            <MobileTimePicker
+              slotProps={{
+                actionBar: {
+                  actions: ['clear', 'accept'],
+                },
+              }}
+              name={inputName}
+              views={timeViews}
+              value={Manager.IsValid(defaultValue) ? moment(defaultValue, DatetimeFormats.timeForDb) : null}
+              label={labelText}
+              minutesStep={5}
+              onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
+              key={refreshKey}
+              format={'hh:mma'}
+              onAccept={onDateOrTimeSelection}
+            />
+          </>
+        )}
         {/* TEXT */}
         {inputType === InputTypes.text && (
           <DebounceInput
@@ -65,7 +116,8 @@ function InputWrapper({
             className={`${inputClasses}`}
             onChange={onChange}
             name={inputName}
-            debounceTimeout={customDebounceDelay !== 1000 ? customDebounceDelay : 1000}
+            debounceTimeout={0}
+            // debounceTimeout={customDebounceDelay !== 1000 ? customDebounceDelay : 1000}
             key={refreshKey}
           />
         )}
@@ -87,100 +139,62 @@ function InputWrapper({
 
         {/* PHONE */}
         {inputType === InputTypes.phone && (
-          <input
-            type="tel"
-            id="phone"
-            name={inputName}
-            maxLength={16}
-            placeholder={placeholder}
-            key={refreshKey}
-            pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-            defaultValue={defaultValue}
-            required={required}
-            onChange={onChange}
-          />
-        )}
-
-        {/* DATE */}
-        {inputType === InputTypes.date && (
-          <MobileDatePicker
-            showDaysOutsideCurrentMonth={true}
-            label={labelText}
-            onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
-            views={dateViews}
-            name={inputName}
-            class={`${theme} ${inputClasses}`}
-            value={Manager.IsValid(defaultValue) ? moment(defaultValue) : null}
-            key={refreshKey}
-            multiple={true}
-            format={dateFormat}
-            onAccept={onDateOrTimeSelection}
-          />
-        )}
-
-        {/* DATE RANGE */}
-        {inputType === InputTypes.dateRange && (
-          <MobileDateRangePicker
-            onAccept={onDateOrTimeSelection}
-            defaultValue={Manager.IsValid(defaultValue) ? moment(defaultValue) : null}
-            slots={{field: SingleInputDateRangeField}}
-            key={refreshKey}
-            onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
-            label={labelText}
-            name="allowedRange"
-          />
-        )}
-
-        {/* TIME */}
-        {inputType === InputTypes.time && (
-          <MobileTimePicker
-            slotProps={{
-              actionBar: {
-                actions: ['clear', 'accept'],
-              },
-            }}
-            name={inputName}
-            views={timeViews}
-            value={Manager.IsValid(defaultValue) ? moment(defaultValue, DatetimeFormats.timeForDb) : null}
-            label={labelText}
-            minutesStep={5}
-            onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
-            key={refreshKey}
-            format={DatetimeFormats.timeForDb}
-            onAccept={onDateOrTimeSelection}
-          />
+          <>
+            <RiPhoneFill className={'input-icon phone'} />
+            <input
+              type="tel"
+              id="phone"
+              name={inputName}
+              maxLength={16}
+              className={`${inputClasses} with-icon`}
+              placeholder={placeholder}
+              key={refreshKey}
+              pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+              defaultValue={defaultValue}
+              required={required}
+              onChange={(e) => {
+                let value = e.target.value
+                e.target.value = value.replace(/[^0-9+]/g, '')
+                onChange(e)
+              }}
+            />
+          </>
         )}
 
         {/* URL */}
         {inputType === InputTypes.url && (
-          <input
-            type="url"
-            id="url"
-            placeholder={placeholder}
-            onChange={(e) => {
-              onChange(e)
-            }}
-            name={inputName}
-            className={inputClasses}
-            defaultValue={defaultValue}
-            key={refreshKey}
-          />
+          <>
+            <PiLinkSimpleHorizontalBold className={'input-icon website'} />
+            <input
+              type="url"
+              id="url"
+              placeholder={placeholder}
+              onChange={(e) => {
+                onChange(e)
+              }}
+              name={inputName}
+              className={`${inputClasses} with-icon`}
+              defaultValue={defaultValue}
+              key={refreshKey}
+            />
+          </>
         )}
 
         {/* EMAIL */}
         {inputType === InputTypes.email && (
-          <input
-            type="email"
-            id="email"
-            placeholder={placeholder}
-            onChange={(e) => {
-              onChange(e)
-            }}
-            name={inputName}
-            className={inputClasses}
-            defaultValue={defaultValue}
-            key={refreshKey}
-          />
+          <>
+            <MdEmail className={'input-icon'} />
+            <input
+              type="email"
+              id="email"
+              placeholder={placeholder}
+              onChange={onChange}
+              name={inputName}
+              className={`${inputClasses} with-icon`}
+              defaultValue={defaultValue}
+              key={refreshKey}
+            />
+          </>
         )}
 
         {/* PASSWORD */}
@@ -189,9 +203,7 @@ function InputWrapper({
             type="password"
             id="password"
             placeholder={placeholder}
-            onChange={(e) => {
-              onChange(e)
-            }}
+            onChange={onChange}
             className={inputClasses}
             defaultValue={defaultValue}
             key={refreshKey}
@@ -200,21 +212,29 @@ function InputWrapper({
 
         {/* TEXTAREA */}
         {inputType === InputTypes.textarea && (
-          <textarea
-            id="textarea"
-            placeholder={placeholder}
-            onChange={(e) => {
-              onChange(e)
-            }}
-            onKeyUp={onKeyUp}
-            className={inputClasses}
-            name={inputName}
-            defaultValue={defaultValue}
-            key={refreshKey}
-          />
+          <>
+            <MdNotes className={'input-icon notes'} />
+            <textarea
+              id="textarea"
+              placeholder={placeholder}
+              onChange={(e) => {
+                onChange(e)
+              }}
+              onKeyUp={onKeyUp}
+              className={`${inputClasses} with-icon`}
+              name={inputName}
+              defaultValue={defaultValue}
+              key={refreshKey}
+            />
+          </>
         )}
       </div>
-      {hasBottomSpacer && <Spacer height={5} />}
+      {Manager.IsValid(error, true) && (
+        <p className="input-wrapper-error">
+          <PiArrowBendLeftUpFill />
+          {error}
+        </p>
+      )}
     </>
   )
 }

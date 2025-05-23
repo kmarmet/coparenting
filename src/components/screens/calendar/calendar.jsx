@@ -354,15 +354,20 @@ export default function EventCalendar() {
   }, [])
 
   useEffect(() => {
-    if (Manager.IsValid(appUpdates)) {
+    if (Manager.IsValid(appUpdates) && Manager.IsValid(currentUser)) {
       UpdateOrRefreshIfNecessary().then((r) => r)
     }
-  }, [appUpdates])
+  }, [appUpdates, currentUser])
 
   const UpdateOrRefreshIfNecessary = async () => {
-    let currentVersion = appUpdates[appUpdates.length - 1]?.currentVersion
-    AppManager.UpdateOrRefreshIfNecessary(currentUser, currentVersion)
-    setState({...state, successAlertMessage: 'App Updated'})
+    let latestVersionNumber = appUpdates[appUpdates.length - 1]?.currentVersion
+    const shouldRefresh = await AppManager.UpdateOrRefreshIfNecessary(currentUser, latestVersionNumber)
+    if (shouldRefresh) {
+      setState({...state, successAlertMessage: 'Updating App ...'})
+      await Manager.GetPromise(() => {
+        window.location.reload()
+      }, 2500)
+    }
   }
 
   return (
@@ -397,9 +402,8 @@ export default function EventCalendar() {
           onClose={ViewAllEvents}
           showCard={showSearchCard}
           onSubmit={Search}>
-          <Spacer height={5} />
           <InputWrapper
-            labelText="Event Name"
+            placeholder="Event Name"
             refreshKey={refreshKey}
             inputValue={searchQuery}
             inputType={InputTypes.text}

@@ -133,7 +133,7 @@ export default function CustomWeekends({hide, showCard}) {
         })}
       />
       <Spacer height={5} />
-      <ShareWithCheckboxes required={false} onCheck={HandleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
+      <ShareWithCheckboxes required={false} onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coparents'} />
       <hr className="mt-5 mb-10" />
     </Modal>
   )

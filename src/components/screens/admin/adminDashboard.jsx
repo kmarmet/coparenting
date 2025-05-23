@@ -143,12 +143,12 @@ export default function AdminDashboard() {
             </Select>
           </FormControl>
           <InputWrapper
-            labelText={`Enter ${recordPropToCheck} or Event Name for Calendar Events`}
+            placeholder={`Enter ${recordPropToCheck} or Event Name for Calendar Events`}
             inputType={InputTypes.text}
             onChange={(e) => setGetRecordsSearchValue(e.target.value)}
           />
           <p className="mb-10 center-text">-or-</p>
-          <InputWrapper labelText={`Enter Record ID`} inputType={InputTypes.text} onChange={(e) => setGetRecordsSearchValue(e.target.value)} />
+          <InputWrapper placeholder={`Enter Record ID`} inputType={InputTypes.text} onChange={(e) => setGetRecordsSearchValue(e.target.value)} />
           <div className="buttons flex">
             <button className="button" onClick={CopyToClipboard}>
               Copy

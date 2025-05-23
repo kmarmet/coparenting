@@ -127,15 +127,15 @@ const NewCoparentForm = ({showCard, hideCard}) => {
         <Spacer height={5} />
         <div id="new-coparent-container" className={`${theme} form`}>
           <div className="form new-coparent-form">
-            <InputWrapper inputType={InputTypes.text} required={true} labelText={'Name'} onChange={(e) => setName(e.target.value)} />
+            <InputWrapper inputType={InputTypes.text} required={true} placeholder={'Name'} onChange={(e) => setName(e.target.value)} />
             <InputWrapper
               inputType={InputTypes.email}
               inputValueType="email"
               required={coparentHasAccount}
-              labelText={'Email Address'}
+              placeholder={'Email Address'}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <AddressInput labelText={'Home Address'} onChange={(address) => setAddress(address)} />
+            <AddressInput placeholder={'Home Address'} onChange={(address) => setAddress(address)} />
 
             <div className="flex">
               <Label text={'Co-Parent has an Account with Us'} />

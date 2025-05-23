@@ -1,8 +1,19 @@
 // Path: src\managers\manager.js
 import _ from 'lodash'
+import LogManager from './logManager'
 import StringManager from './stringManager'
 
 const Manager = {
+  GetPromise: async (callback, delay = 0) =>
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve()
+        callback()
+      }, delay)
+    }).catch((error) => {
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
+      // log error
+    }),
   GetInvalidInputsErrorString: (requiredInputs) => {
     let invalidInputNames = []
     let areOrIs = 'are'

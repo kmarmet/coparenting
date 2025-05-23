@@ -132,7 +132,7 @@ export default function FiftyFifty({hide, showCard}) {
         {/* FIRST PERIOD */}
         <InputWrapper
           wrapperClasses="date-range-input"
-          labelText={'First Period'}
+          placeholder={'First Period'}
           required={true}
           inputType={InputTypes.dateRange}
           onDateOrTimeSelection={(dateArray) => {
@@ -145,7 +145,7 @@ export default function FiftyFifty({hide, showCard}) {
 
         <InputWrapper
           wrapperClasses="date-range-input"
-          labelText={'Second Period'}
+          placeholder={'Second Period'}
           required={true}
           inputType={InputTypes.dateRange}
           onDateOrTimeSelection={(dateArray) => {
@@ -159,7 +159,7 @@ export default function FiftyFifty({hide, showCard}) {
         {/* THIRD PERIOD */}
         <InputWrapper
           wrapperClasses="date-range-input"
-          labelText={'Third Period'}
+          placeholder={'Third Period'}
           required={true}
           inputType={InputTypes.dateRange}
           onDateOrTimeSelection={(dateArray) => {
@@ -175,7 +175,7 @@ export default function FiftyFifty({hide, showCard}) {
           required={false}
           shareWith={currentUser?.coparents?.map((x) => x.phone)}
           onCheck={HandleShareWithSelection}
-          labelText={'Share with'}
+          placeholder={'Share with'}
           containerClass={'share-with-coparents'}
           dataKey={currentUser?.coparents?.map((x) => x.name)}
         />

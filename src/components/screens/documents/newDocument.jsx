@@ -223,7 +223,7 @@ export default function NewDocument() {
         <div id="upload-documents-container" className={`${theme}`}>
           {/* FORM */}
           <div className="form">
-            <InputWrapper labelText={'Document Name'} inputType={InputTypes.text} onChange={(e) => setDocName(e.target.value)} />
+            <InputWrapper placeholder={'Document Name'} inputType={InputTypes.text} onChange={(e) => setDocName(e.target.value)} />
             <CheckboxGroup
               parentLabel={'Document Type'}
               required={true}

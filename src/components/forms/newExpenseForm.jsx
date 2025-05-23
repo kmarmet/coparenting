@@ -381,7 +381,7 @@ export default function NewExpenseForm() {
           </div>
 
           {/* CATEGORY */}
-          <SelectDropdown selectValue={expenseCategory} onChange={HandleCategorySelection} labelText={'Category'}>
+          <SelectDropdown selectValue={expenseCategory} onChange={HandleCategorySelection} placeholder={'Category'}>
             {Object.keys(ExpenseCategories).map((type, index) => {
               return (
                 <MenuItem key={index} value={type}>
@@ -394,18 +394,18 @@ export default function NewExpenseForm() {
           <Spacer height={5} />
 
           {/* EXPENSE NAME */}
-          <InputWrapper onChange={(e) => setExpenseName(e.target.value)} inputType={InputTypes.text} labelText={'Name'} required={true} />
+          <InputWrapper onChange={(e) => setExpenseName(e.target.value)} inputType={InputTypes.text} placeholder={'Name'} required={true} />
 
           {/* DUE DATE */}
           <InputWrapper
             inputType={InputTypes.date}
             uidClass="new-expense-date"
-            labelText={'Due Date'}
+            placeholder={'Due Date'}
             onDateOrTimeSelection={(date) => setExpenseDueDate(date)}
           />
 
           {/* NOTES */}
-          <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} labelText={'Notes'} />
+          <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} placeholder={'Notes'} />
           <Spacer height={5} />
 
           {/* PAYER */}
@@ -420,7 +420,7 @@ export default function NewExpenseForm() {
           />
 
           {/* SHARE WITH */}
-          <ShareWithCheckboxes onCheck={HandleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
+          <ShareWithCheckboxes onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coparents'} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {currentUser && currentUser?.children !== undefined && (

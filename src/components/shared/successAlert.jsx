@@ -3,7 +3,6 @@ import {IoClose} from 'react-icons/io5'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
-import StringManager from '../../managers/stringManager'
 
 const SuccessAlert = () => {
   const {state, setState} = useContext(globalState)
@@ -24,7 +23,7 @@ const SuccessAlert = () => {
 
   return (
     <div id="success-alert-wrapper" onClick={() => setShowAlert(false)} className={`${DomManager.Animate.FadeInDown(showAlert)}`}>
-      <p id="success-alert">{StringManager.FormatTitle(successAlertMessage)}</p>
+      <p id="success-alert">{successAlertMessage}</p>
       <IoClose className={'alert-close-icon'} />
     </div>
   )

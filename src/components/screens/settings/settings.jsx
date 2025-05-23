@@ -98,7 +98,7 @@ export default function Settings() {
           {/* MORNING SUMMARY */}
           <InputWrapper
             defaultValue={moment(currentUser?.dailySummaries?.morningReminderSummaryHour, 'h:mma')}
-            labelText={'Morning Hour'}
+            placeholder={'Morning Hour'}
             timeViews={['hours']}
             inputType={InputTypes.time}
             onDateOrTimeSelection={(e) => setMorningSummaryHour(e)}
@@ -106,7 +106,7 @@ export default function Settings() {
           {/* EVENING SUMMARY */}
           <InputWrapper
             defaultValue={moment(currentUser?.dailySummaries?.eveningReminderSummaryHour, 'h:mma')}
-            labelText={'Evening Hour'}
+            placeholder={'Evening Hour'}
             timeViews={['hours']}
             inputType={InputTypes.time}
             onChange={(e) => setEveningSummaryHour(e.target.value)}

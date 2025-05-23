@@ -375,6 +375,7 @@ const DB_UserScoped = {
   },
   updateByPath: async (path, newValue) => {
     const dbRef = ref(getDatabase())
+    console.log(path, newValue)
     await set(child(dbRef, path), newValue)
   },
   updateUserContactInfo: async (currentUser, currentValue, updatedValue, propNameToUpdate) => {

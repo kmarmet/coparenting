@@ -122,16 +122,16 @@ const NewParentForm = ({showCard, hideCard}) => {
         <Spacer height={5} />
         <div id="new-parent-container" className={`${theme} form`}>
           <div className="form new-parent-form">
-            <InputWrapper inputType={InputTypes.text} required={true} labelText={'Name'} onChange={(e) => setName(e.target.value)} />
+            <InputWrapper inputType={InputTypes.text} required={true} placeholder={'Name'} onChange={(e) => setName(e.target.value)} />
             <InputWrapper
               inputType={InputTypes.email}
               inputValueType="email"
               required={parentHasAccount}
-              labelText={'Email Address'}
+              placeholder={'Email Address'}
               onChange={(e) => setEmail(e.target.value)}
             />
             <AddressInput
-              labelText={'Home Address'}
+              placeholder={'Home Address'}
               onChange={(place) => {
                 setAddress(place)
               }}

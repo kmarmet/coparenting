@@ -135,7 +135,7 @@ export default function Medical({activeChild}) {
                       <InputWrapper
                         hasBottomSpacer={false}
                         inputType={InputTypes.text}
-                        labelText={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
+                        placeholder={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
                           Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''
                         }`}
                         defaultValue={value}

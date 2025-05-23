@@ -79,7 +79,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
       <Label text={'Please specify the upcoming Friday you would like to use as the starting point for the visitation schedule'} />
       <Spacer height={5} />
       <InputWrapper
-        labelText={'Date'}
+        placeholder={'Date'}
         required={true}
         inputType={InputTypes.date}
         uidClass="visitation-every-other-weekend"
@@ -90,7 +90,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
         required={false}
         shareWith={currentUser?.coparents?.map((x) => x.phone)}
         onCheck={HandleShareWithSelection}
-        labelText={'Share with'}
+        placeholder={'Share with'}
         containerClass={'share-with-coparents'}
       />
     </Modal>

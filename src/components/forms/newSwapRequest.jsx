@@ -21,6 +21,7 @@ import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
 import useChildren from '../../hooks/useChildren'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import DatasetManager from '../../managers/datasetManager'
 import DomManager from '../../managers/domManager'
 import Label from '../shared/label'
 import Spacer from '../shared/spacer'
@@ -179,7 +180,7 @@ export default function NewSwapRequest() {
 
   return (
     <Modal
-      submitText={'Send Request'}
+      submitText={'Send'}
       onSubmit={Submit}
       wrapperClass="new-swap-request"
       title={'Request Visitation Swap'}
@@ -210,7 +211,7 @@ export default function NewSwapRequest() {
             <InputWrapper
               uidClass="swap-single-date"
               inputType={InputTypes.date}
-              labelText={'Date'}
+              placeholder={'Date'}
               required={true}
               onDateOrTimeSelection={(day) => setStartDate(moment(day).format(DatetimeFormats.dateForDb))}
             />
@@ -222,7 +223,7 @@ export default function NewSwapRequest() {
               <InputWrapper
                 uidClass="swap-hours-date"
                 inputType={InputTypes.date}
-                labelText={'Day'}
+                placeholder={'Day'}
                 required={true}
                 onDateOrTimeSelection={(day) => setStartDate(moment(day).format(DatetimeFormats.dateForDb))}
               />
@@ -231,14 +232,14 @@ export default function NewSwapRequest() {
               <InputWrapper
                 inputType={InputTypes.time}
                 uidClass="swap-request-from-hour"
-                labelText={'Start Time'}
+                placeholder={'Start Time'}
                 onDateOrTimeSelection={(e) => setRequestFromHour(moment(e).format('ha'))}
               />
 
               <InputWrapper
                 inputType={InputTypes.time}
                 uidClass="swap-request-to-hour"
-                labelText={'End Time'}
+                placeholder={'End Time'}
                 onDateOrTimeSelection={(e) => setRequestToHour(moment(e).format('ha'))}
               />
             </>
@@ -254,7 +255,7 @@ export default function NewSwapRequest() {
                 }
               }}
               useNativeDate={true}
-              labelText={'Date Range'}
+              placeholder={'Date Range'}
               required={true}
               inputType={InputTypes.dateRange}
             />
@@ -264,7 +265,7 @@ export default function NewSwapRequest() {
           <InputWrapper
             uidClass="swap-response-date"
             inputType={InputTypes.date}
-            labelText={'Requested Response Date'}
+            placeholder={'Requested Response Date'}
             required={true}
             onDateOrTimeSelection={(day) => setResponseDueDate(moment(day).format(DatetimeFormats.dateForDb))}
           />
@@ -284,14 +285,23 @@ export default function NewSwapRequest() {
             }}
           />
 
+          <Spacer height={8} />
+
           {/* WHO SHOULD SEE IT? */}
-          <ShareWithCheckboxes required={true} onCheck={HandleShareWithSelection} labelText={'Share with'} containerClass={'share-with-coparents'} />
+          <ShareWithCheckboxes
+            required={true}
+            onCheck={HandleShareWithSelection}
+            placeholder={'Share with'}
+            containerClass={'share-with-coparents'}
+          />
+
+          <Spacer height={8} />
 
           {/* INCLUDE CHILDREN */}
           {Manager.IsValid(children) && (
             <div className="share-with-container ">
               <div className="flex">
-                <Label text={'Include Child(ren)'} />
+                <Label text={'Include Child(ren)'} classes="always-show" />
                 <ToggleButton onCheck={() => setIncludeChildren(!includeChildren)} onUncheck={() => setIncludeChildren(!includeChildren)} />
               </div>
               {includeChildren && (
@@ -309,7 +319,7 @@ export default function NewSwapRequest() {
           <Spacer height={5} />
 
           {/* NOTES */}
-          <InputWrapper inputType={'textarea'} labelText={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
+          <InputWrapper inputType={'textarea'} placeholder={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
         </div>
       </div>
     </Modal>

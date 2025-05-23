@@ -170,7 +170,7 @@ export default function Login() {
                 inputClasses="email login-input"
                 inputType={InputTypes.email}
                 required={true}
-                labelText={'Email Address'}
+                placeholder={'Email Address'}
                 onChange={(e) => (credentials.current.email = e.target.value)}
               />
               {/* PASSWORD */}
@@ -180,7 +180,7 @@ export default function Login() {
                   required={true}
                   hasBottomSpacer={false}
                   wrapperClasses="password fade-in-right"
-                  labelText={'Password'}
+                  placeholder={'Password'}
                   inputClasses="password login-input"
                   onChange={(e) => (credentials.current.password = e.target.value)}
                 />

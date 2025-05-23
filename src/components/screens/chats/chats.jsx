@@ -52,10 +52,10 @@ const Chats = () => {
         }}
         hideCard={() => setShowInvitationCard(false)}>
         <Spacer height={5} />
-        <InputWrapper inputType={InputTypes.text} labelText={'Co-Parent Name'} required={true} onChange={(e) => setInviteeName(e.target.value)} />
+        <InputWrapper inputType={InputTypes.text} placeholder={'Co-Parent Name'} required={true} onChange={(e) => setInviteeName(e.target.value)} />
         <InputWrapper
           inputType={InputTypes.email}
-          labelText={'Co-Parent Email Address'}
+          placeholder={'Co-Parent Email Address'}
           required={true}
           onChange={(e) => setInviteeEmail(e.target.value)}
         />

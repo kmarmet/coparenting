@@ -200,8 +200,8 @@ const Contacts = () => {
         }}
         hideCard={() => setShowInvitationCard(false)}>
         <Spacer height={5} />
-        <InputWrapper inputType={InputTypes.text} labelText={'Name'} required={true} onChange={(e) => setInviteeName(e.target.value)} />
-        <InputWrapper inputType={InputTypes.email} labelText={'Email Address'} required={true} onChange={(e) => setInviteeEmail(e.target.value)} />
+        <InputWrapper inputType={InputTypes.text} placeholder={'Name'} required={true} onChange={(e) => setInviteeName(e.target.value)} />
+        <InputWrapper inputType={InputTypes.email} placeholder={'Email Address'} required={true} onChange={(e) => setInviteeEmail(e.target.value)} />
       </Modal>
 
       {/* MODAL */}
@@ -286,7 +286,7 @@ const Contacts = () => {
 
           <InputWrapper
             inputType={InputTypes.text}
-            labelText={'Name'}
+            placeholder={'Name'}
             defaultValue={GetContactName()}
             wrapperClasses="show-label"
             required={true}
@@ -316,7 +316,7 @@ const Contacts = () => {
           {Manager.IsValid(GetContactEmail()) && (
             <InputWrapper
               inputType={InputTypes.email}
-              labelText={'Email Address'}
+              placeholder={'Email Address'}
               defaultValue={GetContactEmail()}
               wrapperClasses="show-label"
               required={true}
@@ -341,7 +341,7 @@ const Contacts = () => {
           {Manager.IsValid(GetContactPhone()) && (
             <InputWrapper
               inputType={InputTypes.phone}
-              labelText={'Phone Number'}
+              placeholder={'Phone Number'}
               defaultValue={GetContactPhone()}
               wrapperClasses="show-label"
               required={true}

@@ -159,7 +159,7 @@ export default function NewTransferChangeRequest() {
             <InputWrapper
               inputType={InputTypes.date}
               uidClass="transfer-request-date"
-              labelText={'Day'}
+              placeholder={'Day'}
               required={true}
               onDateOrTimeSelection={(e) => setRequestDate(moment(e).format(DatetimeFormats.dateForDb))}
             />
@@ -167,7 +167,7 @@ export default function NewTransferChangeRequest() {
             {/* TIME */}
             <InputWrapper
               inputType={InputTypes.time}
-              labelText={'New Time'}
+              placeholder={'New Time'}
               uidClass="transfer-request-time"
               onDateOrTimeSelection={(e) => setRequestTime(moment(e).format(DatetimeFormats.timeForDb))}
             />
@@ -176,13 +176,13 @@ export default function NewTransferChangeRequest() {
             <InputWrapper
               inputType={InputTypes.date}
               uidClass="transfer-request-response-date"
-              labelText={'Requested Response Date'}
+              placeholder={'Requested Response Date'}
               required={true}
               onDateOrTimeSelection={(e) => setResponseDueDate(moment(e).format(DatetimeFormats.dateForDb))}
             />
 
             {/*  NEW LOCATION*/}
-            <AddressInput labelText={'New Location'} onChange={(address) => setRequestLocation(address)} />
+            <AddressInput placeholder={'New Location'} onChange={(address) => setRequestLocation(address)} />
             <div className="flex">
               <Label text={'Set as Preferred Transfer Location'} />
               <ToggleButton onCheck={() => setPreferredLocation(requestLocation)} onUncheck={() => setPreferredLocation('')} />
@@ -191,7 +191,7 @@ export default function NewTransferChangeRequest() {
             <Spacer height={5} />
 
             {/* REASON */}
-            <InputWrapper inputType={InputTypes.textarea} labelText={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
+            <InputWrapper inputType={InputTypes.textarea} placeholder={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
 
             <Spacer height={5} />
 
@@ -210,7 +210,7 @@ export default function NewTransferChangeRequest() {
             <ShareWithCheckboxes
               shareWith={coparents?.map((x) => x.phone)}
               onCheck={HandleShareWithSelection}
-              labelText={'Share with'}
+              placeholder={'Share with'}
               containerClass={'share-with-coparents'}
               checkboxArray={DomManager.BuildCheckboxGroup({
                 currentUser,

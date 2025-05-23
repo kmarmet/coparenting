@@ -32,6 +32,7 @@ import LogManager from '../../managers/logManager'
 import CalendarEvent from '../../models/calendarEvent'
 import AddressInput from '../shared/addressInput'
 import DetailBlock from '../shared/detailBlock'
+import Label from '../shared/label'
 import Map from '../shared/map'
 import MultilineDetailBlock from '../shared/multilineDetailBlock'
 import Spacer from '../shared/spacer.jsx'
@@ -339,7 +340,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         }}
         hasDelete={currentUser?.key === updatedEvent?.current?.ownerKey}
         onSubmit={Submit}
-        submitText={'Update Event'}
+        submitText={'Update'}
         submitIcon={<BsCalendar2CheckFill className={'edit-calendar-icon'} />}
         hasSubmitButton={view === 'edit'}
         onClose={async () => {
@@ -353,7 +354,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           <ViewSelector
             key={refreshKey}
             onloadState={showCard}
-            labels={['details', 'edit']}
+            labels={['Details', 'Edit']}
             updateState={(labelText) => {
               setView(labelText)
             }}
@@ -469,11 +470,10 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
           {/* EDIT */}
           <div id="edit" className={view === 'edit' ? 'view-wrapper edit active content' : 'view-wrapper content'}>
-            <Spacer height={5} />
             {/* EVENT NAME */}
             <InputWrapper
               inputType={InputTypes.text}
-              labelText={'Event Name'}
+              placeholder={'Event Name'}
               defaultValue={updatedEvent.current?.title}
               wrapperClasses="show-label"
               required={true}
@@ -488,7 +488,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             {/* DATE */}
             {!eventIsDateRange && (
               <InputWrapper
-                labelText={'Date'}
+                placeholder={'Date'}
                 required={true}
                 inputType={InputTypes.date}
                 onDateOrTimeSelection={(date) => (updatedEvent.current.startDate = moment(date).format(DatetimeFormats.dateForDb))}
@@ -502,7 +502,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 {/* START TIME */}
                 <InputWrapper
                   wrapperClasses="start-time"
-                  labelText={'Start Time'}
+                  placeholder={'Start Time'}
                   uidClass="event-start-time"
                   required={false}
                   inputType={InputTypes.time}
@@ -514,7 +514,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 <InputWrapper
                   uidClass="event-end-time"
                   wrapperClasses="end-time"
-                  labelText={'End Time'}
+                  placeholder={'End Time'}
                   required={false}
                   defaultValue={updatedEvent?.current?.endTime}
                   inputType={InputTypes.time}
@@ -537,7 +537,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             <Accordion expanded={showReminders} id={'checkboxes'}>
               <AccordionSummary>
                 <div className="flex reminder-times-toggle">
-                  <p className="label">Remind Me</p>
+                  <Label classes="toggle" text={'Remind Me'} />
                   <ToggleButton
                     isDefaultChecked={Manager.IsValid(updatedEvent?.current?.reminderTimes)}
                     onCheck={() => setShowReminders(true)}
@@ -562,7 +562,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
             {/* IS VISITATION? */}
             <div className="flex visitation-toggle">
-              <p className="label">Visitation Event</p>
+              <Label classes="toggle" text={'Visitation Event'} />
               <ToggleButton
                 isDefaultChecked={updatedEvent?.current?.fromVisitationSchedule}
                 onCheck={() => setIsVisitation(!isVisitation)}
@@ -575,7 +575,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               <Accordion expanded={includeChildren} id={'checkboxes'}>
                 <AccordionSummary>
                   <div className="flex children-toggle">
-                    <p className="label">Include Children</p>
+                    <Label classes="toggle" text={'Include Children'} />
                     <ToggleButton
                       isDefaultChecked={updatedEvent?.current?.children?.length > 0}
                       onCheck={() => setIncludeChildren(!includeChildren)}
@@ -605,7 +605,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             {/* URL/WEBSITE */}
             <InputWrapper
               defaultValue={updatedEvent?.current?.websiteUrl}
-              labelText={'URL/Website'}
+              placeholder={'URL/Website'}
               wrapperClasses={Manager.IsValid(updatedEvent?.current?.websiteUrl) ? 'show-label' : ''}
               required={false}
               inputType={InputTypes.url}
@@ -614,7 +614,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
             <AddressInput
               defaultValue={updatedEvent?.current?.address}
-              labelText={'Location'}
+              placeholder={'Location'}
               onChange={(address) => (updatedEvent.current.address = address)}
             />
 
@@ -623,14 +623,14 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               wrapperClasses={Manager.IsValid(updatedEvent?.current?.phone) ? 'show-label' : ''}
               defaultValue={updatedEvent?.current?.phone}
               inputType={InputTypes.phone}
-              labelText={'Phone'}
+              placeholder={'Phone'}
               onChange={(e) => (updatedEvent.current.phone = StringManager.FormatPhone(e.target.value))}
             />
 
             {/* NOTES */}
             <InputWrapper
               defaultValue={updatedEvent?.current?.notes}
-              labelText={'Notes'}
+              placeholder={'Notes'}
               required={false}
               wrapperClasses={Manager.IsValid(updatedEvent?.current?.notes) ? 'show-label textarea' : 'textarea'}
               inputType={InputTypes.textarea}

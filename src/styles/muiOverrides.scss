@@ -93,8 +93,7 @@
           line-height: 1;
           height: 50px !important;
           color: $darkerGrey !important;
-          border: 1px solid $lightBorderColor !important;
-          background: $grey !important;
+          background: white !important;
 
           &:nth-child(2) {
             background: $green !important;
@@ -169,12 +168,16 @@
       }
 
       &.Mui-selected {
-        background-color: $lightMain !important;
+        //        background-color: $lightMain !important;
+        background-color: transparent !important;
         width: 55px !important;
         height: 45px !important;
         color: $main !important;
         border: 0 !important;
-        margin: 0 10px !important;
+
+        span {
+          font-weight: $fwMediumBold !important;
+        }
 
         &:after {
           display: none !important;
@@ -597,27 +600,25 @@
         max-height: unset !important;
         padding: 0 !important;
         position: absolute !important;
-        caret-color: $main !important;
+        caret-color: white !important;
         width: 100% !important;
         border-radius: 0 !important;
+        color: white !important;
       }
     }
     .MuiInputLabel-root {
-      font-weight: $fwRegular !important;
+      font-weight: $fwMediumBold !important;
       margin: 0 !important;
       line-height: 1 !important;
-      color: $darkGrey !important;
-      font-style: italic !important;
-      position: unset !important;
-      //      top: -33px !important;
-      //      left: -14px !important;
-      //      width: max-content !important;
-      //      height: 20px !important;
+      color: $darkerTransWhite !important;
+      position: absolute !important;
+      top: 50px !important;
+      text-transform: uppercase;
       z-index: 99999 !important;
       padding: 0 !important;
       padding-left: 8px !important;
       @include fontType;
-      font-size: 14px !important;
+      font-size: 12px !important;
       display: none !important;
 
       &.active {

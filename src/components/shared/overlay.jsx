@@ -3,7 +3,7 @@ import globalState from '../../context'
 
 const Overlay = ({children, show}) => {
   const {state, setState} = useContext(globalState)
-  const {theme} = state
+  const {menuIsOpen, showScreenActions, showCreationMenu} = state
 
   useEffect(() => {
     const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
@@ -27,10 +27,8 @@ const Overlay = ({children, show}) => {
 
   return (
     <>
-      <div className="overlay-color-bg"></div>
       <div
-        id="overlay"
-        className={`overlay-wrapper${show ? ' active' : ''}`}
+        className={`page-overlay${show ? ' active' : ''} ${menuIsOpen || showScreenActions || showCreationMenu ? 'blur' : ''}`}
         onClick={() => {
           // const overlay = e.currentTarget
           // if (Manager.IsValid(overlay) && (overlay?.classList.contains('overlay-wrapper') || overlay?.classList.contains('creation-menu'))) {

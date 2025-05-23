@@ -381,7 +381,7 @@
     }
 
     .close-x {
-      color: $darkerGrey;
+      color: $transWhite;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -431,6 +431,52 @@
     /*#region  CLASS/ID DEFAULTS*/
     .green {
       color: $green;
+    }
+
+    .input-wrapper-error {
+      color: $red;
+      font-size: 14px;
+      font-weight: $fwMediumBold;
+      text-transform: lowercase;
+      position: relative;
+      top: -5px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+
+      svg {
+        color: $transWhite;
+        transform: scale(0.6);
+        position: relative;
+        top: -2px;
+      }
+    }
+
+    // Select Dropdown
+    fieldset {
+      top: 50% !important;
+      left: 0;
+      transform: translateY(-50%);
+      padding: 0 !important;
+      margin: 0 !important;
+      z-index: $maxZIndex !important;
+      overflow: hidden !important;
+      height: 30px !important;
+      legend {
+        align-self: stretch !important;
+        height: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        span {
+          padding-left: 10px !important;
+          padding-right: 0 !important;
+          opacity: 1 !important;
+          color: white;
+          line-height: 1 !important;
+          white-space: nowrap !important;
+        }
+      }
     }
 
     .fade-up-wrapper {
@@ -574,30 +620,33 @@
       z-index: 9;
     }
 
-    #overlay {
+    .page-overlay {
       z-index: -1;
       position: fixed;
       display: flex;
       align-items: flex-end;
       justify-content: center;
       opacity: 0;
-      //      background-color: rgba(0, 0, 0, 0.4);
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
       width: 100vw;
       height: 100vh;
-      backdrop-filter: blur(10px);
       transition: all 0.4s ease-out;
-      background: rgba(255, 255, 255, 0.4);
       flex-wrap: wrap;
       flex-direction: column;
       @include mainColorsGradient;
+
       &.active {
         opacity: 1;
         transition: all 0.4s ease-in;
         z-index: 99999999;
+
+        &.blur {
+          backdrop-filter: blur(2.5px);
+          background: rgba(0, 0, 0, 0.85);
+        }
       }
 
       .swipe-bar {
@@ -917,20 +966,76 @@
       @include checkboxGroup;
     }
 
-    #input-wrapper,
+    .input-wrapper,
     #address-input-wrapper {
       @include inputWrapper;
+      height: 50px;
+      overflow: unset;
+      #label-wrapper {
+        padding-left: 10px;
+      }
 
       &#address-input-wrapper {
+        flex-direction: row;
+        align-items: center;
+        position: relative;
+        * {
+          outline: none !important;
+        }
+
+        input {
+          z-index: $maxZIndex !important;
+          align-self: stretch !important;
+          bottom: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+          width: calc(100% - 30px) !important;
+          max-width: 90% !important;
+          white-space: nowrap !important;
+          line-height: 1 !important;
+          top: 3px !important;
+          position: relative !important;
+          height: min-content !important;
+
+          &[aria-expanded='true'] {
+            padding-top: 2px !important;
+          }
+        }
+
+        // PLACEHOLDER
+        [class*='placeholder'] {
+          color: $mediumTransWhite !important;
+          opacity: 1 !important;
+          width: calc(100% - 30px) !important;
+          font-weight: $fwLight;
+          bottom: 2px !important;
+          line-height: 1 !important;
+          background: unset;
+          position: relative;
+
+          height: min-content !important;
+        }
+        /*#endregion  GOOGLE MAPS INPUT */
         /*#region  GOOGLE MAPS INPUT */
         [class*='-menu'] {
           background: white !important;
-          z-index: 99999999999 !important;
-          width: 100% !important;
-          border-radius: $borderRadius !important;
           @include centerHoriz;
-          position: relative !important;
+          z-index: $maxZIndex !important;
+          border-radius: $bigBorderRadius !important;
+          min-height: 100px !important;
+          overflow: auto !important;
+          position: absolute !important;
+          top: 40px !important;
+          width: calc(100% - 30px) !important;
+          transition: all 0.3s ease-in-out !important;
+          box-shadow: $boxShadow_bottom_only_dark;
+
+          * {
+            color: $blend !important;
+            line-height: 1.3 !important;
+          }
         }
+
         [class*='IndicatorsContainer'] {
           display: none !important;
         }
@@ -938,65 +1043,66 @@
         // PARENT
         [class*='-container'] {
           width: 100% !important;
-          min-height: 20px !important;
-
+          @include centerVert;
+          position: absolute !important;
+          z-index: 99999999999 !important;
+          left: 0 !important;
+          align-items: center;
+          display: flex;
+          padding-top: 6px !important;
+          outline: none !important;
           [class*='-control'] {
             border: 0 !important;
             background: transparent !important;
             padding: 0 !important;
             min-height: 20px !important;
             border-radius: 0 !important;
-            margin-top: 3px !important;
+            position: relative !important;
+            width: 100% !important;
+            top: 0 !important;
 
             [class*='singleValue'] {
               padding: 0 !important;
               margin: 0 !important;
               background: transparent !important;
-              color: $darkestGrey !important;
+              color: white !important;
             }
 
             [class*='ValueContainer'] {
               padding: 0 !important;
-              display: block !important;
               margin: 0 !important;
+              min-height: 30px !important;
+              top: 0 !important;
+              width: calc(100% - 30px) !important;
+              max-width: 90% !important;
+              white-space: nowrap !important;
+              line-height: 1 !important;
+              display: flex !important;
+              align-items: center !important;
+              left: 40px !important;
               position: relative !important;
-              min-height: 20px !important;
 
               [class*='-Input'] {
                 margin: 0 !important;
                 padding: 0 !important;
                 display: block !important;
+                color: white !important;
                 width: 100% !important;
                 position: absolute !important;
                 top: 0 !important;
                 left: 0 !important;
                 right: 0 !important;
-
                 input {
                   user-select: none !important;
                   outline: none !important;
                   width: 100% !important;
-                  color: $darkestGrey !important;
                   display: block !important;
                 }
               }
               [id^='react-select'] {
-                //        display: none;
+                //        display: none;    color: white !important;
               }
             }
-          }
-        }
-
-        // PLACEHOLDER
-        [id*='-placeholder'] {
-          color: $darkestGrey !important;
-          //          opacity: 0 !important;
-        }
-        /*#endregion  GOOGLE MAPS INPUT */
-
-        * {
-          &::after {
-            display: none !important;
           }
         }
 
@@ -1008,10 +1114,6 @@
             border-radius: $borderRadius;
             padding: 5px;
           }
-        }
-        * {
-          line-height: 1 !important;
-          background: unset;
         }
       }
     }
@@ -1490,27 +1592,27 @@
       }
     }
 
-    .overlay,
-    .page-overlay {
-      width: 100vw;
-      position: fixed;
-      left: 0;
-      right: 0;
-      z-index: -1;
-      bottom: 0;
-      top: 0;
-      transition: all 1s ease-in-out;
-      background-color: rgba(0, 0, 0, 0.4);
-      opacity: 0;
-      height: 100vh;
-
-      &.active {
-        transition: all 1s ease-in-out;
-        opacity: 1;
-        z-index: 10000000;
-        backdrop-filter: blur(10px);
-      }
-    }
+    //    .overlay,
+    //    .page-overlay {
+    //      width: 100vw;
+    //      position: fixed;
+    //      left: 0;
+    //      right: 0;
+    //      z-index: -1;
+    //      bottom: 0;
+    //      top: 0;
+    //      transition: all 1s ease-in-out;
+    //      background-color: rgba(0, 0, 0, 0.4);
+    //      opacity: 0;
+    //      height: 100vh;
+    //
+    //      &.active {
+    //        transition: all 1s ease-in-out;
+    //        opacity: 1;
+    //        z-index: 10000000;
+    //        backdrop-filter: blur(10px);
+    //      }
+    //    }
 
     .flex {
       display: flex;

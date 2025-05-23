@@ -7,7 +7,6 @@ import MyConfetti from '/src/components/shared/myConfetti'
 import Note from '/src/components/shared/note'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import ScheduleTypes from '/src/constants/scheduleTypes'
-
 import DB from '/src/database/DB'
 import DB_UserScoped from '/src/database/db_userScoped'
 import AlertManager from '/src/managers/alertManager'
@@ -26,7 +25,6 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
 import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import useCalendarEvents from '../../hooks/useCalendarEvents'
@@ -34,7 +32,7 @@ import useCurrentUser from '../../hooks/useCurrentUser'
 import DomManager from '../../managers/domManager'
 import NavBar from '../navBar'
 import AccordionTitle from '../shared/accordionTitle'
-import Label from '../shared/label'
+import AddressInput from '../shared/addressInput'
 import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer'
 
@@ -385,19 +383,17 @@ export default function Visitation() {
                       />
                     </div>
 
-                    {/* LOCATION */}
-                    <Label classes="address-label" text={'Preferred Transfer Location'} />
-                    <GooglePlacesAutocomplete
-                      selectProps={{
-                        className: 'address-input',
-                        placeholder: currentUser?.visitation?.transferAddress,
-                        onChange: (e) =>
-                          UpdateDefaultTransferLocation(e?.label, Manager.GetDirectionsLink(e?.label)).then(() =>
-                            setTimeout(() => {
-                              setState({...state, successAlertMessage: 'Preferred Transfer Location Set'})
-                            }, 300)
-                          ),
-                        isClearable: false,
+                    {/* DEFAULT TRANSFER LOCATION */}
+                    <AddressInput
+                      defaultValue={currentUser?.visitation?.transferAddress}
+                      wrapperClasses="address-input"
+                      labelText="Preferred Transfer Location"
+                      onChange={(address) => {
+                        UpdateDefaultTransferLocation(address, Manager.GetDirectionsLink(address)).then(() =>
+                          setTimeout(() => {
+                            setState({...state, successAlertMessage: 'Preferred Transfer Location Set'})
+                          }, 300)
+                        )
                       }}
                     />
                     <Spacer height={5} />

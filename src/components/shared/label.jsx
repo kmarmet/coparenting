@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
-export default function Label({ labelId = '', classes = '', children, text, required = false, icon = null, isBold = false }) {
+export default function Label({labelId = '', classes = '', children, text, required = false, icon = null, isBold = false}) {
   return (
-    <div id="label-wrapper" className={classes}>
+    <div id="label-wrapper" className={`${classes}`}>
       <label className={`${isBold ? 'bold' : ''}`} id={labelId}>
         {icon ? icon : ''}
         {text}

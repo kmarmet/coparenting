@@ -188,6 +188,7 @@ export default function Coparents() {
         </div>
       </ScreenActionsMenu>
 
+      {/* INVITATION FORM */}
       <Modal
         submitText={'Send Invitation'}
         wrapperClass="invite-coparent-card"
@@ -208,13 +209,13 @@ export default function Coparents() {
         <Spacer height={5} />
         <InputWrapper
           inputType={InputTypes.text}
-          labelText={'Co-Parent Name'}
+          placeholder={'Co-Parent Name'}
           required={true}
           onChange={(e) => (invite.current.name = e.target.value)}
         />
         <InputWrapper
-          inputType={InputTypes.text}
-          labelText={'Co-Parent Email Address'}
+          inputType={InputTypes.email}
+          placeholder={'Co-Parent Email Address'}
           required={true}
           onChange={(e) => (invite.current.email = e.target.value)}
         />
@@ -263,7 +264,7 @@ export default function Coparents() {
                         <AddressInput
                           className={'address-input'}
                           defaultValue={value}
-                          labelText="Home Address"
+                          placeholder="Home Address"
                           onChange={(address) => Update('address', address)}
                         />
                       )}
@@ -281,11 +282,10 @@ export default function Coparents() {
                                 setActiveCoparent(activeCoparent)
                               }}
                               inputType={InputTypes.text}
-                              labelText={infoLabel}
+                              placeholder={infoLabel}
                             />
                             <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
                           </div>
-                          <Spacer height={5} />
                         </>
                       )}
                     </div>

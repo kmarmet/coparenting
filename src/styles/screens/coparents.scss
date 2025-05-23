@@ -92,20 +92,28 @@
   #coparent-info,
   #parent-info {
     margin-top: 20px;
+    @include mainColorsGradient;
+    padding: 15px;
+    border-radius: $bigBorderRadius;
+    @include shadow;
 
-    #parent-name-primary {
+    #parent-name-primary,
+    #coparent-name-primary {
       font-weight: $fwMediumBold;
-      font-size: 18px;
+      font-size: 22px;
       line-height: 1;
+      color: white;
+      text-align: center;
     }
 
     #coparent-type-primary,
     #parent-type-primary {
-      font-size: 14px;
+      font-size: 16px;
       width: 100%;
-      text-align: left;
+      text-align: center;
       margin-bottom: 15px;
-      color: $darkerGrey;
+      color: $transWhite;
+      padding-top: 3px;
     }
 
     .form {

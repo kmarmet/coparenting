@@ -27,6 +27,9 @@ StringManager = {
     }
     return str.substring(0, firstIndex).replace(target, replacement) + str.substring(firstIndex);
   },
+  ContainsOnlyNumbers: function(str) {
+    return /^\d+$/.test(str);
+  },
   IsNotAllSameNumber: function(str) {
     if (!/^\d+$/.test(str)) {
       return true;

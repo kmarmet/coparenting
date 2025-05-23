@@ -24,11 +24,11 @@ export default function ParentInput({add, parentsLength = 1, labels}) {
       <p id="group-label">
         Parent #{parentsLength} {`- ${StringManager.uppercaseFirstLetterOfAllWords(name)}`}
       </p>
-      <InputWrapper inputType={'input'} labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
+      <InputWrapper inputType={'input'} placeholder={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
       <InputWrapper
         inputType={'input'}
         inputValueType="number"
-        labelText={'Phone Number'}
+        placeholder={'Phone Number'}
         required={true}
         onChange={(e) => setUserPhone(e.target.value)}
       />

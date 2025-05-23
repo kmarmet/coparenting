@@ -181,10 +181,15 @@ export default function Parents() {
         }}
         hideCard={() => setShowInvitationForm(false)}>
         <Spacer height={5} />
-        <InputWrapper inputType={InputTypes.text} labelText={'Parent Name'} required={true} onChange={(e) => setInvitedParentName(e.target.value)} />
         <InputWrapper
           inputType={InputTypes.text}
-          labelText={'Parent Email Address'}
+          placeholder={'Parent Name'}
+          required={true}
+          onChange={(e) => setInvitedParentName(e.target.value)}
+        />
+        <InputWrapper
+          inputType={InputTypes.text}
+          placeholder={'Parent Email Address'}
           required={true}
           onChange={(e) => setInvitedParentEmail(e.target.value)}
         />
@@ -235,7 +240,7 @@ export default function Parents() {
                       {infoLabel.toLowerCase().includes('address') && (
                         <AddressInput
                           defaultValue={value}
-                          labelText={'Home Address'}
+                          placeholder={'Home Address'}
                           onChange={(address) => Update('address', address).then((r) => r)}
                         />
                       )}
@@ -252,7 +257,7 @@ export default function Parents() {
                                 Update(infoLabel, `${inputValue}`).then((r) => r)
                               }}
                               inputType={InputTypes.text}
-                              labelText={infoLabel}
+                              placeholder={infoLabel}
                             />
                             <PiTrashSimpleFill className="close-x fs-24" onClick={() => DeleteProp(infoLabel)} />
                           </div>

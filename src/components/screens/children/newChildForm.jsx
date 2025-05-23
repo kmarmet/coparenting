@@ -123,7 +123,7 @@ const NewChildForm = ({hideCard, showCard}) => {
         <div className="form new-child-form">
           {/* NAME */}
           <InputWrapper
-            labelText={'Name'}
+            placeholder={'Name'}
             inputType={InputTypes.text}
             required={true}
             onChange={(e) => (newChild.current.general.name = StringManager.FormatTitle(e.target.value, true))}
@@ -131,7 +131,7 @@ const NewChildForm = ({hideCard, showCard}) => {
 
           {/* EMAIL */}
           <InputWrapper
-            labelText={'Email Address'}
+            placeholder={'Email Address'}
             required={childHasAccount}
             inputType={InputTypes.email}
             onChange={(e) => (newChild.current.general.email = e.target.value)}
@@ -140,18 +140,18 @@ const NewChildForm = ({hideCard, showCard}) => {
           {/* DATE OF BIRTH */}
           <InputWrapper
             dateFormat={'MM/DD/YYYY'}
-            labelText={'Date of Birth'}
+            placeholder={'Date of Birth'}
             dateViews={['year', 'month', 'day']}
             inputType={InputTypes.date}
             onDateOrTimeSelection={(e) => (newChild.current.general.dateOfBirth = moment(e).format(DatetimeFormats.monthDayYear))}
           />
 
           {/* ADDRESS */}
-          <AddressInput labelText={'Home Address'} onChange={(address) => (newChild.current.general.address = address)} />
+          <AddressInput placeholder={'Home Address'} onChange={(address) => (newChild.current.general.address = address)} />
 
           {/* PHONE NUMBER */}
           <InputWrapper
-            labelText={'Phone Number'}
+            placeholder={'Phone Number'}
             inputType={InputTypes.phone}
             required={false}
             onChange={(e) => (newChild.current.general.phone = e.target.value)}

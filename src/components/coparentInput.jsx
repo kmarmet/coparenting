@@ -30,11 +30,11 @@ export default function CoparentInputs({add, coparentsLength = 1}) {
       <p id="coparent-label">
         Co-Parent #{coparentsLength} {`- ${StringManager.uppercaseFirstLetterOfAllWords(name)}`}
       </p>
-      <InputWrapper inputType={'input'} labelText={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
+      <InputWrapper inputType={'input'} placeholder={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
       <InputWrapper
         inputType={'input'}
         inputValueType="number"
-        labelText={'Phone Number'}
+        placeholder={'Phone Number'}
         required={true}
         onChange={(e) => setUserPhone(e.target.value)}
       />

@@ -20,6 +20,7 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import React, {useContext, useEffect, useRef, useState} from 'react'
+import {BsCalendarCheck} from 'react-icons/bs'
 import validator from 'validator'
 import CreationForms from '../../constants/creationForms'
 import InputTypes from '../../constants/inputTypes'
@@ -303,7 +304,7 @@ export default function NewCalendarEvent() {
     <>
       {/* FORM WRAPPER */}
       <Modal
-        submitText={`Create`}
+        submitText={`Done`}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={ResetForm}
         onSubmit={Submit}
@@ -311,12 +312,14 @@ export default function NewCalendarEvent() {
         wrapperClass={`new-calendar-event`}
         contentClass={eventLength === EventLengths.single ? 'single-view' : 'multiple-view'}
         title={`Create New Event`}
+        submitIcon={<BsCalendarCheck />}
         viewSelector={
           <ViewSelector
             defaultView={'Single Day'}
             labels={['Single Day', 'Multiple Days']}
             updateState={(labelText) => {
-              if (Manager.Contains(labelText, 'Single')) {
+              console.log(labelText)
+              if (Manager.Contains(labelText.toLowerCase(), 'single')) {
                 setEventLength(EventLengths.single)
               } else {
                 setEventLength(EventLengths.multiple)
@@ -329,7 +332,7 @@ export default function NewCalendarEvent() {
           <InputWrapper
             inputClasses="event-title-input"
             inputType={InputTypes.text}
-            labelText={'Event Name'}
+            placeholder="Event Name"
             required={true}
             inputValueType="input"
             inputValue={newEvent.current.title}
@@ -343,7 +346,7 @@ export default function NewCalendarEvent() {
           {eventLength === EventLengths.single && (
             <InputWrapper
               defaultValue={dateToEdit}
-              labelText={'Date'}
+              placeholder="Date"
               uidClass="event-start-date"
               inputType={InputTypes.date}
               required={true}
@@ -357,7 +360,7 @@ export default function NewCalendarEvent() {
           {eventLength === EventLengths.multiple && (
             <InputWrapper
               wrapperClasses="date-range-input"
-              labelText={'Date Range'}
+              placeholder={'Date Range'}
               required={true}
               inputType={InputTypes.dateRange}
               onDateOrTimeSelection={(dateArray) => {
@@ -368,28 +371,28 @@ export default function NewCalendarEvent() {
               }}
             />
           )}
-
           {eventLength === EventLengths.single && (
             <>
               {/* EVENT WITH TIME */}
               <InputWrapper
-                labelText={'Start Time'}
+                placeholder={'Start Time'}
                 uidClass="event-start-time time"
                 inputType={InputTypes.time}
                 onDateOrTimeSelection={(e) => (newEvent.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}
               />
               <InputWrapper
-                labelText={'End Time'}
+                placeholder={'End Time'}
                 uidClass="event-end-time time"
                 inputType={InputTypes.time}
                 onDateOrTimeSelection={(e) => (newEvent.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}
               />
             </>
           )}
-          <Spacer height={5} />
+          <Spacer height={10} />
 
           {/* Share with */}
           <ShareWithCheckboxes required={false} onCheck={HandleShareWithSelection} containerClass={`share-with`} />
+          <Spacer height={10} />
 
           {eventLength === EventLengths.single && (
             <>
@@ -417,24 +420,20 @@ export default function NewCalendarEvent() {
             </>
           )}
 
-          <Spacer height={1} />
-
           {/* IS VISITATION? */}
           <div>
             <div className="flex">
-              <Label text={'Visitation Event'} />
+              <Label text={'Visitation Event'} classes="toggle" />
               <ToggleButton isDefaultChecked={false} onCheck={() => setIsVisitation(true)} onUncheck={() => setIsVisitation(false)} />
             </div>
           </div>
-
-          <Spacer height={1} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.IsValid(currentUser?.children) && (
             <Accordion id={'checkboxes'} expanded={includeChildren}>
               <AccordionSummary>
                 <div className="flex">
-                  <Label text={'Include Children'} />
+                  <Label text={'Include Children'} classes="toggle" />
                   <ToggleButton
                     isDefaultChecked={false}
                     onCheck={() => setIncludeChildren(!includeChildren)}
@@ -462,7 +461,7 @@ export default function NewCalendarEvent() {
               <Accordion id={'checkboxes'} expanded={eventIsRecurring}>
                 <AccordionSummary>
                   <div className="flex">
-                    <p className="label">Recurring</p>
+                    <Label text={'Recurring'} classes="toggle" />
                     <ToggleButton onCheck={() => setEventIsRecurring(true)} onUncheck={() => setEventIsRecurring(false)} />
                   </div>
                 </AccordionSummary>
@@ -477,7 +476,7 @@ export default function NewCalendarEvent() {
                   />
 
                   {Manager.IsValid(recurringFrequency) && (
-                    <InputWrapper inputType={'date'} labelText={'Date to End Recurring Events'} required={true}>
+                    <InputWrapper inputType={'date'} placeholder={'Date to End Recurring Events'} required={true}>
                       <MobileDatePicker
                         className={`${theme}  w-100`}
                         onChange={(e) => (newEvent.current.endDate = moment(e).format(DatetimeFormats.dateForDb))}
@@ -493,7 +492,7 @@ export default function NewCalendarEvent() {
           {eventLength === EventLengths.single && (
             <>
               <div className="flex">
-                <Label text={'Duplicate'} />
+                <Label text={'Duplicate'} classes="toggle" />
                 <ToggleButton
                   isDefaultChecked={false}
                   onCheck={() => {
@@ -517,34 +516,31 @@ export default function NewCalendarEvent() {
             </>
           )}
 
-          <Spacer height={5} />
+          <Spacer height={10} />
 
           {/* URL/WEBSITE */}
           <InputWrapper
-            labelText={'Website/Link'}
+            placeholder={'Website/Link'}
             required={false}
             inputType={InputTypes.url}
             onChange={(e) => (newEvent.current.websiteUrl = e.target.value)}
           />
-
           {/* ADDRESS */}
           <AddressInput
             wrapperClasses={Manager.IsValid(newEvent.current.address, true) ? 'show-label' : ''}
-            labelText={'Location'}
+            placeholder={'Location'}
             required={false}
             onChange={(address) => (newEvent.current.address = address)}
           />
-
           {/* PHONE */}
           <InputWrapper
             inputType={InputTypes.phone}
-            labelText={'Phone'}
+            placeholder="Phone"
             onChange={(e) => (newEvent.current.phone = StringManager.FormatPhone(e.target.value))}
           />
-
           {/* NOTES */}
           <InputWrapper
-            labelText={'Notes'}
+            placeholder={'Notes'}
             required={false}
             inputType={InputTypes.textarea}
             onChange={(e) => (newEvent.current.notes = e.target.value)}></InputWrapper>

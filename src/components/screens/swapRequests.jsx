@@ -281,7 +281,7 @@ export default function SwapRequests() {
               <InputWrapper
                 defaultValue={moment(activeRequest?.startDate)}
                 inputType={InputTypes.date}
-                labelText={'Date'}
+                placeholder={'Date'}
                 uidClass="swap-request-date"
                 wrapperClasses={`${Manager.IsValid(activeRequest?.startDate) ? 'show-label' : ''}`}
                 onDateOrTimeSelection={(day) => setStartDate(moment(day).format(DatetimeFormats.dateForDb))}
@@ -293,7 +293,7 @@ export default function SwapRequests() {
               uidClass="response-due-date"
               wrapperClasses={`${Manager.IsValid(activeRequest?.requestedResponseDate) ? 'show-label' : ''}`}
               inputType={InputTypes.date}
-              labelText={'Requested Response Date'}
+              placeholder={'Requested Response Date'}
               defaultValue={moment(activeRequest?.requestedResponseDate)}
               onDateOrTimeSelection={(day) => setResponseDueDate(moment(day).format(DatetimeFormats.dateForDb))}
             />

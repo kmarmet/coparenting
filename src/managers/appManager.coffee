@@ -27,7 +27,8 @@ export default AppManager =
       hoursSinceRefresh = Math.abs Math.ceil msSinceLastRefresh / (1000 * 60 * 60)
 
       # If it has been more than 3 hours since the last refresh -> reload the page
-      if hoursSinceRefresh > 3
+      if hoursSinceRefresh > 6
+        console.log('true')
         localStorage.setItem 'lastAutoRefresh', moment().format(DatetimeFormats.fullDatetime)
         window.location.reload()
         return false
@@ -36,18 +37,18 @@ export default AppManager =
     else
       localStorage.setItem 'lastAutoRefresh', moment().format(DatetimeFormats.fullDatetime)
 
-  UpdateOrRefreshIfNecessary: (currentUser, currentVersion) ->
+  UpdateOrRefreshIfNecessary: (currentUser, latestVersion, delay = 0) ->
     AppManager.RefreshIfNecessary();
 
     if Manager.IsValid currentUser
-      if Manager.IsValid(currentVersion) && currentVersion != currentUser?.app?.lastVersionSeen
-        await DB_UserScoped.updateByPath("#{DB.tables.users}/#{currentUser?.key}/app/lastVersionSeen", currentVersion)
-        setTimeout () ->
-          window.location.reload()
-        , 1000
+      if not currentUser?.app?.currentVersion or currentUser?.app?.currentVersion != latestVersion
+        await DB_UserScoped.updateByPath("#{DB.tables.users}/#{currentUser?.key}/app/currentVersion", latestVersion)
+        return true
+      else
 
+        return false
     else
-      await DB_UserScoped.updateByPath("#{DB.tables.users}/#{currentUser?.key}/app/lastVersionSeen", currentVersion)
+      return false
 
   GetOS: () ->
     userAgent = window.navigator.userAgent

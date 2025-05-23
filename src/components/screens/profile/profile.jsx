@@ -228,7 +228,7 @@ export default function Profile() {
               <InputWrapper
                 inputType={InputTypes.email}
                 onChange={(e) => setEmail(e.target.value)}
-                labelText={'New Email Address'}
+                placeholder={'New Email Address'}
                 required={true}></InputWrapper>
             )}
           </div>
@@ -251,11 +251,16 @@ export default function Profile() {
         <div id="reauthentication-wrapper" className={`${theme}`}>
           <InputWrapper
             onChange={(e) => setEmail(e?.currentTarget?.value)}
-            labelText={'Email Address'}
+            placeholder={'Email Address'}
             inputType={InputTypes.email}
             required={true}
           />
-          <InputWrapper onChange={(e) => setPhone(e?.currentTarget?.value)} labelText={'Password'} inputType={InputTypes.password} required={true} />
+          <InputWrapper
+            onChange={(e) => setPhone(e?.currentTarget?.value)}
+            placeholder={'Password'}
+            inputType={InputTypes.password}
+            required={true}
+          />
         </div>
       </Modal>
 
@@ -276,7 +281,7 @@ export default function Profile() {
                 SetHomeAddress(address).then()
               }}
               defaultValue={currentUser?.location?.homeAddress}
-              labelText={'Home Address'}
+              placeholder={'Home Address'}
               required={true}
               value={currentUser?.homeAddress}
             />

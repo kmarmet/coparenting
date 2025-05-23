@@ -44,7 +44,7 @@ export default function ResetPassword() {
       <div id="forgot-password-container" className="page-container light form">
         <p className="screen-title ">Reset Password</p>
         <Spacer height={10} />
-        <InputWrapper labelText={'Email Address'} required={true} inputType={InputTypes.email} onChange={(e) => setEmail(e.target.value)} />
+        <InputWrapper placeholder={'Email Address'} required={true} inputType={InputTypes.email} onChange={(e) => setEmail(e.target.value)} />
         <button className="button default green w-100" onClick={sendResetLink}>
           Send Reset Link
         </button>

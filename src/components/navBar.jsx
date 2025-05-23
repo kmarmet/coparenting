@@ -90,7 +90,7 @@ export default function NavBar({children, navbarClass}) {
           )}
 
           {/* UPDATES */}
-          {currentUser?.accountType === 'parent' && (
+          {currentUser?.accountType === 'parent' && currentScreen !== ScreenNames.children && currentScreen !== ScreenNames.coparents && (
             <div
               style={DomManager.AnimateDelayStyle(1, 0.06)}
               onClick={() => changeCurrentScreen(ScreenNames.updates)}

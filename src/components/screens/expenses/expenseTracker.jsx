@@ -449,14 +449,14 @@ export default function ExpenseTracker() {
             <>
               <InputWrapper
                 inputType={InputTypes.text}
-                labelText={'Name'}
+                placeholder={'Name'}
                 defaultValue={activeExpense?.name}
                 onChange={(e) => setName(e.target.value)}
               />
 
               {/* AMOUNT */}
               <InputWrapper
-                labelText={'Amount'}
+                placeholder={'Amount'}
                 defaultValue={activeExpense?.amount}
                 inputType={InputTypes.number}
                 onChange={(e) => setAmount(e.target.value)}
@@ -466,7 +466,7 @@ export default function ExpenseTracker() {
               <InputWrapper
                 defaultValue={moment(activeExpense?.dueDate)}
                 inputType={'date'}
-                labelText={'Due Date'}
+                placeholder={'Due Date'}
                 uidClass="expense-tracker-due-date"
                 onDateOrTimeSelection={(e) => setDueDate(moment(e).format('MM/DD/yyyy'))}
               />
@@ -476,7 +476,7 @@ export default function ExpenseTracker() {
                 wrapperClasses={'expense-tracker'}
                 selectValue={category}
                 onChange={(e) => setCategory(e.target.value)}
-                labelText={'Category'}>
+                placeholder={'Category'}>
                 {categoriesAsArray.map((cat, index) => {
                   return (
                     <MenuItem key={index} value={cat}>
@@ -493,7 +493,7 @@ export default function ExpenseTracker() {
                 defaultValue={activeExpense?.notes}
                 onChange={(e) => setNotes(e.target.value)}
                 inputType={InputTypes.textarea}
-                labelText={'Notes'}
+                placeholder={'Notes'}
               />
 
               {/* BUTTONS */}
@@ -606,7 +606,11 @@ export default function ExpenseTracker() {
                   </div>
                 )}
                 <Label text={''} classes="sorting" />
-                <SelectDropdown wrapperClasses={'sorting-accordion'} selectValue={sortMethod} labelText={'Sort by'} onChange={HandleSortBySelection}>
+                <SelectDropdown
+                  wrapperClasses={'sorting-accordion'}
+                  selectValue={sortMethod}
+                  placeholder={'Sort by'}
+                  onChange={HandleSortBySelection}>
                   <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
                   <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
                   <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>

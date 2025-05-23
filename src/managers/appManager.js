@@ -41,7 +41,8 @@ export default AppManager = {
       msSinceLastRefresh = (ref1 = moment(lastRefresh, DatetimeFormats.fullDatetime).diff()) != null ? ref1 : 0;
       hoursSinceRefresh = Math.abs(Math.ceil(msSinceLastRefresh / (1000 * 60 * 60)));
       // If it has been more than 3 hours since the last refresh -> reload the page
-      if (hoursSinceRefresh > 3) {
+      if (hoursSinceRefresh > 6) {
+        console.log('true');
         localStorage.setItem('lastAutoRefresh', moment().format(DatetimeFormats.fullDatetime));
         window.location.reload();
         return false;
@@ -51,18 +52,18 @@ export default AppManager = {
       return localStorage.setItem('lastAutoRefresh', moment().format(DatetimeFormats.fullDatetime));
     }
   },
-  UpdateOrRefreshIfNecessary: async function(currentUser, currentVersion) {
-    var ref1;
+  UpdateOrRefreshIfNecessary: async function(currentUser, latestVersion, delay = 0) {
+    var ref1, ref2;
     AppManager.RefreshIfNecessary();
     if (Manager.IsValid(currentUser)) {
-      if (Manager.IsValid(currentVersion) && currentVersion !== (currentUser != null ? (ref1 = currentUser.app) != null ? ref1.lastVersionSeen : void 0 : void 0)) {
-        await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser != null ? currentUser.key : void 0}/app/lastVersionSeen`, currentVersion);
-        return setTimeout(function() {
-          return window.location.reload();
-        }, 1000);
+      if (!(currentUser != null ? (ref1 = currentUser.app) != null ? ref1.currentVersion : void 0 : void 0) || (currentUser != null ? (ref2 = currentUser.app) != null ? ref2.currentVersion : void 0 : void 0) !== latestVersion) {
+        await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser != null ? currentUser.key : void 0}/app/currentVersion`, latestVersion);
+        return true;
+      } else {
+        return false;
       }
     } else {
-      return (await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUser != null ? currentUser.key : void 0}/app/lastVersionSeen`, currentVersion));
+      return false;
     }
   },
   GetOS: function() {

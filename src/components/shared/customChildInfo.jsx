@@ -1,6 +1,7 @@
 // Path: src\components\shared\customChildInfo.jsx
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
+import {GrCheckmark} from 'react-icons/gr'
 import validator from 'validator'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
@@ -17,6 +18,7 @@ import CheckboxGroup from './checkboxGroup'
 import InputWrapper from './inputWrapper'
 import Modal from './modal'
 import ShareWithCheckboxes from './shareWithCheckboxes'
+import Spacer from './spacer'
 import ViewSelector from './viewSelector'
 
 export default function CustomChildInfo({hideCard, showCard, activeChild}) {
@@ -84,11 +86,12 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
   return (
     <Modal
       onSubmit={Add}
-      submitText={'Add'}
+      submitText={'Done'}
       className="custom-child-info-wrapper"
       wrapperClass="custom-child-info-card"
       onClose={ResetForm}
       title={'Add Your Own Info'}
+      submitIcon={<GrCheckmark />}
       viewSelector={
         <ViewSelector
           defaultView={'General'}
@@ -99,11 +102,11 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
       }
       showCard={showCard}>
       <div className="form">
-        <ShareWithCheckboxes onCheck={HandleShareWithSelection} labelText="Share with" required={false} />
+        <Spacer height={6} />
 
         {/* INFO TYPE */}
         <CheckboxGroup
-          parentLabel="Type"
+          parentLabel="Information Type"
           required={true}
           checkboxArray={DomManager.BuildCheckboxGroup({
             currentUser,
@@ -112,21 +115,22 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
           })}
           onCheck={HandleInfoTypeSelection}
         />
+        <Spacer height={10} />
 
         {/* INPUTS */}
         {infoType === 'text' && (
           <>
-            <InputWrapper inputType={InputTypes.text} labelText={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
-            <InputWrapper inputType={InputTypes.text} labelText={'Value'} required={true} onChange={(e) => setValue(e.target.value)} />
+            <InputWrapper inputType={InputTypes.text} placeholder={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
+            <InputWrapper inputType={InputTypes.text} placeholder={'Value'} required={true} onChange={(e) => setValue(e.target.value)} />
           </>
         )}
 
         {infoType === 'phone' && (
           <>
-            <InputWrapper inputType={InputTypes.phone} labelText={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
+            <InputWrapper inputType={InputTypes.text} placeholder={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
             <InputWrapper
-              inputValueType="tel"
-              labelText={'Phone Number'}
+              inputType={InputTypes.phone}
+              placeholder={'Phone Number'}
               required={true}
               onChange={(e) => setValue(StringManager.FormatPhone(e.target.value))}
             />
@@ -135,9 +139,9 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
 
         {infoType === 'date' && (
           <div className="w-100">
-            <InputWrapper inputType={InputTypes.text} labelText={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
+            <InputWrapper inputType={InputTypes.text} placeholder={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
             <InputWrapper
-              labelText={'Date'}
+              placeholder={'Date'}
               required={true}
               uidClass="child-info-custom-date"
               inputType={InputTypes.date}
@@ -148,9 +152,9 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
 
         {infoType === 'location' && (
           <>
-            <InputWrapper inputType={InputTypes.text} labelText={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
+            <InputWrapper inputType={InputTypes.text} placeholder={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
             <AddressInput
-              labelText={'Address'}
+              placeholder={'Address'}
               required={true}
               onChange={(address) => {
                 setValue(address)
@@ -158,6 +162,8 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
             />
           </>
         )}
+        <Spacer height={6} />
+        <ShareWithCheckboxes onCheck={HandleShareWithSelection} labelText="CONTACTS TO Share with" required={false} />
       </div>
     </Modal>
   )

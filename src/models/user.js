@@ -9,7 +9,7 @@ import DateFormats from '../constants/datetimeFormats';
 
 User = class User {
   constructor(id = Manager.GetUid(), creationDate = moment().format(DateFormats.dateForDb), key = '', name = '', email = '', phone = '', children = [], coparents = [], sharedDataUsers = [], parentType = '', accountType = '', homeAddress = '', app = {
-      lastVersionSeen: 1
+      currentVersion: 1
     }, location = {
       country: '',
       city: '',

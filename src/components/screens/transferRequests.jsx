@@ -281,7 +281,7 @@ export default function TransferRequests() {
               <InputWrapper
                 defaultValue={moment(activeRequest?.startDate)}
                 inputType={InputTypes.date}
-                labelText={'Date'}
+                placeholder={'Date'}
                 uidClass="transfer-request-date"
                 onDateOrTimeSelection={(e) => setRequestDate(moment(e).format(DatetimeFormats.dateForDb))}
               />
@@ -291,12 +291,12 @@ export default function TransferRequests() {
                 defaultValue={activeRequest?.time}
                 inputType={InputTypes.time}
                 uidClass="transfer-request-time"
-                labelText={'Time'}
+                placeholder={'Time'}
                 onDateOrTimeSelection={(e) => setRequestTime(moment(e).format(DatetimeFormats.timeForDb))}
               />
 
               {/*  NEW LOCATION*/}
-              <AddressInput labelText={'Address'} defaultValue={activeRequest?.location} onChange={(address) => setRequestLocation(address)} />
+              <AddressInput placeholder={'Address'} defaultValue={activeRequest?.location} onChange={(address) => setRequestLocation(address)} />
 
               {/* RESPONSE DUE DATE */}
               <InputWrapper
@@ -304,7 +304,7 @@ export default function TransferRequests() {
                 onDateOrTimeSelection={(e) => setResponseDueDate(moment(e).format(DatetimeFormats.dateForDb))}
                 inputType={InputTypes.date}
                 uidClass="transfer-request-response-date"
-                labelText={'Requested Response Date'}
+                placeholder={'Requested Response Date'}
               />
 
               {/* REASON */}
@@ -313,7 +313,7 @@ export default function TransferRequests() {
                   defaultValue={activeRequest?.requestReason}
                   onChange={(e) => setRequestReason(e)}
                   inputType={InputTypes.textarea}
-                  labelText={'Reason for Request'}
+                  placeholder={'Reason for Request'}
                 />
               )}
 

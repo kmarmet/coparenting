@@ -616,7 +616,7 @@ const Chats = () => {
             </p>
             <InputWrapper
               inputType={'input'}
-              labelText={'Find a message...'}
+              placeholder={'Find a message...'}
               onChange={async (e) => {
                 const inputValue = e.target.value
                 if (inputValue.length === 0) {

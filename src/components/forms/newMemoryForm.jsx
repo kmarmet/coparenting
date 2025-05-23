@@ -168,7 +168,7 @@ export function NewMemoryForm() {
             {/* TITLE */}
             <InputWrapper
               inputType={InputTypes.text}
-              labelText={'Title'}
+              placeholder={'Title'}
               onChange={(e) => {
                 newMemory.current.title = e.target.value
               }}
@@ -177,7 +177,7 @@ export function NewMemoryForm() {
             {/* DATE */}
             <InputWrapper
               uidClass="memory-capture-date-uid"
-              labelText={'Capture Date'}
+              placeholder={'Capture Date'}
               inputType={InputTypes.date}
               onDateOrTimeSelection={(e) => {
                 newMemory.current.memoryCaptureDate = moment(e).format(DatetimeFormats.dateForDb)
@@ -185,7 +185,7 @@ export function NewMemoryForm() {
             />
 
             {/* NOTES */}
-            <InputWrapper onChange={(e) => (newMemory.current.notes = e.target.value)} inputType={InputTypes.textarea} labelText={'Notes'} />
+            <InputWrapper onChange={(e) => (newMemory.current.notes = e.target.value)} inputType={InputTypes.textarea} placeholder={'Notes'} />
 
             {/* UPLOAD BUTTON */}
             <UploadInputs

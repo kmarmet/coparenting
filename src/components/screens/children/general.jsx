@@ -113,7 +113,7 @@ function General({activeChild}) {
                             <InputWrapper
                               hasBottomSpacer={false}
                               inputType={InputTypes.text}
-                              labelText={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
+                              placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
                               defaultValue={value}
                               onChange={async (e) => {
                                 const inputValue = e.target.value

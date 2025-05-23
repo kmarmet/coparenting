@@ -833,7 +833,7 @@
       }
 
       // INPUT WRAPPER
-      #input-wrapper {
+      .input-wrapper {
         background: $translucentLightest;
 
         * {
@@ -988,7 +988,7 @@
           #add-expense-form {
             #amount-input-wrapper {
               .input-wrapper {
-                #input-wrapper {
+                .input-wrapper {
                   input {
                     border-bottom: 1px solid $translucentLightest;
                   }

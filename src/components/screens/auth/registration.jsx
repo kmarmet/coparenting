@@ -356,7 +356,7 @@ export default function Registration() {
                 inputType={InputTypes.text}
                 inputName="Name"
                 required={true}
-                labelText={'Name'}
+                placeholder={'Name'}
                 onChange={(e) => setName(e.target.value)}
               />
 
@@ -364,19 +364,19 @@ export default function Registration() {
               <InputWrapper
                 inputType={InputTypes.phone}
                 required={true}
-                labelText={'Phone Number'}
+                placeholder={'Phone Number'}
                 onChange={(e) => setPhoneNumber(e.target.value)}
               />
 
               {/* EMAIL */}
-              <InputWrapper inputType={InputTypes.text} required={true} labelText={'Email Address'} onChange={(e) => setEmail(e.target.value)} />
+              <InputWrapper inputType={InputTypes.text} required={true} placeholder={'Email Address'} onChange={(e) => setEmail(e.target.value)} />
 
               {/* PASSWORD */}
               <InputWrapper
                 inputType={InputTypes.password}
                 inputValueType="password"
                 required={true}
-                labelText={'Password'}
+                placeholder={'Password'}
                 onChange={(e) => setPassword(e.target.value)}
               />
 
@@ -385,7 +385,7 @@ export default function Registration() {
                 inputType={InputTypes.password}
                 inputValueType="password"
                 required={true}
-                labelText={'Confirm Password'}
+                placeholder={'Confirm Password'}
                 onChange={(e) => setConfirmedPassword(e.target.value)}
               />
 
@@ -440,14 +440,14 @@ export default function Registration() {
             <InputWrapper
               inputType={InputTypes.email}
               required={true}
-              labelText={'Parent Email Address'}
+              placeholder={'Parent Email Address'}
               onChange={(e) => setParentEmail(e.target.value)}
             />
             {/* PARENT PHONE */}
             <InputWrapper
               inputType={InputTypes.phone}
               required={true}
-              labelText={'Parent Phone Number'}
+              placeholder={'Parent Phone Number'}
               onChange={(e) => setParentPhone(e.target.value)}
             />
             <button className="button default green center" onClick={SendParentAccessCode}>
@@ -461,7 +461,7 @@ export default function Registration() {
           <>
             <p className="screen-title">Verify Access Code</p>
             <Spacer height={10} />
-            <InputWrapper labelText={'Access Code'} inputType={InputTypes.text} required={true} onChange={(e) => setEnteredCode(e.target.value)} />
+            <InputWrapper placeholder={'Access Code'} inputType={InputTypes.text} required={true} onChange={(e) => setEnteredCode(e.target.value)} />
             <Spacer height={10} />
             <button className="button w-50 default green center" onClick={VerifyParentAccessCode}>
               Verify Code

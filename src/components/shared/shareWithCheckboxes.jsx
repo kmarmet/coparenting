@@ -8,7 +8,6 @@ import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager.coffee'
 import Checkbox from './checkbox.jsx'
 import Label from './label'
-import Spacer from './spacer'
 
 export default function ShareWithCheckboxes({
   defaultKeys = [],
@@ -42,8 +41,7 @@ export default function ShareWithCheckboxes({
     <>
       {Manager.IsValid(shareWith) && (
         <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass}`}>
-          <Label text={`${labelText.length === 0 ? 'Contacts to share with' : labelText}`} required={required} />
-          <Spacer height={2} />
+          <Label classes="toggle always-show" text={`${labelText.length === 0 ? 'Contacts to share with' : labelText}`} required={required} />
           <div className="flex" id="checkboxes">
             {Manager.IsValid(shareWith) &&
               shareWith?.map((user, index) => {

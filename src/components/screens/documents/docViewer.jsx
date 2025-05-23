@@ -562,7 +562,12 @@ export default function DocViewer() {
         onSubmit={RenameFile}
         className="rename-file"
         title={'Rename Document'}>
-        <InputWrapper labelText={'New document name'} required={true} inputType={InputTypes.text} onChange={(e) => setNewFileName(e.target.value)} />
+        <InputWrapper
+          placeholder={'New document name'}
+          required={true}
+          inputType={InputTypes.text}
+          onChange={(e) => setNewFileName(e.target.value)}
+        />
       </Modal>
 
       {/* SCREEN ACTIONS */}

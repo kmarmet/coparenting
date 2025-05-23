@@ -22,6 +22,8 @@ export default function Modal({
   deleteButtonText = 'Delete',
   titleIcon = null,
   viewSelector,
+  submitIcon = null,
+  deleteIcon = null,
 }) {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey, creationFormToShow} = state
@@ -57,6 +59,16 @@ export default function Modal({
         setTimeout(() => {
           DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
         }, 300)
+      }
+      const activeModal = document.querySelector('#modal-wrapper.active')
+      if (Manager.IsValid(activeModal)) {
+        const allWrappers = activeModal.querySelectorAll('.input-wrapper')
+        if (Manager.IsValid(allWrappers)) {
+          const firstWrapper = allWrappers[0]
+          if (Manager.IsValid(firstWrapper)) {
+            firstWrapper.querySelector('input').focus()
+          }
+        }
       }
     }
     let modalWrapper = document.querySelector(`.${wrapperClass}#modal-wrapper.active`)
@@ -96,20 +108,19 @@ export default function Modal({
 
       // Set MUI datetime picker placeholders
 
-      const startTimeInput = document.querySelector('#input-wrapper.start-time .MuiInputBase-input')
-      const endTimeInput = document.querySelector('#input-wrapper.end-time .MuiInputBase-input')
-
-      if (startTimeInput && endTimeInput) {
-        startTimeInput.placeholder = 'Start time'
-        endTimeInput.placeholder = 'End time'
-      }
+      // const startTimeInput = document.querySelector('.input-wrapper.start-time .MuiInputBase-input')
+      // const endTimeInput = document.querySelector('.input-wrapper.end-time .MuiInputBase-input')
+      //
+      // if (startTimeInput && endTimeInput) {
+      //   startTimeInput.placeholder = 'Start time'
+      //   endTimeInput.placeholder = 'End time'
+      // }
     }
   }, [showCard])
 
   return (
     <Overlay show={showCard}>
       <div key={refreshKey} id="modal-wrapper" className={`${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
-        <div className="above-card">{viewSelector}</div>
         <div
           style={DomManager.AnimateDelayStyle(1, 0.002)}
           id="modal-card"
@@ -124,6 +135,7 @@ export default function Modal({
             </div>
 
             <div id="relative-wrapper">
+              {viewSelector}
               <div id="content">{children}</div>
             </div>
           </div>
@@ -132,12 +144,14 @@ export default function Modal({
           {hasSubmitButton && (
             <button className={`button card-button submit`} onClick={onSubmit}>
               {submitText}
+              {/*{submitIcon && submitIcon}*/}
             </button>
           )}
 
           {hasDelete && (
             <button className={'delete-button default card-button'} onClick={onDelete}>
               {deleteButtonText}
+              {/*{!deleteIcon ? <FaMinus className={'delete'} /> : deleteIcon}*/}
             </button>
           )}
           <button
@@ -146,7 +160,8 @@ export default function Modal({
               onClose()
               HideCard()
             }}>
-            Cancel
+            Nevermind
+            {/*<CgClose />*/}
           </button>
         </div>
       </div>

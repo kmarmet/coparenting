@@ -56,10 +56,10 @@ export default function CustomParentInfo({hideCard, activeCoparent, showCard}) {
           hasBottomSpacer={true}
           inputType={InputTypes.text}
           required={true}
-          labelText={'Title/Label'}
+          placeholder={'Title/Label'}
           onChange={(e) => setTitle(StringManager.removeSpecialChars(e.target.value))}
         />
-        <InputWrapper inputType={InputTypes.text} required={true} labelText={'Value'} onChange={(e) => setValue(e.target.value)} />
+        <InputWrapper inputType={InputTypes.text} required={true} placeholder={'Value'} onChange={(e) => setValue(e.target.value)} />
       </div>
     </Modal>
   )

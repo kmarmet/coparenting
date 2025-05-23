@@ -17,7 +17,7 @@ class User
     @accountType = ''
     @homeAddress = ''
     @app = {
-      lastVersionSeen: 1
+      currentVersion: 1
     }
     @location = {
       country: ''
