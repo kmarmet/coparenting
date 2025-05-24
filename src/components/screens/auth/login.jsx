@@ -115,6 +115,7 @@ export default function Login() {
       <div id="login-container" className={`page-container login`}>
         {!window.location.href.includes('localhost') && (
           <Turnstile
+            /* eslint-disable-next-line no-undef */
             sitekey={process.env.REACT_APP_CLOUDFARE_CAPTCHA_SITE_KEY}
             onSuccess={() => {
               console.log(`Captcha Challenge Solved`)
@@ -125,6 +126,7 @@ export default function Login() {
             }}
             onError={(error) => {
               setState({...state, successAlertMessage: 'Pre-Authentication Failed. Please close and reopen the app again'})
+              LogManager.Log(`Error: ${error} | Code File: Login | Function: None  `)
               console.log(`Captcha Error: ${error}`)
             }}
             onExpire={() => {
@@ -136,6 +138,7 @@ export default function Login() {
         <ScreenHeader wrapperClass="login-header">
           <img
             onClick={() => setState({...state, currentScreen: ScreenNames.landing})}
+            /* eslint-disable-next-line no-undef */
             src={require('../../../img/logo.png')}
             alt="Peaceful coParenting"
           />
@@ -162,57 +165,55 @@ export default function Login() {
 
         {/* FORM/INPUTS */}
         <div className="screen-content">
-          <div className="flex form-container">
-            <div className="form">
-              {/* EMAIL */}
+          <div className="form-container">
+            {/* EMAIL */}
+            <InputWrapper
+              inputClasses="email login-input"
+              inputType={InputTypes.email}
+              required={true}
+              wrapperClasses="white"
+              placeholder={'Email Address'}
+              onChange={(e) => (credentials.current.email = e.target.value)}
+            />
+            {/* PASSWORD */}
+            <div className="flex">
               <InputWrapper
-                wrapperClasses="fade-in-right"
-                inputClasses="email login-input"
-                inputType={InputTypes.email}
+                inputType={viewPassword ? InputTypes.text : InputTypes.password}
                 required={true}
-                placeholder={'Email Address'}
-                onChange={(e) => (credentials.current.email = e.target.value)}
+                hasBottomSpacer={false}
+                wrapperClasses="password white"
+                placeholder={'Password'}
+                inputClasses="password login-input"
+                onChange={(e) => (credentials.current.password = e.target.value)}
               />
-              {/* PASSWORD */}
-              <div className="flex">
-                <InputWrapper
-                  inputType={viewPassword ? InputTypes.text : InputTypes.password}
-                  required={true}
-                  hasBottomSpacer={false}
-                  wrapperClasses="password fade-in-right"
-                  placeholder={'Password'}
-                  inputClasses="password login-input"
-                  onChange={(e) => (credentials.current.password = e.target.value)}
-                />
-                {!viewPassword && <PiEyeDuotone onClick={() => setViewPassword(true)} className={'blue eye-icon '} />}
-                {viewPassword && <PiEyeClosedDuotone onClick={() => setViewPassword(false)} className={'blue eye-icon '} />}
-              </div>
-
-              <div id="below-inputs-wrapper" className="flex space-between align-center">
-                {/* REMEMBER ME */}
-                <Checkbox text={'Remember Me'} onCheck={() => setIsPersistent(!isPersistent)} />
-                {/* FORGOT PASSWORD BUTTON */}
-                <p id="forgot-password-link" onClick={() => setState({...state, currentScreen: ScreenNames.resetPassword})}>
-                  Forgot Password
-                </p>
-              </div>
-
-              <Spacer height={10} />
-
-              {/* LOGIN BUTTONS */}
-              {challengeSolved && !window.location.href.includes('localhost') && (
-                <button className="button default green" id="login-button" onClick={Login}>
-                  Login
-                </button>
-              )}
-              {window.location.href.includes('localhost') && (
-                <button className="button default green" id="login-button" onClick={Login}>
-                  Login
-                </button>
-              )}
-
-              {!challengeSolved && !window.location.href.includes('localhost') && <p id="captcha-loading-text">Pre-Authentication in Progress...</p>}
+              {!viewPassword && <PiEyeDuotone onClick={() => setViewPassword(true)} className={'blue eye-icon '} />}
+              {viewPassword && <PiEyeClosedDuotone onClick={() => setViewPassword(false)} className={'blue eye-icon '} />}
             </div>
+
+            <div id="below-inputs-wrapper" className="flex space-between align-center">
+              {/* REMEMBER ME */}
+              <Checkbox text={'Remember Me'} onCheck={() => setIsPersistent(!isPersistent)} />
+              {/* FORGOT PASSWORD BUTTON */}
+              <p id="forgot-password-link" onClick={() => setState({...state, currentScreen: ScreenNames.resetPassword})}>
+                Forgot Password
+              </p>
+            </div>
+
+            <Spacer height={10} />
+
+            {/* LOGIN BUTTONS */}
+            {challengeSolved && !window.location.href.includes('localhost') && (
+              <button className="button default green" id="login-button" onClick={Login}>
+                Login
+              </button>
+            )}
+            {window.location.href.includes('localhost') && (
+              <button className="button default green" id="login-button" onClick={Login}>
+                Login
+              </button>
+            )}
+
+            {!challengeSolved && !window.location.href.includes('localhost') && <p id="captcha-loading-text">Pre-Authentication in Progress...</p>}
 
             <p id="sign-up-link" onClick={() => setState({...state, currentScreen: ScreenNames.registration})}>
               Don&#39;t have an account? <span>Sign Up</span>

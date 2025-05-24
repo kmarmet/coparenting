@@ -269,6 +269,7 @@ DomManager = {
       for obj in customLabelArray
         if Manager.IsValid(obj[labelProp]) and Manager.IsValid(obj[uidProp])
           checkboxGroup.push
+            isActive: Manager.IsValid(defaultLabels)
             label: obj[labelProp]
             key: obj[uidProp]
 

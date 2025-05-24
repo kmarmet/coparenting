@@ -18,7 +18,6 @@ import CalendarMapper from '/src/mappers/calMapper'
 import ActivityCategory from '/src/models/activityCategory'
 import Expense from '/src/models/expense.js'
 import ModelNames from '/src/models/modelNames'
-import MenuItem from '@mui/material/MenuItem'
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
 import {GrPowerReset} from 'react-icons/gr'
@@ -287,7 +286,8 @@ export default function NewExpenseForm() {
     const currentNumber = parseInt(expenseAmount || 0)
     const total = asNumber + currentNumber
     setExpenseAmount(() => total)
-    const inputWrapper = document.querySelector('.input-wrapper')
+    const activeForm = document.querySelector('.form.active')
+    const inputWrapper = activeForm.querySelector('.input-wrapper')
     const amountInput = inputWrapper.querySelector('input')
     amountInput.value = total
     numberButton.classList.add('pressed', 'animate', 'active')
@@ -296,9 +296,7 @@ export default function NewExpenseForm() {
     }, 50)
   }
 
-  const HandleCategorySelection = async (category) => {
-    setExpenseCategory(category.target.value)
-  }
+  const HandleCategorySelection = async (category) => setExpenseCategory(category.target.value)
 
   return (
     <Form
@@ -311,7 +309,7 @@ export default function NewExpenseForm() {
       wrapperClass="new-expense-card form at-top"
       showCard={creationFormToShow === CreationForms.expense}
       onClose={ResetForm}>
-      <div className="calendarEvents-wrapper">
+      <div className="expenses-wrapper">
         <Spacer height={5} />
         {/* PAGE CONTAINER */}
         <div id="add-expense-form" className={`${theme} at-top`}>
@@ -382,20 +380,24 @@ export default function NewExpenseForm() {
           </div>
 
           {/* CATEGORY */}
-          <SelectDropdown options={Object.keys(ExpenseCategories)} selectValue={Object.keys(ExpenseCategories)[0]} onChange={HandleCategorySelection}>
-            {Object.keys(ExpenseCategories).map((type, index) => {
-              return (
-                <MenuItem key={index} value={type}>
-                  {type}
-                </MenuItem>
-              )
-            })}
-          </SelectDropdown>
-
+          <SelectDropdown
+            options={Object.keys(ExpenseCategories)}
+            selectValue={Object.keys(ExpenseCategories)[0]}
+            onChange={HandleCategorySelection}
+            placeholder={'Select a Category'}
+            label={'Category'}
+            required={true}
+            onloadState={true}
+          />
           <Spacer height={5} />
 
           {/* EXPENSE NAME */}
-          <InputWrapper onChange={(e) => setExpenseName(e.target.value)} inputType={InputTypes.text} placeholder={'Name'} required={true} />
+          <InputWrapper
+            onChange={(e) => setExpenseName(e.target.value)}
+            inputType={InputTypes.text}
+            placeholder={'Name of Expense'}
+            required={true}
+          />
 
           {/* DUE DATE */}
           <InputWrapper

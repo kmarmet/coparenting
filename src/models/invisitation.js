@@ -9,13 +9,13 @@ import moment from "moment";
 
 Invitation = class Invitation {
   constructor(options = {}) {
-    var ref, ref1, ref2, ref3;
+    var ref, ref1, ref2, ref3, ref4;
     this.id = Manager.GetUid();
     this.timestamp = (ref = moment(options != null ? options.timestamp : void 0).format(DatetimeFormats.dateForDb)) != null ? ref : moment().format(DatetimeFormats.dateForDb);
-    this.senderKey = options != null ? options.senderKey : void 0;
-    this.recipientPhone = (ref1 = options != null ? options.recipientPhone : void 0) != null ? ref1 : '';
-    this.senderName = (ref2 = options != null ? options.senderName : void 0) != null ? ref2 : '';
-    this.senderEmail = (ref3 = options != null ? options.senderEmail : void 0) != null ? ref3 : '';
+    this.token = (ref1 = options != null ? options.token : void 0) != null ? ref1 : '';
+    this.recipientPhone = (ref2 = options != null ? options.recipientPhone : void 0) != null ? ref2 : '';
+    this.senderName = (ref3 = options != null ? options.senderName : void 0) != null ? ref3 : '';
+    this.senderEmail = (ref4 = options != null ? options.senderEmail : void 0) != null ? ref4 : '';
     this.status = 'sent';
   }
 

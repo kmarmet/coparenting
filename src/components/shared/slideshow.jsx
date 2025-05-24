@@ -96,7 +96,7 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
 
   return (
     <Overlay show={show}>
-      <div {...handlers} id="slideshow-wrapper" style={DomManager.AnimateDelayStyle(1)} className={show ? 'active' : ''}>
+      <div {...handlers} style={DomManager.AnimateDelayStyle(1)} className={`${show ? 'active' : ''} slideshow-wrapper`}>
         {Manager.IsValid(images) &&
           images.map((imageData, index) => {
             return (
@@ -116,21 +116,32 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
             )
           })}
         {/* NAVIGATION */}
-        <div className="navigation">
+        {images?.length > 1 && (
+          <p className="count">
+            {activeImageIndex + 1} <span className="op-8">of</span> {images?.length}
+          </p>
+        )}
+        <div className={`navigation ${images?.length < 2 ? 'full-width' : ''}`}>
           {images?.length > 1 && (
-            <div className="arrows">
-              <div className="svg-wrapper left">
-                <TbCircleArrowLeftFilled onClick={() => Navigate('left')} />
-              </div>
-              {activeImageIndex + 1} <span className="op-8">of</span> {images?.length}
-              <div className="svg-wrapper right">
-                <TbCircleArrowRightFilled onClick={() => Navigate('right')} />
-              </div>
-            </div>
+            <>
+              <button onClick={() => Navigate('left')} className="button">
+                <TbCircleArrowLeftFilled />
+                Previous
+              </button>
+
+              <button className="button close" onClick={hide}>
+                Close
+              </button>
+              <button onClick={() => Navigate('right')} className="button">
+                Next <TbCircleArrowRightFilled />
+              </button>
+            </>
           )}
-          <span className="close" onClick={hide}>
-            CLOSE
-          </span>
+          {images?.length === 1 && (
+            <button className="button close" onClick={hide}>
+              Close
+            </button>
+          )}
         </div>
       </div>
     </Overlay>

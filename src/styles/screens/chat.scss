@@ -112,29 +112,6 @@
       }
     }
 
-    #row {
-      flex-wrap: wrap;
-
-      .thread-actions {
-        position: relative;
-        opacity: 0;
-        width: 100%;
-        transition: all 0.3s ease-in-out;
-        justify-content: center;
-        gap: 10px;
-        max-height: 0;
-        align-items: flex-start;
-        z-index: -1;
-        &.active {
-          right: 0;
-          max-height: 1000px;
-          z-index: 1;
-          opacity: 1;
-          transition: all 0.3s ease-in-out;
-        }
-      }
-    }
-
     .thread-item {
       justify-content: space-between;
       width: 100%;
@@ -142,8 +119,6 @@
       border-bottom: 0;
       flex-wrap: nowrap;
       position: relative;
-      @include row;
-      margin-bottom: 8px;
       opacity: 1;
       .last-message {
         max-width: 400px;
@@ -163,9 +138,33 @@
         align-items: center;
         width: 100%;
         justify-content: space-between;
+        background: white;
+        padding: 12px;
+        border-radius: $bigBorderRadius;
+        border: 1px solid $greyBorderColor;
+        min-height: 55px;
+
         .column {
           &.left {
             width: 90%;
+          }
+
+          &.right {
+            button {
+              &.button {
+                height: unset;
+                border-radius: $borderRadius;
+                padding: 6px 0;
+                width: 60px;
+                font-size: 12px;
+                &.resume {
+                  background: $greenForWhiteText;
+                }
+                &.pause {
+                  background: $bootstrapRed;
+                }
+              }
+            }
           }
         }
 
@@ -174,26 +173,6 @@
           padding: 0;
           line-height: 1;
           color: $primaryText;
-        }
-        #pause-wrapper,
-        #play-wrapper {
-          height: 100%;
-          margin: 0 0 0 auto;
-          padding: 0;
-          position: relative;
-          top: 4px;
-
-          &#play-wrapper {
-            top: 5px;
-          }
-          .pause-icon {
-            font-size: 24px;
-            color: $red;
-          }
-          .play-icon {
-            font-size: 20px;
-            color: $green;
-          }
         }
       }
 

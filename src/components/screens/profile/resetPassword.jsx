@@ -1,29 +1,30 @@
 // Path: src\components\screens\profile\resetPassword.jsx
-import React, {useContext, useState} from 'react'
-import globalState from '../../../context'
-import ScreenNames from '../../../constants/screenNames'
-import validator from 'validator'
-import {getAuth, sendPasswordResetEmail} from 'firebase/auth'
-import firebaseConfig from '../../../firebaseConfig'
 import {initializeApp} from 'firebase/app'
+import {getAuth, sendPasswordResetEmail} from 'firebase/auth'
+import React, {useContext, useRef} from 'react'
+import validator from 'validator'
+import InputTypes from '../../../constants/inputTypes'
+import ScreenNames from '../../../constants/screenNames'
+import globalState from '../../../context'
+import firebaseConfig from '../../../firebaseConfig'
 import AlertManager from '../../../managers/alertManager'
+import Form from '../../shared/form'
 import InputWrapper from '../../shared/inputWrapper'
 import Spacer from '../../shared/spacer'
-import InputTypes from '../../../constants/inputTypes'
 
 export default function ResetPassword() {
   const {state, setState} = useContext(globalState)
   const {theme, firebaseUser} = state
-  const [email, setEmail] = useState('')
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
+  const email = useRef('')
 
-  const sendResetLink = async () => {
-    if (!validator.isEmail(email)) {
+  const SendResetLink = async () => {
+    if (!validator.isEmail(email.current)) {
       AlertManager.throwError('Email is not valid')
       return false
     }
-    await sendPasswordResetEmail(auth, email)
+    await sendPasswordResetEmail(auth, email.current)
       .then(async () => {
         AlertManager.successAlert('A reset link has been sent to your email')
         setState({
@@ -32,26 +33,24 @@ export default function ResetPassword() {
           userIsLoggedIn: true,
         })
       })
-      .catch((error) => {
+      .catch(() => {
         AlertManager.throwError('Profile not Found', 'We could not find an profile with the email provided')
-        console.log(error)
-        // Some error occurred.
+        return false
       })
   }
 
   return (
-    <>
-      <div id="forgot-password-container" className="page-container light form">
-        <p className="screen-title ">Reset Password</p>
-        <Spacer height={10} />
-        <InputWrapper placeholder={'Email Address'} required={true} inputType={InputTypes.email} onChange={(e) => setEmail(e.target.value)} />
-        <button className="button default green w-100" onClick={sendResetLink}>
-          Send Reset Link
-        </button>
+    <Form
+      onClose={() => setState({...state, currentScreen: ScreenNames.login})}
+      title={'Reset Password'}
+      submitText={'Send Reset Link'}
+      showCard={true}
+      onSubmit={SendResetLink}
+      wrapperClass="reset-password">
+      <Spacer height={10} />
+      <div className="screen-content">
+        <InputWrapper placeholder={'Email Address'} required={true} inputType={InputTypes.email} onChange={(e) => (email.current = e.target.value)} />
       </div>
-      <button className="button default back-to-login-button" onClick={() => setState({...state, currentScreen: ScreenNames.login})}>
-        Back to Login
-      </button>
-    </>
+    </Form>
   )
 }

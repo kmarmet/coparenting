@@ -1,12 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react'
 import {IoClose} from 'react-icons/io5'
+import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 
 const SuccessAlert = () => {
   const {state, setState} = useContext(globalState)
-  const {successAlertMessage} = state
+  const {successAlertMessage, authUser, currentScreen} = state
   const [showAlert, setShowAlert] = useState(false)
 
   useEffect(() => {
@@ -22,10 +23,15 @@ const SuccessAlert = () => {
   }, [successAlertMessage])
 
   return (
-    <div id="success-alert-wrapper" onClick={() => setShowAlert(false)} className={`${DomManager.Animate.FadeInDown(showAlert)}`}>
-      <p id="success-alert">{successAlertMessage}</p>
-      <IoClose className={'alert-close-icon'} />
-    </div>
+    <>
+      {Manager.IsValid(authUser) ||
+        (currentScreen === ScreenNames.login && (
+          <div id="success-alert-wrapper" onClick={() => setShowAlert(false)} className={`${DomManager.Animate.FadeInDown(false)}`}>
+            <p id="success-alert">{successAlertMessage}</p>
+            <IoClose className={'alert-close-icon'} />
+          </div>
+        ))}
+    </>
   )
 }
 

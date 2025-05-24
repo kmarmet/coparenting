@@ -347,7 +347,7 @@ export default function EventCalendar() {
     //   setState({...state, successAlertMessage: 'testing bro'})
     // }, 1000)
 
-    setState({...state, isLoading: false})
+    // setState({...state, isLoading: false})
     setTimeout(() => {
       AddMonthText()
     }, 500)

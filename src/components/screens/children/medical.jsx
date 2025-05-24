@@ -97,10 +97,6 @@ export default function Medical({activeChild}) {
     SetChildData().then((r) => r)
   }, [activeChild])
 
-  if (currentUserIsLoading) {
-    return <img src={require('../../../img/loading.gif')} alt="Loading" />
-  }
-
   return (
     <div className="info-section section medical form">
       <Accordion className={`${theme} child-info`} disabled={!Manager.IsValid(medicalValues)}>

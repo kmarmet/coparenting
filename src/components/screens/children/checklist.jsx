@@ -14,7 +14,6 @@ import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import DomManager from '../../../managers/domManager'
 import StringManager from '../../../managers/stringManager'
-import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
 
 export default function Checklist({fromOrTo, activeChildId}) {
   const {state, setState} = useContext(globalState)
@@ -97,10 +96,6 @@ export default function Checklist({fromOrTo, activeChildId}) {
       SetSelectedChild().then((r) => r)
     }
   }, [activeChild])
-
-  if (childrenAreLoading || activeChildIsLoading) {
-    return <StandaloneLoadingGif />
-  }
 
   return (
     <div className={`info-section section checklist ${fromOrTo}`}>

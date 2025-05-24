@@ -24,6 +24,10 @@ export default function Form({
   viewSelector,
   submitIcon = null,
   deleteIcon = null,
+  hasThirdButton = false,
+  thirdButtonText = '',
+  thirdButtonCallback = () => {},
+  cancelButtonText = 'Nevermind',
 }) {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey, creationFormToShow} = state
@@ -152,13 +156,20 @@ export default function Form({
               {/*{!deleteIcon ? <FaMinus className={'delete'} /> : deleteIcon}*/}
             </button>
           )}
+
+          {hasThirdButton && (
+            <button className="third-button default card-button" onClick={thirdButtonCallback} style={{width: 'auto'}}>
+              {thirdButtonText} test
+            </button>
+          )}
+
           <button
             className="button card-button close"
             onClick={() => {
               onClose()
               HideCard()
             }}>
-            Nevermind
+            {cancelButtonText}
             {/*<CgClose />*/}
           </button>
         </div>

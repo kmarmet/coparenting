@@ -6,7 +6,7 @@ class Invitation
   constructor: (options = {}) ->
     @id = Manager.GetUid()
     @timestamp = moment(options?.timestamp).format(DatetimeFormats.dateForDb) ? moment().format(DatetimeFormats.dateForDb)
-    @senderKey = options?.senderKey
+    @token = options?.token ? ''
     @recipientPhone = options?.recipientPhone ? ''
     @senderName = options?.senderName ? ''
     @senderEmail = options?.senderEmail ? ''

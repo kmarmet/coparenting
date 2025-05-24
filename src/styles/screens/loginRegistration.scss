@@ -3,14 +3,6 @@
 #external-overrides {
   // REGISTRATION
   #registration-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    min-height: 100vh;
-    overflow-y: auto;
-    margin-top: 0;
-    padding-bottom: 300px;
-
     &.page-container {
       &.active {
         background-color: $lightBg;
@@ -299,10 +291,12 @@
     overflow-y: auto;
     margin-top: 0;
 
-    img {
-      border-radius: 100%;
-      width: 120px;
-      height: auto;
+    .screen-header {
+      img {
+        border-radius: 100%;
+        width: 120px;
+        height: auto;
+      }
     }
 
     .buttons {
@@ -411,11 +405,23 @@
       }
     }
 
+    // LOGIN FORM
     .form-container {
       display: flex;
       flex-direction: column;
       justify-content: center;
       margin-top: 30px;
+
+      .input-wrapper {
+        input {
+          background: white;
+          color: $primaryText;
+        }
+        svg {
+          z-index: 99;
+          color: $darkGrey;
+        }
+      }
 
       p {
         width: 100%;

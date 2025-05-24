@@ -15,7 +15,6 @@ import DomManager from '../../../managers/domManager'
 import Form from '../../shared/form'
 import MyConfetti from '../../shared/myConfetti'
 import Spacer from '../../shared/spacer'
-import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
 
 export default function AddOrUpdateTransferChecklists({showCard, hideCard, activeChildId}) {
   const {state, setState} = useContext(globalState)
@@ -139,10 +138,6 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
       }, 300)
     }
   }, [showCard])
-
-  if (childrenAreLoading || activeChildIsLoading) {
-    return <StandaloneLoadingGif />
-  }
 
   return (
     <Form

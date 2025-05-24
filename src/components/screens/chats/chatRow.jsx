@@ -6,8 +6,6 @@ import ChatManager from '/src/managers/chatManager.js'
 import Manager from '/src/managers/manager.js'
 import StringManager from '/src/managers/stringManager.coffee'
 import React, {useContext, useEffect, useState} from 'react'
-import {FaPlay} from 'react-icons/fa'
-import {FaCirclePause} from 'react-icons/fa6'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
 import DomManager from '../../../managers/domManager'
@@ -99,33 +97,33 @@ export default function ChatRow({chat, index}) {
         <div className="flex">
           <div className="column left">
             <p className="coparent-name">{StringManager.GetFirstNameOnly(otherMember?.name)}</p>
-            <p className="last-message">{lastMessage}</p>
+            {Manager.IsValid(lastMessage, true) && <p className="last-message">{lastMessage}</p>}
           </div>
           <div className="column right">
             {/* PAUSE CHAT BUTTON */}
             {!chat?.isPausedFor?.includes(currentUser?.key) && (
-              <div id="pause-wrapper">
-                <FaCirclePause
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    AlertManager.confirmAlert(
-                      'When you pause the chat, it will remain accessible for your reference. However, you will not receive notifications related to this particular chat until you decide to unpause it. \n\n You can resume the chat at any time. \n\n Are you sure? ',
-                      "I'm Sure",
-                      true,
-                      async () => {
-                        await PauseChat()
-                      }
-                    )
-                  }}
-                  className={`pause-icon`}
-                />
-              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  AlertManager.confirmAlert(
+                    'When you pause the chat, it will remain accessible for your reference. However, you will not receive notifications related to this particular chat until you decide to unpause it. \n\n You can resume the chat at any time. \n\n Are you sure? ',
+                    "I'm Sure",
+                    true,
+                    async () => {
+                      await PauseChat()
+                    }
+                  )
+                }}
+                className="button pause">
+                Pause
+              </button>
             )}
             {/* PLAY CHAT BUTTON */}
+
             {chat?.isPausedFor?.includes(currentUser?.key) && (
-              <div id="play-wrapper">
-                <FaPlay className={'play-icon'} onClick={() => UnpauseChat()} />
-              </div>
+              <button className="button resume" onClick={UnpauseChat}>
+                Resume
+              </button>
             )}
           </div>
         </div>

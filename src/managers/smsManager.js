@@ -9,58 +9,12 @@ export default SmsManager = {
   lineBreak: '\r\n',
   signature: "\r\nThank You,\r\nPeaceful coParenting",
   Templates: {
+    ParentChildVerification: function(childName, verificationCode) {
+      return `${StringManager.uppercaseFirstLetterOfAllWords(childName)} is requesting sharing access. ${SmsManager.lineBreak}${SmsManager.lineBreak}If you would like to grant access, please share this code with them: ${verificationCode} ${SmsManager.lineBreak}${SmsManager.signature}`;
+    },
     Invitation: function(currentUser, userName, recipientPhone) {
-      return `Hello ${userName}, ${SmsManager.lineBreak}${SmsManager.lineBreak} You have been invited to join Peaceful coParenting by ${currentUser != null ? currentUser.name : void 0}. To accept the invite please visit ${SmsManager.lineBreak}https://peaceful-coparenting.app?senderKey=${currentUser != null ? currentUser.key : void 0} ${SmsManager.lineBreak}  ${SmsManager.lineBreak}${SmsManager.signature}`;
+      return `Hello ${userName},${SmsManager.lineBreak}${SmsManager.lineBreak} You have been invited to join Peaceful coParenting by ${currentUser != null ? currentUser.name : void 0}. To accept the invite please visit ${SmsManager.lineBreak}https://peaceful-coparenting.app?type=invite&senderKey=${currentUser != null ? currentUser.key : void 0} ${SmsManager.lineBreak}  ${SmsManager.lineBreak}${SmsManager.signature}`;
     }
-  },
-  getNewCalEventTemplate: (title, date, createdBy) => {
-    return `A new Shared Calendar event has been created by ${createdBy}${SmsManager.lineBreak}${SmsManager.lineBreak}Title:${title}${SmsManager.lineBreak}Date:${date}${SmsManager.lineBreak}${SmsManager.signature}`;
-  },
-  getNewExpenseTemplate: (title, amount, createdBy) => {
-    return `A new Expense has been created by ${createdBy}${SmsManager.lineBreak}${SmsManager.lineBreak}Expense: ${title}${SmsManager.lineBreak}Amount: $${amount}${SmsManager.lineBreak}${SmsManager.signature}`;
-  },
-  getNewSwapRequestTemplate: (date, createdBy) => {
-    return `A new Swap Request has been created by ${createdBy}${SmsManager.lineBreak}${SmsManager.lineBreak}Date(s): ${date}${SmsManager.lineBreak}${SmsManager.signature}`;
-  },
-  getSwapRequestDecisionTemplate: (date, decision, reason, createdBy) => {
-    var decisionText;
-    decisionText = "APPROVED";
-    if (decision === "rejected") {
-      decisionText = "REJECTED";
-    }
-    if (reason.length > 0) {
-      return `A new Swap Request decision for ${date} has been made by ${createdBy}${SmsManager.lineBreak}${SmsManager.lineBreak}Decision: ${decisionText} Reason: ${reason}${SmsManager.lineBreak}${SmsManager.signature}`;
-    } else {
-      return `A new Swap Request decision for ${date} has been made by ${createdBy}${SmsManager.lineBreak}${SmsManager.lineBreak}Decision: ${decisionText}${SmsManager.lineBreak}${SmsManager.signature}`;
-    }
-  },
-  getMarkAsPaidTemplate: function(coparent, expenseName) {
-    return `An expense has been PAID by ${coparent}${SmsManager.lineBreak}${SmsManager.lineBreak}Expense Name: ${expenseName}${SmsManager.lineBreak}${SmsManager.signature}`;
-  },
-  getExpenseReminderTemplate: function(recipient, expense) {
-    var dueDateInfo, ref;
-    dueDateInfo = ((ref = expense.dueDate) != null ? ref.length : void 0) > 0 ? `Due date is: ${expense.dueDate}` : "";
-    return `This is a reminder to pay the ${expense.name} expense. ${dueDateInfo} ${SmsManager.lineBreak}${SmsManager.signature}`;
-  },
-  getSwapRequestReminderTemplate: function(recipient, request) {
-    return `This is a reminder to make a decision for the Swap Request on ${request.startDate} created by ${request.createdBy} on ${request.creationDate}. ${SmsManager.lineBreak}${SmsManager.signature}`;
-  },
-  getTransferRequestTemplate: function(request, createdBy) {
-    return `A new Child Transfer Request has been created by ${createdBy} for ${request.date} at ${request.time} ${SmsManager.lineBreak}${SmsManager.signature}`;
-  },
-  /**
-  * Function to calculate cube of input
-  * @param {number} Number to operate on
-  * @return {number} Cube of input
-   */
-  getParentVerificationTemplate: function(childName, verificationCode) {
-    return `${StringManager.uppercaseFirstLetterOfAllWords(childName)} is requesting sharing access. ${SmsManager.lineBreak}${SmsManager.lineBreak}If you would like to grant access, please share this code with them: ${verificationCode} ${SmsManager.lineBreak}${SmsManager.signature}`;
-  },
-  getRegistrationVerificationTemplate: function(userName, verificationCode) {
-    return `${userName} ,please enter this code to continue registration: ${verificationCode} ${SmsManager.lineBreak}${SmsManager.signature}`;
-  },
-  getPhoneVerificationTemplate: function(verificationCode) {
-    return `Please enter this code for Peaceful coParenting registration ${SmsManager.lineBreak} ${verificationCode}`;
   },
   GetRemainingBalance: async function() {
     var error, requestOptions, response, result;

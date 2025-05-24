@@ -14,6 +14,19 @@ const Manager = {
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
       // log error
     }),
+  CallbackOnTimeout: (timeoutSeconds = 60, timeoutFunc = () => {}, condition = false) => {
+    let secondsTimer = 0
+    function innerFunc() {
+      let interval = setInterval(() => {
+        secondsTimer += 2
+        if (secondsTimer >= timeoutSeconds || condition === true) {
+          timeoutFunc()
+          clearInterval(interval)
+        }
+      }, 1000)
+    }
+    return innerFunc()
+  },
   GetInvalidInputsErrorString: (requiredInputs) => {
     let invalidInputNames = []
     let areOrIs = 'are'

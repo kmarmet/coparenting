@@ -1,12 +1,8 @@
-// Path: src\components\screens\home.jsx
 import ScreenNames from '/src/constants/screenNames'
-import firebaseConfig from '/src/firebaseConfig'
 import AppManager from '/src/managers/appManager.js'
 import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
 import HomescreenSections from '/src/models/homescreenSections.js'
-import {initializeApp} from 'firebase/app'
-import {getAuth} from 'firebase/auth'
 import React, {useContext, useEffect, useState} from 'react'
 import {AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool} from 'react-icons/ai'
 import {BsFillEnvelopeHeartFill} from 'react-icons/bs'
@@ -35,8 +31,6 @@ export default function Landing() {
   })
 
   // Init Firebase
-  const app = initializeApp(firebaseConfig)
-  const auth = getAuth(app)
 
   const ToggleFeature = (feature) => {
     const featureName = feature.currentTarget.dataset.name
@@ -93,6 +87,18 @@ export default function Landing() {
   }, [currentScreen])
 
   useEffect(() => {
+    const requestType = AppManager.getQueryStringParams('type')
+    if (Manager.IsValid(requestType)) {
+      if (requestType === 'invite') {
+        // Invitation Sender Key
+        const token = AppManager.getQueryStringParams('token')
+
+        if (Manager.IsValid(token)) {
+          localStorage.setItem('pcp_invite_token', token)
+          setState({...state, currentScreen: ScreenNames.registration})
+        }
+      }
+    }
     const scrollWrapper = document.querySelector('#wrapper')
 
     const queryStringSection = AppManager.getQueryStringParams('section')

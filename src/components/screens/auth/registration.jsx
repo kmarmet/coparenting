@@ -6,8 +6,7 @@ import AlertManager from '/src/managers/alertManager'
 import SmsManager from '/src/managers/smsManager.js'
 import {initializeApp} from 'firebase/app'
 import {createUserWithEmailAndPassword, getAuth} from 'firebase/auth'
-import React, {useContext, useEffect, useState} from 'react'
-import {LuArrowLeft, LuArrowRight} from 'react-icons/lu'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import PasswordChecklist from 'react-password-checklist'
 import validator from 'validator'
 import InputTypes from '../../../constants/inputTypes'
@@ -25,6 +24,7 @@ import Child from '../../../models/child/child'
 import General from '../../../models/child/general'
 import ModelNames from '../../../models/modelNames'
 import CheckboxGroup from '../../shared/checkboxGroup'
+import Form from '../../shared/form'
 
 const Steps = {
   Form: 'form',
@@ -37,19 +37,12 @@ export default function Registration() {
   const {state, setState} = useContext(globalState)
   const {registrationExitStep, authUser} = state
 
-  // FORM
-  const [email, setEmail] = useState('')
+  const [accountType, setAccountType] = useState('')
   const [password, setPassword] = useState('')
   const [confirmedPassword, setConfirmedPassword] = useState('')
-  const [name, setName] = useState('')
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [accountType, setAccountType] = useState('')
-
   // PARENT ACCESS CODE VERIFICATION
-  const [parentPhone, setParentPhone] = useState(null)
   const [enteredCode, setEnteredCode] = useState(0)
   const [verificationCode, setVerificationCode] = useState('')
-  const [parentEmail, setParentEmail] = useState('')
 
   // STATE
   const [activeStep, setActiveStep] = useState(Manager.IsValid(registrationExitStep) ? Steps.RequestParentAccess : Steps.Form)
@@ -58,6 +51,10 @@ export default function Registration() {
   const [onboardingScreen, setOnboardingScreen] = useState(1)
   const [codeRetryCount, setCodeRetryCount] = useState(0)
 
+  // REF
+  const userRef = useRef({phoneNumber: '', email: '', name: '', password: '', confirmedPassword: ''})
+  const parentRef = useRef({phoneNumber: '', email: ''})
+
   // Firebase init
   const app = initializeApp(firebaseConfig)
   const auth = getAuth(app)
@@ -65,12 +62,12 @@ export default function Registration() {
   // SUBMIT
   const Submit = async () => {
     setState({...state, isLoading: true})
-    if (!validator.isEmail(email)) {
+    if (!validator.isEmail(userRef.current.email)) {
       AlertManager.throwError('Email address is not valid')
       setState({...state, isLoading: false})
       return false
     }
-    if (!validator.isMobilePhone(phoneNumber) || !StringManager.IsNotAllSameNumber(phoneNumber)) {
+    if (!validator.isMobilePhone(userRef.current.phone) || !StringManager.IsNotAllSameNumber(userRef.current.phone)) {
       AlertManager.throwError('Phone number is not valid')
       setState({...state, isLoading: false})
       return false
@@ -87,10 +84,10 @@ export default function Registration() {
     }
 
     const errorString = Manager.GetInvalidInputsErrorString([
-      {name: 'Your Name', value: name},
-      {name: 'Your Phone Number', value: phoneNumber},
+      {name: 'Your Name', value: userRef.current.name},
+      {name: 'Your Phone Number', value: userRef.current.phone},
       {name: 'Profile Type', value: accountType},
-      {name: 'Email', value: email},
+      {name: 'Email', value: userRef.current.email},
       {name: 'Password', value: password},
       {name: 'Password Confirmation', value: confirmedPassword},
     ])
@@ -104,19 +101,19 @@ export default function Registration() {
     localStorage.setItem('pcp_registration_started', 'true')
 
     // CREATE FIREBASE USER
-    createUserWithEmailAndPassword(auth, email, password)
+    createUserWithEmailAndPassword(auth, userRef.current.email, password)
       .then(async (userCredential) => {
         try {
           // Signed up successfully
           const user = userCredential.user
           await SmsManager.Send(
             '3307494534',
-            `New Registration: ${user.email} \n\n Key: ${user?.uid} \n\n Account Type: ${accountType} \n\n Name: ${name} \n\n Phone Number: ${phoneNumber}`
+            `New Registration: ${user.email} \n\n Key: ${user?.uid} \n\n Account Type: ${accountType} \n\n Name: ${name} \n\n Phone Number: ${userRef.current.phone}`
           )
 
           const userObject = {
-            phone: phoneNumber,
-            email: email,
+            phone: userRef.current.phone,
+            email: userRef.current.email,
             accountType,
             authUser: user,
             name,
@@ -145,7 +142,6 @@ export default function Registration() {
           }
         } catch (error) {
           localStorage.removeItem('pcp_registration_started')
-          console.log(`Error: ${error} | Code File: Registration  | Function:  Submit `)
           LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
           setState({...state, isLoading: false})
         }
@@ -176,19 +172,19 @@ export default function Registration() {
   const SendParentAccessCode = async (codeResent = false) => {
     // Create profile for (this user) child
     const errorString = Manager.GetInvalidInputsErrorString([
-      {name: 'Parent Email', value: parentEmail},
-      {name: 'Parent Phone', value: parentPhone},
+      {name: 'Parent Email', value: parentRef.current.email},
+      {name: 'Parent Phone', value: parentRef.current.phoneNumber},
     ])
 
     if (Manager.IsValid(errorString)) {
       AlertManager.throwError(errorString)
       return false
     }
-    if ((!parentPhone || !validator.isMobilePhone(parentPhone)) && !codeResent) {
+    if ((!parentRef.current.phoneNumber || !validator.isMobilePhone(parentRef.current.phoneNumber)) && !codeResent) {
       AlertManager.throwError('Phone number is not valid')
       return false
     } else {
-      const parent = await DB.find(DB.tables.users, ['email', parentEmail], true)
+      const parent = await DB.find(DB.tables.users, ['email', parentRef.current.email], true)
 
       if (!parent) {
         AlertManager.throwError(
@@ -198,7 +194,7 @@ export default function Registration() {
         return false
       }
 
-      if (parentPhone === localCurrentUser?.phone) {
+      if (parentRef.current.phoneNumber === localCurrentUser?.phone) {
         AlertManager.throwError('Unable to request access', "Your parent's phone number cannot be your phone number")
         return false
       }
@@ -206,7 +202,10 @@ export default function Registration() {
       const phoneCode = Manager.GetUid().slice(0, 6)
       setVerificationCode(phoneCode)
       setState({...state, isLoading: true, loadingText: 'Sending access code to your parent...'})
-      await SmsManager.Send(parentPhone, SmsManager.getParentVerificationTemplate(StringManager.GetFirstNameOnly(name), phoneCode))
+      await SmsManager.Send(
+        parentRef.current.phoneNumber,
+        SmsManager.Templates.ParentChildVerification(StringManager.GetFirstNameOnly(name), phoneCode)
+      )
       setState({...state, isLoading: false})
       setActiveStep(Steps.VerifyParentAccessCode)
     }
@@ -221,7 +220,7 @@ export default function Registration() {
     // Access granted
     try {
       if (enteredCode === verificationCode) {
-        const existingParentAccount = await DB.find(DB.tables.users, ['email', parentEmail], true)
+        const existingParentAccount = await DB.find(DB.tables.users, ['email', parentRef.current.email], true)
 
         if (existingParentAccount) {
           let currentUserToUse = localCurrentUser
@@ -317,9 +316,9 @@ export default function Registration() {
   useEffect(() => {
     const errorString = Manager.GetInvalidInputsErrorString([
       {name: 'Your Name', value: name},
-      {name: 'Your Phone Number', value: phoneNumber},
+      {name: 'Your Phone Number', value: userRef.current.phone},
       {name: 'Profile Type', value: accountType},
-      {name: 'Email', value: email},
+      {name: 'Email', value: userRef.current.email},
       {name: 'Password', value: password},
       {name: 'Password Confirmation', value: confirmedPassword},
     ])
@@ -327,7 +326,7 @@ export default function Registration() {
     if (!Manager.IsValid(errorString, true)) {
       setShowCreateButton(true)
     }
-  }, [phoneNumber, email, name, accountType, password, confirmedPassword])
+  }, [userRef.current.phone, userRef.current.email, userRef.current.name, accountType, password, confirmedPassword])
 
   useEffect(() => {
     window.onbeforeunload = function () {
@@ -337,87 +336,93 @@ export default function Registration() {
   }, [])
 
   return (
-    <>
+    <Form
+      onSubmit={Submit}
+      cancelButtonText="Back to Login"
+      onClose={() => setState({...state, currentScreen: ScreenNames.login})}
+      subtitle="Please provide your information below to set up an account and begin your harmonious co-parenting experience"
+      title={'Sign Up'}
+      wrapperClass="registration at-top"
+      showCard={true}
+      submitText={accountType.toLowerCase() === 'parent' ? 'Create Account' : 'Request Access Code'}>
       {/* PAGE CONTAINER */}
-      <div id="registration-container" className="page-container form">
+      <div id="registration-container" className="">
         {/* FORM */}
         {activeStep === Steps.Form && (
           <>
-            <p className="screen-title">Sign Up</p>
-            <p className="screen-intro-text">
-              Please provide your information below to set up an account and begin your harmonious co-parenting experience
-            </p>
-
             <Spacer height={15} />
 
             {/* PARENT FORM */}
-            <div className="form">
-              <InputWrapper
-                inputType={InputTypes.text}
-                inputName="Name"
-                required={true}
-                placeholder={'Name'}
-                onChange={(e) => setName(e.target.value)}
-              />
+            <InputWrapper
+              inputType={InputTypes.text}
+              inputName="Name"
+              required={true}
+              placeholder={'Name'}
+              onChange={(e) => (userRef.current.name = e.target.value)}
+            />
 
-              {/* PHONE */}
-              <InputWrapper
-                inputType={InputTypes.phone}
-                required={true}
-                placeholder={'Phone Number'}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-              />
+            {/* PHONE */}
+            <InputWrapper
+              inputType={InputTypes.phone}
+              required={true}
+              placeholder={'Phone Number'}
+              onChange={(e) => (userRef.current.phone = e.target.value)}
+            />
 
-              {/* EMAIL */}
-              <InputWrapper inputType={InputTypes.text} required={true} placeholder={'Email Address'} onChange={(e) => setEmail(e.target.value)} />
+            {/* EMAIL */}
+            <InputWrapper
+              inputType={InputTypes.email}
+              required={true}
+              placeholder={'Email Address'}
+              onChange={(e) => (userRef.current.email = e.target.value)}
+            />
 
-              {/* PASSWORD */}
-              <InputWrapper
-                inputType={InputTypes.password}
-                inputValueType="password"
-                required={true}
-                placeholder={'Password'}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+            {/* PASSWORD */}
+            <InputWrapper
+              inputType={InputTypes.password}
+              inputValueType="password"
+              required={true}
+              placeholder={'Password'}
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-              {/* CONFIRM PASSWORD */}
-              <InputWrapper
-                inputType={InputTypes.password}
-                inputValueType="password"
-                required={true}
-                placeholder={'Confirm Password'}
-                onChange={(e) => setConfirmedPassword(e.target.value)}
-              />
+            {/* CONFIRM PASSWORD */}
+            <InputWrapper
+              inputType={InputTypes.password}
+              inputValueType="password"
+              required={true}
+              placeholder={'Confirm Password'}
+              onChange={(e) => setConfirmedPassword(e.target.value)}
+            />
 
-              {/* PASSWORD CHECKLIST */}
-              <PasswordChecklist
-                rules={['minLength', 'specialChar', 'number', 'capital', 'match', 'notEmpty']}
-                minLength={5}
-                className={'password-validation'}
-                value={password}
-                valueAgain={confirmedPassword}
-                onChange={(isValid) => {
-                  if (isValid) {
-                    setPassword(password)
-                  }
-                }}
-              />
+            {/* PASSWORD CHECKLIST */}
+            <PasswordChecklist
+              rules={['minLength', 'specialChar', 'number', 'capital', 'match', 'notEmpty']}
+              minLength={5}
+              className={'password-validation'}
+              value={password}
+              valueAgain={confirmedPassword}
+              onChange={(isValid) => {
+                if (isValid) {
+                  setConfirmedPassword(password)
+                }
+              }}
+            />
 
-              <Spacer height={10} />
+            <Spacer height={10} />
 
-              {/* ACCOUNT TYPE */}
-              <CheckboxGroup
-                onCheck={HandleAccountType}
-                parentLabel="Profile Type (cannot be changed later)"
-                labelText="Profile Type"
-                checkboxArray={DomManager.BuildCheckboxGroup({
-                  customLabelArray: ['Parent', 'Child'],
-                })}
-                required={true}
-                textOnly={true}
-                dataKey={['Parent', 'Child']}
-              />
-            </div>
+            {/* ACCOUNT TYPE */}
+            <CheckboxGroup
+              onCheck={HandleAccountType}
+              parentLabel="Profile Type (cannot be changed later)"
+              checkboxArray={DomManager.BuildCheckboxGroup({
+                customLabelArray: ['Parent', 'Child'],
+                defaultLabels: ['Parent'],
+              })}
+              required={true}
+              textOnly={true}
+              dataKey={['Parent', 'Child']}
+            />
           </>
         )}
 
@@ -441,14 +446,14 @@ export default function Registration() {
               inputType={InputTypes.email}
               required={true}
               placeholder={'Parent Email Address'}
-              onChange={(e) => setParentEmail(e.target.value)}
+              onChange={(e) => (parentRef.current.email = e.target.value)}
             />
             {/* PARENT PHONE */}
             <InputWrapper
               inputType={InputTypes.phone}
               required={true}
               placeholder={'Parent Phone Number'}
-              onChange={(e) => setParentPhone(e.target.value)}
+              onChange={(e) => (parentRef.current.phone = e.target.value)}
             />
             <button className="button default green center" onClick={SendParentAccessCode}>
               Send Access Code
@@ -470,7 +475,6 @@ export default function Registration() {
             <button
               className="button default grey center w-50"
               onClick={async () => {
-                setParentPhone('')
                 setEnteredCode('')
                 setVerificationCode('')
                 await SendParentAccessCode(true)
@@ -485,6 +489,7 @@ export default function Registration() {
           <>
             <div id="onboarding">
               <div className={onboardingScreen === 1 ? 'active screen' : 'screen'}>
+                {/* eslint-disable-next-line no-undef */}
                 <img src={require('../../../img/onboarding/welcome.gif')} alt="" />
 
                 <div className="text-content">
@@ -511,6 +516,7 @@ export default function Registration() {
 
               {/* SCREEN 2   */}
               <div className={onboardingScreen === 2 ? 'active screen' : 'screen'}>
+                {/* eslint-disable-next-line no-undef */}
                 <img src={require('../../../img/onboarding/calendar.gif')} alt="" />
 
                 <div className="text-content">
@@ -546,31 +552,26 @@ export default function Registration() {
         )}
 
         {/* BACK TO LOG IN BUTTON */}
-        <div id="registration-buttons">
-          {activeStep !== Steps.Onboarding && (
-            <button id="request-access-screen" className="button default" onClick={() => setState({...state, currentScreen: ScreenNames.login})}>
-              <LuArrowLeft /> Back to Login
-            </button>
-          )}
-          {showCreateButton &&
-            activeStep !== Steps.VerifyParentAccessCode &&
-            activeStep !== Steps.RequestParentAccess &&
-            activeStep !== Steps.Onboarding && (
-              <button
-                className="button default green"
-                onClick={() => {
-                  AlertManager.confirmAlert(
-                    'Are the details you provided correct? Profile Type cannot be changed after signing up',
-                    'Yes',
-                    'No',
-                    async () => await Submit()
-                  )
-                }}>
-                {accountType === 'parent' ? 'Create Profile' : 'Request Access'} <LuArrowRight />
-              </button>
-            )}
-        </div>
+        {/*<div id="registration-buttons" className="card-buttons">*/}
+        {/*  {showCreateButton &&*/}
+        {/*    activeStep !== Steps.VerifyParentAccessCode &&*/}
+        {/*    activeStep !== Steps.RequestParentAccess &&*/}
+        {/*    activeStep !== Steps.Onboarding && (*/}
+        {/*      <button*/}
+        {/*        className="button default green"*/}
+        {/*        onClick={() => {*/}
+        {/*          AlertManager.confirmAlert(*/}
+        {/*            'Are the details you provided correct? Profile Type cannot be changed after signing up',*/}
+        {/*            'Yes',*/}
+        {/*            'No',*/}
+        {/*            async () => await Submit()*/}
+        {/*          )*/}
+        {/*        }}>*/}
+        {/*        {accountType.toLowerCase() === 'parent' ? 'Create Profile' : 'Request Access'} <LuArrowRight />*/}
+        {/*      </button>*/}
+        {/*    )}*/}
+        {/*</div>*/}
       </div>
-    </>
+    </Form>
   )
 }

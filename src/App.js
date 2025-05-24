@@ -34,7 +34,6 @@ import Vault from '/src/components/screens/vault.jsx'
 import Visitation from '/src/components/screens/visitation.jsx'
 import BrandBar from '/src/components/shared/brandBar'
 import DesktopLeftSidebar from '/src/components/shared/desktopLeftSidebar'
-import Loading from '/src/components/shared/loading'
 import ScreenNames from '/src/constants/screenNames'
 import StateObj from '/src/constants/stateObj'
 import globalState from '/src/context.js'
@@ -120,11 +119,15 @@ export default function App() {
     onAuthStateChanged(auth, async (user) => {
       // USER LOGGED IN FROM PERSISTED STATE
       // console.Log(user)
+
       try {
         if (user) {
           const user = auth.currentUser
+          // Manager.CallbackOnTimeout(10, async () => {
+          //   setState({...state, isLoading: false, loadingText: ''})
+          // })
 
-          // Check for last auto refresh tie and last login datetime
+          // Check for last auto refresh time and last login datetime
           if (Manager.IsValid(user)) {
             // Login check
             const lastLogin = moment(user?.metadata?.lastSignInTime).format(DatetimeFormats.fullDatetime)
@@ -217,7 +220,7 @@ export default function App() {
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <div className={`App ${theme}`} id="app-container">
         {/* LOADING */}
-        <Loading isLoading={isLoading} loadingText={loadingText} theme={currentUser?.settings?.theme} />
+        {/*<Loading isLoading={isLoading} loadingText={loadingText} theme={currentUser?.settings?.theme} />*/}
 
         <globalState.Provider value={stateToUpdate}>
           {/* SUCCESS ALERT */}

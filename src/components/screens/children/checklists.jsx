@@ -130,10 +130,6 @@ export default function Checklists({showCard, hideCard}) {
     }
   }, [showCard])
 
-  if (currentUserIsLoading) {
-    return <img src={require('../../../img/loading.gif')} alt="Loading" className="data-loading-gif" />
-  }
-
   return (
     <Form
       onSubmit={AddToDb}

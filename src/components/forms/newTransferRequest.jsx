@@ -138,10 +138,6 @@ export default function NewTransferChangeRequest() {
     }
   }
 
-  if (coparentsAreLoading || currentUserIsLoading) {
-    return <img src={require('../../img/loading.gif')} alt="" />
-  }
-
   return (
     <Form
       onSubmit={Submit}

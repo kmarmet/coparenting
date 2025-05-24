@@ -92,9 +92,6 @@ export default function Behavior({activeChild}) {
     SetSelectedChild().then((r) => r)
   }, [activeChild, sharedChildInfo])
 
-  if (currentUserIsLoading) {
-    return <img src={require('../../../img/loading.gif')} className="data-loading-gif" alt="Loading" />
-  }
   return (
     <div className="info-section section behavior" key={refreshKey}>
       <Accordion className={`${theme} child-info`} disabled={!Manager.IsValid(activeChild?.behavior)}>

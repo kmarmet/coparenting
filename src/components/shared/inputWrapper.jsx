@@ -109,6 +109,7 @@ function InputWrapper({
             />
           </>
         )}
+
         {/* TEXT */}
         {inputType === InputTypes.text && (
           <DebounceInput

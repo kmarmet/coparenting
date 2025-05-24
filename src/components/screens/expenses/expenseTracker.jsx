@@ -288,10 +288,6 @@ export default function ExpenseTracker() {
     }
   }, [expenses])
 
-  if (expensesAreLoading || currentUserIsLoading) {
-    return <img className="data-loading-gif" src={require('../../../img/loading.gif')} alt="Loading" />
-  }
-
   return (
     <>
       {/* NEW EXPENSE FORM */}

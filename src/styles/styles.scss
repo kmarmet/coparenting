@@ -148,6 +148,21 @@
     height: 10px !important;
     width: 10px !important;
   }
+
+  li {
+    &.valid {
+      span {
+        color: $brightGreen !important;
+        opacity: 1 !important;
+      }
+    }
+    &.invalid {
+      span {
+        color: $red !important;
+        opacity: 1 !important;
+      }
+    }
+  }
 }
 
 #external-overrides {
@@ -483,102 +498,6 @@
       opacity: 0;
     }
 
-    #slideshow-wrapper {
-      opacity: 0;
-      z-index: -1;
-      max-height: 70vh;
-      transition: all 0.4s ease-out;
-      position: fixed;
-      top: 60px;
-      left: 2.5vw;
-      right: 2.5vw;
-      bottom: 0;
-      height: 100vh;
-      justify-content: center;
-      align-items: flex-start;
-      padding-bottom: 100px;
-      display: none;
-      flex-wrap: wrap;
-
-      &.active {
-        display: flex;
-        opacity: 1;
-        z-index: 999999999999999;
-        transition: all 0.4s ease-in;
-
-        img {
-          z-index: 9999999999999999999;
-          display: block;
-          border-radius: $bigBorderRadius;
-          transition: all 0.4s ease-out;
-          max-height: 60vh;
-          margin-top: 15px;
-          mask-image: linear-gradient(to bottom, black 88%, transparent 100%);
-          &.active {
-            max-width: 90vw;
-            height: auto;
-            opacity: 1;
-            transition: all 0.4s ease-in;
-            z-index: 999999999999999;
-          }
-        }
-      }
-
-      .content {
-        max-height: 0;
-        opacity: 0;
-        max-width: 0;
-        transition: all 0.4s ease-out;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-
-        &.active {
-          max-height: unset;
-          max-width: unset;
-          opacity: 1;
-          transition: all 0.4s ease-in;
-        }
-
-        .title {
-          margin: 0;
-        }
-
-        .capture-date {
-          margin-top: 20px;
-          color: $darkGrey;
-          font-style: italic;
-          text-align: center;
-        }
-
-        .title,
-        .notes,
-        .shared-by {
-          color: white;
-          font-size: 35px;
-          font-weight: $fwMediumBold;
-          width: 100%;
-          text-align: center;
-        }
-
-        .shared-by {
-          margin-top: 10px;
-          color: $darkGrey;
-          text-align: center;
-          font-size: 16px;
-        }
-
-        .notes {
-          font-size: 16px;
-          font-weight: $fwRegular;
-          line-height: 1.3;
-          margin-bottom: 10px;
-          max-width: 90%;
-        }
-      }
-    }
-
     .notification-badge {
       position: absolute;
       height: 10px;
@@ -661,71 +580,14 @@
         margin: auto auto 8px auto;
       }
 
-      .navigation {
-        z-index: 999999999999;
-        flex-wrap: wrap;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        font-size: 16px;
-        padding: 8px 12px;
-        font-weight: $fwBold;
-        border-radius: $bigBorderRadius;
+      .count {
         color: white;
-        width: 100vw;
-        margin-bottom: 15px;
-        background: transparent;
-
-        .arrows {
-          width: 40%;
-          display: flex;
-          justify-content: center;
-          color: white;
-          align-items: center;
-          .svg-wrapper {
-            transform: scale(1.2);
-            background: white;
-            border-radius: 100%;
-            height: 25px;
-            width: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            &:first-child {
-              margin-right: auto;
-            }
-            &:last-child {
-              margin-left: auto;
-            }
-
-            svg {
-              height: 28px;
-              width: 28px;
-              transform: scale(1.28);
-            }
-          }
-        }
+        font-size: 22px;
+        font-weight: $fwBold;
+        margin: 20px 0 8px 0;
 
         span {
-          font-weight: $fwRegular;
-          font-size: 16px;
-          padding: 0 10px;
-          text-align: center;
-          color: white;
-
-          &.close {
-            color: white;
-            font-size: 14px;
-            font-weight: $fwMediumBold;
-            margin-left: auto;
-            background: $blend;
-            padding: 5px 20px;
-            border-radius: $borderRadius;
-          }
-        }
-        svg {
-          color: $blend;
+          font-size: 18px;
         }
       }
     }
@@ -1235,6 +1097,37 @@
         z-index: $maxZIndex;
         opacity: 1;
         backdrop-filter: blur(5px);
+        @include mainColorsGradient;
+      }
+      .loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+      }
+
+      .loading-text {
+        @include position-center;
+        width: 100%;
+        height: 100px;
+        line-height: 100px;
+        text-align: center;
+        span {
+          display: inline-block;
+          margin: 0 4px;
+          text-align: center;
+          font-size: 45px;
+          color: #fff;
+          font-weight: $fwLight;
+          @for $i from 0 through 9 {
+            &:nth-child(#{$i + 1}) {
+              filter: blur(0px);
+              animation: blur-text 0.9s (#{$i/9}) + s infinite linear alternate;
+            }
+          }
+        }
       }
 
       p {
@@ -1246,6 +1139,23 @@
         max-width: 80vw;
         opacity: 1;
         background: transparent;
+
+        @include position-center;
+        width: 100%;
+        height: 100px;
+        line-height: 100px;
+        span {
+          display: inline-block;
+          margin: 0 5px;
+          color: #fff;
+          font-family: 'Quattrocento Sans', sans-serif;
+          @for $i from 0 through 6 {
+            &:nth-child(#{$i + 1}) {
+              filter: blur(0px);
+              animation: blur-text 1.5s (#{$i/5}) + s infinite linear alternate;
+            }
+          }
+        }
       }
 
       img {

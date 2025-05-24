@@ -16,6 +16,7 @@ import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import {PiCameraRotateFill, PiListChecksFill} from 'react-icons/pi'
+
 import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
 import useActiveChild from '../../../hooks/useActiveChild'
@@ -107,6 +108,7 @@ export default function Children() {
       {/* NEW CHILD  */}
       <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
 
+      {/* SCREEN ACTIONS */}
       <ScreenActionsMenu title="Manage Children">
         {/* ADD CHILD */}
         <div
