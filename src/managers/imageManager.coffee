@@ -58,10 +58,10 @@ ImageManager =
     catch error
       console.log(error)
 
-  expandImage: (img, modal) ->
-    modal ?= document.querySelector('.image - modal')
+  expandImage: (img, form) ->
+    form ?= document.querySelector('.image - form')
     src = img.getAttribute('src')
-    imageModal = modal
+    imageModal = form
     imageModal.querySelector('img').setAttribute('src', src)
     imageModal.classList.add('active')
 
@@ -83,7 +83,7 @@ ImageManager =
       console.log(img)
 
   navigateToImage: (direction, imgPaths) ->
-    img = document.querySelector(' #modal-img')
+    img = document.querySelector(' #form-img')
     src = img.getAttribute('src')
     imgIndex = imgPaths.indexOf(src)
     if imgIndex > -1 and imgIndex + 1 < imgPaths.length

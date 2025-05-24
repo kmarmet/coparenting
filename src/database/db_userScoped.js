@@ -160,6 +160,20 @@ const DB_UserScoped = {
       return currentUser?.coparents.find((c) => c.key === key)?.name
     }
   },
+  GetContactFromEmail: async (users = [], email, accountType = 'parent') => {
+    if (accountType === 'parent') {
+      return users?.find((x) => x?.email === email)
+    } else {
+      return users?.find((x) => x?.general?.email === email)
+    }
+  },
+  GetContactFromPhone: async (users = [], phone, accountType = 'parent') => {
+    if (accountType === 'parent') {
+      return users?.find((x) => x?.phone === phone)
+    } else {
+      return users?.find((x) => x?.general?.phone === phone)
+    }
+  },
 
   // ADD
   addMultipleExpenses: async (currentUser, data) => {

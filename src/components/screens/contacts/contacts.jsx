@@ -1,7 +1,7 @@
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import {FaUserEdit} from 'react-icons/fa'
 import {HiDotsHorizontal} from 'react-icons/hi'
-import {IoClose, IoPersonAdd} from 'react-icons/io5'
+import {IoPersonAdd} from 'react-icons/io5'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
@@ -14,18 +14,18 @@ import useParents from '../../../hooks/useParents'
 import useUsers from '../../../hooks/useUsers'
 import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
-import EmailManager from '../../../managers/emailManager'
+import InvitationManager from '../../../managers/invitationManager'
 import Manager from '../../../managers/manager'
 import ObjectManager from '../../../managers/objectManager'
+import SmsManager from '../../../managers/smsManager'
 import StringManager from '../../../managers/stringManager'
-import Child from '../../../models/child/child'
-import Coparent from '../../../models/coparent'
+import Invitation from '../../../models/invisitation'
 import NavBar from '../../navBar'
 import DetailBlock from '../../shared/detailBlock'
+import Form from '../../shared/form'
 import InputWrapper from '../../shared/inputWrapper'
 import Label from '../../shared/label'
 import Map from '../../shared/map'
-import Modal from '../../shared/modal'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
@@ -52,10 +52,10 @@ const Contacts = () => {
   const [showNewChildCard, setShowNewChildCard] = useState(false)
   const [showInvitationCard, setShowInvitationCard] = useState(false)
   const [showModal, setShowModal] = useState(false)
-  const [inviteeEmail, setInviteeEmail] = useState('')
-  const [inviteeName, setInviteeName] = useState('')
   const [view, setView] = useState('details')
-  const [updateObject, setUpdateObject] = useState({})
+
+  // REFS
+  const updateObject = useRef({})
 
   // CONTACT UPDATE STATE
   const UpdateContact = async () => {
@@ -161,12 +161,12 @@ const Contacts = () => {
     }
   }
 
-  // Remove view from the active modal
+  // Remove view from the active form
   useEffect(() => {
     if (showNewCoparentCard || showNewParentCard || showNewChildCard) {
-      const activeModal = document.querySelector('#modal-wrapper.active')
+      const activeModal = document.querySelector('#form-wrapper.active')
       if (Manager.IsValid(activeModal)) {
-        const modalCard = activeModal.querySelector('#modal-card')
+        const modalCard = activeModal.querySelector('#form-card')
         if (Manager.IsValid(modalCard)) {
           modalCard.classList.remove('details')
         }
@@ -182,35 +182,46 @@ const Contacts = () => {
       <NewParentForm showCard={showNewParentCard} hideCard={() => setShowNewParentCard(false)} />
 
       {/* INVITATION FORM */}
-      <Modal
-        submitText={'Send Invitation'}
+      <Form
+        submitText={'Send'}
         wrapperClass="invitation-card"
         title={`Invite ${GetContactName()}`}
         subtitle="Extend an invitation to facilitate the sharing of essential information with them"
         onClose={() => setShowInvitationCard(false)}
         showCard={showInvitationCard}
-        onSubmit={() => {
-          if (!Manager.IsValid(inviteeEmail) || !Manager.IsValid(inviteeName)) {
-            AlertManager.throwError('Please fill out all fields')
+        onSubmit={async () => {
+          if (!Manager.IsValid(updateObject.current.email)) {
+            AlertManager.throwError('Email is required')
             return false
           }
-          EmailManager.SendEmailToUser(EmailManager.Templates.coparentInvitation, '', inviteeEmail, inviteeName)
+          const newInvitation = new Invitation({
+            recipientPhone: updateObject.current.phone,
+            senderKey: currentUser?.key,
+            senderName: currentUser?.name,
+            senderEmail: currentUser?.email,
+          })
+          await InvitationManager.AddInvitation(newInvitation, currentUser?.key)
+          SmsManager.Send(updateObject.current.phone, SmsManager.Templates.Invitation(currentUser, activeContact?.name, updateObject.current.phone))
           setState({...state, successAlertMessage: 'Invitation Sent!'})
           setShowInvitationCard(false)
         }}
         hideCard={() => setShowInvitationCard(false)}>
         <Spacer height={5} />
-        <InputWrapper inputType={InputTypes.text} placeholder={'Name'} required={true} onChange={(e) => setInviteeName(e.target.value)} />
-        <InputWrapper inputType={InputTypes.email} placeholder={'Email Address'} required={true} onChange={(e) => setInviteeEmail(e.target.value)} />
-      </Modal>
+        <InputWrapper
+          inputType={InputTypes.phone}
+          placeholder={'Phone Number'}
+          required={true}
+          onChange={(e) => (updateObject.current.phone = e.target.value)}
+        />
+      </Form>
 
-      {/* MODAL */}
-      <Modal
+      {/* UPDATE FORM */}
+      <Form
         onSubmit={UpdateContact}
         activeView={view}
         onClose={() => setShowModal(false)}
         hideCard={() => setShowModal(false)}
-        wrapperClass="contact-modal-wrapper"
+        wrapperClass="contact-form-wrapper"
         hasSubmitButton={view === 'edit'}
         hasDelete={true}
         onDelete={RemoveContact}
@@ -220,7 +231,7 @@ const Contacts = () => {
           <ViewSelector
             onloadState={showModal}
             key={refreshKey}
-            labels={['details', 'edit']}
+            labels={['Details', 'Edit']}
             updateState={(labelText) => {
               setView(labelText)
             }}
@@ -230,11 +241,11 @@ const Contacts = () => {
         title={`${GetContactName()}`}
         showCard={showModal}>
         {/* DETAILS */}
-        <div id="details" className={view === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
+        <div id="details" className={view.toLowerCase() === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
           <div className="blocks">
             <DetailBlock isCustom={true} isFullWidth={true} valueToValidate={activeContact} text={''} title={''}>
-              <p>
-                Add custom information about {GetContactName()} at&nbsp; the&nbsp;
+              <p className="custom-text">
+                Add custom information about {GetContactName()} at the&nbsp;
                 <span className="link" onClick={() => setState({...state, currentScreen: ScreenNames.children})}>
                   {GetAccountType()}
                 </span>
@@ -280,10 +291,8 @@ const Contacts = () => {
         </div>
 
         {/* EDIT */}
-        <div id="edit" className={view === 'edit' ? 'view-wrapper edit active' : 'view-wrapper'}>
-          <Spacer height={5} />
+        <div id="edit" className={view.toLowerCase() === 'edit' ? 'view-wrapper edit active' : 'view-wrapper'}>
           {/* NAME */}
-
           <InputWrapper
             inputType={InputTypes.text}
             placeholder={'Name'}
@@ -294,20 +303,7 @@ const Contacts = () => {
             onChange={async (e) => {
               const inputValue = e.target.value
               if (inputValue.length > 1) {
-                let propertyPath = GetAccountType() === 'parent' ? 'name' : 'general.name'
-                let model = GetAccountType() === 'parent' ? new Coparent() : new Child()
-
-                if (activeContact?.accountType === 'child') {
-                  model = new Child()
-                  propertyPath = 'general.name'
-                }
-
-                setActiveContact((prevState) => {
-                  return {...prevState, name: inputValue}
-                })
-                setUpdateObject((prevState) => {
-                  return {...prevState, model, propertyPath, inputValue}
-                })
+                updateObject.current.recipientName = inputValue
               }
             }}
           />
@@ -322,16 +318,9 @@ const Contacts = () => {
               required={true}
               onChange={async (e) => {
                 const inputValue = e.target.value
-                let propertyPath = GetAccountType() === 'parent' ? 'email' : 'general.email'
-                let model = GetAccountType() === 'parent' ? new Coparent() : new Child()
 
                 if (inputValue.length > 1) {
-                  setActiveContact((prevState) => {
-                    return {...prevState, email: inputValue}
-                  })
-                  setUpdateObject((prevState) => {
-                    return {...prevState, model, propertyPath, inputValue}
-                  })
+                  updateObject.current.recipientEmail = inputValue
                 }
               }}
             />
@@ -347,22 +336,14 @@ const Contacts = () => {
               required={true}
               onChange={async (e) => {
                 const inputValue = e.target.value
-                let propertyPath = GetAccountType() === 'parent' ? 'phone' : 'general.phone'
-                let model = GetAccountType() === 'parent' ? new Coparent() : new Child()
-
                 if (inputValue.length > 1) {
-                  setActiveContact((prevState) => {
-                    return {...prevState, phone: inputValue}
-                  })
-                  setUpdateObject((prevState) => {
-                    return {...prevState, model, propertyPath, inputValue}
-                  })
+                  updateObject.current.recipientPhone = inputValue
                 }
               }}
             />
           )}
         </div>
-      </Modal>
+      </Form>
 
       {/* SCREEN ACTIONS */}
       <ScreenActionsMenu>
@@ -460,10 +441,6 @@ const Contacts = () => {
             </div>
           </>
         )}
-
-        <div id="close-icon-wrapper">
-          <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
-        </div>
       </ScreenActionsMenu>
 
       {/* PAGE CONTAINER */}
@@ -477,7 +454,7 @@ const Contacts = () => {
           {/* COPARENTS */}
           {currentUser?.accountType === 'parent' && (
             <div id="contacts-wrapper">
-              <Label text={'COPARENTS'} />
+              <Label classes={'black toggle always-show'} text={'COPARENTS'} />
               <Spacer height={3} />
               {Manager.IsValid(coparents) &&
                 coparents.map((contact, index) => {
@@ -514,7 +491,7 @@ const Contacts = () => {
           {currentUser?.accountType === 'parent' && (
             <div id="contacts-wrapper">
               <Spacer height={15} />
-              <Label text={'CHILDREN'} />
+              <Label classes={'black toggle always-show'} text={'CHILDREN'} />
               <Spacer height={3} />
               {Manager.IsValid(children) &&
                 children.map((contact, index) => {
@@ -553,7 +530,7 @@ const Contacts = () => {
           {currentUser?.accountType === 'child' && (
             <div id="contacts-wrapper">
               <Spacer height={15} />
-              <Label text={'PARENTS'} />
+              <Label classes={'black toggle always-show'} text={'PARENTS'} />
               <Spacer height={3} />
               {Manager.IsValid(parents) &&
                 parents.map((contact, index) => {

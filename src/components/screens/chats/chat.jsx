@@ -1,6 +1,6 @@
 // Path: src\components\screens\chats\chat.jsx
+import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import Modal from '/src/components/shared/modal'
 import ScreenNames from '/src/constants/screenNames'
 import globalState from '/src/context.js'
 import AlertManager from '/src/managers/alertManager'
@@ -30,6 +30,7 @@ import useChat from '../../../hooks/useChat'
 import useChatMessages from '../../../hooks/useChatMessages'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import AppManager from '../../../managers/appManager'
+import DatasetManager from '../../../managers/datasetManager'
 import DateManager from '../../../managers/dateManager'
 import UpdateManager from '../../../managers/updateManager'
 import ActivityCategory from '../../../models/activityCategory'
@@ -42,7 +43,6 @@ const Chats = () => {
   const {chat} = useChat()
   const [searchResults, setSearchResults] = useState([])
   const [showSearchInput, setShowSearchInput] = useState(false)
-  const [bookmarks, setBookmarks] = useState([])
   const [showBookmarks, setShowBookmarks] = useState(false)
   const [showSearchCard, setShowSearchCard] = useState(false)
   const [messageText, setMessageText] = useState('')
@@ -54,7 +54,9 @@ const Chats = () => {
   const [chatId, setChatId] = useState(null)
   const {chatMessages} = useChatMessages(chatId)
   const [messagesToLoop, setMessagesToLoop] = useState(chatMessages)
-  const [showLongpressMenu, setShowLongpressMenu] = useState(false)
+  const [bookmarkedMessages, setBookmarkedMessages] = useState([])
+  const [bookmarks, setBookmarks] = useState([])
+  const [showLongPressMenu, setShowLongPressMenu] = useState(false)
   const [activeMessage, setActiveMessage] = useState()
   const handlers = useSwipeable({
     delta: {
@@ -67,18 +69,17 @@ const Chats = () => {
   })
 
   const bind = useLongPress((element) => {
-    const longPressMenu = element.target.parentNode.previousSibling
     const message = element.target
     const messageId = message.getAttribute('data-id')
     const thisMessage = messagesToLoop.find((x) => x.id === messageId)
     if (Manager.IsValid(thisMessage?.message)) {
       setActiveMessage(thisMessage)
-      setShowLongpressMenu(true)
+      setShowLongPressMenu(true)
     }
   })
 
   const ToggleBookmark = async () => {
-    await ChatManager.toggleMessageBookmark(currentUser, messageRecipient, activeMessage?.id, chat?.id, bookmarks).finally(async () => {
+    await ChatManager.ToggleMessageBookmark(currentUser, messageRecipient, activeMessage?.id, chat?.id, bookmarks).finally(async () => {
       await DefineBookmarks()
     })
   }
@@ -181,7 +182,7 @@ const Chats = () => {
   }
 
   const ViewBookmarks = () => {
-    if (bookmarks.length > 0) {
+    if (bookmarkedMessages.length > 0) {
       setShowBookmarks(!showBookmarks)
       ScrollToLatestMessage()
     }
@@ -189,14 +190,15 @@ const Chats = () => {
 
   const DefineBookmarks = async () => {
     let bookmarkRecords = await ChatManager.getBookmarks(chat?.id)
-    let bookmarkedRecordIds = bookmarkRecords.map((x) => x.messageId)
+    let bookmarkedRecordIds = DatasetManager.GetValidArray(bookmarkRecords.map((x) => x.messageId))
+    setBookmarks(bookmarkRecords)
     // Set bookmarks
     if (Manager.IsValid(bookmarkRecords)) {
       let bookmarksToLoop = chatMessages.filter((x) => bookmarkedRecordIds.includes(x.id))
-      setBookmarks(bookmarksToLoop)
+      setBookmarkedMessages(bookmarksToLoop)
     } else {
       setShowBookmarks(false)
-      setBookmarks([])
+      setBookmarkedMessages([])
     }
     ScrollToLatestMessage()
   }
@@ -290,6 +292,8 @@ const Chats = () => {
 
   useEffect(() => {
     if (Manager.IsValid(chatMessages)) {
+      DefineBookmarks().then((r) => r)
+
       setMessagesToLoop(chatMessages)
     }
   }, [chatMessages])
@@ -306,13 +310,11 @@ const Chats = () => {
     }
   }, [showBookmarks])
 
-  useEffect(() => {
-    DefineBookmarks().then((r) => r)
-  }, [])
+  useEffect(() => {}, [])
 
   return (
     <>
-      <Modal
+      <Form
         title={'Search'}
         className="form conversation-search-card"
         wrapperClass="conversation-search"
@@ -326,7 +328,7 @@ const Chats = () => {
             return false
           }
           const results = messagesToLoop?.filter((x) => x.message.toLowerCase().indexOf(searchInputQuery.toLowerCase()) > -1)
-          setBookmarks([])
+          setBookmarkedMessages([])
           setSearchResults(results)
           setSearchInputQuery('')
           setShowSearchCard(false)
@@ -349,40 +351,40 @@ const Chats = () => {
           }}
           inputClasses="search-input"
         />
-      </Modal>
+      </Form>
 
       {/* PAGE CONTAINER */}
       <div key={refreshKey} id="chat-wrapper" className={`${theme} conversation`} {...handlers}>
         {/* LONG PRESS MENU */}
-        {showLongpressMenu && (
+        {showLongPressMenu && (
           <div className="long-press-menu">
             <button
               id="copy"
               onClick={() => {
                 navigator.clipboard.writeText(Manager.IsValid(activeMessage) ? activeMessage?.message : '')
-                setShowLongpressMenu(false)
+                setShowLongPressMenu(false)
                 setState({...state, successAlertMessage: 'Message Copied'})
               }}>
               Copy <IoCopy />
             </button>
             <button
               id="bookmark"
-              className={`${Manager.IsValid(bookmarks?.find((x) => x?.id === activeMessage?.id)) ? 'remove' : 'add'}`}
+              className={`${Manager.IsValid(bookmarkedMessages?.find((x) => x?.id === activeMessage?.id)) ? 'remove' : 'add'}`}
               onClick={(e) => {
-                const isBookmarked = Manager.IsValid(bookmarks?.find((x) => x?.id === activeMessage?.id))
+                const isBookmarked = Manager.IsValid(bookmarkedMessages?.find((x) => x?.id === activeMessage?.id))
                 e.target.parentNode.classList.remove('active')
                 ToggleBookmark(isBookmarked).then((r) => r)
-                setShowLongpressMenu(false)
+                setShowLongPressMenu(false)
               }}>
-              {Manager.IsValid(bookmarks?.find((x) => x?.id === activeMessage?.id)) ? 'Remove Bookmark' : 'Add Bookmark'}
-              {Manager.IsValid(bookmarks?.find((x) => x?.id === activeMessage?.id)) ? <BsBookmarkDashFill /> : <BsBookmarkStarFill />}
+              {Manager.IsValid(bookmarkedMessages?.find((x) => x?.id === activeMessage?.id)) ? 'Remove Bookmark' : 'Add Bookmark'}
+              {Manager.IsValid(bookmarkedMessages?.find((x) => x?.id === activeMessage?.id)) ? <BsBookmarkDashFill /> : <BsBookmarkStarFill />}
             </button>
 
             <button
               id="cancel"
               onClick={(e) => {
                 e.target.parentNode.classList.remove('active')
-                setShowLongpressMenu(false)
+                setShowLongPressMenu(false)
               }}>
               Cancel <MdCancel className={'cancel-icon'} />
             </button>
@@ -416,7 +418,7 @@ const Chats = () => {
                 <TbMessageCircleSearch id="search-icon" onClick={() => setShowSearchCard(true)} />
               )}
 
-              {bookmarks.length > 0 && (
+              {bookmarkedMessages.length > 0 && (
                 <BsFillBookmarksFill
                   id="chat-bookmark-icon"
                   className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
@@ -428,7 +430,7 @@ const Chats = () => {
         )}
 
         {/* SEARCH RESULTS */}
-        {bookmarks.length === 0 && searchResults.length > 0 && (
+        {bookmarkedMessages.length === 0 && searchResults.length > 0 && (
           <div id="messages" className="search-results">
             {Manager.IsValid(searchResults) &&
               searchResults.map((messageObj, index) => {
@@ -454,9 +456,9 @@ const Chats = () => {
         )}
 
         {/* BOOKMARKED MESSAGES */}
-        {Manager.IsValid(bookmarks) && showBookmarks && (
+        {Manager.IsValid(bookmarkedMessages) && showBookmarks && (
           <div id="bookmark-messages" className="bookmark-results">
-            {bookmarks.map((bookmark, index) => {
+            {bookmarkedMessages.map((bookmark, index) => {
               let sender
 
               if (StringManager.GetFirstNameOnly(bookmark.sender) === StringManager.GetFirstNameOnly(currentUser?.name)) {
@@ -466,37 +468,39 @@ const Chats = () => {
               }
               return (
                 <div {...bind()} key={index} className={'message-wrapper bookmark-message'}>
-                  {/* LONGPRESS MENU */}
-                  <div className="long-press-menu">
-                    <button
-                      id="copy"
-                      onClick={(e) => {
-                        setState({...state, successAlertMessage: 'Message Copied'})
-                        const message = e.target.parentNode.parentNode.querySelector('.message')
-                        navigator.clipboard.writeText(message.textContent)
-                        e.target.parentNode.classList.remove('active')
-                      }}>
-                      Copy <IoCopy />
-                    </button>
-                    <button
-                      id="bookmark"
-                      onClick={(e) => {
-                        e.target.parentNode.classList.remove('active')
+                  {/* LONG-PRESS MENU */}
+                  {showLongPressMenu && (
+                    <div className="long-press-menu">
+                      <button
+                        id="copy"
+                        onClick={(e) => {
+                          setState({...state, successAlertMessage: 'Message Copied'})
+                          const message = e.target.parentNode.parentNode.querySelector('.message')
+                          navigator.clipboard.writeText(message.textContent)
+                          e.target.parentNode.classList.remove('active')
+                        }}>
+                        Copy <IoCopy />
+                      </button>
+                      <button
+                        id="bookmark"
+                        onClick={(e) => {
+                          e.target.parentNode.classList.remove('active')
 
-                        ToggleBookmark(bookmark).then((r) => r)
-                      }}>
-                      Remove Bookmark
-                      <BsBookmarkDashFill className={'active'} />
-                    </button>
+                          ToggleBookmark(bookmark).then((r) => r)
+                        }}>
+                        Remove Bookmark
+                        <BsBookmarkDashFill className={'active'} />
+                      </button>
 
-                    <button
-                      id="cancel"
-                      onClick={(e) => {
-                        e.target.parentNode.classList.remove('active')
-                      }}>
-                      Cancel <MdCancel className={'cancel-icon'} />
-                    </button>
-                  </div>
+                      <button
+                        id="cancel"
+                        onClick={(e) => {
+                          e.target.parentNode.classList.remove('active')
+                        }}>
+                        Cancel <MdCancel className={'cancel-icon'} />
+                      </button>
+                    </div>
+                  )}
                   <div className={`flex`}>
                     <p
                       style={DomManager.AnimateDelayStyle(index)}
@@ -521,7 +525,7 @@ const Chats = () => {
               {Manager.IsValid(messagesToLoop) &&
                 messagesToLoop.map((message, index) => {
                   // Determine bookmark class
-                  let isBookmarked = Manager.IsValid(bookmarks?.find((x) => x.id === message?.id))
+                  let isBookmarked = Manager.IsValid(bookmarkedMessages?.find((x) => x.id === message?.id))
                   const timestampDateOnly = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.dateForDb)
                   const timestampTimeOnly = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.timeForDb)
                   let convertedTime = DateManager.convertTime(timestampTimeOnly, message?.senderTimezone, currentUser?.location?.timezone)
@@ -569,10 +573,10 @@ const Chats = () => {
                 <div className={'flex'} id="message-input-container">
                   <InputWrapper
                     placeholder={'Message...'}
-                    inputType={InputTypes.textarea}
+                    inputType={InputTypes.chat}
                     inputClasses="message-input"
                     hasBottomSpacer={false}
-                    wrapperClasses="chat-input-wrapper"
+                    wrapperClasses="chat-input"
                     defaultValue={messageText}
                     onKeyUp={(e) => {
                       // Backspace
@@ -611,11 +615,11 @@ const Chats = () => {
                 className={showBookmarks ? 'material-icons  top-bar-icon' + ' active' : 'material-icons  top-bar-icon'}
               />
               {showBookmarks && <p>Hide Bookmarks</p>}
-              {!showBookmarks && bookmarks.length > 0 && <p>View Bookmarks</p>}
-              {bookmarks.length === 0 && !showBookmarks && <p>No Bookmarks</p>}
+              {!showBookmarks && bookmarkedMessages.length > 0 && <p>View Bookmarks</p>}
+              {bookmarkedMessages.length === 0 && !showBookmarks && <p>No Bookmarks</p>}
             </p>
             <InputWrapper
-              inputType={'input'}
+              inputType={InputTypes.text}
               placeholder={'Find a message...'}
               onChange={async (e) => {
                 const inputValue = e.target.value
@@ -626,7 +630,7 @@ const Chats = () => {
                 if (inputValue.length > 2) {
                   setSearchInputQuery(inputValue)
                   const results = messagesToLoop.filter((x) => x.message.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
-                  setBookmarks([])
+                  setBookmarkedMessages([])
                   setSearchResults(results)
                 }
               }}

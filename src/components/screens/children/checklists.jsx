@@ -11,7 +11,7 @@ import useCurrentUser from '../../../hooks/useCurrentUser'
 import DomManager from '../../../managers/domManager'
 import StringManager from '../../../managers/stringManager'
 // Path: src\components\screens\childInfo\checklists.jsx
-import Modal from '../../shared/modal'
+import Form from '../../shared/form'
 
 export default function Checklists({showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
@@ -135,7 +135,7 @@ export default function Checklists({showCard, hideCard}) {
   }
 
   return (
-    <Modal
+    <Form
       onSubmit={AddToDb}
       wrapperClass="child-info-checklists"
       submitIcon={<MdOutlineChecklist />}
@@ -176,6 +176,6 @@ export default function Checklists({showCard, hideCard}) {
             </div>
           )
         })}
-    </Modal>
+    </Form>
   )
 }

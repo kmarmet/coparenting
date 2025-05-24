@@ -1,7 +1,7 @@
 // Path: src\components\screens\coparents\newCoparentForm.jsx
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import Modal from '/src/components/shared/modal'
 import AlertManager from '/src/managers/alertManager'
 import Manager from '/src/managers/manager'
 import Coparent from '/src/models/coparent'
@@ -116,7 +116,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
   }
 
   return (
-    <Modal
+    <Form
       onSubmit={Submit}
       submitText={name.length > 0 ? `Add ${StringManager.uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
       title={`Add ${Manager.IsValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} Contact`}
@@ -158,7 +158,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
           </div>
         </div>
       </div>
-    </Modal>
+    </Form>
   )
 }
 

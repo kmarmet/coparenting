@@ -21,8 +21,8 @@ import StringManager from '../../../managers/stringManager.coffee'
 import UpdateManager from '../../../managers/updateManager'
 import NavBar from '../../navBar'
 import AddressInput from '../../shared/addressInput'
+import Form from '../../shared/form'
 import InputWrapper from '../../shared/inputWrapper'
-import Modal from '../../shared/modal'
 import Spacer from '../../shared/spacer'
 
 export default function Profile() {
@@ -206,7 +206,7 @@ export default function Profile() {
   return (
     <>
       {/* UPDATE CARD */}
-      <Modal
+      <Form
         onSubmit={async () => {
           if (updateType === 'phone') {
             await UpdateUserPhone()
@@ -233,10 +233,10 @@ export default function Profile() {
             )}
           </div>
         </div>
-      </Modal>
+      </Form>
 
       {/* RE-AUTHENTICATE CARD */}
-      <Modal
+      <Form
         onSubmit={async () => {
           console.log('here')
         }}
@@ -262,7 +262,7 @@ export default function Profile() {
             required={true}
           />
         </div>
-      </Modal>
+      </Form>
 
       {/* PAGE CONTAINER */}
       <div id="account-container" className={`${theme} page-container`}>

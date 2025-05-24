@@ -24,6 +24,7 @@ const DB = {
     holidayEvents: 'holidayEvents',
     documentHeaders: 'documentHeaders',
     appUpdates: 'appUpdates',
+    invitations: 'invitations',
   },
   find: async (arrayOrTable, matchArray, isFromDb = true, filterFunction = null) => {
     if (filterFunction) {
@@ -233,7 +234,7 @@ const DB = {
       update(ref(dbRef, path), updatedRow)
         .then()
         .catch((error) => {
-          console.log(error)
+          LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
         })
     } catch (error) {
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)

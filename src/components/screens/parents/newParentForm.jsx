@@ -1,7 +1,7 @@
 // Path: src\components\screens\parents\newParentForm.jsx
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import Modal from '/src/components/shared/modal'
 import AlertManager from '/src/managers/alertManager'
 import Manager from '/src/managers/manager'
 import React, {useContext, useState} from 'react'
@@ -111,7 +111,7 @@ const NewParentForm = ({showCard, hideCard}) => {
   }
 
   return (
-    <Modal
+    <Form
       onSubmit={Submit}
       submitText={name.length > 0 ? `Add ${StringManager.uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
       title={`Add ${Manager.IsValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} to Your Profile`}
@@ -158,7 +158,7 @@ const NewParentForm = ({showCard, hideCard}) => {
           </div>
         </div>
       </div>
-    </Modal>
+    </Form>
   )
 }
 

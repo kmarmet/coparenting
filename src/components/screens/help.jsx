@@ -11,8 +11,8 @@ import DomManager from '../../managers/domManager'
 import EmailManager from '../../managers/emailManager'
 import Manager from '../../managers/manager'
 import NavBar from '../navBar'
+import Form from '../shared/form'
 import InputWrapper from '../shared/inputWrapper'
-import Modal from '../shared/modal'
 import Spacer from '../shared/spacer'
 
 export default function Help() {
@@ -90,7 +90,7 @@ export default function Help() {
   return (
     <>
       {/* FEATURE REQUEST */}
-      <Modal
+      <Form
         onSubmit={SubmitFeatureRequest}
         submitText={'Send Request'}
         wrapperClass="feature-request"
@@ -117,10 +117,10 @@ export default function Help() {
             </div>
           </div>
         </div>
-      </Modal>
+      </Form>
 
       {/* FEEDBACK */}
-      <Modal
+      <Form
         submitText={'Send Feedback'}
         className="feedback-wrapper"
         wrapperClass="feedback-wrapper"
@@ -143,10 +143,10 @@ export default function Help() {
             </div>
           </div>
         </div>
-      </Modal>
+      </Form>
 
       {/* CONTACT SUPPORT */}
-      <Modal
+      <Form
         submitText={'Send Support Request'}
         onSubmit={SubmitSupportRequest}
         wrapperClass="support-wrapper"
@@ -168,7 +168,7 @@ export default function Help() {
             </div>
           </div>
         </div>
-      </Modal>
+      </Form>
 
       {/* CONTACT US */}
       <div id="help-container" className={`${theme} page-container form`}>

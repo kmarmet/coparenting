@@ -1,10 +1,10 @@
 import React, {useContext} from 'react'
-import Modal from '../../shared/modal.jsx'
 import {ImAppleinc} from 'react-icons/im'
 import {IoLogoVenmo} from 'react-icons/io5'
-import {SiCashapp, SiZelle} from 'react-icons/si'
 import {LiaCcPaypal} from 'react-icons/lia'
+import {SiCashapp, SiZelle} from 'react-icons/si'
 import globalState from '../../../context.js'
+import Form from '../../shared/form.jsx'
 import Spacer from '../../shared/spacer'
 
 const zelleLink = 'https://www.zellepay.com/how-it-works'
@@ -21,7 +21,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
 
   return (
     <>
-      <Modal
+      <Form
         hasSubmitButton={false}
         subtitle="There are numerous straightforward and cost-free methods available for transferring money to a co-parent for calendarEvents or other purposes. Please review the options below to determine which one suits your needs best."
         title={'Payment/Transfer Options'}
@@ -135,7 +135,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
             </div>
           </div>
         )}
-      </Modal>
+      </Form>
     </>
   )
 }

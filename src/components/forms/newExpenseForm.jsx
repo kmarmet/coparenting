@@ -1,7 +1,7 @@
 // Path: src\components\forms\newExpenseForm.jsx
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import Modal from '/src/components/shared/modal'
 import SelectDropdown from '/src/components/shared/selectDropdown'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import Spacer from '/src/components/shared/spacer.jsx'
@@ -301,25 +301,26 @@ export default function NewExpenseForm() {
   }
 
   return (
-    <Modal
+    <Form
       refreshKey={refreshKey}
       hasDelete={false}
       onSubmit={SubmitNewExpense}
-      submitText={'Create'}
+      submitText={'Done'}
       title={'Create Expense'}
       className="new-expense-card"
-      wrapperClass="new-expense-card"
+      wrapperClass="new-expense-card form at-top"
       showCard={creationFormToShow === CreationForms.expense}
       onClose={ResetForm}>
       <div className="calendarEvents-wrapper">
         <Spacer height={5} />
         {/* PAGE CONTAINER */}
-        <div id="add-expense-form" className={`${theme} form`}>
+        <div id="add-expense-form" className={`${theme} at-top`}>
           {/* AMOUNT */}
           <div id="amount-input-wrapper">
-            <span className="flex input-wrapper">
-              <span id="dollar-sign">$</span>
+            <span className="flex">
               <InputWrapper
+                wrapperClass="currency"
+                isCurrency={true}
                 id="amount-input"
                 hasBottomSpacer={false}
                 inputType={InputTypes.number}
@@ -381,7 +382,7 @@ export default function NewExpenseForm() {
           </div>
 
           {/* CATEGORY */}
-          <SelectDropdown selectValue={expenseCategory} onChange={HandleCategorySelection} placeholder={'Category'}>
+          <SelectDropdown options={Object.keys(ExpenseCategories)} selectValue={Object.keys(ExpenseCategories)[0]} onChange={HandleCategorySelection}>
             {Object.keys(ExpenseCategories).map((type, index) => {
               return (
                 <MenuItem key={index} value={type}>
@@ -406,6 +407,7 @@ export default function NewExpenseForm() {
 
           {/* NOTES */}
           <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} placeholder={'Notes'} />
+
           <Spacer height={5} />
 
           {/* PAYER */}
@@ -418,15 +420,17 @@ export default function NewExpenseForm() {
             })}
             onCheck={HandlePayerSelection}
           />
-
+          <Spacer height={8} />
           {/* SHARE WITH */}
           <ShareWithCheckboxes onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coparents'} />
+
+          <Spacer height={8} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {currentUser && currentUser?.children !== undefined && (
             <div className="share-with-container ">
               <div className="flex">
-                <Label text={'Applicable Child(ren)'} />
+                <Label text={'Applicable Child(ren)'} classes="always-show" />
                 <ToggleButton onCheck={() => setIncludeChildren(!includeChildren)} onUncheck={() => setIncludeChildren(!includeChildren)} />
               </div>
               {includeChildren && (
@@ -443,7 +447,7 @@ export default function NewExpenseForm() {
 
           {/* RECURRING? */}
           <div className="flex">
-            <Label text={'Recurring'} />
+            <Label text={'Recurring'} classes="always-show" />
             <ToggleButton onCheck={() => setIsRecurring(true)} onUncheck={() => setIsRecurring(false)} />
           </div>
           {isRecurring && (
@@ -476,6 +480,6 @@ export default function NewExpenseForm() {
           <Spacer height={20} />
         </div>
       </div>
-    </Modal>
+    </Form>
   )
 }

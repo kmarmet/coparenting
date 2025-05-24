@@ -8,6 +8,11 @@ apiKey = process.env.REACT_APP_SMS_API_KEY;
 export default SmsManager = {
   lineBreak: '\r\n',
   signature: "\r\nThank You,\r\nPeaceful coParenting",
+  Templates: {
+    Invitation: function(currentUser, userName, recipientPhone) {
+      return `Hello ${userName}, ${SmsManager.lineBreak}${SmsManager.lineBreak} You have been invited to join Peaceful coParenting by ${currentUser != null ? currentUser.name : void 0}. To accept the invite please visit ${SmsManager.lineBreak}https://peaceful-coparenting.app?senderKey=${currentUser != null ? currentUser.key : void 0} ${SmsManager.lineBreak}  ${SmsManager.lineBreak}${SmsManager.signature}`;
+    }
+  },
   getNewCalEventTemplate: (title, date, createdBy) => {
     return `A new Shared Calendar event has been created by ${createdBy}${SmsManager.lineBreak}${SmsManager.lineBreak}Title:${title}${SmsManager.lineBreak}Date:${date}${SmsManager.lineBreak}${SmsManager.signature}`;
   },

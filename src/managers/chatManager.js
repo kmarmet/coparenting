@@ -132,28 +132,22 @@ const ChatManager = {
 
     return existingBookmarks
   },
-  toggleMessageBookmark: async (currentUser, messageToUser, messageId, chatId, existingBookmarks) => {
-    const dbRef = ref(getDatabase())
-    let toAdd = []
-
-    const newBookmark = new ChatBookmark()
-    newBookmark.ownerKey = currentUser?.key
-    newBookmark.messageId = messageId
-
-    // Bookmarks exist already
-    if (Manager.IsValid(existingBookmarks)) {
-      const existingBookmark = existingBookmarks.find((x) => x?.messageId === messageId)
-      if (Manager.IsValid(existingBookmark)) {
-        toAdd = existingBookmarks.filter((x) => x?.messageId !== messageId)
-      } else {
-        toAdd = DatasetManager.AddToArray(existingBookmarks, newBookmark)
-      }
-    } else {
-      toAdd = [newBookmark]
-    }
-
+  ToggleMessageBookmark: async (currentUser, messageToUser, messageId, chatId, existingBookmarks) => {
     try {
-      await set(child(dbRef, `${DB.tables.chatBookmarks}/${chatId}`), toAdd)
+      const dbRef = ref(getDatabase())
+      let updated = []
+
+      const newBookmark = new ChatBookmark()
+      newBookmark.ownerKey = currentUser?.key
+      newBookmark.messageId = messageId
+      const existsAlready = existingBookmarks.find((x) => x?.messageId === messageId)
+      if (Manager.IsValid(existsAlready)) {
+        updated = existingBookmarks.filter((x) => x?.messageId !== messageId)
+      } else {
+        updated = DatasetManager.AddToArray(existingBookmarks, newBookmark)
+      }
+
+      set(child(dbRef, `${DB.tables.chatBookmarks}/${chatId}`), updated)
     } catch (error) {
       LogManager.Log(error.message, LogManager.LogTypes.error)
     }

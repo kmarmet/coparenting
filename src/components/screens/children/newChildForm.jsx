@@ -18,9 +18,9 @@ import CalendarEvent from '../../../models/calendarEvent'
 import Child from '../../../models/child/child'
 import ModelNames from '../../../models/modelNames'
 import AddressInput from '../../shared/addressInput'
+import Form from '../../shared/form'
 import InputWrapper from '../../shared/inputWrapper'
 import Label from '../../shared/label'
-import Modal from '../../shared/modal'
 import Spacer from '../../shared/spacer'
 import ToggleButton from '../../shared/toggleButton'
 import UploadInputs from '../../shared/uploadInputs'
@@ -110,7 +110,7 @@ const NewChildForm = ({hideCard, showCard}) => {
   }
 
   return (
-    <Modal
+    <Form
       submitText={`Add ${name.length > 0 ? name : 'Child'}`}
       onSubmit={Submit}
       className="new-child-wrapper"
@@ -180,7 +180,7 @@ const NewChildForm = ({hideCard, showCard}) => {
           />
         </div>
       </div>
-    </Modal>
+    </Form>
   )
 }
 

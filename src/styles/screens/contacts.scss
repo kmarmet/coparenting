@@ -2,24 +2,6 @@
 
 #external-overrides {
   #contacts-wrapper {
-    #page-links {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      margin-bottom: 15px;
-      width: 100%;
-      flex-wrap: nowrap;
-
-      .separator {
-        margin: 0 10px;
-        color: $darkGrey;
-      }
-
-      p {
-        color: $linkColor;
-        border-bottom: 1px solid $linkColor;
-      }
-    }
     .under-label {
       color: $darkerGrey;
       span {

@@ -9,6 +9,7 @@ InputTypes = {
   dateRange: 'date-range'
   time: 'time'
   textarea: 'textarea'
+  chat: 'chat'
   phone: 'phone'
   url: 'url'
 }

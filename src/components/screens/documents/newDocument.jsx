@@ -1,7 +1,7 @@
 // Path: src\components\screens\documents\newDocument.jsx
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import Modal from '/src/components/shared/modal'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import UploadInputs from '/src/components/shared/uploadInputs'
 import FirebaseStorage from '/src/database/firebaseStorage'
@@ -209,9 +209,9 @@ export default function NewDocument() {
   }
 
   return (
-    <Modal
+    <Form
       className="upload-document-card"
-      wrapperClass="upload-document-modal"
+      wrapperClass="upload-document-form"
       onSubmit={Upload}
       submitText={'Upload'}
       showCard={creationFormToShow === CreationForms.documents}
@@ -242,6 +242,6 @@ export default function NewDocument() {
           />
         </div>
       </div>
-    </Modal>
+    </Form>
   )
 }

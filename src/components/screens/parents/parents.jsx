@@ -20,7 +20,7 @@ import useParents from '../../../hooks/useParents'
 import DomManager from '../../../managers/domManager'
 import EmailManager from '../../../managers/emailManager'
 import AddressInput from '../../shared/addressInput'
-import Modal from '../../shared/modal'
+import Form from '../../shared/form'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import Spacer from '../../shared/spacer'
 import CustomParentInfo from './customParentInfo'
@@ -163,7 +163,7 @@ export default function Parents() {
         </div>
       </ScreenActionsMenu>
 
-      <Modal
+      <Form
         submitText={'Send Invitation'}
         wrapperClass="invite-parent-card"
         title={'Invite Parent'}
@@ -193,7 +193,7 @@ export default function Parents() {
           required={true}
           onChange={(e) => setInvitedParentEmail(e.target.value)}
         />
-      </Modal>
+      </Form>
 
       {/* COPARENTS CONTAINER */}
       <div id="parents-container" className={`${theme} page-container parents-wrapper`}>

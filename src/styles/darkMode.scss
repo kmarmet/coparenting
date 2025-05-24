@@ -962,7 +962,7 @@
       }
 
       // BOTTOM CARD
-      #modal-wrapper {
+      #form-wrapper {
         .buttons {
           #cancel-button {
             background: transparent;
@@ -1016,9 +1016,9 @@
             }
           }
         }
-        #modal-content {
+        #form-content {
           background: transparent;
-          #modal {
+          #form {
             background: $darkGreyLight;
 
             #large-title {
@@ -1026,7 +1026,7 @@
               font-weight: $fwMedium;
             }
 
-            #modal-title-and-text {
+            #form-title-and-text {
               background-color: $darkGreyLight;
             }
 

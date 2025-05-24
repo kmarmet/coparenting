@@ -1,4 +1,4 @@
-// Path: src\components\shared\modal.jsx
+// Path: src\components\shared\form.jsx
 import Manager from '/src/managers/manager.js'
 import React, {useContext, useEffect} from 'react'
 import globalState from '../../context'
@@ -6,7 +6,7 @@ import DomManager from '../../managers/domManager'
 import StringManager from '../../managers/stringManager'
 import Overlay from './overlay'
 
-export default function Modal({
+export default function Form({
   submitText,
   onSubmit,
   onDelete,
@@ -29,14 +29,14 @@ export default function Modal({
   const {theme, refreshKey, creationFormToShow} = state
 
   const HideCard = () => {
-    const modalWrapper = document.querySelector(`.${wrapperClass}#modal-wrapper`)
+    const modalWrapper = document.querySelector(`.${wrapperClass}#form-wrapper`)
 
     if (modalWrapper) {
-      const modal = modalWrapper.querySelector('#modal')
+      const form = modalWrapper.querySelector('#form')
 
-      if (modal) {
+      if (form) {
         setTimeout(() => {
-          const labelWrappers = modal.querySelectorAll('#label-wrapper')
+          const labelWrappers = form.querySelectorAll('#label-wrapper')
           if (Manager.IsValid(labelWrappers)) {
             labelWrappers.forEach((label) => {
               label.classList.remove('active')
@@ -48,7 +48,7 @@ export default function Modal({
   }
 
   const ScrollToTop = () => {
-    const header = document.getElementById('modal-title')
+    const header = document.getElementById('form-title')
     header.scrollIntoView({behavior: 'smooth', block: 'end'})
   }
 
@@ -60,7 +60,7 @@ export default function Modal({
           DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
         }, 300)
       }
-      const activeModal = document.querySelector('#modal-wrapper.active')
+      const activeModal = document.querySelector('#form-wrapper.active')
       if (Manager.IsValid(activeModal)) {
         const allWrappers = activeModal.querySelectorAll('.input-wrapper')
         if (Manager.IsValid(allWrappers)) {
@@ -71,17 +71,17 @@ export default function Modal({
         }
       }
     }
-    let modalWrapper = document.querySelector(`.${wrapperClass}#modal-wrapper.active`)
+    let modalWrapper = document.querySelector(`.${wrapperClass}#form-wrapper.active`)
 
-    // Check if creationFormToShow is valid and if so, find the modal wrapper
+    // Check if creationFormToShow is valid and if so, find the form wrapper
     if (Manager.IsValid(creationFormToShow, true)) {
-      modalWrapper = document.querySelector(`.${creationFormToShow}#modal-wrapper`)
+      modalWrapper = document.querySelector(`.${creationFormToShow}#form-wrapper`)
     }
     if (modalWrapper) {
       const checkboxContainer = document.getElementById('share-with-checkbox-container')
 
       if (modalWrapper && StringManager.GetWordCount(title) >= 4) {
-        const title = modalWrapper.querySelector('#modal-title')
+        const title = modalWrapper.querySelector('#form-title')
         if (title) {
           title.classList.add('long-title')
         }
@@ -102,7 +102,7 @@ export default function Modal({
             checkboxContainer.classList.remove('active')
           }
         } else {
-          DomManager.ToggleAnimation('remove', 'modal-fade-wrapper', DomManager.AnimateClasses.names.fadeInUp, 50)
+          DomManager.ToggleAnimation('remove', 'form-fade-wrapper', DomManager.AnimateClasses.names.fadeInUp, 50)
         }
       }
 
@@ -120,24 +120,22 @@ export default function Modal({
 
   return (
     <Overlay show={showCard}>
-      <div key={refreshKey} id="modal-wrapper" className={`${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
+      <div key={refreshKey} id="form-wrapper" className={`${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
         <div
           style={DomManager.AnimateDelayStyle(1, 0.002)}
-          id="modal-card"
-          className={`${DomManager.Animate.FadeInUp(showCard, '.modal-fade-wrapper')} modal-fade-wrapper ${activeView}`}>
-          <div id="modal">
+          id="form-card"
+          className={`${DomManager.Animate.FadeInUp(showCard, '.form-fade-wrapper')} form-fade-wrapper ${activeView}`}>
+          <div id="form">
             <div className="header">
-              <p id="modal-title" className={StringManager.GetWordCount(title) > 3 ? 'long-title' : ''}>
+              <p id="form-title" className={StringManager.GetWordCount(title) > 3 ? 'long-title' : ''}>
                 {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
                 {title}
               </p>
               {Manager.IsValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}
             </div>
 
-            <div id="relative-wrapper">
-              {viewSelector}
-              <div id="content">{children}</div>
-            </div>
+            {viewSelector}
+            <div id="content">{children}</div>
           </div>
         </div>
         <div className={`flex card-buttons`}>

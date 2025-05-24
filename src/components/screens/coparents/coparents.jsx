@@ -21,7 +21,7 @@ import useCurrentUser from '../../../hooks/useCurrentUser'
 import DomManager from '../../../managers/domManager'
 import EmailManager from '../../../managers/emailManager'
 import AddressInput from '../../shared/addressInput'
-import Modal from '../../shared/modal'
+import Form from '../../shared/form'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
@@ -189,7 +189,7 @@ export default function Coparents() {
       </ScreenActionsMenu>
 
       {/* INVITATION FORM */}
-      <Modal
+      <Form
         submitText={'Send Invitation'}
         wrapperClass="invite-coparent-card"
         title={'Invite Co-Parent'}
@@ -219,7 +219,7 @@ export default function Coparents() {
           required={true}
           onChange={(e) => (invite.current.email = e.target.value)}
         />
-      </Modal>
+      </Form>
 
       {/* COPARENTS CONTAINER */}
       <div id="coparents-container" className={`${theme} page-container parents-wrapper`}>

@@ -13,9 +13,9 @@ import useChat from '../../../hooks/useChat'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import EmailManager from '../../../managers/emailManager'
 import NavBar from '../../navBar'
+import Form from '../../shared/form'
 import InputWrapper from '../../shared/inputWrapper'
 import Label from '../../shared/label'
-import Modal from '../../shared/modal'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
@@ -34,7 +34,7 @@ const Chats = () => {
   return (
     <>
       {/* INVITATION FORM */}
-      <Modal
+      <Form
         submitText={'Send Invitation'}
         wrapperClass="invite-coparent-card"
         title={'Invite Co-Parent'}
@@ -59,7 +59,7 @@ const Chats = () => {
           required={true}
           onChange={(e) => setInviteeEmail(e.target.value)}
         />
-      </Modal>
+      </Form>
 
       {/* NO DATA FALLBACK */}
       {chats?.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
@@ -80,7 +80,7 @@ const Chats = () => {
             <AccordionSummary>
               <button className="button default grey" onClick={() => setShowInfo(!showInfo)}>
                 <div id="circle" className="circle"></div>
-                <Label text={'Invite Co-Parent'} /> {showInfo ? <LuMinus /> : <LuPlus />}
+                <Label text={'Invite Co-Parent'} classes="always-show" /> {showInfo ? <LuMinus /> : <LuPlus />}
               </button>
             </AccordionSummary>
             <AccordionDetails>

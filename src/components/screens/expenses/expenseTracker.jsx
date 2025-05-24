@@ -30,9 +30,9 @@ import NewExpenseForm from '../../forms/newExpenseForm.jsx'
 import NavBar from '../../navBar.jsx'
 import AccordionTitle from '../../shared/accordionTitle'
 import DetailBlock from '../../shared/detailBlock'
+import Form from '../../shared/form.jsx'
 import InputWrapper from '../../shared/inputWrapper.jsx'
 import Label from '../../shared/label.jsx'
-import Modal from '../../shared/modal.jsx'
 import NoDataFallbackText from '../../shared/noDataFallbackText.jsx'
 import ScreenHeader from '../../shared/screenHeader'
 import SelectDropdown from '../../shared/selectDropdown.jsx'
@@ -310,7 +310,7 @@ export default function ExpenseTracker() {
       />
 
       {/* DETAILS CARD */}
-      <Modal
+      <Form
         submitText={'Update'}
         title={`${StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.name || '')}`}
         submitIcon={<RxUpdate className={'fs-16'} />}
@@ -517,7 +517,7 @@ export default function ExpenseTracker() {
             </>
           )}
         </div>
-      </Modal>
+      </Form>
 
       {/* PAGE CONTAINER */}
       <div id="expense-tracker" className={`${theme} page-container form`}>

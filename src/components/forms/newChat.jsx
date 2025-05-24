@@ -9,7 +9,7 @@ import AlertManager from '../../managers/alertManager'
 import DatasetManager from '../../managers/datasetManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
-import Modal from '../shared/modal'
+import Form from '../shared/form'
 import Spacer from '../shared/spacer'
 
 const NewChatSelector = () => {
@@ -56,7 +56,7 @@ const NewChatSelector = () => {
   }, [creationFormToShow, chats])
 
   return (
-    <Modal
+    <Form
       hasSubmitButton={false}
       className="new-chat"
       wrapperClass="new-chat"
@@ -88,7 +88,7 @@ const NewChatSelector = () => {
             </div>
           )
         })}
-    </Modal>
+    </Form>
   )
 }
 

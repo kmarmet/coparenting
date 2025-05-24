@@ -4,10 +4,10 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
+import Form from '../../../components/shared/form'
 import InputWrapper from '../../../components/shared/inputWrapper'
 // Path: src\components\screens\visitation\fiftyFifty.jsx
 import Label from '../../../components/shared/label'
-import Modal from '../../../components/shared/modal'
 import MyConfetti from '../../../components/shared/myConfetti'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
@@ -90,7 +90,7 @@ export default function FiftyFifty({hide, showCard}) {
   }
 
   return (
-    <Modal
+    <Form
       onSubmit={addToCalendar}
       submitText={'Add Schedule'}
       className="form"
@@ -180,6 +180,6 @@ export default function FiftyFifty({hide, showCard}) {
           dataKey={currentUser?.coparents?.map((x) => x.name)}
         />
       </div>
-    </Modal>
+    </Form>
   )
 }

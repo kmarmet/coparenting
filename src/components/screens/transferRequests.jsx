@@ -1,7 +1,7 @@
 // Path: src\components\screens\transferRequests?.jsx
+import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import Map from '/src/components/shared/map.jsx'
-import Modal from '/src/components/shared/modal'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import DB from '/src/database/DB'
@@ -175,7 +175,7 @@ export default function TransferRequests() {
   return (
     <>
       {/* DETAILS CARD */}
-      <Modal
+      <Form
         submitText={'Approve'}
         onDelete={() => DeleteRequest('deleted')}
         title={'Request Details'}
@@ -351,7 +351,7 @@ export default function TransferRequests() {
             </>
           )}
         </div>
-      </Modal>
+      </Form>
 
       <div id="transfer-requests-container" className={`${theme} page-container form`}>
         {transferRequests?.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}

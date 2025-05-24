@@ -383,7 +383,7 @@ DomManager = {
   },
   setDefaultView: function() {
     var activeModal, allViews;
-    activeModal = document.querySelector('#modal-wrapper.active');
+    activeModal = document.querySelector('#form-wrapper.active');
     if (activeModal) {
       allViews = activeModal.querySelectorAll('.view');
       if (Manager.IsValid(allViews[0])) {

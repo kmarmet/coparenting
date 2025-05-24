@@ -1,7 +1,7 @@
 // Path: src\components\forms\newSwapRequest.jsx
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import Modal from '/src/components/shared/modal'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import SwapDurations from '/src/constants/swapDurations'
@@ -179,7 +179,7 @@ export default function NewSwapRequest() {
   const ChangeSwapDuration = (duration) => setSwapDuration(duration)
 
   return (
-    <Modal
+    <Form
       submitText={'Send'}
       onSubmit={Submit}
       wrapperClass="new-swap-request"
@@ -322,6 +322,6 @@ export default function NewSwapRequest() {
           <InputWrapper inputType={'textarea'} placeholder={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
         </div>
       </div>
-    </Modal>
+    </Form>
   )
 }

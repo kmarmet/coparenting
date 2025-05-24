@@ -9,8 +9,8 @@ import useCurrentUser from '../../../hooks/useCurrentUser'
 import AlertManager from '../../../managers/alertManager'
 import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager.coffee'
+import Form from '../../shared/form'
 import InputWrapper from '../../shared/inputWrapper'
-import Modal from '../../shared/modal'
 import Spacer from '../../shared/spacer'
 
 export default function CustomCoparentInfo({hideCard, activeCoparent, showCard, onAdd = (coparent) => {}}) {
@@ -43,7 +43,7 @@ export default function CustomCoparentInfo({hideCard, activeCoparent, showCard, 
   }
 
   return (
-    <Modal
+    <Form
       submitIcon={<FaWandMagicSparkles />}
       submitText={'Add'}
       onSubmit={Add}
@@ -62,6 +62,6 @@ export default function CustomCoparentInfo({hideCard, activeCoparent, showCard, 
         />
         <InputWrapper inputType={InputTypes.text} required={true} placeholder={'Value'} onChange={(e) => setValue(e.target.value)} />
       </div>
-    </Modal>
+    </Form>
   )
 }

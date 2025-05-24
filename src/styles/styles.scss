@@ -958,8 +958,8 @@
       }
     }
 
-    #modal-wrapper {
-      @include modal;
+    #form-wrapper {
+      @include form;
     }
 
     #share-with-checkbox-group {

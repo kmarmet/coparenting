@@ -1,7 +1,7 @@
 // Path: src\components\forms\editCalEvent.jsx
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import Modal from '/src/components/shared/modal'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import DB from '/src/database/DB'
@@ -325,7 +325,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
   return (
     <>
-      <Modal
+      <Form
         onDelete={() => {
           AlertManager.confirmAlert(
             SetLocalConfirmMessage(),
@@ -638,7 +638,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             />
           </div>
         </div>
-      </Modal>
+      </Form>
     </>
   )
 }

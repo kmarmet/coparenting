@@ -1,7 +1,7 @@
 // Path: src\components\screens\swapRequests?.jsx
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import Modal from '/src/components/shared/modal'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
 import SwapDurations from '/src/constants/swapDurations.js'
 import DB from '/src/database/DB'
@@ -182,7 +182,7 @@ export default function SwapRequests() {
   return (
     <>
       {/* DETAILS CARD */}
-      <Modal
+      <Form
         onDelete={DeleteRequest}
         hasDelete={activeRequest?.ownerKey === currentUser?.key && view === 'edit'}
         hasSubmitButton={activeRequest?.ownerKey !== currentUser?.key}
@@ -355,7 +355,7 @@ export default function SwapRequests() {
             </div>
           </>
         )}
-      </Modal>
+      </Form>
 
       {/* PAGE CONTAINER */}
       <div id="swap-requests" className={`${theme} page-container form`}>

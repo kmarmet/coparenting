@@ -1,8 +1,8 @@
 // Path: src\components\screens\calendar\calendar.jsx
 import EditCalEvent from '/src/components/forms/editCalEvent'
 import NavBar from '/src/components/navBar.jsx'
+import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import Modal from '/src/components/shared/modal'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import globalState from '/src/context.js'
 import AlertManager from '/src/managers/alertManager'
@@ -375,7 +375,7 @@ export default function EventCalendar() {
       {/* CARDS */}
       <>
         {/* HOLIDAYS CARD */}
-        <Modal
+        <Form
           hasSubmitButton={false}
           className={`${theme} view-holidays`}
           wrapperClass={`view-holidays`}
@@ -390,10 +390,10 @@ export default function EventCalendar() {
               Visitation
             </button>
           </div>
-        </Modal>
+        </Form>
 
         {/* SEARCH CARD */}
-        <Modal
+        <Form
           submitIcon={<LuCalendarSearch />}
           submitText={'Search'}
           className="search-card"
@@ -409,7 +409,7 @@ export default function EventCalendar() {
             inputType={InputTypes.text}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-        </Modal>
+        </Form>
 
         {/* EDIT EVENT */}
         <EditCalEvent showCard={showEditCard} hideCard={() => setShowEditCard(false)} event={eventToEdit} />

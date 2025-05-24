@@ -1,7 +1,7 @@
 // Path: src\components\forms\newCalendarEvent.jsx
 import CheckboxGroup from '/src/components/shared/checkboxGroup'
+import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import Modal from '/src/components/shared/modal'
 import MyConfetti from '/src/components/shared/myConfetti.js'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import DatetimeFormats from '/src/constants/datetimeFormats'
@@ -303,13 +303,13 @@ export default function NewCalendarEvent() {
   return (
     <>
       {/* FORM WRAPPER */}
-      <Modal
+      <Form
         submitText={`Done`}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={ResetForm}
         onSubmit={Submit}
         showCard={creationFormToShow === CreationForms.calendar}
-        wrapperClass={`new-calendar-event`}
+        wrapperClass={`new-calendar-event form at-top`}
         contentClass={eventLength === EventLengths.single ? 'single-view' : 'multiple-view'}
         title={`Create New Event`}
         submitIcon={<BsCalendarCheck />}
@@ -327,7 +327,7 @@ export default function NewCalendarEvent() {
             }}
           />
         }>
-        <div id="calendar-event-form-container" className={`form ${theme}`}>
+        <div id="calendar-event-form-container" className={`${theme}`}>
           {/* EVENT NAME */}
           <InputWrapper
             inputClasses="event-title-input"
@@ -507,7 +507,7 @@ export default function NewCalendarEvent() {
               </div>
 
               {/* CLONED INPUTS */}
-              <div className={`cloned-date-wrapper form  ${showCloneInput === true ? 'active' : ''}`}></div>
+              <div className={`cloned-date-wrapper ${showCloneInput === true ? 'active' : ''}`}></div>
               {showCloneInput && (
                 <button className="default button" id="add-date-button" onClick={AddDateInput}>
                   Add Date
@@ -545,7 +545,7 @@ export default function NewCalendarEvent() {
             inputType={InputTypes.textarea}
             onChange={(e) => (newEvent.current.notes = e.target.value)}></InputWrapper>
         </div>
-      </Modal>
+      </Form>
     </>
   )
 }

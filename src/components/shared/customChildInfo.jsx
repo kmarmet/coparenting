@@ -15,8 +15,8 @@ import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager.js'
 import AddressInput from './addressInput'
 import CheckboxGroup from './checkboxGroup'
+import Form from './form'
 import InputWrapper from './inputWrapper'
-import Modal from './modal'
 import ShareWithCheckboxes from './shareWithCheckboxes'
 import Spacer from './spacer'
 import ViewSelector from './viewSelector'
@@ -84,7 +84,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
   }
 
   return (
-    <Modal
+    <Form
       onSubmit={Add}
       submitText={'Done'}
       className="custom-child-info-wrapper"
@@ -165,6 +165,6 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
         <Spacer height={6} />
         <ShareWithCheckboxes onCheck={HandleShareWithSelection} labelText="CONTACTS TO Share with" required={false} />
       </div>
-    </Modal>
+    </Form>
   )
 }

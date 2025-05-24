@@ -22,8 +22,8 @@ import UpdateManager from '../../managers/updateManager'
 import ActivityCategory from '../../models/activityCategory'
 import Memory from '../../models/memory'
 import ModelNames from '../../models/modelNames'
+import Form from '../shared/form'
 import InputWrapper from '../shared/inputWrapper'
-import Modal from '../shared/modal'
 import MyConfetti from '../shared/myConfetti'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import Spacer from '../shared/spacer'
@@ -150,7 +150,7 @@ export function NewMemoryForm() {
   }
 
   return (
-    <Modal
+    <Form
       onSubmit={Upload}
       wrapperClass="new-memory"
       submitText={'Add Memory'}
@@ -201,6 +201,6 @@ export function NewMemoryForm() {
           </div>
         </div>
       </div>
-    </Modal>
+    </Form>
   )
 }

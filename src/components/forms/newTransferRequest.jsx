@@ -19,9 +19,9 @@ import useCoparents from '../../hooks/useCoparents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import DomManager from '../../managers/domManager'
 import AddressInput from '../shared/addressInput'
+import Form from '../shared/form'
 import InputWrapper from '../shared/inputWrapper'
 import Label from '../shared/label'
-import Modal from '../shared/modal'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import Spacer from '../shared/spacer'
 import ToggleButton from '../shared/toggleButton'
@@ -143,7 +143,7 @@ export default function NewTransferChangeRequest() {
   }
 
   return (
-    <Modal
+    <Form
       onSubmit={Submit}
       submitText={'Send Request'}
       wrapperClass="new-transfer-request"
@@ -220,6 +220,6 @@ export default function NewTransferChangeRequest() {
           </div>
         </div>
       </div>
-    </Modal>
+    </Form>
   )
 }

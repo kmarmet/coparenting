@@ -29,6 +29,7 @@ function InputWrapper({
   placeholder = '',
   dateFormat = DatetimeFormats.readableMonthAndDay,
   inputName = '',
+  isCurrency = false,
   customDebounceDelay = 1000,
   errorMessage = '',
 }) {
@@ -124,17 +125,20 @@ function InputWrapper({
 
         {/* NUMBER */}
         {inputType === InputTypes.number && (
-          <input
-            type="tel"
-            id="number"
-            name={inputName}
-            placeholder={placeholder}
-            key={refreshKey}
-            pattern="[0-9]"
-            defaultValue={defaultValue}
-            required={required}
-            onChange={onChange}
-          />
+          <>
+            {isCurrency && <span className="currency input-icon">$</span>}
+            <input
+              type="tel"
+              id="number"
+              name={inputName}
+              placeholder={isCurrency ? '0' : placeholder}
+              key={refreshKey}
+              pattern="[0-9]"
+              defaultValue={defaultValue}
+              required={required}
+              onChange={onChange}
+            />
+          </>
         )}
 
         {/* PHONE */}
@@ -227,6 +231,22 @@ function InputWrapper({
               key={refreshKey}
             />
           </>
+        )}
+
+        {/* CHAT */}
+        {inputType === InputTypes.chat && (
+          <textarea
+            id="textarea"
+            placeholder={placeholder}
+            onChange={(e) => {
+              onChange(e)
+            }}
+            onKeyUp={onKeyUp}
+            className={`${inputClasses}`}
+            name={inputName}
+            defaultValue={defaultValue}
+            key={refreshKey}
+          />
         )}
       </div>
       {Manager.IsValid(error, true) && (

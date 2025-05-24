@@ -1,5 +1,5 @@
+import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
-import Modal from '/src/components/shared/modal'
 import ScreenNames from '/src/constants/screenNames'
 import DB from '/src/database/DB'
 import AlertManager from '/src/managers/alertManager'
@@ -464,7 +464,7 @@ export default function DocViewer() {
   return (
     <>
       {/* SEARCH CARD */}
-      <Modal
+      <Form
         wrapperClass="doc-search-card"
         className="form search-card"
         submitText={'Find Text'}
@@ -479,10 +479,10 @@ export default function DocViewer() {
           onChange={(e) => setSearchValue(e.target.value)}
           inputValueType="text"
         />
-      </Modal>
+      </Form>
 
       {/* TIPS CARD */}
-      <Modal
+      <Form
         wrapperClass="doc-tips-card"
         hasSubmitButton={false}
         showCard={showTips}
@@ -520,11 +520,11 @@ export default function DocViewer() {
             open the document.
           </p>
         </>
-      </Modal>
+      </Form>
 
       {/* TABLE OF CONTENTS */}
       {tocHeaders?.length > 0 && (
-        <Modal
+        <Form
           wrapperClass="toc-card"
           hasSubmitButton={false}
           showCard={showToc}
@@ -550,11 +550,11 @@ export default function DocViewer() {
                 })}
             </div>
           </div>
-        </Modal>
+        </Form>
       )}
 
       {/* RENAME FILE */}
-      <Modal
+      <Form
         showCard={showRenameFile}
         submitText={'Rename'}
         wrapperClass="rename-file-card"
@@ -568,7 +568,7 @@ export default function DocViewer() {
           inputType={InputTypes.text}
           onChange={(e) => setNewFileName(e.target.value)}
         />
-      </Modal>
+      </Form>
 
       {/* SCREEN ACTIONS */}
       <ScreenActionsMenu centeredActionItem={true}>

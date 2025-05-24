@@ -21,6 +21,7 @@
         <item url="file://$PROJECT_DIR$/src/managers/emailManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/expenseManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/imageManager.js" />
+        <item url="file://$PROJECT_DIR$/src/managers/invitationManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/locationManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/logManager.js" />
         <item url="file://$PROJECT_DIR$/src/managers/networkManager.js" />
@@ -53,6 +54,7 @@
         <item url="file://$PROJECT_DIR$/src/models/expense.js" />
         <item url="file://$PROJECT_DIR$/src/models/formNames.js" />
         <item url="file://$PROJECT_DIR$/src/models/homescreenSections.js" />
+        <item url="file://$PROJECT_DIR$/src/models/invisitation.js" />
         <item url="file://$PROJECT_DIR$/src/models/memory.js" />
         <item url="file://$PROJECT_DIR$/src/models/modelNames.js" />
         <item url="file://$PROJECT_DIR$/src/models/parent.js" />
@@ -84,6 +86,7 @@
       <root url="file://$PROJECT_DIR$/src/managers/emailManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/expenseManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/imageManager.js" />
+      <root url="file://$PROJECT_DIR$/src/managers/invitationManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/locationManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/logManager.js" />
       <root url="file://$PROJECT_DIR$/src/managers/networkManager.js" />
@@ -117,6 +120,7 @@
       <root url="file://$PROJECT_DIR$/src/models/expense.js" />
       <root url="file://$PROJECT_DIR$/src/models/formNames.js" />
       <root url="file://$PROJECT_DIR$/src/models/homescreenSections.js" />
+      <root url="file://$PROJECT_DIR$/src/models/invisitation.js" />
       <root url="file://$PROJECT_DIR$/src/models/memory.js" />
       <root url="file://$PROJECT_DIR$/src/models/modelNames.js" />
       <root url="file://$PROJECT_DIR$/src/models/parent.js" />

@@ -2,7 +2,7 @@
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
 import CheckboxGroup from '../../../components/shared/checkboxGroup'
-import Modal from '../../../components/shared/modal'
+import Form from '../../../components/shared/form'
 import MyConfetti from '../../../components/shared/myConfetti'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
@@ -105,7 +105,7 @@ export default function CustomWeekends({hide, showCard}) {
   }
 
   return (
-    <Modal
+    <Form
       submitText={'Add Schedule'}
       className={'long-title form'}
       onSubmit={AddSpecificWeekendsToCalendar}
@@ -135,6 +135,6 @@ export default function CustomWeekends({hide, showCard}) {
       <Spacer height={5} />
       <ShareWithCheckboxes required={false} onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coparents'} />
       <hr className="mt-5 mb-10" />
-    </Modal>
+    </Form>
   )
 }

@@ -12,7 +12,7 @@ import useCurrentUser from '../../../hooks/useCurrentUser'
 import AlertManager from '../../../managers/alertManager'
 import DatasetManager from '../../../managers/datasetManager'
 import DomManager from '../../../managers/domManager'
-import Modal from '../../shared/modal'
+import Form from '../../shared/form'
 import MyConfetti from '../../shared/myConfetti'
 import Spacer from '../../shared/spacer'
 import StandaloneLoadingGif from '../../shared/standaloneLoadingGif'
@@ -145,7 +145,7 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
   }
 
   return (
-    <Modal
+    <Form
       onSubmit={AddOrUpdate}
       wrapperClass="new-checklist"
       submitText={'DONE'}
@@ -166,6 +166,6 @@ export default function AddOrUpdateTransferChecklists({showCard, hideCard, activ
       <button className="button default grey center" onClick={AddInput}>
         Add Item <CgMathPlus />
       </button>
-    </Modal>
+    </Form>
   )
 }

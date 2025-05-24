@@ -1,8 +1,8 @@
 // Path: src\components\screens\visitation\everyOtherWeekend.jsx
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
+import Form from '../../../components/shared/form'
 import InputWrapper from '../../../components/shared/inputWrapper'
-import Modal from '../../../components/shared/modal'
 import MyConfetti from '../../../components/shared/myConfetti'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
@@ -67,7 +67,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
   }
 
   return (
-    <Modal
+    <Form
       submitText={'Add Schedule'}
       subtitle="Add an every other weekend visitation schedule."
       className="form"
@@ -93,6 +93,6 @@ export default function EveryOtherWeekend({hide, showCard}) {
         placeholder={'Share with'}
         containerClass={'share-with-coparents'}
       />
-    </Modal>
+    </Form>
   )
 }

@@ -10,8 +10,12 @@
 *.userosscache
 *.sln.docstates
 
-*.env
+# Visual Studio 2017
+*.csproj.user
+.idea/
+.vscode/
 
+*.env
 *.map
 
 .parcel-cache/calendarEvents.mdb
