@@ -3,7 +3,9 @@ import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
+import ActivityCategory from '/src/constants/activityCategory'
 import DatetimeFormats from '/src/constants/datetimeFormats'
+import ModelNames from '/src/constants/modelNames'
 import DB from '/src/database/DB'
 import AlertManager from '/src/managers/alertManager'
 import CalendarManager from '/src/managers/calendarManager.js'
@@ -12,14 +14,11 @@ import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
 import UpdateManager from '/src/managers/updateManager'
 import {default as CalendarMapper, default as CalMapper} from '/src/mappers/calMapper'
-import ActivityCategory from '/src/models/activityCategory'
-import ModelNames from '/src/models/modelNames'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
 import React, {useContext, useEffect, useRef, useState} from 'react'
-import {BsCalendar2CheckFill} from 'react-icons/bs'
 import {MdEventRepeat} from 'react-icons/md'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
@@ -29,7 +28,7 @@ import useUsers from '../../hooks/useUsers'
 import DatasetManager from '../../managers/datasetManager'
 import DomManager from '../../managers/domManager'
 import LogManager from '../../managers/logManager'
-import CalendarEvent from '../../models/calendarEvent'
+import CalendarEvent from '../../models/new/calendarEvent'
 import AddressInput from '../shared/addressInput'
 import DetailBlock from '../shared/detailBlock'
 import Label from '../shared/label'
@@ -341,7 +340,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         hasDelete={currentUser?.key === updatedEvent?.current?.ownerKey}
         onSubmit={Submit}
         submitText={'Update'}
-        submitIcon={<BsCalendar2CheckFill className={'edit-calendar-icon'} />}
         hasSubmitButton={view === 'edit'}
         onClose={async () => {
           await ResetForm()
@@ -360,7 +358,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             }}
           />
         }
-        wrapperClass={`edit-calendar-event ${updatedEvent?.current?.ownerKey === currentUser?.key ? 'owner' : 'non-owner'}`}>
+        wrapperClass={`edit-calendar-event at-top ${updatedEvent?.current?.ownerKey === currentUser?.key ? 'owner' : 'non-owner'}`}>
         <div id="edit-cal-event-container" className={`${theme} edit-event-form'`}>
           {/* DETAILS */}
           <div id="details" className={view === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
@@ -502,7 +500,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 {/* START TIME */}
                 <InputWrapper
                   wrapperClasses="start-time"
-                  placeholder={'Start Time'}
+                  labelText={'Start Time'}
                   uidClass="event-start-time"
                   required={false}
                   inputType={InputTypes.time}
@@ -514,7 +512,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 <InputWrapper
                   uidClass="event-end-time"
                   wrapperClasses="end-time"
-                  placeholder={'End Time'}
+                  labelText={'End Time'}
                   required={false}
                   defaultValue={updatedEvent?.current?.endTime}
                   inputType={InputTypes.time}
@@ -523,7 +521,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               </>
             )}
 
-            <Spacer height={5} />
+            <Spacer height={11} />
 
             {/* Share with */}
             <ShareWithCheckboxes
@@ -532,6 +530,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               onCheck={HandleShareWithSelection}
               containerClass={`share-with-parents`}
             />
+
+            <Spacer height={8} />
 
             {/* REMINDER */}
             <Accordion expanded={showReminders} id={'checkboxes'}>

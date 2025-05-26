@@ -215,7 +215,7 @@ export default function Children() {
       </ScreenActionsMenu>
 
       {/* PAGE CONTAINER */}
-      <div id="child-info-container" className={`${theme} page-container child-info form`}>
+      <div id="child-info-container" className={`${theme} page-container child-info`}>
         <ScreenHeader
           title={'Children'}
           screenDescription="You can store and access all relevant information about your child, particularly essential details that you may need to retrieve at any

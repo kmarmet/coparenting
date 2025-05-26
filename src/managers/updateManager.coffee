@@ -4,7 +4,8 @@ import Manager from "./manager.js"
 import moment from "moment"
 import DateFormats from "../constants/datetimeFormats"
 import UpdateSubscriber from "../models/updateSubscriber"
-import Update from "../models/update"
+import Update from "../models/new/update"
+import LogManager from "./logManager"
 
 
 export default UpdateManager =
@@ -55,44 +56,51 @@ export default UpdateManager =
 #  appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
 
   init: (currentUser) ->
-
-    UpdateManager.currentUser = currentUser
-    window.OneSignalDeferred = window.OneSignalDeferred or []
-    OneSignalDeferred.push ->
-      OneSignal.init
-        appId: UpdateManager.appId
-      .then () ->
-        OneSignal.User.PushSubscription.addEventListener 'change', UpdateManager.eventListener
+    try
+      UpdateManager.currentUser = currentUser
+      window.OneSignalDeferred = window.OneSignalDeferred or []
+      OneSignalDeferred.push ->
+        OneSignal.init
+          appId: UpdateManager.appId
+          .then () ->
+          OneSignal.User.PushSubscription.addEventListener 'change', UpdateManager.eventListener
+    catch error
+      LogManager.Log("Error: #{error} | Code File:  | Function:  ")
 
   eventListener: (event) ->
     userSubscribed = OneSignal.User.PushSubscription.optedIn
     subId = event?.current?.id
 
-    if userSubscribed && subId
-      newSubscriber = new UpdateSubscriber()
+    try
+      if userSubscribed && subId
+        newSubscriber = new UpdateSubscriber()
 
-      setTimeout  ->
-        newSubscriber.email = UpdateManager?.currentUser?.email
-        newSubscriber.key = UpdateManager?.currentUser?.key
-        newSubscriber.id = Manager.GetUid()
-        newSubscriber.subscriptionId = subId
+        setTimeout  ->
+          newSubscriber.email = UpdateManager?.currentUser?.email
+          newSubscriber.key = UpdateManager?.currentUser?.key
+          newSubscriber.id = Manager.GetUid()
+          newSubscriber.subscriptionId = subId
 
-        fetch("https://api.onesignal.com/apps/#{UpdateManager.appId}/subscriptions/#{subId}/user/identity")
-          .then (identity) ->
-            userIdentity = await identity.json()
-            newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
-            existingSubscriber = await DB.find(DB.tables.updateSubscribers, ["email", UpdateManager?.currentUser?.email], true)
+          fetch("https://api.onesignal.com/apps/#{UpdateManager.appId}/subscriptions/#{subId}/user/identity")
+            .then (identity) ->
+              userIdentity = await identity.json()
+              currentUpdates = await DB.getTable("#{DB.tables.updateSubscribers}")
+              newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
 
-            # If user already exists -> replace record
-            if Manager.IsValid(existingSubscriber)
-              deleteKey = await DB.getSnapshotKey("#{DB.tables.updateSubscribers}", existingSubscriber, "id")
-              await DB.DeleteByPath("#{DB.tables.updateSubscribers}/#{deleteKey}")
-              await DB.Add("/#{DB.tables.updateSubscribers}", newSubscriber)
+              # If user already exists -> replace record
+              if Manager.IsValid(existingSubscriber)
+                existingSubscriber =  currentUpdates.find((x) => x?.email == UpdateManager?.currentUser?.email)
+                existingSubscriber.subscriptionId = subId;
+                existingSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
+                index = DB.GetTableIndexById(currentUpdates, existingSubscriber?.id)
+                await DB.updateEntireRecord("#{DB.tables.updateSubscribers}/#{index}", existingSubscriber)
+              # Else create new record
+              else
+                await DB.Add("#{DB.tables.updateSubscribers}", newSubscriber)
+        , 500
 
-            # Else create new record
-            else
-              await DB.Add("/#{DB.tables.updateSubscribers}", newSubscriber)
-      , 500
+    catch error
+      LogManager.Log("Error: #{error} | Code File:  | Function:  ")
 
   getUserSubId: (currentUserPhoneOrEmail, phoneOrEmail = "email") ->
     existingRecord = await DB.find(DB.tables.updateSubscribers, [phoneOrEmail, currentUserPhoneOrEmail], true)

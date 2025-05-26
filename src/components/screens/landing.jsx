@@ -2,7 +2,6 @@ import ScreenNames from '/src/constants/screenNames'
 import AppManager from '/src/managers/appManager.js'
 import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
-import HomescreenSections from '/src/models/homescreenSections.js'
 import React, {useContext, useEffect, useState} from 'react'
 import {AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool} from 'react-icons/ai'
 import {BsFillEnvelopeHeartFill} from 'react-icons/bs'
@@ -100,16 +99,6 @@ export default function Landing() {
       }
     }
     const scrollWrapper = document.querySelector('#wrapper')
-
-    const queryStringSection = AppManager.getQueryStringParams('section')
-    if (Manager.IsValid(queryStringSection)) {
-      const whyUsSection = document.querySelector('.unique-features.section')
-      if (queryStringSection === HomescreenSections.whyUs) {
-        if (whyUsSection) {
-          whyUsSection.scrollIntoView({behavior: 'smooth'})
-        }
-      }
-    }
 
     const appWrapper = document.getElementById('app-content-with-sidebar')
     if (appWrapper) {

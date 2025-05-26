@@ -98,7 +98,7 @@ export default function Medical({activeChild}) {
   }, [activeChild])
 
   return (
-    <div className="info-section section medical form">
+    <div className="info-section section medical">
       <Accordion className={`${theme} child-info`} disabled={!Manager.IsValid(medicalValues)}>
         <AccordionSummary
           onClick={() => setShowInputs(!showInputs)}
@@ -111,42 +111,44 @@ export default function Medical({activeChild}) {
           </p>
         </AccordionSummary>
         <AccordionDetails>
-          {Manager.IsValid(medicalValues) &&
-            medicalValues.map((prop, index) => {
-              const infoLabel = StringManager.spaceBetweenWords(prop[0])
-              const value = prop[1]
+          <div className="gradient padding">
+            {Manager.IsValid(medicalValues) &&
+              medicalValues.map((prop, index) => {
+                const infoLabel = StringManager.spaceBetweenWords(prop[0])
+                const value = prop[1]
 
-              return (
-                <div key={index} id="data-row">
-                  {infoLabel.toLowerCase().includes('phone') && (
-                    <>
-                      <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
-                        {infoLabel}: {value}
-                      </a>
-                      <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
-                    </>
-                  )}
-                  {!infoLabel.toLowerCase().includes('phone') && (
-                    <>
-                      <InputWrapper
-                        hasBottomSpacer={false}
-                        inputType={InputTypes.text}
-                        placeholder={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
-                          Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''
-                        }`}
-                        defaultValue={value}
-                        debounceTimeout={1000}
-                        onChange={(e) => {
-                          const inputValue = e.target.value
-                          Update(infoLabel, `${inputValue}`).then((r) => r)
-                        }}
-                      />
-                      <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
-                    </>
-                  )}
-                </div>
-              )
-            })}
+                return (
+                  <div key={index} className="data-row">
+                    {infoLabel.toLowerCase().includes('phone') && (
+                      <>
+                        <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
+                          {infoLabel}: {value}
+                        </a>
+                        <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
+                      </>
+                    )}
+                    {!infoLabel.toLowerCase().includes('phone') && (
+                      <>
+                        <InputWrapper
+                          hasBottomSpacer={false}
+                          inputType={InputTypes.text}
+                          placeholder={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
+                            Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''
+                          }`}
+                          defaultValue={value}
+                          debounceTimeout={1000}
+                          onChange={(e) => {
+                            const inputValue = e.target.value
+                            Update(infoLabel, `${inputValue}`).then((r) => r)
+                          }}
+                        />
+                        <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
+                      </>
+                    )}
+                  </div>
+                )
+              })}
+          </div>
         </AccordionDetails>
       </Accordion>
     </div>

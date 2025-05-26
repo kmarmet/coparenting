@@ -40,9 +40,9 @@ export default function ShareWithCheckboxes({
   return (
     <>
       {Manager.IsValid(shareWith) && (
-        <div id="share-with-checkbox-group" className={`${theme} ${checkboxGroupClass}`}>
+        <div className={`${theme} ${checkboxGroupClass} share-with-checkbox-group`}>
           <Label classes="toggle always-show" text={`${labelText.length === 0 ? 'Contacts to share with' : labelText}`} required={required} />
-          <div className="flex" id="checkboxes">
+          <div className="flex checkboxes">
             {Manager.IsValid(shareWith) &&
               shareWith?.map((user, index) => {
                 let name = StringManager.GetFirstNameOnly(user?.name)

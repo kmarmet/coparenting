@@ -104,35 +104,38 @@ export default function Schooling({activeChild}) {
           </p>
         </AccordionSummary>
         <AccordionDetails>
-          {Manager.IsValid(schoolingValues) &&
-            schoolingValues.map((prop, index) => {
-              let infoLabel = StringManager.uppercaseFirstLetterOfAllWords(StringManager.spaceBetweenWords(prop[0]))
-              const value = prop.flat()[1]
-              return (
-                <div key={index} id="data-row">
-                  {infoLabel.toLowerCase().includes('phone') && (
-                    <>
-                      <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
-                        {infoLabel}: {value}
-                      </a>
-                      <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
-                    </>
-                  )}
-                  {!infoLabel.toLowerCase().includes('phone') && (
-                    <>
-                      <InputWrapper
-                        hasBottomSpacer={false}
-                        inputType={InputTypes.text}
-                        placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
-                        defaultValue={value}
-                        onChange={(e) => Update(infoLabel, e.target.value)}
-                      />
-                      <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
-                    </>
-                  )}
-                </div>
-              )
-            })}
+          <div className="gradient padding">
+            {Manager.IsValid(schoolingValues) &&
+              schoolingValues.map((prop, index) => {
+                let infoLabel = StringManager.uppercaseFirstLetterOfAllWords(StringManager.spaceBetweenWords(prop[0]))
+                const value = prop.flat()[1]
+                return (
+                  <div key={index} className="data-row">
+                    {infoLabel.toLowerCase().includes('phone') && (
+                      <>
+                        <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
+                          {infoLabel}: {value}
+                        </a>
+                        <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
+                      </>
+                    )}
+                    {!infoLabel.toLowerCase().includes('phone') && (
+                      <>
+                        <InputWrapper
+                          wrapperClasses={`${index === schoolingValues.length - 2 ? 'last' : ''}`}
+                          hasBottomSpacer={false}
+                          inputType={InputTypes.text}
+                          placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
+                          defaultValue={value}
+                          onChange={(e) => Update(infoLabel, e.target.value)}
+                        />
+                        <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
+                      </>
+                    )}
+                  </div>
+                )
+              })}
+          </div>
         </AccordionDetails>
       </Accordion>
     </div>

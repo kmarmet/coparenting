@@ -1,10 +1,9 @@
 import Manager from "../managers/manager"
 
 class DocumentHeader
-  constructor: (
+  constructor: (options = {}) ->
     @id = Manager.GetUid()
-    @headerText = ''
-    @ownerKey = ''
-  ) ->
+    @headerText = options?.headerText ? ''
+    @ownerKey = options?.ownerKey ? ''
 
 export default DocumentHeader

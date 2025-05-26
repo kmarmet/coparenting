@@ -21,12 +21,12 @@ export default function CheckboxGroup({
 
   return (
     <>
-      <div id="checkbox-group" className={`${theme} ${elClass}`}>
+      <div className={`${theme} ${elClass} checkbox-group`}>
         {parentLabel.length > 0 && (
           <Label classes="standalone-label-wrapper always-show" text={parentLabel} required={required} icon={icon ? icon : ''} />
         )}
         {/*<Spacer height={2} />*/}
-        <div id="checkboxes" className={checkboxArray.length > 2 ? 'more-than-two-checkboxes' : 'two-checkboxes'}>
+        <div className={`${checkboxArray.length > 2 ? 'more-than-two-checkboxes' : 'two-checkboxes'} checkboxes`}>
           {Manager.IsValid(checkboxArray) &&
             checkboxArray.map((obj, index) => {
               let label = obj.label

@@ -293,49 +293,20 @@
         padding: 0 10px;
       }
 
-      #data-row {
+      .data-row {
         display: flex;
         align-items: center;
         width: 100%;
         justify-content: space-between;
         max-width: 100%;
-        margin-bottom: 8px;
+        margin-bottom: 0;
 
-        &.checklist-item-row {
-          border-bottom: 0;
-          justify-content: space-between;
-          margin-bottom: 5px;
-          overflow: hidden;
+        &.last {
+          margin-bottom: 0;
+        }
 
-          .checklist-item {
-            width: 100%;
-            background: $mediumGrey;
-            padding: 12px;
-            border-radius: $buttonBorderRadius;
-            display: flex;
-            line-height: 1;
-            white-space: nowrap;
-            align-items: center;
-            transition: all 0.3s ease-in-out;
-
-            .checkmark {
-              display: none;
-            }
-
-            &.active {
-              background: $green;
-              transition: all 0.3s ease-in-out;
-              color: white;
-              padding: 10px;
-
-              .checkmark {
-                display: unset;
-                color: white;
-                font-size: 22px;
-                margin-right: 8px;
-              }
-            }
-          }
+        &.invalid {
+          display: none;
         }
 
         .input-wrapper {
@@ -389,6 +360,50 @@
           .header {
             border-bottom: 0;
             font-weight: bold;
+          }
+        }
+
+        .checklist-item-row {
+          border-bottom: 0;
+          justify-content: space-between;
+          margin-bottom: 5px;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+
+          svg {
+            color: $darkGrey;
+          }
+
+          .checklist-item {
+            width: 100%;
+            background: white;
+            border: 1px solid $greyBorderColor;
+            padding: 12px;
+            border-radius: $buttonBorderRadius;
+            display: flex;
+            line-height: 1;
+            white-space: nowrap;
+            align-items: center;
+            transition: all 0.3s ease-in-out;
+
+            .checkmark {
+              display: none;
+            }
+
+            &.active {
+              background: $green;
+              transition: all 0.3s ease-in-out;
+              color: white;
+              padding: 10px;
+
+              .checkmark {
+                display: unset;
+                color: white;
+                font-size: 22px;
+                margin-right: 8px;
+              }
+            }
           }
         }
       }

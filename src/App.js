@@ -56,6 +56,7 @@ import NewChat from './components/forms/newChat'
 import Contacts from './components/screens/contacts/contacts'
 import Parents from './components/screens/parents/parents'
 import CreationMenu from './components/shared/creationMenu'
+import Loading from './components/shared/loading'
 import SuccessAlert from './components/shared/successAlert'
 import CreationForms from './constants/creationForms'
 import DatetimeFormats from './constants/datetimeFormats'
@@ -130,8 +131,8 @@ export default function App() {
           // Check for last auto refresh time and last login datetime
           if (Manager.IsValid(user)) {
             // Login check
-            const lastLogin = moment(user?.metadata?.lastSignInTime).format(DatetimeFormats.fullDatetime)
-            const msSinceLastLogin = moment(lastLogin, DatetimeFormats.fullDatetime).diff()
+            const lastLogin = moment(user?.metadata?.lastSignInTime).format(DatetimeFormats.timestamp)
+            const msSinceLastLogin = moment(lastLogin, DatetimeFormats.timestamp).diff()
             const hoursSinceLastLogin = Math.abs(Math.ceil(msSinceLastLogin / (1000 * 60 * 60))) ?? 0
 
             // If user has been logged in for more than 30 days -> sign them out
@@ -220,7 +221,7 @@ export default function App() {
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <div className={`App ${theme}`} id="app-container">
         {/* LOADING */}
-        {/*<Loading isLoading={isLoading} loadingText={loadingText} theme={currentUser?.settings?.theme} />*/}
+        <Loading isLoading={isLoading} theme={currentUser?.settings?.theme} />
 
         <globalState.Provider value={stateToUpdate}>
           {/* SUCCESS ALERT */}

@@ -10,7 +10,6 @@ import DatasetManager from '../../managers/datasetManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import Form from '../shared/form'
-import Spacer from '../shared/spacer'
 
 const NewChatSelector = () => {
   const {state, setState} = useContext(globalState)
@@ -34,7 +33,7 @@ const NewChatSelector = () => {
 
   const OpenMessageThread = async (coparent) => {
     // Check if thread member (coparent) profile exists in DB
-    let userCoparent = coparents?.find((x) => x.userKey === coparent?.key)
+    let userCoparent = coparents?.find((x) => x.userKey === coparent?.userKey)
     if (!Manager.IsValid(userCoparent)) {
       AlertManager.oneButtonAlert(
         'Co-Parent Profile not Found',
@@ -52,39 +51,34 @@ const NewChatSelector = () => {
   useEffect(() => {
     if (Manager.IsValid(currentUser) && creationFormToShow === CreationForms.chat && Manager.IsValid(chats)) {
       GetSecuredChats().then((r) => r)
+    } else {
+      const keys = coparents?.map((x) => x?.userKey)
+      setActiveChatKeys(keys)
     }
-  }, [creationFormToShow, chats])
+  }, [creationFormToShow, chats, currentUser])
 
   return (
     <Form
       hasSubmitButton={false}
       className="new-chat"
       wrapperClass="new-chat"
+      subtitle="Who would you like to chat with?"
       onClose={() => setState({...state, showCreationMenu: false, creationFormToShow: null, refreshKey: Manager.GetUid()})}
       showCard={creationFormToShow === CreationForms.chat}
-      title={`${activeChatKeys.length === currentUser?.coparents?.length ? 'Unable to Create Chat' : 'Create Chat'}`}>
-      <Spacer height={5} />
-      {activeChatKeys.length === currentUser?.coparents?.length && (
-        <>
-          <p id="max-chats-text">You already have an existing chat with all children and/or co-parents</p>
-          <Spacer height={5} />
-        </>
-      )}
+      title={`Start Chatting!`}>
       {/* COPARENTS */}
       {Manager.IsValid(activeChatKeys) &&
-        Manager.IsValid(currentUser?.coparents) &&
-        currentUser?.coparents?.map((coparent, index) => {
+        Manager.IsValid(coparents) &&
+        coparents?.map((coparent, index) => {
           return (
             <div key={index} id="coparent-names">
-              {!activeChatKeys.includes(coparent?.userKey) && (
-                <div
-                  className="coparent-name"
-                  onClick={() => {
-                    OpenMessageThread(coparent).then((r) => r)
-                  }}>
-                  {StringManager.GetFirstNameOnly(coparent?.name)}
-                </div>
-              )}
+              <div
+                className="coparent-name"
+                onClick={() => {
+                  OpenMessageThread(coparent).then((r) => r)
+                }}>
+                {StringManager.GetFirstNameOnly(coparent?.name)}
+              </div>
             </div>
           )
         })}

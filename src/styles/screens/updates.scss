@@ -92,59 +92,82 @@
           padding: 10px 10px 10px 0;
           flex-wrap: wrap;
 
-          .category {
-            font-size: 12px;
-            background: $grey;
-            border-radius: 50px;
-            padding: 5px 12px;
-            margin-top: 5px;
-            margin-left: auto;
-            max-width: 80px;
+          .row-content {
             display: flex;
-            justify-content: center;
-            align-items: center;
-          }
-
-          .card-title {
-            font-weight: $fwMedium;
-            line-height: 1;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            color: $main;
-
-            svg {
-              margin-right: 10px;
-              font-size: 26px;
+            gap: 8px;
+            align-items: flex-start;
+            #date {
+              font-size: 12px;
+              margin: 0;
+              width: 100%;
+              color: $darkGrey;
             }
 
-            &.medical {
-              svg {
-                color: $red;
+            .dot {
+              @include square(8px);
+              border-radius: 100%;
+              position: relative;
+              top: 5px;
+              background: $red;
+              display: block;
+
+              &.yellow {
+                background: $gold;
+              }
+
+              &.red {
+                background: $flatRed;
               }
             }
 
-            &.expenses {
+            .category {
+              font-size: 12px;
+              background: $grey;
+              border-radius: 50px;
+              padding: 5px 12px;
+              margin-top: 5px;
+              margin-left: auto;
+              max-width: 80px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+
+            .card-title {
+              font-weight: $fwRegular;
+              line-height: 1.3;
+              width: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: flex-start;
+              color: $primaryText;
+
               svg {
-                color: $gold;
+                margin-right: 10px;
+                font-size: 26px;
+              }
+
+              &.medical {
+                svg {
+                  color: $red;
+                }
+              }
+
+              &.expenses {
+                svg {
+                  color: $gold;
+                }
               }
             }
-          }
 
-          #date {
-            font-size: 12px;
-            margin: 0;
-            width: 100%;
-            color: $darkGrey;
-          }
-          .text {
-            margin: 2px 0 0 0;
-            line-height: 1.4;
-            padding-bottom: 5px;
-            color: $primaryText;
-            font-size: 14px;
-            font-weight: $fwRegular;
+            .text {
+              margin: 2px 0 0 0;
+              line-height: 1.4;
+              padding-bottom: 5px;
+              color: $darkestGrey;
+              font-size: 14px;
+              font-weight: $fwLight;
+            }
           }
         }
       }

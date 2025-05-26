@@ -7,7 +7,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {IoMdCheckmarkCircleOutline} from 'react-icons/io'
 import {MdClearAll} from 'react-icons/md'
-import {PiSealWarningDuotone} from 'react-icons/pi'
+import ActivityCategory from '../../constants/activityCategory'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
@@ -18,7 +18,6 @@ import AppManager from '../../managers/appManager.coffee'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
-import ActivityCategory from '../../models/activityCategory'
 import NavBar from '../navBar'
 import Label from '../shared/label'
 import NoDataFallbackText from '../shared/noDataFallbackText'
@@ -106,6 +105,17 @@ export default function Updates() {
     }, 500)
   }
 
+  const GetCriticalCategoryColor = (category) => {
+    switch (true) {
+      case category === ActivityCategory.expenses:
+        return 'yellow'
+      case category === ActivityCategory.childInfo.medical:
+        return 'red'
+      default:
+        return null
+    }
+  }
+
   useEffect(() => {
     if (Manager.IsValid(updates)) {
       setTimeout(() => {
@@ -132,13 +142,13 @@ export default function Updates() {
               <Accordion id={'updates-legend'} expanded={legendIsExpanded} className={`${theme} accordion white-bg`}>
                 <AccordionSummary>
                   <button className="button default grey" onClick={() => setLegendIsExpanded(!legendIsExpanded)}>
-                    <Label text={'Legend'} /> {legendIsExpanded ? <FaMinus /> : <FaPlus />}
+                    <Label text={'Legend'} classes="always-show" /> {legendIsExpanded ? <FaMinus /> : <FaPlus />}
                   </button>
                 </AccordionSummary>
                 <AccordionDetails>
                   <div className="flex">
                     <div className="box medical"></div>
-                    <p>Child Related - Medical</p>
+                    <p>Medical (Child)</p>
                   </div>
 
                   <div className="flex">
@@ -163,18 +173,21 @@ export default function Updates() {
           <div id="activity-cards">
             {Manager.IsValid(updates) &&
               updates?.map((activity, index) => {
-                const {text, title, creationDate} = activity
+                const {text, title, timestamp} = activity
                 const categoryObject = GetCategory(activity)
                 const {screen, category, className} = categoryObject
 
                 return (
                   <div key={index} className="flex" id="row-wrapper">
                     <div className={`activity-row row ${className}`} onClick={() => ChangeScreen(screen, activity)}>
-                      <p className={`card-title ${className}`}>
-                        {criticalCategories.includes(category) && <PiSealWarningDuotone />} {StringManager.uppercaseFirstLetterOfAllWords(title)}
-                      </p>
-                      <p className="text">{text}</p>
-                      <p id="date">{moment(creationDate, DatetimeFormats.fullDatetime).format(DatetimeFormats.readableDatetime)}</p>
+                      <div className="row-content">
+                        {criticalCategories.includes(category) && <span className={`dot ${GetCriticalCategoryColor(category)}`}></span>}
+                        <div>
+                          <p className={`card-title ${className}`}>{StringManager.uppercaseFirstLetterOfAllWords(title)}</p>
+                          <p className="text">{text}</p>
+                          <p id="date">{moment(timestamp, DatetimeFormats.timestamp).format(DatetimeFormats.readableDatetime)}</p>
+                        </div>
+                      </div>
                     </div>
                     <IoMdCheckmarkCircleOutline className={'row-checkmark'} onClick={() => ClearNotification(activity)} />
                   </div>
@@ -182,8 +195,8 @@ export default function Updates() {
               })}
           </div>
         </div>
+        {updates?.length === 0 && <NoDataFallbackText text={'You have no updates awaiting your attention'} />}
       </div>
-      {updates?.length === 0 && <NoDataFallbackText text={'You have no updates awaiting your attention'} />}
       <NavBar navbarClass={'activity no-Add-new-button'}></NavBar>
     </>
   )

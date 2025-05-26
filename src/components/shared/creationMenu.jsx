@@ -31,13 +31,17 @@ const CreationMenu = () => {
   })
 
   const CheckIfChatsShouldBeShown = async () => {
-    const activeChatCount = chats?.length
-    await DB_UserScoped.getValidAccountsForUser(currentUser).then((obj) => {
-      const coparentOnlyAccounts = obj.filter((x) => Manager.IsValid(x?.accountType) && x?.accountType === 'parent')
-      if (activeChatCount < coparentOnlyAccounts.length) {
-        setShowChatAction(true)
-      }
-    })
+    const activeChatCount = chats?.length ?? 0
+    if (activeChatCount === 0) {
+      setShowChatAction(true)
+    } else {
+      await DB_UserScoped.getValidAccountsForUser(currentUser).then((obj) => {
+        const coparentOnlyAccounts = obj.filter((x) => x?.accountType === 'parent')
+        if (activeChatCount < coparentOnlyAccounts.length) {
+          setShowChatAction(true)
+        }
+      })
+    }
   }
 
   useEffect(() => {
@@ -58,13 +62,13 @@ const CreationMenu = () => {
 
   return (
     <Overlay show={showCreationMenu}>
-      <div className="slide-up-card-wrapper">
+      <div className="slide-up-card-wrapper creation">
         <div className="swipe-bar"></div>
         <div
           key={refreshKey}
           {...handlers}
-          style={DomManager.AnimateDelayStyle(1, 0.1)}
-          className={`${DomManager.Animate.FadeInUp(showCreationMenu, '.fade-up-wrapper')} bottom-menu-wrapper creation-menu fade-up-wrapper`}>
+          style={DomManager.AnimateDelayStyle(1, 0)}
+          className={`${DomManager.Animate.FadeInUp(showCreationMenu, 'faster')} bottom-menu-wrapper creation-menu fade-up-wrapper`}>
           <div className="action-items centered">
             <p className="slide-up-header">Create Resource</p>
             {/* CALENDAR */}

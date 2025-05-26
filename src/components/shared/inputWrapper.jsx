@@ -12,7 +12,6 @@ import globalState from '../../context.js'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
-import Label from './label'
 
 function InputWrapper({
   wrapperClasses = '',
@@ -64,11 +63,19 @@ function InputWrapper({
             onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
             views={dateViews}
             name={inputName}
-            class={`${theme} ${inputClasses}`}
+            className={`${theme} ${inputClasses}`}
             value={Manager.IsValid(defaultValue) ? moment(defaultValue) : null}
             key={refreshKey}
-            multiple={true}
-            placeholder={'test'}
+            multiple={false}
+            onMonthChange={(e) => {
+              // const newMonth = moment(e).format('MMMM')
+              // const activePicker = document.querySelector(`.form-wrapper.active`)
+              // const monthElement = activePicker.querySelector(`.MuiDatePickerToolbar-title`)
+              // const all = document.querySelectorAll('.MuiPaper-root')
+              // console.log(all)
+
+              onDateOrTimeSelection(e)
+            }}
             format={dateFormat}
             onAccept={onDateOrTimeSelection}
           />
@@ -90,7 +97,6 @@ function InputWrapper({
         {/* TIME */}
         {inputType === InputTypes.time && (
           <>
-            <Label text={labelText} classes="time" />
             <MobileTimePicker
               slotProps={{
                 actionBar: {

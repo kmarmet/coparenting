@@ -1,5 +1,6 @@
 // Path: src\components\shared\checkbox.jsx
 import React, {useContext} from 'react'
+import {GiCheckMark} from 'react-icons/gi'
 import globalState from '../../context.js'
 import DomManager from '../../managers/domManager.coffee'
 
@@ -9,11 +10,13 @@ export default function Checkbox({isActive, text, onCheck, wrapperClass = '', da
 
   const ToggleActive = (e) => {
     const checkboxWrapper = e.currentTarget
+    const icon = checkboxWrapper.querySelector('.checkbox-text svg')
     DomManager.toggleActive(checkboxWrapper)
 
     if (onCheck) {
       onCheck(e.currentTarget)
     }
+    DomManager.toggleActive(icon)
   }
 
   return (
@@ -24,7 +27,10 @@ export default function Checkbox({isActive, text, onCheck, wrapperClass = '', da
       data-date={dataDate}
       className={`checkbox-wrapper ${wrapperClass} ${isActive ? 'active' : ''}`}
       onClick={ToggleActive}>
-      <p className="checkbox-text">{text}</p>
+      <p className="checkbox-text">
+        {text}
+        <GiCheckMark className={'checkmark'} />
+      </p>
     </div>
   )
 }

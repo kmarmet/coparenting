@@ -19,7 +19,7 @@ import Manager from '../../../managers/manager'
 import ObjectManager from '../../../managers/objectManager'
 import SmsManager from '../../../managers/smsManager'
 import StringManager from '../../../managers/stringManager'
-import Invitation from '../../../models/invisitation'
+import Invitation from '../../../models/new/invitation'
 import NavBar from '../../navBar'
 import DetailBlock from '../../shared/detailBlock'
 import Form from '../../shared/form'
@@ -164,7 +164,7 @@ const Contacts = () => {
   // Remove view from the active form
   useEffect(() => {
     if (showNewCoparentCard || showNewParentCard || showNewChildCard) {
-      const activeModal = document.querySelector('#form-wrapper.active')
+      const activeModal = document.querySelector('.form-wrapper.active')
       if (Manager.IsValid(activeModal)) {
         const modalCard = activeModal.querySelector('#form-card')
         if (Manager.IsValid(modalCard)) {

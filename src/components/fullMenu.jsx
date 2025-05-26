@@ -1,6 +1,6 @@
 // Path: src\components\fullMenu.jsx
 import {getAuth, signOut} from 'firebase/auth'
-import React, {useContext, useEffect} from 'react'
+import React, {useContext} from 'react'
 import {AiOutlineLogout} from 'react-icons/ai'
 import {BsHouses, BsImages} from 'react-icons/bs'
 import {GrInstallOption, GrSettingsOption, GrUserAdmin} from 'react-icons/gr'
@@ -54,29 +54,17 @@ export default function FullMenu() {
       })
   }
 
-  useEffect(() => {
-    console.log(currentUser)
-  }, [currentUser])
-
   return (
     <Overlay show={menuIsOpen}>
       <div className="swipe-bar"></div>
       {Manager.IsValid(currentUser) && (
-        <div
-          style={DomManager.AnimateDelayStyle(1, 0.1)}
-          id="full-menu-wrapper"
-          {...handlers}
-          className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(menuIsOpen, '.fade-up-wrapper')}`}>
+        <div id="full-menu-wrapper" {...handlers} className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(menuIsOpen, '.fade-up-wrapper')}`}>
           <div id="full-menu" className={`full-menu-wrapper ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
             <div id="menu-sections">
-              <div className="section sharing">
-                {/* SHARING */}
-                <p style={DomManager.AnimateDelayStyle(1, 0.3)} className={`menu-title sharing ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
-                  Sharing
-                </p>
-                <div
-                  style={DomManager.AnimateDelayStyle(1, 0.3)}
-                  className={`menu-items sharing ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
+              {/* SHARING */}
+              <div style={DomManager.AnimateDelayStyle(1, 0.3)} className={`section sharing ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
+                <p className="menu-title">Sharing</p>
+                <div className={`menu-items sharing`}>
                   {/* CALENDAR */}
                   <div
                     className={`menu-item calendar ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
@@ -114,25 +102,26 @@ export default function FullMenu() {
                   <div
                     className={`menu-item updates ${currentScreen === ScreenNames.updates ? 'active' : ''}`}
                     onClick={(e) => ChangeCurrentScreen(ScreenNames.updates, e)}>
-                    <NotificationBadge classes={'menu'} />
                     <div className="content">
                       <div className="svg-wrapper">
                         <PiNotificationFill />
                       </div>
-                      <p>Updates</p>
+
+                      <p>
+                        Updates
+                        <NotificationBadge classes={'menu'} />
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
+
               <hr />
+
               {/* INFORMATION DATABASE */}
-              <div className="section info-storage">
-                <p style={DomManager.AnimateDelayStyle(2, 0.3)} className={`menu-title info-storage ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
-                  Information Database
-                </p>
-                <div
-                  style={DomManager.AnimateDelayStyle(2, 0.3)}
-                  className={`menu-items info-storage ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
+              <div className={`section info-storage ${DomManager.Animate.FadeInUp(menuIsOpen)}`} style={DomManager.AnimateDelayStyle(1, 0.4)}>
+                <p className={`menu-title info-storage`}>Information Database</p>
+                <div className={`menu-items info-storage`}>
                   {/* CONTACTS */}
                   <div
                     className={`menu-item contacts ${currentScreen === ScreenNames.contacts ? 'active' : ''}`}
@@ -209,13 +198,11 @@ export default function FullMenu() {
 
               {/* CO-PARENTING */}
               {currentUser?.accountType === 'parent' && (
-                <div className="section coparenting">
-                  <p style={DomManager.AnimateDelayStyle(3, 0.3)} className={`menu-title coparenting ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
-                    Co-Parenting
-                  </p>
-                  <div
-                    style={DomManager.AnimateDelayStyle(3, 0.3)}
-                    className={`menu-items coparenting ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
+                <div
+                  style={DomManager.AnimateDelayStyle(1, 0.5)}
+                  className={`section coparenting ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
+                  <p className={`menu-title coparenting`}>Co-Parenting</p>
+                  <div className={`menu-items coparenting`}>
                     {/* TRANSFER CHANGE */}
                     <div
                       className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
@@ -262,17 +249,15 @@ export default function FullMenu() {
                   </div>
                 </div>
               )}
+
               <hr />
+
               {/* PROFILE SETTINGS & SUPPORT */}
-              <div className="section profile-settings-support">
-                <p
-                  style={DomManager.AnimateDelayStyle(4, 0.3)}
-                  className={`menu-title profile-settings-support ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
-                  Settings & Support
-                </p>
-                <div
-                  style={DomManager.AnimateDelayStyle(4, 0.3)}
-                  className={`menu-items profile-settings-support ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
+              <div
+                style={DomManager.AnimateDelayStyle(1, 0.6)}
+                className={`section profile-settings-support ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
+                <p className="menu-title">Settings & Support</p>
+                <div className={`menu-items profile-settings-support`}>
                   {/* PROFILE */}
                   <div
                     className={`menu-item profile ${currentScreen === ScreenNames.profile ? 'active' : ''}`}

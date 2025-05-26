@@ -1,7 +1,6 @@
 // Path: src\components\screens\documents\docsList.jsx
 import React, {useContext, useEffect, useState} from 'react'
-import {CgClose} from 'react-icons/cg'
-import {FaFileImage} from 'react-icons/fa'
+import {FaFileImage, FaMinus} from 'react-icons/fa'
 import {HiDocumentText} from 'react-icons/hi2'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
@@ -54,23 +53,25 @@ export default function DocsList() {
                   const documentExts = ['doc', 'docx', 'pdf', 'txt', 'odt']
                   const fileType = documentExts.includes(StringManager.GetFileExtension(doc.name).toString()) ? 'Document' : 'Image'
                   return (
-                    <div
-                      className="row"
-                      key={index}
-                      onClick={(e) => {
-                        if (!Manager.Contains(e.target.classList, 'delete')) {
-                          setSelectedDoc(doc)
-                          setState({...state, docToView: doc, currentScreen: ScreenNames.docViewer})
-                        }
-                      }}>
+                    <div className="row" key={index}>
                       <div className="flex section">
-                        <p data-id={doc.id}>
+                        <p
+                          data-id={doc.id}
+                          onClick={(e) => {
+                            if (!Manager.Contains(e.target.classList, 'delete')) {
+                              setSelectedDoc(doc)
+                              setState({...state, docToView: doc, currentScreen: ScreenNames.docViewer})
+                            }
+                          }}>
                           {fileType === 'Document' ? <HiDocumentText className={'file-type'} /> : <FaFileImage className={'file-type'} />}
                           {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
                         </p>
-                        <div className={`checkbox delete`} onClick={DeleteDoc}>
-                          <CgClose className={'close-x'} />
+                        <div className="svg-wrapper" onClick={DeleteDoc}>
+                          <FaMinus className={'delete-icon'} />
                         </div>
+                        {/*<div className={`checkbox delete`}>*/}
+                        {/*  <CgClose className={'close-x'} />*/}
+                        {/*</div>*/}
                       </div>
                     </div>
                   )

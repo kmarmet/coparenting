@@ -6,7 +6,9 @@ import SelectDropdown from '/src/components/shared/selectDropdown'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
 import Spacer from '/src/components/shared/spacer.jsx'
 import UploadInputs from '/src/components/shared/uploadInputs'
+import ActivityCategory from '/src/constants/activityCategory'
 import ExpenseCategories from '/src/constants/expenseCategories.js'
+import ModelNames from '/src/constants/modelNames'
 import FirebaseStorage from '/src/database/firebaseStorage'
 import AlertManager from '/src/managers/alertManager'
 import DateManager from '/src/managers/dateManager'
@@ -15,9 +17,7 @@ import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager.coffee'
 import UpdateManager from '/src/managers/updateManager'
 import CalendarMapper from '/src/mappers/calMapper'
-import ActivityCategory from '/src/models/activityCategory'
-import Expense from '/src/models/expense.js'
-import ModelNames from '/src/models/modelNames'
+import Expense from '/src/models/new/expense.js'
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
 import {GrPowerReset} from 'react-icons/gr'
@@ -118,7 +118,6 @@ export default function NewExpenseForm() {
     newExpense.amount = StringManager.FormatAsWholeNumber(expenseAmount)
     newExpense.category = expenseCategory
     newExpense.dueDate = Manager.IsValid(expenseDueDate) ? moment(expenseDueDate).format(DatetimeFormats.dateForDb) : ''
-    newExpense.creationDate = DateManager.GetCurrentJavascriptDate()
     newExpense.notes = expenseNotes
     newExpense.paidStatus = 'unpaid'
     newExpense.imageName = expenseImage.name ?? ''

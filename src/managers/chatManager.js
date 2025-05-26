@@ -68,7 +68,6 @@ const ChatManager = {
       })
         .then((response) => response)
         .then((result) => {
-          console.log(result)
           resolve(result.json())
         })
         .catch((error) => {
@@ -152,12 +151,12 @@ const ChatManager = {
       LogManager.Log(error.message, LogManager.LogTypes.error)
     }
   },
-  addChat: async (path, chat) => {
+  CreateChat: async (path, chat) => {
     const dbRef = ref(getDatabase())
     const currentChats = await DB.getTable(path)
     let toAdd
     if (Manager.IsValid(currentChats)) {
-      toAdd = [...currentChats, chat]
+      toAdd = DatasetManager.AddToArray(currentChats, chat)
     } else {
       toAdd = [chat]
     }
@@ -169,12 +168,13 @@ const ChatManager = {
       LogManager.Log(error.message, LogManager.LogTypes.error)
     }
   },
-  addChatMessage: async (path, message) => {
+  AddChatMessage: async (path, message) => {
     const dbRef = ref(getDatabase())
     const currentMessages = await DB.getTable(path)
     let toAdd = []
+    console.log(path, message)
     if (Manager.IsValid(currentMessages)) {
-      toAdd = [...currentMessages, message]
+      toAdd = DatasetManager.AddToArray(currentMessages, message)
     } else {
       toAdd = [message]
     }

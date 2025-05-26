@@ -259,8 +259,11 @@ DomManager = {
       }
     }
   },
+  CheckIfElementIsTag: function(element, tag) {
+    return element.target.tagName === tag;
+  },
   HandleCheckboxSelection: function(element, onCheck, onCheckRemoval, canSelectAll = false) {
-    var checkboxWrappers, checkboxes, clickedEl, i, label, len, thisLabel, wrapper;
+    var checkboxWrappers, checkboxes, checkmark, clickedEl, i, label, len, thisLabel, wrapper;
     clickedEl = element;
     checkboxes = clickedEl.parentNode;
     checkboxWrappers = checkboxes.querySelectorAll('.checkbox-wrapper');
@@ -270,11 +273,17 @@ DomManager = {
       label = clickedEl.dataset.label;
       // UNCHECK OTHERS
       if (!canSelectAll) {
-        for (i = 0, len = checkboxWrappers.length; i < len; i++) {
-          wrapper = checkboxWrappers[i];
-          thisLabel = wrapper.dataset.label;
-          if (thisLabel !== label) {
-            wrapper.classList.remove('active');
+        if (Manager.IsValid(checkboxWrappers)) {
+          for (i = 0, len = checkboxWrappers.length; i < len; i++) {
+            wrapper = checkboxWrappers[i];
+            thisLabel = wrapper.dataset.label;
+            checkmark = wrapper.querySelector('.checkmark');
+            if (Manager.IsValid(checkmark)) {
+              checkmark.classList.remove('active');
+            }
+            if (thisLabel !== label) {
+              wrapper.classList.remove('active');
+            }
           }
         }
       }
@@ -384,7 +393,7 @@ DomManager = {
   },
   setDefaultView: function() {
     var activeModal, allViews;
-    activeModal = document.querySelector('#form-wrapper.active');
+    activeModal = document.querySelector('.form-wrapper.active');
     if (activeModal) {
       allViews = activeModal.querySelectorAll('.view');
       if (Manager.IsValid(allViews[0])) {

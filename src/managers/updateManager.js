@@ -13,7 +13,9 @@ import DateFormats from "../constants/datetimeFormats";
 
 import UpdateSubscriber from "../models/updateSubscriber";
 
-import Update from "../models/update";
+import Update from "../models/new/update";
+
+import LogManager from "./logManager";
 
 export default UpdateManager = {
   currentUser: null,
@@ -57,44 +59,58 @@ export default UpdateManager = {
   //  apiKey: process.env.REACT_APP_ONE_SIGNAL_API_KEY_PROD
   //  appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
   init: function(currentUser) {
-    UpdateManager.currentUser = currentUser;
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    return OneSignalDeferred.push(function() {
-      return OneSignal.init({
-        appId: UpdateManager.appId
-      }).then(function() {
-        return OneSignal.User.PushSubscription.addEventListener('change', UpdateManager.eventListener);
+    var error;
+    try {
+      UpdateManager.currentUser = currentUser;
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      return OneSignalDeferred.push(function() {
+        return OneSignal.init({
+          appId: UpdateManager.appId
+        }.then(function() {}), OneSignal.User.PushSubscription.addEventListener('change', UpdateManager.eventListener));
       });
-    });
+    } catch (error1) {
+      error = error1;
+      return LogManager.Log(`Error: ${error} | Code File:  | Function:  `);
+    }
   },
   eventListener: function(event) {
-    var newSubscriber, ref, subId, userSubscribed;
+    var error, newSubscriber, ref, subId, userSubscribed;
     userSubscribed = OneSignal.User.PushSubscription.optedIn;
     subId = event != null ? (ref = event.current) != null ? ref.id : void 0 : void 0;
-    if (userSubscribed && subId) {
-      newSubscriber = new UpdateSubscriber();
-      return setTimeout(function() {
-        var ref1, ref2;
-        newSubscriber.email = UpdateManager != null ? (ref1 = UpdateManager.currentUser) != null ? ref1.email : void 0 : void 0;
-        newSubscriber.key = UpdateManager != null ? (ref2 = UpdateManager.currentUser) != null ? ref2.key : void 0 : void 0;
-        newSubscriber.id = Manager.GetUid();
-        newSubscriber.subscriptionId = subId;
-        return fetch(`https://api.onesignal.com/apps/${UpdateManager.appId}/subscriptions/${subId}/user/identity`).then(async function(identity) {
-          var deleteKey, existingSubscriber, ref3, ref4, userIdentity;
-          userIdentity = (await identity.json());
-          newSubscriber.oneSignalId = userIdentity != null ? (ref3 = userIdentity.identity) != null ? ref3.onesignal_id : void 0 : void 0;
-          existingSubscriber = (await DB.find(DB.tables.updateSubscribers, ["email", UpdateManager != null ? (ref4 = UpdateManager.currentUser) != null ? ref4.email : void 0 : void 0], true));
-          // If user already exists -> replace record
-          if (Manager.IsValid(existingSubscriber)) {
-            deleteKey = (await DB.getSnapshotKey(`${DB.tables.updateSubscribers}`, existingSubscriber, "id"));
-            await DB.DeleteByPath(`${DB.tables.updateSubscribers}/${deleteKey}`);
-            return (await DB.Add(`/${DB.tables.updateSubscribers}`, newSubscriber));
-          } else {
-            // Else create new record
-            return (await DB.Add(`/${DB.tables.updateSubscribers}`, newSubscriber));
-          }
-        });
-      }, 500);
+    try {
+      if (userSubscribed && subId) {
+        newSubscriber = new UpdateSubscriber();
+        return setTimeout(function() {
+          var ref1, ref2;
+          newSubscriber.email = UpdateManager != null ? (ref1 = UpdateManager.currentUser) != null ? ref1.email : void 0 : void 0;
+          newSubscriber.key = UpdateManager != null ? (ref2 = UpdateManager.currentUser) != null ? ref2.key : void 0 : void 0;
+          newSubscriber.id = Manager.GetUid();
+          newSubscriber.subscriptionId = subId;
+          return fetch(`https://api.onesignal.com/apps/${UpdateManager.appId}/subscriptions/${subId}/user/identity`).then(async function(identity) {
+            var currentUpdates, existingSubscriber, index, ref3, ref4, userIdentity;
+            userIdentity = (await identity.json());
+            currentUpdates = (await DB.getTable(`${DB.tables.updateSubscribers}`));
+            newSubscriber.oneSignalId = userIdentity != null ? (ref3 = userIdentity.identity) != null ? ref3.onesignal_id : void 0 : void 0;
+            // If user already exists -> replace record
+            if (Manager.IsValid(existingSubscriber)) {
+              existingSubscriber = currentUpdates.find((x) => {
+                var ref4;
+                return (x != null ? x.email : void 0) === (UpdateManager != null ? (ref4 = UpdateManager.currentUser) != null ? ref4.email : void 0 : void 0);
+              });
+              existingSubscriber.subscriptionId = subId;
+              existingSubscriber.oneSignalId = userIdentity != null ? (ref4 = userIdentity.identity) != null ? ref4.onesignal_id : void 0 : void 0;
+              index = DB.GetTableIndexById(currentUpdates, existingSubscriber != null ? existingSubscriber.id : void 0);
+              return (await DB.updateEntireRecord(`${DB.tables.updateSubscribers}/${index}`, existingSubscriber));
+            } else {
+              // Else create new record
+              return (await DB.Add(`${DB.tables.updateSubscribers}`, newSubscriber));
+            }
+          });
+        }, 500);
+      }
+    } catch (error1) {
+      error = error1;
+      return LogManager.Log(`Error: ${error} | Code File:  | Function:  `);
     }
   },
   getUserSubId: async function(currentUserPhoneOrEmail, phoneOrEmail = "email") {

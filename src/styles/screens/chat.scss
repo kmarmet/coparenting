@@ -112,7 +112,7 @@
       }
     }
 
-    .thread-item {
+    .chat-row {
       justify-content: space-between;
       width: 100%;
       align-items: center;
@@ -120,49 +120,87 @@
       flex-wrap: nowrap;
       position: relative;
       opacity: 1;
+      background: white;
+      border-radius: $bigBorderRadius;
+      padding: 20px 20px 0 20px;
+
+      .secondary-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 20px;
+      }
+
+      .play-pause-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-top: 10px;
+
+        .icon {
+          @include square(20px);
+          margin-bottom: 8px;
+
+          &.pause {
+            color: $darkerGrey;
+          }
+          &.play {
+            color: $green;
+          }
+        }
+      }
+
       .last-message {
-        max-width: 400px;
-        color: $darkerGrey;
-        font-size: 14px;
+        color: $darkestGrey;
+        font-weight: $fwLight;
+        font-size: 16px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
-        line-height: 1.2;
+        line-height: 1.4;
         overflow: hidden;
-        padding-top: 3px;
+        padding-top: 10px;
         text-overflow: ellipsis;
-        width: 90%;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        width: 100%;
+        gap: 0 10px;
+
+        svg {
+          color: $darkerGrey;
+          position: relative;
+          top: 3px;
+          @include square(min-content);
+        }
       }
 
       .flex {
         align-items: center;
         width: 100%;
         justify-content: space-between;
-        background: white;
-        padding: 12px;
-        border-radius: $bigBorderRadius;
-        border: 1px solid $greyBorderColor;
-        min-height: 55px;
 
         .column {
           &.left {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-right: 15px;
+            background: white;
+            background: rgba(76, 111, 255, 0.11);
+            border-radius: $buttonBorderRadius;
             width: 90%;
+            padding: 12px;
           }
 
           &.right {
-            button {
-              &.button {
-                height: unset;
-                border-radius: $borderRadius;
-                padding: 6px 0;
-                width: 60px;
-                font-size: 12px;
-                &.resume {
-                  background: $greenForWhiteText;
-                }
-                &.pause {
-                  background: $bootstrapRed;
-                }
+            svg {
+              @include square(25px);
+              &.play-icon {
+                color: $greenForWhiteText;
+              }
+              &.pause-icon {
+                color: $darkestGrey;
               }
             }
           }
@@ -172,7 +210,7 @@
           margin: 0;
           padding: 0;
           line-height: 1;
-          color: $primaryText;
+          color: $main;
         }
       }
 
@@ -184,33 +222,30 @@
         margin-right: 5px;
       }
 
-      .coparent-name {
+      .primary-text {
         display: flex;
-        position: relative;
-        right: 0;
-        font-weight: $fwRegular;
-        color: $primaryText;
-        font-size: 18px;
-        line-height: 1;
-        vertical-align: middle;
+        align-items: center;
         width: 100%;
         justify-content: space-between;
-        align-self: center;
-        margin: 0;
-
-        @media screen and (min-width: 800px) {
-          width: 28vw;
+        .timestamp {
+          font-size: 14px;
+          font-weight: $fwRegular;
+          color: $primaryText;
         }
 
-        .timestamp {
-          opacity: 0.7;
-          font-size: 15px;
-          font-style: italic;
-          color: white;
-          font-weight: 400;
-          margin-left: auto;
-          float: right;
-          justify-self: flex-end;
+        .coparent-name {
+          display: flex;
+          font-weight: $fwMediumBold;
+          color: $primaryText;
+          font-size: 22px;
+          line-height: 1;
+          justify-content: space-between;
+          align-self: center;
+          margin: 0;
+
+          @media screen and (min-width: 800px) {
+            width: 28vw;
+          }
         }
       }
     }
@@ -482,7 +517,6 @@
             display: flex;
             justify-content: space-between;
             float: right;
-            @include mainColorsGradient;
 
             svg {
               color: white;

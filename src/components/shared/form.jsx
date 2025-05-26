@@ -5,6 +5,7 @@ import globalState from '../../context'
 import DomManager from '../../managers/domManager'
 import StringManager from '../../managers/stringManager'
 import Overlay from './overlay'
+import Spacer from './spacer'
 
 export default function Form({
   submitText,
@@ -24,16 +25,14 @@ export default function Form({
   viewSelector,
   submitIcon = null,
   deleteIcon = null,
-  hasThirdButton = false,
-  thirdButtonText = '',
-  thirdButtonCallback = () => {},
-  cancelButtonText = 'Nevermind',
+  cancelButtonText = 'Close',
+  extraButtons = [],
 }) {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey, creationFormToShow} = state
 
   const HideCard = () => {
-    const modalWrapper = document.querySelector(`.${wrapperClass}#form-wrapper`)
+    const modalWrapper = document.querySelector(`.${wrapperClass}.form-wrapper`)
 
     if (modalWrapper) {
       const form = modalWrapper.querySelector('#form')
@@ -52,11 +51,14 @@ export default function Form({
   }
 
   const ScrollToTop = () => {
-    const header = document.getElementById('form-title')
+    const header = document.querySelector('.form-title')
     header.scrollIntoView({behavior: 'smooth', block: 'end'})
   }
 
   useEffect(() => {
+    let activeForm = document.querySelector(`.${wrapperClass}.form-wrapper.active`)
+    const previousMonthButton = document.querySelector('.MuiPickersArrowSwitcher-nextIconButton')
+
     if (showCard) {
       const allActiveFadeInUp = document.querySelectorAll('.animate__animated.animate__fadeInUp')
       if (Manager.IsValid(allActiveFadeInUp)) {
@@ -64,38 +66,36 @@ export default function Form({
           DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
         }, 300)
       }
-      const activeModal = document.querySelector('#form-wrapper.active')
-      if (Manager.IsValid(activeModal)) {
-        const allWrappers = activeModal.querySelectorAll('.input-wrapper')
+      if (Manager.IsValid(activeForm)) {
+        const allWrappers = activeForm.querySelectorAll('.input-wrapper')
         if (Manager.IsValid(allWrappers)) {
           const firstWrapper = allWrappers[0]
           if (Manager.IsValid(firstWrapper)) {
-            firstWrapper.querySelector('input').focus()
+            // firstWrapper.querySelector('input').focus()
           }
         }
       }
     }
-    let modalWrapper = document.querySelector(`.${wrapperClass}#form-wrapper.active`)
 
     // Check if creationFormToShow is valid and if so, find the form wrapper
     if (Manager.IsValid(creationFormToShow, true)) {
-      modalWrapper = document.querySelector(`.${creationFormToShow}#form-wrapper`)
+      activeForm = document.querySelector(`.${creationFormToShow}.form-wrapper`)
     }
-    if (modalWrapper) {
+    if (activeForm) {
       const checkboxContainer = document.getElementById('share-with-checkbox-container')
 
-      if (modalWrapper && StringManager.GetWordCount(title) >= 4) {
-        const title = modalWrapper.querySelector('#form-title')
+      if (activeForm && StringManager.GetWordCount(title) >= 4) {
+        const title = activeForm.querySelector('#form-title')
         if (title) {
           title.classList.add('long-title')
         }
       }
 
       // show or hide card
-      if (Manager.IsValid(wrapperClass, true) && Manager.IsValid(modalWrapper)) {
+      if (Manager.IsValid(wrapperClass, true) && Manager.IsValid(activeForm)) {
         if (showCard) {
           ScrollToTop()
-          const checkboxes = modalWrapper.querySelectorAll('.checkbox')
+          const checkboxes = activeForm.querySelectorAll('.checkbox')
           if (Manager.IsValid(checkboxes)) {
             for (let checkbox of checkboxes) {
               checkbox.checked = false
@@ -124,44 +124,43 @@ export default function Form({
 
   return (
     <Overlay show={showCard}>
-      <div key={refreshKey} id="form-wrapper" className={`${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
+      <div key={refreshKey} className={`form-wrapper ${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
         <div
           style={DomManager.AnimateDelayStyle(1, 0.002)}
-          id="form-card"
-          className={`${DomManager.Animate.FadeInUp(showCard, '.form-fade-wrapper')} form-fade-wrapper ${activeView}`}>
-          <div id="form">
+          className={`form-card ${DomManager.Animate.FadeInUp(showCard, '.form-fade-wrapper')} form-fade-wrapper ${activeView}`}>
+          <div className="content-wrapper">
             <div className="header">
-              <p id="form-title" className={StringManager.GetWordCount(title) > 3 ? 'long-title' : ''}>
+              <p className={'form-title'}>
                 {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
                 {title}
               </p>
-              {Manager.IsValid(subtitle, true) && <p id="subtitle">{subtitle}</p>}
+              {Manager.IsValid(subtitle, true) && <p className="subtitle">{subtitle}</p>}
             </div>
 
             {viewSelector}
-            <div id="content">{children}</div>
+            {Manager.IsValid(viewSelector) && <hr />}
+            {!Manager.IsValid(viewSelector) && <Spacer height={10} />}
+            <div className="content">{children}</div>
           </div>
         </div>
         <div className={`flex card-buttons`}>
           {hasSubmitButton && (
             <button className={`button card-button submit`} onClick={onSubmit}>
               {submitText}
-              {/*{submitIcon && submitIcon}*/}
             </button>
           )}
 
           {hasDelete && (
             <button className={'delete-button default card-button'} onClick={onDelete}>
               {deleteButtonText}
-              {/*{!deleteIcon ? <FaMinus className={'delete'} /> : deleteIcon}*/}
             </button>
           )}
 
-          {hasThirdButton && (
-            <button className="third-button default card-button" onClick={thirdButtonCallback} style={{width: 'auto'}}>
-              {thirdButtonText} test
-            </button>
-          )}
+          {/* EXTRA BUTTONS */}
+          {Manager.IsValid(extraButtons) &&
+            extraButtons.map((button) => {
+              return button
+            })}
 
           <button
             className="button card-button close"
@@ -170,7 +169,6 @@ export default function Form({
               HideCard()
             }}>
             {cancelButtonText}
-            {/*<CgClose />*/}
           </button>
         </div>
       </div>

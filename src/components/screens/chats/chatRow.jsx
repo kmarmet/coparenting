@@ -4,10 +4,13 @@ import globalState from '/src/context.js'
 import AlertManager from '/src/managers/alertManager.coffee'
 import ChatManager from '/src/managers/chatManager.js'
 import Manager from '/src/managers/manager.js'
-import StringManager from '/src/managers/stringManager.coffee'
+import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
+import {FaPlay, IoMdPause} from 'react-icons/fa'
+import {IoMdPause} from 'react-icons/io'
+import {MdCallMade, MdCallReceived} from 'react-icons/md'
+import DatetimeFormats from '../../../constants/datetimeFormats'
 import useCurrentUser from '../../../hooks/useCurrentUser'
-import useUsers from '../../../hooks/useUsers'
 import DomManager from '../../../managers/domManager'
 
 export default function ChatRow({chat, index}) {
@@ -16,12 +19,9 @@ export default function ChatRow({chat, index}) {
   const [otherMember, setOtherMember] = useState(null)
   const [lastMessage, setLastMessage] = useState('')
   const {currentUser} = useCurrentUser()
-  const {users} = useUsers()
 
   const OpenChat = async () => {
-    // Check if thread member (coparent) profile exists in DB
-    let userCoparent = users?.find((user) => user?.key === otherMember?.key)
-    if (!Manager.IsValid(userCoparent)) {
+    if (!Manager.IsValid(otherMember)) {
       AlertManager.oneButtonAlert(
         'Co-Parent Profile not Found',
         'This co-parent may have deactivated their profile, but you can still view the messages',
@@ -31,7 +31,7 @@ export default function ChatRow({chat, index}) {
         }
       )
     } else {
-      setState({...state, currentScreen: ScreenNames.chat, messageRecipient: userCoparent})
+      setState({...state, currentScreen: ScreenNames.chat, messageRecipient: otherMember})
     }
   }
 
@@ -56,14 +56,7 @@ export default function ChatRow({chat, index}) {
 
   const GetLastMessage = async () => {
     const chatMessages = await ChatManager.getMessages(chat?.id)
-    const otherMemberMessages = chatMessages.filter((x) => x?.senderKey === otherMember?.key)
-    let lastMessage = ''
-    if (Manager.IsValid(chatMessages)) {
-      if (Manager.IsValid(otherMemberMessages)) {
-        lastMessage = otherMemberMessages[otherMemberMessages.length - 1]['message']
-      }
-    }
-    setLastMessage(lastMessage)
+    setLastMessage(chatMessages[chatMessages.length - 1])
   }
 
   useEffect(() => {
@@ -82,51 +75,50 @@ export default function ChatRow({chat, index}) {
     <div
       onClick={(e) => {
         e.stopPropagation()
-        if (e.target.tagName === 'path' || e.target.tagName === 'svg') return false
-        if (e.currentTarget.classList.contains('row')) {
+        if (DomManager.CheckIfElementIsTag(e, 'path') || DomManager.CheckIfElementIsTag(e, 'svg')) return false
+        if (e.currentTarget.classList.contains('chat-row')) {
           OpenChat().then((r) => r)
         }
         if (e.target !== e.currentTarget) return false
       }}
       data-thread-id={chat?.id}
       style={DomManager.AnimateDelayStyle(index)}
-      className={`chats row chats-animation-row ${DomManager.Animate.FadeInUp(chat?.id)}`}>
-      {/* THREAD ITEM */}
-      <div className={`flex thread-item wrap`}>
-        {/* COPARENT NAME */}
-        <div className="flex">
-          <div className="column left">
-            <p className="coparent-name">{StringManager.GetFirstNameOnly(otherMember?.name)}</p>
-            {Manager.IsValid(lastMessage, true) && <p className="last-message">{lastMessage}</p>}
+      className={`chat-row chats-animation-row ${DomManager.Animate.FadeInUp(chat?.id)}`}>
+      {/* COPARENT NAME */}
+      <div className="primary-text">
+        <p className="coparent-name">{otherMember?.name}</p>
+        <p className="timestamp">{moment(lastMessage?.timestamp, DatetimeFormats.timestamp).format('ddd (hh:mma)')}</p>
+      </div>
+      <p className="last-message">
+        {lastMessage?.message}
+        {lastMessage?.senderKey === currentUser?.key ? <MdCallMade /> : <MdCallReceived />}
+      </p>
+      <div className="play-pause-wrapper">
+        {/* PLAY CHAT BUTTON */}
+        {chat?.isPausedFor?.includes(currentUser?.key) && (
+          <div id="play-wrapper">
+            <FaPlay className={'play icon'} onClick={UnpauseChat} />
           </div>
-          <div className="column right">
-            {/* PAUSE CHAT BUTTON */}
-            {!chat?.isPausedFor?.includes(currentUser?.key) && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  AlertManager.confirmAlert(
-                    'When you pause the chat, it will remain accessible for your reference. However, you will not receive notifications related to this particular chat until you decide to unpause it. \n\n You can resume the chat at any time. \n\n Are you sure? ',
-                    "I'm Sure",
-                    true,
-                    async () => {
-                      await PauseChat()
-                    }
-                  )
-                }}
-                className="button pause">
-                Pause
-              </button>
-            )}
-            {/* PLAY CHAT BUTTON */}
-
-            {chat?.isPausedFor?.includes(currentUser?.key) && (
-              <button className="button resume" onClick={UnpauseChat}>
-                Resume
-              </button>
-            )}
+        )}
+        {/* PAUSE CHAT BUTTON */}
+        {!chat?.isPausedFor?.includes(currentUser?.key) && (
+          <div id="pause-wrapper">
+            <IoMdPause
+              onClick={(e) => {
+                e.stopPropagation()
+                AlertManager.confirmAlert(
+                  `When you pause the chat, it will remain accessible for your reference. However, <b>you will not receive notifications related to this particular chat until you decide to unpause it</b>. \n\n You can resume the chat at any time. \n\n Are you sure? `,
+                  "I'm Sure",
+                  true,
+                  async () => {
+                    await PauseChat()
+                  }
+                )
+              }}
+              className={`pause icon`}
+            />
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

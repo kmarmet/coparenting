@@ -95,9 +95,15 @@ export default function NavBar({children, navbarClass}) {
               style={DomManager.AnimateDelayStyle(1, 0.06)}
               onClick={() => changeCurrentScreen(ScreenNames.updates)}
               className={`${Manager.IsValid(updates) ? 'unread' : ''} ${currentScreen === ScreenNames.updates ? 'active menu-item updates' : 'menu-item updates'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
-              <PiNotificationFill className={'updates active'} />
-              <p>Updates</p>
-              {/*<NotificationBadge classes={'navbar'} />*/}
+              <PiNotificationFill className={'updates'} />
+              <p>
+                Updates
+                {Manager.IsValid(updates) && (
+                  <span className="update-count">
+                    <span>{Manager.IsValid(updates) ? ` ${updates?.length}` : ''}</span>
+                  </span>
+                )}
+              </p>
             </div>
           )}
 

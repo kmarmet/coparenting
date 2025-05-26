@@ -1,6 +1,7 @@
 // Path: src\components\screens\chats\chat.jsx
 import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
+import ModelNames from '/src/constants/modelNames'
 import ScreenNames from '/src/constants/screenNames'
 import globalState from '/src/context.js'
 import AlertManager from '/src/managers/alertManager'
@@ -11,7 +12,6 @@ import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager.coffee'
 import ChatMessage from '/src/models/chat/chatMessage'
 import ChatThread from '/src/models/chat/chatThread'
-import ModelNames from '/src/models/modelNames'
 import moment from 'moment-timezone'
 import React, {useContext, useEffect, useState} from 'react'
 import {Fade} from 'react-awesome-reveal'
@@ -23,6 +23,7 @@ import {PiBookmarksSimpleDuotone} from 'react-icons/pi'
 import {TbMessageCircleSearch} from 'react-icons/tb'
 import {useSwipeable} from 'react-swipeable'
 import {useLongPress} from 'use-long-press'
+import ActivityCategory from '../../../constants/activityCategory'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
 import DB from '../../../database/DB'
@@ -33,7 +34,6 @@ import AppManager from '../../../managers/appManager'
 import DatasetManager from '../../../managers/datasetManager'
 import DateManager from '../../../managers/dateManager'
 import UpdateManager from '../../../managers/updateManager'
-import ActivityCategory from '../../../models/activityCategory'
 import Spacer from '../../shared/spacer'
 
 const Chats = () => {
@@ -123,11 +123,11 @@ const Chats = () => {
     const recipient = {
       name: messageRecipient.name,
       id: messageRecipient.id,
-      key: messageRecipient.key,
+      key: messageRecipient.userKey,
     }
     _chat.id = uid
     _chat.members = [recipient, sender]
-    _chat.creationTimestamp = moment().format(DatetimeFormats.fullDatetime)
+    _chat.creationTimestamp = moment().format(DatetimeFormats.timestamp)
     _chat.ownerKey = currentUser?.key
     _chat.isPausedFor = []
 
@@ -141,10 +141,10 @@ const Chats = () => {
     chatMessage.senderKey = currentUser?.key
     chatMessage.senderTimezone = messageTimezone
     chatMessage.id = Manager.GetUid()
-    chatMessage.timestamp = moment().format(DatetimeFormats.fullDatetime)
+    chatMessage.timestamp = moment().format(DatetimeFormats.timestamp)
     chatMessage.sender = currentUser?.name
     chatMessage.recipient = messageRecipient.name
-    chatMessage.recipientKey = messageRecipient.key
+    chatMessage.recipientKey = messageRecipient.userKey
     chatMessage.message = messageText
     chatMessage.notificationSent = false
 
@@ -154,13 +154,13 @@ const Chats = () => {
     //#region ADD TO DB
     // Existing chat
     if (Manager.IsValid(chat)) {
-      await ChatManager.addChatMessage(`${DB.tables.chatMessages}/${chat.id}`, cleanMessage)
+      await ChatManager.AddChatMessage(`${DB.tables.chatMessages}/${chat.id}`, cleanMessage)
     }
     // Create new chat (for each member, if one doesn't exist between members)
     else {
-      await ChatManager.addChat(`${DB.tables.chats}/${currentUser?.key}`, cleanedChat)
-      await ChatManager.addChat(`${DB.tables.chats}/${messageRecipient?.key}`, cleanedRecipientChat)
-      await ChatManager.addChatMessage(`${DB.tables.chatMessages}/${uid}`, cleanMessage)
+      await ChatManager.CreateChat(`${DB.tables.chats}/${currentUser?.key}`, cleanedChat)
+      await ChatManager.CreateChat(`${DB.tables.chats}/${messageRecipient?.userKey}`, cleanedRecipientChat)
+      await ChatManager.AddChatMessage(`${DB.tables.chatMessages}/${uid}`, cleanMessage)
     }
     //#endregion ADD TO DB
 
@@ -293,12 +293,13 @@ const Chats = () => {
   useEffect(() => {
     if (Manager.IsValid(chatMessages)) {
       DefineBookmarks().then((r) => r)
-
+      console.log(chatMessages)
       setMessagesToLoop(chatMessages)
     }
   }, [chatMessages])
 
   useEffect(() => {
+    console.log(chat)
     if (Manager.IsValid(chat) && Manager.IsValid(chat?.id)) {
       setChatId(chat?.id)
     }
@@ -309,8 +310,6 @@ const Chats = () => {
       DomManager.ToggleAnimation('add', 'bookmark-message', DomManager.AnimateClasses.names.fadeInUp)
     }
   }, [showBookmarks])
-
-  useEffect(() => {}, [])
 
   return (
     <>
@@ -526,16 +525,16 @@ const Chats = () => {
                 messagesToLoop.map((message, index) => {
                   // Determine bookmark class
                   let isBookmarked = Manager.IsValid(bookmarkedMessages?.find((x) => x.id === message?.id))
-                  const timestampDateOnly = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.dateForDb)
-                  const timestampTimeOnly = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.timeForDb)
+                  const timestampDateOnly = moment(message?.timestamp, DatetimeFormats.timestamp).format(DatetimeFormats.dateForDb)
+                  const timestampTimeOnly = moment(message?.timestamp, DatetimeFormats.timestamp).format(DatetimeFormats.timeForDb)
                   let convertedTime = DateManager.convertTime(timestampTimeOnly, message?.senderTimezone, currentUser?.location?.timezone)
-                  let convertedTimestamp = moment(`${timestampDateOnly} ${convertedTime}`, DatetimeFormats.fullDatetime)
+                  let convertedTimestamp = moment(`${timestampDateOnly} ${convertedTime}`, DatetimeFormats.timestamp)
                     .tz(currentUser?.location?.timezone)
                     .format('ddd, MMMM Do (h:mma)')
 
                   // Message Sent Today
-                  if (moment(message?.timestamp, DatetimeFormats.fullDatetime).isSame(moment(), 'day')) {
-                    convertedTimestamp = moment(message?.timestamp, DatetimeFormats.fullDatetime).format(DatetimeFormats.timeForDb)
+                  if (moment(message?.timestamp, DatetimeFormats.timestamp).isSame(moment(), 'day')) {
+                    convertedTimestamp = moment(message?.timestamp, DatetimeFormats.timestamp).format(DatetimeFormats.timeForDb)
                   }
                   return (
                     <div
@@ -596,7 +595,7 @@ const Chats = () => {
                       }
                     }}
                   />
-                  <IoSend className={toneObject?.color} onClick={SendMessage} id="send-button" />
+                  {Manager.IsValid(messageRecipient) && <IoSend className={toneObject?.color} onClick={SendMessage} id="send-button" />}
                 </div>
               </div>
             </div>

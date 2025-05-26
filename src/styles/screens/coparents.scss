@@ -59,7 +59,7 @@
       &.active {
         transition: all 0.3s ease-in;
         @include mainColorsGradient;
-
+        background: $secondaryAccent;
         * {
           transition: all 0.2s ease-in;
           color: white;

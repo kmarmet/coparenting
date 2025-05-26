@@ -290,6 +290,17 @@ export default function EventCalendar() {
     }
   }
 
+  const UpdateOrRefreshIfNecessary = async () => {
+    let latestVersionNumber = appUpdates[appUpdates.length - 1]?.currentVersion
+    const shouldRefresh = await AppManager.UpdateOrRefreshIfNecessary(currentUser, latestVersionNumber)
+    if (shouldRefresh) {
+      setState({...state, successAlertMessage: 'Updating App ...'})
+      await Manager.GetPromise(() => {
+        window.location.reload()
+      }, 2500)
+    }
+  }
+
   useEffect(() => {
     GetEvents().then((r) => r)
   }, [calendarEvents])
@@ -343,11 +354,6 @@ export default function EventCalendar() {
   }, [currentScreen, currentUserIsLoading])
 
   useEffect(() => {
-    // setTimeout(() => {
-    //   setState({...state, successAlertMessage: 'testing bro'})
-    // }, 1000)
-
-    // setState({...state, isLoading: false})
     setTimeout(() => {
       AddMonthText()
     }, 500)
@@ -358,17 +364,6 @@ export default function EventCalendar() {
       UpdateOrRefreshIfNecessary().then((r) => r)
     }
   }, [appUpdates, currentUser])
-
-  const UpdateOrRefreshIfNecessary = async () => {
-    let latestVersionNumber = appUpdates[appUpdates.length - 1]?.currentVersion
-    const shouldRefresh = await AppManager.UpdateOrRefreshIfNecessary(currentUser, latestVersionNumber)
-    if (shouldRefresh) {
-      setState({...state, successAlertMessage: 'Updating App ...'})
-      await Manager.GetPromise(() => {
-        window.location.reload()
-      }, 2500)
-    }
-  }
 
   return (
     <>

@@ -23,19 +23,19 @@ export default AppManager =
 
     # Last refresh exists
     if Manager.IsValid lastRefresh
-      msSinceLastRefresh = moment(lastRefresh, DatetimeFormats.fullDatetime).diff() ? 0
+      msSinceLastRefresh = moment(lastRefresh, DatetimeFormats.timestamp).diff() ? 0
       hoursSinceRefresh = Math.abs Math.ceil msSinceLastRefresh / (1000 * 60 * 60)
 
       # If it has been more than 3 hours since the last refresh -> reload the page
       if hoursSinceRefresh > 6
         console.log('true')
-        localStorage.setItem 'lastAutoRefresh', moment().format(DatetimeFormats.fullDatetime)
+        localStorage.setItem 'lastAutoRefresh', moment().format(DatetimeFormats.timestamp)
         window.location.reload()
         return false
 
     # Last refresh does not exist -> set one
     else
-      localStorage.setItem 'lastAutoRefresh', moment().format(DatetimeFormats.fullDatetime)
+      localStorage.setItem 'lastAutoRefresh', moment().format(DatetimeFormats.timestamp)
 
   UpdateOrRefreshIfNecessary: (currentUser, latestVersion, delay = 0) ->
     AppManager.RefreshIfNecessary();
@@ -189,7 +189,7 @@ export default AppManager =
       await DB_UserScoped.updateUserRecord(user.phone, "updatedApp", false)
     lastUpdateObject = await DB.getTable("updateAvailable")
     {updateAvailable} =  lastUpdateObject
-    timestamp = moment().format(DateFormats.fullDatetime)
+    timestamp = moment().format(DateFormats.timestamp)
     updateObject =
       lastUpdate: timestamp
       updateAvailable: false

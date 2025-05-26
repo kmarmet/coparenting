@@ -48,6 +48,15 @@
     transition: all 0.3s ease-in-out !important;
     box-shadow: $boxShadow_bottom_only_dark;
 
+    .MuiPickersArrowSwitcher-root {
+      width: 100px;
+
+      svg {
+        transform: scale(1.6);
+        color: $darkGrey !important;
+      }
+    }
+
     .MuiList-root {
       padding: 0 !important;
     }
@@ -292,14 +301,14 @@
           width: 47vw !important;
         }
 
-        .MuiDayCalendar-weekDayLabel {
-          font-size: 16px;
-          width: 50px;
-          height: 50px;
-          color: $lightDarkGrey;
-          opacity: 0.7;
-          font-weight: bold;
-        }
+        //        .MuiDayCalendar-weekDayLabel {
+        //          font-size: 16px;
+        //          width: 50px;
+        //          height: 50px;
+        //          color: red;
+        //          opacity: 0.7;
+        //          font-weight: bold;
+        //        }
 
         .MuiPickersDay-today:not(.Mui-selected) {
           opacity: 1 !important;
@@ -580,14 +589,31 @@
   /*#region  PICKER INPUTS*/
   .MuiFormControl-root {
     width: 100%;
+    height: 50px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+
+    * {
+      height: 50px !important;
+    }
+
+    svg {
+      height: min-content !important;
+    }
+
     fieldset {
       border: 0 !important;
     }
+
     .MuiInputBase-root {
       border: 0;
-      border-radius: 0;
       padding-right: 0;
-
+      background: $inputBackground !important;
+      border-radius: $borderRadius !important;
+      width: 100% !important;
+      height: 50px !important;
       * {
         user-select: none;
       }
@@ -599,27 +625,38 @@
         transition: all 0.2s ease-in-out !important;
         max-height: unset !important;
         padding: 0 !important;
-        position: absolute !important;
         caret-color: white !important;
-        width: 100% !important;
         border-radius: 0 !important;
         color: white !important;
+        height: auto !important;
+        width: 100% !important;
+        position: relative !important;
+        background-color: transparent !important;
       }
     }
+
+    .MuiInputBase-root {
+      background-color: transparent !important;
+    }
+
     .MuiInputLabel-root {
-      font-weight: $fwMediumBold !important;
-      margin: 0 !important;
+      margin: 0 auto 0 0 !important;
       line-height: 1 !important;
-      color: $darkerTransWhite !important;
-      position: absolute !important;
-      top: 50px !important;
-      text-transform: uppercase;
       z-index: 99999 !important;
-      padding: 0 !important;
-      padding-left: 8px !important;
+      padding: 0 10px 0 0 !important;
       @include fontType;
-      font-size: 12px !important;
-      display: none !important;
+      font-size: 16px !important;
+      font-style: italic !important;
+      color: $transWhite;
+      font-weight: $fwLight !important;
+      text-transform: capitalize;
+      position: relative;
+      left: -15px;
+
+      // Small label when input has value
+      &.MuiFormLabel-filled {
+        display: none !important;
+      }
 
       &.active {
         color: $primaryText !important;

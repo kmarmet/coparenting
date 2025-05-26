@@ -1,6 +1,6 @@
 // Path: src\components\shared\customChildInfo.jsx
 import moment from 'moment'
-import React, {useContext, useState} from 'react'
+import React, {useContext, useRef, useState} from 'react'
 import {GrCheckmark} from 'react-icons/gr'
 import validator from 'validator'
 import DatetimeFormats from '../../constants/datetimeFormats'
@@ -12,7 +12,7 @@ import AlertManager from '../../managers/alertManager'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
-import UpdateManager from '../../managers/updateManager.js'
+import UpdateManager from '../../managers/updateManager'
 import AddressInput from './addressInput'
 import CheckboxGroup from './checkboxGroup'
 import Form from './form'
@@ -24,30 +24,36 @@ import ViewSelector from './viewSelector'
 export default function CustomChildInfo({hideCard, showCard, activeChild}) {
   const {state, setState} = useContext(globalState)
   const {theme} = state
-  const [title, setTitle] = useState('')
-  const [value, setValue] = useState('')
   const [infoSection, setInfoSection] = useState('general')
   const [infoType, setInfoType] = useState('text')
-  const [shareWith, setShareWith] = useState([])
   const {currentUser} = useCurrentUser()
+  const info = useRef({title: '', value: '', shareWith: ''})
+
   const Add = async () => {
-    if (title.length === 0 || value.length === 0) {
+    if (info.current.title.length === 0 || info.current.value.length === 0) {
       AlertManager.throwError('Please fill/select required fields')
       return false
     }
-    if (infoType === 'phone' && !validator.isMobilePhone(value)) {
+    if (infoType === 'phone' && !validator.isMobilePhone(info.current.value)) {
       AlertManager.throwError('Please enter a valid phone number')
       return false
     }
 
-    await DB_UserScoped.addUserChildProp(currentUser, activeChild, infoSection, StringManager.toCamelCase(title), value, shareWith)
+    await DB_UserScoped.addUserChildProp(
+      currentUser,
+      activeChild,
+      infoSection,
+      StringManager.toCamelCase(info.current.title),
+      info.current.value,
+      info.current.shareWith
+    )
 
-    if (Manager.IsValid(shareWith)) {
-      await UpdateManager.sendToShareWith(
-        shareWith,
+    if (Manager.IsValid(info.current.shareWith)) {
+      await UpdateManager.SendToShareWith(
+        info.current.shareWith,
         currentUser,
         `${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Updated for ${activeChild?.general?.name}`,
-        `${title} - ${value}`,
+        `${info.current.title} - ${info.current.value}`,
         infoSection
       )
     }
@@ -70,14 +76,11 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
   }
 
   const HandleShareWithSelection = (e) => {
-    const shareWithNumbers = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
-    setShareWith(shareWithNumbers)
+    info.current.shareWith = DomManager.HandleShareWithSelection(e, currentUser, info.current.shareWith, info)
   }
 
   const ResetForm = (successMessage = '') => {
     Manager.ResetForm('custom-child-info-wrapper')
-    setTitle('')
-    setValue('')
     setInfoSection('')
     hideCard()
     setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
@@ -101,70 +104,88 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
         />
       }
       showCard={showCard}>
-      <div className="form">
-        <Spacer height={6} />
+      <Spacer height={6} />
 
-        {/* INFO TYPE */}
-        <CheckboxGroup
-          parentLabel="Information Type"
-          required={true}
-          checkboxArray={DomManager.BuildCheckboxGroup({
-            currentUser,
-            defaultLabels: ['Text'],
-            customLabelArray: ['Text', 'Location', 'Date', 'Phone'],
-          })}
-          onCheck={HandleInfoTypeSelection}
-        />
-        <Spacer height={10} />
+      {/* INFO TYPE */}
+      <CheckboxGroup
+        parentLabel="Information Type"
+        required={true}
+        checkboxArray={DomManager.BuildCheckboxGroup({
+          currentUser,
+          defaultLabels: ['Text'],
+          customLabelArray: ['Text', 'Location', 'Date', 'Phone'],
+        })}
+        onCheck={HandleInfoTypeSelection}
+      />
+      <Spacer height={10} />
 
-        {/* INPUTS */}
-        {infoType === 'text' && (
-          <>
-            <InputWrapper inputType={InputTypes.text} placeholder={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
-            <InputWrapper inputType={InputTypes.text} placeholder={'Value'} required={true} onChange={(e) => setValue(e.target.value)} />
-          </>
-        )}
+      {/* INPUTS */}
+      {infoType === 'text' && (
+        <>
+          <InputWrapper
+            inputType={InputTypes.text}
+            placeholder={'Title/Label'}
+            required={true}
+            onChange={(e) => (info.current.title = e.target.value)}
+          />
+          <InputWrapper inputType={InputTypes.text} placeholder={'Value'} required={true} onChange={(e) => (info.current.value = e.target.value)} />
+        </>
+      )}
 
-        {infoType === 'phone' && (
-          <>
-            <InputWrapper inputType={InputTypes.text} placeholder={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
-            <InputWrapper
-              inputType={InputTypes.phone}
-              placeholder={'Phone Number'}
-              required={true}
-              onChange={(e) => setValue(StringManager.FormatPhone(e.target.value))}
-            />
-          </>
-        )}
+      {infoType === 'phone' && (
+        <>
+          <InputWrapper
+            inputType={InputTypes.text}
+            placeholder={'Title/Label'}
+            required={true}
+            onChange={(e) => (info.current.title = e.target.value)}
+          />
+          <InputWrapper
+            inputType={InputTypes.phone}
+            placeholder={'Phone Number'}
+            required={true}
+            onChange={(e) => (info.current.value = StringManager.FormatPhone(e.target.value))}
+          />
+        </>
+      )}
 
-        {infoType === 'date' && (
-          <div className="w-100">
-            <InputWrapper inputType={InputTypes.text} placeholder={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
-            <InputWrapper
-              placeholder={'Date'}
-              required={true}
-              uidClass="child-info-custom-date"
-              inputType={InputTypes.date}
-              onDateOrTimeSelection={(e) => setValue(moment(e).format(DatetimeFormats.dateForDb))}
-            />
-          </div>
-        )}
+      {infoType === 'date' && (
+        <div className="w-100">
+          <InputWrapper
+            inputType={InputTypes.text}
+            placeholder={'Title/Label'}
+            required={true}
+            onChange={(e) => (info.current.title = e.target.value)}
+          />
+          <InputWrapper
+            placeholder={'Date'}
+            required={true}
+            uidClass="child-info-custom-date"
+            inputType={InputTypes.date}
+            onDateOrTimeSelection={(e) => (info.current.value = moment(e).format(DatetimeFormats.dateForDb))}
+          />
+        </div>
+      )}
 
-        {infoType === 'location' && (
-          <>
-            <InputWrapper inputType={InputTypes.text} placeholder={'Title/Label'} required={true} onChange={(e) => setTitle(e.target.value)} />
-            <AddressInput
-              placeholder={'Address'}
-              required={true}
-              onChange={(address) => {
-                setValue(address)
-              }}
-            />
-          </>
-        )}
-        <Spacer height={6} />
-        <ShareWithCheckboxes onCheck={HandleShareWithSelection} labelText="CONTACTS TO Share with" required={false} />
-      </div>
+      {infoType === 'location' && (
+        <>
+          <InputWrapper
+            inputType={InputTypes.text}
+            placeholder={'Title/Label'}
+            required={true}
+            onChange={(e) => (info.current.title = e.target.value)}
+          />
+          <AddressInput
+            placeholder={'Address'}
+            required={true}
+            onChange={(address) => {
+              info.current.value = address
+            }}
+          />
+        </>
+      )}
+      <Spacer height={6} />
+      <ShareWithCheckboxes onCheck={HandleShareWithSelection} labelText="CONTACTS TO Share with" required={false} />
     </Form>
   )
 }

@@ -4,16 +4,16 @@ import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import MyConfetti from '/src/components/shared/myConfetti.js'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
+import ActivityCategory from '/src/constants/activityCategory'
 import DatetimeFormats from '/src/constants/datetimeFormats'
 import EventLengths from '/src/constants/eventLengths'
+import ModelNames from '/src/constants/modelNames'
 import AlertManager from '/src/managers/alertManager'
 import Manager from '/src/managers/manager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
 import CalendarMapper from '/src/mappers/calMapper'
-import ActivityCategory from '/src/models/activityCategory'
-import CalendarEvent from '/src/models/calendarEvent'
-import ModelNames from '/src/models/modelNames'
+import CalendarEvent from '/src/models/new/calendarEvent'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -311,7 +311,7 @@ export default function NewCalendarEvent() {
         showCard={creationFormToShow === CreationForms.calendar}
         wrapperClass={`new-calendar-event form at-top`}
         contentClass={eventLength === EventLengths.single ? 'single-view' : 'multiple-view'}
-        title={`Create New Event`}
+        title={`Create Event`}
         submitIcon={<BsCalendarCheck />}
         viewSelector={
           <ViewSelector
@@ -375,13 +375,13 @@ export default function NewCalendarEvent() {
             <>
               {/* EVENT WITH TIME */}
               <InputWrapper
-                placeholder={'Start Time'}
+                labelText={'Start Time'}
                 uidClass="event-start-time time"
                 inputType={InputTypes.time}
                 onDateOrTimeSelection={(e) => (newEvent.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}
               />
               <InputWrapper
-                placeholder={'End Time'}
+                labelText={'End Time'}
                 uidClass="event-end-time time"
                 inputType={InputTypes.time}
                 onDateOrTimeSelection={(e) => (newEvent.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}

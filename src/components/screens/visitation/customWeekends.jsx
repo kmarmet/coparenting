@@ -15,7 +15,7 @@ import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 import VisitationManager from '../../../managers/visitationManager'
-import CalendarEvent from '../../../models/calendarEvent'
+import CalendarEvent from '../../../models/new/calendarEvent'
 import Spacer from '../../shared/spacer'
 
 export default function CustomWeekends({hide, showCard}) {

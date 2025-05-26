@@ -113,7 +113,7 @@ export default function Checklist({fromOrTo, activeChildId}) {
               Manager.IsValid(checklist?.items) &&
               checklist?.items?.map((item, index) => {
                 return (
-                  <div data-checklist-text={item} key={index} id="data-row" className="checklist-item-row">
+                  <div data-checklist-text={item} key={index} className="data-row" className="checklist-item-row">
                     <p onClick={ToggleActive} className="checklist-item">
                       {activeItems.includes(item.toLowerCase()) && <IoCheckmarkCircleSharp className={'checkmark'} />}
                       {StringManager.uppercaseFirstLetterOfAllWords(item)}

@@ -7,11 +7,11 @@ import moment from "moment"
 import DateManager from "./dateManager"
 import CalendarMapper from "../mappers/calMapper"
 import DatasetManager from "./datasetManager"
-import CalendarEvent from "../models/calendarEvent"
+import CalendarEvent from "../models/new/calendarEvent"
 import ObjectManager from "./objectManager"
 import * as Sentry from '@sentry/react'
 
-import ModelNames from "../models/modelNames"
+import ModelNames from "../constants/modelNames"
 
 export default CalendarManager =
   addMultipleCalEvents: (currentUser, newEvents, isRangeClonedOrRecurring = false) ->

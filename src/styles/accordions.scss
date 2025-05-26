@@ -28,6 +28,10 @@
       .MuiCollapse-entered {
         //        background: white !important;
         border-radius: 0 0 8px 8px !important;
+
+        .checkbox-group {
+          padding-bottom: 15px !important;
+        }
       }
 
       // EXPANDED ACCORDION
@@ -341,18 +345,18 @@
             #label-wrapper {
               label {
                 white-space: nowrap;
-                color: $darkestGrey !important;
+                color: $darkerGrey !important;
+                font-weight: $fwLight !important;
               }
             }
 
             button {
               background: white !important;
-              border: 1px solid $greyBorderColor !important;
+              //              border: 1px solid $greyBorderColor !important;
               line-height: 1 !important;
               white-space: nowrap !important;
-
               svg {
-                color: $darkestGrey !important;
+                color: $darkerGrey !important;
                 position: relative;
                 top: -1px !important;
               }

@@ -58,7 +58,7 @@
           top: -5px;
           svg {
             transform: scale(1);
-            color: $lightDarkGrey;
+            color: $darkerGrey;
           }
         }
         &.active {
@@ -83,7 +83,7 @@
             transform: scale(1);
             bottom: unset;
             right: unset;
-            color: $lightDarkGrey;
+            color: $darkerGrey;
           }
         }
       }

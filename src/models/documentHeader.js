@@ -4,10 +4,11 @@ var DocumentHeader;
 import Manager from "../managers/manager";
 
 DocumentHeader = class DocumentHeader {
-  constructor(id = Manager.GetUid(), headerText = '', ownerKey = '') {
-    this.id = id;
-    this.headerText = headerText;
-    this.ownerKey = ownerKey;
+  constructor(options = {}) {
+    var ref, ref1;
+    this.id = Manager.GetUid();
+    this.headerText = (ref = options != null ? options.headerText : void 0) != null ? ref : '';
+    this.ownerKey = (ref1 = options != null ? options.ownerKey : void 0) != null ? ref1 : '';
   }
 
 };

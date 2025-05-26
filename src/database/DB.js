@@ -124,7 +124,8 @@ const DB = {
       } else {
         tableData = [newData]
       }
-      await set(child(dbRef, path), tableData)
+
+      await set(child(dbRef, path), DatasetManager.GetValidArray(tableData))
     } catch (error) {
       console.log(error.message)
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)

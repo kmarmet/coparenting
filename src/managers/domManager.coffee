@@ -178,6 +178,9 @@ DomManager = {
           if Manager.IsValid(box)
             box.classList.add('active')
 
+  CheckIfElementIsTag: (element, tag) ->
+    return element.target.tagName == tag
+
   HandleCheckboxSelection: (element, onCheck, onCheckRemoval, canSelectAll = false) ->
     clickedEl = element
     checkboxes = clickedEl.parentNode
@@ -190,10 +193,16 @@ DomManager = {
 
       # UNCHECK OTHERS
       unless canSelectAll
-        for wrapper in checkboxWrappers
-          thisLabel = wrapper.dataset.label
-          if thisLabel isnt label
-            wrapper.classList.remove('active')
+        if Manager.IsValid(checkboxWrappers)
+          for wrapper in checkboxWrappers
+            thisLabel = wrapper.dataset.label
+            checkmark = wrapper.querySelector('.checkmark')
+
+            if Manager.IsValid(checkmark)
+              checkmark.classList.remove('active')
+
+            if thisLabel isnt label
+              wrapper.classList.remove('active')
 
       # CHECK
       if onCheck? then onCheck(label)
@@ -276,7 +285,7 @@ DomManager = {
     return DatasetManager.GetValidArray(checkboxGroup)
 
   setDefaultView: () ->
-    activeModal = document.querySelector('#form-wrapper.active')
+    activeModal = document.querySelector('.form-wrapper.active')
     if activeModal
       allViews = activeModal.querySelectorAll('.view')
       if Manager.IsValid(allViews[0])

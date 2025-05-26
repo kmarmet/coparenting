@@ -14,7 +14,7 @@ import AlertManager from '../../../managers/alertManager'
 import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 import VisitationManager from '../../../managers/visitationManager'
-import CalendarEvent from '../../../models/calendarEvent'
+import CalendarEvent from '../../../models/new/calendarEvent'
 import Label from '../../shared/label'
 import Spacer from '../../shared/spacer'
 

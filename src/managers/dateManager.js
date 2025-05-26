@@ -1,10 +1,10 @@
 import moment from 'moment-timezone'
 import DatetimeFormats from '../constants/datetimeFormats'
+import ModelNames from '../constants/modelNames'
 import DB from '../database/DB'
 import DatasetManager from '../managers/datasetManager.coffee'
 import Manager from '../managers/manager'
-import CalendarEvent from '../models/calendarEvent'
-import ModelNames from '../models/modelNames'
+import CalendarEvent from '../models/new/calendarEvent'
 import CalendarManager from './calendarManager.js'
 import ObjectManager from './objectManager'
 import StringManager from './stringManager'
@@ -80,7 +80,7 @@ const DateManager = {
       return DatetimeFormats.timeForDb
     }
     if (date.indexOf('/') > -1 && date.indexOf(':') > -1) {
-      return DatetimeFormats.fullDatetime
+      return DatetimeFormats.timestamp
     }
     if (date.indexOf('-') > -1) {
       return DatetimeFormats.jsDate

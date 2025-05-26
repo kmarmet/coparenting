@@ -10,6 +10,7 @@ import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
 import useChat from '../../../hooks/useChat'
+import useCoparents from '../../../hooks/useCoparents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import EmailManager from '../../../managers/emailManager'
 import NavBar from '../../navBar'
@@ -30,6 +31,7 @@ const Chats = () => {
   const [inviteeEmail, setInviteeEmail] = useState('')
   const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {chats} = useChat()
+  const {coparents} = useCoparents()
 
   return (
     <>
@@ -85,9 +87,8 @@ const Chats = () => {
             </AccordionSummary>
             <AccordionDetails>
               <p>
-                Currently, your account is linked to {currentUser?.coparents?.length}{' '}
-                {currentUser?.coparents?.length > 1 ? 'co-parents' : 'co-parent'}. If you wish to communicate with another co-parent, feel free to
-                Send them an invitation.
+                Currently, your account is linked to {coparents?.length} {coparents?.length > 1 ? 'co-parents' : 'co-parent'}. If you wish to
+                communicate with another co-parent, feel free to Send them an invitation.
               </p>
 
               <button
@@ -101,7 +102,6 @@ const Chats = () => {
               </button>
             </AccordionDetails>
           </Accordion>
-          <Spacer height={8} />
           {/* CHAT ROWS */}
           {chats?.length > 0 &&
             chats?.map((chat, index) => {

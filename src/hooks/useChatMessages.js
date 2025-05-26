@@ -11,8 +11,6 @@ const useChatMessages = (chatId) => {
   const queryKey = ['realtime', path]
   const [chatMessages, setChatMessages] = useState([])
 
-  // Get current user and set path
-
   useEffect(() => {
     const database = getDatabase()
     const dataRef = ref(database, path)

@@ -3,6 +3,8 @@ import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
+import ActivityCategory from '/src/constants/activityCategory'
+import ModelNames from '/src/constants/modelNames'
 import SwapDurations from '/src/constants/swapDurations.js'
 import DB from '/src/database/DB'
 import AlertManager from '/src/managers/alertManager'
@@ -11,11 +13,8 @@ import Manager from '/src/managers/manager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
 import UpdateManager from '/src/managers/updateManager'
-import ActivityCategory from '/src/models/activityCategory'
-import ModelNames from '/src/models/modelNames'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {IoAdd} from 'react-icons/io5'
 import {PiCheckBold, PiSwapDuotone} from 'react-icons/pi'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
@@ -25,6 +24,7 @@ import useCurrentUser from '../../hooks/useCurrentUser'
 import useSwapRequests from '../../hooks/useSwapRequests'
 import NavBar from '../navBar'
 import DetailBlock from '../shared/detailBlock'
+import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer'
 import ToggleButton from '../shared/toggleButton'
 import ViewSelector from '../shared/viewSelector'
@@ -69,7 +69,7 @@ export default function SwapRequests() {
     updatedRequest.startDate = startDate
     updatedRequest.requestedResponseDate = requestedResponseDate
     updatedRequest.children = requestChildren
-    updatedRequest.requestReason = requestReason
+    updatedRequest.reason = requestReason
 
     if (Manager.IsValid(requestedResponseDate)) {
       updatedRequest.requestedResponseDate = moment(requestedResponseDate).format(DatetimeFormats.dateForDb)
@@ -82,8 +82,7 @@ export default function SwapRequests() {
   }
 
   const SelectDecision = async (decision) => {
-    const recipient = coparents?.find((x) => x.userKey === activeRequest.recipientKey)
-    const recipientName = recipient?.name
+    const recipientName = activeRequest?.recipient?.name
     // Rejected
     if (decision === Decisions.declined) {
       activeRequest.status = 'declined'
@@ -113,7 +112,7 @@ export default function SwapRequests() {
   }
 
   const SetDefaults = () => {
-    setRequestReason(activeRequest?.requestReason)
+    setRequestReason(activeRequest?.reason)
     setRequestChildren(activeRequest?.children)
     setSwapDuration(activeRequest?.duration)
     setStartDate(activeRequest?.startDate)
@@ -235,9 +234,9 @@ export default function SwapRequests() {
               />
               {/* Sent to */}
               <DetailBlock
-                text={activeRequest?.recipientName === currentUser?.name ? 'Me' : activeRequest?.recipientName}
+                text={activeRequest?.recipient?.name === currentUser?.name ? 'Me' : activeRequest?.recipient?.name}
                 title={'Sent To'}
-                valueToValidate={activeRequest?.recipientName}
+                valueToValidate={activeRequest?.recipient?.name}
               />
 
               {/* Start time */}
@@ -263,11 +262,11 @@ export default function SwapRequests() {
 
               {/*  Reason */}
               <DetailBlock
-                text={activeRequest?.requestReason}
+                text={activeRequest?.reason}
                 isFullWidth={true}
                 classes="long-text"
                 title={'Reason'}
-                valueToValidate={activeRequest?.requestReason}
+                valueToValidate={activeRequest?.reason}
               />
             </div>
           </div>
@@ -358,75 +357,77 @@ export default function SwapRequests() {
       </Form>
 
       {/* PAGE CONTAINER */}
-      <div id="swap-requests" className={`${theme} page-container form`}>
+      <div id="swap-requests" className={`${theme} page-container`}>
+        <ScreenHeader
+          title={'Swap Requests'}
+          screenDescription="A request for your child(ren) to remain with you during the designated visitation time of your co-parent"
+        />
         {swapRequests?.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
-        <p className="screen-title">Swap Requests </p>
-        {!DomManager.isMobile() && <IoAdd id={'Add-new-button'} className={'swap-requests'} onClick={() => setShowCard(true)} />}
-        <p className="text-screen-intro">A request for your child(ren) to remain with you during the designated visitation time of your co-parent.</p>
         <Spacer height={15} />
+        <div className="screen-content">
+          {/* LOOP REQUESTS */}
+          <div id="swap-requests-container">
+            {Manager.IsValid(swapRequests) &&
+              swapRequests?.map((request, index) => {
+                return (
+                  <div onClick={() => SetCurrentRequest(request)} key={index} className="row">
+                    {/* REQUEST DATE */}
+                    <div id="primary-icon-wrapper" className="mr-10">
+                      <PiSwapDuotone id={'primary-row-icon'} />
+                    </div>
 
-        {/* LOOP REQUESTS */}
-        <div id="swap-requests-container">
-          {Manager.IsValid(swapRequests) &&
-            swapRequests?.map((request, index) => {
-              return (
-                <div onClick={() => SetCurrentRequest(request)} key={index} className="row">
-                  {/* REQUEST DATE */}
-                  <div id="primary-icon-wrapper" className="mr-10">
-                    <PiSwapDuotone id={'primary-row-icon'} />
-                  </div>
-
-                  {/* CONTENT */}
-                  <div id="content" className={`${request?.requestReason?.length > 20 ? 'long-text' : ''}`}>
-                    {/* MULTIPLE */}
-                    {request?.duration === SwapDurations.multiple && (
-                      <div className="flex">
-                        <p id="title">
-                          {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)} to{' '}
-                          {moment(request?.endDate).format(DatetimeFormats.readableMonthAndDay)}
-                          {request?.ownerName === currentUser?.name && <span>Sent to {request?.recipientName}</span>}
-                          {request?.ownerName !== currentUser?.name && <span>from {request?.ownerName}</span>}
-                        </p>
-                        <span className={`${request?.status} status`} id="request-status">
-                          {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
-                        </span>
-                      </div>
-                    )}
-                    {/* SINGLE */}
-                    <div className="flex">
-                      {request?.duration === SwapDurations.single && (
-                        <>
-                          <p id="title" className="row-title">
-                            {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)}
-                            {request?.ownerName === currentUser?.name && <span>Sent to {request?.recipientName}</span>}
+                    {/* CONTENT */}
+                    <div id="content" className={`${request?.reason?.length > 20 ? 'long-text' : ''}`}>
+                      {/* MULTIPLE */}
+                      {request?.duration === SwapDurations.multiple && (
+                        <div className="flex">
+                          <p id="title">
+                            {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)} to{' '}
+                            {moment(request?.endDate).format(DatetimeFormats.readableMonthAndDay)}
+                            {request?.ownerName === currentUser?.name && <span>Sent to {request?.recipient?.name}</span>}
                             {request?.ownerName !== currentUser?.name && <span>from {request?.ownerName}</span>}
                           </p>
                           <span className={`${request?.status} status`} id="request-status">
                             {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
                           </span>
-                        </>
+                        </div>
                       )}
-                      {/* HOURS */}
+                      {/* SINGLE */}
+                      <div className="flex">
+                        {request?.duration === SwapDurations.single && (
+                          <>
+                            <p id="title" className="row-title">
+                              {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)}
+                              {request?.ownerName === currentUser?.name && <span>Sent to {request?.recipient?.name}</span>}
+                              {request?.ownerName !== currentUser?.name && <span>from {request?.ownerName}</span>}
+                            </p>
+                            <span className={`${request?.status} status`} id="request-status">
+                              {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
+                            </span>
+                          </>
+                        )}
+                        {/* HOURS */}
+                        {request?.duration === SwapDurations.intra && (
+                          <>
+                            <p id="title" className="row-title">
+                              {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)}
+                            </p>
+                            <span className={`${request?.status} status`} id="request-status">
+                              {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
+                            </span>
+                          </>
+                        )}
+                      </div>
                       {request?.duration === SwapDurations.intra && (
-                        <>
-                          <p id="title" className="row-title">
-                            {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)}
-                          </p>
-                          <span className={`${request?.status} status`} id="request-status">
-                            {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
-                          </span>
-                        </>
+                        <p id="subtitle">
+                          {request?.fromHour.replace(' ', '')} to {request?.toHour.replace(' ', '')}
+                        </p>
                       )}
                     </div>
-                    {request?.duration === SwapDurations.intra && (
-                      <p id="subtitle">
-                        {request?.fromHour.replace(' ', '')} to {request?.toHour.replace(' ', '')}
-                      </p>
-                    )}
                   </div>
-                </div>
-              )
-            })}
+                )
+              })}
+          </div>
         </div>
       </div>
       <NavBar />

@@ -3,7 +3,9 @@ import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import Map from '/src/components/shared/map.jsx'
 import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
+import ActivityCategory from '/src/constants/activityCategory'
 import DatetimeFormats from '/src/constants/datetimeFormats'
+import ModelNames from '/src/constants/modelNames'
 import DB from '/src/database/DB'
 import AlertManager from '/src/managers/alertManager'
 import DomManager from '/src/managers/domManager'
@@ -11,14 +13,12 @@ import Manager from '/src/managers/manager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
 import UpdateManager from '/src/managers/updateManager.js'
-import ActivityCategory from '/src/models/activityCategory'
-import ModelNames from '/src/models/modelNames'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {setKey} from 'react-geocode'
-import {IoAdd} from 'react-icons/io5'
 import {MdPersonPinCircle} from 'react-icons/md'
-import {PiCarProfileDuotone, PiCheckBold} from 'react-icons/pi'
+import {PiCarProfileDuotone} from 'react-icons/pi'
+import ButtonTypes from '../../constants/buttonTypes'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context.js'
 import useCoparents from '../../hooks/useCoparents'
@@ -26,8 +26,10 @@ import useCurrentUser from '../../hooks/useCurrentUser'
 import useTransferRequests from '../../hooks/useTransferRequests'
 import NavBar from '../navBar'
 import AddressInput from '../shared/addressInput'
+import CardButton from '../shared/cardButton'
 import DetailBlock from '../shared/detailBlock'
 import Label from '../shared/label.jsx'
+import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer.jsx'
 import ToggleButton from '../shared/toggleButton'
 import ViewSelector from '../shared/viewSelector'
@@ -101,7 +103,7 @@ export default function TransferRequests() {
   }
 
   const SelectDecision = async (decision) => {
-    const recipient = coparents?.find((x) => x.userKey === activeRequest?.recipientKey)
+    const recipient = coparents?.find((x) => x.userKey === activeRequest?.recipient?.key)
     const recipientName = recipient?.name
     // Rejected
     if (decision === Decisions.declined) {
@@ -133,8 +135,9 @@ export default function TransferRequests() {
     if (!sendWithAddress) {
       notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
     }
-    const recipientKey = activeRequest?.ownerKey === currentUser?.key ? activeRequest.recipientKey : currentUser?.key
-    await UpdateManager.SendUpdate('Transfer Destination Arrival', notificationMessage, recipientKey, currentUser, ActivityCategory.expenses)
+    const recipient = coparents.find((x) => x.key === activeRequest?.recipient?.key)
+
+    await UpdateManager.SendUpdate('Transfer Destination Arrival', notificationMessage, recipient?.key, currentUser, ActivityCategory.expenses)
     setState({...state, successAlertMessage: 'Arrival Notification Sent'})
   }
 
@@ -142,7 +145,7 @@ export default function TransferRequests() {
     if (key === currentUser?.key) {
       return 'Me'
     } else {
-      return currentUser?.coparents.find((c) => c.userKey === key)?.name
+      return coparents.find((c) => c.userKey === key)?.name
     }
   }
 
@@ -182,16 +185,41 @@ export default function TransferRequests() {
         hasDelete={activeRequest?.ownerKey === currentUser?.key && view === 'edit'}
         hasSubmitButton={activeRequest?.ownerKey !== currentUser?.key}
         onSubmit={() => SelectDecision(Decisions.approved)}
-        wrapperClass="transfer-change"
-        submitIcon={<PiCheckBold />}
-        viewSelector={<ViewSelector labels={['details', 'edit']} updateState={(e) => setView(e)} />}
+        wrapperClass="transfer-change form at-top"
+        viewSelector={<ViewSelector labels={['Details', 'Edit']} updateState={(e) => setView(e)} />}
+        thirdButtonText="Decline"
         className="transfer-change"
+        extraButtons={[
+          <CardButton buttonType={ButtonTypes.green} key={Manager.GetUid()} onClick={Update} text={'Update'} />,
+          <CardButton
+            onClick={() => {
+              AlertManager.inputAlert(
+                'Reason for Declining Request',
+                'Please enter the reason for declining this request',
+                (e) => {
+                  if (e.value.length === 0) {
+                    AlertManager.throwError('Reason for declining is required')
+                    return false
+                  } else {
+                    SelectDecision(Decisions.declined).then(ResetForm)
+                    setDeclineReason(e.value)
+                  }
+                },
+                true,
+                true,
+                'textarea'
+              )
+            }}
+            text="Decline"
+            buttonType={ButtonTypes.red}
+            key={Manager.GetUid()}
+          />,
+        ]}
+        hasThirdButton={true}
         onClose={ResetForm}
         showCard={showDetails}>
         <div id="details" className={`content ${activeRequest?.requestReason?.length > 20 ? 'long-text' : ''}`}>
-          <Spacer height={8} />
-
-          {view === 'details' && (
+          {view.toLowerCase() === 'details' && (
             <>
               {/* BLOCKS */}
               <div className="blocks">
@@ -233,7 +261,7 @@ export default function TransferRequests() {
 
                 {/* FROM/TO */}
                 <DetailBlock title={'From'} valueToValidate={'From'} text={GetFromOrToName(activeRequest?.ownerKey)} />
-                <DetailBlock title={'To'} valueToValidate={'To'} text={GetFromOrToName(activeRequest?.recipientKey)} />
+                <DetailBlock title={'To'} valueToValidate={'To'} text={GetFromOrToName(activeRequest?.recipient?.key)} />
 
                 {/* REASON */}
                 <DetailBlock
@@ -242,8 +270,6 @@ export default function TransferRequests() {
                   isFullWidth={true}
                   title={'Reason for Request'}
                 />
-
-                {/* BUTTONS */}
 
                 {/*  Location */}
                 <DetailBlock
@@ -266,7 +292,7 @@ export default function TransferRequests() {
 
               {/*  SEND WITH ADDRESS */}
               <div className="flex send-with-address-toggle">
-                <Label text={'Include Address in Arrival Notification'} />
+                <Label text={'Include Address in Notification'} classes="toggle " />
                 <ToggleButton onCheck={() => setSendWithAddress(!sendWithAddress)} toggleState={sendWithAddress} />
               </div>
 
@@ -275,13 +301,13 @@ export default function TransferRequests() {
             </>
           )}
 
-          {view === 'edit' && (
+          {view.toLowerCase() === 'edit' && (
             <>
               {/* DATE */}
               <InputWrapper
                 defaultValue={moment(activeRequest?.startDate)}
                 inputType={InputTypes.date}
-                placeholder={'Date'}
+                labelText={'Date'}
                 uidClass="transfer-request-date"
                 onDateOrTimeSelection={(e) => setRequestDate(moment(e).format(DatetimeFormats.dateForDb))}
               />
@@ -291,7 +317,7 @@ export default function TransferRequests() {
                 defaultValue={activeRequest?.time}
                 inputType={InputTypes.time}
                 uidClass="transfer-request-time"
-                placeholder={'Time'}
+                labelText={'Transfer Time'}
                 onDateOrTimeSelection={(e) => setRequestTime(moment(e).format(DatetimeFormats.timeForDb))}
               />
 
@@ -304,7 +330,7 @@ export default function TransferRequests() {
                 onDateOrTimeSelection={(e) => setResponseDueDate(moment(e).format(DatetimeFormats.dateForDb))}
                 inputType={InputTypes.date}
                 uidClass="transfer-request-response-date"
-                placeholder={'Requested Response Date'}
+                labelText={'Requested Response Date'}
               />
 
               {/* REASON */}
@@ -316,92 +342,60 @@ export default function TransferRequests() {
                   placeholder={'Reason for Request'}
                 />
               )}
-
-              {/* BUTTONS */}
-              <div className="card-buttons">
-                <button className="button default grey center" data-request-id={activeRequest?.id} onClick={Update}>
-                  Update Request
-                </button>
-                {activeRequest?.ownerKey !== currentUser?.key && (
-                  <button
-                    className="button default red center"
-                    data-request-id={activeRequest?.id}
-                    onClick={() => {
-                      AlertManager.inputAlert(
-                        'Reason for Declining Request',
-                        'Please enter the reason for declining this request',
-                        (e) => {
-                          if (e.value.length === 0) {
-                            AlertManager.throwError('Reason for declining is required')
-                            return false
-                          } else {
-                            SelectDecision(Decisions.declined).then(ResetForm)
-                            setDeclineReason(e.value)
-                          }
-                        },
-                        true,
-                        true,
-                        'textarea'
-                      )
-                    }}>
-                    Decline Request
-                  </button>
-                )}
-              </div>
             </>
           )}
         </div>
       </Form>
 
-      <div id="transfer-requests-container" className={`${theme} page-container form`}>
+      <div id="transfer-requests-container" className={`${theme} page-container`}>
         {transferRequests?.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
 
-        <div className="flex" id="screen-title-wrapper">
-          <p className="screen-title">Transfer Change Requests</p>
-          {!DomManager.isMobile() && <IoAdd id={'Add-new-button'} onClick={() => setShowNewRequestCard(true)} />}
-        </div>
-        <p className="text-screen-intro">A proposal to modify the time and/or location for the child exchange on a designated day.</p>
+        <ScreenHeader
+          title={'Transfer Change Requests'}
+          screenDescription="A proposal to modify the time and/or location for the child exchange on a designated day"
+        />
         <Spacer height={10} />
-
-        {/* LOOP REQUESTS */}
-        {!showNewRequestCard && (
-          <div id="all-transfer-requests-container">
-            {Manager.IsValid(transferRequests) &&
-              transferRequests?.map((request, index) => {
-                return (
-                  <div
-                    key={index}
-                    className="flex row"
-                    onClick={() => {
-                      setActiveRequest(request)
-                      setShowDetails(true)
-                    }}>
-                    <div id="primary-icon-wrapper">
-                      <PiCarProfileDuotone id={'primary-row-icon'} />
-                    </div>
-                    <div data-request-id={request.id} className="request " id="content">
-                      {/* DATE */}
-                      <p id="title" className="flex date row-title">
-                        {moment(request.startDate).format(DatetimeFormats.readableMonthAndDay)}
-                        <span className={`${request.status} status`} id="request-status">
-                          {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
-                        </span>
-                      </p>
-                      {request?.recipientKey === currentUser?.key && (
-                        <p id="subtitle">from {currentUser?.coparents.find((x) => x.key === request.ownerKey)?.name}</p>
-                      )}
-                      {request?.recipientKey !== currentUser?.key && (
-                        <p id="subtitle">
-                          to&nbsp;
-                          {StringManager.GetFirstNameOnly(currentUser?.coparents?.find((x) => x?.userKey === request?.recipientKey)?.name)}
+        <div className="screen-content">
+          {/* LOOP REQUESTS */}
+          {!showNewRequestCard && (
+            <div id="all-transfer-requests-container">
+              {Manager.IsValid(transferRequests) &&
+                transferRequests?.map((request, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="flex row"
+                      onClick={() => {
+                        setActiveRequest(request)
+                        setShowDetails(true)
+                      }}>
+                      <div id="primary-icon-wrapper">
+                        <PiCarProfileDuotone id={'primary-row-icon'} />
+                      </div>
+                      <div data-request-id={request.id} className="request " id="content">
+                        {/* DATE */}
+                        <p id="title" className="flex date row-title">
+                          {moment(request.startDate).format(DatetimeFormats.readableMonthAndDay)}
+                          <span className={`${request.status} status`} id="request-status">
+                            {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
+                          </span>
                         </p>
-                      )}
+                        {request?.recipient?.key === currentUser?.key && (
+                          <p id="subtitle">from {coparents.find((x) => x.key === request.ownerKey)?.name}</p>
+                        )}
+                        {request?.recipient?.key !== currentUser?.key && (
+                          <p id="subtitle">
+                            to&nbsp;
+                            {StringManager.GetFirstNameOnly(coparents?.find((x) => x?.userKey === request?.recipient?.key)?.name)}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
-          </div>
-        )}
+                  )
+                })}
+            </div>
+          )}
+        </div>
         <NavBar />
       </div>
     </>

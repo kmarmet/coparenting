@@ -152,6 +152,7 @@
         }
       }
     }
+
     #image-name {
       text-align: right;
       font-size: 14px;
@@ -206,16 +207,7 @@
         @include row;
         @include hover;
         opacity: 0;
-        .checkbox {
-          @include extraClickableSpace;
-          position: relative;
-          &:after {
-            top: -10px;
-            left: auto;
-            right: -10px;
-            transform: none;
-          }
-        }
+        margin-bottom: 8px;
 
         .doc-type {
           width: 100%;
@@ -231,10 +223,19 @@
         }
 
         .section {
-          justify-content: flex-start;
-          height: auto;
           width: 100%;
-          align-items: center;
+          .svg-wrapper {
+            padding: 5px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: $borderRadius;
+            svg {
+              height: 16px;
+              width: 16px;
+              color: $bootstrapRed;
+            }
+          }
 
           &.flex {
             justify-content: space-between;
@@ -271,34 +272,24 @@
 
           p {
             line-height: 1;
-            margin: 0;
-            padding: 0;
             display: flex;
             align-items: center;
             font-size: 18px;
-            opacity: 0.8;
-            font-weight: $fwMedium;
+            font-weight: $fwLight;
+            justify-content: flex-start;
+            height: auto;
+            width: 100%;
+            background: white;
+            border-radius: $bigBorderRadius;
+            padding: 12px 10px;
+            border: 1px solid $greyBorderColor;
+            @include ellipsis;
             @include hoverBlue;
-          }
 
-          svg {
-            font-size: 22px;
-            margin-right: 10px;
-            color: $main;
-          }
-
-          .checkbox {
-            &.delete {
-              .close-x {
-                color: $darkerGrey;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-size: 18px;
-                margin: 0;
-                padding: 0;
-                line-height: 1;
-              }
+            svg {
+              color: $blend;
+              margin-right: 5px;
+              @include square(24px);
             }
           }
 

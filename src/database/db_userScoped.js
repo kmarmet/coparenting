@@ -6,11 +6,11 @@ import {child, get, getDatabase, push, ref, remove, set, update} from 'firebase/
 import _ from 'lodash'
 import moment from 'moment'
 import DatetimeFormats from '../constants/datetimeFormats'
+import ModelNames from '../constants/modelNames'
 import AppManager from '../managers/appManager'
 import LogManager from '../managers/logManager'
 import Manager from '../managers/manager'
-import ModelNames from '../models/modelNames'
-import User from '../models/user'
+import User from '../models/users/user'
 import DB from './DB'
 import FirebaseStorage from './firebaseStorage'
 

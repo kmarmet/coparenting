@@ -105,43 +105,46 @@ export default function Behavior({activeChild}) {
           </p>
         </AccordionSummary>
         <AccordionDetails>
-          {behaviorValues &&
-            behaviorValues.map((prop, index) => {
-              let infoLabel = StringManager.spaceBetweenWords(prop[0])
-              infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel).replaceAll('OF', ' of ')
-              const value = prop[1]
-              return (
-                <div key={index} id="data-row">
-                  {infoLabel.toLowerCase().includes('phone') && (
-                    <>
-                      <div className="flex input">
-                        <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
-                          {infoLabel}: {value}
-                        </a>
-                      </div>
-                      <Spacer height={5} />
-                      <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
-                    </>
-                  )}
-                  {!infoLabel.toLowerCase().includes('phone') && (
-                    <>
-                      <InputWrapper
-                        hasBottomSpacer={false}
-                        customDebounceDelay={1200}
-                        inputType={InputTypes.text}
-                        defaultValue={value}
-                        placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
-                        onChange={async (e) => {
-                          const inputValue = e.target.value
-                          await Update(infoLabel, `${inputValue}`)
-                        }}
-                      />
-                      <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
-                    </>
-                  )}
-                </div>
-              )
-            })}
+          <div className="gradient padding">
+            {behaviorValues &&
+              behaviorValues.map((prop, index) => {
+                let infoLabel = StringManager.spaceBetweenWords(prop[0])
+                infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel).replaceAll('OF', ' of ')
+                const value = prop[1]
+                return (
+                  <div key={index} className="data-row">
+                    {infoLabel.toLowerCase().includes('phone') && (
+                      <>
+                        <div className="flex input">
+                          <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
+                            {infoLabel}: {value}
+                          </a>
+                        </div>
+                        <Spacer height={5} />
+                        <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
+                      </>
+                    )}
+                    {!infoLabel.toLowerCase().includes('phone') && (
+                      <>
+                        <InputWrapper
+                          wrapperClasses={`${index === behaviorValues.length - 2 ? 'last' : ''}`}
+                          hasBottomSpacer={false}
+                          customDebounceDelay={1200}
+                          inputType={InputTypes.text}
+                          defaultValue={value}
+                          placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
+                          onChange={async (e) => {
+                            const inputValue = e.target.value
+                            await Update(infoLabel, `${inputValue}`)
+                          }}
+                        />
+                        <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
+                      </>
+                    )}
+                  </div>
+                )
+              })}
+          </div>
         </AccordionDetails>
       </Accordion>
     </div>

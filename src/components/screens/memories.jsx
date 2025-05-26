@@ -114,7 +114,7 @@ export default function Memories() {
                       setActiveImgIndex(index)
                       setShowSlideshow(true)
                     }}>
-                    {Manager.IsValid(imgObj?.title, true) && <p className="memory-title">{StringManager.FormatTitle(imgObj?.title, true)}</p>}
+                    {Manager.IsValid(imgObj?.name, true) && <p className="memory-title">{StringManager.FormatTitle(imgObj?.name, true)}</p>}
                     <div
                       style={{backgroundImage: `url(${imgObj?.url})`}}
                       className="memory-image"
@@ -129,7 +129,7 @@ export default function Memories() {
                       DELETE
                     </p>
                     {/* DOWNLOAD BUTTON */}
-                    <p onClick={(e) => SaveMemoryImage(imgObj?.url)} id="download-text">
+                    <p onClick={() => SaveMemoryImage(imgObj?.url)} id="download-text">
                       DOWNLOAD
                     </p>
                   </div>

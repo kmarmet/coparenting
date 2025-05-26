@@ -53,6 +53,8 @@ function General({activeChild}) {
         values = [...values, ...sharedValues]
       }
       const valuesArr = values.filter((x) => x[1]?.length === 0)?.map((x) => x[1])
+
+      console.log('valuesArr', values)
       if (valuesArr.length === values.length) {
         setGeneralValues([])
       } else {
@@ -77,7 +79,7 @@ function General({activeChild}) {
   }, [activeChild, sharedChildInfo])
 
   return (
-    <div className="info-section section general form" key={refreshKey}>
+    <div className="info-section section general" key={refreshKey}>
       {Manager.IsValid(currentUser) && Manager.IsValid(currentUser?.key) && Manager.IsValid(activeChild) && (
         <Accordion className={`${theme} child-info`} expanded={showInputs}>
           <AccordionSummary
@@ -91,43 +93,48 @@ function General({activeChild}) {
             </p>
           </AccordionSummary>
           <AccordionDetails>
-            {Manager.IsValid(generalValues) &&
-              generalValues.map((prop, index) => {
-                let infoLabel = StringManager.spaceBetweenWords(prop[0])
-                const value = prop[1]
-                const toSkip = ['profilePic']
-
-                return (
-                  <div key={index} className={`${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''}`} id="data-row">
-                    {!toSkip.includes(prop[0]) && (
-                      <>
-                        {Manager.Contains(infoLabel.toLowerCase(), 'address') && (
-                          <AddressInput
-                            labelText="Home Address"
-                            onChange={(address) => Update(infoLabel, address)}
-                            defaultValue={activeChild?.general?.address}
-                          />
-                        )}
-                        {!Manager.Contains(infoLabel.toLowerCase(), 'address') && (
-                          <>
-                            <InputWrapper
-                              hasBottomSpacer={false}
-                              inputType={InputTypes.text}
-                              placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
-                              defaultValue={value}
-                              onChange={async (e) => {
-                                const inputValue = e.target.value
-                                await Update(infoLabel, inputValue)
-                              }}
+            <div className="gradient padding">
+              {Manager.IsValid(generalValues) &&
+                generalValues.map((prop, index) => {
+                  let infoLabel = StringManager.spaceBetweenWords(prop[0])
+                  const value = prop[1]
+                  const toSkip = ['profilePic']
+                  console.log(index, generalValues.length)
+                  return (
+                    <div
+                      key={index}
+                      className={`data-row ${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''} ${toSkip.includes(prop[0]) ? 'invalid' : ''} ${index === generalValues.length - 1 && !toSkip.includes(prop[0]) ? 'last' : ''}`}>
+                      {!toSkip.includes(prop[0]) && (
+                        <>
+                          {Manager.Contains(infoLabel.toLowerCase(), 'address') && (
+                            <AddressInput
+                              labelText="Home Address"
+                              onChange={(address) => Update(infoLabel, address)}
+                              defaultValue={activeChild?.general?.address}
                             />
-                            {infoLabel.toLowerCase() !== 'name' && <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />}
-                          </>
-                        )}
-                      </>
-                    )}
-                  </div>
-                )
-              })}
+                          )}
+                          {!Manager.Contains(infoLabel.toLowerCase(), 'address') && (
+                            <>
+                              <InputWrapper
+                                wrapperClasses={`${index === generalValues.length - 2 ? 'last' : ''}`}
+                                hasBottomSpacer={false}
+                                inputType={InputTypes.text}
+                                placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
+                                defaultValue={value}
+                                onChange={async (e) => {
+                                  const inputValue = e.target.value
+                                  await Update(infoLabel, inputValue)
+                                }}
+                              />
+                              {infoLabel.toLowerCase() !== 'name' && <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />}
+                            </>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  )
+                })}
+            </div>
           </AccordionDetails>
         </Accordion>
       )}

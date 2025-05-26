@@ -1,7 +1,7 @@
 // Path: src\components\screens\childInfo\addOrUpdateTransferChecklists.jsx
 import DB from '/src/database/DB'
 import Manager from '/src/managers/manager'
-import Checklist from '/src/models/checklist.js'
+import Checklist from '/src/models/new/checklist.js'
 import React, {useContext, useEffect, useState} from 'react'
 import {CgMathPlus} from 'react-icons/cg'
 import globalState from '../../../context'

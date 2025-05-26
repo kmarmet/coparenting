@@ -3,7 +3,9 @@ import CheckboxGroup from '/src/components/shared/checkboxGroup'
 import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
+import ActivityCategory from '/src/constants/activityCategory'
 import DatetimeFormats from '/src/constants/datetimeFormats'
+import ModelNames from '/src/constants/modelNames'
 import SwapDurations from '/src/constants/swapDurations'
 import DB from '/src/database/DB'
 import AlertManager from '/src/managers/alertManager'
@@ -11,9 +13,7 @@ import Manager from '/src/managers/manager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
 import UpdateManager from '/src/managers/updateManager'
-import ActivityCategory from '/src/models/activityCategory'
-import ModelNames from '/src/models/modelNames'
-import SwapRequest from '/src/models/swapRequest'
+import SwapRequest from '/src/models/new/swapRequest'
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
 import creationForms from '../../constants/creationForms'
@@ -112,16 +112,18 @@ export default function NewSwapRequest() {
     newRequest.children = requestChildren
     newRequest.startDate = startDate
     newRequest.endDate = endDate
-    newRequest.requestReason = requestReason
+    newRequest.reason = requestReason
     newRequest.duration = swapDuration
     newRequest.ownerName = currentUser?.name
     newRequest.fromHour = requestFromHour
     newRequest.requestedResponseDate = requestedResponseDate
-    newRequest.recipientName = recipientName
+    newRequest.recipient = {
+      key: recipientKey,
+      name: recipientName,
+    }
     newRequest.toHour = requestToHour
     newRequest.ownerKey = currentUser?.key
     newRequest.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
-    newRequest.recipientKey = recipientKey
 
     const cleanObject = ObjectManager.GetModelValidatedObject(newRequest, ModelNames.swapRequest)
 
