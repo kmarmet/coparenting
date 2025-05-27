@@ -102,7 +102,6 @@ export default function Visitation() {
     if (Manager.IsValid(selectedHolidayDates)) {
       // setShowUpdateHolidaysButton(false)
       let events = []
-      console.log(selectedHolidayDates)
       selectedHolidayDates.forEach((holidayDateString) => {
         const dateObject = new CalendarEvent()
         const holidayName = CalendarMapper.holidayDateToName(moment(holidayDateString).format('MM/DD'))
@@ -115,7 +114,6 @@ export default function Visitation() {
         dateObject.createdBy = currentUser?.name
         dateObject.fromVisitationSchedule = true
         dateObject.isHoliday = true
-        dateObject.id = Manager.GetUid()
         dateObject.shareWith = DatasetManager.getUniqueArray(shareWith, true)
         const cleanedObject = ObjectManager.GetModelValidatedObject(dateObject, ModelNames.calendarEvent)
         events.push(cleanedObject)
@@ -136,7 +134,8 @@ export default function Visitation() {
         const holidayMonth = moment(dataDate).month() + 1
         const currentMonth = moment().month() + 1
         const holidayYear = holidayMonth < currentMonth ? moment().year() + 1 : moment().year()
-        const dateAsString = moment(`${dataDate}/${holidayYear}`, DatetimeFormats.dateForDb).format(DatetimeFormats.dateForDb)
+        const dateAsString = moment(`${dataDate}/${holidayYear}`).format(DatetimeFormats.dateForDb)
+        console.log(dateAsString)
         setSelectedHolidayDates([...selectedHolidayDates, dateAsString])
       },
       (e) => {
@@ -211,7 +210,7 @@ export default function Visitation() {
     })
   }
 
-  const getCurrentVisitationSchedule = async () => {
+  const GetCurrentVisitationSchedule = async () => {
     let scheduleEvents = await VisitationManager.getSchedule(currentUser)
     scheduleEvents = scheduleEvents.filter((x) => x.isHoliday === false)
     if (scheduleEvents.length > 0) {
@@ -222,7 +221,7 @@ export default function Visitation() {
     }
   }
 
-  const removeScheduleTypeActiveClass = () => {
+  const RemoveScheduleTypeActiveClass = () => {
     const checkboxWrapper = document.querySelector('.schedule-type-checkboxes')
     if (Manager.IsValid(checkboxWrapper)) {
       const checkboxes = checkboxWrapper.querySelectorAll('#checkbox-container')
@@ -264,13 +263,13 @@ export default function Visitation() {
     }
 
     if (scheduleType === '') {
-      removeScheduleTypeActiveClass()
+      RemoveScheduleTypeActiveClass()
     }
   }, [scheduleType])
 
   useEffect(() => {
     if (Manager.IsValid(currentUser) && Manager.IsValid(calendarEvents)) {
-      getCurrentVisitationSchedule().then((r) => r)
+      GetCurrentVisitationSchedule().then((r) => r)
       SetAllStates().then((r) => r)
     }
   }, [currentUser, calendarEvents])
@@ -303,7 +302,7 @@ export default function Visitation() {
       </>
 
       {/* PAGE CONTAINER */}
-      <div id="visitation-container" className={`${theme} page-container form`}>
+      <div id="visitation-container" className={`${theme} page-container`}>
         <ScreenHeader
           title={'Visitation'}
           screenName={ScreenNames.visitation}
@@ -373,7 +372,6 @@ export default function Visitation() {
                     {/* SCHEDULE SELECTION */}
                     <div className="section visitation-schedule">
                       <CheckboxGroup
-                        elClass="schedule-type-checkboxes"
                         onCheck={HandleScheduleTypeSelection}
                         skipNameFormatting={true}
                         checkboxArray={DomManager.BuildCheckboxGroup({
@@ -381,6 +379,7 @@ export default function Visitation() {
                           labelType: 'visitation',
                         })}
                       />
+
                     </div>
 
                     {/* DEFAULT TRANSFER LOCATION */}

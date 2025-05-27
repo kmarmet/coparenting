@@ -29,7 +29,7 @@ export default function Checkbox({isActive, text, onCheck, wrapperClass = '', da
       onClick={ToggleActive}>
       <p className="checkbox-text">
         {text}
-        <GiCheckMark className={'checkmark'} />
+        <GiCheckMark className={`${isActive ? 'active' : ''} checkmark`} />
       </p>
     </div>
   )

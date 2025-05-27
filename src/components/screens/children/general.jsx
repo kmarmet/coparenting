@@ -54,7 +54,6 @@ function General({activeChild}) {
       }
       const valuesArr = values.filter((x) => x[1]?.length === 0)?.map((x) => x[1])
 
-      console.log('valuesArr', values)
       if (valuesArr.length === values.length) {
         setGeneralValues([])
       } else {
@@ -98,14 +97,10 @@ function General({activeChild}) {
                 generalValues.map((prop, index) => {
                   let infoLabel = StringManager.spaceBetweenWords(prop[0])
                   const value = prop[1]
-                  const toSkip = ['profilePic']
-                  console.log(index, generalValues.length)
                   return (
                     <div
                       key={index}
-                      className={`data-row ${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''} ${toSkip.includes(prop[0]) ? 'invalid' : ''} ${index === generalValues.length - 1 && !toSkip.includes(prop[0]) ? 'last' : ''}`}>
-                      {!toSkip.includes(prop[0]) && (
-                        <>
+                      className={`data-row ${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''} ${index === generalValues.length - 1  ? 'last' : ''}`}>
                           {Manager.Contains(infoLabel.toLowerCase(), 'address') && (
                             <AddressInput
                               labelText="Home Address"
@@ -129,8 +124,6 @@ function General({activeChild}) {
                               {infoLabel.toLowerCase() !== 'name' && <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />}
                             </>
                           )}
-                        </>
-                      )}
                     </div>
                   )
                 })}

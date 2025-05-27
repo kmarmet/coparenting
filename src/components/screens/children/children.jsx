@@ -29,18 +29,19 @@ import Spacer from '../../shared/spacer'
 import AddOrUpdateTransferChecklists from './addOrUpdateTransferChecklists'
 import Checklist from './checklist'
 import Checklists from './checklists'
+import DB from '../../../database/DB'
 
 export default function Children() {
   const {state, setState} = useContext(globalState)
   const {theme} = state
-  const {currentUser, currentUserIsLoading} = useCurrentUser()
-  const {children, childrenAreLoading} = useChildren()
+  const {currentUser} = useCurrentUser()
+  const {children} = useChildren()
   const [showInfoCard, setShowInfoCard] = useState(false)
   const [showNewChildForm, setShowNewChildForm] = useState(false)
   const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
   const [activeChildId, setActiveChildId] = useState(currentUser?.children?.[0]?.id)
-  const {activeChild, activeChildIsLoading} = useActiveChild(activeChildId)
+  const {activeChild} = useActiveChild(activeChildId)
   const imgRef = useRef()
 
   const UploadProfilePic = async (fromButton = false) => {
@@ -65,12 +66,13 @@ export default function Children() {
     )
 
     // Update Child profilePic
-    await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, 'general', 'profilePic', uploadedImageUrl)
+    const childIndex = DB.GetChildIndex(children, activeChild?.id)
+    await DB_UserScoped.UpdateChild(`${DB.tables.users}/${currentUser?.key}/children/${childIndex}`, uploadedImageUrl)
   }
 
   const DeleteChild = async () => {
     AlertManager.confirmAlert(
-      `Are you sure you want to unlink ${StringManager.GetFirstNameOnly(activeChild?.general?.name)} from your profile?`,
+      `Are you sure you want to remove ${StringManager.GetFirstNameOnly(activeChild?.general?.name)} from your contacts?`,
       `I'm Sure`,
       true,
       async () => {
@@ -233,18 +235,18 @@ export default function Children() {
                   return (
                     <div key={child?.id}>
                       {/* PROFILE PIC */}
-                      {Manager.IsValid(child?.general?.profilePic) && (
+                      {Manager.IsValid(child?.profilePic) && (
                         <div onClick={() => setActiveChildId(child?.id)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
                           <div
                             className="child-image"
-                            style={{backgroundImage: `url(${child?.general?.profilePic})`, transition: 'all .3s linear'}}></div>
+                            style={{backgroundImage: `url(${child?.profilePic})`, transition: 'all .3s linear'}}></div>
                           {/* CHILD NAME */}
                           <span className="child-name">{StringManager.GetFirstNameOnly(child?.general?.name)}</span>
                         </div>
                       )}
 
                       {/* NO IMAGE */}
-                      {!Manager.IsValid(child?.general?.profilePic, true) && (
+                      {!Manager.IsValid(child?.profilePic, true) && (
                         <div onClick={() => setActiveChildId(child?.id)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
                           <div className="child-image no-image">
                             <span>No Image</span>

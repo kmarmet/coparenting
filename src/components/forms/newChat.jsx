@@ -40,6 +40,7 @@ const NewChatSelector = () => {
         'This co-parent may have deactivated their profile, however, you can still view the messages',
         null,
         () => {
+          coparent.key = userCoparent?.userKey
           setState({...state, currentScreen: ScreenNames.chats, messageRecipient: coparent})
         }
       )

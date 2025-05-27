@@ -44,7 +44,6 @@ const NewChildForm = ({hideCard, showCard}) => {
   }
 
   const Submit = async () => {
-    console.log(newChild)
     const errorString = Manager.GetInvalidInputsErrorString([{name: "Child's Name", value: newChild.current.general.name}])
 
     if (Manager.IsValid(errorString, true)) {
@@ -56,8 +55,8 @@ const NewChildForm = ({hideCard, showCard}) => {
       AlertManager.throwError('If the child has an account with us, their email is required')
       return false
     }
-    let _profilePic = newChild.current.general.profilePic
-    newChild.current.general.profilePic = ''
+    let _profilePic = newChild.current.profilePic
+    newChild.current.profilePic = ''
 
     if (childHasAccount) {
       newChild.current.userKey = Manager.GetUid()
@@ -75,7 +74,7 @@ const NewChildForm = ({hideCard, showCard}) => {
 
     // Add profile pic
     if (Manager.IsValid(_profilePic)) {
-      _profilePic = await ImageManager.compressImage(newChild.current.general.profilePic)
+      _profilePic = await ImageManager.compressImage(newChild.current.profilePic)
       if (Manager.IsValid(_profilePic)) {
         await FirebaseStorage.upload(
           FirebaseStorage.directories.profilePics,
@@ -86,7 +85,7 @@ const NewChildForm = ({hideCard, showCard}) => {
           if (!Manager.IsValid(url)) {
             return false
           }
-          newChild.current.general.profilePic = url
+          newChild.current.profilePic = url
         })
       }
     }
@@ -173,7 +172,7 @@ const NewChildForm = ({hideCard, showCard}) => {
             uploadType={'image'}
             actualUploadButtonText={'Upload'}
             getImages={(files) => {
-              newChild.current.general.profilePic = files[0]
+              newChild.current.profilePic = files[0]
             }}
             uploadButtonText={`Choose`}
             upload={() => {}}

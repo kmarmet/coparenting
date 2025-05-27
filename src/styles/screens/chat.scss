@@ -167,12 +167,7 @@
         width: 100%;
         gap: 0 10px;
 
-        svg {
-          color: $darkerGrey;
-          position: relative;
-          top: 3px;
-          @include square(min-content);
-        }
+
       }
 
       .flex {
@@ -231,6 +226,12 @@
           font-size: 14px;
           font-weight: $fwRegular;
           color: $primaryText;
+          svg {
+            color: $darkerGrey;
+            position: relative;
+            top: 5px;
+            @include square(18px);
+          }
         }
 
         .coparent-name {
@@ -444,12 +445,12 @@
       color: $darkGrey;
       font-size: 12px;
       padding-top: 5px;
-      &.from {
+      &.to {
         float: right;
         text-align: right;
         padding-right: 10px;
       }
-      &.to {
+      &.from {
         float: left;
         text-align: left;
         padding-left: 10px;
@@ -511,12 +512,13 @@
 
           &.from {
             z-index: 100;
-            margin-left: auto;
             background-color: $blend;
             color: white;
             display: flex;
             justify-content: space-between;
-            float: right;
+            float: left;
+            margin-right: auto;
+            margin-left: 0;
 
             svg {
               color: white;
@@ -526,10 +528,9 @@
 
           &.to {
             background-color: white;
+            margin-left: auto;
             color: $headerText;
-            margin-right: auto;
-            margin-left: 0;
-            float: left;
+            float: right;
 
             &.message {
               svg {
@@ -689,13 +690,15 @@
 
       #message-input-container {
         width: 100vw;
+        border-radius: $borderRadius;
+        background: white;
+        padding: 0 15px;
         #send-button {
           color: $green;
           font-weight: $fwMediumBold;
           text-align: center;
-          margin-right: 0;
-          margin-left: 20px;
-          border-radius: $buttonBorderRadius;
+          margin-left: 10px;
+          @include square(26px);
 
           &.red {
             color: $red;
@@ -710,8 +713,10 @@
           overflow: auto;
           transition: all 0.3s ease-in-out;
           min-height: 50px;
-          border-radius: $borderRadius;
-          background: white;
+
+          &:focus, &.active {
+            box-shadow: none;
+          }
 
           &::placeholder {
             color: $darkGrey;

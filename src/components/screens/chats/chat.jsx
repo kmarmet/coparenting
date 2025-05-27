@@ -11,7 +11,6 @@ import Manager from '/src/managers/manager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager.coffee'
 import ChatMessage from '/src/models/chat/chatMessage'
-import ChatThread from '/src/models/chat/chatThread'
 import moment from 'moment-timezone'
 import React, {useContext, useEffect, useState} from 'react'
 import {Fade} from 'react-awesome-reveal'
@@ -35,12 +34,13 @@ import DatasetManager from '../../../managers/datasetManager'
 import DateManager from '../../../managers/dateManager'
 import UpdateManager from '../../../managers/updateManager'
 import Spacer from '../../shared/spacer'
+import Chat from '../../../models/chat/chat'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
   const {theme, messageRecipient, refreshKey} = state
   const {currentUser} = useCurrentUser()
-  const {chat} = useChat()
+  const { chats} = useChat()
   const [searchResults, setSearchResults] = useState([])
   const [showSearchInput, setShowSearchInput] = useState(false)
   const [showBookmarks, setShowBookmarks] = useState(false)
@@ -51,13 +51,15 @@ const Chats = () => {
   const [inSearchMode, setInSearchMode] = useState(false)
   const [inputIsActive, setInputIsActive] = useState()
   const [messageTimezone, setMessageTimezone] = useState(false)
-  const [chatId, setChatId] = useState(null)
-  const {chatMessages} = useChatMessages(chatId)
-  const [messagesToLoop, setMessagesToLoop] = useState(chatMessages)
   const [bookmarkedMessages, setBookmarkedMessages] = useState([])
   const [bookmarks, setBookmarks] = useState([])
   const [showLongPressMenu, setShowLongPressMenu] = useState(false)
   const [activeMessage, setActiveMessage] = useState()
+  const [activeChat, setActiveChat] = useState()
+  const {chatMessages} = useChatMessages(activeChat?.id)
+  const [messagesToLoop, setMessagesToLoop] = useState(chatMessages)
+
+  // Handle swipe
   const handlers = useSwipeable({
     delta: {
       right: 170,
@@ -68,6 +70,7 @@ const Chats = () => {
     },
   })
 
+  // Handle long press
   const bind = useLongPress((element) => {
     const message = element.target
     const messageId = message.getAttribute('data-id')
@@ -79,7 +82,7 @@ const Chats = () => {
   })
 
   const ToggleBookmark = async () => {
-    await ChatManager.ToggleMessageBookmark(currentUser, messageRecipient, activeMessage?.id, chat?.id, bookmarks).finally(async () => {
+    await ChatManager.ToggleMessageBookmark(currentUser, messageRecipient, activeMessage?.id, activeChat?.id, bookmarks).finally(async () => {
       await DefineBookmarks()
     })
   }
@@ -110,41 +113,49 @@ const Chats = () => {
     HideKeyboard()
 
     //#region FILL MODELS
-    const _chat = new ChatThread()
+    const _chat = new Chat()
     const chatMessage = new ChatMessage()
     const uid = Manager.GetUid()
 
     // Chats
     const sender = {
-      name: currentUser.name,
-      key: currentUser.key,
-      id: currentUser.id,
+      name: currentUser?.name,
+      key: currentUser?.key,
+      id: currentUser?.id,
     }
     const recipient = {
-      name: messageRecipient.name,
-      id: messageRecipient.id,
-      key: messageRecipient.userKey,
+      name: messageRecipient?.name,
+      id: messageRecipient?.id,
+      key: messageRecipient?.key,
     }
+
     _chat.id = uid
     _chat.members = [recipient, sender]
-    _chat.creationTimestamp = moment().format(DatetimeFormats.timestamp)
     _chat.ownerKey = currentUser?.key
     _chat.isPausedFor = []
 
-    const cleanedChat = ObjectManager.GetModelValidatedObject(_chat, ModelNames.chatThread)
-    cleanedChat.isPausedFor = []
-    let cleanedRecipientChat = {...cleanedChat}
+    // const cleanedChat = ObjectManager.GetModelValidatedObject(_chat, ModelNames.chat)
+    _chat.isPausedFor = []
+    let cleanedRecipientChat = {..._chat}
     cleanedRecipientChat.isPausedFor = []
-    cleanedRecipientChat.ownerKey = messageRecipient.key
+    cleanedRecipientChat.ownerKey = messageRecipient.userKey
 
-    // Message
-    chatMessage.senderKey = currentUser?.key
-    chatMessage.senderTimezone = messageTimezone
-    chatMessage.id = Manager.GetUid()
+    // MESSAGE
+
+    // Sender
+    chatMessage.sender = {
+      name: currentUser?.name,
+      key: currentUser?.key,
+      timezone: currentUser?.location?.timezone,
+    }
+
+    // Recipient
+    chatMessage.recipient = {
+      name: messageRecipient?.name,
+      key: messageRecipient?.key,
+    }
+
     chatMessage.timestamp = moment().format(DatetimeFormats.timestamp)
-    chatMessage.sender = currentUser?.name
-    chatMessage.recipient = messageRecipient.name
-    chatMessage.recipientKey = messageRecipient.userKey
     chatMessage.message = messageText
     chatMessage.notificationSent = false
 
@@ -153,19 +164,19 @@ const Chats = () => {
 
     //#region ADD TO DB
     // Existing chat
-    if (Manager.IsValid(chat)) {
-      await ChatManager.AddChatMessage(`${DB.tables.chatMessages}/${chat.id}`, cleanMessage)
+    if (Manager.IsValid(activeChat)) {
+      await ChatManager.AddChatMessage(`${DB.tables.chatMessages}/${activeChat.id}`, cleanMessage)
     }
     // Create new chat (for each member, if one doesn't exist between members)
     else {
-      await ChatManager.CreateChat(`${DB.tables.chats}/${currentUser?.key}`, cleanedChat)
-      await ChatManager.CreateChat(`${DB.tables.chats}/${messageRecipient?.userKey}`, cleanedRecipientChat)
+      await ChatManager.CreateChat(`${DB.tables.chats}/${currentUser?.key}`, _chat)
+      await ChatManager.CreateChat(`${DB.tables.chats}/${messageRecipient?.key}`, cleanedRecipientChat)
       await ChatManager.AddChatMessage(`${DB.tables.chatMessages}/${uid}`, cleanMessage)
     }
     //#endregion ADD TO DB
 
     // SEND NOTIFICATION - Only Send if it is not paused for the recipient
-    if (!chat?.isPausedFor?.includes(messageRecipient?.key)) {
+    if (!activeChat?.isPausedFor?.includes(messageRecipient?.key)) {
       UpdateManager.SendUpdate(
         'New Message 🗯️',
         `You have an unread message from ${StringManager.GetFirstNameOnly(currentUser.name)}`,
@@ -189,7 +200,7 @@ const Chats = () => {
   }
 
   const DefineBookmarks = async () => {
-    let bookmarkRecords = await ChatManager.getBookmarks(chat?.id)
+    let bookmarkRecords = await ChatManager.getBookmarks(activeChat?.id)
     let bookmarkedRecordIds = DatasetManager.GetValidArray(bookmarkRecords.map((x) => x.messageId))
     setBookmarks(bookmarkRecords)
     // Set bookmarks
@@ -293,17 +304,23 @@ const Chats = () => {
   useEffect(() => {
     if (Manager.IsValid(chatMessages)) {
       DefineBookmarks().then((r) => r)
-      console.log(chatMessages)
       setMessagesToLoop(chatMessages)
     }
   }, [chatMessages])
 
   useEffect(() => {
-    console.log(chat)
-    if (Manager.IsValid(chat) && Manager.IsValid(chat?.id)) {
-      setChatId(chat?.id)
+    if (Manager.IsValid(chats) && Manager.IsValid(messageRecipient)) {
+      if (chats.length > 0) {
+        for (let _chat of chats) {
+          const memberKeys = _chat?.members?.map((x) => x?.key)
+          if (Manager.IsValid(memberKeys) && memberKeys.includes(messageRecipient?.key) && memberKeys.includes(currentUser?.key)) {
+            setActiveChat(_chat)
+            break
+          }
+        }
+      }
     }
-  }, [chat])
+  }, [chats, messageRecipient])
 
   useEffect(() => {
     if (showBookmarks) {
@@ -434,19 +451,19 @@ const Chats = () => {
             {Manager.IsValid(searchResults) &&
               searchResults.map((messageObj, index) => {
                 let sender
-                if (StringManager.GetFirstNameOnly(messageObj.sender) === StringManager.GetFirstNameOnly(currentUser?.name)) {
+                if (messageObj?.sender?.key === currentUser?.key) {
                   sender = 'ME'
                 } else {
-                  sender = StringManager.GetFirstNameOnly(messageObj.sender)
+                  sender = StringManager.GetFirstNameOnly(messageObj?.sender?.name)
                 }
                 return (
                   <div
                     key={index}
                     className={`message-wrapper search-message-wrapper ${DomManager.Animate.FadeInUp(searchResults, '.message-wrapper')}`}
                     style={DomManager.AnimateDelayStyle(index, 0.002)}>
-                    <p className={messageObj.sender === currentUser?.name ? 'message from' : 'to message'}>{messageObj.message}</p>
-                    <span className={messageObj.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
-                      From {sender} on&nbsp;{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD (hh:mma)')}
+                    <p className={messageObj?.sender?.key !== currentUser?.key ? 'message from' : 'to message'}>{messageObj.message}</p>
+                    <span className={messageObj?.sender?.key !== currentUser?.key ? 'timestamp from' : 'to timestamp'}>
+                      From {sender?.name} on&nbsp;{moment(messageObj.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD (hh:mma)')}
                     </span>
                   </div>
                 )
@@ -460,10 +477,10 @@ const Chats = () => {
             {bookmarkedMessages.map((bookmark, index) => {
               let sender
 
-              if (StringManager.GetFirstNameOnly(bookmark.sender) === StringManager.GetFirstNameOnly(currentUser?.name)) {
+              if (bookmark?.sender?.key === currentUser?.key) {
                 sender = 'ME'
               } else {
-                sender = StringManager.GetFirstNameOnly(bookmark.sender)
+                sender = StringManager.GetFirstNameOnly(bookmark.sender?.name)
               }
               return (
                 <div {...bind()} key={index} className={'message-wrapper bookmark-message'}>
@@ -503,11 +520,11 @@ const Chats = () => {
                   <div className={`flex`}>
                     <p
                       style={DomManager.AnimateDelayStyle(index)}
-                      className={`${DomManager.Animate.FadeInUp(bookmark, '.message-wrapper')} ${bookmark.sender === currentUser?.name ? 'message from' : 'to message'}`}>
+                      className={`${DomManager.Animate.FadeInUp(bookmark, '.message-wrapper')} ${bookmark?.sender?.key === currentUser?.key ? 'message from' : 'to message'}`}>
                       {bookmark.message}
                     </p>
                   </div>
-                  <span className={bookmark.sender === currentUser?.name ? 'timestamp from' : 'to timestamp'}>
+                  <span className={bookmark?.sender?.key === currentUser?.key ? 'timestamp from' : 'to timestamp'}>
                     From {sender} on&nbsp; {moment(bookmark.timestamp, 'MM/DD/yyyy hh:mma').format('ddd, MMM DD (hh:mma)')}
                   </span>
                 </div>
@@ -521,13 +538,15 @@ const Chats = () => {
           <>
             {/* ITERATE DEFAULT MESSAGES */}
             <div id="default-messages">
+
+
               {Manager.IsValid(messagesToLoop) &&
                 messagesToLoop.map((message, index) => {
                   // Determine bookmark class
                   let isBookmarked = Manager.IsValid(bookmarkedMessages?.find((x) => x.id === message?.id))
                   const timestampDateOnly = moment(message?.timestamp, DatetimeFormats.timestamp).format(DatetimeFormats.dateForDb)
                   const timestampTimeOnly = moment(message?.timestamp, DatetimeFormats.timestamp).format(DatetimeFormats.timeForDb)
-                  let convertedTime = DateManager.convertTime(timestampTimeOnly, message?.senderTimezone, currentUser?.location?.timezone)
+                  let convertedTime = DateManager.convertTime(timestampTimeOnly, message?.sender?.timezone, currentUser?.location?.timezone)
                   let convertedTimestamp = moment(`${timestampDateOnly} ${convertedTime}`, DatetimeFormats.timestamp)
                     .tz(currentUser?.location?.timezone)
                     .format('ddd, MMMM Do (h:mma)')
@@ -536,6 +555,7 @@ const Chats = () => {
                   if (moment(message?.timestamp, DatetimeFormats.timestamp).isSame(moment(), 'day')) {
                     convertedTimestamp = moment(message?.timestamp, DatetimeFormats.timestamp).format(DatetimeFormats.timeForDb)
                   }
+
                   return (
                     <div
                       key={index}
@@ -545,14 +565,14 @@ const Chats = () => {
                         <p
                           {...bind(message?.id)}
                           data-id={message?.id}
-                          className={message?.senderKey === currentUser?.key ? 'from message' : 'to message'}>
+                          className={message?.sender?.key !== currentUser?.key ? 'from message' : 'to message'}>
                           {message?.message}
                         </p>
                         {isBookmarked && (
-                          <FaStar className={message?.senderKey === currentUser?.key ? 'from bookmarked-icon' : 'to bookmarked-icon'} />
+                          <FaStar className={message?.sender?.key !== currentUser?.key ? 'from bookmarked-icon' : 'to bookmarked-icon'} />
                         )}
                       </div>
-                      <span className={message?.sender === currentUser?.name ? 'from timestamp' : 'to timestamp'}>{convertedTimestamp}</span>
+                      <span className={message?.sender?.key !== currentUser?.key ? 'from timestamp' : 'to timestamp'}>{convertedTimestamp}</span>
                     </div>
                   )
                 })}
@@ -575,7 +595,7 @@ const Chats = () => {
                     inputType={InputTypes.chat}
                     inputClasses="message-input"
                     hasBottomSpacer={false}
-                    wrapperClasses="chat-input"
+                    wrapperClasses="chat-input mb-0"
                     defaultValue={messageText}
                     onKeyUp={(e) => {
                       // Backspace

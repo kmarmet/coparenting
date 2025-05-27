@@ -2,24 +2,25 @@ import Manager from '../../managers/manager.js'
 import moment from 'moment'
 import DatetimeFormats from "../../constants/datetimeFormats"
 
-export default class ChildUser
-  constructor: (
-    @creationDate = moment().format(DatetimeFormats.dateForDb)
-    @parents = []
-    @name = ''
-    @email = ''
-    @accountType = 'child'
-    @phone = ''
+class ChildUser
+  constructor: (options = {}) ->
     @id = Manager.GetUid()
-    @settings = {
+    @creationDate = moment().format(DatetimeFormats.dateForDb)
+    @accountType =  'child'
+    @parents = options?.parents ?  []
+    @name = options?.name ? ''
+    @email =  options?.email ? ''
+    @phone = options?.phone ? ''
+    @parentAccessGranted = false
+    @profilePic =  options?.profilePic ? ''
+    @settings =
       theme: 'light'
       notificationsEnabled: true
-    }
-    @dailySummaries = {
+
+    @dailySummaries =
       morningSentDate: ''
       eveningSentDate: ''
       morningReminderSummaryHour: '10am'
       eveningReminderSummaryHour: '8pm'
-    }
-    @parentAccessGranted = false
-  ) ->
+
+export default ChildUser

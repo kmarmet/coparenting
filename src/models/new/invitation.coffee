@@ -8,8 +8,12 @@ class Invitation
     @timestamp = moment(options?.timestamp).format(DatetimeFormats.dateForDb) ? moment().format(DatetimeFormats.dateForDb)
     @token = options?.token ? ''
     @recipientPhone = options?.recipientPhone ? ''
-    @senderName = options?.senderName ? ''
-    @senderEmail = options?.senderEmail ? ''
+
+    @sender =
+      name: options?.sender?.name ? ''
+      key: options?.sender?.key ? ''
+      email: options?.sender?.email ? ''
+
     @status = 'sent'
 
 export default Invitation

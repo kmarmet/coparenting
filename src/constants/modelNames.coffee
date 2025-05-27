@@ -10,7 +10,7 @@ ModelNames =
   user: "user"
   transferChangeRequest: 'transferChangeRequest'
   chatMessage: "chatMessage"
-  chatThread: "chatThread"
+  chat: "chat"
   childUser: 'childUser'
   doc:'doc'
   child: 'child'

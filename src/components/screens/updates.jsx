@@ -4,7 +4,6 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {IoMdCheckmarkCircleOutline} from 'react-icons/io'
 import {MdClearAll} from 'react-icons/md'
 import ActivityCategory from '../../constants/activityCategory'
@@ -19,10 +18,10 @@ import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import NavBar from '../navBar'
-import Label from '../shared/label'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer'
+import AccordionTitle from '../shared/accordionTitle'
 
 export default function Updates() {
   const {state, setState} = useContext(globalState)
@@ -141,9 +140,7 @@ export default function Updates() {
             <div className="flex">
               <Accordion id={'updates-legend'} expanded={legendIsExpanded} className={`${theme} accordion white-bg`}>
                 <AccordionSummary>
-                  <button className="button default grey" onClick={() => setLegendIsExpanded(!legendIsExpanded)}>
-                    <Label text={'Legend'} classes="always-show" /> {legendIsExpanded ? <FaMinus /> : <FaPlus />}
-                  </button>
+                  <AccordionTitle onClick={() => setLegendIsExpanded(!legendIsExpanded)} titleText={'Legend'} toggleState={legendIsExpanded} />
                 </AccordionSummary>
                 <AccordionDetails>
                   <div className="flex">

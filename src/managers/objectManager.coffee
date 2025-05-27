@@ -6,7 +6,8 @@ import TransferChangeRequest from "../models/new/transferChangeRequest"
 import SwapRequest from "../models/new/swapRequest"
 import User from "../models/users/user"
 import Coparent from "../models/users/coparent"
-import ChatThread from "../models/chat/chatThread"
+import ChatThread from "../models/chat/chat"
+import Chat from "../models/chat/chat"
 import ChatMessage from "../models/chat/chatMessage"
 import ChildUser from "../models/child/childUser"
 import Doc from "../models/new/doc"
@@ -136,29 +137,35 @@ ObjectManager = {
       when ModelNames.doc
         new Doc()
 
-  GetModelValidatedObject: (object, modelName) ->
-    returnObject = switch modelName
-      when ModelNames.calendarEvent then new CalendarEvent()
-      when ModelNames.expense then new Expense()
-      when ModelNames.memory then new Memory()
-      when ModelNames.transferChangeRequest then new TransferChangeRequest()
-      when ModelNames.swapRequest then new SwapRequest()
-      when ModelNames.inputSuggestion then new InputSuggestion()
-      when ModelNames.user then new User()
-      when ModelNames.coparent then new Coparent()
-      when ModelNames.chatThread then new ChatThread()
-      when ModelNames.chatMessage then new ChatMessage()
-      when ModelNames.childUser then new ChildUser()
-      when ModelNames.child then new Child()
-      when ModelNames.parent then new Parent()
-      when ModelNames.doc then new Doc()
+  GetModelValidatedObject: (obj, modelName) ->
+    returnObject = {}
+    console.log(true)
+    switch modelName
+      when ModelNames.calendarEvent then returnObject =  new CalendarEvent()
+      when ModelNames.expense then returnObject = new Expense()
+      when ModelNames.memory then returnObject = new Memory()
+      when ModelNames.transferChangeRequest then returnObject = new TransferChangeRequest()
+      when ModelNames.swapRequest then returnObject = new SwapRequest()
+      when ModelNames.user then returnObject = new User()
+      when ModelNames.coparent then returnObject = new Coparent()
+      when ModelNames.chat then returnObject = new Chat()
+      when ModelNames.chatMessage then returnObject = new ChatMessage()
+      when ModelNames.childUser then returnObject = new ChildUser()
+      when ModelNames.child then returnObject = new Child()
+      when ModelNames.parent then returnObject = new Parent()
+      when ModelNames.doc then returnObject = new Doc()
 
-    for prop of object
-      if Array.isArray(object[prop])
-        object[prop] = [] if object[prop] in [undefined, null]
-      else
-        object[prop] = '' if object[prop] in [undefined, null] or object[prop].toString().toLowerCase().includes('invalid')
-      returnObject[prop] = object[prop]
+    console.log(returnObject)
+
+    if Manager.IsValid(returnObject)
+      for prop of returnObject
+        console.log(prop, returnObject)
+        if Manager.IsValid(returnObject?[prop])
+          if Array.isArray(returnObject?[prop])
+            returnObject?[prop] = [] if returnObject?[prop] in [undefined, null]
+          else
+            returnObject?[prop] = '' if returnObject?[prop] in [undefined, null] or returnObject?[prop]?.toString()?.toLowerCase()?.includes('invalid')
+          returnObject?[prop] = returnObject?[prop]
 
 #    returnObject = ObjectManager.GetValidObject(returnObject)
     returnObject

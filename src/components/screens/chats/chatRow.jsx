@@ -87,11 +87,11 @@ export default function ChatRow({chat, index}) {
       {/* COPARENT NAME */}
       <div className="primary-text">
         <p className="coparent-name">{otherMember?.name}</p>
-        <p className="timestamp">{moment(lastMessage?.timestamp, DatetimeFormats.timestamp).format('ddd (hh:mma)')}</p>
+        <p className="timestamp">{moment(lastMessage?.timestamp, DatetimeFormats.timestamp).format('ddd (hh:mma)')} {lastMessage?.sender?.key === currentUser?.key ? <MdCallMade /> : <MdCallReceived />}</p>
       </div>
       <p className="last-message">
         {lastMessage?.message}
-        {lastMessage?.senderKey === currentUser?.key ? <MdCallMade /> : <MdCallReceived />}
+
       </p>
       <div className="play-pause-wrapper">
         {/* PLAY CHAT BUTTON */}

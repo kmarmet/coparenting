@@ -63,7 +63,7 @@ export default UpdateManager =
         OneSignal.init
           appId: UpdateManager.appId
           .then () ->
-          OneSignal.User.PushSubscription.addEventListener 'change', UpdateManager.eventListener
+            OneSignal.User.PushSubscription.addEventListener 'change', UpdateManager.eventListener
     catch error
       LogManager.Log("Error: #{error} | Code File:  | Function:  ")
 

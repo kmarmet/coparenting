@@ -71,7 +71,8 @@
 
     #activity-cards {
       gap: 8px;
-      justify-content: center;
+      justify-content: space-between;
+      width: 100%;
       align-items: center;
       flex-wrap: wrap;
       display: flex;
@@ -80,7 +81,7 @@
       #row-wrapper {
         align-items: center;
         justify-content: space-between;
-
+width: 100%;
         .row-checkmark {
           color: $green;
           margin-left: 25px;

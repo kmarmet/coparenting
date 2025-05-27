@@ -75,7 +75,7 @@ export default function TransferRequests() {
     // Fill -> overwrite
     let updatedRequest = {...activeRequest}
     updatedRequest.time = requestTime
-    updatedRequest.location = requestLocation
+    updatedRequest.address = requestLocation
     updatedRequest.directionsLink = Manager.GetDirectionsLink(requestLocation)
     updatedRequest.date = requestDate
     updatedRequest.declineReason = declineReason
@@ -130,7 +130,7 @@ export default function TransferRequests() {
   const CheckIn = async () => {
     setShowDetails(false)
     let notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser?.name))} at ${
-      activeRequest?.location
+      activeRequest?.address
     }`
     if (!sendWithAddress) {
       notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
@@ -275,9 +275,9 @@ export default function TransferRequests() {
                 <DetailBlock
                   isNavLink={true}
                   title={'Go'}
-                  text={activeRequest?.location}
-                  valueToValidate={activeRequest?.location}
-                  linkUrl={activeRequest?.location}
+                  text={activeRequest?.address}
+                  valueToValidate={activeRequest?.address}
+                  linkUrl={activeRequest?.address}
                 />
 
                 {/*  CHECK IN */}
@@ -297,7 +297,7 @@ export default function TransferRequests() {
               </div>
 
               {/* MAP */}
-              <Map locationString={activeRequest?.location} />
+              <Map locationString={activeRequest?.address} />
             </>
           )}
 
@@ -322,7 +322,7 @@ export default function TransferRequests() {
               />
 
               {/*  NEW LOCATION*/}
-              <AddressInput placeholder={'Address'} defaultValue={activeRequest?.location} onChange={(address) => setRequestLocation(address)} />
+              <AddressInput placeholder={'Address'} defaultValue={activeRequest?.address} onChange={(address) => setRequestLocation(address)} />
 
               {/* RESPONSE DUE DATE */}
               <InputWrapper

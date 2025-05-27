@@ -359,7 +359,7 @@ const DB_UserScoped = {
   },
   UpdateChildInfo: async (currentUser, activeChild, section, prop, value) => {
     const dbRef = ref(getDatabase())
-    if (Manager.IsValid(currentUser)) {
+    if (Manager.IsValid(currentUser) && Manager.IsValid(activeChild)) {
       const childKey = DB.GetChildIndex(currentUser?.children, activeChild?.id)
 
       if (Manager.IsValid(childKey)) {
@@ -378,6 +378,15 @@ const DB_UserScoped = {
   UpdateCoparent: async (currentUserKey, coparentIndex, prop, value) => {
     const dbRef = ref(getDatabase())
     await set(child(dbRef, `${DB.tables.users}/${currentUserKey}/coparents/${coparentIndex}/${StringManager.formatDbProp(prop)}`), value)
+  },
+  UpdateChild: async (path, value) => {
+    try {
+      const dbRef = ref(getDatabase())
+      await set(child(dbRef, path), value)
+    }
+      catch (error) {
+        LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
+      }
   },
   UpdateParent: async (currentUserKey, parentIndex, prop, value) => {
     const dbRef = ref(getDatabase())

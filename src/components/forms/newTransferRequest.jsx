@@ -164,7 +164,7 @@ export default function NewTransferChangeRequest() {
             <AddressInput
               labelText={'Address'}
               onChange={(address) => {
-                console.log(address)
+                updateRef.current.address = address
               }}
             />
 
@@ -197,13 +197,7 @@ export default function NewTransferChangeRequest() {
 
             <Spacer height={8} />
 
-            <ShareWithCheckboxes
-              onCheck={HandleShareWithSelection}
-              checkboxArray={DomManager.BuildCheckboxGroup({
-                currentUser,
-                predefinedType: 'share-with',
-              })}
-            />
+              <ShareWithCheckboxes  onCheck={HandleShareWithSelection} required={true}  />
           </div>
         </div>
       </div>

@@ -5,7 +5,6 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import React, {useContext, useState} from 'react'
-import {LuMinus, LuPlus} from 'react-icons/lu'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
@@ -16,11 +15,11 @@ import EmailManager from '../../../managers/emailManager'
 import NavBar from '../../navBar'
 import Form from '../../shared/form'
 import InputWrapper from '../../shared/inputWrapper'
-import Label from '../../shared/label'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 import ChatRow from './chatRow.jsx'
+import AccordionTitle from '../../shared/accordionTitle'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
@@ -82,7 +81,7 @@ const Chats = () => {
             <AccordionSummary>
               <button className="button default grey" onClick={() => setShowInfo(!showInfo)}>
                 <div id="circle" className="circle"></div>
-                <Label text={'Invite Co-Parent'} classes="always-show" /> {showInfo ? <LuMinus /> : <LuPlus />}
+                <AccordionTitle titleText={"Invite Co-Parent"} toggleState={showInfo} onClick={() => setShowInfo(!showInfo)} />
               </button>
             </AccordionSummary>
             <AccordionDetails>

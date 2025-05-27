@@ -196,9 +196,11 @@ const Contacts = () => {
           }
           const newInvitation = new Invitation({
             recipientPhone: updateObject.current.phone,
-            senderKey: currentUser?.key,
-            senderName: currentUser?.name,
-            senderEmail: currentUser?.email,
+            sender: {
+              key: currentUser?.key,
+              name: currentUser?.name,
+              email: currentUser?.email,
+            }
           })
           await InvitationManager.AddInvitation(newInvitation, currentUser?.key)
           SmsManager.Send(updateObject.current.phone, SmsManager.Templates.Invitation(currentUser, activeContact?.name, updateObject.current.phone))
@@ -471,7 +473,7 @@ const Contacts = () => {
                       <div className="header">
                         <div
                           className={`contact-card-pic ${!Manager.IsValid(contact?.profilePic) ? 'no-pic' : ''}`}
-                          style={{backgroundImage: Manager.IsValid(contact?.general?.profilePic) ? `url(${contact?.profilePic})` : ''}}>
+                          style={{backgroundImage: Manager.IsValid(contact?.profilePic) ? `url(${contact?.profilePic})` : ''}}>
                           {!Manager.IsValid(contact?.profilePic) && <span>{StringManager.GetFirstNameOnly(contact?.name)[0]}</span>}
                         </div>
                         <p className="contact-card-name">
@@ -507,9 +509,9 @@ const Contacts = () => {
                       key={index}>
                       <div className="header">
                         <div
-                          className={`contact-card-pic ${!Manager.IsValid(contact?.general?.profilePic) ? 'no-pic' : ''}`}
-                          style={{backgroundImage: Manager.IsValid(contact?.general?.profilePic) ? `url(${contact?.general?.profilePic})` : ''}}>
-                          {!Manager.IsValid(contact?.general?.profilePic) && (
+                          className={`contact-card-pic ${!Manager.IsValid(contact?.profilePic) ? 'no-pic' : ''}`}
+                          style={{backgroundImage: Manager.IsValid(contact?.profilePic) ? `url(${contact?.profilePic})` : ''}}>
+                          {!Manager.IsValid(contact?.profilePic) && (
                             <span>{StringManager.GetFirstNameOnly(contact?.general?.name)[0]} </span>
                           )}
                         </div>
@@ -547,7 +549,7 @@ const Contacts = () => {
                       <div className="header">
                         <div
                           className={`contact-card-pic ${!Manager.IsValid(contact?.profilePic) ? 'no-pic' : ''}`}
-                          style={{backgroundImage: Manager.IsValid(contact?.general?.profilePic) ? `url(${contact?.profilePic})` : ''}}>
+                          style={{backgroundImage: Manager.IsValid(contact?.profilePic) ? `url(${contact?.profilePic})` : ''}}>
                           {' '}
                           {!Manager.IsValid(contact?.profilePic) && <span>{StringManager.GetFirstNameOnly(contact?.name)[0]}</span>}
                         </div>

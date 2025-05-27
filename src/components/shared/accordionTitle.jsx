@@ -5,7 +5,7 @@ import {LuMinus, LuPlus} from 'react-icons/lu'
 const AccordionTitle = ({onClick, titleText, toggleState}) => {
   return (
     <button className="button default grey" onClick={onClick}>
-      <Label text={titleText} /> {toggleState ? <LuMinus /> : <LuPlus />}
+      <Label text={titleText} classes={"toggle always-show"}  /> {toggleState ? <LuMinus /> : <LuPlus />}
     </button>
   )
 }

@@ -430,8 +430,7 @@
 }
 
 @mixin mainColorsGradient {
-  background-image: linear-gradient(to right bottom, #4c6fff, #6069ff, #7362ff, #8559ff, #964fff);
-  background-image: linear-gradient(to right top, #4c6fff, #6069ff, #7362ff, #8559ff, #964fff);
+  background: linear-gradient(30deg, #4c6fff, #555bea, #6d54e9, #7c6fee);
 }
 
 @mixin fadeEdges {
@@ -1885,10 +1884,6 @@
     text-transform: lowercase;
   }
 
-  &.active {
-    @include shadow;
-  }
-
   .input-icon {
     @include centerVert;
     position: absolute;
@@ -2095,11 +2090,29 @@
     width: 100%;
   }
 
+  .checkmark {
+    opacity: 0;
+    position: absolute;
+    top: -50px;
+    margin: 0 0 0 5px;
+    padding: 0;
+    @include square(14px);
+    &.active {
+      opacity: 1;
+      position: relative;
+      top: 1px;
+    }
+  }
+
   .checkbox-text {
     font-size: 14px;
     line-height: 1;
     white-space: nowrap;
     color: #9b9b9b;
+
+    svg {
+      color: white;
+    }
   }
 }
 
@@ -2158,7 +2171,6 @@
       gap: 8px;
       grid-template-columns: repeat(2, 1fr);
       align-items: center;
-      //      padding-bottom: 15px;
       flex-wrap: wrap;
 
       #label-wrapper {
