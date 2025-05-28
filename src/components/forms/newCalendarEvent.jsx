@@ -12,7 +12,6 @@ import AlertManager from '/src/managers/alertManager'
 import Manager from '/src/managers/manager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
-import CalendarMapper from '/src/mappers/calMapper'
 import CalendarEvent from '/src/models/new/calendarEvent'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -35,6 +34,9 @@ import Label from '../shared/label'
 import Spacer from '../shared/spacer.jsx'
 import ToggleButton from '../shared/toggleButton'
 import ViewSelector from '../shared/viewSelector'
+import useChildren from '../../hooks/useChildren'
+import SelectDropdown from '../shared/selectDropdown'
+import CalMapper from '../../mappers/calMapper'
 
 export default function NewCalendarEvent() {
   // APP STATE
@@ -51,6 +53,7 @@ export default function NewCalendarEvent() {
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
   const [eventIsCloned, setEventIsCloned] = useState(false)
   const {currentUser} = useCurrentUser()
+  const {children, childrenDropdownOptions} = useChildren()
 
   // COMPONENT STATE
   const [showCloneInput, setShowCloneInput] = useState(false)
@@ -99,9 +102,11 @@ export default function NewCalendarEvent() {
       newEvent.current.isCloned = Manager.IsValid(clonedDates)
       newEvent.current.isDateRange = eventIsDateRange
 
+      console.log(newEvent.current)
+      // return false
+
       const cleaned = ObjectManager.GetModelValidatedObject(newEvent.current, ModelNames.calendarEvent)
 
-      console.log(cleaned)
       //#endregion FILL NEW EVENT
 
       if (Manager.IsValid(newEvent.current)) {
@@ -198,40 +203,11 @@ export default function NewCalendarEvent() {
     }
   }
 
-  const HandleChildSelection = (e) => {
-    let childrenArr = []
-    DomManager.HandleCheckboxSelection(
-      e,
-      (e) => {
-        childrenArr = [...eventChildren, e]
-      },
-      (e) => {
-        childrenArr = childrenArr.filter((x) => x !== e)
-      },
-      true
-    )
-    setEventChildren(childrenArr)
-  }
+  const HandleChildSelection = (e) => setEventChildren(e?.map((x) => x?.label?.trim()))
 
-  const HandleShareWithSelection = (e) => {
-    newEvent.current.shareWith = DomManager.HandleShareWithSelection(e, currentUser, newEvent.current.shareWith, newEvent)
-  }
+  const HandleShareWithSelection = (e) => (newEvent.current.shareWith = e.map((x) => x.value))
 
-  const HandleReminderSelection = (e) => {
-    DomManager.HandleCheckboxSelection(
-      e,
-      (e) => {
-        let timeframe = CalendarMapper.reminderTimes(e)
-        setEventReminderTimes([...eventReminderTimes, timeframe])
-      },
-      (e) => {
-        let mapped = CalendarMapper.reminderTimes(e)
-        let filtered = eventReminderTimes.filter((x) => x !== mapped)
-        setEventReminderTimes(filtered)
-      },
-      true
-    )
-  }
+  const HandleReminderSelection = (e) => setEventReminderTimes(e?.map((x) => x?.value?.trim()))
 
   const HandleRepeatingSelection = async (e) => {
     DomManager.HandleCheckboxSelection(
@@ -294,6 +270,22 @@ export default function NewCalendarEvent() {
     cloneDateWrapper.append(wrapper)
   }
 
+  const GetReminderOptions = () => {
+    const unformatted = CalMapper.allUnformattedTimes()
+    let options = []
+    if (Manager.IsValid(unformatted)) {
+      for (let reminder of unformatted) {
+        if (Manager.IsValid(reminder)) {
+          options.push({
+            label: CalMapper.readableReminderBeforeTimeframes(reminder),
+            value: reminder,
+          })
+        }
+      }
+    }
+    return options
+  }
+
   useEffect(() => {
     if (dateToEdit) {
       newEvent.current.startDate = moment(dateToEdit).format(DatetimeFormats.dateForDb)
@@ -309,14 +301,15 @@ export default function NewCalendarEvent() {
         onClose={ResetForm}
         onSubmit={Submit}
         showCard={creationFormToShow === CreationForms.calendar}
-        wrapperClass={`new-calendar-event form at-top`}
+        wrapperClass={`new-calendar-event at-top`}
         contentClass={eventLength === EventLengths.single ? 'single-view' : 'multiple-view'}
         title={`Create Event`}
         submitIcon={<BsCalendarCheck />}
         viewSelector={
           <ViewSelector
-            defaultView={'Single Day'}
+            show={true}
             labels={['Single Day', 'Multiple Days']}
+            dropdownPlaceholder={'View'}
             updateState={(labelText) => {
               console.log(labelText)
               if (Manager.Contains(labelText.toLowerCase(), 'single')) {
@@ -388,15 +381,30 @@ export default function NewCalendarEvent() {
               />
             </>
           )}
-          <Spacer height={10} />
 
           {/* Share with */}
           <ShareWithCheckboxes required={false} onCheck={HandleShareWithSelection} containerClass={`share-with`} />
-          <Spacer height={10} />
+          <Spacer height={3} />
+
+          {/* INCLUDING WHICH CHILDREN */}
+          {Manager.IsValid(children) && (
+            <SelectDropdown
+              options={childrenDropdownOptions}
+              labelText={'Select Children to Include'}
+              onChange={HandleChildSelection}
+              isMultiple={true}
+            />
+          )}
+          <Spacer height={3} />
+
+          {/* REMINDER */}
+          {eventLength === EventLengths.single && (
+            <SelectDropdown isMultiple={true} labelText={'Select Reminders'} options={GetReminderOptions()} onChange={HandleReminderSelection} />
+          )}
+          <Spacer height={8} />
 
           {eventLength === EventLengths.single && (
             <>
-              {/* REMINDER */}
               <Accordion id={'checkboxes'} expanded={showReminders}>
                 <AccordionSummary>
                   <div className="flex">
@@ -427,33 +435,6 @@ export default function NewCalendarEvent() {
               <ToggleButton isDefaultChecked={false} onCheck={() => setIsVisitation(true)} onUncheck={() => setIsVisitation(false)} />
             </div>
           </div>
-
-          {/* INCLUDING WHICH CHILDREN */}
-          {Manager.IsValid(currentUser?.children) && (
-            <Accordion id={'checkboxes'} expanded={includeChildren}>
-              <AccordionSummary>
-                <div className="flex">
-                  <Label text={'Include Children'} classes="toggle" />
-                  <ToggleButton
-                    isDefaultChecked={false}
-                    onCheck={() => setIncludeChildren(!includeChildren)}
-                    onUncheck={() => setIncludeChildren(!includeChildren)}
-                  />
-                </div>
-              </AccordionSummary>
-              <AccordionDetails>
-                <CheckboxGroup
-                  elClass={`${theme} children`}
-                  skipNameFormatting={true}
-                  checkboxArray={DomManager.BuildCheckboxGroup({
-                    currentUser,
-                    labelType: 'children',
-                  })}
-                  onCheck={HandleChildSelection}
-                />
-              </AccordionDetails>
-            </Accordion>
-          )}
 
           {/* RECURRING */}
           {eventLength === EventLengths.single && (

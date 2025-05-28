@@ -3,6 +3,7 @@ import DatasetManager from "./datasetManager"
 import DB_UserScoped from "../database/db_userScoped"
 import CalMapper from "../mappers/calMapper"
 import DateManager from "./dateManager"
+import StringManager from "./stringManager"
 
 DomManager = {
   AnimateDelayStyle: (index, delay = .2) ->
@@ -156,6 +157,14 @@ DomManager = {
           setTimeout ->
             AddClasses(item)
           , index * delay
+
+  GetSelectOptions: (optionsArray = []) ->
+    options = []
+    if Manager.IsValid(optionsArray)
+      for option in optionsArray
+        options.push({value: option, label: StringManager.uppercaseFirstLetterOfAllWords(option)})
+    return options
+
 
   SetDefaultCheckboxes: (checkboxContainerClass, object, propName, isArray = false, values) ->
     # Share With

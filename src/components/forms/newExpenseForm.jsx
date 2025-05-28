@@ -386,7 +386,7 @@ export default function NewExpenseForm() {
             placeholder={'Select a Category'}
             label={'Category'}
             required={true}
-            onloadState={true}
+            show={true}
           />
           <Spacer height={5} />
 

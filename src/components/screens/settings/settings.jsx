@@ -83,7 +83,7 @@ export default function Settings() {
 
   return (
     <>
-      <div id="settings-container" className={`${currentUser?.settings?.theme} page-container form`}>
+      <div id="settings-container" className={`${currentUser?.settings?.theme} page-container `}>
         <p className="screen-title">Settings</p>
         <Spacer height={10} />
         {/* CALENDAR SETTINGS */}

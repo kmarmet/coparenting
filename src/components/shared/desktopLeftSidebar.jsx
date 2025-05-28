@@ -86,7 +86,7 @@ export default function DesktopLeftSidebar() {
           </div>
 
           {/* PARENTS ONLY */}
-          {AppManager.getAccountType(currentUser) === 'parent' && (
+          {AppManager.GetAccountType(currentUser) === 'parent' && (
             <>
               {/* VISITATION */}
               <div
@@ -137,7 +137,7 @@ export default function DesktopLeftSidebar() {
               </div>
             </>
           )}
-          {AppManager.getAccountType(currentUser) === 'parent' && (
+          {AppManager.GetAccountType(currentUser) === 'parent' && (
             <>
               {/* MEMORIES */}
               <div

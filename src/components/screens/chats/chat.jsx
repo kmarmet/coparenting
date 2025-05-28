@@ -238,7 +238,7 @@ const Chats = () => {
   const DefineMessageTimezone = async () => {
     let timezone = currentUser?.location?.timezone
     if (!Manager.IsValid(timezone, true)) {
-      timezone = await AppManager.getTimezone()
+      timezone = await AppManager.GetTimezone()
     }
     setMessageTimezone(timezone)
   }

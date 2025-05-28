@@ -1,14 +1,22 @@
 import React, {useEffect} from 'react'
 import DomManager from '../../managers/domManager'
 
-export default function Loading({theme = 'light', loadingText, isLoading}) {
-  useEffect(() => {
+export default function Loading({theme = 'light', isLoading}) {
+  const ToggleAnimation = () => {
     if (isLoading === true) DomManager.ToggleAnimation('add', 'loading-overlay', DomManager.AnimateClasses.names.fadeIn)
-    else DomManager.ToggleAnimation('remove', 'loading-overlay', DomManager.AnimateClasses.names.fadeIn)
+    else {
+      setTimeout(() => {
+        DomManager.ToggleAnimation('remove', 'loading-overlay', DomManager.AnimateClasses.names.fadeIn)
+      }, 2000)
+    }
+  }
+
+  useEffect(() => {
+    ToggleAnimation()
   }, [isLoading])
   return (
-    <div className={`${isLoading === true ? 'loading-overlay active' : 'loading-overlay'} ${theme}`}>
-      {isLoading && <img src={require('../../img/loading.svg')} alt="" />}
+    <div className={`${DomManager.Animate.FadeIn(isLoading)} ${isLoading ? 'active' : ''} loading-overlay ${theme}`}>
+      <div className="loading-animation"></div>
     </div>
   )
 }

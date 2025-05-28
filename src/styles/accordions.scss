@@ -342,6 +342,19 @@
               font-weight: $fwMediumBold !important;
             }
 
+            button {
+              span {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                svg {
+                  color: $labelText !important;
+                  top: unset !important;
+                  @include square(18px);
+                }
+              }
+            }
+
             #label-wrapper {
               label {
                 white-space: nowrap;

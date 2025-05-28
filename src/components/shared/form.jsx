@@ -6,6 +6,7 @@ import DomManager from '../../managers/domManager'
 import StringManager from '../../managers/stringManager'
 import Overlay from './overlay'
 import Spacer from './spacer'
+import StringAsHtmlElement from './stringAsHtmlElement'
 
 export default function Form({
   submitText,
@@ -57,7 +58,6 @@ export default function Form({
 
   useEffect(() => {
     let activeForm = document.querySelector(`.${wrapperClass}.form-wrapper.active`)
-    const previousMonthButton = document.querySelector('.MuiPickersArrowSwitcher-nextIconButton')
 
     if (showCard) {
       const allActiveFadeInUp = document.querySelectorAll('.animate__animated.animate__fadeInUp')
@@ -134,7 +134,7 @@ export default function Form({
                 {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
                 {title}
               </p>
-              {Manager.IsValid(subtitle, true) && <p className="subtitle">{subtitle}</p>}
+              {Manager.IsValid(subtitle, true) && <StringAsHtmlElement classes={'subtitle'} text={subtitle} />}
             </div>
 
             {viewSelector}

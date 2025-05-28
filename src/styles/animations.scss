@@ -12,10 +12,20 @@
   }
 }
 
+@keyframes loadingAnimation {
+  100% {
+    box-shadow: 0 0 0 40px #0000;
+  }
+}
+
 @keyframes animateWidth {
   to {
     width: 100%;
   }
+}
+
+@keyframes locationPinAnimation {
+  to {transform: perspective(300px) translateZ(150px);opacity:0}
 }
 
 @keyframes blur-text {

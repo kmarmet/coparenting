@@ -389,6 +389,12 @@
   display: flex;
   background: white;
 
+  .location-pin-animation {
+    transform: scale(.65) rotate(45deg);
+    position: relative;
+    top: -3px;
+  }
+
   svg {
     color: $main;
     width: unset;
@@ -1373,16 +1379,6 @@
       color: $transWhite;
     }
 
-    .MuiTypography-root {
-      &:before {
-        content: 'Type: ';
-        position: relative;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-      }
-    }
 
     .MuiOutlinedInput-notchedOutline {
       border: 0 !important;
@@ -1404,11 +1400,16 @@
         height: auto !important;
         position: absolute !important;
         width: calc(100% - 20px) !important;
+
+        &.full-width {
+          width: 100% !important;
+        }
       }
       .MuiListItemText-root {
         height: auto !important;
         span {
           color: white !important;
+
           height: auto !important;
         }
       }
@@ -1625,9 +1626,8 @@
 
     &.unpaid,
     &.declined {
-      background-color: $bootstrapRedBg;
-      color: $red;
-      border: 1px solid $red;
+      background-color: $flatRed;
+      color: white;
     }
   }
 
@@ -1681,7 +1681,7 @@
     font-weight: $fwRegular;
   }
 
-  #details {
+  .details {
     max-height: 0;
     transition: all 0.3s ease-in-out;
     transform: scale(0);
@@ -1738,6 +1738,11 @@
       font-size: 14px !important;
       text-transform: uppercase;
       padding-bottom: 5px;
+    }
+    &.dark {
+      label {
+        color: $labelText;
+      }
     }
 
     &.black {
@@ -1846,6 +1851,11 @@
   border-radius: $borderRadius;
   background-color: $inputBackground;
   margin-bottom: 8px;
+
+  &.active {
+    border: 1px solid $greyBorderColor;
+    border-radius: $borderRadius;
+  }
 
   &.white {
     background: white;
@@ -2800,6 +2810,8 @@
   &.at-top {
     justify-content: flex-start;
     padding-top: 45px;
+
+    overflow: auto;
   }
 
   // PRIMARY PARENT
@@ -2812,6 +2824,7 @@
     width: calc(100vw - 20px);
     transition: all 0.8s ease-out;
     opacity: 0;
+    max-height: calc(100vh - 145px);
 
     .content-wrapper {
       overflow: auto;
@@ -2819,7 +2832,8 @@
       position: relative;
       z-index: 999;
       max-height: 99vh;
-      padding-bottom: 200px;
+      backdrop-filter: blur(25px);
+      padding: 0 0 200px 0;
 
       .share-with-checkbox-group {
         .checkboxes {
@@ -2906,7 +2920,7 @@
           }
         }
 
-        #details {
+        .details {
           hr {
             width: 90%;
             background-color: #ecedef;
@@ -3484,7 +3498,7 @@
 
   /*#region  SPECIFIC FORMS*/
   &.transfer-change {
-    #details {
+    .details {
       .flex {
         &.send-with-address-toggle {
           border: 0;
@@ -4049,139 +4063,146 @@
     overflow: auto;
     transition: all 0.3s ease-in-out;
 
-    #relative-wrapper {
-      a {
-        line-height: 1;
-        display: inline-block;
-        opacity: 1;
-        color: $linkColor;
-        text-decoration: none;
-        padding-bottom: 3px;
+    a {
+      line-height: 1;
+      display: inline-block;
+      opacity: 1;
+      color: $linkColor;
+      text-decoration: none;
+      padding-bottom: 3px;
+    }
+
+    .new-tab-icon {
+      font-size: 18px;
+      margin: 0;
+      padding: 0;
+      line-height: 1;
+      position: relative;
+      top: 3px;
+    }
+
+    .option {
+      border-radius: $borderRadius;
+      background: white;
+      .description {
+        padding-top: 5px;
+        padding-bottom: 10px;
       }
+      &.zelle {
+        border: 2px solid #6d1fd4;
+        background: rgba(109, 31, 212, 0.13);
 
-      .new-tab-icon {
-        font-size: 18px;
-        margin: 0;
-        padding: 0;
-        line-height: 1;
-        position: relative;
-        top: 3px;
-      }
-
-      .option {
-        border-radius: $borderRadius;
-        background: $grey;
-        .description {
-          padding-top: 5px;
-          padding-bottom: 10px;
+        .text {
+          border-radius: 0;
         }
-        &.zelle {
-          border: 2px solid #6d1fd4;
-          background: rgba(109, 31, 212, 0.13);
-
-          p {
-            color: #541ca8;
-          }
-        }
-        &.venmo {
-          background: rgba(0, 140, 255, 0.25);
-          border: 2px solid #008cff;
-
-          p {
-            color: #0073d8;
-          }
-        }
-        &.apple-cash {
-          border: 2px solid #181818;
-          background: white;
-        }
-        &.paypal {
-          background: rgba(0, 72, 255, 0.23);
-          border: 2px solid #002991;
-
-          p {
-            color: #002991;
-          }
-        }
-        &.cashapp {
-          background: rgba(0, 214, 79, 0.15);
-          border: 2px solid #00d64f;
-
-          p {
-            color: $bootstrapGreen;
-            font-weight: $fwRegular;
-            opacity: 1;
-          }
-        }
-        .brand-name-wrapper {
-          align-items: center;
-          padding: 10px;
-
-          .brand-name {
-            opacity: 1;
-            line-height: 1;
-            font-size: 22px;
-            justify-content: center;
-          }
-
-          &.zelle {
-            background: #6d1fd4;
-          }
-
-          &.venmo {
-            background: #008cff;
-          }
-
-          &.paypal {
-            background: #002991;
-          }
-
-          &.cashapp {
-            background: #00d64f;
-          }
-
-          &.apple {
-            background: #181818;
-          }
-
-          svg {
-            margin-right: 10px;
-          }
-
-          svg,
-          p {
-            color: white;
-            font-size: 22px;
-
-            &.venmo-icon {
-              font-size: 24px;
-            }
-          }
-        }
-
-        iframe {
-          margin: 10px auto 0 auto;
-          display: block;
-          border-radius: 0 0 $borderRadius $borderRadius;
-          max-width: 100%;
-          width: 100%;
-          border: 0;
-          height: auto;
-        }
-
-        img {
-          width: 50px;
-          max-width: 50px;
-        }
-      }
-
-      .text {
-        width: 100%;
-        padding: 10px;
 
         p {
-          margin: 0;
+          color: #541ca8;
         }
+      }
+      &.venmo {
+        background: rgba(0, 140, 255, 0.25);
+        border: 2px solid #008cff;
+
+        .text {
+          border-radius: 0;
+        }
+
+        p {
+          color: #0073d8;
+        }
+      }
+      &.apple-cash {
+        border: 2px solid #181818;
+        background: white;
+      }
+      &.paypal {
+        background: rgba(0, 72, 255, 0.23);
+        border: 2px solid #002991;
+
+        p {
+          color: #002991;
+        }
+      }
+      &.cashapp {
+        background: rgba(0, 214, 79, 0.15);
+        border: 2px solid #00d64f;
+
+        p {
+          color: $bootstrapGreen;
+          font-weight: $fwRegular;
+          opacity: 1;
+        }
+      }
+      .brand-name-wrapper {
+        align-items: center;
+        padding: 10px;
+
+        .brand-name {
+          opacity: 1;
+          line-height: 1;
+          font-size: 22px;
+          justify-content: center;
+        }
+
+        &.zelle {
+          background: #6d1fd4;
+        }
+
+        &.venmo {
+          background: #008cff;
+        }
+
+        &.paypal {
+          background: #002991;
+        }
+
+        &.cashapp {
+          background: #00d64f;
+        }
+
+        &.apple {
+          background: #181818;
+        }
+
+        svg {
+          margin-right: 10px;
+        }
+
+        svg,
+        p {
+          color: white;
+          font-size: 22px;
+
+          &.venmo-icon {
+            font-size: 24px;
+          }
+        }
+      }
+
+      iframe {
+        display: block;
+        border-radius: 0 0 $borderRadius $borderRadius;
+        max-width: 100%;
+        width: 100%;
+        border: 0;
+        height: auto;
+      }
+
+      img {
+        width: 50px;
+        max-width: 50px;
+      }
+    }
+
+    .text {
+      width: 100%;
+      padding: 10px;
+      background: white;
+      border-radius: 0 0 $borderRadius $borderRadius;
+
+      p {
+        margin: 0;
       }
     }
   }

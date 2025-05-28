@@ -11,6 +11,8 @@ import CalMapper from "../mappers/calMapper";
 
 import DateManager from "./dateManager";
 
+import StringManager from "./stringManager";
+
 DomManager = {
   AnimateDelayStyle: function(index, delay = .2) {
     return {
@@ -224,6 +226,20 @@ DomManager = {
         }
       });
     }
+  },
+  GetSelectOptions: function(optionsArray = []) {
+    var i, len, option, options;
+    options = [];
+    if (Manager.IsValid(optionsArray)) {
+      for (i = 0, len = optionsArray.length; i < len; i++) {
+        option = optionsArray[i];
+        options.push({
+          value: option,
+          label: StringManager.uppercaseFirstLetterOfAllWords(option)
+        });
+      }
+    }
+    return options;
   },
   SetDefaultCheckboxes: async function(checkboxContainerClass, object, propName, isArray = false, values) {
     var box, i, j, len, len1, phone, reminderIsValid, reminderTimes, results, timeframe;

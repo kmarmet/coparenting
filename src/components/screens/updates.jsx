@@ -31,7 +31,7 @@ export default function Updates() {
   const {updates} = useUpdates()
   const criticalCategories = [ActivityCategory.expenses, ActivityCategory.childInfo.medical]
 
-  const SetAppBadge = async () => await AppManager.setAppBadge(updates?.length)
+  const SetAppBadge = async () => await AppManager.SetAppBadge(updates?.length)
 
   const ClearAll = async () => await DB.DeleteByPath(`${DB.tables.updates}/${currentUser?.key}`)
 
@@ -192,7 +192,7 @@ export default function Updates() {
               })}
           </div>
         </div>
-        {updates?.length === 0 && <NoDataFallbackText text={'You have no updates awaiting your attention'} />}
+        {updates?.length === 0 && <NoDataFallbackText text={'no updates awaiting your attention'} />}
       </div>
       <NavBar navbarClass={'activity no-Add-new-button'}></NavBar>
     </>

@@ -14,13 +14,11 @@ import UpdateManager from '/src/managers/updateManager'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
-import MenuItem from '@mui/material/MenuItem'
 import 'lightgallery/css/lightgallery.css'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {BsCardImage} from 'react-icons/bs'
 import {MdOutlineEventRepeat} from 'react-icons/md'
-import {RxUpdate} from 'react-icons/rx'
 import {LazyLoadImage} from 'react-lazy-load-image-component'
 import InputTypes from '../../../constants/inputTypes'
 import DB from '../../../database/DB.js'
@@ -46,6 +44,8 @@ const SortByTypes = {
   recentlyAdded: 'Recently Added',
   amountDesc: 'Amount: High to Low',
   amountAsc: 'Amount: Low to High',
+  nameAsc: 'Name (ascending)',
+  nameDesc: 'Name (descending)',
 }
 
 export default function ExpenseTracker() {
@@ -56,7 +56,7 @@ export default function ExpenseTracker() {
   const [categoriesInUse, setCategoriesInUse] = useState([])
   const [activeExpense, setActiveExpense] = useState(null)
   const [showDetails, setShowDetails] = useState(false)
-  const [view, setView] = useState('details')
+  const [view, setView] = useState('Details')
   const [category, setCategory] = useState(activeExpense?.category)
   const [amount, setAmount] = useState('')
   const [payer, setPayer] = useState('')
@@ -73,8 +73,8 @@ export default function ExpenseTracker() {
   const [expenseDateType, setExpenseDateType] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
   const [sortedExpenses, setSortedExpenses] = useState([])
-  const {expenses, expensesAreLoading} = useExpenses()
-  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {expenses} = useExpenses()
+  const {currentUser} = useCurrentUser()
   const [showSlideshow, setShowSlideshow] = useState(false)
 
   const Update = async () => {
@@ -196,6 +196,26 @@ export default function ExpenseTracker() {
       setSortedExpenses(sortedByAmountAsc)
       setSortMethod(SortByTypes.amountAsc)
     }
+
+    // Name Ascending
+    if (sortByName === SortByTypes.nameAsc) {
+      const sortedByNameAsc = DatasetManager.sortByProperty(expenses, 'name', 'asc')
+      setSortedExpenses(sortedByNameAsc)
+      setSortMethod(SortByTypes.nameAsc)
+    }
+
+    // Name Descending
+    if (sortByName === SortByTypes.nameDesc) {
+      const sortedByNameDesc = DatasetManager.sortByProperty(expenses, 'name', 'desc')
+      setSortedExpenses(sortedByNameDesc)
+      setSortMethod(SortByTypes.nameDesc)
+    }
+
+    if (sortByName === SortByTypes.nearestDueDate) {
+      const sortedByNearestDueDate = DatasetManager.sortByProperty(expenses, 'dueDate', 'asc')
+      setSortedExpenses(sortedByNearestDueDate)
+      setSortMethod(SortByTypes.nearestDueDate)
+    }
   }
 
   const HandleCategorySelection = async (element) => {
@@ -226,7 +246,7 @@ export default function ExpenseTracker() {
     setPaidStatus(activeExpense?.paidStatus)
     setImageName(activeExpense?.imageName)
     setRecipientName(activeExpense?.recipientName)
-    setView('details')
+    setView('Details')
   }
 
   const DeleteExpense = async () => await DB.deleteById(`${DB.tables.expenses}/${currentUser?.key}`, activeExpense?.id)
@@ -275,7 +295,7 @@ export default function ExpenseTracker() {
   }
 
   useEffect(() => {
-    setView('details')
+    setView('Details')
     const catsAsArray = Object.keys(ExpenseCategories)
     catsAsArray.unshift('None')
     setCategoriesAsArray(catsAsArray)
@@ -309,9 +329,8 @@ export default function ExpenseTracker() {
       <Form
         submitText={'Update'}
         title={`${StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.name || '')}`}
-        submitIcon={<RxUpdate className={'fs-16'} />}
         onSubmit={Update}
-        hasSubmitButton={view === 'edit'}
+        hasSubmitButton={view === 'Edit'}
         className="expense-tracker form"
         wrapperClass="expense-tracker"
         onClose={() => {
@@ -320,12 +339,21 @@ export default function ExpenseTracker() {
           setState({...state, refreshKey: Manager.GetUid()})
         }}
         onDelete={DeleteExpense}
-        viewSelector={<ViewSelector onloadState={showDetails} labels={['details', 'edit']} updateState={(e) => setView(e.toLowerCase())} />}
+        viewSelector={
+          <ViewSelector
+            wrapperClasses="full-width"
+            show={showDetails}
+            dropdownPlaceholder="View"
+            labels={['Details', 'Edit']}
+            updateState={(e) => {
+              setView(e)
+            }}
+          />
+        }
         showCard={showDetails}>
-        <div id="details" className={`content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
-          <Spacer height={5} />
+        <div className={`details content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
           {/* DETAILS */}
-          {view === 'details' && (
+          {view === 'Details' && (
             <>
               <div className="blocks">
                 {/*  Amount */}
@@ -441,7 +469,7 @@ export default function ExpenseTracker() {
           )}
 
           {/* EDIT */}
-          {view === 'edit' && (
+          {view === 'Edit' && (
             <>
               <InputWrapper
                 inputType={InputTypes.text}
@@ -469,18 +497,12 @@ export default function ExpenseTracker() {
 
               {/* CATEGORY */}
               <SelectDropdown
-                wrapperClasses={'expense-tracker'}
+                wrapperClasses={'expense-tracker in-form'}
                 selectValue={category}
                 onChange={(e) => setCategory(e.target.value)}
-                placeholder={'Category'}>
-                {categoriesAsArray.map((cat, index) => {
-                  return (
-                    <MenuItem key={index} value={cat}>
-                      {cat}
-                    </MenuItem>
-                  )
-                })}
-              </SelectDropdown>
+                options={categoriesAsArray}
+                placeholder={'Category'}
+              />
 
               <Spacer height={5} />
 
@@ -516,7 +538,7 @@ export default function ExpenseTracker() {
       </Form>
 
       {/* PAGE CONTAINER */}
-      <div id="expense-tracker" className={`${theme} page-container form`}>
+      <div id="expense-tracker" className={`${theme} page-container`}>
         <ScreenHeader
           title={'Expense Tracker'}
           screenDescription="Incorporate expenses that your co-parent is responsible for. Should a new expense arise that requires your payment, you will have the option
@@ -525,9 +547,9 @@ export default function ExpenseTracker() {
         <Spacer height={8} />
 
         <div className="screen-content">
-          {/* PAYMENT OPTIONS */}
+          {/* PAYMENT OPTIONS LINK */}
           <p className="payment-options-link" onClick={() => setShowPaymentOptionsCard(true)}>
-            Bill Payment & Money Transfer Options
+            Expense Payment & Money Transfer Options
           </p>
           <Spacer height={8} />
 
@@ -606,12 +628,8 @@ export default function ExpenseTracker() {
                   wrapperClasses={'sorting-accordion'}
                   selectValue={sortMethod}
                   placeholder={'Sort by'}
-                  onChange={HandleSortBySelection}>
-                  <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
-                  <MenuItem value={SortByTypes.nearestDueDate}>{SortByTypes.nearestDueDate}</MenuItem>
-                  <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
-                  <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
-                </SelectDropdown>
+                  options={Object.values(SortByTypes)}
+                  onChange={HandleSortBySelection}></SelectDropdown>
               </div>
             </AccordionDetails>
           </Accordion>

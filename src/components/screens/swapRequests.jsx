@@ -201,7 +201,7 @@ export default function SwapRequests() {
         showCard={showDetails}>
         {/* DETAILS */}
         {view === 'details' && (
-          <div id="details" className={`content`}>
+          <div className="details" className={`content`}>
             <Spacer height={5} />
             <div className="blocks">
               {/* Swap Date(s) */}

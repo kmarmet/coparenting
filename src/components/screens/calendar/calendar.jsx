@@ -18,7 +18,6 @@ import {BsStars} from 'react-icons/bs'
 import {LuCalendarSearch} from 'react-icons/lu'
 import {PiCalendarXDuotone} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
-import ScreenNames from '../../../constants/screenNames'
 import DB from '../../../database/DB.js'
 import useAppUpdates from '../../../hooks/useAppUpdates'
 import useCalendarEvents from '../../../hooks/useCalendarEvents'
@@ -267,9 +266,7 @@ export default function EventCalendar() {
   }
 
   const SetInitialActivities = async () => {
-    const notifications = await DB.getTable(`${DB.tables.updates}/${currentUser?.key}`)
-    await AppManager.setAppBadge(notifications.length)
-    setState({...state, notificationCount: notifications.length, currentScreen: ScreenNames.calendar, refreshKey: Manager.GetUid()})
+    // AppManager.SetAppBadge(appUpdates?.length)
   }
 
   // SEARCH
@@ -292,7 +289,7 @@ export default function EventCalendar() {
 
   const UpdateOrRefreshIfNecessary = async () => {
     let latestVersionNumber = appUpdates[appUpdates.length - 1]?.currentVersion
-    const shouldRefresh = await AppManager.UpdateOrRefreshIfNecessary(currentUser, latestVersionNumber)
+    const shouldRefresh = await AppManager.UpdateOrRefreshIfNecessary(currentUser, latestVersionNumber).then()
     if (shouldRefresh) {
       setState({...state, successAlertMessage: 'Updating App ...'})
       await Manager.GetPromise(() => {

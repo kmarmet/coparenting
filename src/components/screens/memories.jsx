@@ -3,7 +3,6 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import React, {useContext, useEffect, useState} from 'react'
-import {LuMinus, LuPlus} from 'react-icons/lu'
 import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import DB from '../../database/DB'
@@ -15,11 +14,11 @@ import ImageManager from '../../managers/imageManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import NavBar from '../navBar'
-import Label from '../shared/label'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import ScreenHeader from '../shared/screenHeader'
 import Slideshow from '../shared/slideshow'
 import Spacer from '../shared/spacer'
+import AccordionTitle from '../shared/accordionTitle'
 
 export default function Memories() {
   const {state, setState} = useContext(globalState)
@@ -86,9 +85,7 @@ export default function Memories() {
         <div className="screen-content">
           <Accordion className={`${theme} white-bg memories-accordion accordion`} expanded={showDisclaimer}>
             <AccordionSummary>
-              <button className="button default grey" onClick={() => setShowDisclaimer(!showDisclaimer)}>
-                <Label text={'Memory Expiration'} /> {showDisclaimer ? <LuMinus /> : <LuPlus />}
-              </button>
+              <AccordionTitle titleText={'Memory Expiration'} onClick={() => setShowDisclaimer(!showDisclaimer)} />
             </AccordionSummary>
             <Spacer height={5} />
             <AccordionDetails>

@@ -325,7 +325,7 @@ const DB_UserScoped = {
     const dbRef = ref(getDatabase())
     const {email, key, accountType, phone, name} = userObject
 
-    const locationDetails = (await AppManager.getLocationDetails()) || {}
+    const locationDetails = (await AppManager.GetLocationDetails()) || {}
 
     // User Record
     let newUser = new User()

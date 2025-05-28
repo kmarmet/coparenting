@@ -1,5 +1,4 @@
-// Path: src\components\forms\editCalEvent.jsx
-import CheckboxGroup from '/src/components/shared/checkboxGroup'
+// Path: src\components\forms\EditCalEvent.jsx
 import Form from '/src/components/shared/form'
 import InputWrapper from '/src/components/shared/inputWrapper'
 import ShareWithCheckboxes from '/src/components/shared/shareWithCheckboxes'
@@ -13,10 +12,7 @@ import Manager from '/src/managers/manager'
 import ObjectManager from '/src/managers/objectManager'
 import StringManager from '/src/managers/stringManager'
 import UpdateManager from '/src/managers/updateManager'
-import {default as CalendarMapper, default as CalMapper} from '/src/mappers/calMapper'
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
+import {default as CalMapper} from '/src/mappers/calMapper'
 import moment from 'moment'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {MdEventRepeat} from 'react-icons/md'
@@ -28,7 +24,6 @@ import useUsers from '../../hooks/useUsers'
 import DatasetManager from '../../managers/datasetManager'
 import DomManager from '../../managers/domManager'
 import LogManager from '../../managers/logManager'
-import CalendarEvent from '../../models/new/calendarEvent'
 import AddressInput from '../shared/addressInput'
 import DetailBlock from '../shared/detailBlock'
 import Label from '../shared/label'
@@ -37,6 +32,8 @@ import MultilineDetailBlock from '../shared/multilineDetailBlock'
 import Spacer from '../shared/spacer.jsx'
 import ToggleButton from '../shared/toggleButton'
 import ViewSelector from '../shared/viewSelector'
+import SelectDropdown from '../shared/selectDropdown'
+import useChildren from '../../hooks/useChildren'
 
 export default function EditCalEvent({event, showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
@@ -46,6 +43,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const {currentUser} = useCurrentUser()
   const {calendarEvents} = useCalendarEvents(event?.ownerKey)
   const {users} = useUsers()
+  const {children, childrenDropdownOptions} = useChildren()
 
   // Event Details
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
@@ -58,13 +56,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const [isVisitation, setIsVisitation] = useState(false)
   const [shareWithNames, setShareWithNames] = useState([])
   const [clonedDates, setClonedDates] = useState([])
-  const [view, setView] = useState('details')
+  const [view, setView] = useState('Details')
 
   // REF
-  const updatedEvent = useRef(new CalendarEvent({...event, startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)}))
+  const updatedEvent = useRef({...event, children: event?.children || [], startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)})
 
   const ResetForm = async (alertMessage = '') => {
-    Manager.ResetForm('edit-event-form')
+    Manager.ResetForm('Edit-event-form')
     setEventIsDateRange(false)
     setClonedDates([])
     setIncludeChildren(false)
@@ -209,49 +207,16 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   }
 
   // CHECKBOX HANDLERS
-  const HandleChildSelection = (e) => {
-    let childrenArr = []
-    DomManager.HandleCheckboxSelection(
-      e,
-      (e) => {
-        childrenArr = [...updatedEvent.current.children, e]
-        updatedEvent.current.children = childrenArr
-      },
-      (e) => {
-        updatedEvent.current.children = updatedEvent?.current?.children?.filter((x) => x !== e)
-      },
-      true
-    )
-  }
+  const HandleChildSelection = (e) => (updatedEvent.current.children = e?.map((x) => x?.label?.trim()))
 
   const HandleShareWithSelection = (e) => {
-    updatedEvent.current.shareWith = DomManager.HandleShareWithSelection(e, currentUser, updatedEvent?.current?.shareWith)
+    updatedEvent.current.shareWith = e.map((x) => x.value)
   }
 
-  const HandleReminderSelection = async (e) => {
-    DomManager.HandleCheckboxSelection(
-      e,
-      (e) => {
-        let timeframe = CalendarMapper.reminderTimes(e)
-        if (updatedEvent?.current?.reminderTimes?.length === 0) {
-          updatedEvent?.current?.reminderTimes([timeframe])
-        } else {
-          if (!updatedEvent?.current?.reminderTimes?.includes(timeframe)) {
-            updatedEvent.current.reminderTimes = DatasetManager.AddToArray(updatedEvent?.current?.reminderTimes, timeframe)
-          }
-        }
-      },
-      (e) => {
-        let mapped = CalendarMapper.reminderTimes(e)
-        let filtered = updatedEvent?.current?.reminderTimes?.filter((x) => x !== mapped)
-        updatedEvent.current.reminderTimes = filtered
-      },
-      true
-    )
-  }
+  const HandleReminderSelection = (e) => (updatedEvent.current.reminderTimes = e?.map((x) => x?.value?.trim()))
 
   const SetDefaultValues = async () => {
-    setView('details')
+    setView('Details')
     setEventIsRecurring(updatedEvent?.current?.isRecurring)
     setEventIsDateRange(updatedEvent?.current?.isDateRange)
     setIncludeChildren(Manager.IsValid(updatedEvent?.current?.children))
@@ -291,7 +256,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     let message = 'Are you sure you want to Delete this event?'
 
     if (updatedEvent?.current?.isRecurring || updatedEvent?.current?.isCloned || updatedEvent?.current?.isDateRange) {
-      message = 'Are you sure you would like to Delete ALL events with these details?'
+      message = 'Are you sure you would like to Delete ALL events with these Details?'
     }
 
     return message
@@ -313,6 +278,22 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     readable = readable.replace('At', '')
     readable = StringManager.uppercaseFirstLetterOfAllWords(readable)
     return readable
+  }
+
+  const GetReminderOptions = () => {
+    const unformatted = CalMapper.allUnformattedTimes()
+    let options = []
+    if (Manager.IsValid(unformatted)) {
+      for (let reminder of unformatted) {
+        if (Manager.IsValid(reminder)) {
+          options.push({
+            label: CalMapper.readableReminderBeforeTimeframes(reminder),
+            value: reminder,
+          })
+        }
+      }
+    }
+    return options
   }
 
   useEffect(() => {
@@ -340,28 +321,28 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         hasDelete={currentUser?.key === updatedEvent?.current?.ownerKey}
         onSubmit={Submit}
         submitText={'Update'}
-        hasSubmitButton={view === 'edit'}
+        hasSubmitButton={view === 'Edit'}
         onClose={async () => {
           await ResetForm()
         }}
         title={StringManager.formatEventTitle(StringManager.uppercaseFirstLetterOfAllWords(updatedEvent?.current?.title))}
         showCard={showCard}
         deleteButtonText="Delete"
-        className="edit-calendar-event"
+        className="Edit-calendar-event"
         viewSelector={
           <ViewSelector
-            key={refreshKey}
-            onloadState={showCard}
+            show={showCard}
+            dropdownPlaceholder="Select View"
             labels={['Details', 'Edit']}
             updateState={(labelText) => {
               setView(labelText)
             }}
           />
         }
-        wrapperClass={`edit-calendar-event at-top ${updatedEvent?.current?.ownerKey === currentUser?.key ? 'owner' : 'non-owner'}`}>
-        <div id="edit-cal-event-container" className={`${theme} edit-event-form'`}>
+        wrapperClass={`Edit-calendar-event at-top ${updatedEvent?.current?.ownerKey === currentUser?.key ? 'owner' : 'non-owner'}`}>
+        <div id="Edit-cal-event-container" className={`${theme} Edit-event-form'`}>
           {/* DETAILS */}
-          <div id="details" className={view === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
+          <div className={view === 'Details' ? 'view-wrapper details active' : 'view-wrapper'}>
             <div className="blocks">
               {/*  Date */}
               <DetailBlock
@@ -467,7 +448,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           </div>
 
           {/* EDIT */}
-          <div id="edit" className={view === 'edit' ? 'view-wrapper edit active content' : 'view-wrapper content'}>
+          <div className={view === 'Edit' ? 'view-wrapper edit active content' : 'view-wrapper content edit'}>
             {/* EVENT NAME */}
             <InputWrapper
               inputType={InputTypes.text}
@@ -521,7 +502,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               </>
             )}
 
-            <Spacer height={11} />
+            <hr />
 
             {/* Share with */}
             <ShareWithCheckboxes
@@ -531,76 +512,22 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               containerClass={`share-with-parents`}
             />
 
-            <Spacer height={8} />
+            <Spacer height={2} />
 
-            {/* REMINDER */}
-            <Accordion expanded={showReminders} id={'checkboxes'}>
-              <AccordionSummary>
-                <div className="flex reminder-times-toggle">
-                  <Label classes="toggle" text={'Remind Me'} />
-                  <ToggleButton
-                    isDefaultChecked={Manager.IsValid(updatedEvent?.current?.reminderTimes)}
-                    onCheck={() => setShowReminders(true)}
-                    onUncheck={() => setShowReminders(false)}
-                  />
-                </div>
-              </AccordionSummary>
-              <AccordionDetails>
-                <CheckboxGroup
-                  checkboxArray={DomManager.BuildCheckboxGroup({
-                    currentUser,
-                    labelType: 'reminder-times',
-                    defaultLabels: updatedEvent?.current?.reminderTimes,
-                  })}
-                  elClass={`${theme}`}
-                  containerClass={'reminder-times'}
-                  skipNameFormatting={true}
-                  onCheck={HandleReminderSelection}
-                />
-              </AccordionDetails>
-            </Accordion>
-
-            {/* IS VISITATION? */}
-            <div className="flex visitation-toggle">
-              <Label classes="toggle" text={'Visitation Event'} />
-              <ToggleButton
-                isDefaultChecked={updatedEvent?.current?.fromVisitationSchedule}
-                onCheck={() => setIsVisitation(!isVisitation)}
-                onUncheck={() => setIsVisitation(!isVisitation)}
-              />
-            </div>
+            <SelectDropdown isMultiple={true} labelText={'Select Reminders'} options={GetReminderOptions()} onChange={HandleReminderSelection} />
+            <Spacer height={2} />
 
             {/* INCLUDING WHICH CHILDREN */}
-            {currentUser?.accountType === 'parent' && (
-              <Accordion expanded={includeChildren} id={'checkboxes'}>
-                <AccordionSummary>
-                  <div className="flex children-toggle">
-                    <Label classes="toggle" text={'Include Children'} />
-                    <ToggleButton
-                      isDefaultChecked={updatedEvent?.current?.children?.length > 0}
-                      onCheck={() => setIncludeChildren(!includeChildren)}
-                      onUncheck={() => setIncludeChildren(!includeChildren)}
-                    />
-                  </div>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <div id="include-children-checkbox-container">
-                    <CheckboxGroup
-                      checkboxArray={DomManager.BuildCheckboxGroup({
-                        currentUser,
-                        labelType: 'children',
-                        defaultLabels: updatedEvent?.current?.children,
-                      })}
-                      elClass={`${theme} `}
-                      containerClass={'include-children-checkbox-container'}
-                      onCheck={HandleChildSelection}
-                    />
-                  </div>
-                </AccordionDetails>
-              </Accordion>
+            {Manager.IsValid(children) && (
+              <SelectDropdown
+                options={childrenDropdownOptions}
+                labelText={'Select Children to Include'}
+                onChange={HandleChildSelection}
+                isMultiple={true}
+              />
             )}
 
-            <Spacer height={5} />
+            <hr />
 
             {/* URL/WEBSITE */}
             <InputWrapper
@@ -636,6 +563,16 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               inputType={InputTypes.textarea}
               onChange={(e) => (updatedEvent.current.notes = e.target.value)}
             />
+
+            {/* IS VISITATION? */}
+            <div className="flex visitation-toggle">
+              <Label classes="toggle" text={'Visitation Event'} />
+              <ToggleButton
+                isDefaultChecked={updatedEvent?.current?.fromVisitationSchedule}
+                onCheck={() => setIsVisitation(!isVisitation)}
+                onUncheck={() => setIsVisitation(!isVisitation)}
+              />
+            </div>
           </div>
         </div>
       </Form>

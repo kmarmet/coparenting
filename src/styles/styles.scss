@@ -142,6 +142,135 @@
   }
 }
 
+
+.location-pin-animation {
+  width: 40px;
+  aspect-ratio: 1;
+  position: relative;
+  transform: rotate(45deg);
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50% 50% 0 50%;
+    background: $blend;
+    -webkit-mask: radial-gradient(circle 10px at 50% 50%,#0000 94%,#000);
+  }
+  &::after {
+    animation: locationPinAnimation 1.3s infinite linear reverse; ;
+    transform: perspective(400px) translateZ(0px)
+  }
+}
+
+
+
+.loading-animation {
+  width: 20px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #5e64ff;
+  box-shadow: 0 0 0 0 $blend;
+  animation: loadingAnimation 1.2s infinite linear;
+  position: relative;
+  transform: scale(1.3);
+
+  &::after,
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 0 0 $blend;
+    animation: inherit;
+    animation-delay: -0.5s;
+  }
+
+  &::after {
+    animation-delay: -1s;
+  }
+}
+
+// REACT-SELECT
+[class*='css-'] {
+  // Dropdown Menu
+  &[class*='-menu'] {
+    z-index: $maxZIndex !important;
+    position: relative;
+    display: block;
+    background-color: transparent !important;
+    border-radius: $borderRadius !important;
+    padding-top: 8px !important;
+    @include bestShadow;
+    width: 80vw !important;
+    margin: 0 auto !important;
+    transition: all 0.4s ease-in-out !important;
+  }
+
+  // Wrapper
+  &[class*='-control'] {
+    background: $inputBackground !important;
+    border-radius: $borderRadius !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    [class*='css-'] {
+      color: white !important;
+      font-size: 14px !important;
+
+      &:first-child {
+        div {
+          width: auto !important;
+        }
+      }
+    }
+
+    // Chips
+    [class*='-multiValue'] {
+      background: $inputBackground !important;
+      border-radius: 50px !important;
+      padding: 0 5px !important;
+      color: white !important;
+      max-width: unset !important;
+      width: auto !important;
+      margin-right: 5px !important;
+
+      [class*='css-'] {
+        color: white !important;
+        font-size: 14px !important;
+      }
+    }
+
+    [class*='-indicatorSeparator'] {
+      display: none !important;
+    }
+
+    [class*='-indicatorContainer'] {
+      color: white !important;
+    }
+
+    [class*='-singleValue'] {
+      color: white !important;
+    }
+
+    [class*='-placeholder'] {
+      color: white !important;
+    }
+  }
+  &[class*='-container'] {
+    border-radius: $borderRadius !important;
+    border: 0 !important;
+
+    [class*='-option'] {
+      background: $inputBackground !important;
+      border-radius: $borderRadius !important;
+      width: 94% !important;
+      margin: 0 auto 8px auto !important;
+      color: white !important;
+    }
+  }
+}
+
 .password-validation {
   .checklist-icon {
     font-size: 15px !important;
@@ -1100,16 +1229,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      background-color: transparent;
+
+      &.active {
+        backdrop-filter: blur(10px);
+        //background: rgba(0, 0, 0, 0.2);
+        z-index: $maxZIndex;
+      }
 
       &.dark {
         background: $darkBg;
       }
 
-      &.active {
-        z-index: $maxZIndex;
-        backdrop-filter: blur(5px);
-        background: rgba(0, 0, 0, 0.2);
-      }
       .loading {
         position: fixed;
         top: 0;
@@ -1117,7 +1248,6 @@
         width: 100%;
         height: 100%;
         z-index: 9999;
-        border: 2px dashed red !important;
       }
 
       .loading-text {

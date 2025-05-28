@@ -141,7 +141,7 @@ export default function App() {
               return
             }
           }
-          await AppManager.setAppBadge(0)
+          // await AppManager.setAppBadge(0)
           await AppManager.clearAppBadge()
           const users = await DB.getTable(DB.tables.users)
 
@@ -153,6 +153,7 @@ export default function App() {
             let screenToNavigateTo = ScreenNames.calendar
             const body = document.getElementById('external-overrides')
             const navbar = document.getElementById('navbar')
+            updates = await DB.getTable(`${DB.tables.updates}/${currentUserFromDb?.key}`)
 
             if (Manager.IsValid(navbar)) {
               navbar.setAttribute('account-type', currentUserFromDb?.accountType)
@@ -164,19 +165,18 @@ export default function App() {
             // Check if child profile and if parent access is granted
             // Add location details to use record if they do not exist
             if (!Manager.IsValid(currentUserFromDb?.location)) {
-              AppManager.getLocationDetails().then(async (r) => {
+              AppManager.GetLocationDetails().then(async (r) => {
                 await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUserFromDb?.key}/location`, r)
               })
 
               // Delete expired items
-              AppManager.deleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
-              AppManager.deleteExpiredMemories(currentUserFromDb).then((r) => r)
+              AppManager.DeleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
+              AppManager.DeleteExpiredMemories(currentUserFromDb).then((r) => r)
             }
 
             // Get notifications
-            if (!window.location.href.includes('localhost')) {
+            if (!window.location.href.includes('localhost') && !AppManager.IsDevMode()) {
               UpdateManager.init(currentUserFromDb)
-              updates = await DB.getTable(`${DB.tables.updates}/${currentUserFromDb?.key}`)
             }
 
             // Back to Log in if user's email is not verified

@@ -79,10 +79,8 @@ const Chats = () => {
           {/* INVITE BUTTON */}
           <Accordion expanded={showInfo} className={`${theme} white-bg invite-accordion accordion`}>
             <AccordionSummary>
-              <button className="button default grey" onClick={() => setShowInfo(!showInfo)}>
-                <div id="circle" className="circle"></div>
-                <AccordionTitle titleText={"Invite Co-Parent"} toggleState={showInfo} onClick={() => setShowInfo(!showInfo)} />
-              </button>
+              <div id="circle" className="circle"></div>
+              <AccordionTitle titleText={'Invite Co-Parent'} toggleState={showInfo} onClick={() => setShowInfo(!showInfo)} />
             </AccordionSummary>
             <AccordionDetails>
               <p>

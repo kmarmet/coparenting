@@ -8,6 +8,7 @@ import {IoEllipsisVerticalSharp} from 'react-icons/io5'
 import App from './App'
 import Spacer from './components/shared/spacer'
 import AlertManager from './managers/alertManager'
+import AppManager from './managers/appManager'
 
 if ('serviceWorker' in navigator) {
   function handleConnection() {
@@ -30,23 +31,25 @@ if ('serviceWorker' in navigator) {
   // eslint-disable-next-line no-undef
   const publicUrl = window.location.hostname.indexOf('localhost') > -1 ? 'http://localhost:1234' : process.env.REACT_APP_PUBLIC_URL
   // console.Log(`${publicUrl}/OneSignalSDKWorker.js`)
-  navigator.serviceWorker
-    .register(`${publicUrl}/OneSignalSDKWorker.js`)
-    .then((registration) => {
-      // console.Log(registration);
+  if (!AppManager.IsDevMode()) {
+    navigator.serviceWorker
+      .register(`${publicUrl}/OneSignalSDKWorker.js`)
+      .then((registration) => {
+        // console.Log(registration);
 
-      console.log('[SW] service Worker is registered at', registration.scope)
-    })
-    .catch((err) => {
-      console.error('[SW] service Worker registration failed:', err)
-    })
+        console.log('[SW] service Worker is registered at', registration.scope)
+      })
+      .catch((err) => {
+        console.error('[SW] service Worker registration failed:', err)
+      })
 
-  // Update content
-  navigator.serviceWorker.ready.then((registration) => {
-    registration.update().then(() => {
-      // console.Log('PWA Updated')
+    // Update content
+    navigator.serviceWorker.ready.then((registration) => {
+      registration.update().then(() => {
+        // console.Log('PWA Updated')
+      })
     })
-  })
+  }
   function isReachable(url) {
     /**
      * Note: fetch() still "succeeds" for 404s on subdirectories,

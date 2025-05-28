@@ -16,7 +16,6 @@ import UpdateManager from '/src/managers/updateManager.js'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {setKey} from 'react-geocode'
-import {MdPersonPinCircle} from 'react-icons/md'
 import {PiCarProfileDuotone} from 'react-icons/pi'
 import ButtonTypes from '../../constants/buttonTypes'
 import InputTypes from '../../constants/inputTypes'
@@ -218,7 +217,7 @@ export default function TransferRequests() {
         hasThirdButton={true}
         onClose={ResetForm}
         showCard={showDetails}>
-        <div id="details" className={`content ${activeRequest?.requestReason?.length > 20 ? 'long-text' : ''}`}>
+        <div className="details" className={`content ${activeRequest?.requestReason?.length > 20 ? 'long-text' : ''}`}>
           {view.toLowerCase() === 'details' && (
             <>
               {/* BLOCKS */}
@@ -283,7 +282,8 @@ export default function TransferRequests() {
                 {/*  CHECK IN */}
                 <DetailBlock title={'Check In'} valueToValidate={'Check In'} isCustom={true}>
                   <div className="card-icon-button" onClick={CheckIn}>
-                    <MdPersonPinCircle />
+                    {/*<MdPersonPinCircle />*/}
+                    <span className="location-pin-animation"></span>
                   </div>
                   <Spacer height={2} />
                 </DetailBlock>

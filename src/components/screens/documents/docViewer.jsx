@@ -664,7 +664,7 @@ export default function DocViewer() {
       </ScreenActionsMenu>
 
       {/* PAGE CONTAINER / TEXT */}
-      <div id="documents-container" className={`${theme} page-container form documents`}>
+      <div id="documents-container" className={`${theme} page-container  documents`}>
         <ScreenHeader title={StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(docToView?.name)).replaceAll('-', ' ')} />
         <div className="screen-content">
           <div id="doc-text"></div>

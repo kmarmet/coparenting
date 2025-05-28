@@ -1006,7 +1006,7 @@
         }
         #relative-wrapper {
           #content {
-            #details {
+            .details {
               hr {
                 &.top,
                 &.bottom {
@@ -1032,7 +1032,7 @@
 
             #relative-wrapper {
               #content {
-                #details {
+                .details {
                   .blocks {
                     .block {
                       a {

@@ -1,10 +1,10 @@
 // Path: src\components\shared\viewSelector.jsx
 import React, {useContext, useState} from 'react'
 import globalState from '../../context'
-import StringManager from '../../managers/stringManager'
 import SelectDropdown from './selectDropdown'
+import DomManager from '../../managers/domManager'
 
-export default function ViewSelector({labels, updateState, wrapperClasses = '', onloadState = ''}) {
+export default function ViewSelector({labels, dropdownPlaceholder = '', isMultiple = false, updateState, wrapperClasses = '', show = false}) {
   // APP STATE
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
@@ -13,16 +13,17 @@ export default function ViewSelector({labels, updateState, wrapperClasses = '', 
   return (
     <div key={refreshKey} className={`${wrapperClasses} views-wrapper`}>
       <SelectDropdown
-        options={labels.map((x) => StringManager.uppercaseFirstLetterOfAllWords(x))}
-        wrapperClasses={'view-selector'}
+        options={DomManager.GetSelectOptions(labels)}
+        wrapperClasses={`view-selector ${wrapperClasses}`}
         selectValue={selected}
-        labelText={labels[0]}
-        placeholder={labels[0]}
+        isMultiple={isMultiple}
+        className={wrapperClasses}
+        labelText={dropdownPlaceholder}
         onChange={(e) => {
-          updateState(e.target.value.toLowerCase())
-          setSelected(e.target.value)
+          updateState(e.value)
+          setSelected(e.value)
         }}
-        onloadState={true}
+        show={show}
       />
     </div>
   )

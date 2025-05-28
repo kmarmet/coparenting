@@ -139,6 +139,26 @@ export default function Vault() {
       setSortedExpenses(sortedByAmountAsc)
       setSortMethod(SortByTypes.amountAsc)
     }
+
+    // Name Ascending
+    if (sortByName === SortByTypes.nameAsc) {
+      const sortedByNameAsc = DatasetManager.sortByProperty(expenses, 'name', 'asc')
+      setSortedExpenses(sortedByNameAsc)
+      setSortMethod(SortByTypes.nameAsc)
+    }
+
+    // Name Descending
+    if (sortByName === SortByTypes.nameDesc) {
+      const sortedByNameDesc = DatasetManager.sortByProperty(expenses, 'name', 'desc')
+      setSortedExpenses(sortedByNameDesc)
+      setSortMethod(SortByTypes.nameDesc)
+    }
+
+    if (sortByName === SortByTypes.nearestDueDate) {
+      const sortedByNearestDueDate = DatasetManager.sortByProperty(expenses, 'dueDate', 'asc')
+      setSortedExpenses(sortedByNearestDueDate)
+      setSortMethod(SortByTypes.nearestDueDate)
+    }
   }
 
   const ExportExpenses = () => VaultManager.createCSV(expenses, 'Peaceful_coParenting_Exported_Expenses', 'expenses')
@@ -169,7 +189,7 @@ export default function Vault() {
 
   return (
     <>
-      <div id="records-wrapper" className={`${theme} form page-container`}>
+      <div id="records-wrapper" className={`${theme} page-container`}>
         <ScreenHeader
           title={'The Vault'}
           screenName={ScreenNames.vault}
@@ -181,10 +201,10 @@ export default function Vault() {
           <p>Data can be exported as an Excel spreadsheet format, with options to apply filters or sorting as needed.</p>
           <Spacer height={10} />
           {/* RECORD TYPE */}
+          <Label text={'Record Type'} classes={'always-show dark'} />
           <CheckboxGroup
             containerClass={'reminder-times'}
             elClass={`${theme}`}
-            parentLabel="Record Type"
             skipNameFormatting={true}
             checkboxArray={DomManager.BuildCheckboxGroup({
               currentUser,
@@ -198,10 +218,10 @@ export default function Vault() {
           {coparents?.length > 1 && recordType === RecordTypes.Expenses && (
             <>
               <Spacer height={5} />
+              <Label text={'Payers'} classes={'always-show dark'} />
               <CheckboxGroup
                 elClass={'payers'}
                 skipNameFormatting={true}
-                parentLabel="Payer"
                 checkboxArray={DomManager.BuildCheckboxGroup({
                   currentUser,
                   customLabelArray: expensePayers,
@@ -215,7 +235,12 @@ export default function Vault() {
           {recordType === RecordTypes.Expenses && Manager.IsValid(expenses) && (
             <div id="sorting-wrapper">
               <Label text={'Sorting'} />
-              <SelectDropdown id={'sorting-dropdown'} wrapperClasses={'sorting-dropdown'} selectValue={sortMethod} onChange={HandleSortBySelection}>
+              <SelectDropdown
+                id={'sorting-dropdown'}
+                options={Object.values(SortByTypes)}
+                wrapperClasses={'sorting-dropdown'}
+                selectValue={sortMethod}
+                onChange={HandleSortBySelection}>
                 <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
                 <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
                 <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
@@ -260,26 +285,28 @@ export default function Vault() {
 
           {/* CHATS */}
           {recordType === RecordTypes.Chats && (
-            <CheckboxGroup
-              onCheck={(e) => {
-                const chatKey = e.dataset.key
-                DomManager.HandleCheckboxSelection(
-                  e,
-                  () => {
-                    setSelectedChatId(chatKey)
-                  },
-                  () => {},
-                  false
-                )
-              }}
-              parentLabel="Select which chat you would like to export"
-              checkboxArray={DomManager.BuildCheckboxGroup({
-                currentUser,
-                customLabelArray: activeChats,
-                labelProp: 'name',
-                uidProp: 'id',
-              })}
-            />
+            <>
+              <Label text={'Select chat to export'} classes={'always-show dark'} />
+              <CheckboxGroup
+                onCheck={(e) => {
+                  const chatKey = e.dataset.key
+                  DomManager.HandleCheckboxSelection(
+                    e,
+                    () => {
+                      setSelectedChatId(chatKey)
+                    },
+                    () => {},
+                    false
+                  )
+                }}
+                checkboxArray={DomManager.BuildCheckboxGroup({
+                  currentUser,
+                  customLabelArray: activeChats,
+                  labelProp: 'name',
+                  uidProp: 'id',
+                })}
+              />
+            </>
           )}
         </div>
       </div>

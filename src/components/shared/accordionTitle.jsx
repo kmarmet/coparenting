@@ -1,11 +1,12 @@
 import React from 'react'
-import Label from './label'
 import {LuMinus, LuPlus} from 'react-icons/lu'
 
 const AccordionTitle = ({onClick, titleText, toggleState}) => {
   return (
     <button className="button default grey" onClick={onClick}>
-      <Label text={titleText} classes={"toggle always-show"}  /> {toggleState ? <LuMinus /> : <LuPlus />}
+      <span className={'label'}>
+        {titleText} {toggleState ? <LuMinus /> : <LuPlus />}
+      </span>
     </button>
   )
 }

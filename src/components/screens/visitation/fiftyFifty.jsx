@@ -7,7 +7,6 @@ import {FaMinus, FaPlus} from 'react-icons/fa6'
 import Form from '../../../components/shared/form'
 import InputWrapper from '../../../components/shared/inputWrapper'
 // Path: src\components\screens\visitation\fiftyFifty.jsx
-import Label from '../../../components/shared/label'
 import MyConfetti from '../../../components/shared/myConfetti'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
@@ -21,6 +20,7 @@ import StringManager from '../../../managers/stringManager'
 import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/new/calendarEvent'
 import Spacer from '../../shared/spacer'
+import AccordionTitle from '../../shared/accordionTitle'
 
 export default function FiftyFifty({hide, showCard}) {
   const {state, setState} = useContext(globalState)
@@ -103,7 +103,7 @@ export default function FiftyFifty({hide, showCard}) {
         <Accordion id={'fifty-fifty-info'} expanded={expandFiftyFiftyInfoText}>
           <AccordionSummary>
             <div className="flex space-between" id="accordion-title" onClick={() => setExpandFiftyFiftyInfoText(!expandFiftyFiftyInfoText)}>
-              <Label text={`What is a 50/50 Visitation Schedule?`} />
+              <AccordionTitle text={`What is a 50/50 Visitation Schedule?`} />
               {!expandFiftyFiftyInfoText && <FaPlus className={'visitation-card'} />}
               {expandFiftyFiftyInfoText && <FaMinus className={'visitation-card'} />}
             </div>

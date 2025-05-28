@@ -1,7 +1,7 @@
 import Manager from "./manager"
 import DB from "../database/DB"
 import moment from "moment"
-import { child, getDatabase, ref, set } from 'firebase/database'
+import {child, getDatabase, ref, set} from 'firebase/database'
 import DateFormats from "../constants/datetimeFormats"
 import DatetimeFormats from "../constants/datetimeFormats"
 import DB_UserScoped from "../database/db_userScoped"
@@ -9,13 +9,12 @@ import CalendarManager from "./calendarManager"
 import FirebaseStorage from "../database/firebaseStorage"
 
 export default AppManager =
-  OperatingSystems: {
-    Windows: 'Windows',
-    Linux: 'Linux',
-    Mac: 'Mac',
-    iOS: 'iOS',
+  OperatingSystems:
+    Windows: 'Windows'
+    Linux: 'Linux'
+    Mac: 'Mac'
+    iOS: 'iOS'
     Android: 'Android'
-  },
 
   RefreshIfNecessary: () ->
     # Refresh check
@@ -39,13 +38,11 @@ export default AppManager =
 
   UpdateOrRefreshIfNecessary: (currentUser, latestVersion, delay = 0) ->
     AppManager.RefreshIfNecessary();
-
     if Manager.IsValid currentUser
       if not currentUser?.app?.currentVersion or currentUser?.app?.currentVersion != latestVersion
         await DB_UserScoped.updateByPath("#{DB.tables.users}/#{currentUser?.key}/app/currentVersion", latestVersion)
         return true
       else
-
         return false
     else
       return false
@@ -71,7 +68,7 @@ export default AppManager =
 
     return os
 
-  getIPAddress: () ->
+  GetIPAddress: () ->
     ipAddress = ''
     myHeaders = new Headers()
 
@@ -89,8 +86,8 @@ export default AppManager =
       console.error error
     return ipAddress
 
-  getTimezone: () ->
-    ipAddress = await AppManager.getIPAddress()
+  GetTimezone: () ->
+    ipAddress = await AppManager.GetIPAddress()
     timezone = ''
     myHeaders = new Headers()
     myHeaders.append "x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY
@@ -110,8 +107,8 @@ export default AppManager =
 
     return timezone
 
-  getLocationDetails: () ->
-    ipAddress = await AppManager.getIPAddress()
+  GetLocationDetails: () ->
+    ipAddress = await AppManager.GetIPAddress()
     location = {
       city: '',
       timezone: '',
@@ -151,18 +148,18 @@ export default AppManager =
 
     return searchParams
 
-  setAppBadge: (count) =>
+  SetAppBadge: (count) ->
     if window.navigator.setAppBadge
       window.navigator.setAppBadge(count)
 
-  clearAppBadge: =>
+  clearAppBadge: ->
     if window.navigator.clearAppBadge
       navigator.clearAppBadge()
 
-  isDevMode: =>
+  IsDevMode: ->
     location.hostname == 'localhost'
 
-  getAccountType: (currentUser) =>
+  GetAccountType: (currentUser) ->
     if Manager.IsValid(currentUser)
       if Manager.IsValid(currentUser?.accountType)
         if currentUser?.accountType == 'parent'
@@ -171,7 +168,7 @@ export default AppManager =
           return 'child'
       'parent'
 
-  deleteExpiredCalendarEvents: (currentUser) ->
+  DeleteExpiredCalendarEvents: (currentUser) ->
     events = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.key}")
     if Manager.IsValid(events)
       events = events.filter (x) -> x?
@@ -206,7 +203,7 @@ export default AppManager =
     updateObject = await DB.getTable("updateAvailable")
     return updateObject
 
-  deleteExpiredMemories: (currentUser) ->
+  DeleteExpiredMemories: (currentUser) ->
     memories = await DB.getTable(DB.tables.memories)
     if Manager.IsValid(memories)
       for memory in memories

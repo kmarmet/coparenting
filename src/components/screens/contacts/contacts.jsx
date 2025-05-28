@@ -200,7 +200,7 @@ const Contacts = () => {
               key: currentUser?.key,
               name: currentUser?.name,
               email: currentUser?.email,
-            }
+            },
           })
           await InvitationManager.AddInvitation(newInvitation, currentUser?.key)
           SmsManager.Send(updateObject.current.phone, SmsManager.Templates.Invitation(currentUser, activeContact?.name, updateObject.current.phone))
@@ -231,7 +231,7 @@ const Contacts = () => {
         submitText={'Update'}
         viewSelector={
           <ViewSelector
-            onloadState={showModal}
+            show={showModal}
             key={refreshKey}
             labels={['Details', 'Edit']}
             updateState={(labelText) => {
@@ -243,7 +243,7 @@ const Contacts = () => {
         title={`${GetContactName()}`}
         showCard={showModal}>
         {/* DETAILS */}
-        <div id="details" className={view.toLowerCase() === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
+        <div className="details" className={view.toLowerCase() === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
           <div className="blocks">
             <DetailBlock isCustom={true} isFullWidth={true} valueToValidate={activeContact} text={''} title={''}>
               <p className="custom-text">
@@ -293,7 +293,7 @@ const Contacts = () => {
         </div>
 
         {/* EDIT */}
-        <div id="edit" className={view.toLowerCase() === 'edit' ? 'view-wrapper edit active' : 'view-wrapper'}>
+        <div className="edit" className={view.toLowerCase() === 'edit' ? 'view-wrapper edit active' : 'view-wrapper'}>
           {/* NAME */}
           <InputWrapper
             inputType={InputTypes.text}
@@ -511,9 +511,7 @@ const Contacts = () => {
                         <div
                           className={`contact-card-pic ${!Manager.IsValid(contact?.profilePic) ? 'no-pic' : ''}`}
                           style={{backgroundImage: Manager.IsValid(contact?.profilePic) ? `url(${contact?.profilePic})` : ''}}>
-                          {!Manager.IsValid(contact?.profilePic) && (
-                            <span>{StringManager.GetFirstNameOnly(contact?.general?.name)[0]} </span>
-                          )}
+                          {!Manager.IsValid(contact?.profilePic) && <span>{StringManager.GetFirstNameOnly(contact?.general?.name)[0]} </span>}
                         </div>
                         <p className="contact-card-name">
                           {contact?.general?.name}

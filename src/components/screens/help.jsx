@@ -171,7 +171,7 @@ export default function Help() {
       </Form>
 
       {/* CONTACT US */}
-      <div id="help-container" className={`${theme} page-container form`}>
+      <div id="help-container" className={`${theme} page-container `}>
         <p className="screen-title">We&#39;re Here to Help</p>
         {/* SECTIONS */}
         <div className="sections">

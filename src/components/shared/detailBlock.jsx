@@ -28,7 +28,9 @@ const DetailBlock = ({
   return (
     <>
       {Manager.IsValid(valueToValidate?.toString()) && (
-        <div style={DomManager.AnimateDelayStyle(1)} className={`block ${classes} ${isFullWidth ? 'full-width' : ''}`}>
+        <div
+          style={DomManager.AnimateDelayStyle(1, 0.2)}
+          className={`block ${classes} ${DomManager.Animate.FadeInUp(valueToValidate)} ${isFullWidth ? 'full-width' : ''}`}>
           {/* CUSTOM */}
           {isCustom && children}
 

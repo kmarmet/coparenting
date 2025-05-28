@@ -150,7 +150,7 @@ export function NewMemoryForm() {
             MyConfetti.fire()
             await ResetForm()
           })
-        AppManager.setAppBadge(1)
+        AppManager.SetAppBadge(1)
         setState({...state, isLoading: false})
       })
   }

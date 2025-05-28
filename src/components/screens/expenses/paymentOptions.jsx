@@ -23,15 +23,14 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
     <>
       <Form
         hasSubmitButton={false}
-        subtitle="There are numerous straightforward and cost-free methods available for transferring money to a co-parent for calendarEvents or other purposes. Please review the options below to determine which one suits your needs best."
+        subtitle={`There are numerous straightforward and cost-free methods available for transferring money to a co-parent for expenses or other purposes. <br /><br /> Please review the options below to determine which one suits your needs best.`}
         title={'Payment/Transfer Options'}
         className="payment-options-card"
-        wrapperClass="payment-options-card"
+        wrapperClass="payment-options-card at-top"
         onClose={onClose}
         showCard={showPaymentOptionsCard}>
         {showPaymentOptionsCard && (
           <div id="payment-options-card">
-            <Spacer height={5} />
             <div className="options">
               {/* ZELLE */}
               <div className="option zelle">
@@ -57,7 +56,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
                   allowFullScreen></iframe>
               </div>
 
-              <Spacer height={5} />
+              <Spacer height={10} />
               {/* VENMO */}
               <div className="option venmo">
                 <div className="flex brand-name-wrapper venmo">
@@ -81,7 +80,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
                   allowFullScreen></iframe>
               </div>
 
-              <Spacer height={5} />
+              <Spacer height={10} />
 
               {/* APPLE PAY */}
               <div className="option apple-cash">
@@ -99,7 +98,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
                 </div>
               </div>
 
-              <Spacer height={5} />
+              <Spacer height={10} />
               {/* PAYPAL */}
               <div className="option paypal">
                 <div className="flex brand-name-wrapper paypal">
@@ -116,7 +115,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
                 </div>
               </div>
 
-              <Spacer height={5} />
+              <Spacer height={10} />
               {/* CASHAPP */}
               <div className="option cashapp">
                 <div className="flex brand-name-wrapper cashapp">
