@@ -168,11 +168,11 @@ export default function App() {
               AppManager.GetLocationDetails().then(async (r) => {
                 await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUserFromDb?.key}/location`, r)
               })
-
-              // Delete expired items
-              AppManager.DeleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
-              AppManager.DeleteExpiredMemories(currentUserFromDb).then((r) => r)
             }
+
+            // Delete expired items
+            AppManager.DeleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
+            AppManager.DeleteExpiredMemories(currentUserFromDb).then((r) => r)
 
             // Get notifications
             if (!window.location.href.includes('localhost') && !AppManager.IsDevMode()) {

@@ -41,7 +41,6 @@ const useChildren = () => {
         setChildrenAreLoading(false)
       },
       (err) => {
-        console.log(`useChildren Error: ${err}`)
         setError(err)
         setChildrenAreLoading(false)
       }

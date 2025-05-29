@@ -33,7 +33,6 @@ const useParents = () => {
         }
       },
       (err) => {
-        console.log(`useParents Error: ${err}`)
         setError(err)
         setIsLoading(false)
       }

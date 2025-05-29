@@ -1,5 +1,4 @@
 @import './_mixins.scss';
-
 #error-screen {
   height: 100vh;
   width: 100vw;
@@ -143,6 +142,7 @@
 }
 
 
+
 .location-pin-animation {
   width: 40px;
   aspect-ratio: 1;
@@ -151,20 +151,18 @@
 
   &::before,
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     border-radius: 50% 50% 0 50%;
     background: $blend;
-    -webkit-mask: radial-gradient(circle 10px at 50% 50%,#0000 94%,#000);
+    -webkit-mask: radial-gradient(circle 10px at 50% 50%, #0000 94%, #000);
   }
   &::after {
-    animation: locationPinAnimation 1.3s infinite linear reverse; ;
-    transform: perspective(400px) translateZ(0px)
+    animation: locationPinAnimation 1.3s infinite linear reverse;
+    transform: perspective(400px) translateZ(0px);
   }
 }
-
-
 
 .loading-animation {
   width: 20px;

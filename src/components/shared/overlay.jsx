@@ -14,14 +14,14 @@ const Overlay = ({children, show}) => {
       }
 
       document.body.classList.add('disable-scroll')
-      appContentWithSidebar.classList.add('disable-scroll')
+      appContentWithSidebar?.classList?.add('disable-scroll')
     } else {
       if (pageContainer) {
         pageContainer.classList.remove('disable-scroll')
       }
 
       document.body.classList.remove('disable-scroll')
-      appContentWithSidebar.classList.remove('disable-scroll')
+      appContentWithSidebar?.classList?.remove('disable-scroll')
     }
   }, [show])
 

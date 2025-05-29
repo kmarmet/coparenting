@@ -33,7 +33,6 @@ const useCoparents = () => {
         setCoparentsAreLoading(false)
       },
       (err) => {
-        console.log(`useCoparents Error: ${err}`)
         setError(err)
         setCoparentsAreLoading(false)
       }

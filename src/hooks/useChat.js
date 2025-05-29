@@ -5,7 +5,7 @@ import DB from '../database/DB'
 import Manager from '../managers/manager'
 import useCurrentUser from './useCurrentUser'
 
-const useChat = (chatIdInput) => {
+const useChat = () => {
   const {state, setState} = useContext(globalState)
   const {messageRecipient, authUser} = state
   const {currentUser} = useCurrentUser()
@@ -38,7 +38,7 @@ const useChat = (chatIdInput) => {
         }
       },
       (err) => {
-        console.log(`useChatMessages Error: ${err}`)
+        // console.log(`useChatMessages Error: ${err}`)
         setError(err)
         setIsLoading(false)
       }

@@ -66,6 +66,7 @@
     "react-google-autocomplete": "2.7.3",
     "react-google-places-autocomplete": "^4.1.0",
     "react-icons": "^5.3.0",
+    "react-image": "^4.1.0",
     "react-json-pretty": "^2.2.0",
     "react-lazy-load-image-component": "^1.6.3",
     "react-onesignal": "^3.0.1",
@@ -94,9 +95,9 @@
     "workbox-cli": "7.1.0"
   },
   "scripts": {
-    "start": "npm run removeParcelCache && parcel public/index.html --no-cache",
+    "start": "npm run removeParcelCache && parcel public/index.html",
     "watch-coffee": "coffee --watch --compile src",
-    "build": "npm run deleteBuild && npm run removeParcelCache && parcel build public/index.html --no-source-maps && npm run deleteUnwantedFilesFromBuild && compress-cra",
+    "build": "npm run deleteBuild && npm run removeParcelCache && parcel build public/index.html --no-source-maps && compress-cra",
     "buildWithNewImages": "npm run deleteBuild && npm run removeParcelCache && parcel build public/index.html --no-source-maps && npm run deleteAllButNewImages && compress-cra",
     "buildWithNewJpg": "npm run deleteBuild && npm run removeParcelCache && parcel build public/index.html --no-source-maps && npm run deleteAllButJpg && compress-cra",
     "buildWithSvgAndJpg": "npm run deleteBuild && npm run removeParcelCache && parcel build public/index.html --no-source-maps && npm run deleteAllButSvgAndJpg && compress-cra",

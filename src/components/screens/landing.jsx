@@ -1,8 +1,8 @@
+import React, {useContext, useEffect, useState} from 'react'
 import ScreenNames from '/src/constants/screenNames'
 import AppManager from '/src/managers/appManager.js'
 import DomManager from '/src/managers/domManager'
 import Manager from '/src/managers/manager'
-import React, {useContext, useEffect, useState} from 'react'
 import {AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool} from 'react-icons/ai'
 import {BsFillEnvelopeHeartFill} from 'react-icons/bs'
 import {IoIosArrowUp, IoIosChatbubbles} from 'react-icons/io'
@@ -10,11 +10,11 @@ import {IoSyncCircle} from 'react-icons/io5'
 import {MdLooksOne, MdPeopleAlt, MdStyle} from 'react-icons/md'
 import {PiCalendarDotsDuotone, PiDevicesFill} from 'react-icons/pi'
 import {TbSunMoon} from 'react-icons/tb'
-import {LazyLoadImage} from 'react-lazy-load-image-component'
 import {useLongPress} from 'use-long-press'
 import globalState from '../../context'
 import Slideshow from '../shared/slideshow'
 import Spacer from '../shared/spacer'
+import SuspenseImage from '../shared/suspenseImage'
 
 export default function Landing() {
   const {state, setState} = useContext(globalState)
@@ -121,12 +121,12 @@ export default function Landing() {
         activeIndex={0}
         images={[
           {
-            url: require('/src/img/homepage/tableOfContents.png'),
+            url: require('/src/img/landing/tableOfContents.png'),
             name: 'Table of Contents',
             alt: 'Table of Contents',
           },
           {
-            url: require('/src/img/homepage/customDocHeaders.gif'),
+            url: require('/src/img/landing/customDocHeaders.gif'),
             name: 'Custom Headers',
             alt: 'Custom Headers',
           },
@@ -141,13 +141,13 @@ export default function Landing() {
         images={[
           {
             title: 'Memories',
-            url: require('/src/img/homepage/memories.png'),
+            url: require('/src/img/landing/memories.png'),
             notes: "Share your child's valuable memories with your co-parents or children",
           },
-          {title: 'Calendar', url: require('/src/img/homepage/calendar.png'), notes: 'Schedule important dates with your co-parents or children'},
+          {title: 'Calendar', url: require('/src/img/landing/calendar.png'), notes: 'Schedule important dates with your co-parents or children'},
           {
             title: 'Child Info',
-            url: require('/src/img/homepage/child-info.png'),
+            url: require('/src/img/landing/child-info.png'),
             notes: 'Share important details about your child with your co-parents or children',
           },
         ]}
@@ -159,9 +159,9 @@ export default function Landing() {
         hide={() => setShowDevicesSlideshow(false)}
         activeIndex={1}
         images={[
-          {url: require('/src/img/homepage/devices/phone.png'), title: 'Compatible with all Phones'},
-          {url: require('/src/img/homepage/devices/laptop.png'), title: 'Compatible with all Tablets'},
-          {url: require('/src/img/homepage/devices/tablet.png'), title: 'Compatible with all Computers'},
+          {url: require('/src/img/landing/devices/phone.png'), title: 'Compatible with all Phones'},
+          {url: require('/src/img/landing/devices/laptop.png'), title: 'Compatible with all Tablets'},
+          {url: require('/src/img/landing/devices/tablet.png'), title: 'Compatible with all Computers'},
         ]}
       />
 
@@ -169,7 +169,7 @@ export default function Landing() {
       <Slideshow
         images={[
           {
-            url: require('/src/img/homepage/menu.png'),
+            url: require('/src/img/landing/menu.png'),
             title: 'Collaboration',
             alt: 'Collaboration',
           },
@@ -182,7 +182,7 @@ export default function Landing() {
       <Slideshow
         images={[
           {
-            url: require('/src/img/homepage/expense-tracker.png'),
+            url: require('/src/img/landing/expense-tracker.png'),
             alt: 'Expenses',
             title: 'Expense Tracker',
             notes: 'Assign and track all expenses between you and your co-parents',
@@ -200,7 +200,7 @@ export default function Landing() {
         hide={() => setShowEmotionMeterSlideshow(false)}
         images={[
           {
-            url: require('../../img/homepage/emotion-meter.gif'),
+            url: require('../../img/landing/emotion-meter.gif'),
             title: 'Emotion Meter',
             alt: 'Emotion Meter',
           },
@@ -214,10 +214,10 @@ export default function Landing() {
 
       <div id="above-fold-wrapper" className="section above-fold">
         <div id="home-navbar" className="flex">
-          <img src={require('/src/img/logo.png')} id="logo" {...bind()} alt="Logo" />
-          <div id="login-buttons">
-            <div id="choose-peace-text" className="flex">
-              <p id="choose-peace-text">
+          <SuspenseImage classes={'landing logo'} shouldUseLongPress={true} />
+          <div className="login-buttons">
+            <div className="choose-peace-text flex">
+              <p className="choose-peace-text">
                 <span className="emphasize">Choose Peace</span>
                 <span>ful Co-Parenting</span>
               </p>
@@ -230,10 +230,10 @@ export default function Landing() {
         </div>
         <Spacer height={10} />
 
-        <div className="flex" id="images" onClick={() => setShowTrioSlideshow(true)}>
-          <img className={'image'} src={require('/src/img/homepage/memories.png')} alt="Memories" />
-          <img className={'image'} src={require('/src/img/homepage/calendar.png')} alt="Calendar" />
-          <img className={'image'} src={require('/src/img/homepage/child-info.png')} alt="Child Info" />
+        <div className="flex" id="images">
+          <SuspenseImage classes={'landing memories'} />
+          <SuspenseImage classes={'landing calendar'} />
+          <SuspenseImage classes={'landing child-info'} />
         </div>
       </div>
       <Spacer height={20} />
@@ -276,13 +276,7 @@ export default function Landing() {
                 Effective communication with a foundation of respect is crucial for successful co-parenting. The Emotion Meter plays a vital role in
                 facilitating this essential aspect.
               </p>
-
-              <LazyLoadImage
-                onClick={(e) => setShowEmotionMeterSlideshow(true)}
-                id="emotion-meter-gif"
-                src={require('../../img/homepage/emotion-meter.gif')}
-                alt="Emotion Meter"
-              />
+              <SuspenseImage classes={'landing emotion-meter'} />
             </div>
           </div>
         </div>
@@ -671,22 +665,13 @@ export default function Landing() {
                 <p>Use the search feature to quickly find a word or words you are looking for.</p>
               </div>
             </div>
+
             <p className="light-gallery-instructions">{DomManager.tapOrClick()} an image to enlarge</p>
 
-            <LazyLoadImage
-              onClick={() => setShowDocumentsSlideshow(true)}
-              className={'image'}
-              src={require('/src/img/homepage/tableOfContents.png')}
-              alt="Table of Contents"
-            />
+            <SuspenseImage classes={'landing custom-doc-headers'} />
+            <SuspenseImage classes={'landing table-of-contents'} />
 
             <Spacer height={8} />
-            <LazyLoadImage
-              onClick={() => setShowDocumentsSlideshow(true)}
-              className={'image'}
-              src={require('/src/img/homepage/customDocHeaders.gif')}
-              alt="Custom Headers"
-            />
           </div>
         </div>
 
@@ -702,12 +687,7 @@ export default function Landing() {
             </p>
           </div>
 
-          <LazyLoadImage
-            className={'image'}
-            onClick={() => setShowExpensesSlideshow(true)}
-            src={require('/src/img/homepage/expense-tracker.png')}
-            alt="Expenses"
-          />
+          <SuspenseImage classes={'landing expense-tracker'} />
         </div>
 
         <hr className="landing" />
@@ -732,7 +712,8 @@ export default function Landing() {
               </p>
             </div>
 
-            <LazyLoadImage onClick={() => setShowCollabSlideshow(true)} className={'image'} src={require('/src/img/homepage/menu.png')} alt="Menu" />
+            {/*<LazyLoadImage onClick={() => setShowCollabSlideshow(true)} className={'image'} src={require('/src/img/landing/menu.png')} alt="Menu" />*/}
+            <SuspenseImage classes={'landing collaboration'} />
           </div>
         </div>
         <hr className="landing" />
@@ -785,30 +766,9 @@ export default function Landing() {
               </span>
             </div>
 
-            {currentScreen === ScreenNames.landing && (
-              <div className="flex images mt-15" onClick={() => setShowDevicesSlideshow(true)}>
-                <LazyLoadImage
-                  data-src={'/src/img/homepage/devices/phone.png'}
-                  className={'image'}
-                  src={require('/src/img/homepage/devices/phone.png')}
-                  alt="Phone"
-                />
-                <LazyLoadImage
-                  className={'image'}
-                  data-src={'/src/img/homepage/devices/laptop.png'}
-                  src={require('/src/img/homepage/devices/laptop.png')}
-                  alt="Computer"
-                />
-
-                <Spacer height={10} />
-                <LazyLoadImage
-                  className={'image'}
-                  data-src={'/src/img/homepage/devices/tablet.png'}
-                  src={require('/src/img/homepage/devices/tablet.png')}
-                  alt="Tablet"
-                />
-              </div>
-            )}
+            <SuspenseImage classes={'landing phone'} />
+            <SuspenseImage classes={'landing tablet'} />
+            <SuspenseImage classes={'landing laptop'} />
 
             <p className="subtitle mt-25 mb-0" id="multiple-device-usage">
               You can use the application across multiple devices and all of your data will be kept in sync across them all!

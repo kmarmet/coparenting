@@ -31,7 +31,6 @@ const useDocuments = () => {
         }
       },
       (err) => {
-        console.log(`useDocuments Error: ${err}`)
         setError(err)
         setDocumentsAreLoading(false)
       }

@@ -26,7 +26,6 @@ const useChatMessages = (chatId) => {
         }
       },
       (err) => {
-        console.log(`useChatMessages Error: ${err}`)
         setError(err)
         setChatMessagesAreLoading(false)
       }

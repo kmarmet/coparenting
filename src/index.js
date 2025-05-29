@@ -42,14 +42,14 @@ if ('serviceWorker' in navigator) {
       .catch((err) => {
         console.error('[SW] service Worker registration failed:', err)
       })
-
-    // Update content
-    navigator.serviceWorker.ready.then((registration) => {
-      registration.update().then(() => {
-        // console.Log('PWA Updated')
-      })
-    })
   }
+
+  // Update content
+  navigator.serviceWorker.ready.then((registration) => {
+    registration.update().then(() => {
+      // console.Log('PWA Updated')
+    })
+  })
   function isReachable(url) {
     /**
      * Note: fetch() still "succeeds" for 404s on subdirectories,

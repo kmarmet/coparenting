@@ -1,0 +1,128 @@
+@import 'variables';
+@import 'palette';
+@import 'mixins';
+
+// PATHS
+/*#region  LANDING */
+$landing_logo: '../img/logo.png';
+$landing_memories: '../img/landing/memories.png';
+$landing_calendar: '../img/landing/calendar.png';
+$landing_child_info: '../img/landing/child-info.png';
+$landing_emotion_meter: '../img/landing/emotion-meter.gif';
+$landing_custom_doc_headers: '../img/landing/customDocHeaders.gif';
+$landing_table_of_contents: '../img/landing/tableOfContents.png';
+$landing_expense_tracker: '../img/landing/expense-tracker.png';
+$landing_collaboration: '../img/landing/menu.png';
+$landing_phone: '../img/landing/devices/phone.png';
+$landing_laptop: '../img/landing/devices/laptop.png';
+$landing_tablet: '../img/landing/devices/tablet.png';
+/*#endregion  LANDING */
+
+/*#region  LOGIN */
+$login_logo: "../img/logo.png";
+/*#endregion  LOGIN */
+
+.img {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  &.login {
+    &.logo {
+      background-image: url($login_logo);
+      @include square(125px);
+    }
+  }
+
+  &.landing {
+    // Multiple
+    &.memories,
+    &.calendar,
+    &.child-info {
+      height: 300px;
+      width: 100%;
+    }
+
+    &.logo {
+      background-image: url($landing_logo);
+      @include square(75px);
+    }
+
+
+
+
+    &.phone,
+    &.laptop,
+    &.tablet {
+      height: 500px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    &.collaboration {
+      background-image: url($landing_collaboration);
+      height: 400px;
+      width: 100%;
+    }
+
+    &.phone {
+      background-image: url($landing_phone);
+    }
+
+    &.laptop {
+      background-image: url($landing_laptop);
+      height: 200px;
+    }
+
+    &.tablet {
+      background-image: url($landing_tablet);
+      height: 400px;
+    }
+
+    &.custom-doc-headers {
+      background-image: url($landing_custom_doc_headers);
+      height: 200px;
+      margin-bottom: 8px;
+      background-size: cover;
+      border-radius: $bigBorderRadius;
+    }
+
+    &.table-of-contents {
+      background-image: url($landing_table_of_contents);
+      height: 200px;
+      width: auto;
+      background-size: cover;
+      border-radius: $bigBorderRadius;
+    }
+
+    &.emotion-meter {
+      background-image: url($landing_emotion_meter);
+      height: 120px;
+    }
+
+    &.expense-tracker {
+      background-image: url($landing_expense_tracker);
+      height: 200px;
+      width: 100%;
+      background-size: cover;
+    }
+
+    &.memories {
+      background-image: url($landing_memories);
+      position: relative;
+      left: 15px;
+    }
+
+    &.calendar {
+      background-image: url($landing_calendar);
+      position: relative;
+      top: -30px;
+    }
+
+    &.child-info {
+      background-image: url($landing_child_info);
+      position: relative;
+      right: 20px;
+    }
+  }
+}

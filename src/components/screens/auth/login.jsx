@@ -17,6 +17,7 @@ import LogManager from '../../../managers/logManager'
 import Checkbox from '../../shared/checkbox'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
+import SuspenseImage from '../../shared/suspenseImage'
 
 export default function Login() {
   const {state, setState} = useContext(globalState)
@@ -136,12 +137,8 @@ export default function Login() {
         )}
 
         <ScreenHeader wrapperClass="login-header">
-          <img
-            onClick={() => setState({...state, currentScreen: ScreenNames.landing})}
-            /* eslint-disable-next-line no-undef */
-            src={require('../../../img/logo.png')}
-            alt="Peaceful coParenting"
-          />
+          {/*onClick={() => setState({...state, currentScreen: ScreenNames.landing})}*/}
+          <SuspenseImage classes={'login logo'} />
           {/* QUOTE CONTAINER */}
           <div id="quote-container">
             <p id="quote">
