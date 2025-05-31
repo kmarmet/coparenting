@@ -24,8 +24,20 @@
   }
 }
 
+@keyframes progress {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
 @keyframes locationPinAnimation {
-  to {transform: perspective(300px) translateZ(150px);opacity:0}
+  to {
+    transform: perspective(300px) translateZ(150px);
+    opacity: 0;
+  }
 }
 
 @keyframes blur-text {
@@ -89,6 +101,7 @@
     opacity: 1;
   }
 }
+
 @keyframes scaleDown {
   0% {
     transform: scale(1);
@@ -99,6 +112,7 @@
     opacity: 0;
   }
 }
+
 @keyframes dash-check {
   0% {
     stroke-dashoffset: -100;

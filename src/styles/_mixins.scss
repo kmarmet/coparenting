@@ -424,12 +424,34 @@
 /*#endregion  SIZING */
 
 /*#region  EFFECTS*/
+@mixin loadingSkeleton {
+  $color-base: $greyBorderColor;
+  $color-highlight: lighten($color-base, 8%);
+  position: relative;
+  overflow: hidden;
+  width: 50%;
+  height: 40px;
+  background: $color-base;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, $color-base, $color-highlight, $color-base);
+    animation: progress 1s ease-in-out infinite alternate-reverse;
+  }
+}
+
 @mixin frostBackground {
   background: rgba(255, 255, 255, 0.17);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(17px);
   -webkit-backdrop-filter: blur(17px);
 }
+
 @mixin ellipsis {
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1154,7 +1176,7 @@
       justify-content: center;
       position: relative;
       width: 60vw;
-      @include hover;
+  & { @include hover; }
       @include row;
       opacity: 0;
       border: 0;
@@ -1442,7 +1464,7 @@
     width: min-content;
     padding: 0;
     height: unset;
-    @include hover;
+& { @include hover; }
 
     &.active {
       opacity: 1;
@@ -1498,6 +1520,8 @@
       img {
         width: 60px;
         border-radius: 100%;
+
+
       }
     }
 
@@ -1558,7 +1582,10 @@
     margin-bottom: 8px;
   }
 
-  @include hover;
+  & {
+& { @include hover; }
+
+  }
 
   * {
     line-height: 1;
@@ -2032,7 +2059,7 @@
     margin: 0;
     font-size: 20px;
     border: 0;
-    @include hover;
+& { @include hover; }
 
     &.pressed {
       border-radius: $borderRadius;
@@ -2162,7 +2189,7 @@
   .checkboxes,
   #standalone-checkbox-container,
   #share-with-checkbox-container {
-    @include hover;
+& { @include hover; }
     transition: all 0.3s ease-in-out;
     border-radius: 50px;
 
@@ -3705,7 +3732,7 @@
             margin-top: 10px;
             background: $bootstrapRedBg;
             border: 0;
-            @include hover;
+        & { @include hover; }
           }
 
           input {
@@ -3923,7 +3950,7 @@
 
       .item {
         transition: all 0.3s ease-in-out;
-        @include hover;
+    & { @include hover; }
         width: calc(100% / 4);
       }
     }
@@ -4043,13 +4070,18 @@
         width: 100%;
         line-height: 1.3;
         text-transform: capitalize;
-        @include hover;
         padding: 12px 10px;
         border: 0;
         background: $grey;
         border-radius: $borderRadius;
         opacity: 0.95;
         justify-content: flex-start;
+
+
+        & {
+    & { @include hover; }
+
+        }
 
         &.hide {
           display: none;
@@ -4536,7 +4568,7 @@
     margin-top: 10px;
     overflow: hidden;
     height: 30px;
-    @include hover;
+& { @include hover; }
   }
 }
 

@@ -1,22 +1,21 @@
 // Path: src\components\screens\childInfo\childInfo.jsx
-import NavBar from '/src/components/navBar'
-import Behavior from '/src/components/screens/children/behavior'
-import General from '/src/components/screens/children/general'
-import Medical from '/src/components/screens/children/medical'
-import NewChildForm from '/src/components/screens/children/newChildForm'
-import Schooling from '/src/components/screens/children/schooling'
-import NoDataFallbackText from '/src/components/shared/noDataFallbackText'
-import FirebaseStorage from '/src/database/firebaseStorage'
-import AlertManager from '/src/managers/alertManager'
-import DomManager from '/src/managers/domManager'
-import Manager from '/src/managers/manager'
-import StringManager from '/src/managers/stringManager'
+import NavBar from '../../navBar'
+import Behavior from '../../screens/children/behavior'
+import General from '../../screens/children/general'
+import Medical from '../../screens/children/medical'
+import NewChildForm from '../../screens/children/newChildForm'
+import Schooling from '../../screens/children/schooling'
+import NoDataFallbackText from '../../shared/noDataFallbackText'
+import FirebaseStorage from '../../../database/firebaseStorage'
+import AlertManager from '../../../managers/alertManager'
+import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import {PiCameraRotateFill, PiListChecksFill} from 'react-icons/pi'
-
 import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
 import useActiveChild from '../../../hooks/useActiveChild'
@@ -237,9 +236,7 @@ export default function Children() {
                       {/* PROFILE PIC */}
                       {Manager.IsValid(child?.profilePic) && (
                         <div onClick={() => setActiveChildId(child?.id)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
-                          <div
-                            className="child-image"
-                            style={{backgroundImage: `url(${child?.profilePic})`, transition: 'all .3s linear'}}></div>
+                          <div className="child-image" style={{backgroundImage: `url(${child?.profilePic})`, transition: 'all .3s linear'}}></div>
                           {/* CHILD NAME */}
                           <span className="child-name">{StringManager.GetFirstNameOnly(child?.general?.name)}</span>
                         </div>

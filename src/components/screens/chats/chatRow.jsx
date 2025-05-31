@@ -1,12 +1,12 @@
 // Path: src\components\screens\chats\chatRow.jsx
-import ScreenNames from '/src/constants/screenNames.coffee'
-import globalState from '/src/context.js'
-import AlertManager from '/src/managers/alertManager.coffee'
-import ChatManager from '/src/managers/chatManager.js'
-import Manager from '/src/managers/manager.js'
+import ScreenNames from '../../../constants/screenNames.coffee'
+import globalState from '../../../context.js'
+import AlertManager from '../../../managers/alertManager.coffee'
+import ChatManager from '../../../managers/chatManager.js'
+import Manager from '../../../managers/manager.js'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {FaPlay, IoMdPause} from 'react-icons/fa'
+import {FaPlay} from 'react-icons/fa'
 import {IoMdPause} from 'react-icons/io'
 import {MdCallMade, MdCallReceived} from 'react-icons/md'
 import DatetimeFormats from '../../../constants/datetimeFormats'
@@ -87,12 +87,12 @@ export default function ChatRow({chat, index}) {
       {/* COPARENT NAME */}
       <div className="primary-text">
         <p className="coparent-name">{otherMember?.name}</p>
-        <p className="timestamp">{moment(lastMessage?.timestamp, DatetimeFormats.timestamp).format('ddd (hh:mma)')} {lastMessage?.sender?.key === currentUser?.key ? <MdCallMade /> : <MdCallReceived />}</p>
+        <p className="timestamp">
+          {moment(lastMessage?.timestamp, DatetimeFormats.timestamp).format('ddd (hh:mma)')}{' '}
+          {lastMessage?.sender?.key === currentUser?.key ? <MdCallMade /> : <MdCallReceived />}
+        </p>
       </div>
-      <p className="last-message">
-        {lastMessage?.message}
-
-      </p>
+      <p className="last-message">{lastMessage?.message}</p>
       <div className="play-pause-wrapper">
         {/* PLAY CHAT BUTTON */}
         {chat?.isPausedFor?.includes(currentUser?.key) && (

@@ -1,16 +1,14 @@
-import Form from '/src/components/shared/form'
-import InputWrapper from '/src/components/shared/inputWrapper'
-import ScreenNames from '/src/constants/screenNames'
-import DB from '/src/database/DB'
-import AlertManager from '/src/managers/alertManager'
-import DocumentConversionManager from '/src/managers/documentConversionManager'
-import DomManager from '/src/managers/domManager'
-import Manager from '/src/managers/manager'
-import StringManager from '/src/managers/stringManager'
-import DocumentHeader from '/src/models/documentHeader'
+import Form from '../../shared/form'
+import InputWrapper from '../../shared/inputWrapper'
+import ScreenNames from '../../../constants/screenNames'
+import DB from '../../../database/DB'
+import AlertManager from '../../../managers/alertManager'
+import DocumentConversionManager from '../../../managers/documentConversionManager'
+import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager'
+import DocumentHeader from '../../../models/documentHeader'
 import debounce from 'debounce'
-import LightGallery from 'lightgallery/react'
-import 'lightgallery/css/lightgallery.css'
 import _ from 'lodash'
 import React, {useContext, useEffect, useState} from 'react'
 import {FaLightbulb} from 'react-icons/fa6'
@@ -651,13 +649,14 @@ export default function DocViewer() {
         </div>
 
         {/* DOCUMENT IMAGE */}
-        {docType === 'image' && (
-          <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>
-            <div data-src={imgUrl} className="action-item document-image">
-              <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />
-            </div>
-          </LightGallery>
-        )}
+
+        {/*{docType === 'image' && (*/}
+        {/*  <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>*/}
+        {/*    <div data-src={imgUrl} className="action-item document-image">*/}
+        {/*      <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />*/}
+        {/*    </div>*/}
+        {/*  </LightGallery>*/}
+        {/*)}*/}
         <div id="close-icon-wrapper">
           <IoClose className={'close-button'} onClick={() => setState({...state, showScreenActions: false})} />
         </div>

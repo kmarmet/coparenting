@@ -1,4 +1,4 @@
-import Manager from "/src/managers/manager"
+import Manager from "../../managers/manager"
 import moment from "moment"
 import DatetimeFormats from "../../constants/datetimeFormats"
 

@@ -1,7 +1,7 @@
 // Path: src\components\childrenInput.jsx
 import phone from 'phone'
 import React, {useContext, useState} from 'react'
-import InputWrapper from '../components/shared/inputWrapper'
+import InputWrapper from '.../../shared/inputWrapper'
 import globalState from '../context'
 import AlertManager from '../managers/alertManager'
 import Manager from '../managers/manager'

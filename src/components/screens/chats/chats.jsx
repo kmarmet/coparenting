@@ -1,6 +1,6 @@
 // Path: src\components\screens\chats\chats?.jsx
-import AlertManager from '/src/managers/alertManager'
-import Manager from '/src/managers/manager'
+import AlertManager from '../../../managers/alertManager'
+import Manager from '../../../managers/manager'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'

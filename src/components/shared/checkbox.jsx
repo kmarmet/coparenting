@@ -2,7 +2,7 @@
 import React, {useContext} from 'react'
 import {GiCheckMark} from 'react-icons/gi'
 import globalState from '../../context.js'
-import DomManager from '../../managers/domManager.coffee'
+import DomManager from '../../managers/domManager'
 
 export default function Checkbox({isActive, text, onCheck, wrapperClass = '', dataKey, dataDate, dataLabel}) {
   const {state, setState} = useContext(globalState)

@@ -104,6 +104,7 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
                 {imageData?.title?.length > 0 && activeImageIndex === index && <p className={'title'}>{imageData?.title}</p>}
                 {imageData?.notes?.length > 0 && activeImageIndex === index && <p className={'notes'}>{imageData?.notes}</p>}
                 <LazyLoadImage className={index === activeImageIndex && show ? 'active slideshow-image' : 'slideshow-image'} src={imageData?.url} />
+
                 {imageData?.date?.length > 0 && activeImageIndex === index && (
                   <p className={'capture-date'}>
                     Memory was captured on {moment(imageData?.date, DatetimeFormats.dateForDb).format(DatetimeFormats.readableMonthAndDayWithYear)}

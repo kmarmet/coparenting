@@ -1,6 +1,6 @@
 import {getAuth, signOut} from 'firebase/auth'
 import React from 'react'
-import '../src/styles/bundle.scss'
+import './styles/bundle.scss'
 import {createRoot} from 'react-dom/client'
 import {ErrorBoundary} from 'react-error-boundary'
 import {FaSadTear} from 'react-icons/fa'
@@ -182,7 +182,7 @@ root.render(
           <div className="flex" id="steps">
             <span className="step-number">2.</span>
             <p>
-              Search for and tap on Safari <img src={require('../src/img/safari.png')} alt="Safari" id="safari-icon" />
+              Search for and tap on Safari <img src={'../../img/safari-icon.png'} alt="Safari" id="safari-icon" />
             </p>
           </div>
           <div className="flex" id="steps">

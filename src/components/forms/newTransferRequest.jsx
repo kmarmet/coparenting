@@ -1,14 +1,14 @@
 // Path: src\components\forms\newTransferRequest.jsx
-import CheckboxGroup from '/src/components/shared/checkboxGroup'
-import ActivityCategory from '/src/constants/activityCategory'
-import DatetimeFormats from '/src/constants/datetimeFormats'
-import DB from '/src/database/DB'
-import DB_UserScoped from '/src/database/db_userScoped'
-import AlertManager from '/src/managers/alertManager'
-import Manager from '/src/managers/manager'
-import StringManager from '/src/managers/stringManager'
-import UpdateManager from '/src/managers/updateManager.js'
-import TransferChangeRequest from '/src/models/new/transferChangeRequest.js'
+import CheckboxGroup from '../shared/checkboxGroup'
+import ActivityCategory from '../../constants/activityCategory'
+import DatetimeFormats from '../../constants/datetimeFormats'
+import DB from '../../database/DB'
+import DB_UserScoped from '../../database/db_userScoped'
+import AlertManager from '../../managers/alertManager'
+import Manager from '../../managers/manager'
+import StringManager from '../../managers/stringManager'
+import UpdateManager from '../../managers/updateManager.js'
+import TransferChangeRequest from '../../models/new/transferChangeRequest.js'
 import moment from 'moment'
 import React, {useContext, useRef, useState} from 'react'
 import creationForms from '../../constants/creationForms'
@@ -197,7 +197,7 @@ export default function NewTransferChangeRequest() {
 
             <Spacer height={8} />
 
-              <ShareWithCheckboxes  onCheck={HandleShareWithSelection} required={true}  />
+            <ShareWithCheckboxes onCheck={HandleShareWithSelection} required={true} />
           </div>
         </div>
       </div>

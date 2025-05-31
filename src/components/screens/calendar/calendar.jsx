@@ -1,16 +1,16 @@
 // Path: src\components\screens\calendar\calendar.jsx
-import EditCalEvent from '/src/components/forms/editCalEvent'
-import NavBar from '/src/components/navBar.jsx'
-import Form from '/src/components/shared/form'
-import InputWrapper from '/src/components/shared/inputWrapper'
-import DatetimeFormats from '/src/constants/datetimeFormats'
-import globalState from '/src/context.js'
-import AlertManager from '/src/managers/alertManager'
-import AppManager from '/src/managers/appManager'
-import DatasetManager from '/src/managers/datasetManager'
-import DateManager from '/src/managers/dateManager'
-import DomManager from '/src/managers/domManager'
-import Manager from '/src/managers/manager'
+import EditCalEvent from '../../../components/forms/editCalEvent'
+import NavBar from '../../../components/navBar.jsx'
+import Form from '../../../components/shared/form'
+import InputWrapper from '../../../components/shared/inputWrapper'
+import DatetimeFormats from '../../../constants/datetimeFormats'
+import globalState from '../../../context.js'
+import AlertManager from '../../../managers/alertManager'
+import AppManager from '../../../managers/appManager'
+import DatasetManager from '../../../managers/datasetManager'
+import DateManager from '../../../managers/dateManager'
+import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
 import {StaticDatePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
@@ -224,7 +224,7 @@ export default function EventCalendar() {
 
   const SetHolidaysState = async () => {
     let holidaysState = await DB.getTable(DB.tables.holidayEvents)
-    holidaysState = DatasetManager.sortByProperty(holidaysState, 'startDate', 'asc')
+    holidaysState = DatasetManager.sortByProperty(holidaysState, 'startDate', 'asc') ?? []
     setHolidays(holidaysState)
   }
 

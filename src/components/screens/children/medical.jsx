@@ -1,8 +1,8 @@
 // Path: src\components\screens\childInfo\medical.jsx
-import InputWrapper from '/src/components/shared/inputWrapper'
-import DB from '/src/database/DB'
-import DB_UserScoped from '/src/database/db_userScoped'
-import Manager from '/src/managers/manager'
+import InputWrapper from '../../shared/inputWrapper'
+import DB from '../../../database/DB'
+import DB_UserScoped from '../../../database/db_userScoped'
+import Manager from '../../../managers/manager'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'

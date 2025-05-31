@@ -1,7 +1,7 @@
-import NavBar from '/src/components/navBar'
-import DB from '/src/database/DB'
-import AppManager from '/src/managers/appManager'
-import DateManager from '/src/managers/dateManager'
+import NavBar from '../../navBar'
+import DB from '../../../database/DB'
+import AppManager from '../../../managers/appManager'
+import DateManager from '../../../managers/dateManager'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
@@ -90,22 +90,15 @@ export default function AdminDashboard() {
 
   const UpdateAppVersion = async () => {
     if (Manager.IsValid(appUpdates)) {
-    let latestVersion = appUpdates[appUpdates?.length - 1]?.currentVersion
-    const newVersion = latestVersion + 1
-    await DB.Add(
-      `${DB.tables.appUpdates}`,
-      appUpdates,
-      new AppUpdate({currentVersion: newVersion, timestamp: moment().format(DatetimeFormats.dateForDb)})
-    )
-
-    }
-
-    else {
+      let latestVersion = appUpdates[appUpdates?.length - 1]?.currentVersion
+      const newVersion = latestVersion + 1
       await DB.Add(
         `${DB.tables.appUpdates}`,
         appUpdates,
-        new AppUpdate({currentVersion: 1, timestamp: moment().format(DatetimeFormats.dateForDb)})
+        new AppUpdate({currentVersion: newVersion, timestamp: moment().format(DatetimeFormats.dateForDb)})
       )
+    } else {
+      await DB.Add(`${DB.tables.appUpdates}`, appUpdates, new AppUpdate({currentVersion: 1, timestamp: moment().format(DatetimeFormats.dateForDb)}))
     }
     setState({...state, successAlertMessage: `New Version Updated`})
   }
@@ -119,98 +112,100 @@ export default function AdminDashboard() {
 
   return (
     <div id="admin-dashboard-wrapper" className="page-container">
-      <ScreenHeader><img src="https://i.redd.it/16o63vp3mpg91.jpg" alt="" /> </ScreenHeader>
+      <ScreenHeader>
+        <img src="https://i.redd.it/16o63vp3mpg91.jpg" alt="" />{' '}
+      </ScreenHeader>
       <Spacer height={10} />
 
       {/* TOOLBOXES */}
-     <div className="flex grid gap-10 screen-content">
-       {/* UPDATE */}
-       <div className="tool-box">
-         <p className="box-title">App Updates</p>
-         <p className="center-text">Current Version: {applicationVersion}</p>
-         <div className="buttons">
-           <button className="button" onClick={UpdateAppVersion}>
-             Update Version
-           </button>
-         </div>
-       </div>
+      <div className="flex grid gap-10 screen-content">
+        {/* UPDATE */}
+        <div className="tool-box">
+          <p className="box-title">App Updates</p>
+          <p className="center-text">Current Version: {applicationVersion}</p>
+          <div className="buttons">
+            <button className="button" onClick={UpdateAppVersion}>
+              Update Version
+            </button>
+          </div>
+        </div>
 
-       {/* Get Database Record */}
-       <div className="tool-box get-records">
-         <p className="box-title">Get Records</p>
-         <FormControl fullWidth className={'mt-10 mb-15'}>
-           <Select
-             value={tableName}
-             onChange={(e) => {
-               setGetRecordsTable(e.target.value)
-               setTableName(e.target.value)
-             }}>
-             {dbTables.map((table, index) => {
-               return (
-                 <MenuItem key={index} value={table}>
-                   {StringManager.uppercaseFirstLetterOfAllWords(table)}
-                 </MenuItem>
-               )
-             })}
-           </Select>
-         </FormControl>
-         <InputWrapper
-           placeholder={`Enter ${recordPropToCheck} or Event Name for Calendar Events`}
-           inputType={InputTypes.text}
-           onChange={(e) => setGetRecordsSearchValue(e.target.value)}
-         />
-         <p className="mb-10 center-text">-or-</p>
-         <InputWrapper placeholder={`Enter Record ID`} inputType={InputTypes.text} onChange={(e) => setGetRecordsSearchValue(e.target.value)} />
-         <div className="buttons flex">
-           <button className="button" onClick={CopyToClipboard}>
-             Copy
-           </button>
-           <button className="button" onClick={AppendGetRecordsCode}>
-             Execute
-           </button>
-           <button
-             className="button"
-             onClick={() => {
-               document.getElementById('code-block').innerHTML = ''
-               setRecordsAsJson({})
-             }}>
-             Clear
-           </button>
-         </div>
-         {/* CODE BLOCK */}
-         <JSONPretty theme={JSONPrettyMon} id="code-block" {...bind()} data={recordsAsJson}></JSONPretty>
-       </div>
+        {/* Get Database Record */}
+        <div className="tool-box get-records">
+          <p className="box-title">Get Records</p>
+          <FormControl fullWidth className={'mt-10 mb-15'}>
+            <Select
+              value={tableName}
+              onChange={(e) => {
+                setGetRecordsTable(e.target.value)
+                setTableName(e.target.value)
+              }}>
+              {dbTables.map((table, index) => {
+                return (
+                  <MenuItem key={index} value={table}>
+                    {StringManager.uppercaseFirstLetterOfAllWords(table)}
+                  </MenuItem>
+                )
+              })}
+            </Select>
+          </FormControl>
+          <InputWrapper
+            placeholder={`Enter ${recordPropToCheck} or Event Name for Calendar Events`}
+            inputType={InputTypes.text}
+            onChange={(e) => setGetRecordsSearchValue(e.target.value)}
+          />
+          <p className="mb-10 center-text">-or-</p>
+          <InputWrapper placeholder={`Enter Record ID`} inputType={InputTypes.text} onChange={(e) => setGetRecordsSearchValue(e.target.value)} />
+          <div className="buttons flex">
+            <button className="button" onClick={CopyToClipboard}>
+              Copy
+            </button>
+            <button className="button" onClick={AppendGetRecordsCode}>
+              Execute
+            </button>
+            <button
+              className="button"
+              onClick={() => {
+                document.getElementById('code-block').innerHTML = ''
+                setRecordsAsJson({})
+              }}>
+              Clear
+            </button>
+          </div>
+          {/* CODE BLOCK */}
+          <JSONPretty theme={JSONPrettyMon} id="code-block" {...bind()} data={recordsAsJson}></JSONPretty>
+        </div>
 
-       {/* TEXTBELT */}
-       <div className="tool-box">
-         <p className="box-title">TextBelt</p>
-         <p className="center block  center-text">Balance: {textBalance}</p>
-       </div>
+        {/* TEXTBELT */}
+        <div className="tool-box">
+          <p className="box-title">TextBelt</p>
+          <p className="center block  center-text">Balance: {textBalance}</p>
+        </div>
 
-       {/* DELETE EXPIRED STUFF */}
-       <div className="tool-box">
-         <p className="box-title">Delete Expired</p>
-         <div className="buttons flex gap-10">
-           <button className="button" onClick={DeleteExpiredMemories}>
-             Memories
-           </button>
-           <button className="button" onClick={DeletedExpiredCalEvents}>
-             Events
-           </button>
-         </div>
-       </div>
+        {/* DELETE EXPIRED STUFF */}
+        <div className="tool-box">
+          <p className="box-title">Delete Expired</p>
+          <div className="buttons flex gap-10">
+            <button className="button" onClick={DeleteExpiredMemories}>
+              Memories
+            </button>
+            <button className="button" onClick={DeletedExpiredCalEvents}>
+              Events
+            </button>
+          </div>
+        </div>
 
-       {/* HOLIDAYS */}
-       <div className="tool-box">
-         <p className="box-title">Set Holidays</p>
-         <div className="buttons flex">
-           <button className="button" onClick={SetHolidays}>
-             Add to Cal
-           </button>
-           <button onClick={() => DateManager.deleteAllHolidays()}>Delete All</button>
-         </div>
-       </div>
-     </div>
+        {/* HOLIDAYS */}
+        <div className="tool-box">
+          <p className="box-title">Set Holidays</p>
+          <div className="buttons flex">
+            <button className="button" onClick={SetHolidays}>
+              Add to Cal
+            </button>
+            <button onClick={() => DateManager.deleteAllHolidays()}>Delete All</button>
+          </div>
+        </div>
+      </div>
       <NavBar navbarClass={'visitation no-Add-new-button'}></NavBar>
     </div>
   )

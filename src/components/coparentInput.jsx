@@ -1,8 +1,8 @@
 // Path: src\components\coparentInput.jsx
 import React, {useContext, useState} from 'react'
 import validator from 'validator'
-import CheckboxGroup from '../components/shared/checkboxGroup'
-import InputWrapper from '../components/shared/inputWrapper'
+import CheckboxGroup from '.../..//shared/checkboxGroup'
+import InputWrapper from '.../..//shared/inputWrapper'
 import globalState from '../context'
 import AlertManager from '../managers/alertManager'
 import StringManager from '../managers/stringManager'

@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
         "target": "ES6",
-        "module": "CommonJS"
+        "module": "CommonJS",
+        "baseUrl": "src"
     },
-    "exclude": [
-        "node_modules"
-    ]
+    "include": ["src", "**/*.coffee"],
+    "exclude": ["node_modules", "dist"]
 }

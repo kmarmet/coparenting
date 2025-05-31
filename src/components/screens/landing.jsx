@@ -1,8 +1,8 @@
 import React, {useContext, useEffect, useState} from 'react'
-import ScreenNames from '/src/constants/screenNames'
-import AppManager from '/src/managers/appManager.js'
-import DomManager from '/src/managers/domManager'
-import Manager from '/src/managers/manager'
+import ScreenNames from '../../constants/screenNames'
+import AppManager from '../../managers/appManager.js'
+import DomManager from '../../managers/domManager'
+import Manager from '../../managers/manager'
 import {AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool} from 'react-icons/ai'
 import {BsFillEnvelopeHeartFill} from 'react-icons/bs'
 import {IoIosArrowUp, IoIosChatbubbles} from 'react-icons/io'
@@ -10,11 +10,16 @@ import {IoSyncCircle} from 'react-icons/io5'
 import {MdLooksOne, MdPeopleAlt, MdStyle} from 'react-icons/md'
 import {PiCalendarDotsDuotone, PiDevicesFill} from 'react-icons/pi'
 import {TbSunMoon} from 'react-icons/tb'
-import {useLongPress} from 'use-long-press'
 import globalState from '../../context'
 import Slideshow from '../shared/slideshow'
 import Spacer from '../shared/spacer'
 import SuspenseImage from '../shared/suspenseImage'
+import Logo from '../../img/logo.png'
+import Calendar from '../../img/landing/calendar.png'
+import Memories from '../../img/landing/memories.png'
+import ChildInfo from '../../img/landing/child-info.png'
+import Img from '../shared/img'
+import {useLongPress} from 'use-long-press'
 
 export default function Landing() {
   const {state, setState} = useContext(globalState)
@@ -25,12 +30,12 @@ export default function Landing() {
   const [showExpensesSlideshow, setShowExpensesSlideshow] = useState(false)
   const [showDevicesSlideshow, setShowDevicesSlideshow] = useState(false)
   const [showCollabSlideshow, setShowCollabSlideshow] = useState(false)
+
   const bind = useLongPress((element) => {
     setState({...state, currentScreen: ScreenNames.login})
   })
 
   // Init Firebase
-
   const ToggleFeature = (feature) => {
     const featureName = feature.currentTarget.dataset.name
     const clickedFeatureElement = document.querySelector(`[data-name='${featureName}']`)
@@ -121,13 +126,13 @@ export default function Landing() {
         activeIndex={0}
         images={[
           {
-            url: require('/src/img/landing/tableOfContents.png'),
+            url: '../../img/landing/tableOfContents.png',
             name: 'Table of Contents',
             alt: 'Table of Contents',
           },
           {
-            url: require('/src/img/landing/customDocHeaders.gif'),
-            name: 'Custom Headers',
+            url: '../../../img/landing/notes.png',
+            name: 'Notes',
             alt: 'Custom Headers',
           },
         ]}
@@ -141,13 +146,13 @@ export default function Landing() {
         images={[
           {
             title: 'Memories',
-            url: require('/src/img/landing/memories.png'),
+            url: '../../img/landing/memories.png',
             notes: "Share your child's valuable memories with your co-parents or children",
           },
-          {title: 'Calendar', url: require('/src/img/landing/calendar.png'), notes: 'Schedule important dates with your co-parents or children'},
+          {title: 'Calendar', url: '../../img/landing/calendar.png', notes: 'Schedule important dates with your co-parents or children'},
           {
             title: 'Child Info',
-            url: require('/src/img/landing/child-info.png'),
+            url: '../../img/landing/child-info.png',
             notes: 'Share important details about your child with your co-parents or children',
           },
         ]}
@@ -159,9 +164,9 @@ export default function Landing() {
         hide={() => setShowDevicesSlideshow(false)}
         activeIndex={1}
         images={[
-          {url: require('/src/img/landing/devices/phone.png'), title: 'Compatible with all Phones'},
-          {url: require('/src/img/landing/devices/laptop.png'), title: 'Compatible with all Tablets'},
-          {url: require('/src/img/landing/devices/tablet.png'), title: 'Compatible with all Computers'},
+          {url: '../../img/landing/devices/phone.png', title: 'Compatible with all Phones'},
+          {url: '../../img/landing/devices/laptop.png', title: 'Compatible with all Tablets'},
+          {url: '../../img/landing/devices/tablet.png', title: 'Compatible with all Computers'},
         ]}
       />
 
@@ -169,7 +174,7 @@ export default function Landing() {
       <Slideshow
         images={[
           {
-            url: require('/src/img/landing/menu.png'),
+            url: '../../img/landing/menu.png',
             title: 'Collaboration',
             alt: 'Collaboration',
           },
@@ -182,7 +187,7 @@ export default function Landing() {
       <Slideshow
         images={[
           {
-            url: require('/src/img/landing/expense-tracker.png'),
+            url: '../../img/landing/expense-tracker.png',
             alt: 'Expenses',
             title: 'Expense Tracker',
             notes: 'Assign and track all expenses between you and your co-parents',
@@ -200,7 +205,7 @@ export default function Landing() {
         hide={() => setShowEmotionMeterSlideshow(false)}
         images={[
           {
-            url: require('../../img/landing/emotion-meter.gif'),
+            url: '../../img/landing/emotion-meter.png',
             title: 'Emotion Meter',
             alt: 'Emotion Meter',
           },
@@ -214,7 +219,9 @@ export default function Landing() {
 
       <div id="above-fold-wrapper" className="section above-fold">
         <div id="home-navbar" className="flex">
-          <SuspenseImage classes={'landing logo'} shouldUseLongPress={true} />
+          <div {...bind()}>
+            <Img src={Logo} classes={'landing logo'} />
+          </div>
           <div className="login-buttons">
             <div className="choose-peace-text flex">
               <p className="choose-peace-text">
@@ -231,13 +238,13 @@ export default function Landing() {
         <Spacer height={10} />
 
         <div className="flex" id="images">
-          <SuspenseImage classes={'landing memories'} />
-          <SuspenseImage classes={'landing calendar'} />
-          <SuspenseImage classes={'landing child-info'} />
+          <Img src={Memories} classes={'landing memories'} />
+          <Img src={Calendar} classes={'landing calendar'} />
+          <Img src={ChildInfo} classes={'landing child-info'} />
         </div>
       </div>
       <Spacer height={20} />
-      {/* PAGE CONTAINER */}
+
       <div id="below-fold-intro-text" className="section">
         <p>
           Our app provides a stress-free way to manage co-parenting by enhancing communication, scheduling, and decision-making, so&nbsp;
@@ -712,7 +719,7 @@ export default function Landing() {
               </p>
             </div>
 
-            {/*<LazyLoadImage onClick={() => setShowCollabSlideshow(true)} className={'image'} src={require('/src/img/landing/menu.png')} alt="Menu" />*/}
+            {/*<LazyLoadImage onClick={() => setShowCollabSlideshow(true)} className={'image'} src={require('../../img/landing/menu.png')} alt="Menu" />*/}
             <SuspenseImage classes={'landing collaboration'} />
           </div>
         </div>

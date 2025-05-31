@@ -1,6 +1,6 @@
 // Path: src\components\screens\calendar\calendarEvents.jsx
-import DatetimeFormats from '/src/constants/datetimeFormats'
-import Manager from '/src/managers/manager'
+import DatetimeFormats from '../../../constants/datetimeFormats'
+import Manager from '../../../managers/manager'
 import moment from 'moment'
 import React, {useContext, useEffect} from 'react'
 import {BiSolidBellRing} from 'react-icons/bi'

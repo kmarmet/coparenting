@@ -22,10 +22,17 @@ $landing_tablet: '../img/landing/devices/tablet.png';
 $login_logo: "../img/logo.png";
 /*#endregion  LOGIN */
 
+$brokenImage: '../img/desktop-installation.png';
+
 .img {
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+
+  &.broken-image {
+    background-image: url($brokenImage);
+    display: block;
+  }
 
   &.login {
     &.logo {

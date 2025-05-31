@@ -1,3 +1,5 @@
+"use client";
+
 import Manager from "./manager"
 import DatasetManager from "./datasetManager"
 import DB_UserScoped from "../database/db_userScoped"

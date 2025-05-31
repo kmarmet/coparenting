@@ -1,8 +1,8 @@
 // Path: src\components\screens\childInfo\general.jsx
-import InputWrapper from '/src/components/shared/inputWrapper'
-import DB from '/src/database/DB'
-import Manager from '/src/managers/manager'
-import StringManager from '/src/managers/stringManager.coffee'
+import InputWrapper from '../../../components/shared/inputWrapper'
+import DB from '../../../database/DB'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager.coffee'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -100,30 +100,30 @@ function General({activeChild}) {
                   return (
                     <div
                       key={index}
-                      className={`data-row ${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''} ${index === generalValues.length - 1  ? 'last' : ''}`}>
-                          {Manager.Contains(infoLabel.toLowerCase(), 'address') && (
-                            <AddressInput
-                              labelText="Home Address"
-                              onChange={(address) => Update(infoLabel, address)}
-                              defaultValue={activeChild?.general?.address}
-                            />
-                          )}
-                          {!Manager.Contains(infoLabel.toLowerCase(), 'address') && (
-                            <>
-                              <InputWrapper
-                                wrapperClasses={`${index === generalValues.length - 2 ? 'last' : ''}`}
-                                hasBottomSpacer={false}
-                                inputType={InputTypes.text}
-                                placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
-                                defaultValue={value}
-                                onChange={async (e) => {
-                                  const inputValue = e.target.value
-                                  await Update(infoLabel, inputValue)
-                                }}
-                              />
-                              {infoLabel.toLowerCase() !== 'name' && <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />}
-                            </>
-                          )}
+                      className={`data-row ${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''} ${index === generalValues.length - 1 ? 'last' : ''}`}>
+                      {Manager.Contains(infoLabel.toLowerCase(), 'address') && (
+                        <AddressInput
+                          labelText="Home Address"
+                          onChange={(address) => Update(infoLabel, address)}
+                          defaultValue={activeChild?.general?.address}
+                        />
+                      )}
+                      {!Manager.Contains(infoLabel.toLowerCase(), 'address') && (
+                        <>
+                          <InputWrapper
+                            wrapperClasses={`${index === generalValues.length - 2 ? 'last' : ''}`}
+                            hasBottomSpacer={false}
+                            inputType={InputTypes.text}
+                            placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
+                            defaultValue={value}
+                            onChange={async (e) => {
+                              const inputValue = e.target.value
+                              await Update(infoLabel, inputValue)
+                            }}
+                          />
+                          {infoLabel.toLowerCase() !== 'name' && <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />}
+                        </>
+                      )}
                     </div>
                   )
                 })}

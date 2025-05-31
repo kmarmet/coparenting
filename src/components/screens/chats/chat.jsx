@@ -1,16 +1,16 @@
 // Path: src\components\screens\chats\chat.jsx
-import Form from '/src/components/shared/form'
-import InputWrapper from '/src/components/shared/inputWrapper'
-import ModelNames from '/src/constants/modelNames'
-import ScreenNames from '/src/constants/screenNames'
-import globalState from '/src/context.js'
-import AlertManager from '/src/managers/alertManager'
-import ChatManager from '/src/managers/chatManager.js'
-import DomManager from '/src/managers/domManager'
-import Manager from '/src/managers/manager'
-import ObjectManager from '/src/managers/objectManager'
-import StringManager from '/src/managers/stringManager.coffee'
-import ChatMessage from '/src/models/chat/chatMessage'
+import Form from '../../shared/form'
+import InputWrapper from '../../shared/inputWrapper'
+import ModelNames from '../../../constants/modelNames'
+import ScreenNames from '../../../constants/screenNames'
+import globalState from '../../../context.js'
+import AlertManager from '../../../managers/alertManager'
+import ChatManager from '../../../managers/chatManager.js'
+import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
+import ObjectManager from '../../../managers/objectManager'
+import StringManager from '../../../managers/stringManager.coffee'
+import ChatMessage from '../../../models/chat/chatMessage'
 import moment from 'moment-timezone'
 import React, {useContext, useEffect, useState} from 'react'
 import {Fade} from 'react-awesome-reveal'
@@ -40,7 +40,7 @@ const Chats = () => {
   const {state, setState} = useContext(globalState)
   const {theme, messageRecipient, refreshKey} = state
   const {currentUser} = useCurrentUser()
-  const { chats} = useChat()
+  const {chats} = useChat()
   const [searchResults, setSearchResults] = useState([])
   const [showSearchInput, setShowSearchInput] = useState(false)
   const [showBookmarks, setShowBookmarks] = useState(false)
@@ -538,8 +538,6 @@ const Chats = () => {
           <>
             {/* ITERATE DEFAULT MESSAGES */}
             <div id="default-messages">
-
-
               {Manager.IsValid(messagesToLoop) &&
                 messagesToLoop.map((message, index) => {
                   // Determine bookmark class

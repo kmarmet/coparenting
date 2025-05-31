@@ -1,4 +1,4 @@
-import Manager from '/src/managers/manager.js'
+import Manager from './managers/manager.js'
 import {StreamCall, StreamVideo, StreamVideoClient, useCall, useCallStateHooks} from '@stream-io/video-react-sdk'
 import {useEffect} from 'react'
 

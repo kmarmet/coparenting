@@ -1,8 +1,8 @@
 // Path: src\components\forms\newMemoryForm.jsx
-import UploadInputs from '/src/components/shared/uploadInputs'
-import AlertManager from '/src/managers/alertManager'
-import ImageManager from '/src/managers/imageManager'
-import Manager from '/src/managers/manager'
+import UploadInputs from '../../components/shared/uploadInputs'
+import AlertManager from '../../managers/alertManager'
+import ImageManager from '../../managers/imageManager'
+import Manager from '../../managers/manager'
 import moment from 'moment'
 import React, {useContext, useRef, useState} from 'react'
 import {LuImagePlus} from 'react-icons/lu'

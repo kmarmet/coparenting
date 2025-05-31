@@ -141,7 +141,14 @@
   }
 }
 
+.skeleton {
+  min-height: 100px;
+  min-width: 100px;
+  @include loadingSkeleton;
 
+
+  width: 100vw;
+}
 
 .location-pin-animation {
   width: 40px;
@@ -1261,12 +1268,12 @@
           font-size: 45px;
           color: #fff;
           font-weight: $fwLight;
-          @for $i from 0 through 9 {
-            &:nth-child(#{$i + 1}) {
-              filter: blur(0px);
-              animation: blur-text 0.4s calc($i / 9) + s infinite linear alternate;
-            }
-          }
+          //@for $i from 0 through 9 {
+          //  &:nth-child(#{$i + 1}) {
+          //    filter: blur(0px);
+          //    animation: blur-text 0.4s calc($i / 9) + s infinite linear alternate;
+          //  }
+          //}
         }
       }
 
@@ -1287,12 +1294,12 @@
           margin: 0 5px;
           color: #fff;
           font-family: 'Quattrocento Sans', sans-serif;
-          @for $i from 0 through 6 {
-            &:nth-child(#{$i + 1}) {
-              filter: blur(0px);
-              animation: blur-text 1.5s (#{$i/5}) + s infinite linear alternate;
-            }
-          }
+          //@for $i from 0 through 6 {
+          //  &:nth-child(#{$i + 1}) {
+          //    filter: blur(0px);
+          //    animation: blur-text 1.5s (#{$i/5}) + s infinite linear alternate;
+          //  }
+          //}
         }
       }
 

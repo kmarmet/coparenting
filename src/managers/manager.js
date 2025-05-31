@@ -14,18 +14,26 @@ const Manager = {
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
       // log error
     }),
-  CallbackOnTimeout: (timeoutSeconds = 60, timeoutFunc = () => {}, condition = false) => {
-    let secondsTimer = 0
-    function innerFunc() {
-      let interval = setInterval(() => {
-        secondsTimer += 2
-        if (secondsTimer >= timeoutSeconds || condition === true) {
-          timeoutFunc()
-          clearInterval(interval)
-        }
-      }, 1000)
-    }
-    return innerFunc()
+
+  ConditionalIntervalWithTimeout: (condition, startTime, successCallback = () => {}, failureCallback = () => {}, timeoutSeconds = 5) => {
+    let int = setInterval(() => {
+      const endTime = Date.now()
+      const elapsedTimeMs = endTime - startTime
+      const elapsedTimeSeconds = elapsedTimeMs / 1000
+
+      console.log('Elapsed time:', Math.floor(elapsedTimeSeconds), 'seconds')
+
+      // If the condition fails and the timer exceeds 5 seconds
+      if (Math.floor(elapsedTimeSeconds) > timeoutSeconds && condition === false) {
+        clearInterval(int)
+        failureCallback()
+      }
+
+      if (condition === true) {
+        clearInterval(int)
+        successCallback()
+      }
+    }, 1000)
   },
   GetInvalidInputsErrorString: (requiredInputs) => {
     let invalidInputNames = []

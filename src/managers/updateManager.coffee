@@ -1,4 +1,4 @@
-import DB from '../../src/database/DB'
+import DB from "../database/DB"
 import OneSignal from 'react-onesignal'
 import Manager from "./manager.js"
 import moment from "moment"

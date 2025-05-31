@@ -17,8 +17,8 @@ import globalState from '../context'
 import useCurrentUser from '../hooks/useCurrentUser'
 import DomManager from '../managers/domManager'
 import Manager from '../managers/manager'
-import NotificationBadge from './shared/NotificationBadge'
-import Overlay from './shared/overlay'
+import NotificationBadge from '../components/shared/notificationBadge'
+import Overlay from '../components/shared/overlay'
 
 export default function FullMenu() {
   const {state, setState} = useContext(globalState)

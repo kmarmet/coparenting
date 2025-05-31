@@ -1,7 +1,7 @@
 // Path: src\database\db_userScoped.js
-import DatasetManager from '/src/managers/datasetManager'
-import ObjectManager from '/src/managers/objectManager'
-import StringManager from '/src/managers/stringManager.coffee'
+import DatasetManager from '../managers/datasetManager'
+import ObjectManager from '../managers/objectManager'
+import StringManager from '../managers/stringManager.coffee'
 import {child, get, getDatabase, push, ref, remove, set, update} from 'firebase/database'
 import _ from 'lodash'
 import moment from 'moment'
@@ -383,10 +383,9 @@ const DB_UserScoped = {
     try {
       const dbRef = ref(getDatabase())
       await set(child(dbRef, path), value)
+    } catch (error) {
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
-      catch (error) {
-        LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
-      }
   },
   UpdateParent: async (currentUserKey, parentIndex, prop, value) => {
     const dbRef = ref(getDatabase())

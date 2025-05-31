@@ -1,5 +1,5 @@
 // Path: src\components\shared\form.jsx
-import Manager from '/src/managers/manager.js'
+import Manager from '../../managers/manager'
 import React, {useContext, useEffect} from 'react'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager'
