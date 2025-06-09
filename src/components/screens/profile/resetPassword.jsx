@@ -9,7 +9,7 @@ import globalState from '../../../context'
 import firebaseConfig from '../../../firebaseConfig'
 import AlertManager from '../../../managers/alertManager'
 import Form from '../../shared/form'
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import Spacer from '../../shared/spacer'
 
 export default function ResetPassword() {
@@ -49,7 +49,7 @@ export default function ResetPassword() {
       wrapperClass="reset-password">
       <Spacer height={10} />
       <div className="screen-content">
-        <InputWrapper placeholder={'Email Address'} required={true} inputType={InputTypes.email} onChange={(e) => (email.current = e.target.value)} />
+        <InputField placeholder={'Email Address'} required={true} inputType={InputTypes.email} onChange={(e) => (email.current = e.target.value)} />
       </div>
     </Form>
   )

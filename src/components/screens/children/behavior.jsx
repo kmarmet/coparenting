@@ -1,5 +1,5 @@
 // Path: src\components\screens\childInfo\behavior.jsx
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import DB from '../../../database/DB'
 import DB_UserScoped from '../../../database/db_userScoped'
 import AlertManager from '../../../managers/alertManager'
@@ -126,7 +126,7 @@ export default function Behavior({activeChild}) {
                     )}
                     {!infoLabel.toLowerCase().includes('phone') && (
                       <>
-                        <InputWrapper
+                        <InputField
                           wrapperClasses={`${index === behaviorValues.length - 2 ? 'last' : ''}`}
                           hasBottomSpacer={false}
                           customDebounceDelay={1200}

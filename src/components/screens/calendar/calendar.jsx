@@ -2,7 +2,7 @@
 import EditCalEvent from '../../../components/forms/editCalEvent'
 import NavBar from '../../../components/navBar.jsx'
 import Form from '../../../components/shared/form'
-import InputWrapper from '../../../components/shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import globalState from '../../../context.js'
 import AlertManager from '../../../managers/alertManager'
@@ -289,10 +289,13 @@ export default function EventCalendar() {
 
   const UpdateOrRefreshIfNecessary = async () => {
     let latestVersionNumber = appUpdates[appUpdates.length - 1]?.currentVersion
+
     const shouldRefresh = await AppManager.UpdateOrRefreshIfNecessary(currentUser, latestVersionNumber).then()
     if (shouldRefresh) {
-      setState({...state, successAlertMessage: 'Updating App ...'})
-      await Manager.GetPromise(() => {
+      setState({...state, successAlertMessage: 'Updating App...'})
+
+      setTimeout(() => {
+        setState({...state, successAlertMessage: ''})
         window.location.reload()
       }, 2500)
     }
@@ -394,7 +397,7 @@ export default function EventCalendar() {
           onClose={ViewAllEvents}
           showCard={showSearchCard}
           onSubmit={Search}>
-          <InputWrapper
+          <InputField
             placeholder="Event Name"
             refreshKey={refreshKey}
             inputValue={searchQuery}
@@ -522,7 +525,7 @@ export default function EventCalendar() {
           <DesktopLegend />
 
           {/* DESKTOP SIDEBAR */}
-          <InputWrapper
+          <InputField
             labelText="Find events..."
             refreshKey={refreshKey}
             inputValue={searchQuery}

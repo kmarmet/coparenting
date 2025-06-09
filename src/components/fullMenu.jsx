@@ -19,11 +19,16 @@ import DomManager from '../managers/domManager'
 import Manager from '../managers/manager'
 import NotificationBadge from '../components/shared/notificationBadge'
 import Overlay from '../components/shared/overlay'
+import useFeedback from '../hooks/useFeedback'
+import feedbackEmotions from '../constants/feedbackEmotions'
+import DB from '../database/DB'
+import FeedbackEmotionsTracker from '../models/feedbackEmotionsTracker'
 
 export default function FullMenu() {
   const {state, setState} = useContext(globalState)
   const {currentScreen, menuIsOpen} = state
   const {currentUser} = useCurrentUser()
+  const {feedback} = useFeedback()
 
   const handlers = useSwipeable({
     swipeDuration: 300,
@@ -38,9 +43,9 @@ export default function FullMenu() {
   const ChangeCurrentScreen = async (screen) => setState({...state, currentScreen: screen, refreshKey: Manager.GetUid(), menuIsOpen: false})
 
   const Logout = () => {
-    const pageOverlay = document.getElementById('page-overlay')
-    if (pageOverlay) {
-      pageOverlay.classList.remove('active')
+    const screenOverlay = document.getElementById('screen-overlay')
+    if (screenOverlay) {
+      screenOverlay.classList.remove('active')
     }
 
     signOut(auth)
@@ -52,6 +57,21 @@ export default function FullMenu() {
       .catch((error) => {
         console.log(error)
       })
+  }
+
+  const UpdateFeedbackCounter = async (feedbackType) => {
+    if (Manager.IsValid(feedback)) {
+      const prop = `${feedbackType}Count`
+      let count = feedback[prop] + 1
+      await DB.updateByPath(`${DB.tables.feedbackEmotionsTracker}/${prop}`, count)
+    } else {
+      const prop = `${feedbackType}Count`
+      let count = 1
+      let newFeedback = new FeedbackEmotionsTracker()
+      newFeedback[prop] = count
+
+      await DB.updateByPath(`${DB.tables.feedbackEmotionsTracker}`, newFeedback)
+    }
   }
 
   return (
@@ -313,8 +333,8 @@ export default function FullMenu() {
                     </div>
                     <p>Install</p>
                   </div>
-                  {/* LOGOUT BUTTON */}
 
+                  {/* LOGOUT BUTTON */}
                   <div className={`menu-item logout`} onClick={Logout}>
                     <div className="content">
                       <div className="svg-wrapper">
@@ -322,6 +342,39 @@ export default function FullMenu() {
                       </div>
                       <p>Logout</p>
                     </div>
+                  </div>
+                </div>
+
+                <hr />
+
+                {/* FEEDBACK WRAPPER */}
+                <div id="feedback-wrapper">
+                  <p id="feedback-title">How Do You Feel About the App Today?</p>
+                  <p id="feedback-subtitle">
+                    {DomManager.tapOrClick(true)} an emoji to convey how you feel. You may do this as frequently as you like; the numbers reflect the
+                    total feedback received from all users.
+                  </p>
+                  <div id="icon-and-label-wrapper">
+                    <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.unhappy)}>
+                      <span className="icon unhappy">☹️</span>
+                      <span className="count">{feedback?.unhappyCount ?? 0}</span>
+                    </p>
+                    <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.neutral)}>
+                      <span className="icon neutral">😐</span>
+                      <span className="count">{feedback?.neutralCount ?? 0}</span>
+                    </p>
+                    <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.satisfied)}>
+                      <span className="icon satisfied">😊</span>
+                      <span className="count">{feedback?.satisfiedCount ?? 0}</span>
+                    </p>
+                    <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.peaceful)}>
+                      <span className="icon peaceful">😁</span>
+                      <span className="count">{feedback?.peacefulCount ?? 0}</span>
+                    </p>
+                    <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.love)}>
+                      <span className="icon love">❤️‍🔥</span>
+                      <span className="count">{feedback?.loveCount ?? 0} </span>
+                    </p>
                   </div>
                 </div>
               </div>

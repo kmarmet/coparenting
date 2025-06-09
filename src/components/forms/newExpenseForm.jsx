@@ -1,15 +1,15 @@
 // Path: src\components\forms\newExpenseForm.jsx
 import CheckboxGroup from '../../components/shared/checkboxGroup'
 import Form from '../../components/shared/form'
-import InputWrapper from '../../components/shared/inputWrapper'
+import InputField from '../shared/inputField'
 import SelectDropdown from '../../components/shared/selectDropdown'
 import ShareWithCheckboxes from '../../components/shared/shareWithCheckboxes'
 import Spacer from '../../components/shared/spacer.jsx'
-import UploadInputs from '../../components/shared/uploadInputs'
+import UploadButton from '../shared/uploadButton'
 import ActivityCategory from '../../constants/activityCategory'
 import ExpenseCategories from '../../constants/expenseCategories.js'
 import ModelNames from '../../constants/modelNames'
-import FirebaseStorage from '../../database/firebaseStorage'
+import Storage from '../../database/storage'
 import AlertManager from '../../managers/alertManager'
 import DateManager from '../../managers/dateManager'
 import ImageManager from '../../managers/imageManager'
@@ -19,7 +19,7 @@ import UpdateManager from '../../managers/updateManager'
 import CalendarMapper from '../../mappers/calMapper'
 import Expense from '../../models/new/expense.js'
 import moment from 'moment'
-import React, {useContext, useState} from 'react'
+import React, {useContext, useRef, useState} from 'react'
 import {GrPowerReset} from 'react-icons/gr'
 import CreationForms from '../../constants/creationForms'
 import DatetimeFormats from '../../constants/datetimeFormats'
@@ -33,46 +33,32 @@ import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import Label from '../shared/label'
 import ToggleButton from '../shared/toggleButton'
+import useChildren from '../../hooks/useChildren'
+import useCoparents from '../../hooks/useCoparents'
+import useExpenses from '../../hooks/useExpenses'
 
 export default function NewExpenseForm() {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey, authUser, creationFormToShow} = state
   const [expenseName, setExpenseName] = useState('')
-  const [expenseChildren, setExpenseChildren] = useState([])
-  const [expenseDueDate, setExpenseDueDate] = useState('')
-  const [expenseNotes, setExpenseNotes] = useState('')
   const [expenseImage, setExpenseImage] = useState('')
-  const [includeChildren, setIncludeChildren] = useState(false)
   const [isRecurring, setIsRecurring] = useState(false)
-  const [expenseCategory, setExpenseCategory] = useState(ExpenseCategories.General)
-  const [payer, setPayer] = useState({
-    phone: '',
-    name: '',
-  })
-  const [shareWith, setShareWith] = useState([])
   const [recurringFrequency, setRecurringFrequency] = useState('')
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
-  const [expenseAmount, setExpenseAmount] = useState(0)
   const {currentUser} = useCurrentUser()
+  const {children, childrenDropdownOptions} = useChildren()
+  const {coparents} = useCoparents()
+  const {expenses} = useExpenses()
+
+  const formRef = useRef(new Expense())
 
   const ResetForm = async (showAlert) => {
-    Manager.ResetForm('calendarEvents-wrapper')
+    Manager.ResetForm('expenses-wrapper')
     setExpenseName('')
-    setExpenseChildren([])
-    setExpenseDueDate('')
-    setExpenseNotes('')
     setExpenseImage('')
-    setIncludeChildren(false)
     setIsRecurring(false)
-    setExpenseCategory('')
-    setPayer({
-      phone: '',
-      name: '',
-    })
-    setShareWith([])
     setRecurringFrequency('')
     setRepeatingEndDate('')
-    setExpenseAmount('')
     setState({
       ...state,
       refreshKey: Manager.GetUid(),
@@ -86,46 +72,43 @@ export default function NewExpenseForm() {
     const validAccounts = currentUser?.sharedDataUsers
     if (validAccounts === 0) {
       AlertManager.throwError(
-        'No co-parent to \n assign calendarEvents to',
+        'No co-parent to \n assign expenses to',
         'You have not added any co-parents. Or, it is also possible they have closed their profile.'
       )
       return false
     }
-    if (payer.name.length === 0) {
+    if (!Manager.IsValid(formRef.current.payer.name, true)) {
       AlertManager.throwError('Please select will be paying the expense')
       return false
     }
-    if (expenseName.length === 0) {
-      AlertManager.throwError('Please Add an expense name')
+    if (!Manager.IsValid(formRef.current.name, true)) {
+      AlertManager.throwError('Please add an expense name')
       return false
     }
-    if (expenseAmount.length === 0) {
-      AlertManager.throwError('Please Add an expense expenseAmount')
+    if (formRef.current.amount <= 0) {
+      AlertManager.throwError('Please add an expense amount')
       return false
     }
 
     if (validAccounts > 0) {
-      if (shareWith.length === 0) {
+      if (!Manager.IsValid(formRef.current.shareWith)) {
         AlertManager.throwError('Please choose who you would like to share this expense with')
         return false
       }
     }
-    //#endregion VALIDATIONconst newExpense = new Expense()
+    //#endregion VALIDATION
 
-    const newExpense = new Expense()
-    newExpense.name = expenseName
-    newExpense.children = expenseChildren
-    newExpense.amount = StringManager.FormatAsWholeNumber(expenseAmount)
-    newExpense.category = expenseCategory
-    newExpense.dueDate = Manager.IsValid(expenseDueDate) ? moment(expenseDueDate).format(DatetimeFormats.dateForDb) : ''
-    newExpense.notes = expenseNotes
+    const newExpense = {...formRef.current}
+    newExpense.dueDate = Manager.IsValid(formRef.current.dueDate) ? moment(formRef.current.dueDate).format(DatetimeFormats.dateForDb) : ''
     newExpense.paidStatus = 'unpaid'
     newExpense.imageName = expenseImage.name ?? ''
-    newExpense.payer = payer
     newExpense.recurringFrequency = recurringFrequency
     newExpense.ownerKey = currentUser?.key
-    newExpense.shareWith = DatasetManager.getUniqueArray(shareWith, true)
     newExpense.isRecurring = isRecurring
+    newExpense.recipient = {
+      key: currentUser?.key,
+      name: currentUser?.name,
+    }
 
     // If expense has image
     if (expenseImage) {
@@ -145,28 +128,29 @@ export default function NewExpenseForm() {
 
     // IMAGE UPLOAD
     if (Manager.IsValid(expenseImage?.name)) {
-      await FirebaseStorage.upload(FirebaseStorage.directories.expenseImages, currentUser?.key, expenseImage, expenseImage.name).then((url) => {
+      await Storage.upload(Storage.directories.expenseImages, currentUser?.key, expenseImage, expenseImage.name).then((url) => {
         newExpense.imageUrl = url
       })
     }
 
     const cleanObject = ObjectManager.GetModelValidatedObject(newExpense, ModelNames.expense)
+    console.log(cleanObject)
 
     // Add to DB
-    await DB.Add(`${DB.tables.calendarEvents}/${currentUser?.key}`, cleanObject).finally(async () => {
+    await DB.Add(`${DB.tables.expenses}/${currentUser?.key}`, expenses, cleanObject).finally(async () => {
       // Add repeating expense to DB
       if (recurringFrequency.length > 0 && repeatingEndDate.length > 0) {
         await AddRepeatingExpensesToDb()
       }
 
       // Send notification
-      if (Manager.IsValid(shareWith)) {
-        await UpdateManager.SendToShareWith(
-          shareWith,
+      if (Manager.IsValid(formRef.current.shareWith)) {
+        UpdateManager.SendToShareWith(
+          formRef.current.shareWith,
           currentUser,
           `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a new expense`,
-          `${expenseName} - $${expenseAmount}`,
-          ActivityCategory.calendarEvents
+          `${expenseName} - $${formRef.current.amount}`,
+          ActivityCategory.expenses
         )
       }
 
@@ -202,48 +186,17 @@ export default function NewExpenseForm() {
     }
   }
 
-  const HandleChildSelection = (e) => {
-    const childName = e.getAttribute('data-label')
-    DomManager.HandleCheckboxSelection(
-      e,
-      async () => {
-        setExpenseChildren([...expenseChildren, childName])
-      },
-      async () => {
-        setExpenseChildren(expenseChildren.filter((x) => x !== childName))
-      },
-      true
-    )
-  }
+  const HandleChildSelection = (e) => (formRef.current.children = e.map((x) => x.label))
 
-  const HandleShareWithSelection = (e) => {
-    const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
-    setShareWith(updated)
-  }
+  const HandleShareWithSelection = (e) => (formRef.current.shareWith = e.map((x) => x.value))
 
-  const HandlePayerSelection = async (e) => {
-    DomManager.HandleCheckboxSelection(
-      e,
-      async () => {
-        const coparentKey = e.getAttribute('data-key')
-
-        const coparent = currentUser?.coparents?.find((x) => x.userKey === coparentKey)
-        if (Manager.IsValid(coparent)) {
-          const coparentName = coparent.name
-          setPayer({
-            key: coparentKey,
-            name: coparentName,
-          })
-        }
-      },
-      async () => {
-        setPayer({
-          phone: '',
-          name: '',
-        })
-      },
-      false
-    )
+  const HandlePayerSelection = (e) => {
+    const payerUser = coparents?.find((x) => x?.userKey === e?.value)
+    formRef.current.payer = {
+      name: payerUser?.name,
+      key: payerUser?.userKey,
+      phone: payerUser?.phone,
+    }
   }
 
   const HandleRecurringSelection = async (e) => {
@@ -282,12 +235,12 @@ export default function NewExpenseForm() {
   const OnDefaultAmountPress = (e) => {
     const numberButton = e.target
     const asNumber = parseInt(e.target.textContent.replace('$', ''))
-    const currentNumber = parseInt(expenseAmount || 0)
+    const currentNumber = parseInt(formRef.current.amount || 0)
     const total = asNumber + currentNumber
-    setExpenseAmount(() => total)
+    formRef.current.amount = total
     const activeForm = document.querySelector('.form.active')
-    const inputWrapper = activeForm.querySelector('.input-wrapper')
-    const amountInput = inputWrapper.querySelector('input')
+    const inputField = activeForm.querySelector('.input-field')
+    const amountInput = inputField.querySelector('input')
     amountInput.value = total
     numberButton.classList.add('pressed', 'animate', 'active')
     setTimeout(() => {
@@ -295,7 +248,7 @@ export default function NewExpenseForm() {
     }, 50)
   }
 
-  const HandleCategorySelection = async (category) => setExpenseCategory(category.target.value)
+  const HandleCategorySelection = (category) => (formRef.current.category = category.label)
 
   return (
     <Form
@@ -307,15 +260,30 @@ export default function NewExpenseForm() {
       className="new-expense-card"
       wrapperClass="new-expense-card form at-top"
       showCard={creationFormToShow === CreationForms.expense}
+      extraButtons={[
+        <UploadButton
+          useAttachmentIcon={true}
+          uploadType="image"
+          getImages={(input) => {
+            if (input.target.files.length === 0) {
+              AlertManager.throwError('Please choose an image first')
+            } else {
+              setExpenseImage(input.target.files[0])
+            }
+          }}
+          containerClass={`${theme} new-expense-card`}
+          actualUploadButtonText={'Upload'}
+          uploadButtonText="Choose"
+        />,
+      ]}
       onClose={ResetForm}>
       <div className="expenses-wrapper">
-        <Spacer height={5} />
         {/* PAGE CONTAINER */}
         <div id="add-expense-form" className={`${theme} at-top`}>
           {/* AMOUNT */}
-          <div id="amount-input-wrapper">
+          <div id="amount-input-field">
             <span className="flex">
-              <InputWrapper
+              <InputField
                 wrapperClass="currency"
                 isCurrency={true}
                 id="amount-input"
@@ -324,7 +292,7 @@ export default function NewExpenseForm() {
                 onChange={(e) => {
                   const numbersOnly = StringManager.RemoveAllLetters(e.target.value).replaceAll('.', '')
                   e.target.value = numbersOnly
-                  setExpenseAmount(numbersOnly)
+                  formRef.current.amount = numbersOnly
                 }}
                 placeholder={'0'}
               />
@@ -369,8 +337,8 @@ export default function NewExpenseForm() {
             <button
               className="default-amount-button reset"
               onClick={() => {
-                const inputWrapper = document.getElementById('amount-input-wrapper')
-                const amountInput = inputWrapper.querySelector('input')
+                const inputField = document.getElementById('amount-input-field')
+                const amountInput = inputField.querySelector('input')
                 amountInput.value = null
                 setExpenseAmount(0)
               }}>
@@ -380,72 +348,57 @@ export default function NewExpenseForm() {
 
           {/* CATEGORY */}
           <SelectDropdown
-            options={Object.keys(ExpenseCategories)}
+            options={DomManager.GetSelectOptions(Object.values(ExpenseCategories))}
             selectValue={Object.keys(ExpenseCategories)[0]}
             onChange={HandleCategorySelection}
-            placeholder={'Select a Category'}
-            label={'Category'}
+            labelText={'Select a Category'}
             required={true}
             show={true}
           />
           <Spacer height={5} />
 
           {/* EXPENSE NAME */}
-          <InputWrapper
-            onChange={(e) => setExpenseName(e.target.value)}
+          <InputField
+            onChange={(e) => (formRef.current.name = e.target.value)}
             inputType={InputTypes.text}
-            placeholder={'Name of Expense'}
+            placeholder={'Expense Title'}
             required={true}
           />
 
           {/* DUE DATE */}
-          <InputWrapper
+          <InputField
             inputType={InputTypes.date}
             uidClass="new-expense-date"
             placeholder={'Due Date'}
-            onDateOrTimeSelection={(date) => setExpenseDueDate(date)}
+            onDateOrTimeSelection={(date) => (formRef.current.dueDate = moment(date).format(DatetimeFormats.dateForDb))}
           />
 
           {/* NOTES */}
-          <InputWrapper onChange={(e) => setExpenseNotes(e.target.value)} inputType={'textarea'} placeholder={'Notes'} />
-
-          <Spacer height={5} />
+          <InputField onChange={(e) => (formRef.current.notes = e.target.value)} inputType={'textarea'} placeholder={'Notes'} />
+          <hr />
 
           {/* PAYER */}
-          <CheckboxGroup
-            required={true}
-            parentLabel={'Who will be paying the expense?'}
-            checkboxArray={DomManager.BuildCheckboxGroup({
-              currentUser,
-              predefinedType: 'coparents',
-            })}
-            onCheck={HandlePayerSelection}
-          />
-          <Spacer height={8} />
+          {Manager.IsValid(coparents) && (
+            <SelectDropdown
+              options={DomManager.GetSelectOptions(coparents, true)}
+              labelText={'Select Expense Payer'}
+              onChange={HandlePayerSelection}
+            />
+          )}
+
           {/* SHARE WITH */}
           <ShareWithCheckboxes onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coparents'} />
 
-          <Spacer height={8} />
-
           {/* INCLUDING WHICH CHILDREN */}
-          {currentUser && currentUser?.children !== undefined && (
-            <div className="share-with-container ">
-              <div className="flex">
-                <Label text={'Applicable Child(ren)'} classes="always-show" />
-                <ToggleButton onCheck={() => setIncludeChildren(!includeChildren)} onUncheck={() => setIncludeChildren(!includeChildren)} />
-              </div>
-              {includeChildren && (
-                <CheckboxGroup
-                  checkboxArray={DomManager.BuildCheckboxGroup({
-                    currentUser,
-                    labelType: 'children',
-                  })}
-                  onCheck={HandleChildSelection}
-                />
-              )}
-            </div>
+          {Manager.IsValid(children) && (
+            <SelectDropdown
+              options={DomManager.GetSelectOptions(children, true)}
+              labelText={'Select Children to Include'}
+              onChange={HandleChildSelection}
+              isMultiple={true}
+            />
           )}
-
+          <Spacer height={8} />
           {/* RECURRING? */}
           <div className="flex">
             <Label text={'Recurring'} classes="always-show" />
@@ -460,25 +413,6 @@ export default function NewExpenseForm() {
               })}
             />
           )}
-
-          {/* UPLOAD INPUTS */}
-          {shareWith.length > 0 && payer.name.length > 0 && expenseName.length > 0 && expenseAmount.length > 0 && (
-            <UploadInputs
-              uploadType="image"
-              getImages={(input) => {
-                if (input.target.files.length === 0) {
-                  AlertManager.throwError('Please choose an image first')
-                } else {
-                  setExpenseImage(input.target.files[0])
-                }
-              }}
-              containerClass={`${theme} new-expense-card`}
-              actualUploadButtonText={'Upload'}
-              uploadButtonText="Choose"
-            />
-          )}
-
-          <Spacer height={20} />
         </div>
       </div>
     </Form>

@@ -1,13 +1,16 @@
 import {deleteObject, getDownloadURL, getStorage, listAll, ref, uploadBytes} from 'firebase/storage'
-import DB from '../database/DB'
 import Manager from '../managers/manager'
 
-const FirebaseStorage = {
+const Storage = {
   directories: {
     expenseImages: 'expense-images',
     memories: 'memories',
     documents: 'documents',
     profilePics: 'profilePics',
+    appImages: 'appImages',
+    brandLogos: 'brandLogos',
+    landing: 'landing',
+    onboarding: 'onboarding',
   },
   base64ToImage: (dataUrl, imageName) => {
     var arr = dataUrl.split(','),
@@ -41,15 +44,13 @@ const FirebaseStorage = {
         })
     }),
 
-  getSingleFileUrl: async (fileDirectory, id, filename) =>
+  GetSingleFileUrl: async (path) =>
     new Promise(async (resolve, reject) => {
       const storage = getStorage()
-      await getDownloadURL(ref(storage, `${fileDirectory}/${id}/${filename}`))
+      await getDownloadURL(ref(storage, path))
         .then((url) => {
           if (Manager.IsValid(url)) {
-            if (url.indexOf(id) > -1) {
-              resolve(url)
-            }
+            resolve(url)
           }
         })
         .catch((error) => {
@@ -101,15 +102,24 @@ const FirebaseStorage = {
       xhr.send()
     })
   },
-  getImages: async (imageDir, id) =>
-    new Promise(async (resolve) => {
-      const storage = getStorage()
-      let returnImages = []
-      await listAll(ref(storage, `${imageDir}/${id}`)).then(async (res) => {
-        returnImages = res.items.map(async (x) => await getDownloadURL(x))
-        resolve(returnImages)
-      })
-    }),
+  GetImages: async (imageDir, id) => {
+    const storage = getStorage()
+    let returnImages = []
+    await listAll(ref(storage, `${imageDir}/${id}`)).then(async (res) => {
+      returnImages = res.items.map(async (x) => await getDownloadURL(x))
+    })
+
+    return returnImages
+  },
+  GetAppImages: async (imageDir) => {
+    const storage = getStorage()
+    let returnImages = []
+    await listAll(ref(storage, `appImages/${imageDir}`)).then(async (res) => {
+      returnImages = res.items.map(async (x) => await getDownloadURL(x))
+    })
+    const images = await Promise.all(returnImages)
+    return images
+  },
   imageToBlob: async (img) => {
     const fr = new FileReader()
     const blob = new Blob([img], {type: 'text/plain'})
@@ -123,10 +133,10 @@ const FirebaseStorage = {
   getUrlsFromFiles: async (directory, userId, imgs) => {
     let urls = []
     const imgFiles = Array.from(imgs)
-    await FirebaseStorage.getImages(directory, userId).then(async (images) => {
+    await Storage.GetImages(directory, userId).then(async (images) => {
       await Promise.all(images).then((firebaseUrls) => {
         firebaseUrls.forEach(async (url) => {
-          const imageName = FirebaseStorage.GetImageNameFromUrl(url)
+          const imageName = Storage.GetImageNameFromUrl(url)
           const fileImageNames = imgFiles.map((x) => x.name)
           if (fileImageNames.includes(Manager.DecodeHash(imageName))) {
             urls.push(url)
@@ -139,10 +149,10 @@ const FirebaseStorage = {
   GetFileUrl: async (directory, userKey, fileName) => {
     const url = async () =>
       await new Promise(async (resolve) => {
-        await FirebaseStorage.getImages(directory, userKey).then(async (images) => {
+        await Storage.GetImages(directory, userKey).then(async (images) => {
           await Promise.all(images).then((firebaseUrls) => {
             for (let url of firebaseUrls) {
-              const _fileName = FirebaseStorage.GetImageNameFromUrl(url)
+              const _fileName = Storage.GetImageNameFromUrl(url)
               console.log(_fileName, fileName)
               if (_fileName === fileName) {
                 resolve(url)
@@ -156,7 +166,7 @@ const FirebaseStorage = {
   getProfilePicUrl: async (directory, userId, imgs) => {
     const images = async () =>
       await new Promise(async (resolve) => {
-        await FirebaseStorage.getImages(directory, userId).then(async (images) => {
+        await Storage.GetImages(directory, userId).then(async (images) => {
           await Promise.all(images).then((firebaseUrls) => {
             firebaseUrls.forEach(async (urls) => {
               resolve(urls)
@@ -209,16 +219,6 @@ const FirebaseStorage = {
       const storageRef = ref(storage, `${imgDirectory}/${storageKey}/profilePic`.replace('//', '/'))
       uploadBytes(storageRef, img).then((result) => {
         resolve(result)
-      })
-    }),
-  uploadChatRecoverySignature: (storageKey, img) =>
-    new Promise(async (resolve) => {
-      const storage = getStorage()
-      const path = `${DB.tables.chatRecoveryRequests}/${storageKey}/signature.jpg`.replace('//', '/')
-      const storageRef = ref(storage, path)
-      await uploadBytes(storageRef, img).then(async (result) => {
-        const url = await FirebaseStorage.getProfilePicUrl(FirebaseStorage.directories.chatRecoveryRequests, storageKey)
-        resolve(url)
       })
     }),
   uploadMultiple: async (imgDirectory, id, images) => {
@@ -337,4 +337,4 @@ const FirebaseStorage = {
   },
 }
 
-export default FirebaseStorage
+export default Storage

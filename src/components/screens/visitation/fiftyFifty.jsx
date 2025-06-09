@@ -4,11 +4,10 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
-import Form from '../../.../../shared/form'
-import InputWrapper from '../../.../../shared/inputWrapper'
-// Path: src\components\screens\visitation\fiftyFifty.jsx
-import MyConfetti from '../../.../../shared/myConfetti'
-import ShareWithCheckboxes from '../../.../../shared/shareWithCheckboxes'
+import Form from '../../shared/form'
+import InputField from '../../shared/inputField' // Path: src\components\screens\visitation\fiftyFifty.jsx
+import MyConfetti from '../../shared/myConfetti'
+import ShareWithCheckboxes from '../../shared/shareWithCheckboxes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
 import ScheduleTypes from '../../../constants/scheduleTypes'
@@ -130,7 +129,7 @@ export default function FiftyFifty({hide, showCard}) {
         <Spacer height={5} />
 
         {/* FIRST PERIOD */}
-        <InputWrapper
+        <InputField
           wrapperClasses="date-range-input"
           placeholder={'First Period'}
           required={true}
@@ -143,7 +142,7 @@ export default function FiftyFifty({hide, showCard}) {
           }}
         />
 
-        <InputWrapper
+        <InputField
           wrapperClasses="date-range-input"
           placeholder={'Second Period'}
           required={true}
@@ -157,7 +156,7 @@ export default function FiftyFifty({hide, showCard}) {
         />
 
         {/* THIRD PERIOD */}
-        <InputWrapper
+        <InputField
           wrapperClasses="date-range-input"
           placeholder={'Third Period'}
           required={true}

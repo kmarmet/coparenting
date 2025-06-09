@@ -10,7 +10,7 @@ import AlertManager from '../../../managers/alertManager'
 import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager.coffee'
 import Form from '../../shared/form'
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import Spacer from '../../shared/spacer'
 
 export default function CustomCoparentInfo({hideCard, activeCoparent, showCard, onAdd = (coparent) => {}}) {
@@ -53,14 +53,14 @@ export default function CustomCoparentInfo({hideCard, activeCoparent, showCard, 
       onClose={ResetForm}>
       <Spacer height={8} />
       <div className="custom-coparent-info-wrapper">
-        <InputWrapper
+        <InputField
           hasBottomSpacer={true}
           inputType={InputTypes.text}
           required={true}
           placeholder={'Title/Label'}
           onChange={(e) => setTitle(StringManager.removeSpecialChars(e.target.value))}
         />
-        <InputWrapper inputType={InputTypes.text} required={true} placeholder={'Value'} onChange={(e) => setValue(e.target.value)} />
+        <InputField inputType={InputTypes.text} required={true} placeholder={'Value'} onChange={(e) => setValue(e.target.value)} />
       </div>
     </Form>
   )

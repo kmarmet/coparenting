@@ -1,12 +1,14 @@
 // Path: src\components\shared\form.jsx
 import Manager from '../../managers/manager'
-import React, {useContext, useEffect} from 'react'
+import React, {cloneElement, useContext, useEffect} from 'react'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager'
 import StringManager from '../../managers/stringManager'
 import Overlay from './overlay'
 import Spacer from './spacer'
 import StringAsHtmlElement from './stringAsHtmlElement'
+import ButtonThemes from '../../constants/buttonThemes'
+import CardButton from './cardButton'
 
 export default function Form({
   submitText,
@@ -16,7 +18,6 @@ export default function Form({
   children,
   title,
   subtitle = '',
-  activeView = 'details',
   showCard = false,
   hasDelete = false,
   hasSubmitButton = true,
@@ -24,8 +25,6 @@ export default function Form({
   deleteButtonText = 'Delete',
   titleIcon = null,
   viewSelector,
-  submitIcon = null,
-  deleteIcon = null,
   cancelButtonText = 'Close',
   extraButtons = [],
 }) {
@@ -61,13 +60,17 @@ export default function Form({
 
     if (showCard) {
       const allActiveFadeInUp = document.querySelectorAll('.animate__animated.animate__fadeInUp')
+
+      // Add block animation
       if (Manager.IsValid(allActiveFadeInUp)) {
         setTimeout(() => {
           DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
         }, 300)
       }
+
+      // Focus first input
       if (Manager.IsValid(activeForm)) {
-        const allWrappers = activeForm.querySelectorAll('.input-wrapper')
+        const allWrappers = activeForm.querySelectorAll('.input-field')
         if (Manager.IsValid(allWrappers)) {
           const firstWrapper = allWrappers[0]
           if (Manager.IsValid(firstWrapper)) {
@@ -77,7 +80,7 @@ export default function Form({
       }
     }
 
-    // Check if creationFormToShow is valid and if so, find the form wrapper
+    // Check if creationFormToShow is valid -> find the form wrapper
     if (Manager.IsValid(creationFormToShow, true)) {
       activeForm = document.querySelector(`.${creationFormToShow}.form-wrapper`)
     }
@@ -91,7 +94,7 @@ export default function Form({
         }
       }
 
-      // show or hide card
+      // Show or hide card
       if (Manager.IsValid(wrapperClass, true) && Manager.IsValid(activeForm)) {
         if (showCard) {
           ScrollToTop()
@@ -109,16 +112,6 @@ export default function Form({
           DomManager.ToggleAnimation('remove', 'form-fade-wrapper', DomManager.AnimateClasses.names.fadeInUp, 50)
         }
       }
-
-      // Set MUI datetime picker placeholders
-
-      // const startTimeInput = document.querySelector('.input-wrapper.start-time .MuiInputBase-input')
-      // const endTimeInput = document.querySelector('.input-wrapper.end-time .MuiInputBase-input')
-      //
-      // if (startTimeInput && endTimeInput) {
-      //   startTimeInput.placeholder = 'Start time'
-      //   endTimeInput.placeholder = 'End time'
-      // }
     }
   }, [showCard])
 
@@ -127,7 +120,7 @@ export default function Form({
       <div key={refreshKey} className={`form-wrapper ${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
         <div
           style={DomManager.AnimateDelayStyle(1, 0.002)}
-          className={`form-card ${DomManager.Animate.FadeInUp(showCard, '.form-fade-wrapper')} form-fade-wrapper ${activeView}`}>
+          className={`form-card ${DomManager.Animate.FadeInUp(showCard, '.form-fade-wrapper')} form-fade-wrapper `}>
           <div className="content-wrapper">
             <div className="header">
               <p className={'form-title'}>
@@ -145,31 +138,33 @@ export default function Form({
         </div>
         <div className={`flex card-buttons`}>
           {hasSubmitButton && (
-            <button className={`button card-button submit`} onClick={onSubmit}>
-              {submitText}
-            </button>
+            <CardButton
+              buttonType={ButtonThemes.green}
+              text={submitText}
+              classes="card-button"
+              onClick={() => {
+                onSubmit()
+              }}
+            />
           )}
 
-          {hasDelete && (
-            <button className={'delete-button default card-button'} onClick={onDelete}>
-              {deleteButtonText}
-            </button>
-          )}
+          {hasDelete && <CardButton text={deleteButtonText} buttonType={ButtonThemes.red} classes="card-button" onClick={onDelete} />}
 
           {/* EXTRA BUTTONS */}
           {Manager.IsValid(extraButtons) &&
-            extraButtons.map((button) => {
-              return button
+            extraButtons.map((button, index) => {
+              return cloneElement(button, {key: index})
             })}
 
-          <button
-            className="button card-button close"
+          <CardButton
+            text={cancelButtonText}
+            buttonType={ButtonThemes.white}
+            classes="card-button"
             onClick={() => {
               onClose()
               HideCard()
-            }}>
-            {cancelButtonText}
-          </button>
+            }}
+          />
         </div>
       </div>
     </Overlay>

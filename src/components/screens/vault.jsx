@@ -118,7 +118,7 @@ export default function Vault() {
   }
 
   const HandleSortBySelection = (e) => {
-    const sortByName = e.target.value
+    const sortByName = e.value
     const expensesAsNumbers = expenses?.map((expense) => {
       expense.amount = parseInt(expense?.amount)
       return expense
@@ -217,7 +217,7 @@ export default function Vault() {
           {/* PAYERS */}
           {coparents?.length > 1 && recordType === RecordTypes.Expenses && (
             <>
-              <Spacer height={5} />
+              <Spacer height={8} />
               <Label text={'Payers'} classes={'always-show dark'} />
               <CheckboxGroup
                 elClass={'payers'}
@@ -231,14 +231,17 @@ export default function Vault() {
             </>
           )}
 
+          <Spacer height={8} />
+
           {/* SORTING */}
           {recordType === RecordTypes.Expenses && Manager.IsValid(expenses) && (
             <div id="sorting-wrapper">
               <Label text={'Sorting'} />
               <SelectDropdown
+                labelText={'Sort By'}
                 id={'sorting-dropdown'}
-                options={Object.values(SortByTypes)}
-                wrapperClasses={'sorting-dropdown'}
+                options={DomManager.GetSelectOptions(Object.values(SortByTypes))}
+                wrapperClasses={'sorting-dropdown white'}
                 selectValue={sortMethod}
                 onChange={HandleSortBySelection}>
                 <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
@@ -271,7 +274,7 @@ export default function Vault() {
               return (
                 <div
                   key={index}
-                  className={`${recordType.toLowerCase()} ${DomManager.Animate.FadeInRight(expense, '.record-row')} record-row`}
+                  className={`${recordType.toLowerCase()} ${DomManager.Animate.FadeInUp(expense, '.record-row')} record-row`}
                   style={DomManager.AnimateDelayStyle(index)}>
                   <p className="title">
                     {StringManager.FormatTitle(expense?.name)} <span>${expense?.amount}</span>

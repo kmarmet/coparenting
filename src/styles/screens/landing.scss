@@ -154,11 +154,8 @@
 
     .logo {
       height: 100px;
-      width: auto;
       border-radius: 100%;
-      @media screen and (max-width: 600px) {
-        height: 80px;
-      }
+      @include square(80px);
     }
 
     .login-buttons {

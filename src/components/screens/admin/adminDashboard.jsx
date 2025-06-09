@@ -21,7 +21,7 @@ import Manager from '../../../managers/manager'
 import SmsManager from '../../../managers/smsManager'
 import StringManager from '../../../managers/stringManager'
 import AppUpdate from '../../../models/appUpdate'
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import Spacer from '../../shared/spacer'
 import ScreenHeader from '../../shared/screenHeader'
 
@@ -149,13 +149,13 @@ export default function AdminDashboard() {
               })}
             </Select>
           </FormControl>
-          <InputWrapper
+          <InputField
             placeholder={`Enter ${recordPropToCheck} or Event Name for Calendar Events`}
             inputType={InputTypes.text}
             onChange={(e) => setGetRecordsSearchValue(e.target.value)}
           />
           <p className="mb-10 center-text">-or-</p>
-          <InputWrapper placeholder={`Enter Record ID`} inputType={InputTypes.text} onChange={(e) => setGetRecordsSearchValue(e.target.value)} />
+          <InputField placeholder={`Enter Record ID`} inputType={InputTypes.text} onChange={(e) => setGetRecordsSearchValue(e.target.value)} />
           <div className="buttons flex">
             <button className="button" onClick={CopyToClipboard}>
               Copy

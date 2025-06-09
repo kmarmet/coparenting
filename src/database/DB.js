@@ -25,6 +25,7 @@ const DB = {
     documentHeaders: 'documentHeaders',
     appUpdates: 'appUpdates',
     invitations: 'invitations',
+    feedbackEmotionsTracker: 'feedbackEmotionsTracker',
   },
   find: async (arrayOrTable, matchArray, isFromDb = true, filterFunction = null) => {
     if (filterFunction) {
@@ -127,7 +128,6 @@ const DB = {
 
       await set(child(dbRef, path), DatasetManager.GetValidArray(tableData))
     } catch (error) {
-      console.log(error.message)
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },

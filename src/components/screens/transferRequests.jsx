@@ -1,7 +1,6 @@
 // Path: src\components\screens\transferRequests?.jsx
-import Form from '../.../..//shared/form'
-import InputWrapper from '../.../..//shared/inputWrapper'
-import Map from '../.../..//shared/map.jsx'
+import Form from '../.../../shared/form'
+import Map from '../.../../shared/map.jsx'
 import NoDataFallbackText from '../.../..//shared/noDataFallbackText'
 import ActivityCategory from '../../constants/activityCategory'
 import DatetimeFormats from '../../constants/datetimeFormats'
@@ -17,7 +16,7 @@ import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {setKey} from 'react-geocode'
 import {PiCarProfileDuotone} from 'react-icons/pi'
-import ButtonTypes from '../../constants/buttonTypes'
+import ButtonThemes from '../../constants/buttonThemes'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context.js'
 import useCoparents from '../../hooks/useCoparents'
@@ -168,7 +167,7 @@ export default function TransferRequests() {
   useEffect(() => {
     if (Manager.IsValid(currentUser)) {
       setTimeout(() => {
-        DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight, 85)
+        DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInUp, 85)
         DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
       }, 300)
     }
@@ -185,11 +184,11 @@ export default function TransferRequests() {
         hasSubmitButton={activeRequest?.ownerKey !== currentUser?.key}
         onSubmit={() => SelectDecision(Decisions.approved)}
         wrapperClass="transfer-change form at-top"
-        viewSelector={<ViewSelector labels={['Details', 'Edit']} updateState={(e) => setView(e)} />}
+        viewSelector={<ViewSelector dropdownPlaceholder="Details" labels={['Details', 'Edit']} updateState={(e) => setView(e)} />}
         thirdButtonText="Decline"
         className="transfer-change"
         extraButtons={[
-          <CardButton buttonType={ButtonTypes.green} key={Manager.GetUid()} onClick={Update} text={'Update'} />,
+          <CardButton buttonType={ButtonThemes.green} key={Manager.GetUid()} onClick={Update} text={'Update'} />,
           <CardButton
             onClick={() => {
               AlertManager.inputAlert(
@@ -210,14 +209,14 @@ export default function TransferRequests() {
               )
             }}
             text="Decline"
-            buttonType={ButtonTypes.red}
+            buttonType={ButtonThemes.red}
             key={Manager.GetUid()}
           />,
         ]}
         hasThirdButton={true}
         onClose={ResetForm}
         showCard={showDetails}>
-        <div className="details" className={`content ${activeRequest?.requestReason?.length > 20 ? 'long-text' : ''}`}>
+        <div className={` details content ${activeRequest?.requestReason?.length > 20 ? 'long-text' : ''}`}>
           {view.toLowerCase() === 'details' && (
             <>
               {/* BLOCKS */}
@@ -304,7 +303,7 @@ export default function TransferRequests() {
           {view.toLowerCase() === 'edit' && (
             <>
               {/* DATE */}
-              <InputWrapper
+              <InputField
                 defaultValue={moment(activeRequest?.startDate)}
                 inputType={InputTypes.date}
                 labelText={'Date'}
@@ -313,7 +312,7 @@ export default function TransferRequests() {
               />
 
               {/* TIME */}
-              <InputWrapper
+              <InputField
                 defaultValue={activeRequest?.time}
                 inputType={InputTypes.time}
                 uidClass="transfer-request-time"
@@ -325,7 +324,7 @@ export default function TransferRequests() {
               <AddressInput placeholder={'Address'} defaultValue={activeRequest?.address} onChange={(address) => setRequestLocation(address)} />
 
               {/* RESPONSE DUE DATE */}
-              <InputWrapper
+              <InputField
                 defaultValue={activeRequest?.requestedResponseDate}
                 onDateOrTimeSelection={(e) => setResponseDueDate(moment(e).format(DatetimeFormats.dateForDb))}
                 inputType={InputTypes.date}
@@ -335,7 +334,7 @@ export default function TransferRequests() {
 
               {/* REASON */}
               {activeRequest?.ownerKey !== currentUser?.key && (
-                <InputWrapper
+                <InputField
                   defaultValue={activeRequest?.requestReason}
                   onChange={(e) => setRequestReason(e)}
                   inputType={InputTypes.textarea}

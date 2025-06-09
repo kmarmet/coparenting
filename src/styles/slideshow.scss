@@ -1,7 +1,7 @@
 @import './mixins';
 #external-overrides {
   #app-container {
-    .page-overlay {
+    .screen-overlay {
       .slideshow-wrapper {
         opacity: 0;
         z-index: -1;

@@ -10,9 +10,9 @@ export default function AddressInput({onChange = (e) => {}, defaultValue, labelT
   return (
     <>
       <>
-        <div key={refreshKey} id="address-input-wrapper" className={`${wrapperClasses}`}>
+        <div key={refreshKey} id="address-input-field" className={`${wrapperClasses}`}>
           {/* INPUT */}
-          <FaMapLocationDot className={'input-icon'} />
+          <FaMapLocationDot className={'input-icon maps'} />
           <GooglePlacesAutocomplete
             /* eslint-disable-next-line no-undef */
             apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
@@ -36,7 +36,7 @@ export default function AddressInput({onChange = (e) => {}, defaultValue, labelT
           />
         </div>
         {/* LABEL */}
-        {/*{Manager.IsValid(labelText, true) && <Label classes={'address active input-wrapper-label'} text={`${labelText}`} required={required} />}*/}
+        {/*{Manager.IsValid(labelText, true) && <Label classes={'address active input-field-label'} text={`${labelText}`} required={required} />}*/}
       </>
     </>
   )

@@ -632,7 +632,7 @@
         border: 1px solid $lightBorderColor;
 
         .form:not(.input-container) {
-          &.message-input-wrapper {
+          &.message-input-field {
             bottom: 15px;
             position: absolute;
             border-left: none;
@@ -698,7 +698,7 @@
           padding: 15px;
           background-color: white;
 
-          .input-wrapper {
+          .input-field {
             padding: 0;
           }
 

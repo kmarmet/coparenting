@@ -11,19 +11,20 @@ import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
 import DB from '../../../database/DB'
 import DB_UserScoped from '../../../database/db_userScoped'
-import FirebaseStorage from '../../../database/firebaseStorage'
+import Storage from '../../../database/storage'
 import firebaseConfig from '../../../firebaseConfig'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
-import StringManager from '../../../managers/stringManager.coffee'
+import StringManager from '../../../managers/stringManager'
 import UpdateManager from '../../../managers/updateManager'
 import NavBar from '../../navBar'
 import AddressInput from '../../shared/addressInput'
 import Form from '../../shared/form'
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import Spacer from '../../shared/spacer'
+import ScreenHeader from '../../shared/screenHeader'
 
 export default function Profile() {
   const {state, setState} = useContext(globalState)
@@ -43,9 +44,9 @@ export default function Profile() {
   const Logout = () => {
     signOut(auth)
       .then(() => {
-        const pageOverlay = document.getElementById('page-overlay')
-        if (pageOverlay) {
-          pageOverlay.classList.remove('active')
+        const screenOverlay = document.getElementById('screen-overlay')
+        if (screenOverlay) {
+          screenOverlay.classList.remove('active')
         }
         setState({
           ...state,
@@ -142,9 +143,9 @@ export default function Profile() {
         reauthenticateWithCredential(auth.currentUser, credential)
           .then(async () => {
             // // Delete from Firebase Storage
-            const allStorageDirectories = Object.keys(FirebaseStorage.directories)
+            const allStorageDirectories = Object.keys(Storage.directories)
             for (let dir of allStorageDirectories) {
-              await FirebaseStorage.deleteDirectory(dir, currentUser.key)
+              await Storage.deleteDirectory(dir, currentUser.key)
             }
 
             // Delete from OneSignal
@@ -197,9 +198,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (Manager.IsValid(currentUser)) {
-      setTimeout(() => {
-        DomManager.ToggleAnimation('add', 'section', DomManager.AnimateClasses.names.fadeInRight, 85)
-      }, 300)
+      DomManager.ToggleAnimation('add', 'section', DomManager.AnimateClasses.names.fadeInUp)
     }
   }, [currentUser])
 
@@ -222,16 +221,11 @@ export default function Profile() {
         showCard={showUpdateCard}
         title={`Update your ${StringManager.uppercaseFirstLetterOfAllWords(updateType)}`}>
         <div id="update-contact-info-container" className={`${theme}`}>
-          <Spacer height={8} />
-          <div className="form">
-            {updateType === 'email' && (
-              <InputWrapper
-                inputType={InputTypes.email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={'New Email Address'}
-                required={true}></InputWrapper>
-            )}
-          </div>
+          <InputField
+            inputType={InputTypes.email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={'New Email Address'}
+            required={true}></InputField>
         </div>
       </Form>
 
@@ -249,61 +243,58 @@ export default function Profile() {
         showCard={showLoginForm}
         title={`Please login to complete account deletion`}>
         <div id="reauthentication-wrapper" className={`${theme}`}>
-          <InputWrapper
+          <InputField
             onChange={(e) => setEmail(e?.currentTarget?.value)}
             placeholder={'Email Address'}
             inputType={InputTypes.email}
             required={true}
           />
-          <InputWrapper
-            onChange={(e) => setPhone(e?.currentTarget?.value)}
-            placeholder={'Password'}
-            inputType={InputTypes.password}
-            required={true}
-          />
+          <InputField onChange={(e) => setPhone(e?.currentTarget?.value)} placeholder={'Password'} inputType={InputTypes.password} required={true} />
         </div>
       </Form>
 
       {/* PAGE CONTAINER */}
       <div id="account-container" className={`${theme} page-container`}>
-        <p className="screen-title">My Profile</p>
+        <ScreenHeader title={'My Profile'} />
         <Spacer height={10} />
-        <p id="user-name">
-          Hey {StringManager.GetFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
-        </p>
-        <div className="sections">
-          {/* HOME ADDRESS */}
-          {Manager.IsValid(currentUser) && (
-            <AddressInput
-              wrapperClasses="on-grey-bg"
-              onChange={(address) => {
-                console.log(address)
-                SetHomeAddress(address).then()
-              }}
-              defaultValue={currentUser?.location?.homeAddress}
-              placeholder={'Home Address'}
-              required={true}
-              value={currentUser?.homeAddress}
-            />
-          )}
+        <div className="screen-content">
+          <p id="user-name">
+            Hey {StringManager.GetFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
+          </p>
+          <div className="sections">
+            {/* HOME ADDRESS */}
+            {Manager.IsValid(currentUser) && (
+              <AddressInput
+                wrapperClasses="on-grey-bg white"
+                onChange={(address) => {
+                  console.log(address)
+                  SetHomeAddress(address).then()
+                }}
+                defaultValue={currentUser?.location?.homeAddress}
+                placeholder={'Home Address'}
+                required={true}
+                value={currentUser?.homeAddress}
+              />
+            )}
 
-          <p className="section" onClick={() => setState({...state, currentScreen: ScreenNames.resetPassword})}>
-            <MdOutlinePassword />
-            Reset Password
-          </p>
-          <p
-            className="section email"
-            onClick={() => {
-              setUpdateType('email')
-              setShowUpdateCard(true)
-            }}>
-            <MdContactMail />
-            Update Email Address
-          </p>
-          <p className="section close-account" onClick={CloseAccount}>
-            <IoIosRemoveCircle />
-            Deactivate Account
-          </p>
+            <p className="section" onClick={() => setState({...state, currentScreen: ScreenNames.resetPassword})}>
+              <MdOutlinePassword />
+              Reset Password
+            </p>
+            <p
+              className="section email"
+              onClick={() => {
+                setUpdateType('email')
+                setShowUpdateCard(true)
+              }}>
+              <MdContactMail />
+              Update Email Address
+            </p>
+            <p className="section close-account" onClick={CloseAccount}>
+              <IoIosRemoveCircle />
+              Deactivate Account
+            </p>
+          </div>
         </div>
       </div>
       {!showUpdateCard && !showLoginForm && <NavBar navbarClass={'profile no-Add-new-button'}></NavBar>}

@@ -1,12 +1,12 @@
 // Path: src\components\screens\documents\newDocument.jsx
 import CheckboxGroup from '../../../components/shared/checkboxGroup'
 import Form from '../../../components/shared/form'
-import InputWrapper from '../../../components/shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
-import UploadInputs from '../../../components/shared/uploadInputs'
+import UploadButton from '../../shared/uploadButton'
 import ActivityCategory from '../../../constants/activityCategory'
 import ModelNames from '../../../constants/modelNames'
-import FirebaseStorage from '../../../database/firebaseStorage'
+import Storage from '../../../database/storage'
 import AlertManager from '../../../managers/alertManager'
 import DatasetManager from '../../../managers/datasetManager'
 import DocumentConversionManager from '../../../managers/documentConversionManager.js'
@@ -95,16 +95,13 @@ export default function NewDocument() {
     if (docType === 'image') {
       try {
         if (!Manager.IsValid(imageUrl, true)) {
-          imageUrl = await FirebaseStorage.GetFileUrl(FirebaseStorage.directories.documents, currentUser?.key, docNameToUse)
+          imageUrl = await Storage.GetFileUrl(Storage.directories.documents, currentUser?.key, docNameToUse)
         }
         const compressedDoc = await ImageManager.compressImage(doc)
         let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
         // Upload to Firebase Storage
-        imageUrl = await FirebaseStorage.uploadByPath(
-          `${FirebaseStorage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`,
-          compressedDoc
-        )
-        const imageName = FirebaseStorage.GetImageNameFromUrl(imageUrl)
+        imageUrl = await Storage.uploadByPath(`${Storage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`, compressedDoc)
+        const imageName = Storage.GetImageNameFromUrl(imageUrl)
         const ocrObject = await DocumentConversionManager.imageToHtml(imageUrl, imageName)
         html = ocrObject?.ParsedResults[0]?.ParsedText
         html = html
@@ -134,7 +131,7 @@ export default function NewDocument() {
 
     //#region DOCUMENT CONVERSION
     if (docType === 'document') {
-      await FirebaseStorage.uploadByPath(`${FirebaseStorage.directories.documents}/${currentUser.key}/${docNameToUse}`, doc)
+      await Storage.uploadByPath(`${Storage.directories.documents}/${currentUser.key}/${docNameToUse}`, doc)
       let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
       docText = await DocumentConversionManager.DocToHtml(docNameToUse, currentUser?.key)
       await UploadDocToFirebaseStorage(docText, firebaseStorageFileName)
@@ -172,14 +169,14 @@ export default function NewDocument() {
     }
     //#endregion ADD TO DB / SEND NOTIFICATION
 
-    await FirebaseStorage.deleteFile(`${FirebaseStorage.directories.documents}/${currentUser?.key}/${StringManager.formatFileName(docNameToUse)}`)
+    await Storage.deleteFile(`${Storage.directories.documents}/${currentUser?.key}/${StringManager.formatFileName(docNameToUse)}`)
 
     ResetForm('Document Uploaded!')
   }
 
   const UploadDocToFirebaseStorage = async (txt, fileName) => {
     const storage = getStorage()
-    const storageRef = ref(storage, `${FirebaseStorage.directories.documents}/${currentUser?.key}/${fileName}`)
+    const storageRef = ref(storage, `${Storage.directories.documents}/${currentUser?.key}/${fileName}`)
 
     // Upload the string
     uploadString(storageRef, txt, 'raw')
@@ -223,7 +220,7 @@ export default function NewDocument() {
         <div id="upload-documents-container" className={`${theme}`}>
           {/* FORM */}
           <div className="form">
-            <InputWrapper placeholder={'Document Name'} inputType={InputTypes.text} onChange={(e) => setDocName(e.target.value)} />
+            <InputField placeholder={'Document Name'} inputType={InputTypes.text} onChange={(e) => setDocName(e.target.value)} />
             <CheckboxGroup
               parentLabel={'Document Type'}
               required={true}
@@ -233,7 +230,7 @@ export default function NewDocument() {
             <ShareWithCheckboxes required={false} onCheck={HandleShareWithSelection} containerClass={'share-with-coparents'} />
           </div>
           {/* UPLOAD BUTTONS */}
-          <UploadInputs
+          <UploadButton
             containerClass={`${theme} new-document-card`}
             actualUploadButtonText={'Upload'}
             uploadButtonText={docType === 'document' ? 'Document' : 'Choose'}

@@ -1,10 +1,9 @@
 // Path: src\components\screens\visitation\everyOtherWeekend.jsx
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
-import Form from '../../.../../shared/form'
-import InputWrapper from '../../.../../shared/inputWrapper'
-import MyConfetti from '../../.../../shared/myConfetti'
-import ShareWithCheckboxes from '../../.../../shared/shareWithCheckboxes'
+import Form from '../../shared/form'
+import MyConfetti from '../../shared/myConfetti'
+import ShareWithCheckboxes from '../../shared/shareWithCheckboxes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
 import ScheduleTypes from '../../../constants/scheduleTypes'
@@ -17,6 +16,7 @@ import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/new/calendarEvent'
 import Label from '../../shared/label'
 import Spacer from '../../shared/spacer'
+import InputField from '../../shared/inputField'
 
 export default function EveryOtherWeekend({hide, showCard}) {
   const {state, setState} = useContext(globalState)
@@ -78,7 +78,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
       onClose={ResetForm}>
       <Label text={'Please specify the upcoming Friday you would like to use as the starting point for the visitation schedule'} />
       <Spacer height={5} />
-      <InputWrapper
+      <InputField
         placeholder={'Date'}
         required={true}
         inputType={InputTypes.date}

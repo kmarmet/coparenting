@@ -23,7 +23,7 @@ import Invitation from '../../../models/new/invitation'
 import NavBar from '../../navBar'
 import DetailBlock from '../../shared/detailBlock'
 import Form from '../../shared/form'
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import Label from '../../shared/label'
 import Map from '../../shared/map'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
@@ -208,8 +208,7 @@ const Contacts = () => {
           setShowInvitationCard(false)
         }}
         hideCard={() => setShowInvitationCard(false)}>
-        <Spacer height={5} />
-        <InputWrapper
+        <InputField
           inputType={InputTypes.phone}
           placeholder={'Phone Number'}
           required={true}
@@ -233,6 +232,7 @@ const Contacts = () => {
           <ViewSelector
             show={showModal}
             key={refreshKey}
+            dropdownPlaceholder="Details"
             labels={['Details', 'Edit']}
             updateState={(labelText) => {
               setView(labelText)
@@ -243,7 +243,7 @@ const Contacts = () => {
         title={`${GetContactName()}`}
         showCard={showModal}>
         {/* DETAILS */}
-        <div className="details" className={view.toLowerCase() === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
+        <div className={view.toLowerCase() === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
           <div className="blocks">
             <DetailBlock isCustom={true} isFullWidth={true} valueToValidate={activeContact} text={''} title={''}>
               <p className="custom-text">
@@ -293,9 +293,9 @@ const Contacts = () => {
         </div>
 
         {/* EDIT */}
-        <div className="edit" className={view.toLowerCase() === 'edit' ? 'view-wrapper edit active' : 'view-wrapper'}>
+        <div className={view.toLowerCase() === 'edit' ? 'view-wrapper edit active' : 'edit view-wrapper'}>
           {/* NAME */}
-          <InputWrapper
+          <InputField
             inputType={InputTypes.text}
             placeholder={'Name'}
             defaultValue={GetContactName()}
@@ -312,7 +312,7 @@ const Contacts = () => {
 
           {/* EMAIL */}
           {Manager.IsValid(GetContactEmail()) && (
-            <InputWrapper
+            <InputField
               inputType={InputTypes.email}
               placeholder={'Email Address'}
               defaultValue={GetContactEmail()}
@@ -330,7 +330,7 @@ const Contacts = () => {
 
           {/* PHONE */}
           {Manager.IsValid(GetContactPhone()) && (
-            <InputWrapper
+            <InputField
               inputType={InputTypes.phone}
               placeholder={'Phone Number'}
               defaultValue={GetContactPhone()}
@@ -453,7 +453,7 @@ const Contacts = () => {
         />
         <Spacer height={8} />
         <div className="screen-content">
-          {/* COPARENTS */}
+          {/* CO-PARENTS */}
           {currentUser?.accountType === 'parent' && (
             <div id="contacts-wrapper">
               <Label classes={'black toggle always-show'} text={'COPARENTS'} />

@@ -62,8 +62,8 @@ export default UpdateManager =
       OneSignalDeferred.push ->
         OneSignal.init
           appId: UpdateManager.appId
-          .then () ->
-            OneSignal.User.PushSubscription.addEventListener 'change', UpdateManager.eventListener
+        .then () ->
+          OneSignal.User.PushSubscription.addEventListener 'change', UpdateManager.eventListener
     catch error
       LogManager.Log("Error: #{error} | Code File:  | Function:  ")
 

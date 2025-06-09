@@ -20,7 +20,7 @@ import useTransferRequests from '../../hooks/useTransferRequests'
 import DomManager from '../../managers/domManager'
 import AddressInput from '../shared/addressInput'
 import Form from '../shared/form'
-import InputWrapper from '../shared/inputWrapper'
+import InputField from '../shared/inputField'
 import Label from '../shared/label'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import Spacer from '../shared/spacer'
@@ -135,7 +135,7 @@ export default function NewTransferChangeRequest() {
         <div id="transfer-change-container" className={`${theme}`}>
           <div className="transfer-change">
             {/* DAY */}
-            <InputWrapper
+            <InputField
               inputType={InputTypes.date}
               uidClass="transfer-request-date"
               labelText={'Day'}
@@ -144,7 +144,7 @@ export default function NewTransferChangeRequest() {
             />
 
             {/* TIME */}
-            <InputWrapper
+            <InputField
               inputType={InputTypes.time}
               labelText={'New Time'}
               uidClass="transfer-request-time"
@@ -152,7 +152,7 @@ export default function NewTransferChangeRequest() {
             />
 
             {/* RESPONSE DUE DATE */}
-            <InputWrapper
+            <InputField
               inputType={InputTypes.date}
               uidClass="transfer-request-response-date"
               labelText={'Requested Response Date'}
@@ -169,7 +169,7 @@ export default function NewTransferChangeRequest() {
             />
 
             {/* REASON */}
-            <InputWrapper inputType={InputTypes.textarea} placeholder={'Reason'} onChange={(e) => (updateRef.current.reason = e.target.value)} />
+            <InputField inputType={InputTypes.textarea} placeholder={'Reason'} onChange={(e) => (updateRef.current.reason = e.target.value)} />
 
             <Spacer height={8} />
             {/*  SET AS PREFERRED LOCATION */}

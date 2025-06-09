@@ -6,7 +6,7 @@ import InputTypes from '../../../constants/inputTypes'
 import ModelNames from '../../../constants/modelNames'
 import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
-import FirebaseStorage from '../../../database/firebaseStorage'
+import Storage from '../../../database/storage'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
 import AlertManager from '../../../managers/alertManager'
@@ -19,11 +19,11 @@ import Child from '../../../models/child/child'
 import CalendarEvent from '../../../models/new/calendarEvent'
 import AddressInput from '../../shared/addressInput'
 import Form from '../../shared/form'
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import Label from '../../shared/label'
 import Spacer from '../../shared/spacer'
 import ToggleButton from '../../shared/toggleButton'
-import UploadInputs from '../../shared/uploadInputs'
+import UploadButton from '../../shared/uploadButton'
 
 const NewChildForm = ({hideCard, showCard}) => {
   const {state, setState} = useContext(globalState)
@@ -76,17 +76,14 @@ const NewChildForm = ({hideCard, showCard}) => {
     if (Manager.IsValid(_profilePic)) {
       _profilePic = await ImageManager.compressImage(newChild.current.profilePic)
       if (Manager.IsValid(_profilePic)) {
-        await FirebaseStorage.upload(
-          FirebaseStorage.directories.profilePics,
-          `${currentUser?.key}/${newChild.current.id}`,
-          _profilePic,
-          'profilePic'
-        ).then(async (url) => {
-          if (!Manager.IsValid(url)) {
-            return false
+        await Storage.upload(Storage.directories.profilePics, `${currentUser?.key}/${newChild.current.id}`, _profilePic, 'profilePic').then(
+          async (url) => {
+            if (!Manager.IsValid(url)) {
+              return false
+            }
+            newChild.current.profilePic = url
           }
-          newChild.current.profilePic = url
-        })
+        )
       }
     }
 
@@ -121,7 +118,7 @@ const NewChildForm = ({hideCard, showCard}) => {
         <Spacer height={5} />
         <div className="form new-child-form">
           {/* NAME */}
-          <InputWrapper
+          <InputField
             placeholder={'Name'}
             inputType={InputTypes.text}
             required={true}
@@ -129,7 +126,7 @@ const NewChildForm = ({hideCard, showCard}) => {
           />
 
           {/* EMAIL */}
-          <InputWrapper
+          <InputField
             placeholder={'Email Address'}
             required={childHasAccount}
             inputType={InputTypes.email}
@@ -137,7 +134,7 @@ const NewChildForm = ({hideCard, showCard}) => {
           />
 
           {/* DATE OF BIRTH */}
-          <InputWrapper
+          <InputField
             dateFormat={'MM/DD/YYYY'}
             placeholder={'Date of Birth'}
             dateViews={['year', 'month', 'day']}
@@ -149,7 +146,7 @@ const NewChildForm = ({hideCard, showCard}) => {
           <AddressInput placeholder={'Home Address'} onChange={(address) => (newChild.current.general.address = address)} />
 
           {/* PHONE NUMBER */}
-          <InputWrapper
+          <InputField
             placeholder={'Phone Number'}
             inputType={InputTypes.phone}
             required={false}
@@ -166,7 +163,7 @@ const NewChildForm = ({hideCard, showCard}) => {
 
           <Label classes="standalone-label-wrapper" text={'Photo'} />
           {/* UPLOAD BUTTON */}
-          <UploadInputs
+          <UploadButton
             onClose={hideCard}
             containerClass={`${theme} new-child-card`}
             uploadType={'image'}

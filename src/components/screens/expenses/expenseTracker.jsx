@@ -21,6 +21,7 @@ import {MdOutlineEventRepeat} from 'react-icons/md'
 import {LazyLoadImage} from 'react-lazy-load-image-component'
 import InputTypes from '../../../constants/inputTypes'
 import DB from '../../../database/DB.js'
+import ButtonThemes from '../../../constants/buttonThemes'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useExpenses from '../../../hooks/useExpenses'
 import NewExpenseForm from '../../forms/newExpenseForm.jsx'
@@ -28,7 +29,7 @@ import NavBar from '../../navBar.jsx'
 import AccordionTitle from '../../shared/accordionTitle'
 import DetailBlock from '../../shared/detailBlock'
 import Form from '../../shared/form.jsx'
-import InputWrapper from '../../shared/inputWrapper.jsx'
+import InputField from '../../shared/inputField.jsx'
 import Label from '../../shared/label.jsx'
 import NoDataFallbackText from '../../shared/noDataFallbackText.jsx'
 import ScreenHeader from '../../shared/screenHeader'
@@ -37,6 +38,8 @@ import Slideshow from '../../shared/slideshow'
 import Spacer from '../../shared/spacer'
 import ViewSelector from '../../shared/viewSelector.jsx'
 import PaymentOptions from './paymentOptions.jsx'
+import Button from '../../shared/button'
+import CardButton from '../../shared/cardButton'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -140,7 +143,8 @@ export default function ExpenseTracker() {
     setShowDetails(false)
   }
 
-  const HandleExpenseTypeSelection = async (selectionType) => {
+  const HandleExpenseTypeSelection = async (element, selectionType) => {
+    DomManager.toggleActive(element.target, '.filter-button.expense-type', true)
     if (selectionType === 'single') {
       setSortedExpenses(expenses.filter((x) => x.isRecurring === false))
       setExpenseDateType('single')
@@ -155,7 +159,8 @@ export default function ExpenseTracker() {
     }
   }
 
-  const HandlePaidStatusSelection = async (status) => {
+  const HandlePaidStatusSelection = async (element, status) => {
+    DomManager.toggleActive(element.target, '.filter-button.paid-status', true)
     if (status === 'all') {
       setSortedExpenses(expenses)
       setPaidStatus('all')
@@ -166,7 +171,7 @@ export default function ExpenseTracker() {
   }
 
   const HandleSortBySelection = (e) => {
-    const sortByName = e.target.value
+    const sortByName = e.value
     const expensesAsNumbers = expenses.map((expense) => {
       expense.amount = parseInt(expense?.amount)
       return expense
@@ -342,13 +347,32 @@ export default function ExpenseTracker() {
           <ViewSelector
             wrapperClasses="full-width"
             show={showDetails}
-            dropdownPlaceholder="View"
+            dropdownPlaceholder="Details"
             labels={['Details', 'Edit']}
             updateState={(e) => {
               setView(e)
             }}
           />
         }
+        extraButtons={[
+          <>
+            {activeExpense?.paidStatus === 'unpaid' && (
+              <CardButton buttonType={ButtonThemes.green} classes=" default" onClick={TogglePaidStatus}>
+                Paid
+              </CardButton>
+            )}
+
+            {activeExpense?.paidStatus === 'paid' && (
+              <CardButton classes=" default" onClick={TogglePaidStatus}>
+                Mark Unpaid
+              </CardButton>
+            )}
+
+            <CardButton classes=" grey center lh-1_3" onClick={SendReminder}>
+              Send <br /> Reminder
+            </CardButton>
+          </>,
+        ]}
         showCard={showDetails}>
         <div className={`details content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
           {/* DETAILS */}
@@ -470,7 +494,7 @@ export default function ExpenseTracker() {
           {/* EDIT */}
           {view === 'Edit' && (
             <>
-              <InputWrapper
+              <InputField
                 inputType={InputTypes.text}
                 placeholder={'Name'}
                 defaultValue={activeExpense?.name}
@@ -478,7 +502,7 @@ export default function ExpenseTracker() {
               />
 
               {/* AMOUNT */}
-              <InputWrapper
+              <InputField
                 placeholder={'Amount'}
                 defaultValue={activeExpense?.amount}
                 inputType={InputTypes.number}
@@ -486,7 +510,7 @@ export default function ExpenseTracker() {
               />
 
               {/* DUE DATE */}
-              <InputWrapper
+              <InputField
                 defaultValue={moment(activeExpense?.dueDate)}
                 inputType={'date'}
                 placeholder={'Due Date'}
@@ -506,31 +530,12 @@ export default function ExpenseTracker() {
               <Spacer height={5} />
 
               {/* NOTES */}
-              <InputWrapper
+              <InputField
                 defaultValue={activeExpense?.notes}
                 onChange={(e) => setNotes(e.target.value)}
                 inputType={InputTypes.textarea}
                 placeholder={'Notes'}
               />
-
-              {/* BUTTONS */}
-              <div className="action-buttons">
-                {activeExpense?.paidStatus === 'unpaid' && (
-                  <button className="button green default" onClick={TogglePaidStatus}>
-                    Mark Paid
-                  </button>
-                )}
-
-                {activeExpense?.paidStatus === 'paid' && (
-                  <button className="button red default" onClick={TogglePaidStatus}>
-                    Mark Unpaid
-                  </button>
-                )}
-
-                <button className="button default grey center" onClick={SendReminder}>
-                  Send Reminder
-                </button>
-              </div>
             </>
           )}
         </div>
@@ -560,46 +565,28 @@ export default function ExpenseTracker() {
             <AccordionDetails>
               <div id="filters">
                 <div className="filter-row">
-                  <Label isBold={true} text={'Type'} classes="mb-5"></Label>
+                  <Label isBold={true} text={'Type'} classes="mb-5 toggle always-show"></Label>
                   <div className="buttons flex type">
-                    <button
-                      className={`${expenseDateType === 'all' ? 'active' : ''} button default`}
-                      onClick={() => HandleExpenseTypeSelection('all')}>
-                      All
-                    </button>
-                    <button
-                      className={`${expenseDateType === 'single' ? 'active' : ''} button default`}
-                      onClick={() => HandleExpenseTypeSelection('single')}>
-                      One-time
-                    </button>
-                    <button
-                      className={`${expenseDateType === 'recurring' ? 'active' : ''} button default`}
-                      onClick={() => HandleExpenseTypeSelection('recurring')}>
-                      Recurring
-                    </button>
+                    <Button classes={`filter-button expense-type`} onClick={(e) => HandleExpenseTypeSelection(e, 'all')} text={'All'} />
+                    <Button
+                      buttonType={ButtonThemes.blend}
+                      text={'One-time'}
+                      classes={`filter-button expense-type`}
+                      onClick={(e) => HandleExpenseTypeSelection(e, 'single')}
+                    />
+                    <Button text={'Recurring'} classes={`filter-button expense-type`} onClick={(e) => HandleExpenseTypeSelection(e, 'recurring')} />
                   </div>
                 </div>
                 <div className="filter-row">
-                  <Label isBold={true} text={'Payment Status'} classes="mb-5"></Label>
+                  <Label isBold={true} text={'Payment Status'} classes="mb-5 toggle always-show" />
                   <div className="buttons type flex">
-                    <button
-                      className={paidStatus === 'all' ? 'active button default' : 'button default'}
-                      onClick={() => HandlePaidStatusSelection('all')}>
-                      All
-                    </button>
-                    <button
-                      className={paidStatus === 'unpaid' ? 'active button default' : 'button default'}
-                      onClick={() => HandlePaidStatusSelection('unpaid')}>
-                      Unpaid
-                    </button>
-                    <button
-                      className={paidStatus === 'paid' ? 'active button default' : 'button default'}
-                      onClick={() => HandlePaidStatusSelection('paid')}>
-                      Paid
-                    </button>
+                    <Button classes={'button filter-button paid-status'} onClick={(e) => HandlePaidStatusSelection(e, 'all')} text={'All'} />
+                    <Button classes={'button filter-button paid-status'} onClick={(e) => HandlePaidStatusSelection(e, 'unpaid')} text={'Unpaid'} />
+                    <Button classes={'button filter-button paid-status'} onClick={(e) => HandlePaidStatusSelection(e, 'paid')} text={'Paid'} />
                   </div>
                 </div>
-                {categoriesInUse.length > 0 && <Label isBold={true} text={'Category'} classes="mb-5"></Label>}
+
+                {categoriesInUse.length > 0 && <Label isBold={true} text={'Category'} classes="mb-5" />}
 
                 {/* CATEGORIES */}
                 {Manager.IsValid(categoriesInUse) && (
@@ -624,10 +611,10 @@ export default function ExpenseTracker() {
                 )}
                 <Label text={''} classes="sorting" />
                 <SelectDropdown
-                  wrapperClasses={'sorting-accordion'}
+                  wrapperClasses={'sorting-accordion white-bg'}
                   selectValue={sortMethod}
-                  placeholder={'Sort by'}
-                  options={Object.values(SortByTypes)}
+                  labelText={'Sort by'}
+                  options={DomManager.GetSelectOptions(Object.values(SortByTypes))}
                   onChange={HandleSortBySelection}></SelectDropdown>
               </div>
             </AccordionDetails>

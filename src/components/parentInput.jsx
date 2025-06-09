@@ -3,7 +3,7 @@ import React, {useContext, useState} from 'react'
 import globalState from '../context'
 import {phone} from 'phone'
 import AlertManager from '../managers/alertManager'
-import InputWrapper from './shared/inputWrapper'
+import InputField from './shared/inputField'
 import {RiUserAddLine} from 'react-icons/ri'
 import StringManager from '../managers/stringManager'
 
@@ -24,8 +24,8 @@ export default function ParentInput({add, parentsLength = 1, labels}) {
       <p id="group-label">
         Parent #{parentsLength} {`- ${StringManager.uppercaseFirstLetterOfAllWords(name)}`}
       </p>
-      <InputWrapper inputType={'input'} placeholder={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
-      <InputWrapper
+      <InputField inputType={'input'} placeholder={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
+      <InputField
         inputType={'input'}
         inputValueType="number"
         placeholder={'Phone Number'}

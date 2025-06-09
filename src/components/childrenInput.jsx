@@ -26,8 +26,8 @@ export default function ChildrenInput({add, childrenCount}) {
       <p id="child-label">
         Child #{childrenCount} {`- ${StringManager.uppercaseFirstLetterOfAllWords(name)}`}
       </p>
-      <InputWrapper inputType={'input'} placeholder={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
-      <InputWrapper inputType={'input'} inputValueType="number" placeholder={'Phone Number'} onChange={(e) => setUserPhone(e.target.value)} />
+      <InputField inputType={'input'} placeholder={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
+      <InputField inputType={'input'} inputValueType="number" placeholder={'Phone Number'} onChange={(e) => setUserPhone(e.target.value)} />
       {showAddButton && name.length > 0 && (
         <button
           className="button default green"

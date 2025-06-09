@@ -1,9 +1,9 @@
 import React from 'react'
-import ButtonTypes from '../../constants/buttonTypes'
+import ButtonThemes from '../../constants/buttonThemes'
 
-const Button = ({text = '', color = ButtonTypes.white, onClick = (e) => {}}) => {
+const Button = ({text = '', classes = '', theme = ButtonThemes.white, onClick = (e) => {}}) => {
   return (
-    <button className={`button ${color}`} onClick={onClick}>
+    <button className={`button ${theme} ${classes}`} onClick={onClick}>
       {text}
     </button>
   )

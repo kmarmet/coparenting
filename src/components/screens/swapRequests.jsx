@@ -1,7 +1,7 @@
 // Path: src\components\screens\swapRequests?.jsx
 import CheckboxGroup from '../shared/checkboxGroup'
 import Form from '../shared/form'
-import InputWrapper from '../shared/inputWrapper'
+import InputField from '../shared/inputField'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import ActivityCategory from '../../constants/activityCategory'
 import ModelNames from '../../constants/modelNames'
@@ -15,7 +15,7 @@ import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {PiCheckBold, PiSwapDuotone} from 'react-icons/pi'
+import {PiSwapDuotone} from 'react-icons/pi'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context.js'
@@ -165,7 +165,7 @@ export default function SwapRequests() {
   useEffect(() => {
     if (Manager.IsValid(currentUser)) {
       setTimeout(() => {
-        DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight, 85)
+        DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInUp, 85)
         DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
       }, 300)
     }
@@ -186,7 +186,6 @@ export default function SwapRequests() {
         hasDelete={activeRequest?.ownerKey === currentUser?.key && view === 'edit'}
         hasSubmitButton={activeRequest?.ownerKey !== currentUser?.key}
         submitText={'Approve'}
-        submitIcon={<PiCheckBold />}
         title={'Request Details'}
         onSubmit={() => SelectDecision(Decisions.approved)}
         className="swap-requests"
@@ -201,7 +200,7 @@ export default function SwapRequests() {
         showCard={showDetails}>
         {/* DETAILS */}
         {view === 'details' && (
-          <div className="details" className={`content`}>
+          <div className={`content details`}>
             <Spacer height={5} />
             <div className="blocks">
               {/* Swap Date(s) */}
@@ -277,7 +276,7 @@ export default function SwapRequests() {
           <>
             {/* SINGLE DATE */}
             {swapDuration === SwapDurations.single && (
-              <InputWrapper
+              <InputField
                 defaultValue={moment(activeRequest?.startDate)}
                 inputType={InputTypes.date}
                 placeholder={'Date'}
@@ -288,7 +287,7 @@ export default function SwapRequests() {
             )}
 
             {/* RESPONSE DUE DATE */}
-            <InputWrapper
+            <InputField
               uidClass="response-due-date"
               wrapperClasses={`${Manager.IsValid(activeRequest?.requestedResponseDate) ? 'show-label' : ''}`}
               inputType={InputTypes.date}

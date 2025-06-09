@@ -1,7 +1,7 @@
 // Path: src\components\screens\parents\newParentForm.jsx
 import CheckboxGroup from '../../shared/checkboxGroup'
 import Form from '../../shared/form'
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import AlertManager from '../../../managers/alertManager'
 import Manager from '../../../managers/manager'
 import React, {useContext, useState} from 'react'
@@ -122,8 +122,8 @@ const NewParentForm = ({showCard, hideCard}) => {
         <Spacer height={5} />
         <div id="new-parent-container" className={`${theme} form`}>
           <div className="form new-parent-form">
-            <InputWrapper inputType={InputTypes.text} required={true} placeholder={'Name'} onChange={(e) => setName(e.target.value)} />
-            <InputWrapper
+            <InputField inputType={InputTypes.text} required={true} placeholder={'Name'} onChange={(e) => setName(e.target.value)} />
+            <InputField
               inputType={InputTypes.email}
               inputValueType="email"
               required={parentHasAccount}

@@ -1,5 +1,5 @@
 // Path: src\components\screens\childInfo\general.jsx
-import InputWrapper from '../../../components/shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import DB from '../../../database/DB'
 import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager.coffee'
@@ -110,7 +110,7 @@ function General({activeChild}) {
                       )}
                       {!Manager.Contains(infoLabel.toLowerCase(), 'address') && (
                         <>
-                          <InputWrapper
+                          <InputField
                             wrapperClasses={`${index === generalValues.length - 2 ? 'last' : ''}`}
                             hasBottomSpacer={false}
                             inputType={InputTypes.text}

@@ -28,7 +28,7 @@ const Overlay = ({children, show}) => {
   return (
     <>
       <div
-        className={`page-overlay${show ? ' active' : ''} ${menuIsOpen || showScreenActions || showCreationMenu ? 'blur' : ''}`}
+        className={`screen-overlay${show ? ' active' : ''} ${menuIsOpen || showScreenActions || showCreationMenu ? 'blur' : ''}`}
         onClick={() => {
           // const overlay = e.currentTarget
           // if (Manager.IsValid(overlay) && (overlay?.classList.contains('overlay-wrapper') || overlay?.classList.contains('creation-menu'))) {

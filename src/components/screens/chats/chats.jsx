@@ -14,7 +14,7 @@ import useCurrentUser from '../../../hooks/useCurrentUser'
 import EmailManager from '../../../managers/emailManager'
 import NavBar from '../../navBar'
 import Form from '../../shared/form'
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
@@ -53,8 +53,8 @@ const Chats = () => {
         }}
         hideCard={() => setShowInvitationCard(false)}>
         <Spacer height={5} />
-        <InputWrapper inputType={InputTypes.text} placeholder={'Co-Parent Name'} required={true} onChange={(e) => setInviteeName(e.target.value)} />
-        <InputWrapper
+        <InputField inputType={InputTypes.text} placeholder={'Co-Parent Name'} required={true} onChange={(e) => setInviteeName(e.target.value)} />
+        <InputField
           inputType={InputTypes.email}
           placeholder={'Co-Parent Email Address'}
           required={true}

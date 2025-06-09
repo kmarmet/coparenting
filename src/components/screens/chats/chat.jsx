@@ -1,6 +1,6 @@
 // Path: src\components\screens\chats\chat.jsx
 import Form from '../../shared/form'
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import ModelNames from '../../../constants/modelNames'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
@@ -33,7 +33,6 @@ import AppManager from '../../../managers/appManager'
 import DatasetManager from '../../../managers/datasetManager'
 import DateManager from '../../../managers/dateManager'
 import UpdateManager from '../../../managers/updateManager'
-import Spacer from '../../shared/spacer'
 import Chat from '../../../models/chat/chat'
 
 const Chats = () => {
@@ -88,9 +87,9 @@ const Chats = () => {
   }
 
   const HideKeyboard = () => {
-    const messageInputForm = document.querySelector('.message-input-wrapper')
+    const messageInputForm = document.querySelector('.message-input-field')
     messageInputForm.classList.remove('active')
-    Manager.HideKeyboard('message-input-wrapper')
+    Manager.HideKeyboard('message-input-field')
     const input = document.querySelector('.message-input')
     if (input) {
       input.blur()
@@ -296,12 +295,6 @@ const Chats = () => {
   }, [searchResults.length])
 
   useEffect(() => {
-    if (showSearchCard) {
-      setInSearchMode(true)
-    }
-  }, [showSearchCard])
-
-  useEffect(() => {
     if (Manager.IsValid(chatMessages)) {
       DefineBookmarks().then((r) => r)
       setMessagesToLoop(chatMessages)
@@ -343,10 +336,11 @@ const Chats = () => {
             AlertManager.throwError('Please enter a search value')
             return false
           }
-          const results = messagesToLoop?.filter((x) => x.message.toLowerCase().indexOf(searchInputQuery.toLowerCase()) > -1)
+          const results = messagesToLoop?.filter((x) => x.message.toLowerCase().indexOf(searchInputQuery.toLowerCase()) > -1) || []
           setBookmarkedMessages([])
           setSearchResults(results)
           setSearchInputQuery('')
+          setInSearchMode(true)
           setShowSearchCard(false)
         }}
         onClose={() => {
@@ -356,9 +350,8 @@ const Chats = () => {
           setSearchResults([])
           ScrollToLatestMessage()
         }}>
-        <Spacer height={8} />
-        <InputWrapper
-          labelText="Find a message..."
+        <InputField
+          placeholder="Find a message..."
           inputType={InputTypes.text}
           onChange={(e) => {
             if (e.target.value.length > 2) {
@@ -576,7 +569,7 @@ const Chats = () => {
                 })}
             </div>
 
-            <div id="emotion-and-input-wrapper">
+            <div id="emotion-and-input-field">
               {/* EMOTION METER */}
               <div
                 id="tone-wrapper"
@@ -586,9 +579,9 @@ const Chats = () => {
                 <span className="tone">{StringManager.uppercaseFirstLetterOfAllWords(toneObject?.tone)}</span>
               </div>
               {/* MESSAGE INPUT & SEND BUTTON */}
-              <div className={`${inputIsActive ? 'active' : ''} message-input-wrapper`}>
+              <div className={`${inputIsActive ? 'active' : ''} message-input-field`}>
                 <div className={'flex'} id="message-input-container">
-                  <InputWrapper
+                  <InputField
                     placeholder={'Message...'}
                     inputType={InputTypes.chat}
                     inputClasses="message-input"
@@ -635,7 +628,7 @@ const Chats = () => {
               {!showBookmarks && bookmarkedMessages.length > 0 && <p>View Bookmarks</p>}
               {bookmarkedMessages.length === 0 && !showBookmarks && <p>No Bookmarks</p>}
             </p>
-            <InputWrapper
+            <InputField
               inputType={InputTypes.text}
               placeholder={'Find a message...'}
               onChange={async (e) => {

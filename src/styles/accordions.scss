@@ -123,28 +123,37 @@
 
       /*#region  EXPENSES*/
       &#expenses-accordion {
-        #filters {
-          padding: 0 10px 10px 10px;
-        }
-        .buttons {
-          gap: 8px;
-          width: 100%;
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        .filter-row {
+          #label-wrapper {
+            label {
+              color: $darkerGrey !important;
+            }
+          }
+          #filters {
+            padding: 0 10px 10px 10px;
 
-          button {
-            transition: all 0.3s ease-in-out;
-            &.button {
-              &.default {
-                background: white !important;
-                border: 1px solid $lightBorderColor !important;
-                color: $darkGrey !important;
+            .sorting-accordion {
+              &.white-bg {
+              }
+            }
+          }
+          .buttons {
+            gap: 8px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 
-                &.active {
-                  background: $blend !important;
-                  border: 0 !important;
-                  color: white !important;
-                }
+            button {
+              transition: all 0.3s ease-in-out;
+              background: white !important;
+              border: 1px solid $lightBorderColor !important;
+              color: $darkerGrey !important;
+              height: 30px !important;
+
+              &.active {
+                background: $blend !important;
+                border: 0 !important;
+                color: white !important;
               }
             }
           }

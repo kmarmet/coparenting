@@ -1,4 +1,4 @@
-// Path: src\components\shared\inputWrapper.jsx
+// Path: src\components\shared\inputField.jsx
 import {MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
@@ -13,7 +13,7 @@ import useCurrentUser from '../../hooks/useCurrentUser'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 
-function InputWrapper({
+function InputField({
   wrapperClasses = '',
   labelText = '',
   inputType = InputTypes.text,
@@ -54,7 +54,7 @@ function InputWrapper({
           const wrapper = e.currentTarget
           wrapper.classList.remove('active')
         }}
-        className={`input-wrapper ${wrapperClasses} ${inputType} ${Manager.IsValid(defaultValue) ? 'show-label' : ''}`}>
+        className={`input-field ${wrapperClasses} ${inputType} ${Manager.IsValid(defaultValue) ? 'show-label' : ''}`}>
         {/* DATE */}
         {inputType === InputTypes.date && (
           <MobileDatePicker
@@ -257,7 +257,7 @@ function InputWrapper({
         )}
       </div>
       {Manager.IsValid(error, true) && (
-        <p className="input-wrapper-error">
+        <p className="input-field-error">
           <PiArrowBendLeftUpFill />
           {error}
         </p>
@@ -266,4 +266,4 @@ function InputWrapper({
   )
 }
 
-export default InputWrapper
+export default InputField

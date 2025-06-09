@@ -6,7 +6,7 @@ import DateFormats from "../constants/datetimeFormats"
 import DatetimeFormats from "../constants/datetimeFormats"
 import DB_UserScoped from "../database/db_userScoped"
 import CalendarManager from "./calendarManager"
-import FirebaseStorage from "../database/firebaseStorage"
+import Storage from "../database/storage"
 
 export default AppManager =
   OperatingSystems:
@@ -25,9 +25,8 @@ export default AppManager =
       msSinceLastRefresh = moment(lastRefresh, DatetimeFormats.timestamp).diff() ? 0
       hoursSinceRefresh = Math.abs Math.ceil msSinceLastRefresh / (1000 * 60 * 60)
 
-      # If it has been more than 3 hours since the last refresh -> reload the page
-      if hoursSinceRefresh > 6
-        console.log('true')
+      # If it has been more than 24 hours since the last refresh -> reload the page
+      if hoursSinceRefresh > 24
         localStorage.setItem 'lastAutoRefresh', moment().format(DatetimeFormats.timestamp)
         window.location.reload()
         return false
@@ -36,7 +35,7 @@ export default AppManager =
     else
       localStorage.setItem 'lastAutoRefresh', moment().format(DatetimeFormats.timestamp)
 
-  UpdateOrRefreshIfNecessary: (currentUser, latestVersion, delay = 0) ->
+  UpdateOrRefreshIfNecessary: (currentUser, latestVersion) ->
     AppManager.RefreshIfNecessary();
     if Manager.IsValid currentUser
       if not currentUser?.app?.currentVersion or currentUser?.app?.currentVersion != latestVersion
@@ -211,4 +210,4 @@ export default AppManager =
         if daysPassed >= 30
           await DB.Delete( "#{DB.tables.memories}/#{currentUser?.key}", memory.id)
           if Manager.IsValid(memory?.memoryName)
-            await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser?.key, memory?.memoryName)
+            await Storage.delete(Storage.directories.memories, currentUser?.key, memory?.memoryName)

@@ -1,4 +1,4 @@
-import FirebaseStorage from '../database/firebaseStorage'
+import Storage from '../database/storage'
 import AlertManager from './alertManager'
 import ImageManager from './imageManager'
 import LogManager from './logManager'
@@ -122,7 +122,7 @@ const DocumentConversionManager = {
     }
 
     let returnHtml = ''
-    const all = await FirebaseStorage.GetImageAndUrl(FirebaseStorage.directories.documents, currentUserId, fileName)
+    const all = await Storage.GetImageAndUrl(Storage.directories.documents, currentUserId, fileName)
     const {status, imageUrl} = all
     if (status === 'success') {
       await fetch(`${apiAddress}/document/getTextFromPdf?fileName=${fileName}&currentUserId=${currentUserId}`, requestOptions)

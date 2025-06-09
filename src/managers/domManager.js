@@ -228,16 +228,23 @@ DomManager = {
       });
     }
   },
-  GetSelectOptions: function(optionsArray = []) {
-    var i, len, option, options;
+  GetSelectOptions: function(optionsArray = [], optionsAreUsers = false) {
+    var i, len, option, options, ref;
     options = [];
     if (Manager.IsValid(optionsArray)) {
       for (i = 0, len = optionsArray.length; i < len; i++) {
         option = optionsArray[i];
-        options.push({
-          value: option,
-          label: StringManager.uppercaseFirstLetterOfAllWords(option)
-        });
+        if (optionsAreUsers) {
+          options.push({
+            value: option != null ? option.userKey : void 0,
+            label: StringManager != null ? StringManager.uppercaseFirstLetterOfAllWords((option != null ? option.name : void 0) || (option != null ? (ref = option.general) != null ? ref.name : void 0 : void 0)) : void 0
+          });
+        } else {
+          options.push({
+            value: option,
+            label: StringManager.uppercaseFirstLetterOfAllWords(option)
+          });
+        }
       }
     }
     return options;
@@ -422,7 +429,12 @@ DomManager = {
   ScrollToTopOfPage: function() {
     return window.scrollTo(0, 0);
   },
-  toggleActive: function(element) {
+  toggleActive: function(element, iterationClass, removeActiveFromAllFirst = false) {
+    if (removeActiveFromAllFirst && Manager.IsValid(iterationClass, true)) {
+      document.querySelectorAll(iterationClass).forEach(function(x) {
+        return x != null ? x.classList.remove('active') : void 0;
+      });
+    }
     return element.classList.toggle("active");
   },
   toggleAnimateClass: function(element) {

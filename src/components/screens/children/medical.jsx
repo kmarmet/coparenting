@@ -1,5 +1,5 @@
 // Path: src\components\screens\childInfo\medical.jsx
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import DB from '../../../database/DB'
 import DB_UserScoped from '../../../database/db_userScoped'
 import Manager from '../../../managers/manager'
@@ -129,7 +129,7 @@ export default function Medical({activeChild}) {
                     )}
                     {!infoLabel.toLowerCase().includes('phone') && (
                       <>
-                        <InputWrapper
+                        <InputField
                           hasBottomSpacer={false}
                           inputType={InputTypes.text}
                           placeholder={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${

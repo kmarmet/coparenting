@@ -16,7 +16,7 @@ import UpdateManager from '../../managers/updateManager'
 import AddressInput from './addressInput'
 import CheckboxGroup from './checkboxGroup'
 import Form from './form'
-import InputWrapper from './inputWrapper'
+import InputField from './inputField'
 import ShareWithCheckboxes from './shareWithCheckboxes'
 import Spacer from './spacer'
 import ViewSelector from './viewSelector'
@@ -122,25 +122,25 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
       {/* INPUTS */}
       {infoType === 'text' && (
         <>
-          <InputWrapper
+          <InputField
             inputType={InputTypes.text}
             placeholder={'Title/Label'}
             required={true}
             onChange={(e) => (info.current.title = e.target.value)}
           />
-          <InputWrapper inputType={InputTypes.text} placeholder={'Value'} required={true} onChange={(e) => (info.current.value = e.target.value)} />
+          <InputField inputType={InputTypes.text} placeholder={'Value'} required={true} onChange={(e) => (info.current.value = e.target.value)} />
         </>
       )}
 
       {infoType === 'phone' && (
         <>
-          <InputWrapper
+          <InputField
             inputType={InputTypes.text}
             placeholder={'Title/Label'}
             required={true}
             onChange={(e) => (info.current.title = e.target.value)}
           />
-          <InputWrapper
+          <InputField
             inputType={InputTypes.phone}
             placeholder={'Phone Number'}
             required={true}
@@ -151,13 +151,13 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
 
       {infoType === 'date' && (
         <div className="w-100">
-          <InputWrapper
+          <InputField
             inputType={InputTypes.text}
             placeholder={'Title/Label'}
             required={true}
             onChange={(e) => (info.current.title = e.target.value)}
           />
-          <InputWrapper
+          <InputField
             placeholder={'Date'}
             required={true}
             uidClass="child-info-custom-date"
@@ -169,7 +169,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
 
       {infoType === 'location' && (
         <>
-          <InputWrapper
+          <InputField
             inputType={InputTypes.text}
             placeholder={'Title/Label'}
             required={true}

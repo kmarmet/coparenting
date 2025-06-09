@@ -6,7 +6,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import DB from '../../database/DB'
-import FirebaseStorage from '../../database/firebaseStorage'
+import Storage from '../../database/storage'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useMemories from '../../hooks/useMemories'
 import DomManager from '../../managers/domManager'
@@ -30,14 +30,14 @@ export default function Memories() {
   const [activeImgIndex, setActiveImgIndex] = useState(0)
 
   const DeleteMemory = async (firebaseImagePath, record) => {
-    const imageName = FirebaseStorage.GetImageNameFromUrl(firebaseImagePath)
+    const imageName = Storage.GetImageNameFromUrl(firebaseImagePath)
 
     // Current user is record owner
     if (record?.ownerKey === currentUser?.key) {
       // Delete from Firebase Realtime DB
       await DB.deleteMemory(currentUser?.key, record).then(async () => {
         // Delete from Firebase Storage
-        await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser?.key, imageName)
+        await Storage.delete(Storage.directories.memories, currentUser?.key, imageName)
       })
     }
     // Memory was shared with current user -> hide it
@@ -111,7 +111,7 @@ export default function Memories() {
                       setActiveImgIndex(index)
                       setShowSlideshow(true)
                     }}>
-                    {Manager.IsValid(imgObj?.name, true) && <p className="memory-title">{StringManager.FormatTitle(imgObj?.name, true)}</p>}
+                    {Manager.IsValid(imgObj?.title, true) && <p className="memory-title">{StringManager.FormatTitle(imgObj?.title, true)}</p>}
                     <div
                       style={{backgroundImage: `url(${imgObj?.url})`}}
                       className="memory-image"

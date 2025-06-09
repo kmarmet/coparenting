@@ -12,7 +12,7 @@ import LogManager from '../managers/logManager'
 import Manager from '../managers/manager'
 import User from '../models/users/user'
 import DB from './DB'
-import FirebaseStorage from './firebaseStorage'
+import Storage from './storage'
 
 const DB_UserScoped = {
   // GET
@@ -275,7 +275,7 @@ const DB_UserScoped = {
         }
       })
       basePath = `${basePath}/${key}/profilePic/`
-      await FirebaseStorage.getProfilePicUrl(FirebaseStorage.directories.profilePics, id, value).then(async (urls) => {
+      await Storage.getProfilePicUrl(Storage.directories.profilePics, id, value).then(async (urls) => {
         set(child(dbRef, basePath), urls)
       })
     })

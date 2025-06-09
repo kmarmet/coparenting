@@ -160,11 +160,14 @@ DomManager = {
             AddClasses(item)
           , index * delay
 
-  GetSelectOptions: (optionsArray = []) ->
+  GetSelectOptions: (optionsArray = [], optionsAreUsers= false) ->
     options = []
     if Manager.IsValid(optionsArray)
       for option in optionsArray
-        options.push({value: option, label: StringManager.uppercaseFirstLetterOfAllWords(option)})
+        if optionsAreUsers
+          options.push({value: option?.userKey, label: StringManager?.uppercaseFirstLetterOfAllWords(option?.name || option?.general?.name)})
+        else
+          options.push({value: option, label: StringManager.uppercaseFirstLetterOfAllWords(option)})
     return options
 
 
@@ -306,7 +309,10 @@ DomManager = {
   ScrollToTopOfPage: () ->
     window.scrollTo(0, 0)
 
-  toggleActive: (element) ->
+  toggleActive: (element, iterationClass, removeActiveFromAllFirst = false) ->
+    if removeActiveFromAllFirst && Manager.IsValid iterationClass, true
+      document.querySelectorAll(iterationClass).forEach (x) -> x?.classList.remove('active')
+
     element.classList.toggle("active")
 
   toggleAnimateClass: (element) ->

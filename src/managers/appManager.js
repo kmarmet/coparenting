@@ -22,7 +22,7 @@ import DB_UserScoped from "../database/db_userScoped";
 
 import CalendarManager from "./calendarManager";
 
-import FirebaseStorage from "../database/firebaseStorage";
+import Storage from "../database/storage";
 
 export default AppManager = {
   OperatingSystems: {
@@ -40,9 +40,8 @@ export default AppManager = {
     if (Manager.IsValid(lastRefresh)) {
       msSinceLastRefresh = (ref1 = moment(lastRefresh, DatetimeFormats.timestamp).diff()) != null ? ref1 : 0;
       hoursSinceRefresh = Math.abs(Math.ceil(msSinceLastRefresh / (1000 * 60 * 60)));
-      // If it has been more than 3 hours since the last refresh -> reload the page
-      if (hoursSinceRefresh > 6) {
-        console.log('true');
+      // If it has been more than 24 hours since the last refresh -> reload the page
+      if (hoursSinceRefresh > 24) {
         localStorage.setItem('lastAutoRefresh', moment().format(DatetimeFormats.timestamp));
         window.location.reload();
         return false;
@@ -52,7 +51,7 @@ export default AppManager = {
       return localStorage.setItem('lastAutoRefresh', moment().format(DatetimeFormats.timestamp));
     }
   },
-  UpdateOrRefreshIfNecessary: async function(currentUser, latestVersion, delay = 0) {
+  UpdateOrRefreshIfNecessary: async function(currentUser, latestVersion) {
     var ref1, ref2;
     AppManager.RefreshIfNecessary();
     if (Manager.IsValid(currentUser)) {
@@ -260,7 +259,7 @@ export default AppManager = {
         if (daysPassed >= 30) {
           await DB.Delete(`${DB.tables.memories}/${currentUser != null ? currentUser.key : void 0}`, memory.id);
           if (Manager.IsValid(memory != null ? memory.memoryName : void 0)) {
-            results.push((await FirebaseStorage.delete(FirebaseStorage.directories.memories, currentUser != null ? currentUser.key : void 0, memory != null ? memory.memoryName : void 0)));
+            results.push((await Storage.delete(Storage.directories.memories, currentUser != null ? currentUser.key : void 0, memory != null ? memory.memoryName : void 0)));
           } else {
             results.push(void 0);
           }

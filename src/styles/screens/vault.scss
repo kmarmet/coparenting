@@ -31,7 +31,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        color: $accent;
+        color: $blend;
 
         span {
           color: $red;
@@ -47,6 +47,8 @@
 
     // FILTER DROPDOWN
     .sorting-dropdown {
+      background: white;
+      border-radius: $borderRadius !important;
       [role='combobox'] {
         padding: 10px;
         height: auto !important;

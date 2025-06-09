@@ -3,12 +3,13 @@ var SlideshowImage;
 
 SlideshowImage = class SlideshowImage {
   constructor(options = {}) {
-    var ref, ref1, ref2, ref3, ref4;
+    var ref, ref1, ref2, ref3, ref4, ref5;
     this.title = (ref = options != null ? options.title : void 0) != null ? ref : "";
     this.notes = (ref1 = options != null ? options.notes : void 0) != null ? ref1 : "";
     this.url = (ref2 = options != null ? options.url : void 0) != null ? ref2 : "";
     this.date = (ref3 = options != null ? options.date : void 0) != null ? ref3 : "";
     this.ownerKey = (ref4 = options != null ? options.ownerKey : void 0) != null ? ref4 : "";
+    this.classes = (ref5 = options != null ? options.classes : void 0) != null ? ref5 : "";
   }
 
 };

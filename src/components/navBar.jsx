@@ -19,6 +19,8 @@ export default function NavBar({children, navbarClass}) {
   const {currentUser} = useCurrentUser()
   const {updates} = useUpdates()
 
+  const screensToHideUpdates = [ScreenNames.children, ScreenNames.coparents, ScreenNames.contacts, ScreenNames.docViewer]
+
   const changeCurrentScreen = async (screen) => {
     setState({
       ...state,
@@ -50,7 +52,7 @@ export default function NavBar({children, navbarClass}) {
             className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
             <div id="calendar-and-month">
               <BsCalendar className={'calendar'} />
-              <span>{moment().format('DD')}</span>
+              <span>{moment().format('D')}</span>
             </div>
             <p>Calendar</p>
           </div>
@@ -90,7 +92,7 @@ export default function NavBar({children, navbarClass}) {
           )}
 
           {/* UPDATES */}
-          {currentUser?.accountType === 'parent' && currentScreen !== ScreenNames.children && currentScreen !== ScreenNames.coparents && (
+          {currentUser?.accountType === 'parent' && !screensToHideUpdates.includes(currentScreen) && (
             <div
               style={DomManager.AnimateDelayStyle(1, 0.06)}
               onClick={() => changeCurrentScreen(ScreenNames.updates)}

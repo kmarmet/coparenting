@@ -2,7 +2,6 @@
 import React, {useContext, useState} from 'react'
 import validator from 'validator'
 import CheckboxGroup from '.../..//shared/checkboxGroup'
-import InputWrapper from '.../..//shared/inputWrapper'
 import globalState from '../context'
 import AlertManager from '../managers/alertManager'
 import StringManager from '../managers/stringManager'
@@ -30,8 +29,8 @@ export default function CoparentInputs({add, coparentsLength = 1}) {
       <p id="coparent-label">
         Co-Parent #{coparentsLength} {`- ${StringManager.uppercaseFirstLetterOfAllWords(name)}`}
       </p>
-      <InputWrapper inputType={'input'} placeholder={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
-      <InputWrapper
+      <InputField inputType={'input'} placeholder={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
+      <InputField
         inputType={'input'}
         inputValueType="number"
         placeholder={'Phone Number'}

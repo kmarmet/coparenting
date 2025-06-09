@@ -1,5 +1,5 @@
 import Form from '../../shared/form'
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import ScreenNames from '../../../constants/screenNames'
 import DB from '../../../database/DB'
 import AlertManager from '../../../managers/alertManager'
@@ -471,7 +471,7 @@ export default function DocViewer() {
         showOverlay={false}
         onSubmit={Search}
         onClose={CloseSearch}>
-        <InputWrapper
+        <InputField
           wrapperClasses="mt-5"
           labelText="Enter word(s) to find..."
           onChange={(e) => setSearchValue(e.target.value)}
@@ -560,7 +560,7 @@ export default function DocViewer() {
         onSubmit={RenameFile}
         className="rename-file"
         title={'Rename Document'}>
-        <InputWrapper
+        <InputField
           placeholder={'New document name'}
           required={true}
           inputType={InputTypes.text}

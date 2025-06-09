@@ -1,6 +1,6 @@
 // Path: src\components\forms\EditCalEvent.jsx
 import Form from '../shared/form'
-import InputWrapper from '../shared/inputWrapper'
+import InputField from '../shared/inputField'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import ActivityCategory from '../../constants/activityCategory'
 import DatetimeFormats from '../../constants/datetimeFormats'
@@ -450,7 +450,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           {/* EDIT */}
           <div className={view === 'Edit' ? 'view-wrapper edit active content' : 'view-wrapper content edit'}>
             {/* EVENT NAME */}
-            <InputWrapper
+            <InputField
               inputType={InputTypes.text}
               placeholder={'Event Name'}
               defaultValue={updatedEvent.current?.title}
@@ -466,7 +466,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
             {/* DATE */}
             {!eventIsDateRange && (
-              <InputWrapper
+              <InputField
                 placeholder={'Date'}
                 required={true}
                 inputType={InputTypes.date}
@@ -479,7 +479,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             {!eventIsDateRange && (
               <>
                 {/* START TIME */}
-                <InputWrapper
+                <InputField
                   wrapperClasses="start-time"
                   labelText={'Start Time'}
                   uidClass="event-start-time"
@@ -490,7 +490,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 />
 
                 {/* END TIME */}
-                <InputWrapper
+                <InputField
                   uidClass="event-end-time"
                   wrapperClasses="end-time"
                   labelText={'End Time'}
@@ -530,7 +530,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             <hr />
 
             {/* URL/WEBSITE */}
-            <InputWrapper
+            <InputField
               defaultValue={updatedEvent?.current?.websiteUrl}
               placeholder={'URL/Website'}
               wrapperClasses={Manager.IsValid(updatedEvent?.current?.websiteUrl) ? 'show-label' : ''}
@@ -546,7 +546,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             />
 
             {/* PHONE */}
-            <InputWrapper
+            <InputField
               wrapperClasses={Manager.IsValid(updatedEvent?.current?.phone) ? 'show-label' : ''}
               defaultValue={updatedEvent?.current?.phone}
               inputType={InputTypes.phone}
@@ -555,7 +555,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             />
 
             {/* NOTES */}
-            <InputWrapper
+            <InputField
               defaultValue={updatedEvent?.current?.notes}
               placeholder={'Notes'}
               required={false}

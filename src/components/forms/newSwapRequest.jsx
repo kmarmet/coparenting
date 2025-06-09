@@ -1,7 +1,7 @@
 // Path: src\components\forms\newSwapRequest.jsx
 import CheckboxGroup from '../../components/shared/checkboxGroup'
 import Form from '../../components/shared/form'
-import InputWrapper from '../../components/shared/inputWrapper'
+import InputField from '../shared/inputField'
 import ShareWithCheckboxes from '../../components/shared/shareWithCheckboxes'
 import ActivityCategory from '../../constants/activityCategory'
 import DatetimeFormats from '../../constants/datetimeFormats'
@@ -210,7 +210,7 @@ export default function NewSwapRequest() {
         <div id="request-form" className="form single">
           {/* SINGLE DATE */}
           {swapDuration === SwapDurations.single && (
-            <InputWrapper
+            <InputField
               uidClass="swap-single-date"
               inputType={InputTypes.date}
               placeholder={'Date'}
@@ -222,7 +222,7 @@ export default function NewSwapRequest() {
           {/* INTRA DAY - HOURS */}
           {swapDuration === SwapDurations.intra && (
             <>
-              <InputWrapper
+              <InputField
                 uidClass="swap-hours-date"
                 inputType={InputTypes.date}
                 placeholder={'Day'}
@@ -231,14 +231,14 @@ export default function NewSwapRequest() {
               />
 
               {/* TIMES */}
-              <InputWrapper
+              <InputField
                 inputType={InputTypes.time}
                 uidClass="swap-request-from-hour"
                 placeholder={'Start Time'}
                 onDateOrTimeSelection={(e) => setRequestFromHour(moment(e).format('ha'))}
               />
 
-              <InputWrapper
+              <InputField
                 inputType={InputTypes.time}
                 uidClass="swap-request-to-hour"
                 placeholder={'End Time'}
@@ -249,7 +249,7 @@ export default function NewSwapRequest() {
 
           {/* MULTIPLE DAYS */}
           {swapDuration === SwapDurations.multiple && (
-            <InputWrapper
+            <InputField
               onDateOrTimeSelection={(dateArray) => {
                 if (Manager.IsValid(dateArray)) {
                   setStartDate(moment(dateArray[0]).format(DatetimeFormats.dateForDb))
@@ -264,7 +264,7 @@ export default function NewSwapRequest() {
           )}
 
           {/* RESPONSE DUE DATE */}
-          <InputWrapper
+          <InputField
             uidClass="swap-response-date"
             inputType={InputTypes.date}
             placeholder={'Requested Response Date'}
@@ -321,7 +321,7 @@ export default function NewSwapRequest() {
           <Spacer height={5} />
 
           {/* NOTES */}
-          <InputWrapper inputType={'textarea'} placeholder={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
+          <InputField inputType={'textarea'} placeholder={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
         </div>
       </div>
     </Form>

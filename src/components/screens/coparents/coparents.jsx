@@ -1,6 +1,6 @@
 // Path: src\components\screens\parents\parents.jsx
 import NavBar from '../../navBar.jsx'
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
 import DB_UserScoped from '../../../database/db_userScoped'
 import AlertManager from '../../../managers/alertManager'
@@ -206,13 +206,13 @@ export default function Coparents() {
         }}
         hideCard={() => setShowInvitationForm(false)}>
         <Spacer height={5} />
-        <InputWrapper
+        <InputField
           inputType={InputTypes.text}
           placeholder={'Co-Parent Name'}
           required={true}
           onChange={(e) => (invite.current.name = e.target.value)}
         />
-        <InputWrapper
+        <InputField
           inputType={InputTypes.email}
           placeholder={'Co-Parent Email Address'}
           required={true}
@@ -272,7 +272,7 @@ export default function Coparents() {
                       {!inputsToSkip.includes(infoLabel.toLowerCase()) && !infoLabel.toLowerCase().includes('address') && (
                         <>
                           <div className="flex input">
-                            <InputWrapper
+                            <InputField
                               hasBottomSpacer={false}
                               defaultValue={value}
                               onChange={async (e) => {

@@ -42,7 +42,7 @@
           }
         }
       }
-      #emotion-and-input-wrapper {
+      #emotion-and-input-field {
         #tone-wrapper {
           &.green {
             background: $darkGreen;
@@ -57,7 +57,7 @@
             }
           }
         }
-        .message-input-wrapper {
+        .message-input-field {
           .message-input {
             color: $darkText;
           }
@@ -177,7 +177,7 @@
         }
       }
 
-      #page-overlay {
+      #screen-overlay {
         background-color: unset;
       }
 
@@ -833,7 +833,7 @@
       }
 
       // INPUT WRAPPER
-      .input-wrapper {
+      .input-field {
         background: $translucentLightest;
 
         * {
@@ -986,9 +986,9 @@
         }
         &.new-expense-card {
           #add-expense-form {
-            #amount-input-wrapper {
-              .input-wrapper {
-                .input-wrapper {
+            #amount-input-field {
+              .input-field {
+                .input-field {
                   input {
                     border-bottom: 1px solid $translucentLightest;
                   }

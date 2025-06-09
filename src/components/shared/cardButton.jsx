@@ -1,10 +1,12 @@
 import React from 'react'
-import ButtonTypes from '../../constants/buttonTypes'
+import ButtonThemes from '../../constants/buttonThemes'
+import Manager from '../../managers/manager'
 
-const CardButton = ({text, onClick, classes, buttonType = ButtonTypes.default}) => {
+const CardButton = ({text, onClick, classes, buttonType = ButtonThemes.white, children}) => {
   return (
-    <button className={`${classes} ${buttonType} default card-button`} onClick={onClick}>
-      {text}
+    <button className={`${classes} ${buttonType} card-button`} onClick={onClick}>
+      {Manager.IsValid(children) && children}
+      {!Manager.IsValid(children) && text}
     </button>
   )
 }

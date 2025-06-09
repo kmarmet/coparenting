@@ -44,9 +44,9 @@ export default function DesktopLeftSidebar() {
   }
 
   const logout = () => {
-    const pageOverlay = document.getElementById('page-overlay')
-    if (pageOverlay) {
-      pageOverlay.classList.remove('active')
+    const screenOverlay = document.getElementById('screen-overlay')
+    if (screenOverlay) {
+      screenOverlay.classList.remove('active')
     }
     signOut(auth)
       .then(() => {

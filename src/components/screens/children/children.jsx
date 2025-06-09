@@ -6,7 +6,7 @@ import Medical from '../../screens/children/medical'
 import NewChildForm from '../../screens/children/newChildForm'
 import Schooling from '../../screens/children/schooling'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
-import FirebaseStorage from '../../../database/firebaseStorage'
+import Storage from '../../../database/storage'
 import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
@@ -57,8 +57,8 @@ export default function Children() {
     }
 
     // Upload -> Set child/general/profilePic
-    const uploadedImageUrl = await FirebaseStorage.upload(
-      FirebaseStorage.directories.profilePics,
+    const uploadedImageUrl = await Storage.upload(
+      Storage.directories.profilePics,
       `${currentUser?.key}/${activeChild?.id}`,
       imgFiles[0],
       'profilePic'

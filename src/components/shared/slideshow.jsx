@@ -1,7 +1,5 @@
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {TbCircleArrowLeftFilled, TbCircleArrowRightFilled} from 'react-icons/tb'
-import {LazyLoadImage} from 'react-lazy-load-image-component'
 import {useSwipeable} from 'react-swipeable'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import globalState from '../../context'
@@ -12,6 +10,8 @@ import useParents from '../../hooks/useParents'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import Overlay from './overlay'
+import CardButton from './cardButton'
+import ButtonThemes from '../../constants/buttonThemes'
 
 export default function Slideshow({activeIndex = 0, images = [], wrapperClasses = '', show = false, hide = () => {}}) {
   const {state, setState} = useContext(globalState)
@@ -92,6 +92,7 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
 
   useEffect(() => {
     setActiveImageIndex(activeIndex)
+    console.log(images)
   }, [activeIndex])
 
   return (
@@ -103,7 +104,7 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
               <div key={index} className={index === activeImageIndex && show ? 'active content' : 'content'}>
                 {imageData?.title?.length > 0 && activeImageIndex === index && <p className={'title'}>{imageData?.title}</p>}
                 {imageData?.notes?.length > 0 && activeImageIndex === index && <p className={'notes'}>{imageData?.notes}</p>}
-                <LazyLoadImage className={index === activeImageIndex && show ? 'active slideshow-image' : 'slideshow-image'} src={imageData?.url} />
+                <img src={imageData?.url} alt="" />
 
                 {imageData?.date?.length > 0 && activeImageIndex === index && (
                   <p className={'capture-date'}>
@@ -125,24 +126,12 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
         <div className={`navigation ${images?.length < 2 ? 'full-width' : ''}`}>
           {images?.length > 1 && (
             <>
-              <button onClick={() => Navigate('left')} className="button">
-                <TbCircleArrowLeftFilled />
-                Previous
-              </button>
-
-              <button className="button close" onClick={hide}>
-                Close
-              </button>
-              <button onClick={() => Navigate('right')} className="button">
-                Next <TbCircleArrowRightFilled />
-              </button>
+              <CardButton onClick={() => Navigate('left')} classes="button" text={'Previous'} />
+              <CardButton buttonType={ButtonThemes.white} classes="button close" onClick={hide} text={'Close'} />
+              <CardButton onClick={() => Navigate('right')} classes="button" text={'Next'} />
             </>
           )}
-          {images?.length === 1 && (
-            <button className="button close" onClick={hide}>
-              Close
-            </button>
-          )}
+          {images?.length === 1 && <CardButton buttonType={ButtonThemes.white} classes="button close" onClick={hide} text={'Close'} />}
         </div>
       </div>
     </Overlay>

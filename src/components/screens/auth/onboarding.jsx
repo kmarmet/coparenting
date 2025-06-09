@@ -14,7 +14,7 @@ const Onboarding = ({accountType}) => {
   return (
     <div id="onboarding">
       <div className={screen === 1 ? 'active screen' : 'screen'}>
-        <img src={require('../../../img/onboarding/welcome.gif')} alt="" />
+        {/*<img src={require('../../../img/onboarding/welcome.gif')} alt="" />*/}
 
         <div className="text-content">
           <Spacer height={10} />
@@ -38,7 +38,7 @@ const Onboarding = ({accountType}) => {
 
       {/* SCREEN 2   */}
       <div className={screen === 2 ? 'active screen' : 'screen'}>
-        <img src={require('../../../img/onboarding/calendar.gif')} alt="" />
+        {/*<Img src={require('../../../img/onboarding/calendar.gif')} alt="" />*/}
 
         <div className="text-content">
           <Spacer height={10} />

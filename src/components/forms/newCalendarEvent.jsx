@@ -1,7 +1,7 @@
 // Path: src\components\forms\newCalendarEvent.jsx
 import CheckboxGroup from '../shared/checkboxGroup'
 import Form from '../shared/form'
-import InputWrapper from '../shared/inputWrapper'
+import InputField from '../shared/inputField'
 import MyConfetti from '../shared/myConfetti.js'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import ActivityCategory from '../../constants/activityCategory'
@@ -37,6 +37,9 @@ import ViewSelector from '../shared/viewSelector'
 import useChildren from '../../hooks/useChildren'
 import SelectDropdown from '../shared/selectDropdown'
 import CalMapper from '../../mappers/calMapper'
+import DatasetManager from '../../managers/datasetManager'
+import Button from '../shared/button'
+import ButtonThemes from '../../constants/buttonThemes'
 
 export default function NewCalendarEvent() {
   // APP STATE
@@ -60,6 +63,7 @@ export default function NewCalendarEvent() {
   const [showReminders, setShowReminders] = useState(false)
   const [includeChildren, setIncludeChildren] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
+  const [dynamicInputs, setDynamicInputs] = useState([])
 
   // REF
   const newEvent = useRef(new CalendarEvent({startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)}))
@@ -75,6 +79,7 @@ export default function NewCalendarEvent() {
     setShowReminders(false)
     setIncludeChildren(false)
     setIsVisitation(false)
+    setDynamicInputs([])
     setState({
       ...state,
       showBottomMenu: false,
@@ -239,35 +244,19 @@ export default function NewCalendarEvent() {
     )
   }
 
-  const AddDateInput = () => {
-    const input = document.createElement('input')
-    const cloneDateWrapper = document.querySelector('.cloned-date-wrapper')
-    const removeInputButton = document.createElement('button')
-    const wrapper = document.createElement('div')
-    wrapper.classList.add('input-wrapper', 'flex')
-
-    input.type = 'date'
-    input.classList.add('date-input')
-    removeInputButton.innerText = 'REMOVE'
-    removeInputButton.classList.add('remove-cloned-date-button')
-
-    input.addEventListener('change', (e) => {
-      const formattedDate = moment(e.target.value).format(DatetimeFormats.dateForDb)
-      setClonedDates([...clonedDates, formattedDate])
-    })
-    wrapper.append(input)
-
-    // Delete button
-    removeInputButton.addEventListener('click', (e) => {
-      const inputSibling = e.target.previousSibling
-      const formattedDate = moment(inputSibling.value).format(DatetimeFormats.dateForDb)
-      setClonedDates(clonedDates.filter((x) => x !== moment(formattedDate).format(DatetimeFormats.dateForDb)))
-      inputSibling.remove()
-      e.target.remove()
-    })
-    wrapper.append(removeInputButton)
-
-    cloneDateWrapper.append(wrapper)
+  const AppendDynamicInput = () => {
+    setDynamicInputs([
+      ...dynamicInputs,
+      <InputField
+        key={Date.now()}
+        inputType={InputTypes.date}
+        labelText="Date"
+        onDateOrTimeSelection={(e) => {
+          const formattedDate = moment(e).format(DatetimeFormats.dateForDb)
+          setClonedDates(DatasetManager.AddToArray(clonedDates, formattedDate))
+        }}
+      />,
+    ])
   }
 
   const GetReminderOptions = () => {
@@ -291,6 +280,16 @@ export default function NewCalendarEvent() {
       newEvent.current.startDate = moment(dateToEdit).format(DatetimeFormats.dateForDb)
     }
   }, [dateToEdit])
+
+  useEffect(() => {
+    if (!eventIsCloned) {
+      setShowCloneInput(false)
+      const allDynamicInputs = document.querySelectorAll('.cloned-date-wrapper')
+      if (Manager.IsValid(allDynamicInputs)) {
+        // allDynamicInputs.forEach((x) => x.remove())
+      }
+    }
+  }, [eventIsCloned])
 
   return (
     <>
@@ -322,7 +321,7 @@ export default function NewCalendarEvent() {
         }>
         <div id="calendar-event-form-container" className={`${theme}`}>
           {/* EVENT NAME */}
-          <InputWrapper
+          <InputField
             inputClasses="event-title-input"
             inputType={InputTypes.text}
             placeholder="Event Name"
@@ -337,7 +336,7 @@ export default function NewCalendarEvent() {
 
           {/* START DATE */}
           {eventLength === EventLengths.single && (
-            <InputWrapper
+            <InputField
               defaultValue={dateToEdit}
               placeholder="Date"
               uidClass="event-start-date"
@@ -351,7 +350,7 @@ export default function NewCalendarEvent() {
 
           {/* DATE RANGE */}
           {eventLength === EventLengths.multiple && (
-            <InputWrapper
+            <InputField
               wrapperClasses="date-range-input"
               placeholder={'Date Range'}
               required={true}
@@ -367,13 +366,13 @@ export default function NewCalendarEvent() {
           {eventLength === EventLengths.single && (
             <>
               {/* EVENT WITH TIME */}
-              <InputWrapper
+              <InputField
                 labelText={'Start Time'}
                 uidClass="event-start-time time"
                 inputType={InputTypes.time}
                 onDateOrTimeSelection={(e) => (newEvent.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}
               />
-              <InputWrapper
+              <InputField
                 labelText={'End Time'}
                 uidClass="event-end-time time"
                 inputType={InputTypes.time}
@@ -382,9 +381,10 @@ export default function NewCalendarEvent() {
             </>
           )}
 
+          <hr />
           {/* Share with */}
           <ShareWithCheckboxes required={false} onCheck={HandleShareWithSelection} containerClass={`share-with`} />
-          <Spacer height={3} />
+          <Spacer height={2} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.IsValid(children) && (
@@ -395,38 +395,13 @@ export default function NewCalendarEvent() {
               isMultiple={true}
             />
           )}
-          <Spacer height={3} />
+          <Spacer height={2} />
 
           {/* REMINDER */}
           {eventLength === EventLengths.single && (
             <SelectDropdown isMultiple={true} labelText={'Select Reminders'} options={GetReminderOptions()} onChange={HandleReminderSelection} />
           )}
           <Spacer height={8} />
-
-          {eventLength === EventLengths.single && (
-            <>
-              <Accordion id={'checkboxes'} expanded={showReminders}>
-                <AccordionSummary>
-                  <div className="flex">
-                    <p className="label">Remind Me</p>
-                    <ToggleButton onCheck={() => setShowReminders(true)} onUncheck={() => setShowReminders(false)} />
-                  </div>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <CheckboxGroup
-                    elClass={`${theme} reminder-times`}
-                    checkboxArray={DomManager.BuildCheckboxGroup({
-                      currentUser,
-                      labelType: 'reminder-times',
-                    })}
-                    containerClass={'reminder-times'}
-                    skipNameFormatting={true}
-                    onCheck={HandleReminderSelection}
-                  />
-                </AccordionDetails>
-              </Accordion>
-            </>
-          )}
 
           {/* IS VISITATION? */}
           <div>
@@ -447,22 +422,25 @@ export default function NewCalendarEvent() {
                   </div>
                 </AccordionSummary>
                 <AccordionDetails>
+                  <Spacer height={2} />
                   <CheckboxGroup
                     elClass={`${theme}`}
                     onCheck={HandleRepeatingSelection}
-                    checkboxArray={DomManager.BuildCheckboxGroup({
-                      currentUser,
-                      labelType: 'recurring-intervals',
-                    })}
+                    checkboxArray={DomManager.GetSelectOptions(
+                      DomManager.BuildCheckboxGroup({
+                        currentUser,
+                        labelType: 'recurring-intervals',
+                      }).map((x) => x.label)
+                    )}
                   />
 
                   {Manager.IsValid(recurringFrequency) && (
-                    <InputWrapper inputType={'date'} placeholder={'Date to End Recurring Events'} required={true}>
+                    <InputField inputType={'date'} placeholder={'Date to End Recurring Events'} required={true}>
                       <MobileDatePicker
-                        className={`${theme}  w-100`}
+                        className={`${theme}`}
                         onChange={(e) => (newEvent.current.endDate = moment(e).format(DatetimeFormats.dateForDb))}
                       />
-                    </InputWrapper>
+                    </InputField>
                   )}
                 </AccordionDetails>
               </Accordion>
@@ -488,11 +466,14 @@ export default function NewCalendarEvent() {
               </div>
 
               {/* CLONED INPUTS */}
-              <div className={`cloned-date-wrapper ${showCloneInput === true ? 'active' : ''}`}></div>
               {showCloneInput && (
-                <button className="default button" id="add-date-button" onClick={AddDateInput}>
-                  Add Date
-                </button>
+                <>
+                  {Manager.IsValid(dynamicInputs) &&
+                    dynamicInputs.map((input, index) => {
+                      return <div key={index}>{input}</div>
+                    })}
+                  <Button text="Add Date" theme={ButtonThemes.grey} classes="add-date-button center block" onClick={AppendDynamicInput} />
+                </>
               )}
             </>
           )}
@@ -500,7 +481,7 @@ export default function NewCalendarEvent() {
           <Spacer height={10} />
 
           {/* URL/WEBSITE */}
-          <InputWrapper
+          <InputField
             placeholder={'Website/Link'}
             required={false}
             inputType={InputTypes.url}
@@ -514,17 +495,17 @@ export default function NewCalendarEvent() {
             onChange={(address) => (newEvent.current.address = address)}
           />
           {/* PHONE */}
-          <InputWrapper
+          <InputField
             inputType={InputTypes.phone}
             placeholder="Phone"
             onChange={(e) => (newEvent.current.phone = StringManager.FormatPhone(e.target.value))}
           />
           {/* NOTES */}
-          <InputWrapper
+          <InputField
             placeholder={'Notes'}
             required={false}
             inputType={InputTypes.textarea}
-            onChange={(e) => (newEvent.current.notes = e.target.value)}></InputWrapper>
+            onChange={(e) => (newEvent.current.notes = e.target.value)}></InputField>
         </div>
       </Form>
     </>

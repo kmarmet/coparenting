@@ -1,5 +1,5 @@
 // Path: src\components\screens\auth\login.jsx
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
 import firebaseConfig from '../../../firebaseConfig'
@@ -164,7 +164,7 @@ export default function Login() {
         <div className="screen-content">
           <div className="form-container">
             {/* EMAIL */}
-            <InputWrapper
+            <InputField
               inputClasses="email login-input"
               inputType={InputTypes.email}
               required={true}
@@ -174,7 +174,7 @@ export default function Login() {
             />
             {/* PASSWORD */}
             <div className="flex">
-              <InputWrapper
+              <InputField
                 inputType={viewPassword ? InputTypes.text : InputTypes.password}
                 required={true}
                 hasBottomSpacer={false}

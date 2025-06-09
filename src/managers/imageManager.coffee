@@ -2,8 +2,8 @@ import SecurityManager from "./securityManager"
 import imageCompression from 'browser-image-compression'
 import _ from "lodash"
 import DB from "../database/DB"
-import { saveAs } from 'file-saver'
-import FirebaseStorage from '../database/firebaseStorage'
+import {saveAs} from 'file-saver'
+import Storage from '../database/storage'
 import domtoimage from 'dom-to-image'
 import AlertManager from "./alertManager";
 
@@ -101,7 +101,7 @@ ImageManager =
     allMemories = []
     memories = await SecurityManager.getMemories(currentUser)
     allMemories = memories
-    await FirebaseStorage.getImages(FirebaseStorage.directories.memories, currentUser.key).then (imgPromises) ->
+    await Storage.GetImages(Storage.directories.memories, currentUser.key).then (imgPromises) ->
       await Promise.all(imgPromises).then (images) ->
         if images.length > 0
           allMemories.push(images)
@@ -110,7 +110,7 @@ ImageManager =
     returnMemories
 
   deleteImage: (currentUser, imgPaths, directory, path) ->
-    imageName = FirebaseStorage.GetImageNameFromUrl(path)
+    imageName = Storage.GetImageNameFromUrl(path)
     memoryImageToDelete = imgPaths.filter((x) -> x.includes(imageName))[0]
 
     newArray = imgPaths
@@ -122,7 +122,7 @@ ImageManager =
       images: newArray
 
     DB.updateRecord(DB.tables.users, currentUser, 'memories', newMemoryObj)
-    FirebaseStorage.delete(directory, currentUser.key, imageName)
+    Storage.delete(directory, currentUser.key, imageName)
 
   createImage: (url) ->
     image = new Image()

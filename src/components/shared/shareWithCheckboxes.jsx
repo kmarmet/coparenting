@@ -4,7 +4,7 @@ import globalState from '../../context'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useUsers from '../../hooks/useUsers'
 import Manager from '../../managers/manager'
-import StringManager from '../../managers/stringManager.coffee'
+import StringManager from '../../managers/stringManager'
 import SelectDropdown from './selectDropdown'
 
 export default function ShareWithCheckboxes({

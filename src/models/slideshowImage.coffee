@@ -5,5 +5,6 @@ class SlideshowImage
     @url = options?.url ? ""
     @date = options?.date ? ""
     @ownerKey = options?.ownerKey ? ""
+    @classes = options?.classes ? ""
 
 export default SlideshowImage

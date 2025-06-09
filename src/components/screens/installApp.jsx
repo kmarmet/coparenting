@@ -14,6 +14,7 @@ import NavBar from '../navBar'
 import ScreenHeader from '../shared/screenHeader'
 import Slideshow from '../shared/slideshow'
 import Spacer from '../shared/spacer'
+import SuspenseImage from '../shared/suspenseImage'
 
 export default function InstallApp() {
   const {state, setState} = useContext(globalState)
@@ -33,7 +34,8 @@ export default function InstallApp() {
         hide={() => setShowComputerInstallSlideshow(false)}
         images={[
           new SlideshowImage({
-            url: require('../../img/desktop-installation.png'),
+            classes: 'desktop-installation',
+            url: '../../img/desktop-installation.png',
             title: 'Computer Installation',
             notes: 'Easily install via any web browser on your computer',
           }),
@@ -48,6 +50,7 @@ export default function InstallApp() {
           <Spacer height={10} />
 
           <div className="screen-content">
+            <img src={require('../../img/logo.png')} alt="" />
             {Manager.IsValid(operatingSystem) && (
               <p className="screen-intro-text">
                 The operating system of the device you are currently on appears to be&nbsp;
@@ -144,16 +147,12 @@ export default function InstallApp() {
                     Open our site
                   </a>
                 </div>
-                <img
-                  src={require('../../img/desktop-installation.png')}
-                  alt="Desktop Installation"
-                  onClick={() => setShowComputerInstallSlideshow(true)}
-                />
-                <div className="flex mt-15">
+                <div className="flex">
                   <span className="step-number">2.</span>
                   <p>{DomManager.tapOrClick(true)} the installation button in the address bar</p>
                 </div>
 
+                <SuspenseImage classes="installation desktop-installation" onClick={() => setShowComputerInstallSlideshow(true)} />
                 <div className="flex">
                   <span className="step-number">3.</span>
                   <p>

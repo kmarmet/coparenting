@@ -1,5 +1,5 @@
 // Path: src\components\screens\auth\registration.jsx
-import InputWrapper from '../../shared/inputWrapper'
+import InputField from '../../shared/inputField'
 import Spacer from '../../shared/spacer'
 import firebaseConfig from '../../../firebaseConfig'
 import AlertManager from '../../../managers/alertManager'
@@ -353,7 +353,7 @@ export default function Registration() {
             <Spacer height={15} />
 
             {/* PARENT FORM */}
-            <InputWrapper
+            <InputField
               inputType={InputTypes.text}
               inputName="Name"
               required={true}
@@ -362,7 +362,7 @@ export default function Registration() {
             />
 
             {/* PHONE */}
-            <InputWrapper
+            <InputField
               inputType={InputTypes.phone}
               required={true}
               placeholder={'Phone Number'}
@@ -370,7 +370,7 @@ export default function Registration() {
             />
 
             {/* EMAIL */}
-            <InputWrapper
+            <InputField
               inputType={InputTypes.email}
               required={true}
               placeholder={'Email Address'}
@@ -378,7 +378,7 @@ export default function Registration() {
             />
 
             {/* PASSWORD */}
-            <InputWrapper
+            <InputField
               inputType={InputTypes.password}
               inputValueType="password"
               required={true}
@@ -387,7 +387,7 @@ export default function Registration() {
             />
 
             {/* CONFIRM PASSWORD */}
-            <InputWrapper
+            <InputField
               inputType={InputTypes.password}
               inputValueType="password"
               required={true}
@@ -442,14 +442,14 @@ export default function Registration() {
 
             <Spacer height={15} />
             {/* PARENT EMAIL */}
-            <InputWrapper
+            <InputField
               inputType={InputTypes.email}
               required={true}
               placeholder={'Parent Email Address'}
               onChange={(e) => (parentRef.current.email = e.target.value)}
             />
             {/* PARENT PHONE */}
-            <InputWrapper
+            <InputField
               inputType={InputTypes.phone}
               required={true}
               placeholder={'Parent Phone Number'}
@@ -466,7 +466,7 @@ export default function Registration() {
           <>
             <p className="screen-title">Verify Access Code</p>
             <Spacer height={10} />
-            <InputWrapper placeholder={'Access Code'} inputType={InputTypes.text} required={true} onChange={(e) => setEnteredCode(e.target.value)} />
+            <InputField placeholder={'Access Code'} inputType={InputTypes.text} required={true} onChange={(e) => setEnteredCode(e.target.value)} />
             <Spacer height={10} />
             <button className="button w-50 default green center" onClick={VerifyParentAccessCode}>
               Verify Code
@@ -490,7 +490,7 @@ export default function Registration() {
             <div id="onboarding">
               <div className={onboardingScreen === 1 ? 'active screen' : 'screen'}>
                 {/* eslint-disable-next-line no-undef */}
-                <img src={require('../../../img/onboarding/welcome.gif')} alt="" />
+                {/*<img src={require('../../../img/onboarding/welcome.gif')} alt="" />*/}
 
                 <div className="text-content">
                   <Spacer height={10} />
@@ -517,7 +517,7 @@ export default function Registration() {
               {/* SCREEN 2   */}
               <div className={onboardingScreen === 2 ? 'active screen' : 'screen'}>
                 {/* eslint-disable-next-line no-undef */}
-                <img src={require('../../../img/onboarding/calendar.gif')} alt="" />
+                {/*<img src={require('../../../img/onboarding/calendar.gif')} alt="" />*/}
 
                 <div className="text-content">
                   <Spacer height={10} />
