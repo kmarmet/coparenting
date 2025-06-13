@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../context'
-import useChat from '../../hooks/useChat'
+import useChats from '../../hooks/useChats'
 import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import DatasetManager from '../../managers/datasetManager'
@@ -14,12 +14,11 @@ const NewChatSelector = ({show, hide, onClick}) => {
   const {creationFormToShow} = state
   const [chattableUserKeys, setChattableUserKeys] = useState([])
   const {currentUser} = useCurrentUser()
-  const {chats} = useChat()
-
+  const {chats} = useChats()
   const {coParents} = useCoParents()
 
   const DefineInactiveChatKeys = async () => {
-    const inactiveKeys = await ChatManager.GetInactiveChatKeys(currentUser, chats)
+    const inactiveKeys = await ChatManager.GetInactiveChatKeys(currentUser, chats).then((r) => r)
     setChattableUserKeys(DatasetManager.GetValidArray(inactiveKeys, true))
   }
 
@@ -31,7 +30,7 @@ const NewChatSelector = ({show, hide, onClick}) => {
   }
 
   useEffect(() => {
-    if (Manager.IsValid(currentUser) && Manager.IsValid(chats)) {
+    if (Manager.IsValid(currentUser)) {
       DefineInactiveChatKeys().then((r) => r)
     }
   }, [creationFormToShow, chats, currentUser])

@@ -413,6 +413,13 @@
       width: 100%;
       margin: 20px auto;
 
+      &.faded {
+        @include hr;
+        margin: 0;
+        background: transparent;
+        border-color: transparent;
+      }
+
       &.documents {
         margin: 10px 0 25px 0;
         border-color: $lightGrey;

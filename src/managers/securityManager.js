@@ -239,21 +239,9 @@ SecurityManager = {
     return DatasetManager.GetValidArray(returnRecords);
   },
   getChats: async function(currentUser) {
-    var chat, chats, i, len, members, ref, ref1, securedChats;
+    var chats, securedChats;
     chats = DatasetManager.GetValidArray((await DB.getTable(`${DB.tables.chats}/${currentUser != null ? currentUser.key : void 0}`)));
     securedChats = [];
-    // User does not have a chat with root access by phone
-    if (Manager.IsValid(chats)) {
-      for (i = 0, len = chats.length; i < len; i++) {
-        chat = chats[i];
-        members = chat != null ? (ref = chat.members) != null ? ref.map(function(x) {
-          return x.key;
-        }) : void 0 : void 0;
-        if (ref1 = currentUser != null ? currentUser.key : void 0, indexOf.call(members, ref1) >= 0) {
-          securedChats.push(chat);
-        }
-      }
-    }
     return securedChats;
   },
   getCoparentChats: async function(currentUser) {

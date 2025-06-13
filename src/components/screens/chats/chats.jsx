@@ -1,38 +1,37 @@
 // Path: src\components\screens\chats\chats?.jsx
-import AlertManager from '../../../managers/alertManager'
-import Manager from '../../../managers/manager'
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
 import React, {useContext, useState} from 'react'
+import {BsFillSendFill} from 'react-icons/bs'
+import {HiDotsHorizontal} from 'react-icons/hi'
+import CreationForms from '../../../constants/creationForms'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
-import useChat from '../../../hooks/useChat'
+import useChats from '../../../hooks/useChats'
 import useCoParents from '../../../hooks/useCoParents'
+import AlertManager from '../../../managers/alertManager'
+import DomManager from '../../../managers/domManager'
 import EmailManager from '../../../managers/emailManager'
+import Manager from '../../../managers/manager'
+import NewChat from '../../forms/newChat'
 import NavBar from '../../navBar'
 import Form from '../../shared/form'
 import InputField from '../../shared/inputField'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
+import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
-import ChatRow from './chatRow.jsx'
-import AccordionTitle from '../../shared/accordionTitle'
-import CreationForms from '../../../constants/creationForms'
-import NewChat from '../../forms/newChat'
 import Chat from './chat'
+import ChatRow from './chatRow.jsx'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
   const {theme, creationFormToShow} = state
-  const [showInfo, setShowInfo] = useState(false)
   const [showInvitationCard, setShowInvitationCard] = useState(false)
   const [inviteeName, setInviteeName] = useState('')
   const [inviteeEmail, setInviteeEmail] = useState('')
   const [showChat, setShowChat] = useState(false)
   const [recipient, setRecipient] = useState()
-  const {chats} = useChat()
+  const {chats} = useChats()
   const {coParents} = useCoParents()
 
   return (
@@ -76,11 +75,34 @@ const Chats = () => {
 
       <Chat show={showChat} hide={() => setShowChat(false)} recipient={recipient} />
 
+      {/*  SCREEN ACTIONS */}
+      <ScreenActionsMenu title="Manage Chats">
+        <div
+          className="action-item"
+          onClick={() => {
+            setShowInvitationCard(true)
+            setState({...state, showScreenActions: false})
+          }}>
+          <div className="content">
+            <div className="svg-wrapper invite-co-parent">
+              <BsFillSendFill className={'paper-airplane'} />
+            </div>
+            <p>
+              Invite Another Co-Parent
+              <span className={'subtitle'}>
+                Currently, your account is linked to {coParents?.length} {coParents?.length > 1 ? 'co-parents' : 'co-parent'}. Feel free to invite
+                another co-parent.
+              </span>
+            </p>
+          </div>
+        </div>
+      </ScreenActionsMenu>
+
       {/* NO DATA FALLBACK */}
       {chats?.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
 
       {/* PAGE CONTAINER */}
-      <div id="chats-container" className={`${theme} page-container`}>
+      <div id="chats-container" className={`${theme} page-container `}>
         <ScreenHeader
           screenName={ScreenNames.chats}
           title={'Chats'}
@@ -88,37 +110,13 @@ const Chats = () => {
           information that is unfamiliar to you"
         />
 
-        <Spacer height={8} />
-        <div className="screen-content">
-          {/* INVITE BUTTON */}
-          <Accordion expanded={showInfo} className={`${theme} white-bg invite-accordion accordion`}>
-            <AccordionSummary>
-              <div id="circle" className="circle"></div>
-              <AccordionTitle titleText={'Invite Co-Parent'} toggleState={showInfo} onClick={() => setShowInfo(!showInfo)} />
-            </AccordionSummary>
-            <AccordionDetails>
-              <p>
-                Currently, your account is linked to {coParents?.length} {coParents?.length > 1 ? 'co-parents' : 'co-parent'}. If you wish to
-                communicate with another co-parent, feel free to Send them an invitation.
-              </p>
-
-              <button
-                className="default smaller"
-                id="send-invite-button"
-                onClick={() => {
-                  setShowInvitationCard(true)
-                  setShowInfo(false)
-                }}>
-                Send Invite
-              </button>
-            </AccordionDetails>
-          </Accordion>
-
+        <div className="screen-content bottom-padding-only">
           {/* CHAT ROWS */}
           {chats?.length > 0 &&
             chats?.map((chat, index) => {
               return (
                 <ChatRow
+                  chat={chat}
                   onClick={(otherMember) => {
                     console.log('otherMember: ', otherMember)
                     setShowChat(true)
@@ -131,7 +129,20 @@ const Chats = () => {
               )
             })}
         </div>
-        {!showChat && <NavBar />}
+        {!showChat && (
+          <>
+            {/* NAVBAR */}
+            <NavBar navbarClass={'actions white'}>
+              <div
+                style={DomManager.AnimateDelayStyle(1, 0.06)}
+                onClick={() => setState({...state, showScreenActions: true})}
+                className={`menu-item ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
+                <HiDotsHorizontal className={'screen-actions-menu-icon more'} />
+                <p>More</p>
+              </div>
+            </NavBar>
+          </>
+        )}
       </div>
     </>
   )

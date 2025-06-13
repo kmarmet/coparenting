@@ -72,18 +72,9 @@ DomManager = {
       }
     },
     FadeInDown: function(variableToCheck, fastSlowOrDefault = "") {
-      var ref, ref1;
-      if (typeof variableToCheck === 'boolean') {
-        if (variableToCheck === true) {
-          return `animate__animated animate__fadeInDown ${(ref = Manager.IsValid(fastSlowOrDefault, true)) != null ? ref : {
-            [`animate__${fastSlowOrDefault}`]: ''
-          }}`;
-        } else {
-          return 'animate__animated animate__fadeOutUp';
-        }
-      }
-      if (Manager.IsValid(variableToCheck)) {
-        return `animate__animated animate__fadeInDown ${(ref1 = Manager.IsValid(fastSlowOrDefault, true)) != null ? ref1 : {
+      var ref;
+      if (Manager.IsValid(variableToCheck) || variableToCheck === true) {
+        return `animate__animated animate__fadeInDown ${(ref = Manager.IsValid(fastSlowOrDefault, true)) != null ? ref : {
           [`animate__${fastSlowOrDefault}`]: ''
         }}`;
       } else {

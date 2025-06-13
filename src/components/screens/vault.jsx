@@ -12,7 +12,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import {RiFileExcel2Fill} from 'react-icons/ri'
 import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
-import useChat from '../../hooks/useChat'
+import useChats from '../../hooks/useChats'
 import useChatMessages from '../../hooks/useChatMessages'
 import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
@@ -49,7 +49,7 @@ export default function Vault() {
   const {coParents} = useCoParents()
   const {expenses} = useExpenses()
   const {currentUser} = useCurrentUser()
-  const {chats} = useChat()
+  const {chats} = useChats()
   const {chatMessages} = useChatMessages(selectedChatId)
 
   const GetExpenses = async () => {

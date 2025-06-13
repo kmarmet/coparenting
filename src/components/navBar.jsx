@@ -19,7 +19,7 @@ export default function NavBar({children, navbarClass}) {
   const {currentUser} = useCurrentUser()
   const {updates} = useUpdates()
 
-  const screensToHideUpdates = [ScreenNames.children, ScreenNames.coparents, ScreenNames.contacts, ScreenNames.docViewer]
+  const screensToHideUpdates = [ScreenNames.children, ScreenNames.coparents, ScreenNames.chats, ScreenNames.contacts, ScreenNames.docViewer]
 
   const changeCurrentScreen = async (screen) => {
     setState({
@@ -100,11 +100,7 @@ export default function NavBar({children, navbarClass}) {
               <PiNotificationFill className={'updates'} />
               <p>
                 Updates
-                {Manager.IsValid(updates) && (
-                  <span className="update-count">
-                    <span>{Manager.IsValid(updates) ? ` ${updates?.length}` : ''}</span>
-                  </span>
-                )}
+                {Manager.IsValid(updates) && <span className="update-badge"></span>}
               </p>
             </div>
           )}

@@ -249,7 +249,7 @@ function InputField({
             }}
             onKeyUp={onKeyUp}
             className={`${inputClasses}`}
-            name={inputName}
+            name={'Chat Text'}
             defaultValue={defaultValue}
             key={refreshKey}
           />

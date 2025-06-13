@@ -4,11 +4,11 @@ import globalState from '../context'
 import DB from '../database/DB'
 import useCurrentUser from './useCurrentUser'
 
-const useChat = () => {
+const useChats = () => {
   const {state, setState} = useContext(globalState)
   const {messageRecipient, authUser} = state
   const {currentUser} = useCurrentUser()
-  const [isLoading, setIsLoading] = useState(true)
+  const [chatsAreLoading, setChatsAreLoading] = useState(true)
   const [error, setError] = useState(null)
   const [chats, setChats] = useState([])
   const path = `${DB.tables.chats}/${currentUser?.key}`
@@ -22,13 +22,12 @@ const useChat = () => {
       dataRef,
       async (snapshot) => {
         const chats = snapshot.val()
-        console.log(chats)
         setChats(chats)
       },
       (err) => {
         // console.log(`useChatMessages Error: ${err}`)
         setError(err)
-        setIsLoading(false)
+        setChatsAreLoading(false)
       }
     )
 
@@ -39,10 +38,10 @@ const useChat = () => {
 
   return {
     chats,
-    isLoading,
+    chatsAreLoading,
     error,
     queryKey,
   }
 }
 
-export default useChat
+export default useChats

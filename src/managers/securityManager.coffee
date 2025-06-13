@@ -167,12 +167,6 @@ SecurityManager =
   getChats: (currentUser) ->
     chats = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.chats}/#{currentUser?.key}"))
     securedChats = []
-    # User does not have a chat with root access by phone
-    if Manager.IsValid(chats)
-      for chat in chats
-        members = chat?.members?.map (x) -> x.key
-        if currentUser?.key in members
-          securedChats.push(chat)
     return securedChats
 
   getCoparentChats: (currentUser) ->

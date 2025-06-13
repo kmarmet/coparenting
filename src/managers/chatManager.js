@@ -31,13 +31,15 @@ ChatManager = {
     var dbRef, error, existingChats, newChat, updatedChats;
     dbRef = ref(getDatabase());
     newChat = new Chat();
+    newChat.id = Manager.GetUid();
     newChat.members = [{...recipient}, {...sender}];
     newChat.ownerKey = sender != null ? sender.key : void 0;
     existingChats = (await DB.getTable(`${DB.tables.chats}/${sender != null ? sender.key : void 0}`));
     updatedChats = DatasetManager.AddToArray(existingChats, newChat);
     try {
       await set(child(dbRef, `${DB.tables.chats}/${recipient != null ? recipient.key : void 0}`), updatedChats);
-      return (await set(child(dbRef, `${DB.tables.chats}/${sender != null ? sender.key : void 0}`), updatedChats));
+      await set(child(dbRef, `${DB.tables.chats}/${sender != null ? sender.key : void 0}`), updatedChats);
+      return newChat.id;
     } catch (error1) {
       error = error1;
       return LogManager.Log(error.message, LogManager.LogTypes.error);
@@ -56,24 +58,39 @@ ChatManager = {
       return LogManager.Log(error.message, LogManager.LogTypes.error);
     }
   },
-  GetInactiveChatKeys: async function(currentUser, chats) {
+  GetInactiveChatKeys: async function(currentUser, chats = []) {
     var coParentKeys, inactive, memberKeys, members, ref1, validAccountKeys, validAccounts;
+    inactive = [];
+    members = [];
+    memberKeys = [];
+    coParentKeys = [];
+    validAccountKeys = [];
     validAccounts = (await DB_UserScoped.getCoparentAccounts(currentUser));
-    members = DatasetManager.getUniqueArray(chats.map((x) => {
-      return x.members;
-    }), true);
-    memberKeys = DatasetManager.getUniqueArray(members.map((x) => {
-      return x != null ? x.userKey : void 0;
-    }), true);
-    coParentKeys = DatasetManager.getUniqueArray(currentUser != null ? (ref1 = currentUser.coparents) != null ? ref1.map((x) => {
-      return x != null ? x.userKey : void 0;
-    }) : void 0 : void 0, true);
-    validAccountKeys = validAccounts.map((x) => {
-      return x != null ? x.userKey : void 0;
-    });
-    inactive = memberKeys.filter((x) => {
-      return !coParentKeys.includes(x) && !validAccountKeys.includes(x);
-    });
+    if (Manager.IsValid(validAccounts)) {
+      // If there are chats
+      if (Manager.IsValid(chats)) {
+        members = DatasetManager.getUniqueArray(chats != null ? chats.map((x) => {
+          return x != null ? x.members : void 0;
+        }) : void 0, true);
+        memberKeys = DatasetManager.getUniqueArray(members.map((x) => {
+          return x != null ? x.userKey : void 0;
+        }), true);
+        coParentKeys = DatasetManager.getUniqueArray(currentUser != null ? (ref1 = currentUser.coparents) != null ? ref1.map((x) => {
+          return x != null ? x.userKey : void 0;
+        }) : void 0 : void 0, true);
+        validAccountKeys = validAccounts != null ? validAccounts.map((x) => {
+          return x != null ? x.userKey : void 0;
+        }) : void 0;
+        inactive = memberKeys != null ? memberKeys.filter((x) => {
+          return !(coParentKeys != null ? coParentKeys.includes(x) : void 0) && !(validAccountKeys != null ? validAccountKeys.includes(x) : void 0);
+        }) : void 0;
+      } else {
+        // If no inactive chats
+        inactive = validAccounts != null ? validAccounts.map((x) => {
+          return x != null ? x.key : void 0;
+        }) : void 0;
+      }
+    }
     return inactive;
   },
   GetToneAndSentiment: async function(message) {
@@ -143,8 +160,8 @@ ChatManager = {
     var chat, chatToReturn, error, i, len, memberKeys, securedChats;
     try {
       securedChats = (await SecurityManager.getChats(currentUser));
+      console.log("Secured: ", securedChats);
       chatToReturn = null;
-      console.log(securedChats);
       for (i = 0, len = securedChats.length; i < len; i++) {
         chat = securedChats[i];
         memberKeys = chat.members.map(function(x) {
@@ -163,38 +180,36 @@ ChatManager = {
   GetMessages: async function(chatId) {
     return (await DB.getTable(`${DB.tables.chatMessages}/${chatId}`));
   },
-  PauseChat: async function(currentUser, coparentKey) {
-    var error, isPausedFor, securedChat;
-    securedChat = (await ChatManager.GetScopedChat(currentUser, coparentKey));
+  PauseChat: async function(currentUser, coParentKey, chat) {
+    var error, isPausedFor;
     try {
-      isPausedFor = securedChat.isPausedFor;
+      isPausedFor = chat.isPausedFor;
       if (!Manager.IsValid(isPausedFor)) {
         isPausedFor = [currentUser != null ? currentUser.key : void 0];
       } else {
         isPausedFor = [...isPausedFor, currentUser != null ? currentUser.key : void 0];
       }
       isPausedFor = DatasetManager.getUniqueArray(isPausedFor, true);
-      securedChat.isPausedFor = isPausedFor;
+      chat.isPausedFor = isPausedFor;
       // Set chat inactive
-      await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser != null ? currentUser.key : void 0}`, securedChat, securedChat.id);
-      return (await DB.updateEntireRecord(`${DB.tables.chats}/${coparentKey}`, securedChat, securedChat.id));
+      await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser != null ? currentUser.key : void 0}`, chat, chat.id);
+      return (await DB.updateEntireRecord(`${DB.tables.chats}/${coParentKey}`, chat, chat.id));
     } catch (error1) {
       error = error1;
       return LogManager.Log(error.message, LogManager.LogTypes.error);
     }
   },
-  UnpauseChat: async function(currentUser, coparentKey) {
-    var error, isPausedFor, ref1, securedChat;
-    securedChat = (await ChatManager.GetScopedChat(currentUser, coparentKey));
+  ResumeChat: async function(currentUser, coParentKey, chat) {
+    var error, isPausedFor, ref1;
     try {
-      isPausedFor = securedChat != null ? (ref1 = securedChat.isPausedFor) != null ? ref1.filter(function(x) {
+      isPausedFor = chat != null ? (ref1 = chat.isPausedFor) != null ? ref1.filter(function(x) {
         return x !== (currentUser != null ? currentUser.key : void 0);
       }) : void 0 : void 0;
       isPausedFor = DatasetManager.getUniqueArray(isPausedFor, true);
-      securedChat.isPausedFor = isPausedFor;
+      chat.isPausedFor = isPausedFor;
       // Set chat inactive
-      await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser != null ? currentUser.key : void 0}`, securedChat, securedChat.id);
-      return (await DB.updateEntireRecord(`${DB.tables.chats}/${coparentKey}`, securedChat, securedChat.id));
+      await DB.updateEntireRecord(`${DB.tables.chats}/${currentUser != null ? currentUser.key : void 0}`, chat, chat.id);
+      return (await DB.updateEntireRecord(`${DB.tables.chats}/${coParentKey}`, chat, chat.id));
     } catch (error1) {
       error = error1;
       return LogManager.Log(error.message, LogManager.LogTypes.error);

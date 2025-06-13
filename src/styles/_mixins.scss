@@ -20,6 +20,10 @@
 
   .screen-content {
     padding: 0 15px 200px 15px;
+
+    &.bottom-padding-only {
+      padding: 0 0 200px 0;
+    }
   }
 
   .screen-header {
@@ -217,6 +221,7 @@
   flex-wrap: wrap;
   flex-direction: column;
   @include mainColorsGradient;
+
   &.active {
     opacity: 1;
     transition: all 0.4s ease-in;
@@ -228,6 +233,13 @@
     }
   }
 
+  .close-overlay-icon {
+    color: $darkGrey;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: $maxZIndex;
+  }
   .swipe-bar {
     display: block;
     background: rgba(255, 255, 255, 0.71);
@@ -475,7 +487,15 @@
 }
 
 @mixin mainColorsGradient {
-  background-image: linear-gradient(to bottom, #4c6fff, #434cff);
+  background-image: linear-gradient(
+    135deg,
+    hsl(234deg 100% 67%) 0%,
+    hsl(236deg 92% 66%) 15%,
+    hsl(240deg 84% 66%) 31%,
+    hsl(244deg 78% 63%) 46%,
+    hsl(248, 60%, 57%) 67%,
+    hsl(252, 49%, 48%) 100%
+  );
 }
 
 @mixin fadeEdges {
@@ -804,6 +824,10 @@
 
 /*#region  COMPONENTS*/
 @mixin hr {
+  height: 1px;
+  background-color: #fbfeff;
+  width: 100%;
+
   &:after {
     display: block;
     content: '';
@@ -839,7 +863,6 @@
 @mixin successAlert {
   opacity: 0;
   position: fixed;
-  z-index: -1;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -853,11 +876,8 @@
   min-width: calc(100vw - 30px);
   background: $greenForWhiteText;
   top: 60px;
+  z-index: $maxZIndex;
   @include bestShadow;
-
-  &.active {
-    z-index: $maxZIndex;
-  }
 
   .alert-close-icon {
     margin-left: 10px;
@@ -4687,6 +4707,13 @@
   /*#region  SVGS BY CLASS*/
 
   &.actions {
+    &.white {
+      background: white;
+
+      #menu-items {
+        background: white;
+      }
+    }
     #menu-items {
       flex-wrap: nowrap;
       display: flex;
@@ -4828,20 +4855,15 @@
       }
 
       &.updates {
-        .update-count {
+        .update-badge {
           background: $flatRed;
           display: flex;
           justify-content: center;
           align-items: center;
           border-radius: 100%;
-          @include square(15px);
+          @include square(8px);
           margin-left: 5px;
           line-height: 1;
-          span {
-            font-size: 10px;
-            color: white;
-            padding: 8px;
-          }
         }
       }
 

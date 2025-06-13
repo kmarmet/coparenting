@@ -1,4 +1,5 @@
 import React, {useContext, useEffect} from 'react'
+import {IoClose} from 'react-icons/io5'
 import globalState from '../../context'
 import Manager from '../../managers/manager'
 
@@ -6,9 +7,13 @@ const Overlay = ({children, show}) => {
   const {state, setState} = useContext(globalState)
   const {menuIsOpen, showScreenActions, showCreationMenu} = state
 
-  const HideOverlay = (e) => {
-    const overlay = e.target
-    if (Manager.IsValid(overlay) && overlay.classList.contains('screen-overlay')) {
+  const HideOverlay = (e, force = false) => {
+    let overlay = e.target
+
+    if (menuIsOpen || showScreenActions || showCreationMenu) {
+      //  overlay = e.currentTarget
+    }
+    if (Manager.IsValid(overlay) && (overlay.classList.contains('screen-overlay') || force)) {
       overlay.classList.remove('active')
       const allFadeElements = overlay?.querySelectorAll('.animate__fadeInUp')
       if (Manager.IsValid(allFadeElements)) {
@@ -51,6 +56,7 @@ const Overlay = ({children, show}) => {
     <div
       className={`screen-overlay ${show ? 'active gradient' : ''} ${menuIsOpen || showScreenActions || showCreationMenu ? 'blur' : ''}`}
       onClick={HideOverlay}>
+      {menuIsOpen || showScreenActions || (showCreationMenu && <IoClose className={'close-overlay-icon'} onClick={(e) => HideOverlay(e, true)} />)}
       {children}
     </div>
   )

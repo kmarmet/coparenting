@@ -35,7 +35,7 @@ DatasetManager = {
 
     return returnArray
 
-  AddToArrayssss: (arr, newItem, removeIfExistsAlready = false) =>
+  AddToArray: (arr, newItem, removeIfExistsAlready = false) =>
     returnArray = []
 
     if not Manager.IsValid(arr)

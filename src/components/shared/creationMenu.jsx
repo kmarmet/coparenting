@@ -8,7 +8,7 @@ import {RiMapPinTimeFill} from 'react-icons/ri'
 import {useSwipeable} from 'react-swipeable'
 import CreationForms from '../../constants/creationForms'
 import globalState from '../../context'
-import useChat from '../../hooks/useChat'
+import useChats from '../../hooks/useChats'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
@@ -19,7 +19,7 @@ import ChatManager from '../../managers/chatManager'
 const CreationMenu = () => {
   const {state, setState} = useContext(globalState)
   const {dateToEdit, showCreationMenu, refreshKey} = state
-  const {chats} = useChat()
+  const {chats} = useChats()
   const [showChatAction, setShowChatAction] = useState(false)
   const {currentUser} = useCurrentUser()
 
@@ -32,7 +32,7 @@ const CreationMenu = () => {
   })
 
   const CheckIfChatsShouldBeShown = async () => {
-    const chattableKeys = await ChatManager.GetInactiveChatKeys(currentUser, chats)
+    const chattableKeys = await ChatManager.GetInactiveChatKeys(currentUser, chats).then((r) => r)
     if (Manager.IsValid(chattableKeys)) {
       setShowChatAction(true)
     } else {
@@ -42,19 +42,7 @@ const CreationMenu = () => {
 
   useEffect(() => {
     CheckIfChatsShouldBeShown().then((r) => r)
-  }, [chats])
-
-  useEffect(() => {
-    const pageContainer = document.querySelector('.page-container')
-
-    if (pageContainer) {
-      if (showCreationMenu) {
-        pageContainer.classList.add('disable-scroll')
-      } else {
-        pageContainer.classList.remove('disable-scroll')
-      }
-    }
-  }, [showCreationMenu])
+  }, [chats, showCreationMenu])
 
   return (
     <Overlay show={showCreationMenu}>

@@ -41,12 +41,7 @@ DomManager = {
         return 'animate__animated animate__fadeOutDown'
 
     FadeInDown: (variableToCheck,  fastSlowOrDefault = "") ->
-      if typeof variableToCheck == 'boolean'
-        if (variableToCheck == true)
-          return "animate__animated animate__fadeInDown #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
-        else
-          return 'animate__animated animate__fadeOutUp'
-      if Manager.IsValid(variableToCheck)
+      if Manager.IsValid(variableToCheck) or variableToCheck == true
         return "animate__animated animate__fadeInDown #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
       else
         return 'animate__animated animate__fadeOutUp'
@@ -78,6 +73,7 @@ DomManager = {
         return "animate__animated animate__fadeIn animate__#{fastSlowOrDefault}"
       else
         return 'animate__animated animate__fadeOut'
+
     AnimateDelayStyle: (index, delay = .2) ->
       return {animationDelay: "#{index * delay}s"}
 

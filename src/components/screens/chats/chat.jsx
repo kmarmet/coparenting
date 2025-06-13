@@ -1,35 +1,34 @@
 // Path: src\components\screens\chats\chat.jsx
-import Form from '../../shared/form'
-import InputField from '../../shared/inputField'
-import ModelNames from '../../../constants/modelNames'
-import ScreenNames from '../../../constants/screenNames'
-import globalState from '../../../context.js'
-import AlertManager from '../../../managers/alertManager'
-import ChatManager from '../../../managers/chatManager.js'
-import DomManager from '../../../managers/domManager'
-import Manager from '../../../managers/manager'
-import ObjectManager from '../../../managers/objectManager'
-import StringManager from '../../../managers/stringManager.coffee'
-import ChatMessage from '../../../models/chat/chatMessage'
 import moment from 'moment-timezone'
 import React, {useContext, useEffect, useState} from 'react'
 import {BsBookmarkDashFill, BsBookmarkStarFill, BsFillBookmarksFill} from 'react-icons/bs'
 import {FaStar} from 'react-icons/fa'
 import {IoChevronBack, IoCopy, IoSend} from 'react-icons/io5'
-import {MdCancel, MdOutlineSearchOff} from 'react-icons/md'
+import {MdCancel, MdOutlineArrowOutward, MdOutlineSearchOff} from 'react-icons/md'
 import {PiBookmarksSimpleDuotone} from 'react-icons/pi'
 import {TbMessageCircleSearch} from 'react-icons/tb'
-import {useSwipeable} from 'react-swipeable'
 import {useLongPress} from 'use-long-press'
 import ActivityCategory from '../../../constants/activityCategory'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
+import ModelNames from '../../../constants/modelNames'
+import globalState from '../../../context.js'
 import useChatMessages from '../../../hooks/useChatMessages'
+import useChats from '../../../hooks/useChats'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import AlertManager from '../../../managers/alertManager'
 import AppManager from '../../../managers/appManager'
+import ChatManager from '../../../managers/chatManager.js'
 import DatasetManager from '../../../managers/datasetManager'
 import DateManager from '../../../managers/dateManager'
+import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
+import ObjectManager from '../../../managers/objectManager'
+import StringManager from '../../../managers/stringManager.coffee'
 import UpdateManager from '../../../managers/updateManager'
+import ChatMessage from '../../../models/chat/chatMessage'
+import Form from '../../shared/form'
+import InputField from '../../shared/inputField'
 
 const Chat = ({show, hide, recipient}) => {
   const {state, setState} = useContext(globalState)
@@ -53,17 +52,7 @@ const Chat = ({show, hide, recipient}) => {
   const {chatMessages} = useChatMessages(chatId)
   const [chat, setChat] = useState()
   const [messagesToLoop, setMessagesToLoop] = useState(chatMessages)
-
-  // Handle swipe
-  const handlers = useSwipeable({
-    delta: {
-      right: 170,
-    },
-    preventScrollOnSwipe: true,
-    onSwipedRight: () => {
-      setState({...state, currentScreen: ScreenNames.chats})
-    },
-  })
+  const {chats, chatsAreLoading} = useChats()
 
   // Handle long press
   const bind = useLongPress((element) => {
@@ -124,7 +113,7 @@ const Chat = ({show, hide, recipient}) => {
     // Recipient
     chatMessage.recipient = {
       name: recipient?.name,
-      key: recipient?.userKey,
+      key: recipient?.key,
     }
 
     chatMessage.message = messageText
@@ -138,7 +127,7 @@ const Chat = ({show, hide, recipient}) => {
 
     // Create new chat (for each member, if one doesn't exist between members)
     else {
-      const newChatUid = await ChatManager.CreateAndInsertChat(sender, recipient)
+      const newChatUid = await ChatManager.CreateAndInsertChat(sender, chatMessage.recipient)
       await ChatManager.InsertChatMessage(newChatUid, cleanMessage)
     }
 
@@ -209,16 +198,27 @@ const Chat = ({show, hide, recipient}) => {
     }
     setMessageTimezone(timezone)
   }
+
   const GetChat = async () => {
-    const _chat = await ChatManager.GetScopedChat(currentUser, recipient?.key)
-    setChat(_chat)
-    setChatId(_chat?.id)
+    for (let _chat of chats) {
+      const members = _chat?.members
+      for (let member of members) {
+        if (member?.key === recipient?.key) {
+          setChat(_chat)
+          setChatId(_chat?.id)
+          break
+        }
+      }
+    }
   }
+
   // ON PAGE LOAD
   useEffect(() => {
+    if (Manager.IsValid(chats)) {
+      GetChat().then((r) => r)
+    }
     const appContainer = document.querySelector('.App')
     const appContent = document.getElementById('app-content-with-sidebar')
-    GetChat().then((r) => r)
     if (appContent && appContainer) {
       appContent.classList.add('disable-scroll')
       appContainer.classList.add('disable-scroll')
@@ -226,9 +226,9 @@ const Chat = ({show, hide, recipient}) => {
 
     // FOCUS/BLUR INPUT
     const input = document.querySelector('.message-input')
+
     if (input) {
       input.focus()
-
       input.addEventListener('focus', () => {
         setInputIsActive(true)
       })
@@ -236,9 +236,16 @@ const Chat = ({show, hide, recipient}) => {
         setInputIsActive(false)
       })
     }
+
     DefineMessageTimezone().then((r) => r)
     ScrollToLatestMessage()
   }, [])
+
+  useEffect(() => {
+    if (Manager.IsValid(chats)) {
+      GetChat().then((r) => r)
+    }
+  }, [recipient])
 
   // UNSET DYNAMIC INPUT HEIGHT
   useEffect(() => {
@@ -266,13 +273,16 @@ const Chat = ({show, hide, recipient}) => {
     }
   }, [searchResults.length])
 
+  // ON CHAT MESSAGES CHANGE
   useEffect(() => {
+    console.log('Mesages', chatMessages)
     if (Manager.IsValid(chatMessages)) {
       DefineBookmarks().then((r) => r)
       setMessagesToLoop(chatMessages)
     }
   }, [chatMessages])
 
+  // ON SHOW BOOKMARKS
   useEffect(() => {
     if (showBookmarks) {
       DomManager.ToggleAnimation('add', 'bookmark-message', DomManager.AnimateClasses.names.fadeInUp)
@@ -323,7 +333,7 @@ const Chat = ({show, hide, recipient}) => {
       {/* PAGE CONTAINER */}
       {show && Manager.IsValid(recipient) && (
         <>
-          <div key={refreshKey} id="chat-wrapper" className={`${theme} conversation`} {...handlers}>
+          <div key={refreshKey} id="chat-wrapper" className={`${theme} conversation`}>
             {/* LONG PRESS MENU */}
             {showLongPressMenu && (
               <div className="long-press-menu">
@@ -502,6 +512,8 @@ const Chat = ({show, hide, recipient}) => {
                         convertedTimestamp = moment(message?.timestamp, DatetimeFormats.timestamp).format(DatetimeFormats.timeForDb)
                       }
 
+                      const fromOrTo = message?.sender?.key !== currentUser?.key ? 'from' : 'to'
+
                       return (
                         <div
                           key={index}
@@ -518,7 +530,9 @@ const Chat = ({show, hide, recipient}) => {
                               <FaStar className={message?.sender?.key !== currentUser?.key ? 'from bookmarked-icon' : 'to bookmarked-icon'} />
                             )}
                           </div>
-                          <span className={message?.sender?.key !== currentUser?.key ? 'from timestamp' : 'to timestamp'}>{convertedTimestamp}</span>
+                          <span className={message?.sender?.key !== currentUser?.key ? 'from timestamp' : 'to timestamp'}>
+                            {convertedTimestamp} <MdOutlineArrowOutward className={fromOrTo} />
+                          </span>
                         </div>
                       )
                     })}
@@ -534,7 +548,10 @@ const Chat = ({show, hide, recipient}) => {
                     <span className="tone">{StringManager.uppercaseFirstLetterOfAllWords(toneObject?.tone)}</span>
                   </div>
                   {/* MESSAGE INPUT & SEND BUTTON */}
-                  <div className={`${inputIsActive ? 'active' : ''} message-input-field`}>
+                  <div
+                    className={`${inputIsActive ? 'active' : ''} message-input-field`}
+                    onFocus={(e) => e.target.classList.add('active')}
+                    onBlur={(e) => e.target.classList.remove('active')}>
                     <div className={'flex'} id="message-input-container">
                       <InputField
                         placeholder={'Message...'}

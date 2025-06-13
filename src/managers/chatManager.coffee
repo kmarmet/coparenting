@@ -13,6 +13,7 @@ ChatManager =
   CreateAndInsertChat:  (sender,recipient) ->
     dbRef = ref(getDatabase())
     newChat = new Chat()
+    newChat.id = Manager.GetUid()
     newChat.members = [{recipient...}, {sender...}]
     newChat.ownerKey = sender?.key
     existingChats = await DB.getTable("#{DB.tables.chats}/#{sender?.key}")
@@ -21,6 +22,8 @@ ChatManager =
     try
       await set(child(dbRef, "#{DB.tables.chats}/#{recipient?.key}"), updatedChats)
       await set(child(dbRef, "#{DB.tables.chats}/#{sender?.key}"), updatedChats)
+
+      return newChat.id
     catch error
       LogManager.Log(error.message, LogManager.LogTypes.error)
 
@@ -34,24 +37,36 @@ ChatManager =
     catch error
       LogManager.Log(error.message, LogManager.LogTypes.error)
 
-  GetInactiveChatKeys: (currentUser, chats) ->
+  GetInactiveChatKeys: (currentUser, chats = []) ->
+    inactive = []
+    members = []
+    memberKeys = []
+    coParentKeys = []
+    validAccountKeys = []
     validAccounts = await DB_UserScoped.getCoparentAccounts(currentUser)
 
-    members = DatasetManager.getUniqueArray(
-      chats.map((x) => x.members),
-      true
-    )
+    if Manager.IsValid(validAccounts)
+      # If there are chats
+      if Manager.IsValid(chats)
+        members = DatasetManager.getUniqueArray(
+          chats?.map((x) => x?.members),
+          true
+        )
 
-    memberKeys = DatasetManager.getUniqueArray(
-      members.map((x) => x?.userKey),
-      true
-    )
-    coParentKeys = DatasetManager.getUniqueArray(
-      currentUser?.coparents?.map((x) => x?.userKey),
-      true
-    )
-    validAccountKeys = validAccounts.map((x) => x?.userKey)
-    inactive = memberKeys.filter((x) => !coParentKeys.includes(x) && !validAccountKeys.includes(x))
+        memberKeys = DatasetManager.getUniqueArray(
+          members.map((x) => x?.userKey),
+          true
+        )
+        coParentKeys = DatasetManager.getUniqueArray(
+          currentUser?.coparents?.map((x) => x?.userKey),
+          true
+        )
+        validAccountKeys = validAccounts?.map((x) => x?.userKey)
+        inactive = memberKeys?.filter((x) => !coParentKeys?.includes(x) && !validAccountKeys?.includes(x))
+
+        # If no inactive chats
+      else
+        inactive = validAccounts?.map((x) => x?.key)
     return inactive
 
   GetToneAndSentiment: (message) ->
@@ -111,8 +126,8 @@ ChatManager =
   GetScopedChat:  (currentUser, messageToUserKey) ->
     try
       securedChats = await SecurityManager.getChats(currentUser)
+      console.log("Secured: " , securedChats)
       chatToReturn = null
-      console.log(securedChats)
       for chat in securedChats
         memberKeys = chat.members.map (x) -> x.key
         if memberKeys.includes(currentUser.key) and memberKeys.includes(messageToUserKey)
@@ -124,10 +139,9 @@ ChatManager =
   GetMessages:  (chatId) ->
     return await DB.getTable("#{DB.tables.chatMessages}/#{chatId}")
 
-  PauseChat:  (currentUser, coparentKey) ->
-    securedChat = await ChatManager.GetScopedChat(currentUser, coparentKey)
+  PauseChat:  (currentUser, coParentKey, chat) ->
     try
-      isPausedFor = securedChat.isPausedFor
+      isPausedFor = chat.isPausedFor
 
       if !Manager.IsValid(isPausedFor)
         isPausedFor = [currentUser?.key]
@@ -135,22 +149,21 @@ ChatManager =
         isPausedFor = [isPausedFor..., currentUser?.key]
 
       isPausedFor = DatasetManager.getUniqueArray(isPausedFor, true)
-      securedChat.isPausedFor = isPausedFor
+      chat.isPausedFor = isPausedFor
       # Set chat inactive
-      await DB.updateEntireRecord("#{DB.tables.chats}/#{currentUser?.key}", securedChat, securedChat.id)
-      await DB.updateEntireRecord("#{DB.tables.chats}/#{coparentKey}", securedChat, securedChat.id)
+      await DB.updateEntireRecord("#{DB.tables.chats}/#{currentUser?.key}", chat, chat.id)
+      await DB.updateEntireRecord("#{DB.tables.chats}/#{coParentKey}", chat, chat.id)
     catch error
       LogManager.Log(error.message, LogManager.LogTypes.error)
 
-  UnpauseChat:  (currentUser, coparentKey) ->
-    securedChat = await ChatManager.GetScopedChat(currentUser, coparentKey)
+  ResumeChat:  (currentUser, coParentKey, chat) ->
     try
-      isPausedFor = securedChat?.isPausedFor?.filter (x) -> x isnt currentUser?.key
+      isPausedFor = chat?.isPausedFor?.filter (x) -> x isnt currentUser?.key
       isPausedFor = DatasetManager.getUniqueArray(isPausedFor, true)
-      securedChat.isPausedFor = isPausedFor
+      chat.isPausedFor = isPausedFor
       # Set chat inactive
-      await DB.updateEntireRecord("#{DB.tables.chats}/#{currentUser?.key}", securedChat, securedChat.id)
-      await DB.updateEntireRecord("#{DB.tables.chats}/#{coparentKey}", securedChat, securedChat.id)
+      await DB.updateEntireRecord("#{DB.tables.chats}/#{currentUser?.key}", chat, chat.id)
+      await DB.updateEntireRecord("#{DB.tables.chats}/#{coParentKey}", chat, chat.id)
     catch error
       LogManager.Log(error.message, LogManager.LogTypes.error)
 

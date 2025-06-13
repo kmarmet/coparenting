@@ -1,92 +1,140 @@
 // Path: src\components\screens\chats\chatRow.jsx
-import ScreenNames from '../../../constants/screenNames.coffee'
-import globalState from '../../../context.js'
-import AlertManager from '../../../managers/alertManager.coffee'
-import ChatManager from '../../../managers/chatManager.js'
-import Manager from '../../../managers/manager.js'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
-import {FaPlay} from 'react-icons/fa'
-import {IoMdPause} from 'react-icons/io'
-import {MdCallMade, MdCallReceived} from 'react-icons/md'
+import {FaPause, FaPlay} from 'react-icons/fa6'
+import {useSwipeable} from 'react-swipeable'
+import useChats from '../../..//hooks/useChats'
 import DatetimeFormats from '../../../constants/datetimeFormats'
+import ScreenNames from '../../../constants/screenNames.coffee'
+import globalState from '../../../context.js'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import AlertManager from '../../../managers/alertManager'
+import ChatManager from '../../../managers/chatManager.js'
 import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager.js'
+import StringManager from '../../../managers/stringManager'
 
-export default function ChatRow({index, onClick}) {
+export default function ChatRow({index, onClick, chat}) {
   const {state, setState} = useContext(globalState)
   const {refreshKey} = state
   const [otherMember, setOtherMember] = useState(null)
   const [lastMessage, setLastMessage] = useState('')
+  const [lastMessageTimestamp, setLastMessageTimestamp] = useState('')
   const {currentUser} = useCurrentUser()
-  const [chat, setChat] = useState()
+  const {chats} = useChats()
+
+  const handlers = useSwipeable({
+    swipeDuration: 300,
+    preventScrollOnSwipe: true,
+    onSwipedLeft: (e) => {
+      const row = e.event.currentTarget
+      row.classList.add('active')
+    },
+    onSwipedRight: (e) => {
+      const row = e.event.currentTarget
+      row.classList.remove('active')
+    },
+  })
 
   const OpenChat = () => onClick(otherMember)
 
   const PauseChat = async () => {
     if (Manager.IsValid(otherMember)) {
-      await ChatManager.pauseChat(currentUser, otherMember?.key)
+      const playPauseWrapper = document.querySelector('.play-pause-wrapper')
+      const twoColumnChatRow = document.querySelector('.two-column-chat-row')
+      playPauseWrapper.classList.add('pause')
+      playPauseWrapper.classList.remove('resume')
+      twoColumnChatRow.classList.remove('active')
+
+      await ChatManager.PauseChat(currentUser, otherMember?.key, chat)
       setState({...state, currentScreen: ScreenNames.chats, successAlertMessage: 'Chat Paused'})
     }
   }
 
   const UnpauseChat = async () => {
     if (Manager.IsValid(otherMember)) {
-      await ChatManager.unpauseChat(currentUser, otherMember?.key)
+      const playPauseWrapper = document.querySelector('.play-pause-wrapper')
+      const twoColumnChatRow = document.querySelector('.two-column-chat-row')
+      playPauseWrapper.classList.add('resume')
+      playPauseWrapper.classList.remove('pause')
+      twoColumnChatRow.classList.remove('active')
+      await ChatManager.ResumeChat(currentUser, otherMember?.key, chat)
       setState({...state, currentScreen: ScreenNames.chats, successAlertMessage: 'Chat Resumed'})
     }
   }
 
   const GetLastMessage = async () => {
     const chatMessages = await ChatManager.GetMessages(chat?.id)
-    setLastMessage(chatMessages[chatMessages.length - 1])
-  }
+    const lastMessage = chatMessages[chatMessages.length - 1]?.message
+    setLastMessage(lastMessage)
+    const timestamp = chatMessages[chatMessages.length - 1]?.timestamp
+    const today = moment().format('MM/DD/yyyy')
+    const lastMessageTimestampShort = moment(timestamp, DatetimeFormats.timestamp).format('MM/DD/yyyy')
+    const yesterday = moment().subtract(1, 'day').format('MM/DD/yyyy')
 
-  const GetChat = async () => {
-    const _chat = await ChatManager.GetScopedChat(currentUser, otherMember?.key)
-    const otherM = _chat?.members?.find((member) => member?.key !== currentUser?.key)
-    console.log(otherM)
-    setOtherMember(otherM)
-    setChat(_chat)
+    // console.log(lastMessageTimestampShort)
+
+    if (today !== lastMessageTimestampShort) {
+      if (yesterday === lastMessageTimestampShort) {
+        setLastMessageTimestamp(`Yesterday`)
+      }
+      // More than 1 day ago
+      else {
+        setLastMessageTimestamp(moment(timestamp, DatetimeFormats.timestamp).format('ddd (Do)'))
+      }
+    } else {
+      setLastMessageTimestamp(moment(timestamp, DatetimeFormats.timestamp).format('h:mma'))
+    }
+
+    setLastMessage(lastMessage)
   }
 
   useEffect(() => {
-    if (Manager.IsValid(chat)) {
+    if (Manager.IsValid(chats)) {
       GetLastMessage().then((r) => r)
     }
-  }, [chat])
+  }, [chats])
 
   useEffect(() => {
-    GetChat().then((r) => r)
     setTimeout(() => {
-      DomManager.ToggleAnimation('add', 'chat-row', DomManager.AnimateClasses.names.fadeInUp, 90)
-      DomManager.ToggleAnimation('add', 'chat-row', DomManager.AnimateClasses.names.fadeInUp, 90)
+      DomManager.ToggleAnimation('add', 'two-column-chat-row', DomManager.AnimateClasses.names.fadeInUp, 90)
+      DomManager.ToggleAnimation('add', 'two-column-chat-row', DomManager.AnimateClasses.names.fadeInUp, 90)
     }, 300)
   }, [])
 
+  useEffect(() => {
+    if (Manager.IsValid(chat)) {
+      const otherMember = chat?.members?.find((x) => x.key !== currentUser?.key)
+      setOtherMember(otherMember)
+    }
+  }, [chat])
+
   return (
-    <div
-      onClick={(e) => {
-        e.stopPropagation()
-        if (DomManager.CheckIfElementIsTag(e, 'path') || DomManager.CheckIfElementIsTag(e, 'svg')) return false
-        if (e.currentTarget.classList.contains('chat-row')) {
-          OpenChat()
-        }
-        if (e.target !== e.currentTarget) return false
-      }}
-      data-thread-id={chat?.id}
-      style={DomManager.AnimateDelayStyle(index)}
-      className={`chat-row chats-animation-row ${DomManager.Animate.FadeInUp(chat?.id)}`}>
-      {/* CO-PARENT NAME */}
-      <div className="primary-text">
-        <p className="coparent-name">{otherMember?.name}</p>
-        <p className="timestamp">
-          {moment(lastMessage?.timestamp, DatetimeFormats.timestamp).format('ddd (hh:mma)')}{' '}
-          {lastMessage?.sender?.key === currentUser?.key ? <MdCallMade /> : <MdCallReceived />}
-        </p>
+    <div className={'two-column-chat-row'} {...handlers}>
+      <div
+        onClick={(e) => {
+          e.stopPropagation()
+          if (DomManager.CheckIfElementIsTag(e, 'path') || DomManager.CheckIfElementIsTag(e, 'svg')) return false
+          if (e.currentTarget.classList.contains('chat-row')) {
+            OpenChat()
+          }
+          if (e.target !== e.currentTarget) return false
+        }}
+        data-thread-id={chat?.id}
+        style={DomManager.AnimateDelayStyle(index)}
+        className={`chat-row chats-animation-row ${DomManager.Animate.FadeInUp(Manager.IsValid(chat?.id))}`}>
+        {/* CO-PARENT NAME */}
+        <div className="row-text">
+          <div className={'row-text-content'}>
+            <div className={'name-and-timestamp'}>
+              <p className="coParent-name">{StringManager.uppercaseFirstLetterOfAllWords(otherMember?.name)}</p>
+              <p className="timestamp">{lastMessageTimestamp} </p>
+            </div>
+            <p className="last-message">{lastMessage}</p>
+          </div>
+        </div>
       </div>
-      <p className="last-message">{lastMessage?.message}</p>
-      <div className="play-pause-wrapper">
+      <div className="play-pause-wrapper resume">
         {/* PLAY CHAT BUTTON */}
         {chat?.isPausedFor?.includes(currentUser?.key) && (
           <div id="play-wrapper">
@@ -96,7 +144,7 @@ export default function ChatRow({index, onClick}) {
         {/* PAUSE CHAT BUTTON */}
         {!chat?.isPausedFor?.includes(currentUser?.key) && (
           <div id="pause-wrapper">
-            <IoMdPause
+            <FaPause
               onClick={(e) => {
                 e.stopPropagation()
                 AlertManager.confirmAlert(
