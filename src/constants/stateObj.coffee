@@ -22,6 +22,7 @@ StateObj =
   showCreationMenu: false
   showScreenActions: false
   registrationUserName: ''
+  showOverlay: false
   successAlertMessage: null
   users: []
   activeChatId: ''

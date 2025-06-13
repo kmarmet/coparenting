@@ -14,7 +14,7 @@ import React, {useContext, useRef, useState} from 'react'
 import creationForms from '../../constants/creationForms'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
-import useCoparents from '../../hooks/useCoparents'
+import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useTransferRequests from '../../hooks/useTransferRequests'
 import DomManager from '../../managers/domManager'
@@ -31,7 +31,7 @@ export default function NewTransferChangeRequest() {
   const {theme, creationFormToShow} = state
   const [requestRecipientKey, setRequestRecipientKey] = useState('')
   const {currentUser, currentUserIsLoading} = useCurrentUser()
-  const {coparents, coparentsIsLoading} = useCoparents()
+  const {coParents, coParentsAreLoading} = useCoParents()
   const {transferRequests, transferRequestsIsLoading} = useTransferRequests()
   const updateRef = useRef(new TransferChangeRequest())
 
@@ -78,7 +78,7 @@ export default function NewTransferChangeRequest() {
     }
 
     //#endregion VALIDATION
-    const recipient = coparents.find((x) => x.key === requestRecipientKey)
+    const recipient = coParents.find((x) => x.key === requestRecipientKey)
 
     if (Manager.IsValid(recipient)) {
       updateRef.current.recipient.key = recipient?.key
@@ -90,8 +90,8 @@ export default function NewTransferChangeRequest() {
 
     // Update address
     if (Manager.IsValid(updateRef.current.address, true)) {
-      const coparent = currentUser?.coparents.filter((x) => x.key === requestRecipientKey)[0]
-      const key = DB.GetTableIndexById(coparents, coparent?.id)
+      const coParent = currentUser?.coParents.filter((x) => x.key === requestRecipientKey)[0]
+      const key = DB.GetTableIndexById(coParent, coParent?.id)
       await DB_UserScoped.updateUserRecord(currentUser?.key, `coparents/${key}/preferredTransferAddress`, updateRef.current.address)
     }
 

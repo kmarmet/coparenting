@@ -8,12 +8,13 @@ import {RiMapPinTimeFill} from 'react-icons/ri'
 import {useSwipeable} from 'react-swipeable'
 import CreationForms from '../../constants/creationForms'
 import globalState from '../../context'
-import DB_UserScoped from '../../database/db_userScoped'
 import useChat from '../../hooks/useChat'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import Overlay from './overlay'
+import ScreenNames from '../../constants/screenNames'
+import ChatManager from '../../managers/chatManager'
 
 const CreationMenu = () => {
   const {state, setState} = useContext(globalState)
@@ -31,16 +32,11 @@ const CreationMenu = () => {
   })
 
   const CheckIfChatsShouldBeShown = async () => {
-    const activeChatCount = chats?.length ?? 0
-    if (activeChatCount === 0) {
+    const chattableKeys = await ChatManager.GetInactiveChatKeys(currentUser, chats)
+    if (Manager.IsValid(chattableKeys)) {
       setShowChatAction(true)
     } else {
-      await DB_UserScoped.getValidAccountsForUser(currentUser).then((obj) => {
-        const coparentOnlyAccounts = obj.filter((x) => x?.accountType === 'parent')
-        if (activeChatCount < coparentOnlyAccounts.length) {
-          setShowChatAction(true)
-        }
-      })
+      setShowChatAction(false)
     }
   }
 
@@ -164,7 +160,7 @@ const CreationMenu = () => {
                     style={DomManager.AnimateDelayStyle(2.8)}
                     className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
                     onClick={() => {
-                      setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.chat})
+                      setState({...state, showCreationMenu: false, currentScreen: ScreenNames.chats, creationFormToShow: CreationForms.chat})
                     }}>
                     <div className="content">
                       <div className="svg-wrapper chat">

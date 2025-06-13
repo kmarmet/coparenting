@@ -19,7 +19,7 @@ import {PiCarProfileDuotone} from 'react-icons/pi'
 import ButtonThemes from '../../constants/buttonThemes'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context.js'
-import useCoparents from '../../hooks/useCoparents'
+import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useTransferRequests from '../../hooks/useTransferRequests'
 import NavBar from '../navBar'
@@ -56,7 +56,7 @@ export default function TransferRequests() {
   const [requestTimeRemaining, setRequestTimeRemaining] = useState(false)
   const {transferRequests} = useTransferRequests()
   const {currentUser} = useCurrentUser()
-  const {coparents} = useCoparents()
+  const {coParents} = useCoParents()
 
   const ResetForm = async (successMessage = '') => {
     Manager.ResetForm('edit-event-form')
@@ -101,7 +101,7 @@ export default function TransferRequests() {
   }
 
   const SelectDecision = async (decision) => {
-    const recipient = coparents?.find((x) => x.userKey === activeRequest?.recipient?.key)
+    const recipient = coParents?.find((x) => x.userKey === activeRequest?.recipient?.key)
     const recipientName = recipient?.name
     // Rejected
     if (decision === Decisions.declined) {
@@ -133,7 +133,7 @@ export default function TransferRequests() {
     if (!sendWithAddress) {
       notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
     }
-    const recipient = coparents.find((x) => x.key === activeRequest?.recipient?.key)
+    const recipient = coParents?.find((x) => x.key === activeRequest?.recipient?.key)
 
     await UpdateManager.SendUpdate('Transfer Destination Arrival', notificationMessage, recipient?.key, currentUser, ActivityCategory.expenses)
     setState({...state, successAlertMessage: 'Arrival Notification Sent'})
@@ -143,7 +143,7 @@ export default function TransferRequests() {
     if (key === currentUser?.key) {
       return 'Me'
     } else {
-      return coparents.find((c) => c.userKey === key)?.name
+      returncoParents?.find((c) => c.userKey === key)?.name
     }
   }
 
@@ -385,7 +385,7 @@ export default function TransferRequests() {
                         {request?.recipient?.key !== currentUser?.key && (
                           <p id="subtitle">
                             to&nbsp;
-                            {StringManager.GetFirstNameOnly(coparents?.find((x) => x?.userKey === request?.recipient?.key)?.name)}
+                            {StringManager.GetFirstNameOnly(coParents?.find((x) => x?.userKey === request?.recipient?.key)?.name)}
                           </p>
                         )}
                       </div>

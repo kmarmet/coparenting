@@ -1,13 +1,35 @@
 import React, {useContext, useEffect} from 'react'
 import globalState from '../../context'
+import Manager from '../../managers/manager'
 
 const Overlay = ({children, show}) => {
   const {state, setState} = useContext(globalState)
   const {menuIsOpen, showScreenActions, showCreationMenu} = state
 
+  const HideOverlay = (e) => {
+    const overlay = e.target
+    if (Manager.IsValid(overlay) && overlay.classList.contains('screen-overlay')) {
+      overlay.classList.remove('active')
+      const allFadeElements = overlay?.querySelectorAll('.animate__fadeInUp')
+      if (Manager.IsValid(allFadeElements)) {
+        for (let el of allFadeElements) {
+          el.classList.remove('animate__fadeInUp')
+        }
+      }
+      setState({
+        ...state,
+        menuIsOpen: false,
+        creationFormToShow: null,
+        showCreationMenu: false,
+        showScreenActions: false,
+      })
+    }
+  }
+
   useEffect(() => {
     const appContentWithSidebar = document.querySelector('#app-content-with-sidebar')
     const pageContainer = document.querySelector('.page-container')
+
     if (show) {
       if (pageContainer) {
         pageContainer.classList.add('disable-scroll')
@@ -26,32 +48,11 @@ const Overlay = ({children, show}) => {
   }, [show])
 
   return (
-    <>
-      <div
-        className={`screen-overlay${show ? ' active' : ''} ${menuIsOpen || showScreenActions || showCreationMenu ? 'blur' : ''}`}
-        onClick={() => {
-          // const overlay = e.currentTarget
-          // if (Manager.IsValid(overlay) && (overlay?.classList.contains('overlay-wrapper') || overlay?.classList.contains('creation-menu'))) {
-          //   const allFadeElements = overlay?.querySelectorAll('.animate__fadeInUp')
-          //   console.log(overlay)
-          //   if (Manager.IsValid(allFadeElements)) {
-          //     for (let el of allFadeElements) {
-          //       el.classList.remove('animate__fadeInUp')
-          //       el.classList.remove('animate__animated', 'animate__fadeOutDown')
-          //     }
-          //   }
-          //   setState({
-          //     ...state,
-          //     menuIsOpen: false,
-          //     creationFormToShow: null,
-          //     showCreationMenu: false,
-          //     showScreenActions: false,
-          //   })
-          // }
-        }}>
-        {children}
-      </div>
-    </>
+    <div
+      className={`screen-overlay ${show ? 'active gradient' : ''} ${menuIsOpen || showScreenActions || showCreationMenu ? 'blur' : ''}`}
+      onClick={HideOverlay}>
+      {children}
+    </div>
   )
 }
 

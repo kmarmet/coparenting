@@ -119,10 +119,10 @@
       border-bottom: 0;
       flex-wrap: nowrap;
       position: relative;
-      opacity: 1;
       background: white;
       border-radius: $bigBorderRadius;
       padding: 20px 20px 0 20px;
+      opacity: 0;
 
       .secondary-row {
         display: flex;
@@ -199,7 +199,7 @@
           }
         }
 
-        .coparent-name {
+        .coParent-name {
           margin: 0;
           padding: 0;
           line-height: 1;
@@ -221,18 +221,18 @@
         width: 100%;
         justify-content: space-between;
         .timestamp {
-          font-size: 14px;
+          font-size: 13px;
           font-weight: $fwRegular;
-          color: $primaryText;
+          color: $darkGrey;
           svg {
             color: $darkerGrey;
             position: relative;
             top: 5px;
-            @include square(18px);
+            @include square(16px);
           }
         }
 
-        .coparent-name {
+        .coParent-name {
           display: flex;
           font-weight: $fwMediumBold;
           color: $primaryText;
@@ -377,6 +377,7 @@
 
       #close-search-icon {
         color: $red;
+        @include square(25px);
       }
 
       #chat-bookmark-icon {
@@ -690,7 +691,9 @@
         width: 100vw;
         border-radius: $borderRadius;
         background: white;
-        padding: 0 15px;
+        padding-right: 15px;
+        display: flex;
+        align-items: center !important;
         #send-button {
           color: $green;
           font-weight: $fwMediumBold;

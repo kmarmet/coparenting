@@ -1,11 +1,11 @@
 @import '../mixins';
 
-#coparents-container,
+#co-parents-container,
 #parents-container {
   .animation-wrapper {
     opacity: 0;
   }
-  #coparent-container,
+  #co-parent-container,
   #parent-container {
     display: flex;
     width: 100%;
@@ -16,7 +16,7 @@
     margin: 15px 0 0 0;
     gap: 0 15px;
 
-    .coparent,
+    .co-parent,
     .parent {
       display: flex;
       flex-direction: column;
@@ -39,14 +39,14 @@
         color: $darkerGrey;
       }
 
-      .coparent-type,
+      .co-parent-type,
       .parent-type {
         padding-bottom: 5px;
         color: $darkerGrey;
         font-size: 11px;
       }
 
-      .coparent-name,
+      .co-parent-name,
       .parent-name {
         font-size: 15px;
         font-weight: $fwRegular;
@@ -59,7 +59,7 @@
       &.active {
         transition: all 0.3s ease-in;
         @include mainColorsGradient;
-        background: $secondaryAccent;
+        background: #ffed57;
         * {
           transition: all 0.2s ease-in;
           color: white;
@@ -69,14 +69,14 @@
           opacity: 1;
         }
 
-        .coparent-name,
+        .co-parent-name,
         .parent-name {
           opacity: 1;
           font-size: 16px;
           font-weight: $fwBold;
         }
 
-        .coparent-type,
+        .co-parent-type,
         .parent-type {
           opacity: 0.7;
           font-size: 12px;
@@ -89,7 +89,7 @@
     }
   }
 
-  #coparent-info,
+  #co-parent-info,
   #parent-info {
     margin-top: 20px;
     @include mainColorsGradient;
@@ -98,7 +98,7 @@
     @include shadow;
 
     #parent-name-primary,
-    #coparent-name-primary {
+    #co-parent-name-primary {
       font-weight: $fwMediumBold;
       font-size: 22px;
       line-height: 1;
@@ -106,7 +106,7 @@
       text-align: center;
     }
 
-    #coparent-type-primary,
+    #co-parent-type-primary,
     #parent-type-primary {
       font-size: 16px;
       width: 100%;

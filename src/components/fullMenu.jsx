@@ -1,6 +1,6 @@
 // Path: src\components\fullMenu.jsx
 import {getAuth, signOut} from 'firebase/auth'
-import React, {useContext} from 'react'
+import React, {useContext, useEffect} from 'react'
 import {AiOutlineLogout} from 'react-icons/ai'
 import {BsHouses, BsImages} from 'react-icons/bs'
 import {GrInstallOption, GrSettingsOption, GrUserAdmin} from 'react-icons/gr'
@@ -18,18 +18,18 @@ import useCurrentUser from '../hooks/useCurrentUser'
 import DomManager from '../managers/domManager'
 import Manager from '../managers/manager'
 import NotificationBadge from '../components/shared/notificationBadge'
-import Overlay from '../components/shared/overlay'
 import useFeedback from '../hooks/useFeedback'
 import feedbackEmotions from '../constants/feedbackEmotions'
 import DB from '../database/DB'
 import FeedbackEmotionsTracker from '../models/feedbackEmotionsTracker'
+import Overlay from '../components/shared/overlay'
 
 export default function FullMenu() {
   const {state, setState} = useContext(globalState)
   const {currentScreen, menuIsOpen} = state
   const {currentUser} = useCurrentUser()
   const {feedback} = useFeedback()
-
+  const auth = getAuth()
   const handlers = useSwipeable({
     swipeDuration: 300,
     preventScrollOnSwipe: true,
@@ -38,9 +38,10 @@ export default function FullMenu() {
     },
   })
 
-  const auth = getAuth()
-
-  const ChangeCurrentScreen = async (screen) => setState({...state, currentScreen: screen, refreshKey: Manager.GetUid(), menuIsOpen: false})
+  const ChangeCurrentScreen = async (screen, element) => {
+    console.log(element.currentTarget)
+    setState({...state, currentScreen: screen, refreshKey: Manager.GetUid(), menuIsOpen: false})
+  }
 
   const Logout = () => {
     const screenOverlay = document.getElementById('screen-overlay')
@@ -73,6 +74,12 @@ export default function FullMenu() {
       await DB.updateByPath(`${DB.tables.feedbackEmotionsTracker}`, newFeedback)
     }
   }
+
+  useEffect(() => {
+    if (menuIsOpen) {
+      setState({...state, showOverlay: true})
+    }
+  }, [menuIsOpen])
 
   return (
     <Overlay show={menuIsOpen}>
@@ -178,9 +185,9 @@ export default function FullMenu() {
                         </div>
                       </div>
 
-                      {/* COPARENTS */}
+                      {/* CO-PARENTS */}
                       <div
-                        className={`menu-item coparents ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
+                        className={`menu-item co-parents ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
                         onClick={(e) => ChangeCurrentScreen(ScreenNames.coparents, e)}>
                         <div className="svg-wrapper">
                           <PiUsers />
@@ -349,10 +356,10 @@ export default function FullMenu() {
 
                 {/* FEEDBACK WRAPPER */}
                 <div id="feedback-wrapper">
-                  <p id="feedback-title">How Do You Feel About the App Today?</p>
+                  <p id="feedback-title">How is the app performing today?</p>
                   <p id="feedback-subtitle">
-                    {DomManager.tapOrClick(true)} an emoji to convey how you feel. You may do this as frequently as you like; the numbers reflect the
-                    total feedback received from all users.
+                    {DomManager.tapOrClick(true)} an emoji to convey how you feel at the moment. You may do this as frequently as you like; the
+                    numbers reflect the total feedback received from all users.
                   </p>
                   <div id="icon-and-label-wrapper">
                     <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.unhappy)}>
@@ -362,10 +369,6 @@ export default function FullMenu() {
                     <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.neutral)}>
                       <span className="icon neutral">😐</span>
                       <span className="count">{feedback?.neutralCount ?? 0}</span>
-                    </p>
-                    <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.satisfied)}>
-                      <span className="icon satisfied">😊</span>
-                      <span className="count">{feedback?.satisfiedCount ?? 0}</span>
                     </p>
                     <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.peaceful)}>
                       <span className="icon peaceful">😁</span>

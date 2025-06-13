@@ -14,7 +14,7 @@ import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import useChat from '../../hooks/useChat'
 import useChatMessages from '../../hooks/useChatMessages'
-import useCoparents from '../../hooks/useCoparents'
+import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useExpenses from '../../hooks/useExpenses'
 import DomManager from '../../managers/domManager'
@@ -44,11 +44,11 @@ export default function Vault() {
   const [sortMethod, setSortMethod] = useState(SortByTypes.recentlyAdded)
   const [activeChats, setActiveChats] = useState([])
   const [expensePayers, setExpensePayers] = useState([])
-  const [sortedExpenses, setSortedExpenses] = useState(false)
+  const [sortedExpenses, setSortedExpenses] = useState([])
   const [selectedChatId, setSelectedChatId] = useState()
+  const {coParents} = useCoParents()
   const {expenses} = useExpenses()
   const {currentUser} = useCurrentUser()
-  const {coparents} = useCoparents()
   const {chats} = useChat()
   const {chatMessages} = useChatMessages(selectedChatId)
 
@@ -56,10 +56,10 @@ export default function Vault() {
     let payers = []
 
     for (const expense of expenses) {
-      if (expense.payer.key === currentUser.key) {
+      if (expense?.payer?.key === currentUser.key) {
         payers.push('Me')
       } else {
-        payers.push(expense.payer.key)
+        payers.push(expense?.payer?.key)
       }
     }
     let payerNames = []
@@ -67,8 +67,8 @@ export default function Vault() {
       if (payerKey === 'Me') {
         payerNames.push('Me')
       } else {
-        const coparent = coparents?.find((x) => x.userKey === payerKey)
-        payerNames.push(coparent?.name)
+        const coParent = coParents?.find((x) => x.userKey === payerKey)
+        payerNames.push(coParent?.name)
       }
     }
 
@@ -100,8 +100,8 @@ export default function Vault() {
         if (e === 'Me') {
           filteredExpenses = expenses?.filter((x) => x.payer?.key === currentUser?.key)
         } else {
-          const coparent = currentUser?.coparents?.find((x) => x.name.includes(e))
-          filteredExpenses = expenses?.filter((x) => x.payer?.key === coparent?.userKey)
+          const coParent = currentUser?.coParents?.find((x) => x.name.includes(e))
+          filteredExpenses = expenses?.filter((x) => x.payer?.key === coParent?.userKey)
         }
 
         if (Manager.IsValid(filteredExpenses)) {
@@ -180,12 +180,12 @@ export default function Vault() {
   }
 
   useEffect(() => {
-    if (Manager.IsValid(expenses)) {
+    if (Manager.IsValid(expenses) && Manager.IsValid(coParents)) {
       GetExpenses().then((r) => r)
       DomManager.ToggleAnimation('add', 'record-row', DomManager.AnimateClasses.names.fadeInRight, 85)
     }
     DefineChatCheckboxes().then((r) => r)
-  }, [expenses])
+  }, [expenses, coParents])
 
   return (
     <>
@@ -215,7 +215,7 @@ export default function Vault() {
           />
 
           {/* PAYERS */}
-          {coparents?.length > 1 && recordType === RecordTypes.Expenses && (
+          {coParents?.length > 1 && recordType === RecordTypes.Expenses && (
             <>
               <Spacer height={8} />
               <Label text={'Payers'} classes={'always-show dark'} />

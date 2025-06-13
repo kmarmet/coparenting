@@ -19,7 +19,6 @@ import {PiSwapDuotone} from 'react-icons/pi'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context.js'
-import useCoparents from '../../hooks/useCoparents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useSwapRequests from '../../hooks/useSwapRequests'
 import NavBar from '../navBar'
@@ -52,7 +51,6 @@ export default function SwapRequests() {
   const [requestTimeRemaining, setRequestTimeRemaining] = useState(0)
   const {currentUser} = useCurrentUser()
   const {swapRequests} = useSwapRequests()
-  const {coparents} = useCoparents()
 
   const ResetForm = async (showAlert = false) => {
     Manager.ResetForm('swap-request-wrapper')

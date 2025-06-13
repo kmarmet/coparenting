@@ -1,3 +1,4 @@
+// Path: src\styles\accordions.scss
 @import './_mixins.scss';
 @import './_variables.scss';
 @import './palette';
@@ -71,12 +72,7 @@
         border: 0 !important;
         border-radius: 8px !important;
 
-        &.button {
-          &.default {
-            width: 100%;
-            border-radius: 8px !important;
-          }
-        }
+        width: 100%;
       }
 
       .address-input {
@@ -329,7 +325,7 @@
           button {
             &.button {
               height: 40px !important;
-              border-radius: 8px !important;
+              border-radius: 13px !important;
             }
           }
 

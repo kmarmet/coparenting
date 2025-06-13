@@ -34,7 +34,7 @@ import Manager from '../../managers/manager'
 import Label from '../shared/label'
 import ToggleButton from '../shared/toggleButton'
 import useChildren from '../../hooks/useChildren'
-import useCoparents from '../../hooks/useCoparents'
+import useCoParents from '../../hooks/useCoParents'
 import useExpenses from '../../hooks/useExpenses'
 
 export default function NewExpenseForm() {
@@ -47,7 +47,7 @@ export default function NewExpenseForm() {
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
   const {currentUser} = useCurrentUser()
   const {children, childrenDropdownOptions} = useChildren()
-  const {coparents} = useCoparents()
+  const {coParents} = useCoParents()
   const {expenses} = useExpenses()
 
   const formRef = useRef(new Expense())
@@ -191,7 +191,7 @@ export default function NewExpenseForm() {
   const HandleShareWithSelection = (e) => (formRef.current.shareWith = e.map((x) => x.value))
 
   const HandlePayerSelection = (e) => {
-    const payerUser = coparents?.find((x) => x?.userKey === e?.value)
+    const payerUser = coParents?.find((x) => x?.userKey === e?.value)
     formRef.current.payer = {
       name: payerUser?.name,
       key: payerUser?.userKey,
@@ -378,16 +378,16 @@ export default function NewExpenseForm() {
           <hr />
 
           {/* PAYER */}
-          {Manager.IsValid(coparents) && (
+          {Manager.IsValid(coParents) && (
             <SelectDropdown
-              options={DomManager.GetSelectOptions(coparents, true)}
+              options={DomManager.GetSelectOptions(coParents, true)}
               labelText={'Select Expense Payer'}
               onChange={HandlePayerSelection}
             />
           )}
 
           {/* SHARE WITH */}
-          <ShareWithCheckboxes onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coparents'} />
+          <ShareWithCheckboxes onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coParents'} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.IsValid(children) && (

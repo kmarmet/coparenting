@@ -35,7 +35,7 @@ DatasetManager = {
 
     return returnArray
 
-  AddToArray: (arr, newItem, removeIfExistsAlready = false) =>
+  AddToArrayssss: (arr, newItem, removeIfExistsAlready = false) =>
     returnArray = []
 
     if not Manager.IsValid(arr)
@@ -49,6 +49,7 @@ DatasetManager = {
 
     if Manager.IsValid(arr) and not Array.isArray(arr)
       returnArray = [newItem]
+
 
     if removeIfExistsAlready && arr.includes(newItem)
       returnArray = returnArray.filter (x) -> x != newItem

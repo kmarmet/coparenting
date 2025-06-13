@@ -243,7 +243,6 @@ function InputField({
         {/* CHAT */}
         {inputType === InputTypes.chat && (
           <textarea
-            id="textarea"
             placeholder={placeholder}
             onChange={(e) => {
               onChange(e)

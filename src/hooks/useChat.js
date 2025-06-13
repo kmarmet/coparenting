@@ -2,7 +2,6 @@ import {getDatabase, off, onValue, ref} from 'firebase/database'
 import {useContext, useEffect, useState} from 'react'
 import globalState from '../context'
 import DB from '../database/DB'
-import Manager from '../managers/manager'
 import useCurrentUser from './useCurrentUser'
 
 const useChat = () => {
@@ -12,7 +11,6 @@ const useChat = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [chats, setChats] = useState([])
-  const [chat, setChat] = useState()
   const path = `${DB.tables.chats}/${currentUser?.key}`
   const queryKey = ['realtime', path]
 
@@ -24,18 +22,8 @@ const useChat = () => {
       dataRef,
       async (snapshot) => {
         const chats = snapshot.val()
+        console.log(chats)
         setChats(chats)
-        if (Manager.IsValid(chats) && Manager.IsValid(currentUser) && Manager.IsValid(messageRecipient)) {
-          for (let _chat of chats) {
-            const memberKeys = _chat?.members?.map((x) => x?.key)
-            if (Manager.IsValid(memberKeys) && memberKeys.includes(messageRecipient?.key) && memberKeys.includes(currentUser?.key)) {
-              setChat(_chat)
-              break
-            }
-          }
-        } else {
-          setChat(null)
-        }
       },
       (err) => {
         // console.log(`useChatMessages Error: ${err}`)
@@ -50,7 +38,6 @@ const useChat = () => {
   }, [path, currentUser, messageRecipient])
 
   return {
-    chat,
     chats,
     isLoading,
     error,

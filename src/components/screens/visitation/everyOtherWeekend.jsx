@@ -88,7 +88,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
       {/* SHARE WITH */}
       <ShareWithCheckboxes
         required={false}
-        shareWith={currentUser?.coparents?.map((x) => x.phone)}
+        shareWith={currentUser?.coParents?.map((x) => x.phone)}
         onCheck={HandleShareWithSelection}
         placeholder={'Share with'}
         containerClass={'share-with-coparents'}

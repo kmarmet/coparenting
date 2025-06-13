@@ -505,7 +505,8 @@ export default function NewCalendarEvent() {
             placeholder={'Notes'}
             required={false}
             inputType={InputTypes.textarea}
-            onChange={(e) => (newEvent.current.notes = e.target.value)}></InputField>
+            onChange={(e) => (newEvent.current.notes = e.target.value)}
+          />
         </div>
       </Form>
     </>

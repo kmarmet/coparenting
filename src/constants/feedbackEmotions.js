@@ -2,7 +2,6 @@
 var FeedbackEmotion;
 
 FeedbackEmotion = {
-  satisfied: "satisfied",
   neutral: "neutral",
   love: "love",
   unhappy: "unhappy",

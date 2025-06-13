@@ -710,59 +710,6 @@
       z-index: 9;
     }
 
-    .screen-overlay {
-      z-index: -1;
-      position: fixed;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      opacity: 0;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      width: 100vw;
-      height: 100vh;
-      transition: all 0.4s ease-out;
-      flex-wrap: wrap;
-      flex-direction: column;
-      @include mainColorsGradient;
-
-      &.active {
-        opacity: 1;
-        transition: all 0.4s ease-in;
-        z-index: 99999999;
-
-        &.blur {
-          backdrop-filter: blur(2.5px);
-          background: rgba(0, 0, 0, 0.85);
-        }
-      }
-
-      .swipe-bar {
-        display: block;
-        background: rgba(255, 255, 255, 0.71);
-        z-index: 999999999999;
-        position: relative;
-        align-self: flex-end;
-        height: 4px;
-        border-radius: $cardBorderRadius;
-        width: 90px;
-        margin: auto auto 8px auto;
-      }
-
-      .count {
-        color: white;
-        font-size: 22px;
-        font-weight: $fwBold;
-        margin: 20px 0 8px 0;
-
-        span {
-          font-size: 18px;
-        }
-      }
-    }
-
     #upload-image-input {
       opacity: 0 !important;
     }
@@ -1049,7 +996,7 @@
           width: calc(100% - 30px) !important;
           font-weight: $fwLight;
           bottom: 2px !important;
-          padding-left: 20px !important;
+          padding-left: 30px !important;
           font-size: 16px !important;
           line-height: 1 !important;
           background: unset;
@@ -1170,7 +1117,7 @@
       @include navBar;
     }
 
-    #screen-overlay {
+    .screen-overlay {
       @include screenOverlay;
     }
 

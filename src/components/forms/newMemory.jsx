@@ -27,7 +27,7 @@ import MyConfetti from '../shared/myConfetti'
 import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
 import Spacer from '../shared/spacer'
 
-export function NewMemoryForm() {
+export default function NewMemory() {
   const {state, setState} = useContext(globalState)
   const {theme, creationFormToShow} = state
   const [images, setImages] = useState([])

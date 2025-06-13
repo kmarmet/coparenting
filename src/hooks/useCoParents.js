@@ -6,12 +6,12 @@ import DatasetManager from '../managers/datasetManager'
 import Manager from '../managers/manager'
 import useCurrentUser from './useCurrentUser'
 
-const useCoparents = () => {
+const useCoParents = () => {
   const {state, setState} = useContext(globalState)
   const {authUser} = state
   const {currentUser} = useCurrentUser()
-  const [coparentsAreLoading, setCoparentsAreLoading] = useState(true)
-  const [coparents, setCoparents] = useState([])
+  const [coParentsAreLoading, setCoParentsAreLoading] = useState(true)
+  const [coParents, setCoParents] = useState([])
   const [error, setError] = useState(null)
   const path = `${DB.tables.users}/${currentUser?.key}/coparents`
   const queryKey = ['realtime', path]
@@ -24,17 +24,17 @@ const useCoparents = () => {
       dataRef,
       (snapshot) => {
         // console.Log('Children Updated')
-        const formattedCoparents = DatasetManager.GetValidArray(snapshot.val())
-        if (Manager.IsValid(currentUser) && Manager.IsValid(formattedCoparents)) {
-          setCoparents(formattedCoparents)
+        const formattedCoParents = DatasetManager.GetValidArray(snapshot.val())
+        if (Manager.IsValid(currentUser) && Manager.IsValid(formattedCoParents)) {
+          setCoParents(formattedCoParents)
         } else {
-          setCoparents([])
+          setCoParents([])
         }
-        setCoparentsAreLoading(false)
+        setCoParentsAreLoading(false)
       },
       (err) => {
         setError(err)
-        setCoparentsAreLoading(false)
+        setCoParentsAreLoading(false)
       }
     )
 
@@ -44,11 +44,11 @@ const useCoparents = () => {
   }, [path, currentUser])
 
   return {
-    coparents,
-    coparentsAreLoading,
+    coParents,
+    coParentsAreLoading,
     error,
     queryKey,
   }
 }
 
-export default useCoparents
+export default useCoParents

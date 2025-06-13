@@ -73,7 +73,7 @@ export default function NavBar({children, navbarClass}) {
           <div
             style={DomManager.AnimateDelayStyle(1, 0.04)}
             className={`menu-button menu-item  ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}
-            onClick={() => setState({...state, menuIsOpen: true})}>
+            onClick={() => setState({...state, showOverlay: true, menuIsOpen: true})}>
             <div id="svg-wrapper">
               <HiOutlineMenu className={'menu'} />
             </div>
@@ -112,7 +112,7 @@ export default function NavBar({children, navbarClass}) {
           {/* CREATE */}
           <div
             style={DomManager.AnimateDelayStyle(1, 0.07)}
-            onClick={() => setState({...state, showCreationMenu: true})}
+            onClick={() => setState({...state, showCreationMenu: true, showOverlay: true})}
             className={`menu-item create ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
             <IoAdd className={'create'} />
             <p>Create</p>

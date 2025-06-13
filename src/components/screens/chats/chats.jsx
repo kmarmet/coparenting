@@ -9,8 +9,7 @@ import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
 import useChat from '../../../hooks/useChat'
-import useCoparents from '../../../hooks/useCoparents'
-import useCurrentUser from '../../../hooks/useCurrentUser'
+import useCoParents from '../../../hooks/useCoParents'
 import EmailManager from '../../../managers/emailManager'
 import NavBar from '../../navBar'
 import Form from '../../shared/form'
@@ -20,6 +19,9 @@ import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 import ChatRow from './chatRow.jsx'
 import AccordionTitle from '../../shared/accordionTitle'
+import CreationForms from '../../../constants/creationForms'
+import NewChat from '../../forms/newChat'
+import Chat from './chat'
 
 const Chats = () => {
   const {state, setState} = useContext(globalState)
@@ -28,9 +30,10 @@ const Chats = () => {
   const [showInvitationCard, setShowInvitationCard] = useState(false)
   const [inviteeName, setInviteeName] = useState('')
   const [inviteeEmail, setInviteeEmail] = useState('')
-  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const [showChat, setShowChat] = useState(false)
+  const [recipient, setRecipient] = useState()
   const {chats} = useChat()
-  const {coparents} = useCoparents()
+  const {coParents} = useCoParents()
 
   return (
     <>
@@ -62,6 +65,17 @@ const Chats = () => {
         />
       </Form>
 
+      <NewChat
+        onClick={(coParent) => {
+          setShowChat(true)
+          setRecipient(coParent)
+        }}
+        show={creationFormToShow === CreationForms.chat}
+        hide={() => setState({...state, creationFormToShow: null})}
+      />
+
+      <Chat show={showChat} hide={() => setShowChat(false)} recipient={recipient} />
+
       {/* NO DATA FALLBACK */}
       {chats?.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
 
@@ -71,7 +85,7 @@ const Chats = () => {
           screenName={ScreenNames.chats}
           title={'Chats'}
           screenDescription="Your space to peacefully chat with your co-parent and pass along any important info they need to know, or to seek clarification on
-          information that is unfamiliar to you."
+          information that is unfamiliar to you"
         />
 
         <Spacer height={8} />
@@ -84,7 +98,7 @@ const Chats = () => {
             </AccordionSummary>
             <AccordionDetails>
               <p>
-                Currently, your account is linked to {coparents?.length} {coparents?.length > 1 ? 'co-parents' : 'co-parent'}. If you wish to
+                Currently, your account is linked to {coParents?.length} {coParents?.length > 1 ? 'co-parents' : 'co-parent'}. If you wish to
                 communicate with another co-parent, feel free to Send them an invitation.
               </p>
 
@@ -99,13 +113,25 @@ const Chats = () => {
               </button>
             </AccordionDetails>
           </Accordion>
+
           {/* CHAT ROWS */}
           {chats?.length > 0 &&
             chats?.map((chat, index) => {
-              return <ChatRow key={index} chat={chat} index={index} />
+              return (
+                <ChatRow
+                  onClick={(otherMember) => {
+                    console.log('otherMember: ', otherMember)
+                    setShowChat(true)
+                    setRecipient(otherMember)
+                    // setState({...state, creationFormToShow: CreationForms.chat})
+                  }}
+                  key={index}
+                  index={index}
+                />
+              )
             })}
         </div>
-        <NavBar />
+        {!showChat && <NavBar />}
       </div>
     </>
   )

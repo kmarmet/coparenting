@@ -1,8 +1,7 @@
-// Path: src\App.js
+import React, {useEffect, useState} from 'react'
+
 import EditCalEvent from './components/forms/editCalEvent.jsx'
-import NewCalendarEvent from './components/forms/newCalendarEvent.jsx'
 import NewExpenseForm from './components/forms/newExpenseForm.jsx'
-import {NewMemoryForm} from './components/forms/newMemoryForm.jsx'
 import NewSwapRequest from './components/forms/newSwapRequest.jsx'
 import NewTransferChangeRequest from './components/forms/newTransferRequest.jsx'
 import FullMenu from './components/fullMenu'
@@ -51,8 +50,6 @@ import * as Sentry from '@sentry/react'
 import {initializeApp} from 'firebase/app'
 import {getAuth, onAuthStateChanged} from 'firebase/auth'
 import moment from 'moment'
-import React, {useEffect, useState} from 'react'
-import NewChat from './components/forms/newChat'
 import Contacts from './components/screens/contacts/contacts'
 import Parents from './components/screens/parents/parents'
 import CreationMenu from './components/shared/creationMenu'
@@ -62,6 +59,8 @@ import CreationForms from './constants/creationForms'
 import DatetimeFormats from './constants/datetimeFormats'
 import DB from './database/DB'
 import UpdateManager from './managers/updateManager'
+import NewMemory from './components/forms/newMemory.jsx'
+import NewCalendarEvent from './components/forms/newCalendarEvent.jsx'
 
 export default function App() {
   // Initialize Firebase
@@ -232,17 +231,17 @@ export default function App() {
           {/* CREATION MENU */}
           <CreationMenu />
 
+          {/* NEW FORMS */}
           <NewCalendarEvent showCard={creationFormToShow === CreationForms.calendar} />
           <NewSwapRequest showCard={creationFormToShow === CreationForms.swapRequest} />
           <NewTransferChangeRequest showCard={creationFormToShow === CreationForms.transferRequest} />
-          <NewMemoryForm showCard={creationFormToShow === CreationForms.memories} />
+          <NewMemory showCard={creationFormToShow === CreationForms.memories} />
           <NewDocument showCard={creationFormToShow === CreationForms.documents} />
           <NewExpenseForm showCard={creationFormToShow === CreationForms.expense} />
           <NewCoparentForm
             showCard={creationFormToShow === CreationForms.coparent}
             hideCard={() => setState({...state, creationFormToShow: '', refreshKey: Manager.GetUid()})}
           />
-          <NewChat />
 
           {/* BRAND BAR */}
           {!screensToHideBrandbar.includes(currentScreen) && <BrandBar />}

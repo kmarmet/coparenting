@@ -8,7 +8,7 @@ import globalState from '../../../context'
 import DB from '../../../database/DB'
 import DB_UserScoped from '../../../database/db_userScoped'
 import useChildren from '../../../hooks/useChildren'
-import useCoparents from '../../../hooks/useCoparents'
+import useCoParents from '../../../hooks/useCoParents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useParents from '../../../hooks/useParents'
 import useUsers from '../../../hooks/useUsers'
@@ -41,7 +41,7 @@ const Contacts = () => {
   // HOOKS
   const {currentUser} = useCurrentUser()
   const {children} = useChildren()
-  const {coparents} = useCoparents()
+  const {coParents} = useCoParents()
   const {parents} = useParents()
   const {users} = useUsers()
 
@@ -92,7 +92,7 @@ const Contacts = () => {
       async () => {
         // Remove coparent
         if (currentUser?.accountType === 'parent' && activeContact?.accountType === 'parent') {
-          let toRemove = coparents.find((x) => x.id === activeContact?.id)
+          let toRemove = coParents?.find((x) => x.id === activeContact?.id)
 
           if (Manager.IsValid(toRemove)) {
             const coparentIndex = DB.GetTableIndexById(coparents, activeContact?.id)

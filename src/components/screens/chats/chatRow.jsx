@@ -13,27 +13,15 @@ import DatetimeFormats from '../../../constants/datetimeFormats'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import DomManager from '../../../managers/domManager'
 
-export default function ChatRow({chat, index}) {
+export default function ChatRow({index, onClick}) {
   const {state, setState} = useContext(globalState)
   const {refreshKey} = state
   const [otherMember, setOtherMember] = useState(null)
   const [lastMessage, setLastMessage] = useState('')
   const {currentUser} = useCurrentUser()
+  const [chat, setChat] = useState()
 
-  const OpenChat = async () => {
-    if (!Manager.IsValid(otherMember)) {
-      AlertManager.oneButtonAlert(
-        'Co-Parent Profile not Found',
-        'This co-parent may have deactivated their profile, but you can still view the messages',
-        null,
-        () => {
-          setState({...state, currentScreen: ScreenNames.chat, messageRecipient: otherMember})
-        }
-      )
-    } else {
-      setState({...state, currentScreen: ScreenNames.chat, messageRecipient: otherMember})
-    }
-  }
+  const OpenChat = () => onClick(otherMember)
 
   const PauseChat = async () => {
     if (Manager.IsValid(otherMember)) {
@@ -49,25 +37,30 @@ export default function ChatRow({chat, index}) {
     }
   }
 
-  const SetDefaultOtherMember = async () => {
-    const coparent = chat?.members?.find((member) => member?.key !== currentUser?.key)
-    setOtherMember(coparent)
-  }
-
   const GetLastMessage = async () => {
-    const chatMessages = await ChatManager.getMessages(chat?.id)
+    const chatMessages = await ChatManager.GetMessages(chat?.id)
     setLastMessage(chatMessages[chatMessages.length - 1])
   }
 
-  useEffect(() => {
-    SetDefaultOtherMember().then((r) => r)
-    GetLastMessage().then((r) => r)
-  }, [otherMember, chat])
+  const GetChat = async () => {
+    const _chat = await ChatManager.GetScopedChat(currentUser, otherMember?.key)
+    const otherM = _chat?.members?.find((member) => member?.key !== currentUser?.key)
+    console.log(otherM)
+    setOtherMember(otherM)
+    setChat(_chat)
+  }
 
   useEffect(() => {
+    if (Manager.IsValid(chat)) {
+      GetLastMessage().then((r) => r)
+    }
+  }, [chat])
+
+  useEffect(() => {
+    GetChat().then((r) => r)
     setTimeout(() => {
-      // DomManager.ToggleAnimation('add', 'thread-item', DomManager.AnimateClasses.names.fadeInRight, 90)
-      // DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight, 90)
+      DomManager.ToggleAnimation('add', 'chat-row', DomManager.AnimateClasses.names.fadeInUp, 90)
+      DomManager.ToggleAnimation('add', 'chat-row', DomManager.AnimateClasses.names.fadeInUp, 90)
     }, 300)
   }, [])
 
@@ -77,14 +70,14 @@ export default function ChatRow({chat, index}) {
         e.stopPropagation()
         if (DomManager.CheckIfElementIsTag(e, 'path') || DomManager.CheckIfElementIsTag(e, 'svg')) return false
         if (e.currentTarget.classList.contains('chat-row')) {
-          OpenChat().then((r) => r)
+          OpenChat()
         }
         if (e.target !== e.currentTarget) return false
       }}
       data-thread-id={chat?.id}
       style={DomManager.AnimateDelayStyle(index)}
       className={`chat-row chats-animation-row ${DomManager.Animate.FadeInUp(chat?.id)}`}>
-      {/* COPARENT NAME */}
+      {/* CO-PARENT NAME */}
       <div className="primary-text">
         <p className="coparent-name">{otherMember?.name}</p>
         <p className="timestamp">

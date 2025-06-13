@@ -15,7 +15,7 @@ import {IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
-import useCoparents from '../../../hooks/useCoparents'
+import useCoParents from '../../../hooks/useCoParents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import DomManager from '../../../managers/domManager'
 import EmailManager from '../../../managers/emailManager'
@@ -31,25 +31,25 @@ export default function Coparents() {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
   const {currentUser} = useCurrentUser()
-  const {coparents} = useCoparents()
+  const {coParents} = useCoParents()
 
   // State
   const [showCustomInfoCard, setShowCustomInfoCard] = useState(false)
-  const [showNewCoparentFormCard, setShowNewCoparentFormCard] = useState(false)
-  const [activeCoparent, setActiveCoparent] = useState(coparents?.[0])
+  const [showNewCoParentFormCard, setShowNewCoParentFormCard] = useState(false)
+  const [activeCoParent, setActiveCoParent] = useState(coParents?.[0])
   const [showInvitationForm, setShowInvitationForm] = useState(false)
 
   const invite = useRef({name: '', email: ''})
 
   const DeleteProp = async (prop) => {
-    const coparentIndex = DB.GetTableIndexByUserKey(coparents, activeCoparent?.userKey)
+    const coparentIndex = DB.GetTableIndexByUserKey(coParents, activeCoParent?.userKey)
     if (Manager.IsValid(coparentIndex)) {
-      await DB_UserScoped.DeleteCoparentInfoProp(currentUser?.key, coparentIndex, StringManager.formatDbProp(prop), activeCoparent)
+      await DB_UserScoped.DeleteCoparentInfoProp(currentUser?.key, coparentIndex, StringManager.formatDbProp(prop), activeCoParent)
     }
   }
 
   const Update = async (prop, value) => {
-    const coparentIndex = DB.GetTableIndexByUserKey(coparents, activeCoparent?.userKey)
+    const coparentIndex = DB.GetTableIndexByUserKey(coParents, activeCoParent?.userKey)
 
     if (!Manager.IsValid(coparentIndex)) {
       return
@@ -58,56 +58,56 @@ export default function Coparents() {
     setState({...state, successAlertMessage: `${StringManager.FormatTitle(prop, true)} has been updated`})
   }
 
-  const DeleteCoparent = async () => {
-    const coparentIndex = DB.GetTableIndexByUserKey(coparents, activeCoparent?.userKey)
+  const DeleteCoParent = async () => {
+    const coparentIndex = DB.GetTableIndexByUserKey(coParents, activeCoParent?.userKey)
 
     if (!Manager.IsValid(coparentIndex)) {
       return
     }
     await DB_UserScoped.DeleteCoparent(currentUser?.key, coparentIndex)
-    await DB_UserScoped.DeleteSharedDataUserKey(currentUser, activeCoparent?.userKey)
+    await DB_UserScoped.DeleteSharedDataUserKey(currentUser, activeCoParent?.userKey)
   }
 
   useEffect(() => {
-    if (!Manager.IsValid(coparents)) {
-      setActiveCoparent(null)
+    if (!Manager.IsValid(coParents)) {
+      setActiveCoParent(null)
     } else {
-      if (Manager.IsValid(coparents) && !Manager.IsValid(activeCoparent)) {
-        setActiveCoparent(coparents?.[0])
+      if (Manager.IsValid(coParents) && !Manager.IsValid(activeCoParent)) {
+        setActiveCoParent(coParents?.[0])
       }
-      if (Manager.IsValid(activeCoparent) && Manager.IsValid(coparents)) {
-        const coparentId = activeCoparent?.id
-        const updatedCoparent = coparents?.find((x) => x?.id === coparentId)
-        setActiveCoparent(updatedCoparent)
+      if (Manager.IsValid(activeCoParent) && Manager.IsValid(coParents)) {
+        const coparentId = activeCoParent?.id
+        const updatedCoparent = coParents?.find((x) => x?.id === coparentId)
+        setActiveCoParent(updatedCoparent)
       }
     }
-  }, [coparents])
+  }, [coParents])
 
   return (
     <>
       {/* CUSTOM INFO FORM */}
       <CustomCoparentInfo
         hideCard={() => setShowCustomInfoCard(false)}
-        onAdd={(coparent) => setActiveCoparent(coparent)}
-        activeCoparent={activeCoparent}
+        onAdd={(coParent) => setActiveCoParent(coParent)}
+        activeCoparent={activeCoParent}
         showCard={showCustomInfoCard}
       />
 
-      {/* NEW COPARENT FORM */}
-      <NewCoparentForm showCard={showNewCoparentFormCard} hideCard={() => setShowNewCoparentFormCard(false)} />
+      {/* NEW CO-PARENT FORM */}
+      <NewCoparentForm showCard={showNewCoParentFormCard} hideCard={() => setShowNewCoParentFormCard(false)} />
 
       {/*  SCREEN ACTIONS */}
       <ScreenActionsMenu title="Manage Co-Parents">
-        {/* ADD COPARENT */}
+        {/* ADD CO-PARENT */}
         <div
           className="action-item"
           onClick={() => {
-            setShowNewCoparentFormCard(true)
+            setShowNewCoParentFormCard(true)
             setState({...state, showScreenActions: false})
           }}>
           <div className="content">
             <div className="svg-wrapper">
-              <IoPersonAdd className={'Add-coparent fs-22'} />
+              <IoPersonAdd className={'add-co-parent fs-22'} />
             </div>
             <p>
               Add a Co-Parent
@@ -119,7 +119,7 @@ export default function Coparents() {
         </div>
 
         {/* ONLY SHOW IF THERE ARE CO-PARENTS  */}
-        {Manager.IsValid(coparents) && (
+        {Manager.IsValid(coParents) && (
           <>
             {/*  ADD CUSTOM INFO */}
             <div
@@ -134,22 +134,22 @@ export default function Coparents() {
                 </div>
                 <p>
                   Add your Own Info
-                  <span className="subtitle">Include personalized details about {StringManager.GetFirstNameOnly(activeCoparent?.name)}</span>
+                  <span className="subtitle">Include personalized details about {StringManager.GetFirstNameOnly(activeCoParent?.name)}</span>
                 </p>
               </div>
             </div>
 
-            {/*  REMOVE COPARENT */}
+            {/*  REMOVE CO-PARENT */}
             <div
               className="action-item"
               onClick={() => {
                 setState({...state, showScreenActions: false})
                 AlertManager.confirmAlert(
-                  `Are you sure you would like to unlink ${StringManager.GetFirstNameOnly(activeCoparent?.name)} from your profile?`,
+                  `Are you sure you would like to unlink ${StringManager.GetFirstNameOnly(activeCoParent?.name)} from your profile?`,
                   "I'm Sure",
                   true,
                   async () => {
-                    await DeleteCoparent()
+                    await DeleteCoParent()
                   }
                 )
               }}>
@@ -159,9 +159,9 @@ export default function Coparents() {
                 </div>
 
                 <p>
-                  Unlink {StringManager.GetFirstNameOnly(activeCoparent?.name)} from Your Profile
+                  Unlink {StringManager.GetFirstNameOnly(activeCoParent?.name)} from Your Profile
                   <span className="subtitle">
-                    Remove sharing permissions for {StringManager.GetFirstNameOnly(activeCoparent?.name)} along with the information stored about them
+                    Remove sharing permissions for {StringManager.GetFirstNameOnly(activeCoParent?.name)} along with the information stored about them
                   </span>
                 </p>
               </div>
@@ -176,7 +176,7 @@ export default function Coparents() {
             setState({...state, showScreenActions: false})
           }}>
           <div className="content">
-            <div className="svg-wrapper invite-coparent">
+            <div className="svg-wrapper invite-co-parent">
               <BsFillSendFill className={'paper-airplane'} />
             </div>
             <p>
@@ -190,7 +190,7 @@ export default function Coparents() {
       {/* INVITATION FORM */}
       <Form
         submitText={'Send Invitation'}
-        wrapperClass="invite-coparent-card"
+        wrapperClass="invite-co-parent-card"
         title={'Invite Co-Parent'}
         subtitle="Extend an invitation to a co-parent to facilitate the sharing of essential information with them"
         onClose={() => setShowInvitationForm(false)}
@@ -220,35 +220,35 @@ export default function Coparents() {
         />
       </Form>
 
-      {/* COPARENTS CONTAINER */}
-      <div id="coparents-container" className={`${theme} page-container parents-wrapper`}>
+      {/* CO-PARENTS CONTAINER */}
+      <div id="co-parents-container" className={`${theme} page-container parents-wrapper`}>
         <ScreenHeader title={'Co-Parents'} screenDescription=" Maintain accessible records of important information regarding your co-parent." />
         <Spacer height={10} />
         <div style={DomManager.AnimateDelayStyle(1)} className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(true, '.fade-up-wrapper')}`}>
           <div className="screen-content">
-            {/* COPARENT ICONS CONTAINER */}
-            <div id="coparent-container">
-              {Manager.IsValid(coparents) &&
-                coparents?.map((coparent, index) => {
-                  const coparentKey = activeCoparent?.userKey
+            {/* CO-PARENT ICONS CONTAINER */}
+            <div id="co-parent-container">
+              {Manager.IsValid(coParents) &&
+                coParents?.map((coParent, index) => {
+                  const coParentKey = activeCoParent?.userKey
                   return (
                     <div
-                      onClick={() => setActiveCoparent(coparent)}
-                      className={coparentKey && coparentKey === coparent?.userKey ? 'active coparent' : 'coparent'}
+                      onClick={() => setActiveCoParent(coParent)}
+                      className={coParentKey && coParentKey === coParent?.userKey ? 'active co-parent' : 'co-parent'}
                       key={index}>
-                      <span className="coparent-name">{StringManager.GetFirstNameAndLastInitial(coparent?.name)?.[0]}</span>
+                      <span className="co-parent-name">{StringManager.GetFirstNameAndLastInitial(coParent?.name)?.[0]}</span>
                     </div>
                   )
                 })}
             </div>
 
-            {/* COPARENT INFO */}
-            <div id="coparent-info" key={activeCoparent?.current?.userKey}>
-              <p id="coparent-name-primary">{StringManager.GetFirstNameAndLastInitial(activeCoparent?.name)}</p>
-              <p id="coparent-type-primary"> {activeCoparent?.parentType}</p>
-              {/* ITERATE COPARENT INFO */}
-              {Manager.IsValid(activeCoparent) &&
-                Object.entries(activeCoparent).map((propArray, index) => {
+            {/* CO-PARENT INFO */}
+            <div id="co-parent-info" key={activeCoParent?.current?.userKey}>
+              <p id="co-parent-name-primary">{StringManager.GetFirstNameAndLastInitial(activeCoParent?.name)}</p>
+              <p id="co-parent-type-primary"> {activeCoParent?.parentType}</p>
+              {/* ITERATE CO-PARENT INFO */}
+              {Manager.IsValid(activeCoParent) &&
+                Object.entries(activeCoParent).map((propArray, index) => {
                   let infoLabel = propArray[0]
                   infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
                   infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
@@ -278,7 +278,7 @@ export default function Coparents() {
                               onChange={async (e) => {
                                 const inputValue = e.target.value
                                 await Update(infoLabel, `${inputValue}`).then((r) => r)
-                                setActiveCoparent(activeCoparent)
+                                setActiveCoParent(activeCoParent)
                               }}
                               inputType={InputTypes.text}
                               placeholder={infoLabel}
@@ -295,7 +295,7 @@ export default function Coparents() {
         </div>
       </div>
       {/* NO DATA FALLBACK */}
-      {!Manager.IsValid(coparents) && <NoDataFallbackText text={'You have not added any co-parents to your profile yet'} />}
+      {!Manager.IsValid(coParents) && <NoDataFallbackText text={'You have not added any co-parents to your profile yet'} />}
 
       {/* NAVBAR */}
       <NavBar navbarClass={'actions'}>

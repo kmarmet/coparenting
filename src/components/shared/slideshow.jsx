@@ -4,7 +4,7 @@ import {useSwipeable} from 'react-swipeable'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import globalState from '../../context'
 import useChildren from '../../hooks/useChildren'
-import useCoparents from '../../hooks/useCoparents'
+import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useParents from '../../hooks/useParents'
 import DomManager from '../../managers/domManager'
@@ -19,7 +19,7 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
   const [activeImageIndex, setActiveImageIndex] = useState(activeIndex)
   const {currentUser} = useCurrentUser()
   const {children} = useChildren()
-  const {coparents} = useCoparents()
+  const {coParents} = useCoParents()
   const {parents} = useParents()
 
   const handlers = useSwipeable({
@@ -62,7 +62,7 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
 
       // Co-parent name
       if (!Manager.IsValid(name)) {
-        name = coparents?.find((x) => x.userKey === key)?.name
+        name = coParents?.find((x) => x.userKey === key)?.name
       }
       return `Shared by: ${name}`
     }

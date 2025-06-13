@@ -3,16 +3,25 @@ var ChatMessage;
 
 import Manager from "../../managers/manager";
 
+import moment from "moment-timezone";
+
+import DatetimeFormats from "../../constants/datetimeFormats";
+
 ChatMessage = class ChatMessage {
-  constructor(id = Manager.GetUid(), sender = '', recipient = '', timestamp = '', message = '', recipientKey = '', senderKey = '', senderTimezone = '') {
-    this.id = id;
-    this.sender = sender;
-    this.recipient = recipient;
-    this.timestamp = timestamp;
-    this.message = message;
-    this.recipientKey = recipientKey;
-    this.senderKey = senderKey;
-    this.senderTimezone = senderTimezone;
+  constructor(options = {}) {
+    var ref, ref1, ref10, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
+    this.id = Manager.GetUid();
+    this.timestamp = moment().format(DatetimeFormats.timestamp);
+    this.message = (ref = options != null ? options.message : void 0) != null ? ref : '';
+    this.recipient = {
+      name: (ref1 = options != null ? (ref2 = options.recipient) != null ? ref2.name : void 0 : void 0) != null ? ref1 : '',
+      key: (ref3 = options != null ? (ref4 = options.recipient) != null ? ref4.key : void 0 : void 0) != null ? ref3 : ''
+    };
+    this.sender = {
+      name: (ref5 = options != null ? (ref6 = options.sender) != null ? ref6.name : void 0 : void 0) != null ? ref5 : '',
+      key: (ref7 = options != null ? (ref8 = options.sender) != null ? ref8.key : void 0 : void 0) != null ? ref7 : '',
+      timezone: (ref9 = options != null ? (ref10 = options.sender) != null ? ref10.timezone : void 0 : void 0) != null ? ref9 : ''
+    };
   }
 
 };

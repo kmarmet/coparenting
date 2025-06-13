@@ -100,8 +100,8 @@ const DB_UserScoped = {
   getValidAccountsCountForUser: async (currentUser) => {
     const children = await DB_UserScoped.getChildAccounts(currentUser)
     const parents = await DB_UserScoped.getParentAccounts(currentUser)
-    const coparents = await DB_UserScoped.getCoparentAccounts(currentUser)
-    return children?.length + parents?.length + coparents?.length
+    const coParents = await DB_UserScoped.getCoparentAccounts(currentUser)
+    return children?.length + parents?.length + coParents?.length
   },
   getValidAccountsForUser: async (currentUser) => {
     const children = await DB_UserScoped.getChildAccounts(currentUser)
@@ -112,7 +112,7 @@ const DB_UserScoped = {
   getLinkedAccounts: async (currentUser) => {
     const children = currentUser?.children?.filter((x) => x?.userKey) || []
     const parents = currentUser?.parents?.filter((x) => x?.userKey) || []
-    const coparents = currentUser?.coparents?.filter((x) => x?.userKey) || []
+    const coparents = currentUser?.coParents?.filter((x) => x?.userKey) || []
     const accounts = DatasetManager.getUniqueArray([...children, ...parents, ...coparents], true)
     const accountKeys = accounts.map((x) => x?.userKey)
     return {

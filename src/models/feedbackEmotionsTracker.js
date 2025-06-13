@@ -3,12 +3,11 @@ var FeedbackEmotionsTracker;
 
 FeedbackEmotionsTracker = class FeedbackEmotionsTracker {
   constructor(options = {}) {
-    var ref, ref1, ref2, ref3, ref4;
+    var ref, ref1, ref2, ref3;
     this.peacefulCount = (ref = options != null ? options.peacefulCount : void 0) != null ? ref : 0;
-    this.satisfiedCount = (ref1 = options != null ? options.satisfiedCount : void 0) != null ? ref1 : 0;
-    this.loveCount = (ref2 = options != null ? options.loveCount : void 0) != null ? ref2 : 0;
-    this.neutralCount = (ref3 = options != null ? options.neutralCount : void 0) != null ? ref3 : 0;
-    this.unhappyCount = (ref4 = options != null ? options.unhappyCount : void 0) != null ? ref4 : 0;
+    this.loveCount = (ref1 = options != null ? options.loveCount : void 0) != null ? ref1 : 0;
+    this.neutralCount = (ref2 = options != null ? options.neutralCount : void 0) != null ? ref2 : 0;
+    this.unhappyCount = (ref3 = options != null ? options.unhappyCount : void 0) != null ? ref3 : 0;
   }
 
 };
