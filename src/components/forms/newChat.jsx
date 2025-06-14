@@ -9,7 +9,7 @@ import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import Form from '../shared/form'
 
-const NewChatSelector = ({show, hide, onClick}) => {
+const NewChat = ({show, hide, onClick}) => {
   const {state, setState} = useContext(globalState)
   const {creationFormToShow} = state
   const [chattableUserKeys, setChattableUserKeys] = useState([])
@@ -73,4 +73,4 @@ const NewChatSelector = ({show, hide, onClick}) => {
   )
 }
 
-export default NewChatSelector
+export default NewChat

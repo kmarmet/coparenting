@@ -59,31 +59,28 @@ ChatManager = {
     }
   },
   GetInactiveChatKeys: async function(currentUser, chats = []) {
-    var activeChatKeys, i, inactive, key, len, members, test, validAccountKeys, validAccounts;
+    var activeChatKeys, i, inactive, key, len, members, ref1, validAccountKeys, validAccounts;
     inactive = [];
     validAccounts = (await DB_UserScoped.getCoparentAccounts(currentUser));
-    validAccounts = validAccounts.filter((x) => {
+    validAccounts = validAccounts != null ? validAccounts.filter((x) => {
       return x.accountType === 'parent';
-    });
+    }) : void 0;
     validAccountKeys = validAccounts != null ? validAccounts.map((x) => {
       return x != null ? x.key : void 0;
     }) : void 0;
     members = chats != null ? chats.map((x) => {
       return x != null ? x.members : void 0;
     }) : void 0;
-    activeChatKeys = members.flat().map((x) => {
-      return x.key;
-    });
-    activeChatKeys = activeChatKeys.filter((x) => {
+    activeChatKeys = members != null ? (ref1 = members.flat()) != null ? ref1.map((x) => {
+      return x != null ? x.key : void 0;
+    }) : void 0 : void 0;
+    activeChatKeys = activeChatKeys != null ? activeChatKeys.filter((x) => {
       return x !== (currentUser != null ? currentUser.key : void 0);
-    });
+    }) : void 0;
     if (Manager.IsValid(validAccounts)) {
-      test = activeChatKeys.filter((x) => {
-        return !validAccountKeys.includes(x);
-      });
       for (i = 0, len = validAccountKeys.length; i < len; i++) {
         key = validAccountKeys[i];
-        if (!activeChatKeys.includes(key)) {
+        if (!(activeChatKeys != null ? activeChatKeys.includes(key) : void 0)) {
           inactive.push(key);
         }
       }

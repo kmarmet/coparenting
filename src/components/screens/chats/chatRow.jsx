@@ -24,16 +24,18 @@ export default function ChatRow({index, onClick, chat}) {
   const {currentUser} = useCurrentUser()
   const {chats} = useChats()
   const {chatMessages} = useChatMessages(chat?.id)
-
+  const [activeSwipeRow, setActiveSwipeRow] = useState()
   const handlers = useSwipeable({
     swipeDuration: 300,
     preventScrollOnSwipe: true,
     onSwipedLeft: (e) => {
       const row = e.event.currentTarget
+      setActiveSwipeRow(row)
       row.classList.add('active')
     },
     onSwipedRight: (e) => {
       const row = e.event.currentTarget
+      setActiveSwipeRow(row)
       row.classList.remove('active')
     },
   })
@@ -42,26 +44,31 @@ export default function ChatRow({index, onClick, chat}) {
 
   const PauseChat = async () => {
     if (Manager.IsValid(otherMember)) {
-      const playPauseWrapper = document.querySelector('.play-pause-wrapper')
-      const twoColumnChatRow = document.querySelector('.two-column-chat-row')
-      playPauseWrapper.classList.add('pause')
-      playPauseWrapper.classList.remove('resume')
-      twoColumnChatRow.classList.remove('active')
-
-      await ChatManager.PauseChat(currentUser, otherMember?.key, chat)
-      setState({...state, currentScreen: ScreenNames.chats, successAlertMessage: 'Chat Paused'})
+      const playPauseWrapper = activeSwipeRow?.querySelector('.play-pause-wrapper')
+      const twoColumnChatRow = document.querySelectorAll('.two-column-chat-row')
+      await ChatManager.PauseChat(currentUser, otherMember?.key, chat).finally(() => {
+        for (let column of twoColumnChatRow) {
+          column.classList.remove('active')
+        }
+        playPauseWrapper.classList.add('pause')
+        playPauseWrapper.classList.remove('resume')
+        setState({...state, currentScreen: ScreenNames.chats, successAlertMessage: 'Chat Paused'})
+      })
     }
   }
 
   const UnpauseChat = async () => {
     if (Manager.IsValid(otherMember)) {
-      const playPauseWrapper = document.querySelector('.play-pause-wrapper')
-      const twoColumnChatRow = document.querySelector('.two-column-chat-row')
-      playPauseWrapper.classList.add('resume')
-      playPauseWrapper.classList.remove('pause')
-      twoColumnChatRow.classList.remove('active')
-      await ChatManager.ResumeChat(currentUser, otherMember?.key, chat)
-      setState({...state, currentScreen: ScreenNames.chats, successAlertMessage: 'Chat Resumed'})
+      const playPauseWrapper = activeSwipeRow?.querySelector('.play-pause-wrapper')
+      const twoColumnChatRow = document.querySelectorAll('.two-column-chat-row')
+      await ChatManager.ResumeChat(currentUser, otherMember?.key, chat).finally(() => {
+        for (let column of twoColumnChatRow) {
+          column.classList.remove('active')
+        }
+        playPauseWrapper.classList.add('resume')
+        playPauseWrapper.classList.remove('pause')
+        setState({...state, currentScreen: ScreenNames.chats, successAlertMessage: 'Chat Resumed'})
+      })
     }
   }
 

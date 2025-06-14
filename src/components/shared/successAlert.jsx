@@ -10,7 +10,6 @@ const SuccessAlert = () => {
   const [showAlert, setShowAlert] = useState(false)
 
   useEffect(() => {
-    console.log(successAlertMessage)
     if (Manager.IsValid(successAlertMessage, true)) {
       setShowAlert(true)
       setTimeout(() => {

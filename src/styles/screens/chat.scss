@@ -121,7 +121,7 @@
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      padding: 15px;
+      padding: 15px 15px 0 15px;
 
       &.active {
         padding: 15px 0 15px 15px;
@@ -144,7 +144,7 @@
           width: 100%;
           justify-content: flex-start;
           border-bottom: 1px solid $lightBorderColor;
-          padding-bottom: 5px;
+          padding-bottom: 12px;
           position: relative;
 
           .row-text-content {
@@ -157,7 +157,7 @@
               width: 100%;
 
               .timestamp {
-                font-size: 12px;
+                font-size: 14px;
                 font-weight: $fwRegular;
                 color: $mediumGreyDarker;
                 margin-left: auto;
@@ -468,13 +468,13 @@
           transform: scale(0.5);
 
           &.to {
-            right: unset;
-            left: -5px;
+            left: unset;
+            right: -5px;
           }
 
           &.from {
-            left: unset;
-            right: -5px;
+            right: unset;
+            left: -5px;
           }
         }
       }

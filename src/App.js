@@ -273,7 +273,7 @@ export default function App() {
 
             {/* NEW */}
             {currentScreen === ScreenNames.newCalendarEvent && <NewCalendarEvent />}
-            {currentScreen === ScreenNames.newMemory && <NewMemoryForm />}
+            {currentScreen === ScreenNames.newMemory && <NewMemory />}
             {currentScreen === ScreenNames.newChild && <NewChildForm />}
             {currentScreen === ScreenNames.newExpense && <NewExpenseForm />}
             {currentScreen === ScreenNames.newSwapRequest && <NewSwapRequest />}

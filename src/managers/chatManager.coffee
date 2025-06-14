@@ -40,18 +40,17 @@ ChatManager =
   GetInactiveChatKeys: (currentUser, chats = []) ->
     inactive = []
     validAccounts = await DB_UserScoped.getCoparentAccounts(currentUser)
-    validAccounts = validAccounts.filter (x) => x.accountType == 'parent'
+    validAccounts = validAccounts?.filter (x) => x.accountType == 'parent'
     validAccountKeys = validAccounts?.map((x) => x?.key)
     members = chats?.map (x) => x?.members
-    activeChatKeys = members.flat().map (x) => x.key
-    activeChatKeys = activeChatKeys.filter (x) => x != currentUser?.key
+    activeChatKeys = members?.flat()?.map (x) => x?.key
+    activeChatKeys = activeChatKeys?.filter (x) => x != currentUser?.key
 
     if Manager.IsValid(validAccounts)
-      test = activeChatKeys.filter (x) => !validAccountKeys.includes(x)
       for key in validAccountKeys
-        if !activeChatKeys.includes(key)
+        if !activeChatKeys?.includes(key)
           inactive.push(key)
-          
+
     return inactive
 
   GetToneAndSentiment: (message) ->

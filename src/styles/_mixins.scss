@@ -1621,12 +1621,6 @@
     margin-bottom: 8px;
   }
 
-  & {
-    & {
-      @include hover;
-    }
-  }
-
   * {
     line-height: 1;
   }
