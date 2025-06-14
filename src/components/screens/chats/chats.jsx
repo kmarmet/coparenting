@@ -112,16 +112,14 @@ const Chats = () => {
 
         <div className="screen-content bottom-padding-only">
           {/* CHAT ROWS */}
-          {chats?.length > 0 &&
+          {Manager.IsValid(chats) &&
             chats?.map((chat, index) => {
               return (
                 <ChatRow
                   chat={chat}
                   onClick={(otherMember) => {
-                    console.log('otherMember: ', otherMember)
                     setShowChat(true)
                     setRecipient(otherMember)
-                    // setState({...state, creationFormToShow: CreationForms.chat})
                   }}
                   key={index}
                   index={index}

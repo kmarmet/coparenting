@@ -1,27 +1,27 @@
 // Path: src\components\screens\calendar\calendar.jsx
-import EditCalEvent from '../../../components/forms/editCalEvent'
-import NavBar from '../../../components/navBar.jsx'
-import Form from '../../../components/shared/form'
-import InputField from '../../shared/inputField'
-import DatetimeFormats from '../../../constants/datetimeFormats'
-import globalState from '../../../context.js'
-import AlertManager from '../../../managers/alertManager'
-import AppManager from '../../../managers/appManager'
-import DatasetManager from '../../../managers/datasetManager'
-import DateManager from '../../../managers/dateManager'
-import DomManager from '../../../managers/domManager'
-import Manager from '../../../managers/manager'
 import {StaticDatePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {BsStars} from 'react-icons/bs'
 import {LuCalendarSearch} from 'react-icons/lu'
 import {PiCalendarXDuotone} from 'react-icons/pi'
+import EditCalEvent from '../../../components/forms/editCalEvent'
+import NavBar from '../../../components/navBar.jsx'
+import Form from '../../../components/shared/form'
+import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
+import globalState from '../../../context.js'
 import DB from '../../../database/DB.js'
 import useAppUpdates from '../../../hooks/useAppUpdates'
 import useCalendarEvents from '../../../hooks/useCalendarEvents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import AlertManager from '../../../managers/alertManager'
+import AppManager from '../../../managers/appManager'
+import DatasetManager from '../../../managers/datasetManager'
+import DateManager from '../../../managers/dateManager'
+import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
+import InputField from '../../shared/inputField'
 import Spacer from '../../shared/spacer'
 import CalendarEvents from './calendarEvents.jsx'
 import CalendarLegend from './calendarLegend.jsx'
@@ -124,7 +124,7 @@ export default function EventCalendar() {
       const dotWrapper = document.createElement('span')
       dotWrapper.classList.add('dot-wrapper')
 
-      // HOLIDAYS
+      //#region HOLIDAYS
       for (let holiday of emojiHolidays) {
         // Add holiday emoji
         if (Manager.IsValid(holiday) && holiday?.startDate === dayEvent?.startDate) {
@@ -146,19 +146,22 @@ export default function EventCalendar() {
             case moment(holiday.startDate).format('MM/DD') === '06/15':
               holidayEmoji.innerText = '👨‍👧‍👦'
               break
+            case moment(holiday.startDate).format('MM/DD') === '06/19':
+              holidayEmoji.innerText = ' ✨'
+              break
             case moment(holiday.startDate).format('MM/DD') === '07/04':
               holidayEmoji.innerText = '🎇'
-              break
-            case moment(holiday.startDate).format('MM/DD') === '11/28':
-              holidayEmoji.innerText = '🦃'
               break
             case moment(holiday.startDate).format('MM/DD') === '10/31':
               holidayEmoji.innerText = '🎃'
               break
-            case moment(holiday.startDate).format('MM/DD') === '12/25':
-              holidayEmoji.innerText = '🎄'
+            case moment(holiday.startDate).format('MM/DD') === '11/28':
+              holidayEmoji.innerText = '🦃'
               break
             case moment(holiday.startDate).format('MM/DD') === '12/24':
+              holidayEmoji.innerText = '🎄'
+              break
+            case moment(holiday.startDate).format('MM/DD') === '12/25':
               holidayEmoji.innerText = '🎄'
               break
             case moment(holiday.startDate).format('MM/DD') === '12/31':
@@ -170,6 +173,7 @@ export default function EventCalendar() {
           dayElement.append(holidayEmoji)
         }
       }
+      //#endregion HOLIDAYS
 
       // ADD DOTS
       for (let dotClass of dotClasses) {
@@ -236,22 +240,22 @@ export default function EventCalendar() {
     let dotClasses = []
     for (let event of dayEvents) {
       if (Manager.IsValid(event)) {
-        const isCurrentUserDot = event?.ownerKey === currentUser?.key
-        if (
+        const isPayEvent =
           event?.title.toLowerCase().includes('pay') ||
           event?.title.toLowerCase().includes('paid') ||
           event?.title.toLowerCase().includes('salary') ||
           event?.title.toLowerCase().includes('expense')
-        ) {
+        const isCurrentUserDot = event?.ownerKey === currentUser?.key
+        if (isPayEvent) {
           payEvents.push(event.startDate)
         }
         if (event?.isHoliday && !event.fromVisitationSchedule && !Manager.IsValid(event.ownerKey)) {
           dotClasses.push('holiday-event-dot')
         }
-        if (!event?.isHoliday && isCurrentUserDot) {
+        if (!event?.isHoliday && isCurrentUserDot && !isPayEvent) {
           dotClasses.push('current-user-event-dot')
         }
-        if (!event?.isHoliday && !isCurrentUserDot) {
+        if (!event?.isHoliday && !isCurrentUserDot && !isPayEvent) {
           dotClasses.push('coparent-event-dot')
         }
       }

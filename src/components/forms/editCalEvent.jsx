@@ -1,39 +1,37 @@
 // Path: src\components\forms\EditCalEvent.jsx
-import Form from '../shared/form'
-import InputField from '../shared/inputField'
-import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
-import ActivityCategory from '../../constants/activityCategory'
-import DatetimeFormats from '../../constants/datetimeFormats'
-import ModelNames from '../../constants/modelNames'
-import DB from '../../database/DB'
-import AlertManager from '../../managers/alertManager'
-import CalendarManager from '../../managers/calendarManager.js'
-import Manager from '../../managers/manager'
-import ObjectManager from '../../managers/objectManager'
-import StringManager from '../../managers/stringManager'
-import UpdateManager from '../../managers/updateManager'
-import {default as CalMapper} from '../../mappers/calMapper'
 import moment from 'moment'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {MdEventRepeat} from 'react-icons/md'
+import ActivityCategory from '../../constants/activityCategory'
+import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
+import DB from '../../database/DB'
 import useCalendarEvents from '../../hooks/useCalendarEvents'
+import useChildren from '../../hooks/useChildren'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useUsers from '../../hooks/useUsers'
+import AlertManager from '../../managers/alertManager'
+import CalendarManager from '../../managers/calendarManager.js'
 import DatasetManager from '../../managers/datasetManager'
 import DomManager from '../../managers/domManager'
 import LogManager from '../../managers/logManager'
+import Manager from '../../managers/manager'
+import StringManager from '../../managers/stringManager'
+import UpdateManager from '../../managers/updateManager'
+import {default as CalMapper} from '../../mappers/calMapper'
 import AddressInput from '../shared/addressInput'
 import DetailBlock from '../shared/detailBlock'
+import Form from '../shared/form'
+import InputField from '../shared/inputField'
 import Label from '../shared/label'
 import Map from '../shared/map'
 import MultilineDetailBlock from '../shared/multilineDetailBlock'
+import SelectDropdown from '../shared/selectDropdown'
+import ShareWithDropdown from '../shared/shareWithDropdown'
 import Spacer from '../shared/spacer.jsx'
 import ToggleButton from '../shared/toggleButton'
 import ViewSelector from '../shared/viewSelector'
-import SelectDropdown from '../shared/selectDropdown'
-import useChildren from '../../hooks/useChildren'
 
 export default function EditCalEvent({event, showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
@@ -135,7 +133,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           return false
         }
 
-        const cleanedEvent = ObjectManager.GetModelValidatedObject(updated, ModelNames.calendarEvent)
         const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
 
         // Events with multiple days
@@ -152,7 +149,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           }
 
           if (eventIsDateRange) {
-            const dates = await CalendarManager.buildArrayOfEvents(
+            const dates = await CalendarManager.BuildArrayOfEvents(
               currentUser,
               updated,
               'range',
@@ -164,7 +161,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
           // Add repeating dates
           if (eventIsRecurring) {
-            const dates = await CalendarManager.buildArrayOfEvents(
+            const dates = await CalendarManager.BuildArrayOfEvents(
               currentUser,
               updated,
               'recurring',
@@ -181,7 +178,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         // Update Single Event
         else {
           if (updatedEvent?.current?.ownerKey === currentUser?.key) {
-            await DB.updateEntireRecord(`${dbPath}`, cleanedEvent, updated.id)
+            await DB.updateEntireRecord(`${dbPath}`, updatedEvent?.current, updated.id)
           }
         }
         if (updatedEvent?.current?.ownerKey === currentUser?.key) {
@@ -280,22 +277,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     return readable
   }
 
-  const GetReminderOptions = () => {
-    const unformatted = CalMapper.allUnformattedTimes()
-    let options = []
-    if (Manager.IsValid(unformatted)) {
-      for (let reminder of unformatted) {
-        if (Manager.IsValid(reminder)) {
-          options.push({
-            label: CalMapper.readableReminderBeforeTimeframes(reminder),
-            value: reminder,
-          })
-        }
-      }
-    }
-    return options
-  }
-
   useEffect(() => {
     if (Manager.IsValid(event)) {
       updatedEvent.current = event
@@ -332,7 +313,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         viewSelector={
           <ViewSelector
             show={showCard}
-            dropdownPlaceholder="Select View"
+            dropdownPlaceholder="Details"
             labels={['Details', 'Edit']}
             updateState={(labelText) => {
               setView(labelText)
@@ -340,7 +321,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           />
         }
         wrapperClass={`Edit-calendar-event at-top ${updatedEvent?.current?.ownerKey === currentUser?.key ? 'owner' : 'non-owner'}`}>
-        <div id="Edit-cal-event-container" className={`${theme} Edit-event-form'`}>
+        <div id="edit-cal-event-container" className={`${theme} edit-event-form'`}>
           {/* DETAILS */}
           <div className={view === 'Details' ? 'view-wrapper details active' : 'view-wrapper'}>
             <div className="blocks">
@@ -505,8 +486,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             <hr />
 
             {/* Share with */}
-            <ShareWithCheckboxes
-              defaultKeys={updatedEvent?.current?.shareWith}
+            <ShareWithDropdown
+              defaultValues={updatedEvent?.current?.shareWith}
+              labelText={'Share with'}
               required={false}
               onCheck={HandleShareWithSelection}
               containerClass={`share-with-parents`}
@@ -514,7 +496,15 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
             <Spacer height={2} />
 
-            <SelectDropdown isMultiple={true} labelText={'Select Reminders'} options={GetReminderOptions()} onChange={HandleReminderSelection} />
+            {/* REMINDERS */}
+            <SelectDropdown
+              defaultValues={CalMapper.GetExistingReminderOptions(event?.reminderTimes)}
+              isMultiple={true}
+              labelText={'Select Reminders'}
+              options={CalMapper.GetSelectReminderOptions()}
+              onChange={HandleReminderSelection}
+            />
+
             <Spacer height={2} />
 
             {/* INCLUDING WHICH CHILDREN */}

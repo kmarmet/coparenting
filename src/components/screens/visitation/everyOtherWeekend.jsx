@@ -1,9 +1,6 @@
 // Path: src\components\screens\visitation\everyOtherWeekend.jsx
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
-import Form from '../../shared/form'
-import MyConfetti from '../../shared/myConfetti'
-import ShareWithCheckboxes from '../../shared/shareWithCheckboxes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
 import ScheduleTypes from '../../../constants/scheduleTypes'
@@ -14,9 +11,12 @@ import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/new/calendarEvent'
-import Label from '../../shared/label'
-import Spacer from '../../shared/spacer'
+import Form from '../../shared/form'
 import InputField from '../../shared/inputField'
+import Label from '../../shared/label'
+import MyConfetti from '../../shared/myConfetti'
+import ShareWithDropdown from '../../shared/shareWithDropdown'
+import Spacer from '../../shared/spacer'
 
 export default function EveryOtherWeekend({hide, showCard}) {
   const {state, setState} = useContext(globalState)
@@ -86,7 +86,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
         onDateOrTimeSelection={(e) => setFirstEveryOtherWeekend(e)}
       />
       {/* SHARE WITH */}
-      <ShareWithCheckboxes
+      <ShareWithDropdown
         required={false}
         shareWith={currentUser?.coParents?.map((x) => x.phone)}
         onCheck={HandleShareWithSelection}

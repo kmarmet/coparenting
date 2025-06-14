@@ -1,5 +1,5 @@
 import DB from "../database/DB"
-import { child, getDatabase, ref, remove, set, update } from 'firebase/database'
+import {child, getDatabase, ref, remove, set, update} from 'firebase/database'
 import Manager from "./manager"
 import LogManager from "./logManager"
 import DateFormats from "../constants/datetimeFormats"
@@ -8,10 +8,7 @@ import DateManager from "./dateManager"
 import CalendarMapper from "../mappers/calMapper"
 import DatasetManager from "./datasetManager"
 import CalendarEvent from "../models/new/calendarEvent"
-import ObjectManager from "./objectManager"
 import * as Sentry from '@sentry/react'
-
-import ModelNames from "../constants/modelNames"
 
 export default CalendarManager =
   addMultipleCalEvents: (currentUser, newEvents, isRangeClonedOrRecurring = false) ->
@@ -32,13 +29,15 @@ export default CalendarManager =
     catch error
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
 
-  buildArrayOfEvents: (currentUser, eventObject, arrayType = "recurring", startDate, endDate) ->
+  BuildArrayOfEvents: (currentUser, eventObject, arrayType = "recurring", startDate, endDate) ->
     datesToPush = []
     datesToIterate = []
 
   # DATE RANGE / CLONED
     if arrayType == "range" || arrayType == "cloned"
-      datesToIterate = DateManager.getDateRangeDates(startDate, endDate)
+      datesToIterate = DateManager.GetDateRangeDates(startDate, endDate)
+
+    console.log("datesToIterate", datesToIterate)
 
   # REPEATING
     if arrayType == "recurring"
@@ -52,7 +51,6 @@ export default CalendarManager =
       dateObject = new CalendarEvent()
       # Required
       dateObject.title = eventObject.title
-      dateObject.id = Manager.GetUid()
       dateObject.startDate = moment(date).format(DateFormats.dateForDb)
       dateObject.endDate = moment(endDate).format(DateFormats.dateForDb)
 
@@ -60,8 +58,8 @@ export default CalendarManager =
         dateObject.staticStartDate = moment(datesToIterate[0]).format(DateFormats.dateForDb)
 
       # Not Required
-      dateObject.directionsLink = Manager.GetDirectionsLink(eventObject.location)
-      dateObject.location = eventObject.location
+      dateObject.directionsLink = Manager.GetDirectionsLink(eventObject.address)
+      dateObject.address = eventObject.address
       dateObject.children = eventObject.children
       dateObject.ownerKey = currentUser?.key
       dateObject.createdBy = currentUser?.name
@@ -76,15 +74,14 @@ export default CalendarManager =
       # Times
       if Manager.IsValid(eventObject.startTime)
         dateObject.startTime = moment(eventObject.startTime).format(DateFormats.timeForDb)
+
       if Manager.IsValid(eventObject.endTime)
         dateObject.endTime = moment(eventObject.endTime).format(DateFormats.timeForDb)
 
       dateObject.reminderTimes = eventObject.reminderTimes
       dateObject.recurrenceInterval = eventObject.recurringInterval
-      dateObject = ObjectManager.GetModelValidatedObject(dateObject, ModelNames.calendarEvent)
       datesToPush.push dateObject
 
-    console.log datesToPush
     return datesToPush
 
   setHolidays: (holidays) ->

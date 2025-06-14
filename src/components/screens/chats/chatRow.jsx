@@ -116,7 +116,7 @@ export default function ChatRow({index, onClick, chat}) {
   }, [chat])
 
   return (
-    <div className={'two-column-chat-row'} {...handlers}>
+    <div key={refreshKey} className={'two-column-chat-row'} {...handlers}>
       <div
         onClick={(e) => {
           e.stopPropagation()

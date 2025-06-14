@@ -1,41 +1,41 @@
 // Path: src\components\forms\newExpenseForm.jsx
+import moment from 'moment'
+import React, {useContext, useRef, useState} from 'react'
+import {GrPowerReset} from 'react-icons/gr'
 import CheckboxGroup from '../../components/shared/checkboxGroup'
 import Form from '../../components/shared/form'
-import InputField from '../shared/inputField'
 import SelectDropdown from '../../components/shared/selectDropdown'
-import ShareWithCheckboxes from '../../components/shared/shareWithCheckboxes'
 import Spacer from '../../components/shared/spacer.jsx'
-import UploadButton from '../shared/uploadButton'
 import ActivityCategory from '../../constants/activityCategory'
+import CreationForms from '../../constants/creationForms'
+import DatetimeFormats from '../../constants/datetimeFormats'
 import ExpenseCategories from '../../constants/expenseCategories.js'
+import InputTypes from '../../constants/inputTypes'
 import ModelNames from '../../constants/modelNames'
+import globalState from '../../context'
+import DB from '../../database/DB'
+import DB_UserScoped from '../../database/db_userScoped'
 import Storage from '../../database/storage'
+import useChildren from '../../hooks/useChildren'
+import useCoParents from '../../hooks/useCoParents'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useExpenses from '../../hooks/useExpenses'
 import AlertManager from '../../managers/alertManager'
+import DatasetManager from '../../managers/datasetManager.coffee'
 import DateManager from '../../managers/dateManager'
+import DomManager from '../../managers/domManager'
 import ImageManager from '../../managers/imageManager'
+import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager.coffee'
 import UpdateManager from '../../managers/updateManager'
 import CalendarMapper from '../../mappers/calMapper'
 import Expense from '../../models/new/expense.js'
-import moment from 'moment'
-import React, {useContext, useRef, useState} from 'react'
-import {GrPowerReset} from 'react-icons/gr'
-import CreationForms from '../../constants/creationForms'
-import DatetimeFormats from '../../constants/datetimeFormats'
-import InputTypes from '../../constants/inputTypes'
-import globalState from '../../context'
-import DB from '../../database/DB'
-import DB_UserScoped from '../../database/db_userScoped'
-import useCurrentUser from '../../hooks/useCurrentUser'
-import DatasetManager from '../../managers/datasetManager.coffee'
-import DomManager from '../../managers/domManager'
-import Manager from '../../managers/manager'
+import InputField from '../shared/inputField'
 import Label from '../shared/label'
+import ShareWithDropdown from '../shared/shareWithDropdown'
 import ToggleButton from '../shared/toggleButton'
-import useChildren from '../../hooks/useChildren'
-import useCoParents from '../../hooks/useCoParents'
-import useExpenses from '../../hooks/useExpenses'
+import UploadButton from '../shared/uploadButton'
 
 export default function NewExpenseForm() {
   const {state, setState} = useContext(globalState)
@@ -387,7 +387,7 @@ export default function NewExpenseForm() {
           )}
 
           {/* SHARE WITH */}
-          <ShareWithCheckboxes onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coParents'} />
+          <ShareWithDropdown onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coParents'} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.IsValid(children) && (

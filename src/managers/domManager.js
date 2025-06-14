@@ -227,7 +227,7 @@ DomManager = {
         option = optionsArray[i];
         if (optionsAreUsers) {
           options.push({
-            value: option != null ? option.userKey : void 0,
+            value: (option != null ? option.userKey : void 0) || (option != null ? option.key : void 0),
             label: StringManager != null ? StringManager.uppercaseFirstLetterOfAllWords((option != null ? option.name : void 0) || (option != null ? (ref = option.general) != null ? ref.name : void 0 : void 0)) : void 0
           });
         } else {

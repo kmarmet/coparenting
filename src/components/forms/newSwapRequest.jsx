@@ -1,29 +1,29 @@
 // Path: src\components\forms\newSwapRequest.jsx
+import moment from 'moment'
+import React, {useContext, useState} from 'react'
 import CheckboxGroup from '../../components/shared/checkboxGroup'
 import Form from '../../components/shared/form'
-import InputField from '../shared/inputField'
-import ShareWithCheckboxes from '../../components/shared/shareWithCheckboxes'
 import ActivityCategory from '../../constants/activityCategory'
+import creationForms from '../../constants/creationForms'
 import DatetimeFormats from '../../constants/datetimeFormats'
+import InputTypes from '../../constants/inputTypes'
 import ModelNames from '../../constants/modelNames'
 import SwapDurations from '../../constants/swapDurations'
+import globalState from '../../context'
 import DB from '../../database/DB'
+import useChildren from '../../hooks/useChildren'
+import useCurrentUser from '../../hooks/useCurrentUser'
 import AlertManager from '../../managers/alertManager'
+import DatasetManager from '../../managers/datasetManager'
+import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
 import SwapRequest from '../../models/new/swapRequest'
-import moment from 'moment'
-import React, {useContext, useState} from 'react'
-import creationForms from '../../constants/creationForms'
-import InputTypes from '../../constants/inputTypes'
-import globalState from '../../context'
-import useChildren from '../../hooks/useChildren'
-import useCurrentUser from '../../hooks/useCurrentUser'
-import DatasetManager from '../../managers/datasetManager'
-import DomManager from '../../managers/domManager'
+import InputField from '../shared/inputField'
 import Label from '../shared/label'
+import ShareWithDropdown from '../shared/shareWithDropdown'
 import Spacer from '../shared/spacer'
 import ToggleButton from '../shared/toggleButton'
 import ViewSelector from '../shared/viewSelector'
@@ -290,12 +290,7 @@ export default function NewSwapRequest() {
           <Spacer height={8} />
 
           {/* WHO SHOULD SEE IT? */}
-          <ShareWithCheckboxes
-            required={true}
-            onCheck={HandleShareWithSelection}
-            placeholder={'Share with'}
-            containerClass={'share-with-coparents'}
-          />
+          <ShareWithDropdown required={true} onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coparents'} />
 
           <Spacer height={8} />
 

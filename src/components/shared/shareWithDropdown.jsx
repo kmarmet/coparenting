@@ -7,19 +7,13 @@ import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import SelectDropdown from './selectDropdown'
 
-export default function ShareWithCheckboxes({
-  defaultKeys = [],
-  onCheck,
-  containerClass = '',
-  checkboxGroupClass = '',
-  required = true,
-  labelText = '',
-}) {
+export default function ShareWithDropdown({defaultValues = [], onCheck}) {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
   const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {users} = useUsers()
   const [contactKeys, setContactKeys] = useState([])
+  const [defaults, setDefaults] = useState([])
   const SetShareWithUsers = async () => {
     const sharedDataUsers = currentUser?.sharedDataUsers
     const sharedDataUsersAccounts = users?.filter((x) => sharedDataUsers?.includes(x.key))
@@ -45,12 +39,30 @@ export default function ShareWithCheckboxes({
     }
   }, [currentUser, users, refreshKey, currentUserIsLoading])
 
+  useEffect(() => {
+    if (Manager.IsValid(defaultValues)) {
+      const sharedDataUsers = currentUser?.sharedDataUsers
+      const sharedDataUsersAccounts = users?.filter((x) => sharedDataUsers?.includes(x.key))
+
+      let defaultShareWith = []
+      for (let userKey of defaultValues) {
+        let name = sharedDataUsersAccounts?.find((x) => x?.key === userKey)?.name
+        defaultShareWith.push({
+          value: userKey,
+          label: StringManager.GetFirstNameAndLastInitial(name),
+        })
+      }
+      setDefaults(defaultShareWith)
+    }
+  }, [defaultValues])
+
   return (
     <SelectDropdown
       labelText="Select Contacts to Share With"
       wrapperClasses="share-with-select-dropdown"
       isMultiple={true}
       onChange={onCheck}
+      defaultValues={defaults}
       options={contactKeys}
     />
   )

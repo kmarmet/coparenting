@@ -184,73 +184,56 @@ ObjectManager = {
   },
   GetModelValidatedObject: function(obj, modelName) {
     var prop, ref, ref1, ref2, ref3, ref4, returnObject;
-    returnObject = {};
-    console.log(true);
-    switch (modelName) {
-      case ModelNames.calendarEvent:
-        returnObject = new CalendarEvent();
-        break;
-      case ModelNames.expense:
-        returnObject = new Expense();
-        break;
-      case ModelNames.memory:
-        returnObject = new Memory();
-        break;
-      case ModelNames.transferChangeRequest:
-        returnObject = new TransferChangeRequest();
-        break;
-      case ModelNames.swapRequest:
-        returnObject = new SwapRequest();
-        break;
-      case ModelNames.user:
-        returnObject = new User();
-        break;
-      case ModelNames.coparent:
-        returnObject = new Coparent();
-        break;
-      case ModelNames.chat:
-        returnObject = new Chat();
-        break;
-      case ModelNames.chatMessage:
-        returnObject = new ChatMessage();
-        break;
-      case ModelNames.childUser:
-        returnObject = new ChildUser();
-        break;
-      case ModelNames.child:
-        returnObject = new Child();
-        break;
-      case ModelNames.parent:
-        returnObject = new Parent();
-        break;
-      case ModelNames.doc:
-        returnObject = new Doc();
-    }
-    console.log(returnObject);
-    if (Manager.IsValid(returnObject)) {
-      for (prop in returnObject) {
-        console.log(prop, returnObject);
-        if (Manager.IsValid(returnObject != null ? returnObject[prop] : void 0)) {
-          if (Array.isArray(returnObject != null ? returnObject[prop] : void 0)) {
-            if ((ref = returnObject != null ? returnObject[prop] : void 0) === (void 0) || ref === null) {
-              if (returnObject != null) {
-                returnObject[prop] = [];
-              }
-            }
-          } else {
-            if (((ref1 = returnObject != null ? returnObject[prop] : void 0) === (void 0) || ref1 === null) || (returnObject != null ? (ref2 = returnObject[prop]) != null ? (ref3 = ref2.toString()) != null ? (ref4 = ref3.toLowerCase()) != null ? ref4.includes('invalid') : void 0 : void 0 : void 0 : void 0)) {
-              if (returnObject != null) {
-                returnObject[prop] = '';
-              }
+    returnObject = (function() {
+      switch (modelName) {
+        case ModelNames.calendarEvent:
+          return new CalendarEvent();
+        case ModelNames.expense:
+          return new Expense();
+        case ModelNames.memory:
+          return new Memory();
+        case ModelNames.transferChangeRequest:
+          return new TransferChangeRequest();
+        case ModelNames.swapRequest:
+          return new SwapRequest();
+        case ModelNames.user:
+          return new User();
+        case ModelNames.coparent:
+          return new Coparent();
+        case ModelNames.chat:
+          return new Chat();
+        case ModelNames.chatMessage:
+          return new ChatMessage();
+        case ModelNames.childUser:
+          return new ChildUser();
+        case ModelNames.child:
+          return new Child();
+        case ModelNames.parent:
+          return new Parent();
+        case ModelNames.doc:
+          return new Doc();
+      }
+    })();
+    for (prop in returnObject) {
+      if (Manager.IsValid(returnObject != null ? returnObject[prop] : void 0)) {
+        if (Array.isArray(returnObject != null ? returnObject[prop] : void 0)) {
+          if ((ref = returnObject != null ? returnObject[prop] : void 0) === (void 0) || ref === null) {
+            if (returnObject != null) {
+              returnObject[prop] = [];
             }
           }
-          if (returnObject != null) {
-            returnObject[prop] = returnObject != null ? returnObject[prop] : void 0;
+        } else {
+          if (((ref1 = returnObject != null ? returnObject[prop] : void 0) === (void 0) || ref1 === null) || (returnObject != null ? (ref2 = returnObject[prop]) != null ? (ref3 = ref2.toString()) != null ? (ref4 = ref3.toLowerCase()) != null ? ref4.includes('invalid') : void 0 : void 0 : void 0 : void 0)) {
+            if (returnObject != null) {
+              returnObject[prop] = '';
+            }
           }
+        }
+        if (returnObject != null) {
+          returnObject[prop] = returnObject != null ? returnObject[prop] : void 0;
         }
       }
     }
-    //    returnObject = ObjectManager.GetValidObject(returnObject)
     return returnObject;
   },
   merge: function(objectWithValuesToKeep, objectWithValuesToAdd) {

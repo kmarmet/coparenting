@@ -546,7 +546,7 @@ const Chat = ({show, hide, recipient}) => {
                   </div>
                   {/* MESSAGE INPUT & SEND BUTTON */}
                   <div
-                    className={`${inputIsActive ? 'active' : ''} message-input-field`}
+                    className={`message-input-field ${inputIsActive ? 'active' : ''}`}
                     onFocus={(e) => e.target.classList.add('active')}
                     onBlur={(e) => e.target.classList.remove('active')}>
                     <div className={'flex'} id="message-input-container">

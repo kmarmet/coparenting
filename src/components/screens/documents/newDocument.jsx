@@ -1,33 +1,33 @@
 // Path: src\components\screens\documents\newDocument.jsx
+import {getStorage, ref, uploadString} from 'firebase/storage'
+import React, {useContext, useState} from 'react'
 import CheckboxGroup from '../../../components/shared/checkboxGroup'
 import Form from '../../../components/shared/form'
-import InputField from '../../shared/inputField'
-import ShareWithCheckboxes from '../../../components/shared/shareWithCheckboxes'
-import UploadButton from '../../shared/uploadButton'
 import ActivityCategory from '../../../constants/activityCategory'
+import CreationForms from '../../../constants/creationForms'
+import InputTypes from '../../../constants/inputTypes'
 import ModelNames from '../../../constants/modelNames'
+import ScreenNames from '../../../constants/screenNames'
+import globalState from '../../../context'
 import Storage from '../../../database/storage'
+import useCurrentUser from '../../../hooks/useCurrentUser'
+import useDocuments from '../../../hooks/useDocuments'
 import AlertManager from '../../../managers/alertManager'
 import DatasetManager from '../../../managers/datasetManager'
 import DocumentConversionManager from '../../../managers/documentConversionManager.js'
 import DocumentsManager from '../../../managers/documentsManager'
+import DomManager from '../../../managers/domManager'
 import ImageManager from '../../../managers/imageManager'
+import LogManager from '../../../managers/logManager'
 import Manager from '../../../managers/manager.js'
 import ObjectManager from '../../../managers/objectManager'
 import StringManager from '../../../managers/stringManager'
 import UpdateManager from '../../../managers/updateManager'
 import Doc from '../../../models/new/doc'
-import {getStorage, ref, uploadString} from 'firebase/storage'
-import React, {useContext, useState} from 'react'
-import CreationForms from '../../../constants/creationForms'
-import InputTypes from '../../../constants/inputTypes'
-import ScreenNames from '../../../constants/screenNames'
-import globalState from '../../../context'
-import useCurrentUser from '../../../hooks/useCurrentUser'
-import useDocuments from '../../../hooks/useDocuments'
-import DomManager from '../../../managers/domManager'
-import LogManager from '../../../managers/logManager'
+import InputField from '../../shared/inputField'
+import ShareWithDropdown from '../../shared/shareWithDropdown'
 import Spacer from '../../shared/spacer'
+import UploadButton from '../../shared/uploadButton'
 
 export default function NewDocument() {
   const {state, setState} = useContext(globalState)
@@ -227,7 +227,7 @@ export default function NewDocument() {
               checkboxArray={DomManager.BuildCheckboxGroup({currentUser, customLabelArray: ['Document', 'Image']})}
               onCheck={HandleCheckboxSelection}
             />
-            <ShareWithCheckboxes required={false} onCheck={HandleShareWithSelection} containerClass={'share-with-coparents'} />
+            <ShareWithDropdown required={false} onCheck={HandleShareWithSelection} containerClass={'share-with-coparents'} />
           </div>
           {/* UPLOAD BUTTONS */}
           <UploadButton

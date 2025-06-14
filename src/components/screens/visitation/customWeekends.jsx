@@ -1,10 +1,6 @@
 // Path: src\components\screens\visitation\customWeekends.jsx
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
-import CheckboxGroup from '../../.../../shared/checkboxGroup'
-import Form from '../../.../../shared/form'
-import MyConfetti from '../../.../../shared/myConfetti'
-import ShareWithCheckboxes from '../../.../../shared/shareWithCheckboxes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import ScheduleTypes from '../../../constants/scheduleTypes'
 import globalState from '../../../context'
@@ -16,6 +12,10 @@ import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/new/calendarEvent'
+import CheckboxGroup from '../../shared/checkboxGroup'
+import Form from '../../shared/form'
+import MyConfetti from '../../shared/myConfetti'
+import ShareWithDropdown from '../../shared/shareWithDropdown'
 import Spacer from '../../shared/spacer'
 
 export default function CustomWeekends({hide, showCard}) {
@@ -133,7 +133,7 @@ export default function CustomWeekends({hide, showCard}) {
         })}
       />
       <Spacer height={5} />
-      <ShareWithCheckboxes required={false} onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coparents'} />
+      <ShareWithDropdown required={false} onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coparents'} />
       <hr className="mt-5 mb-10" />
     </Form>
   )

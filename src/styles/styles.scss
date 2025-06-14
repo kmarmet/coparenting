@@ -203,14 +203,19 @@
     z-index: $maxZIndex !important;
     position: relative;
     display: block;
-    border-radius: $buttonBorderRadius !important;
-    padding-top: 8px !important;
+    border-radius: 0 !important;
     top: 10px !important;
-    background: $blend !important;
-    width: calc(100vw - 40px) !important;
+    padding-bottom: 15px !important;
+    width: calc(100vw - 50px) !important;
     margin: 0 auto !important;
     transition: all 0.4s ease-in-out !important;
-    box-shadow: $boxShadow_bottom_only_dark;
+    background: transparent !important;
+    box-shadow: none !important;
+
+    [class*='-option'] {
+      text-align: center !important;
+      padding: 15px !important;
+    }
   }
 
   // Wrapper
@@ -1003,7 +1008,7 @@
           width: calc(100% - 30px) !important;
           font-weight: $fwLight;
           bottom: 2px !important;
-          padding-left: 30px !important;
+          padding-left: 35px !important;
           font-size: 16px !important;
           line-height: 1 !important;
           background: unset;

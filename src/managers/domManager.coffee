@@ -161,7 +161,8 @@ DomManager = {
     if Manager.IsValid(optionsArray)
       for option in optionsArray
         if optionsAreUsers
-          options.push({value: option?.userKey, label: StringManager?.uppercaseFirstLetterOfAllWords(option?.name || option?.general?.name)})
+          options.push({value: option?.userKey || option?.key, label: StringManager?.uppercaseFirstLetterOfAllWords(option?.name || option?.general?.name)})
+
         else
           options.push({value: option, label: StringManager.uppercaseFirstLetterOfAllWords(option)})
     return options

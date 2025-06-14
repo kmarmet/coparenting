@@ -1,12 +1,10 @@
 import moment from 'moment-timezone'
 import DatetimeFormats from '../constants/datetimeFormats'
-import ModelNames from '../constants/modelNames'
 import DB from '../database/DB'
 import DatasetManager from '../managers/datasetManager.coffee'
 import Manager from '../managers/manager'
 import CalendarEvent from '../models/new/calendarEvent'
 import CalendarManager from './calendarManager.js'
-import ObjectManager from './objectManager'
 import StringManager from './stringManager'
 
 const DateManager = {
@@ -130,19 +128,17 @@ const DateManager = {
     let daysLeft = duration.asDays()
     return Math.ceil(daysLeft)
   },
-  getDateRangeDates: (startDate, endDate) => {
-    const daysInRange = DateManager.getDaysInRange(startDate, endDate)
-    console.log(daysInRange)
-    let dailyEvents = []
-    for (let i = 0; i <= daysInRange; i++) {
-      let nextDay = moment(startDate).add(i * 1, 'days')
-      const hasReachedEndDate = moment(nextDay).isSameOrAfter(moment(endDate).add(1, 'day'))
-      if (hasReachedEndDate) {
-        break
-      }
-      dailyEvents.push(moment(nextDay).format(DatetimeFormats.dateForDb))
+  GetDateRangeDates: (startDate, endDate) => {
+    const dates = []
+    let start = moment(startDate)
+    const end = moment(endDate)
+
+    while (start <= end) {
+      dates.push(start.format(DatetimeFormats.dateForDb))
+      start = start.add(1, 'days')
     }
-    return dailyEvents
+
+    return dates
   },
   getDailyDates: (startDate, endDate) => {
     const durationInDays = DateManager.getDuration('days', startDate, endDate)
@@ -263,12 +259,14 @@ const DateManager = {
     const holidays = await DateManager.getHolidays()
     let holidayEvents = []
     const switchCheck = (title, holidayName) => {
+      console.log(title, holidayName)
       return !!Manager.Contains(title, holidayName)
     }
 
     // SET EMOJIS / CREATE EVENT SET
     for (const holiday of holidays) {
       let newEvent = new CalendarEvent()
+      console.log(holiday.name)
       // Required
       switch (true) {
         case switchCheck(holiday.name, 'Halloween'):
@@ -295,6 +293,9 @@ const DateManager = {
         case switchCheck(holiday.name, 'Father'):
           newEvent.title = holiday.name += ' 👨‍👧‍👦'
           break
+        case switchCheck(holiday.name, 'Juneteenth'):
+          newEvent.title = holiday.name += ' ✨'
+          break
         case switchCheck(holiday.name, 'Independence'):
           newEvent.title = holiday.name += ' 🎇'
           break
@@ -305,7 +306,6 @@ const DateManager = {
       newEvent.holidayName = holiday.name
       newEvent.startDate = moment(holiday.date).format(DatetimeFormats.dateForDb)
       newEvent.isHoliday = true
-      newEvent = ObjectManager.GetModelValidatedObject(newEvent, ModelNames.calendarEvent)
       holidayEvents.push(newEvent)
     }
     await CalendarManager.setHolidays(holidayEvents)

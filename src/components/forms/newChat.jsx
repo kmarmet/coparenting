@@ -54,10 +54,9 @@ const NewChat = ({show, hide, onClick}) => {
           Manager.IsValid(coParents) &&
           coParents?.map((coParent, index) => {
             return (
-              <>
+              <div key={index}>
                 {chattableUserKeys.includes(coParent?.userKey) && (
                   <div
-                    key={index}
                     className="coParent-name"
                     onClick={() => {
                       OpenChat(coParent).then((r) => r)
@@ -65,7 +64,7 @@ const NewChat = ({show, hide, onClick}) => {
                     {StringManager.GetFirstNameOnly(coParent?.name)}
                   </div>
                 )}
-              </>
+              </div>
             )
           })}
       </div>

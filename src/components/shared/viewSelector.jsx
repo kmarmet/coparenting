@@ -1,8 +1,8 @@
 // Path: src\components\shared\viewSelector.jsx
 import React, {useContext, useState} from 'react'
 import globalState from '../../context'
-import SelectDropdown from './selectDropdown'
 import DomManager from '../../managers/domManager'
+import SelectDropdown from './selectDropdown'
 
 export default function ViewSelector({labels, dropdownPlaceholder = '', isMultiple = false, updateState, wrapperClasses = '', show = false}) {
   // APP STATE

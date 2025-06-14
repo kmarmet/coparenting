@@ -1,28 +1,28 @@
 // Path: src\components\forms\newTransferRequest.jsx
-import CheckboxGroup from '../shared/checkboxGroup'
+import moment from 'moment'
+import React, {useContext, useRef, useState} from 'react'
 import ActivityCategory from '../../constants/activityCategory'
+import creationForms from '../../constants/creationForms'
 import DatetimeFormats from '../../constants/datetimeFormats'
+import InputTypes from '../../constants/inputTypes'
+import globalState from '../../context'
 import DB from '../../database/DB'
 import DB_UserScoped from '../../database/db_userScoped'
+import useCoParents from '../../hooks/useCoParents'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useTransferRequests from '../../hooks/useTransferRequests'
 import AlertManager from '../../managers/alertManager'
+import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager.js'
 import TransferChangeRequest from '../../models/new/transferChangeRequest.js'
-import moment from 'moment'
-import React, {useContext, useRef, useState} from 'react'
-import creationForms from '../../constants/creationForms'
-import InputTypes from '../../constants/inputTypes'
-import globalState from '../../context'
-import useCoParents from '../../hooks/useCoParents'
-import useCurrentUser from '../../hooks/useCurrentUser'
-import useTransferRequests from '../../hooks/useTransferRequests'
-import DomManager from '../../managers/domManager'
 import AddressInput from '../shared/addressInput'
+import CheckboxGroup from '../shared/checkboxGroup'
 import Form from '../shared/form'
 import InputField from '../shared/inputField'
 import Label from '../shared/label'
-import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
+import ShareWithDropdown from '../shared/shareWithDropdown'
 import Spacer from '../shared/spacer'
 import ToggleButton from '../shared/toggleButton'
 
@@ -197,7 +197,7 @@ export default function NewTransferChangeRequest() {
 
             <Spacer height={8} />
 
-            <ShareWithCheckboxes onCheck={HandleShareWithSelection} required={true} />
+            <ShareWithDropdown onCheck={HandleShareWithSelection} required={true} />
           </div>
         </div>
       </div>

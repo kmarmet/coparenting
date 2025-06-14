@@ -1,18 +1,4 @@
 // Path: src\components\forms\newCalendarEvent.jsx
-import CheckboxGroup from '../shared/checkboxGroup'
-import Form from '../shared/form'
-import InputField from '../shared/inputField'
-import MyConfetti from '../shared/myConfetti.js'
-import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
-import ActivityCategory from '../../constants/activityCategory'
-import DatetimeFormats from '../../constants/datetimeFormats'
-import EventLengths from '../../constants/eventLengths'
-import ModelNames from '../../constants/modelNames'
-import AlertManager from '../../managers/alertManager'
-import Manager from '../../managers/manager'
-import ObjectManager from '../../managers/objectManager'
-import StringManager from '../../managers/stringManager'
-import CalendarEvent from '../../models/new/calendarEvent'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -21,25 +7,37 @@ import moment from 'moment'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {BsCalendarCheck} from 'react-icons/bs'
 import validator from 'validator'
+import ActivityCategory from '../../constants/activityCategory'
+import ButtonThemes from '../../constants/buttonThemes'
 import CreationForms from '../../constants/creationForms'
+import DatetimeFormats from '../../constants/datetimeFormats'
+import EventLengths from '../../constants/eventLengths'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
+import useChildren from '../../hooks/useChildren'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import AlertManager from '../../managers/alertManager'
 import CalendarManager from '../../managers/calendarManager'
+import DatasetManager from '../../managers/datasetManager'
 import DomManager from '../../managers/domManager'
 import LogManager from '../../managers/logManager'
+import Manager from '../../managers/manager'
+import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
+import CalMapper from '../../mappers/calMapper'
+import CalendarEvent from '../../models/new/calendarEvent'
 import AddressInput from '../shared/addressInput'
+import Button from '../shared/button'
+import CheckboxGroup from '../shared/checkboxGroup'
+import Form from '../shared/form'
+import InputField from '../shared/inputField'
 import Label from '../shared/label'
+import MyConfetti from '../shared/myConfetti.js'
+import SelectDropdown from '../shared/selectDropdown'
+import ShareWithDropdown from '../shared/shareWithDropdown'
 import Spacer from '../shared/spacer.jsx'
 import ToggleButton from '../shared/toggleButton'
 import ViewSelector from '../shared/viewSelector'
-import useChildren from '../../hooks/useChildren'
-import SelectDropdown from '../shared/selectDropdown'
-import CalMapper from '../../mappers/calMapper'
-import DatasetManager from '../../managers/datasetManager'
-import Button from '../shared/button'
-import ButtonThemes from '../../constants/buttonThemes'
 
 export default function NewCalendarEvent() {
   // APP STATE
@@ -107,10 +105,7 @@ export default function NewCalendarEvent() {
       newEvent.current.isCloned = Manager.IsValid(clonedDates)
       newEvent.current.isDateRange = eventIsDateRange
 
-      console.log(newEvent.current)
       // return false
-
-      const cleaned = ObjectManager.GetModelValidatedObject(newEvent.current, ModelNames.calendarEvent)
 
       //#endregion FILL NEW EVENT
 
@@ -151,7 +146,7 @@ export default function NewCalendarEvent() {
         //#region MULTIPLE DATES
         // Date Range
         if (eventIsDateRange) {
-          const dates = CalendarManager.buildArrayOfEvents(
+          const dates = CalendarManager.BuildArrayOfEvents(
             currentUser,
             newEvent.current,
             'range',
@@ -163,7 +158,7 @@ export default function NewCalendarEvent() {
 
         // Add cloned dates
         if (Manager.IsValid(clonedDates)) {
-          const dates = CalendarManager.buildArrayOfEvents(
+          const dates = CalendarManager.BuildArrayOfEvents(
             currentUser,
             newEvent.current,
             'cloned',
@@ -175,7 +170,7 @@ export default function NewCalendarEvent() {
 
         // Recurring
         if (eventIsRecurring) {
-          const dates = CalendarManager.buildArrayOfEvents(
+          const dates = CalendarManager.BuildArrayOfEvents(
             currentUser,
             newEvent.current,
             'recurring',
@@ -189,7 +184,7 @@ export default function NewCalendarEvent() {
 
         //#region SINGLE DATE
         if (!eventIsRecurring && !eventIsDateRange && !eventIsCloned) {
-          await CalendarManager.addCalendarEvent(currentUser, cleaned)
+          await CalendarManager.addCalendarEvent(currentUser, newEvent.current)
 
           // Send notification
           await UpdateManager.SendToShareWith(
@@ -308,7 +303,7 @@ export default function NewCalendarEvent() {
           <ViewSelector
             show={true}
             labels={['Single Day', 'Multiple Days']}
-            dropdownPlaceholder={'View'}
+            dropdownPlaceholder={'Single Day'}
             updateState={(labelText) => {
               console.log(labelText)
               if (Manager.Contains(labelText.toLowerCase(), 'single')) {
@@ -358,6 +353,7 @@ export default function NewCalendarEvent() {
               onDateOrTimeSelection={(dateArray) => {
                 if (Manager.IsValid(dateArray)) {
                   newEvent.current.startDate = moment(dateArray[0]).format(DatetimeFormats.dateForDb)
+                  newEvent.current.endDate = moment(dateArray[dateArray.length - 1]).format(DatetimeFormats.dateForDb)
                   setEventIsDateRange(true)
                 }
               }}
@@ -383,7 +379,7 @@ export default function NewCalendarEvent() {
 
           <hr />
           {/* Share with */}
-          <ShareWithCheckboxes required={false} onCheck={HandleShareWithSelection} containerClass={`share-with`} />
+          <ShareWithDropdown required={false} onCheck={HandleShareWithSelection} containerClass={`share-with`} />
           <Spacer height={2} />
 
           {/* INCLUDING WHICH CHILDREN */}

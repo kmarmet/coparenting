@@ -39,6 +39,39 @@ CalendarMapper = {
     all = ["timeOfEvent", "fiveMinutes", "halfHour", "hour"];
     return all;
   },
+  GetSelectReminderOptions: function(reminders) {
+    var i, len, options, reminder, unformatted;
+    unformatted = CalendarMapper.allUnformattedTimes();
+    options = [];
+    if (Manager.IsValid(unformatted)) {
+      for (i = 0, len = unformatted.length; i < len; i++) {
+        reminder = unformatted[i];
+        if (Manager.IsValid(reminder)) {
+          options.push({
+            label: CalendarMapper.readableReminderBeforeTimeframes(reminder),
+            value: reminder
+          });
+        }
+      }
+    }
+    return options;
+  },
+  GetExistingReminderOptions: function(reminders) {
+    var i, len, options, reminder;
+    options = [];
+    if (Manager.IsValid(reminders)) {
+      for (i = 0, len = reminders.length; i < len; i++) {
+        reminder = reminders[i];
+        if (Manager.IsValid(reminder)) {
+          options.push({
+            label: CalendarMapper.readableReminderBeforeTimeframes(reminder),
+            value: reminder
+          });
+        }
+      }
+    }
+    return options;
+  },
   readableReminderBeforeTimeframes: function(timeframe) {
     if (Manager.Contains(timeframe, 'hour', false)) {
       return '1 hour before';

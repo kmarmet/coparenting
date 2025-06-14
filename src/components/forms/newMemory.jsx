@@ -1,8 +1,4 @@
 // Path: src\components\forms\newMemoryForm.jsx
-import UploadButton from '../shared/uploadButton'
-import AlertManager from '../../managers/alertManager'
-import ImageManager from '../../managers/imageManager'
-import Manager from '../../managers/manager'
 import moment from 'moment'
 import React, {useContext, useRef, useState} from 'react'
 import ActivityCategory from '../../constants/activityCategory'
@@ -15,8 +11,11 @@ import DB from '../../database/DB'
 import Storage from '../../database/storage'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useMemories from '../../hooks/useMemories'
+import AlertManager from '../../managers/alertManager'
 import AppManager from '../../managers/appManager'
 import DatasetManager from '../../managers/datasetManager'
+import ImageManager from '../../managers/imageManager'
+import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
@@ -24,8 +23,9 @@ import Memory from '../../models/new/memory'
 import Form from '../shared/form'
 import InputField from '../shared/inputField'
 import MyConfetti from '../shared/myConfetti'
-import ShareWithCheckboxes from '../shared/shareWithCheckboxes'
+import ShareWithDropdown from '../shared/shareWithDropdown'
 import Spacer from '../shared/spacer'
+import UploadButton from '../shared/uploadButton'
 
 export default function NewMemory() {
   const {state, setState} = useContext(globalState)
@@ -189,7 +189,7 @@ export default function NewMemory() {
           <Spacer height={8} />
 
           {/* SHARE WITH */}
-          <ShareWithCheckboxes onCheck={HandleShareWithSelection} />
+          <ShareWithDropdown onCheck={HandleShareWithSelection} />
 
           <Spacer height={8} />
           {/* UPLOAD BUTTON */}

@@ -17,7 +17,7 @@ import AddressInput from './addressInput'
 import CheckboxGroup from './checkboxGroup'
 import Form from './form'
 import InputField from './inputField'
-import ShareWithCheckboxes from './shareWithCheckboxes'
+import ShareWithDropdown from './shareWithDropdown'
 import Spacer from './spacer'
 import ViewSelector from './viewSelector'
 
@@ -185,7 +185,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
         </>
       )}
       <Spacer height={6} />
-      <ShareWithCheckboxes onCheck={HandleShareWithSelection} labelText="CONTACTS TO Share with" required={false} />
+      <ShareWithDropdown onCheck={HandleShareWithSelection} labelText="CONTACTS TO Share with" required={false} />
     </Form>
   )
 }

@@ -4,10 +4,6 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
 import React, {useContext, useState} from 'react'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
-import Form from '../../shared/form'
-import InputField from '../../shared/inputField' // Path: src\components\screens\visitation\fiftyFifty.jsx
-import MyConfetti from '../../shared/myConfetti'
-import ShareWithCheckboxes from '../../shared/shareWithCheckboxes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
 import ScheduleTypes from '../../../constants/scheduleTypes'
@@ -18,8 +14,12 @@ import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/new/calendarEvent'
-import Spacer from '../../shared/spacer'
 import AccordionTitle from '../../shared/accordionTitle'
+import Form from '../../shared/form'
+import InputField from '../../shared/inputField' // Path: src\components\screens\visitation\fiftyFifty.jsx
+import MyConfetti from '../../shared/myConfetti'
+import ShareWithDropdown from '../../shared/shareWithDropdown'
+import Spacer from '../../shared/spacer'
 
 export default function FiftyFifty({hide, showCard}) {
   const {state, setState} = useContext(globalState)
@@ -170,7 +170,7 @@ export default function FiftyFifty({hide, showCard}) {
         />
 
         {/* SHARE WITH */}
-        <ShareWithCheckboxes
+        <ShareWithDropdown
           required={false}
           shareWith={currentUser?.coParents?.map((x) => x.phone)}
           onCheck={HandleShareWithSelection}

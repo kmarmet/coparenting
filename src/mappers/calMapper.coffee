@@ -24,6 +24,27 @@ CalendarMapper =
     all = ["timeOfEvent","fiveMinutes","halfHour","hour"]
     return all
 
+  GetSelectReminderOptions: (reminders) ->
+    unformatted = CalendarMapper.allUnformattedTimes()
+    options = []
+    if Manager.IsValid(unformatted)
+      for reminder in unformatted
+        if Manager.IsValid(reminder)
+          options.push
+            label: CalendarMapper.readableReminderBeforeTimeframes(reminder)
+            value: reminder
+    return options
+
+  GetExistingReminderOptions: (reminders) ->
+    options = []
+    if Manager.IsValid(reminders)
+      for reminder in reminders
+        if Manager.IsValid(reminder)
+          options.push
+            label: CalendarMapper.readableReminderBeforeTimeframes(reminder)
+            value: reminder
+    return options
+
   readableReminderBeforeTimeframes: (timeframe) ->
     if Manager.Contains(timeframe,'hour', false)
       return  '1 hour before'

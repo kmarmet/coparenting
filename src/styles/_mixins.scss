@@ -889,7 +889,7 @@
     font-size: 22px;
   }
 
-  p {
+  .success-alert-text {
     display: block;
     margin-right: auto;
     background: transparent;
@@ -1916,19 +1916,6 @@
   &.active {
     border: 1px solid $greyBorderColor;
     border-radius: $borderRadius;
-
-    &.chat-input {
-      border: 0;
-
-      textarea {
-        &::placeholder {
-          position: relative;
-          top: 5px;
-          padding-left: 0;
-          left: 0;
-        }
-      }
-    }
   }
 
   &.white {
