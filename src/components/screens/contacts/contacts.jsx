@@ -31,7 +31,7 @@ import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 import ViewSelector from '../../shared/viewSelector'
 import NewChildForm from '../children/newChildForm'
-import NewCoparentForm from '../coparents/newCoparentForm'
+import NewCoParentForm from '../coparents/newCoParentForm'
 import NewParentForm from '../parents/newParentForm'
 
 const Contacts = () => {
@@ -177,7 +177,7 @@ const Contacts = () => {
   return (
     <>
       {/* NEW */}
-      <NewCoparentForm showCard={showNewCoparentCard} hideCard={() => setShowNewCoparentCard(false)} />
+      <NewCoParentForm showCard={showNewCoparentCard} hideCard={() => setShowNewCoparentCard(false)} />
       <NewChildForm showCard={showNewChildCard} hideCard={() => setShowNewChildCard(false)} />
       <NewParentForm showCard={showNewParentCard} hideCard={() => setShowNewParentCard(false)} />
 

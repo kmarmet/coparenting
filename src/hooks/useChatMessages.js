@@ -14,7 +14,6 @@ const useChatMessages = (chatId) => {
   useEffect(() => {
     const database = getDatabase()
     const dataRef = ref(database, path)
-    console.log('ChatID: ', chatId)
     const listener = onValue(
       dataRef,
       async (snapshot) => {

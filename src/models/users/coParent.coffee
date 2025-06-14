@@ -1,6 +1,6 @@
 import Manager from "../../managers/manager"
 
-class Coparent
+class CoParent
   constructor: (options = {}) ->
     @id = options.id ? Manager.GetUid()
     @name = options.name ? ''
@@ -11,4 +11,4 @@ class Coparent
     @relationshipToMe = options.relationshipToMe ? ''
     @email = options.email ? ''
 
-export default Coparent
+export default CoParent

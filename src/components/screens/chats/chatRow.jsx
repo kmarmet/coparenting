@@ -7,6 +7,7 @@ import useChats from '../../..//hooks/useChats'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import ScreenNames from '../../../constants/screenNames.coffee'
 import globalState from '../../../context.js'
+import useChatMessages from '../../../hooks/useChatMessages'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import AlertManager from '../../../managers/alertManager'
 import ChatManager from '../../../managers/chatManager.js'
@@ -22,6 +23,7 @@ export default function ChatRow({index, onClick, chat}) {
   const [lastMessageTimestamp, setLastMessageTimestamp] = useState('')
   const {currentUser} = useCurrentUser()
   const {chats} = useChats()
+  const {chatMessages} = useChatMessages(chat?.id)
 
   const handlers = useSwipeable({
     swipeDuration: 300,
@@ -64,15 +66,12 @@ export default function ChatRow({index, onClick, chat}) {
   }
 
   const GetLastMessage = async () => {
-    const chatMessages = await ChatManager.GetMessages(chat?.id)
     const lastMessage = chatMessages[chatMessages.length - 1]?.message
     setLastMessage(lastMessage)
     const timestamp = chatMessages[chatMessages.length - 1]?.timestamp
     const today = moment().format('MM/DD/yyyy')
     const lastMessageTimestampShort = moment(timestamp, DatetimeFormats.timestamp).format('MM/DD/yyyy')
     const yesterday = moment().subtract(1, 'day').format('MM/DD/yyyy')
-
-    // console.log(lastMessageTimestampShort)
 
     if (today !== lastMessageTimestampShort) {
       if (yesterday === lastMessageTimestampShort) {
@@ -93,7 +92,7 @@ export default function ChatRow({index, onClick, chat}) {
     if (Manager.IsValid(chats)) {
       GetLastMessage().then((r) => r)
     }
-  }, [chats])
+  }, [chats, otherMember, chatMessages])
 
   useEffect(() => {
     setTimeout(() => {

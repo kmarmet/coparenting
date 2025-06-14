@@ -7,14 +7,14 @@ import {MdSwapHorizontalCircle} from 'react-icons/md'
 import {RiMapPinTimeFill} from 'react-icons/ri'
 import {useSwipeable} from 'react-swipeable'
 import CreationForms from '../../constants/creationForms'
+import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import useChats from '../../hooks/useChats'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import ChatManager from '../../managers/chatManager'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import Overlay from './overlay'
-import ScreenNames from '../../constants/screenNames'
-import ChatManager from '../../managers/chatManager'
 
 const CreationMenu = () => {
   const {state, setState} = useContext(globalState)
@@ -41,7 +41,9 @@ const CreationMenu = () => {
   }
 
   useEffect(() => {
-    CheckIfChatsShouldBeShown().then((r) => r)
+    if (Manager.IsValid(chats)) {
+      CheckIfChatsShouldBeShown().then((r) => r)
+    }
   }, [chats, showCreationMenu])
 
   return (

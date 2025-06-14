@@ -59,36 +59,33 @@ ChatManager = {
     }
   },
   GetInactiveChatKeys: async function(currentUser, chats = []) {
-    var coParentKeys, inactive, memberKeys, members, ref1, validAccountKeys, validAccounts;
+    var activeChatKeys, i, inactive, key, len, members, test, validAccountKeys, validAccounts;
     inactive = [];
-    members = [];
-    memberKeys = [];
-    coParentKeys = [];
-    validAccountKeys = [];
     validAccounts = (await DB_UserScoped.getCoparentAccounts(currentUser));
+    validAccounts = validAccounts.filter((x) => {
+      return x.accountType === 'parent';
+    });
+    validAccountKeys = validAccounts != null ? validAccounts.map((x) => {
+      return x != null ? x.key : void 0;
+    }) : void 0;
+    members = chats != null ? chats.map((x) => {
+      return x != null ? x.members : void 0;
+    }) : void 0;
+    activeChatKeys = members.flat().map((x) => {
+      return x.key;
+    });
+    activeChatKeys = activeChatKeys.filter((x) => {
+      return x !== (currentUser != null ? currentUser.key : void 0);
+    });
     if (Manager.IsValid(validAccounts)) {
-      // If there are chats
-      if (Manager.IsValid(chats)) {
-        members = DatasetManager.getUniqueArray(chats != null ? chats.map((x) => {
-          return x != null ? x.members : void 0;
-        }) : void 0, true);
-        memberKeys = DatasetManager.getUniqueArray(members.map((x) => {
-          return x != null ? x.userKey : void 0;
-        }), true);
-        coParentKeys = DatasetManager.getUniqueArray(currentUser != null ? (ref1 = currentUser.coparents) != null ? ref1.map((x) => {
-          return x != null ? x.userKey : void 0;
-        }) : void 0 : void 0, true);
-        validAccountKeys = validAccounts != null ? validAccounts.map((x) => {
-          return x != null ? x.userKey : void 0;
-        }) : void 0;
-        inactive = memberKeys != null ? memberKeys.filter((x) => {
-          return !(coParentKeys != null ? coParentKeys.includes(x) : void 0) && !(validAccountKeys != null ? validAccountKeys.includes(x) : void 0);
-        }) : void 0;
-      } else {
-        // If no inactive chats
-        inactive = validAccounts != null ? validAccounts.map((x) => {
-          return x != null ? x.key : void 0;
-        }) : void 0;
+      test = activeChatKeys.filter((x) => {
+        return !validAccountKeys.includes(x);
+      });
+      for (i = 0, len = validAccountKeys.length; i < len; i++) {
+        key = validAccountKeys[i];
+        if (!activeChatKeys.includes(key)) {
+          inactive.push(key);
+        }
       }
     }
     return inactive;

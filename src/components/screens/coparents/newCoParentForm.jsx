@@ -1,10 +1,4 @@
 // Path: src\components\screens\coparents\newCoparentForm.jsx
-import CheckboxGroup from '../../shared/checkboxGroup'
-import Form from '../../shared/form'
-import InputField from '../../shared/inputField'
-import AlertManager from '../../../managers/alertManager'
-import Manager from '../../../managers/manager'
-import Coparent from '../../../models/users/coparent'
 import React, {useContext, useState} from 'react'
 import validator from 'validator'
 import InputTypes from '../../../constants/inputTypes'
@@ -13,15 +7,20 @@ import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
+import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
 import ObjectManager from '../../../managers/objectManager'
 import StringManager from '../../../managers/stringManager'
 import AddressInput from '../../shared/addressInput'
+import CheckboxGroup from '../../shared/checkboxGroup'
+import Form from '../../shared/form'
+import InputField from '../../shared/inputField'
 import Label from '../../shared/label'
 import Spacer from '../../shared/spacer'
 import ToggleButton from '../../shared/toggleButton'
 
-const NewCoparentForm = ({showCard, hideCard}) => {
+const NewCoParentForm = ({showCard, hideCard}) => {
   const {state, setState} = useContext(globalState)
   const {theme} = state
   const {currentUser} = useCurrentUser()
@@ -32,7 +31,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
   const [address, setAddress] = useState('')
   const [email, setEmail] = useState('')
   const [parentType, setParentType] = useState('')
-  const [coparentHasAccount, setCoparentHasAccount] = useState(false)
+  const [coParentHasAccount, setCoParentHasAccount] = useState(false)
 
   const ResetForm = async (successMessage = '') => {
     Manager.ResetForm('new-coparent-wrapper')
@@ -40,13 +39,13 @@ const NewCoparentForm = ({showCard, hideCard}) => {
     setAddress('')
     setEmail('')
     setParentType('')
-    setCoparentHasAccount(false)
+    setCoParentHasAccount(false)
     setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
     hideCard()
   }
 
   const Submit = async () => {
-    if (!validator.isEmail(email) && coparentHasAccount) {
+    if (!validator.isEmail(email) && coParentHasAccount) {
       AlertManager.throwError('Email address is not valid')
       return false
     }
@@ -66,7 +65,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
       return false
     }
 
-    if (coparentHasAccount && !Manager.IsValid(email)) {
+    if (coParentHasAccount && !Manager.IsValid(email)) {
       AlertManager.throwError('If the coparent has an account with us, their email is required')
       return false
     }
@@ -102,7 +101,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
     await ResetForm(`${StringManager.GetFirstNameOnly(name)} Added!`)
   }
 
-  const HandleCoparentType = (e) => {
+  const HandleCoParentType = (e) => {
     const type = e.dataset['key']
     DomManager.HandleCheckboxSelection(
       e,
@@ -131,7 +130,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
             <InputField
               inputType={InputTypes.email}
               inputValueType="email"
-              required={coparentHasAccount}
+              required={coParentHasAccount}
               placeholder={'Email Address'}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -139,7 +138,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
 
             <div className="flex">
               <Label text={'Co-Parent has an Account with Us'} />
-              <ToggleButton onCheck={() => setCoparentHasAccount(true)} onUncheck={() => setCoparentHasAccount(false)} />
+              <ToggleButton onCheck={() => setCoParentHasAccount(true)} onUncheck={() => setCoParentHasAccount(false)} />
             </div>
 
             <Spacer height={5} />
@@ -153,7 +152,7 @@ const NewCoparentForm = ({showCard, hideCard}) => {
                 currentUser,
                 customLabelArray: ['Biological', 'Step-Parent', 'Guardian', 'Other'],
               })}
-              onCheck={HandleCoparentType}
+              onCheck={HandleCoParentType}
             />
           </div>
         </div>
@@ -162,4 +161,4 @@ const NewCoparentForm = ({showCard, hideCard}) => {
   )
 }
 
-export default NewCoparentForm
+export default NewCoParentForm

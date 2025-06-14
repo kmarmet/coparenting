@@ -39,34 +39,19 @@ ChatManager =
 
   GetInactiveChatKeys: (currentUser, chats = []) ->
     inactive = []
-    members = []
-    memberKeys = []
-    coParentKeys = []
-    validAccountKeys = []
     validAccounts = await DB_UserScoped.getCoparentAccounts(currentUser)
+    validAccounts = validAccounts.filter (x) => x.accountType == 'parent'
+    validAccountKeys = validAccounts?.map((x) => x?.key)
+    members = chats?.map (x) => x?.members
+    activeChatKeys = members.flat().map (x) => x.key
+    activeChatKeys = activeChatKeys.filter (x) => x != currentUser?.key
 
     if Manager.IsValid(validAccounts)
-      # If there are chats
-      if Manager.IsValid(chats)
-        members = DatasetManager.getUniqueArray(
-          chats?.map((x) => x?.members),
-          true
-        )
-
-        memberKeys = DatasetManager.getUniqueArray(
-          members.map((x) => x?.userKey),
-          true
-        )
-        coParentKeys = DatasetManager.getUniqueArray(
-          currentUser?.coparents?.map((x) => x?.userKey),
-          true
-        )
-        validAccountKeys = validAccounts?.map((x) => x?.userKey)
-        inactive = memberKeys?.filter((x) => !coParentKeys?.includes(x) && !validAccountKeys?.includes(x))
-
-        # If no inactive chats
-      else
-        inactive = validAccounts?.map((x) => x?.key)
+      test = activeChatKeys.filter (x) => !validAccountKeys.includes(x)
+      for key in validAccountKeys
+        if !activeChatKeys.includes(key)
+          inactive.push(key)
+          
     return inactive
 
   GetToneAndSentiment: (message) ->

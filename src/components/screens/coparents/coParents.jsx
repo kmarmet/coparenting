@@ -1,11 +1,4 @@
 // Path: src\components\screens\parents\parents.jsx
-import NavBar from '../../navBar.jsx'
-import InputField from '../../shared/inputField'
-import NoDataFallbackText from '../../shared/noDataFallbackText'
-import DB_UserScoped from '../../../database/db_userScoped'
-import AlertManager from '../../../managers/alertManager'
-import Manager from '../../../managers/manager'
-import StringManager from '../../../managers/stringManager'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {BsFillSendFill} from 'react-icons/bs'
 import {CgClose} from 'react-icons/cg'
@@ -15,19 +8,26 @@ import {IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
+import DB_UserScoped from '../../../database/db_userScoped'
 import useCoParents from '../../../hooks/useCoParents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
 import EmailManager from '../../../managers/emailManager'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager'
+import NavBar from '../../navBar.jsx'
 import AddressInput from '../../shared/addressInput'
 import Form from '../../shared/form'
+import InputField from '../../shared/inputField'
+import NoDataFallbackText from '../../shared/noDataFallbackText'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 import CustomCoparentInfo from './customCoparentInfo'
-import NewCoparentForm from './newCoparentForm'
+import NewCoParentForm from './newCoParentForm'
 
-export default function Coparents() {
+export default function CoParents() {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
   const {currentUser} = useCurrentUser()
@@ -94,7 +94,7 @@ export default function Coparents() {
       />
 
       {/* NEW CO-PARENT FORM */}
-      <NewCoparentForm showCard={showNewCoParentFormCard} hideCard={() => setShowNewCoParentFormCard(false)} />
+      <NewCoParentForm showCard={showNewCoParentFormCard} hideCard={() => setShowNewCoParentFormCard(false)} />
 
       {/*  SCREEN ACTIONS */}
       <ScreenActionsMenu title="Manage Co-Parents">

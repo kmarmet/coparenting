@@ -1,7 +1,18 @@
+// Screens
+import emailjs from '@emailjs/browser'
+import {LocalizationProvider} from '@mui/x-date-pickers-pro/LocalizationProvider'
+import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment'
+import {LicenseInfo} from '@mui/x-license'
+import * as Sentry from '@sentry/react'
+import {initializeApp} from 'firebase/app'
+import {getAuth, onAuthStateChanged} from 'firebase/auth'
+import moment from 'moment'
 import React, {useEffect, useState} from 'react'
 
 import EditCalEvent from './components/forms/editCalEvent.jsx'
+import NewCalendarEvent from './components/forms/newCalendarEvent.jsx'
 import NewExpenseForm from './components/forms/newExpenseForm.jsx'
+import NewMemory from './components/forms/newMemory.jsx'
 import NewSwapRequest from './components/forms/newSwapRequest.jsx'
 import NewTransferChangeRequest from './components/forms/newTransferRequest.jsx'
 import FullMenu from './components/fullMenu'
@@ -13,8 +24,9 @@ import Chat from './components/screens/chats/chat.jsx'
 import Chats from './components/screens/chats/chats.jsx'
 import Children from './components/screens/children/children.jsx'
 import NewChildForm from './components/screens/children/newChildForm.jsx'
-import Coparents from './components/screens/coparents/coparents.jsx'
-import NewCoparentForm from './components/screens/coparents/newCoparentForm.jsx'
+import Contacts from './components/screens/contacts/contacts'
+import CoParents from './components/screens/coparents/coParents.jsx'
+import NewCoParentForm from './components/screens/coparents/newCoParentForm.jsx'
 import DocsList from './components/screens/documents/docsList.jsx'
 import DocViewer from './components/screens/documents/docViewer'
 import NewDocument from './components/screens/documents/newDocument.jsx'
@@ -23,6 +35,7 @@ import Help from './components/screens/help'
 import InstallApp from './components/screens/installApp.jsx'
 import Landing from './components/screens/landing'
 import Memories from './components/screens/memories.jsx'
+import Parents from './components/screens/parents/parents'
 import Profile from './components/screens/profile/profile.jsx'
 import ResetPassword from './components/screens/profile/resetPassword.jsx'
 import Settings from './components/screens/settings/settings.jsx'
@@ -32,35 +45,22 @@ import Updates from './components/screens/updates'
 import Vault from './components/screens/vault.jsx'
 import Visitation from './components/screens/visitation.jsx'
 import BrandBar from './components/shared/brandBar'
+import CreationMenu from './components/shared/creationMenu'
 import DesktopLeftSidebar from './components/shared/desktopLeftSidebar'
+import Loading from './components/shared/loading'
+import SuccessAlert from './components/shared/successAlert'
+import CreationForms from './constants/creationForms'
+import DatetimeFormats from './constants/datetimeFormats'
 import ScreenNames from './constants/screenNames'
 import StateObj from './constants/stateObj'
 import globalState from './context.js'
+import DB from './database/DB'
 import DB_UserScoped from './database/db_userScoped'
 import firebaseConfig from './firebaseConfig.js'
 import AppManager from './managers/appManager.js'
 import DomManager from './managers/domManager'
 import Manager from './managers/manager'
-// Screens
-import emailjs from '@emailjs/browser'
-import {LocalizationProvider} from '@mui/x-date-pickers-pro/LocalizationProvider'
-import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment'
-import {LicenseInfo} from '@mui/x-license'
-import * as Sentry from '@sentry/react'
-import {initializeApp} from 'firebase/app'
-import {getAuth, onAuthStateChanged} from 'firebase/auth'
-import moment from 'moment'
-import Contacts from './components/screens/contacts/contacts'
-import Parents from './components/screens/parents/parents'
-import CreationMenu from './components/shared/creationMenu'
-import Loading from './components/shared/loading'
-import SuccessAlert from './components/shared/successAlert'
-import CreationForms from './constants/creationForms'
-import DatetimeFormats from './constants/datetimeFormats'
-import DB from './database/DB'
 import UpdateManager from './managers/updateManager'
-import NewMemory from './components/forms/newMemory.jsx'
-import NewCalendarEvent from './components/forms/newCalendarEvent.jsx'
 
 export default function App() {
   // Initialize Firebase
@@ -238,7 +238,7 @@ export default function App() {
           <NewMemory showCard={creationFormToShow === CreationForms.memories} />
           <NewDocument showCard={creationFormToShow === CreationForms.documents} />
           <NewExpenseForm showCard={creationFormToShow === CreationForms.expense} />
-          <NewCoparentForm
+          <NewCoParentForm
             showCard={creationFormToShow === CreationForms.coparent}
             hideCard={() => setState({...state, creationFormToShow: '', refreshKey: Manager.GetUid()})}
           />
@@ -278,7 +278,7 @@ export default function App() {
             {currentScreen === ScreenNames.newExpense && <NewExpenseForm />}
             {currentScreen === ScreenNames.newSwapRequest && <NewSwapRequest />}
             {currentScreen === ScreenNames.newTransferRequest && <NewTransferChangeRequest />}
-            {currentScreen === ScreenNames.newCoparent && <NewCoparentForm />}
+            {currentScreen === ScreenNames.newCoparent && <NewCoParentForm />}
 
             {/* STANDARD */}
             {currentScreen === ScreenNames.installApp && <InstallApp />}
@@ -293,7 +293,7 @@ export default function App() {
             {currentScreen === ScreenNames.transferRequests && <TransferRequests />}
             {currentScreen === ScreenNames.memories && <Memories />}
             {currentScreen === ScreenNames.children && <Children />}
-            {currentScreen === ScreenNames.coparents && <Coparents />}
+            {currentScreen === ScreenNames.coparents && <CoParents />}
             {currentScreen === ScreenNames.parents && <Parents />}
             {currentScreen === ScreenNames.chat && <Chat />}
             {currentScreen === ScreenNames.chats && <Chats />}

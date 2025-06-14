@@ -11,7 +11,6 @@ import {useLongPress} from 'use-long-press'
 import ActivityCategory from '../../../constants/activityCategory'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
-import ModelNames from '../../../constants/modelNames'
 import globalState from '../../../context.js'
 import useChatMessages from '../../../hooks/useChatMessages'
 import useChats from '../../../hooks/useChats'
@@ -23,7 +22,6 @@ import DatasetManager from '../../../managers/datasetManager'
 import DateManager from '../../../managers/dateManager'
 import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
-import ObjectManager from '../../../managers/objectManager'
 import StringManager from '../../../managers/stringManager.coffee'
 import UpdateManager from '../../../managers/updateManager'
 import ChatMessage from '../../../models/chat/chatMessage'
@@ -116,19 +114,19 @@ const Chat = ({show, hide, recipient}) => {
       key: recipient?.key,
     }
 
-    chatMessage.message = messageText
+    console.log(chatMessage.recipient)
 
-    const cleanMessage = ObjectManager.GetModelValidatedObject(chatMessage, ModelNames.chatMessage)
+    chatMessage.message = messageText
 
     // Existing chat
     if (Manager.IsValid(chat)) {
-      await ChatManager.InsertChatMessage(chat?.id, cleanMessage)
+      await ChatManager.InsertChatMessage(chat?.id, chatMessage)
     }
 
     // Create new chat (for each member, if one doesn't exist between members)
     else {
       const newChatUid = await ChatManager.CreateAndInsertChat(sender, chatMessage.recipient)
-      await ChatManager.InsertChatMessage(newChatUid, cleanMessage)
+      await ChatManager.InsertChatMessage(newChatUid, chatMessage)
     }
 
     // SEND NOTIFICATION - Only Send if it is not paused for the recipient
@@ -275,7 +273,6 @@ const Chat = ({show, hide, recipient}) => {
 
   // ON CHAT MESSAGES CHANGE
   useEffect(() => {
-    console.log('Mesages', chatMessages)
     if (Manager.IsValid(chatMessages)) {
       DefineBookmarks().then((r) => r)
       setMessagesToLoop(chatMessages)

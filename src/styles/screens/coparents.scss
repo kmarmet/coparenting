@@ -22,12 +22,13 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: white;
       padding: 8px;
       @include hover;
       height: 80px;
       width: 80px;
       border-radius: 100%;
+      opacity: 0.5;
+      background: white;
 
       * {
         user-select: none;
@@ -58,11 +59,11 @@
       // ACTIVE
       &.active {
         transition: all 0.3s ease-in;
-        @include mainColorsGradient;
-        background: #ffed57;
+        background: white;
+        opacity: 1;
         * {
           transition: all 0.2s ease-in;
-          color: white;
+          color: $primaryText;
         }
 
         svg {
@@ -72,6 +73,7 @@
         .co-parent-name,
         .parent-name {
           opacity: 1;
+          color: $blend;
           font-size: 16px;
           font-weight: $fwBold;
         }
