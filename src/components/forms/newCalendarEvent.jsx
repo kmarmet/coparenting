@@ -22,13 +22,13 @@ import DatasetManager from '../../managers/datasetManager'
 import DomManager from '../../managers/domManager'
 import LogManager from '../../managers/logManager'
 import Manager from '../../managers/manager'
+import SelectDropdownManager from '../../managers/selectDropdownManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
 import CalMapper from '../../mappers/calMapper'
 import CalendarEvent from '../../models/new/calendarEvent'
 import AddressInput from '../shared/addressInput'
 import Button from '../shared/button'
-import CheckboxGroup from '../shared/checkboxGroup'
 import Form from '../shared/form'
 import InputField from '../shared/inputField'
 import Label from '../shared/label'
@@ -37,7 +37,7 @@ import SelectDropdown from '../shared/selectDropdown'
 import ShareWithDropdown from '../shared/shareWithDropdown'
 import Spacer from '../shared/spacer.jsx'
 import ToggleButton from '../shared/toggleButton'
-import ViewSelector from '../shared/viewSelector'
+import ViewDropdown from '../shared/viewDropdown'
 
 export default function NewCalendarEvent() {
   // APP STATE
@@ -62,6 +62,8 @@ export default function NewCalendarEvent() {
   const [includeChildren, setIncludeChildren] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
   const [dynamicInputs, setDynamicInputs] = useState([])
+  const [remindersDropdownSelections, setRemindersDropdownSelections] = useState([])
+  const [childrenDropdownSelections, setChildrenDropdownSelections] = useState([])
 
   // REF
   const newEvent = useRef(new CalendarEvent({startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)}))
@@ -95,15 +97,15 @@ export default function NewCalendarEvent() {
         newEvent.current.title = `${StringManager.formatEventTitle(newEvent.current.title)} (Visitation)`
       }
       newEvent.current.directionsLink = Manager.GetDirectionsLink(newEvent.current.address)
-      newEvent.current.children = eventChildren
       newEvent.current.ownerKey = currentUser?.key
       newEvent.current.createdBy = StringManager.GetFirstNameOnly(currentUser?.name)
-      newEvent.current.reminderTimes = eventReminderTimes
       newEvent.current.recurringInterval = recurringFrequency
       newEvent.current.fromVisitationSchedule = isVisitation
       newEvent.current.isRecurring = eventIsRecurring
       newEvent.current.isCloned = Manager.IsValid(clonedDates)
       newEvent.current.isDateRange = eventIsDateRange
+      newEvent.current.children = childrenDropdownSelections.map((x) => x.label)
+      newEvent.current.reminderTimes = remindersDropdownSelections.map((x) => (x = CalMapper.GetReminderTimes(x.value)))
 
       // return false
 
@@ -254,22 +256,6 @@ export default function NewCalendarEvent() {
     ])
   }
 
-  const GetReminderOptions = () => {
-    const unformatted = CalMapper.allUnformattedTimes()
-    let options = []
-    if (Manager.IsValid(unformatted)) {
-      for (let reminder of unformatted) {
-        if (Manager.IsValid(reminder)) {
-          options.push({
-            label: CalMapper.readableReminderBeforeTimeframes(reminder),
-            value: reminder,
-          })
-        }
-      }
-    }
-    return options
-  }
-
   useEffect(() => {
     if (dateToEdit) {
       newEvent.current.startDate = moment(dateToEdit).format(DatetimeFormats.dateForDb)
@@ -300,9 +286,9 @@ export default function NewCalendarEvent() {
         title={`Create Event`}
         submitIcon={<BsCalendarCheck />}
         viewSelector={
-          <ViewSelector
+          <ViewDropdown
             show={true}
-            labels={['Single Day', 'Multiple Days']}
+            views={['Single Day', 'Multiple Days']}
             dropdownPlaceholder={'Single Day'}
             updateState={(labelText) => {
               console.log(labelText)
@@ -386,8 +372,10 @@ export default function NewCalendarEvent() {
           {Manager.IsValid(children) && (
             <SelectDropdown
               options={childrenDropdownOptions}
-              labelText={'Select Children to Include'}
-              onChange={HandleChildSelection}
+              placeholder={'Select Children to Include'}
+              onSelection={(e) => {
+                setChildrenDropdownSelections(e)
+              }}
               isMultiple={true}
             />
           )}
@@ -395,7 +383,14 @@ export default function NewCalendarEvent() {
 
           {/* REMINDER */}
           {eventLength === EventLengths.single && (
-            <SelectDropdown isMultiple={true} labelText={'Select Reminders'} options={GetReminderOptions()} onChange={HandleReminderSelection} />
+            <SelectDropdown
+              isMultiple={true}
+              placeholder={'Select Reminders'}
+              options={SelectDropdownManager.GetDefault.ReminderOptions}
+              onSelection={(e) => {
+                setRemindersDropdownSelections(e)
+              }}
+            />
           )}
           <Spacer height={8} />
 
@@ -419,16 +414,16 @@ export default function NewCalendarEvent() {
                 </AccordionSummary>
                 <AccordionDetails>
                   <Spacer height={2} />
-                  <CheckboxGroup
-                    elClass={`${theme}`}
-                    onCheck={HandleRepeatingSelection}
-                    checkboxArray={DomManager.GetSelectOptions(
-                      DomManager.BuildCheckboxGroup({
-                        currentUser,
-                        labelType: 'recurring-intervals',
-                      }).map((x) => x.label)
-                    )}
-                  />
+                  {/*<CheckboxGroup*/}
+                  {/*  elClass={`${theme}`}*/}
+                  {/*  onCheck={HandleRepeatingSelection}*/}
+                  {/*  checkboxArray={SelectDropdownManager.GetDefault.ReminderOptions(*/}
+                  {/*    DomManager.BuildCheckboxGroup({*/}
+                  {/*      currentUser,*/}
+                  {/*      labelType: 'recurring-intervals',*/}
+                  {/*    }).map((x) => x.label)*/}
+                  {/*  )}*/}
+                  {/*/>*/}
 
                   {Manager.IsValid(recurringFrequency) && (
                     <InputField inputType={'date'} placeholder={'Date to End Recurring Events'} required={true}>

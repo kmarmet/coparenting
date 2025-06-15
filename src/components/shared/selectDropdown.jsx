@@ -1,37 +1,37 @@
-import React, {useContext} from 'react'
+import React from 'react'
 import Select from 'react-select'
 import makeAnimated from 'react-select/animated'
-import globalState from '../../context'
-import Manager from '../../managers/manager.js'
-import Label from './label.jsx'
-import Spacer from './spacer'
 
 const animatedComponents = makeAnimated()
 
-export default function SelectDropdown({defaultValues, wrapperClasses, isMultiple = false, onChange, labelText = '', options = []}) {
-  const {state, setState} = useContext(globalState)
-  const {theme, refreshKey, dateToEdit} = state
+export default function SelectDropdown({
+  value,
+  wrapperClasses,
+  uidClass = '',
+  isMultiple = false,
+  onSelection = (e) => {},
+  placeholder = '',
+  options = [],
+}) {
   return (
     <div className={wrapperClasses}>
-      {Manager.IsValid(labelText) && <Label text={labelText} />}
-      <Spacer height={2} />
       <Select
         required={true}
-        key={refreshKey}
         components={animatedComponents}
-        placeholder={labelText}
-        loadingMessage={'Loading...'}
+        placeholder={placeholder}
         isSearchable={false}
         isClearable={false}
         captureMenuScroll={false}
         blurInputOnSelect={false}
         closeMenuOnSelect={!isMultiple}
-        className={wrapperClasses}
+        className={`${wrapperClasses} select-dropdown`}
+        uidClass={uidClass}
         isMulti={isMultiple}
         menuShouldScrollIntoView={true}
-        defaultValue={defaultValues}
-        onChange={onChange}
+        value={value}
+        onChange={onSelection}
         options={options}
+        onMenuOpen={(e) => {}}
       />
     </div>
   )

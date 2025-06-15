@@ -268,6 +268,7 @@
       color: white !important;
     }
   }
+
   &[class*='-container'] {
     border-radius: $borderRadius !important;
     border: 0 !important;
@@ -286,6 +287,10 @@
       width: 94% !important;
       margin: 0 auto 8px auto !important;
       color: white !important;
+    }
+
+    [id*='listbox'] {
+      max-height: unset !important;
     }
   }
 }

@@ -27,6 +27,7 @@ import DomManager from '../../managers/domManager'
 import ImageManager from '../../managers/imageManager'
 import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
+import SelectDropdownManager from '../../managers/selectDropdownManager'
 import StringManager from '../../managers/stringManager.coffee'
 import UpdateManager from '../../managers/updateManager'
 import CalendarMapper from '../../mappers/calMapper'
@@ -348,10 +349,10 @@ export default function NewExpenseForm() {
 
           {/* CATEGORY */}
           <SelectDropdown
-            options={DomManager.GetSelectOptions(Object.values(ExpenseCategories))}
-            selectValue={Object.keys(ExpenseCategories)[0]}
+            options={SelectDropdownManager.GetDefault.ReminderOptions}
+            value={Object.keys(ExpenseCategories)[0]}
             onChange={HandleCategorySelection}
-            labelText={'Select a Category'}
+            placeholder={'Select a Category'}
             required={true}
             show={true}
           />
@@ -380,8 +381,8 @@ export default function NewExpenseForm() {
           {/* PAYER */}
           {Manager.IsValid(coParents) && (
             <SelectDropdown
-              options={DomManager.GetSelectOptions(coParents, true)}
-              labelText={'Select Expense Payer'}
+              options={SelectDropdownManager.GetDefault.Users(coParents)}
+              placeholder={'Select Expense Payer'}
               onChange={HandlePayerSelection}
             />
           )}
@@ -392,8 +393,8 @@ export default function NewExpenseForm() {
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.IsValid(children) && (
             <SelectDropdown
-              options={DomManager.GetSelectOptions(children, true)}
-              labelText={'Select Children to Include'}
+              options={SelectDropdownManager.GetDefault.Users(children)}
+              placeholder={'Select Children to Include'}
               onChange={HandleChildSelection}
               isMultiple={true}
             />

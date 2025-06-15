@@ -221,7 +221,6 @@
   flex-wrap: wrap;
   flex-direction: column;
   @include mainColorsGradient;
-
   &.active {
     opacity: 1;
     transition: all 0.4s ease-in;
@@ -413,11 +412,9 @@
   border-radius: 100%;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
   display: flex;
-  background: white;
-
+  background: $inputBackground;
+  @include square(55px);
   .location-pin-animation {
     transform: scale(0.65) rotate(45deg);
     position: relative;
@@ -425,7 +422,7 @@
   }
 
   svg {
-    color: $main;
+    color: white;
     width: unset;
     display: inline;
     transform: scale(1);
@@ -489,12 +486,12 @@
 @mixin mainColorsGradient {
   background-image: linear-gradient(
     135deg,
-    hsl(234deg 100% 67%) 0%,
+    hsl(234deg 100% 67%) 10%,
     hsl(236deg 92% 66%) 15%,
     hsl(240deg 84% 66%) 31%,
     hsl(244deg 78% 63%) 46%,
     hsl(248, 60%, 57%) 67%,
-    hsl(252, 49%, 48%) 100%
+    hsl(252, 49%, 50%) 80%
   );
 }
 
@@ -875,9 +872,14 @@
   width: max-content;
   min-width: calc(100vw - 30px);
   background: $greenForWhiteText;
-  top: 60px;
   z-index: $maxZIndex;
+  top: -200px;
+  transition: all 2s cubic-bezier(0.17, 0.67, 0.21, 0.95);
   @include bestShadow;
+  &.animate__fadeInDown {
+    transition: all 1s cubic-bezier(0.17, 0.67, 0.21, 0.95);
+    top: 60px;
+  }
 
   .alert-close-icon {
     margin-left: 10px;
@@ -2830,7 +2832,6 @@
   align-items: center;
   left: 0;
   right: 0;
-  z-index: -1;
   overscroll-behavior: none;
   display: flex;
   flex-direction: column;
@@ -2867,18 +2868,9 @@
     }
   }
 
-  &.active {
-    opacity: 1;
-    z-index: $maxZIndex;
-    .form-fade-wrapper {
-      z-index: 999;
-    }
-  }
-
   &.at-top {
     justify-content: flex-start;
     padding-top: 45px;
-
     overflow: auto;
   }
 
@@ -2891,7 +2883,6 @@
     border-radius: 0;
     width: calc(100vw - 20px);
     transition: all 0.8s ease-out;
-    opacity: 0;
     max-height: calc(100vh - 145px);
 
     .content-wrapper {
@@ -3038,6 +3029,7 @@
                   }
                 }
               }
+
               .rest-of-list-items {
                 opacity: 0;
                 transition: opacity 0.8s ease-out;
@@ -3105,6 +3097,7 @@
                 }
               }
 
+              // Icons
               a {
                 border: 0;
 
@@ -3368,6 +3361,12 @@
           text-decoration: none;
           max-width: 95%;
           @include ellipsis;
+
+          &.active {
+            white-space: wrap;
+            width: 100%;
+            text-overflow: unset;
+          }
 
           &.long-title {
             align-items: flex-start;

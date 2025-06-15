@@ -14,7 +14,6 @@ const Manager = {
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
       // log error
     }),
-
   ConditionalIntervalWithTimeout: (condition, startTime, successCallback = () => {}, failureCallback = () => {}, timeoutSeconds = 5) => {
     let int = setInterval(() => {
       const endTime = Date.now()

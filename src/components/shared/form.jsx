@@ -1,14 +1,14 @@
 // Path: src\components\shared\form.jsx
-import Manager from '../../managers/manager'
 import React, {cloneElement, useContext, useEffect} from 'react'
+import ButtonThemes from '../../constants/buttonThemes'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager'
+import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
+import CardButton from './cardButton'
 import Overlay from './overlay'
 import Spacer from './spacer'
 import StringAsHtmlElement from './stringAsHtmlElement'
-import ButtonThemes from '../../constants/buttonThemes'
-import CardButton from './cardButton'
 
 export default function Form({
   submitText,
@@ -118,12 +118,10 @@ export default function Form({
   return (
     <Overlay show={showCard}>
       <div key={refreshKey} className={`form-wrapper ${theme} ${wrapperClass} ${showCard ? 'active' : ''}`}>
-        <div
-          style={DomManager.AnimateDelayStyle(1, 0.002)}
-          className={`form-card ${DomManager.Animate.FadeInUp(showCard, '.form-fade-wrapper')} form-fade-wrapper `}>
+        <div style={DomManager.AnimateDelayStyle(1, 0.002)} className={`form-card form-fade-wrapper `}>
           <div className="content-wrapper">
             <div className="header">
-              <p className={'form-title'}>
+              <p className={'form-title'} onClick={(e) => DomManager.ToggleActive(e.currentTarget)}>
                 {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
                 {title}
               </p>

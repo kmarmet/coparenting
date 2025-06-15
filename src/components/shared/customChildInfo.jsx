@@ -19,7 +19,7 @@ import Form from './form'
 import InputField from './inputField'
 import ShareWithDropdown from './shareWithDropdown'
 import Spacer from './spacer'
-import ViewSelector from './viewSelector'
+import ViewDropdown from './viewDropdown'
 
 export default function CustomChildInfo({hideCard, showCard, activeChild}) {
   const {state, setState} = useContext(globalState)
@@ -96,10 +96,10 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
       title={'Add Your Own Info'}
       submitIcon={<GrCheckmark />}
       viewSelector={
-        <ViewSelector
+        <ViewDropdown
           defaultView={'General'}
           wrapperClasses="child-info"
-          labels={['General', 'Medical', 'Schooling', 'Behavior']}
+          views={['General', 'Medical', 'Schooling', 'Behavior']}
           updateState={(e) => setInfoSection(e.toLowerCase())}
         />
       }

@@ -1,16 +1,3 @@
-import MyConfetti from '../../shared/myConfetti.js'
-import ActivityCategory from '../../../constants/activityCategory'
-import DatetimeFormats from '../../../constants/datetimeFormats.js'
-import ExpenseCategories from '../../../constants/expenseCategories'
-import ModelNames from '../../../constants/modelNames'
-import globalState from '../../../context.js'
-import DatasetManager from '../../../managers/datasetManager'
-import DomManager from '../../../managers/domManager'
-import ExpenseManager from '../../../managers/expenseManager.js'
-import Manager from '../../../managers/manager'
-import ObjectManager from '../../../managers/objectManager'
-import StringManager from '../../../managers/stringManager'
-import UpdateManager from '../../../managers/updateManager'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -19,27 +6,40 @@ import React, {useContext, useEffect, useState} from 'react'
 import {BsCardImage} from 'react-icons/bs'
 import {MdOutlineEventRepeat} from 'react-icons/md'
 import {LazyLoadImage} from 'react-lazy-load-image-component'
-import InputTypes from '../../../constants/inputTypes'
-import DB from '../../../database/DB.js'
+import ActivityCategory from '../../../constants/activityCategory'
 import ButtonThemes from '../../../constants/buttonThemes'
+import DatetimeFormats from '../../../constants/datetimeFormats.js'
+import ExpenseCategories from '../../../constants/expenseCategories'
+import InputTypes from '../../../constants/inputTypes'
+import ModelNames from '../../../constants/modelNames'
+import globalState from '../../../context.js'
+import DB from '../../../database/DB.js'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useExpenses from '../../../hooks/useExpenses'
+import DatasetManager from '../../../managers/datasetManager'
+import DomManager from '../../../managers/domManager'
+import ExpenseManager from '../../../managers/expenseManager.js'
+import Manager from '../../../managers/manager'
+import ObjectManager from '../../../managers/objectManager'
+import StringManager from '../../../managers/stringManager'
+import UpdateManager from '../../../managers/updateManager'
 import NewExpenseForm from '../../forms/newExpenseForm.jsx'
 import NavBar from '../../navBar.jsx'
 import AccordionTitle from '../../shared/accordionTitle'
+import Button from '../../shared/button'
+import CardButton from '../../shared/cardButton'
 import DetailBlock from '../../shared/detailBlock'
 import Form from '../../shared/form.jsx'
 import InputField from '../../shared/inputField.jsx'
 import Label from '../../shared/label.jsx'
+import MyConfetti from '../../shared/myConfetti.js'
 import NoDataFallbackText from '../../shared/noDataFallbackText.jsx'
 import ScreenHeader from '../../shared/screenHeader'
 import SelectDropdown from '../../shared/selectDropdown.jsx'
 import Slideshow from '../../shared/slideshow'
 import Spacer from '../../shared/spacer'
-import ViewSelector from '../../shared/viewSelector.jsx'
+import ViewDropdown from '../../shared/viewDropdown.jsx'
 import PaymentOptions from './paymentOptions.jsx'
-import Button from '../../shared/button'
-import CardButton from '../../shared/cardButton'
 
 const SortByTypes = {
   nearestDueDate: 'Nearest Due Date',
@@ -144,7 +144,7 @@ export default function ExpenseTracker() {
   }
 
   const HandleExpenseTypeSelection = async (element, selectionType) => {
-    DomManager.toggleActive(element.target, '.filter-button.expense-type', true)
+    DomManager.ToggleActive(element.target, '.filter-button.expense-type', true)
     if (selectionType === 'single') {
       setSortedExpenses(expenses.filter((x) => x.isRecurring === false))
       setExpenseDateType('single')
@@ -160,7 +160,7 @@ export default function ExpenseTracker() {
   }
 
   const HandlePaidStatusSelection = async (element, status) => {
-    DomManager.toggleActive(element.target, '.filter-button.paid-status', true)
+    DomManager.ToggleActive(element.target, '.filter-button.paid-status', true)
     if (status === 'all') {
       setSortedExpenses(expenses)
       setPaidStatus('all')
@@ -229,7 +229,7 @@ export default function ExpenseTracker() {
     if (element.target.classList.contains('active')) {
       expensesByCategory = allExpenses.filter((x) => x.category !== category)
     }
-    DomManager.toggleActive(element.target)
+    DomManager.ToggleActive(element.target)
     if (category === 'None') {
       setSortedExpenses(allExpenses)
     } else {
@@ -344,11 +344,11 @@ export default function ExpenseTracker() {
         }}
         onDelete={DeleteExpense}
         viewSelector={
-          <ViewSelector
+          <ViewDropdown
             wrapperClasses="full-width"
             show={showDetails}
             dropdownPlaceholder="Details"
-            labels={['Details', 'Edit']}
+            views={['Details', 'Edit']}
             updateState={(e) => {
               setView(e)
             }}
@@ -521,7 +521,7 @@ export default function ExpenseTracker() {
               {/* CATEGORY */}
               <SelectDropdown
                 wrapperClasses={'expense-tracker in-form'}
-                selectValue={category}
+                value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 options={categoriesAsArray}
                 placeholder={'Category'}
@@ -612,9 +612,9 @@ export default function ExpenseTracker() {
                 <Label text={''} classes="sorting" />
                 <SelectDropdown
                   wrapperClasses={'sorting-accordion white-bg'}
-                  selectValue={sortMethod}
+                  value={sortMethod}
                   labelText={'Sort by'}
-                  options={DomManager.GetSelectOptions(Object.values(SortByTypes))}
+                  options={SelectDropdownManager.GetDefault.ReminderOptions(Object.values(SortByTypes))}
                   onChange={HandleSortBySelection}></SelectDropdown>
               </div>
             </AccordionDetails>

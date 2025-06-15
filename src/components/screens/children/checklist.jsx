@@ -1,4 +1,3 @@
-import Manager from '../../../managers/manager'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -13,6 +12,7 @@ import useActiveChild from '../../../hooks/useActiveChild'
 import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 
 export default function Checklist({fromOrTo, activeChildId}) {
@@ -33,7 +33,7 @@ export default function Checklist({fromOrTo, activeChildId}) {
     } else {
       setActiveItems([...activeItems, el.target.textContent.toLowerCase()])
     }
-    DomManager.toggleActive(el.target)
+    DomManager.ToggleActive(el.target)
   }
 
   const DeleteItem = async (el) => {

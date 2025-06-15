@@ -1,23 +1,23 @@
 // Path: src\components\screens\archives.jsx
-import CheckboxGroup from '../.../../shared/checkboxGroup.jsx'
-import Label from '../.../../shared/label.jsx'
-import SelectDropdown from '../.../../shared/selectDropdown.jsx'
-import DatetimeFormats from '../../constants/datetimeFormats.coffee'
-import DatasetManager from '../../managers/datasetManager.coffee'
-import Manager from '../../managers/manager'
-import StringManager from '../../managers/stringManager.coffee'
 import MenuItem from '@mui/material/MenuItem'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {RiFileExcel2Fill} from 'react-icons/ri'
+import CheckboxGroup from '../.../../shared/checkboxGroup.jsx'
+import Label from '../.../../shared/label.jsx'
+import SelectDropdown from '../.../../shared/selectDropdown.jsx'
+import DatetimeFormats from '../../constants/datetimeFormats.coffee'
 import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
-import useChats from '../../hooks/useChats'
 import useChatMessages from '../../hooks/useChatMessages'
+import useChats from '../../hooks/useChats'
 import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useExpenses from '../../hooks/useExpenses'
+import DatasetManager from '../../managers/datasetManager.coffee'
 import DomManager from '../../managers/domManager'
+import Manager from '../../managers/manager'
+import StringManager from '../../managers/stringManager.coffee'
 import VaultManager from '../../managers/vaultManager'
 import NavBar from '../navBar'
 import ScreenHeader from '../shared/screenHeader'
@@ -240,9 +240,9 @@ export default function Vault() {
               <SelectDropdown
                 labelText={'Sort By'}
                 id={'sorting-dropdown'}
-                options={DomManager.GetSelectOptions(Object.values(SortByTypes))}
+                options={SelectDropdownManager.GetDefault.ReminderOptions(Object.values(SortByTypes))}
                 wrapperClasses={'sorting-dropdown white'}
-                selectValue={sortMethod}
+                value={sortMethod}
                 onChange={HandleSortBySelection}>
                 <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
                 <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>

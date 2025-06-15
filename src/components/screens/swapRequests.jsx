@@ -1,32 +1,32 @@
 // Path: src\components\screens\swapRequests?.jsx
-import CheckboxGroup from '../shared/checkboxGroup'
-import Form from '../shared/form'
-import InputField from '../shared/inputField'
-import NoDataFallbackText from '../shared/noDataFallbackText'
+import moment from 'moment'
+import React, {useContext, useEffect, useState} from 'react'
+import {PiSwapDuotone} from 'react-icons/pi'
 import ActivityCategory from '../../constants/activityCategory'
+import DatetimeFormats from '../../constants/datetimeFormats'
+import InputTypes from '../../constants/inputTypes'
 import ModelNames from '../../constants/modelNames'
 import SwapDurations from '../../constants/swapDurations.js'
+import globalState from '../../context.js'
 import DB from '../../database/DB'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useSwapRequests from '../../hooks/useSwapRequests'
 import AlertManager from '../../managers/alertManager'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
-import moment from 'moment'
-import React, {useContext, useEffect, useState} from 'react'
-import {PiSwapDuotone} from 'react-icons/pi'
-import DatetimeFormats from '../../constants/datetimeFormats'
-import InputTypes from '../../constants/inputTypes'
-import globalState from '../../context.js'
-import useCurrentUser from '../../hooks/useCurrentUser'
-import useSwapRequests from '../../hooks/useSwapRequests'
 import NavBar from '../navBar'
+import CheckboxGroup from '../shared/checkboxGroup'
 import DetailBlock from '../shared/detailBlock'
+import Form from '../shared/form'
+import InputField from '../shared/inputField'
+import NoDataFallbackText from '../shared/noDataFallbackText'
 import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer'
 import ToggleButton from '../shared/toggleButton'
-import ViewSelector from '../shared/viewSelector'
+import ViewDropdown from '../shared/viewDropdown'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -194,7 +194,7 @@ export default function SwapRequests() {
           setActiveRequest(null)
           await ResetForm()
         }}
-        viewSelector={<ViewSelector labels={['details', 'edit']} visibleLabels={['details']} updateState={(e) => setView(e.toLowerCase())} />}
+        viewSelector={<ViewDropdown views={['details', 'edit']} visibleviews={['details']} updateState={(e) => setView(e.toLowerCase())} />}
         showCard={showDetails}>
         {/* DETAILS */}
         {view === 'details' && (

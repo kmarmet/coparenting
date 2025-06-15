@@ -1,11 +1,14 @@
-import React, {useContext} from 'react'
+import React, {useContext, useState} from 'react'
+import MultilineDetailBlockTypes from '../../constants/multilineDetailBlockTypes'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
+import StringManager from '../../managers/stringManager'
 
-const MultilineDetailBlock = ({array = [], title = ''}) => {
+const MultilineDetailBlock = ({array = [], title = '', dataType = MultilineDetailBlockTypes.Reminders}) => {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
+  const [showAll, setShowAll] = useState(false)
 
   return (
     <>
@@ -15,23 +18,26 @@ const MultilineDetailBlock = ({array = [], title = ''}) => {
           onClick={(e) => {
             const target = e.currentTarget
             const restOfList = target.querySelector(`.rest-of-list-items`)
-            const ellipseElement = target.querySelector(`.ellipsis`)
-            DomManager.toggleActive(restOfList)
-            if (Manager.IsValid(ellipseElement)) {
-              ellipseElement.classList.toggle('hide')
-            }
+            DomManager.ToggleActive(restOfList)
+            setShowAll(!showAll)
           }}>
           <p className={`block-text list`}>
-            {array[0]}
-            {array.length > 1 && <span className="ellipsis">...</span>}
+            {dataType === MultilineDetailBlockTypes.ShareWith && StringManager.GetFirstNameAndLastInitial(array[0])}
+            {dataType === MultilineDetailBlockTypes.Reminders && StringManager.uppercaseFirstLetterOfAllWords(array[0])}
+            {array.length > 1 && !showAll && <span className="ellipsis">...</span>}
           </p>
           <div className="rest-of-list-items">
-            {array.map((arrItem, index) => {
+            {array?.flat()?.map((arrItem, index) => {
               if (index < 1) return
               return (
-                <p className={`block-text`} key={index}>
-                  {arrItem}
-                </p>
+                <div key={index}>
+                  {dataType === MultilineDetailBlockTypes.ShareWith && (
+                    <p className={`block-text`}>{StringManager.GetFirstNameAndLastInitial(arrItem)}</p>
+                  )}
+                  {dataType === MultilineDetailBlockTypes.Reminders && (
+                    <p className={`block-text`}>{StringManager.uppercaseFirstLetterOfAllWords(arrItem)}</p>
+                  )}
+                </div>
               )
             })}
           </div>

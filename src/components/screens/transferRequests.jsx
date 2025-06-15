@@ -1,27 +1,27 @@
 // Path: src\components\screens\transferRequests?.jsx
+import moment from 'moment'
+import React, {useContext, useEffect, useState} from 'react'
+import {setKey} from 'react-geocode'
+import {PiCarProfileDuotone} from 'react-icons/pi'
+import NoDataFallbackText from '../.../..//shared/noDataFallbackText'
 import Form from '../.../../shared/form'
 import Map from '../.../../shared/map.jsx'
-import NoDataFallbackText from '../.../..//shared/noDataFallbackText'
 import ActivityCategory from '../../constants/activityCategory'
+import ButtonThemes from '../../constants/buttonThemes'
 import DatetimeFormats from '../../constants/datetimeFormats'
+import InputTypes from '../../constants/inputTypes'
 import ModelNames from '../../constants/modelNames'
+import globalState from '../../context.js'
 import DB from '../../database/DB'
+import useCoParents from '../../hooks/useCoParents'
+import useCurrentUser from '../../hooks/useCurrentUser'
+import useTransferRequests from '../../hooks/useTransferRequests'
 import AlertManager from '../../managers/alertManager'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager.js'
-import moment from 'moment'
-import React, {useContext, useEffect, useState} from 'react'
-import {setKey} from 'react-geocode'
-import {PiCarProfileDuotone} from 'react-icons/pi'
-import ButtonThemes from '../../constants/buttonThemes'
-import InputTypes from '../../constants/inputTypes'
-import globalState from '../../context.js'
-import useCoParents from '../../hooks/useCoParents'
-import useCurrentUser from '../../hooks/useCurrentUser'
-import useTransferRequests from '../../hooks/useTransferRequests'
 import NavBar from '../navBar'
 import AddressInput from '../shared/addressInput'
 import CardButton from '../shared/cardButton'
@@ -30,7 +30,7 @@ import Label from '../shared/label.jsx'
 import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer.jsx'
 import ToggleButton from '../shared/toggleButton'
-import ViewSelector from '../shared/viewSelector'
+import ViewDropdown from '../shared/viewDropdown'
 
 const Decisions = {
   approved: 'APPROVED',
@@ -184,7 +184,7 @@ export default function TransferRequests() {
         hasSubmitButton={activeRequest?.ownerKey !== currentUser?.key}
         onSubmit={() => SelectDecision(Decisions.approved)}
         wrapperClass="transfer-change form at-top"
-        viewSelector={<ViewSelector dropdownPlaceholder="Details" labels={['Details', 'Edit']} updateState={(e) => setView(e)} />}
+        viewSelector={<ViewDropdown dropdownPlaceholder="Details" views={['Details', 'Edit']} updateState={(e) => setView(e)} />}
         thirdButtonText="Decline"
         className="transfer-change"
         extraButtons={[

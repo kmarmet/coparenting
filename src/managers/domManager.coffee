@@ -5,7 +5,6 @@ import DatasetManager from "./datasetManager"
 import DB_UserScoped from "../database/db_userScoped"
 import CalMapper from "../mappers/calMapper"
 import DateManager from "./dateManager"
-import StringManager from "./stringManager"
 
 DomManager = {
   AnimateDelayStyle: (index, delay = .2) ->
@@ -149,24 +148,9 @@ DomManager = {
         item.classList.remove(DomManager.AnimateClasses[animateName].enter)
 
       allMenuItems.forEach (item, index) ->
-        if index == 0
-          item.classList.add(DomManager.AnimateClasses[animateName].enter)
-        else
-          setTimeout ->
-            AddClasses(item)
-          , index * delay
-
-  GetSelectOptions: (optionsArray = [], optionsAreUsers= false) ->
-    options = []
-    if Manager.IsValid(optionsArray)
-      for option in optionsArray
-        if optionsAreUsers
-          options.push({value: option?.userKey || option?.key, label: StringManager?.uppercaseFirstLetterOfAllWords(option?.name || option?.general?.name)})
-
-        else
-          options.push({value: option, label: StringManager.uppercaseFirstLetterOfAllWords(option)})
-    return options
-
+        setTimeout ->
+          AddClasses(item)
+        , index * delay
 
   SetDefaultCheckboxes: (checkboxContainerClass, object, propName, isArray = false, values) ->
     # Share With
@@ -185,7 +169,7 @@ DomManager = {
       reminderTimes = values
       if reminderIsValid
         for timeframe in reminderTimes
-          box = document.querySelector("[data-label='#{CalMapper.readableReminderBeforeTimeframes(timeframe)}'] .box")
+          box = document.querySelector("[data-label='#{CalMapper.GetReadableReminderTime(timeframe)}'] .box")
           if Manager.IsValid(box)
             box.classList.add('active')
 
@@ -225,7 +209,7 @@ DomManager = {
     clickedEl = e.currentTarget
     key = e.currentTarget.dataset['key']
     updated = DatasetManager.ToggleInArray(refToUpdate?.current?.shareWith, key)
-    DomManager.toggleActive(clickedEl)
+    DomManager.ToggleActive(clickedEl)
 
     return DatasetManager.GetValidArray(updated)
 
@@ -277,7 +261,7 @@ DomManager = {
           if Manager.IsValid(defaultLabels) and defaultLabels.includes(label)
             isActive = true
           if labelType and labelType is 'reminder-times'
-            label = CalMapper.readableReminderBeforeTimeframes(label)
+            label = CalMapper.GetReadableReminderTime(label)
           if Manager.IsValid(label)
             checkboxGroup.push
               label: label
@@ -306,9 +290,10 @@ DomManager = {
   ScrollToTopOfPage: () ->
     window.scrollTo(0, 0)
 
-  toggleActive: (element, iterationClass, removeActiveFromAllFirst = false) ->
+  ToggleActive: (element, iterationClass = [], removeActiveFromAllFirst = false) ->
     if removeActiveFromAllFirst && Manager.IsValid iterationClass, true
       document.querySelectorAll(iterationClass).forEach (x) -> x?.classList.remove('active')
+
 
     element.classList.toggle("active")
 

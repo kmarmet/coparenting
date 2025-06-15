@@ -24,7 +24,7 @@ class CalendarEvent
     @visitationSchedule = options.visitationSchedule ? ''
 
   # ARRAYS
-    @reminderTimes = options.reminderTimes ? []
+    @GetReminderTimes = options.GetReminderTimes ? []
     @shareWith = options.shareWith ? []
     @children = options.children ? []
     @sentReminders = options.sentReminders ? []

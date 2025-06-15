@@ -11,12 +11,12 @@ export default function Checkbox({isActive, text, onCheck, wrapperClass = '', da
   const ToggleActive = (e) => {
     const checkboxWrapper = e.currentTarget
     const icon = checkboxWrapper.querySelector('.checkbox-text svg')
-    DomManager.toggleActive(checkboxWrapper)
+    DomManager.ToggleActive(checkboxWrapper)
 
     if (onCheck) {
       onCheck(e.currentTarget)
     }
-    DomManager.toggleActive(icon)
+    DomManager.ToggleActive(icon)
   }
 
   return (

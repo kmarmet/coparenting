@@ -29,7 +29,7 @@ import Map from '../../shared/map'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
-import ViewSelector from '../../shared/viewSelector'
+import ViewDropdown from '../../shared/viewDropdown'
 import NewChildForm from '../children/newChildForm'
 import NewCoParentForm from '../coparents/newCoParentForm'
 import NewParentForm from '../parents/newParentForm'
@@ -229,11 +229,11 @@ const Contacts = () => {
         deleteButtonText={`Remove`}
         submitText={'Update'}
         viewSelector={
-          <ViewSelector
+          <ViewDropdown
             show={showModal}
             key={refreshKey}
             dropdownPlaceholder="Details"
-            labels={['Details', 'Edit']}
+            views={['Details', 'Edit']}
             updateState={(labelText) => {
               setView(labelText)
             }}

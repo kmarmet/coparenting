@@ -41,7 +41,7 @@ export default function CoparentInputs({add, coparentsLength = 1}) {
         parentLabel={name.length > 0 ? `${StringManager.uppercaseFirstLetterOfAllWords(name)}'s Parent Type` : 'Parent Type'}
         className="coparent-type"
         skipNameFormatting={true}
-        checkboxLabels={['Step-Parent', 'Biological Parent', "Partner's Co-Parent"]}
+        checkboxviews={['Step-Parent', 'Biological Parent', "Partner's Co-Parent"]}
         onCheck={handleCoparentType}
       />
       {showAddButton && name.length > 0 && userPhone.length > 0 && parentType.length > 0 && (

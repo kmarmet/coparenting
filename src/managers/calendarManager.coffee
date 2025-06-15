@@ -78,7 +78,7 @@ export default CalendarManager =
       if Manager.IsValid(eventObject.endTime)
         dateObject.endTime = moment(eventObject.endTime).format(DateFormats.timeForDb)
 
-      dateObject.reminderTimes = eventObject.reminderTimes
+      dateObject.reminderTimes = eventObject.GetReminderTimes
       dateObject.recurrenceInterval = eventObject.recurringInterval
       datesToPush.push dateObject
 

@@ -27,7 +27,7 @@ CalendarEvent = class CalendarEvent {
     this.holidayName = (ref16 = options.holidayName) != null ? ref16 : '';
     this.visitationSchedule = (ref17 = options.visitationSchedule) != null ? ref17 : '';
     // ARRAYS
-    this.reminderTimes = (ref18 = options.reminderTimes) != null ? ref18 : [];
+    this.GetReminderTimes = (ref18 = options.GetReminderTimes) != null ? ref18 : [];
     this.shareWith = (ref19 = options.shareWith) != null ? ref19 : [];
     this.children = (ref20 = options.children) != null ? ref20 : [];
     this.sentReminders = (ref21 = options.sentReminders) != null ? ref21 : [];

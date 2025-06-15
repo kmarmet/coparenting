@@ -4,7 +4,7 @@ import moment from "moment"
 import Manager from "../managers/manager"
 
 CalendarMapper =
-  reminderTimes: (timeframe) ->
+  GetReminderTimes: (timeframe) ->
     if Manager.Contains(timeframe,'hour')
       return ReminderTimes.hour
     if Manager.Contains(timeframe,'30')
@@ -14,46 +14,35 @@ CalendarMapper =
     if Manager.Contains(timeframe,'event')
       return ReminderTimes.timeOfEvent
 
-  allReadableReminderTimes: () ->
+  GetReadableReminderTimes: () ->
     readableTimes = []
     for time in Object.keys(ReminderTimes)
-      readableTimes.push(CalendarMapper.readableReminderBeforeTimeframes(time))
+      readableTimes.push(CalendarMapper.GetReadableReminderTime(time))
     return readableTimes
 
   allUnformattedTimes: () ->
     all = ["timeOfEvent","fiveMinutes","halfHour","hour"]
     return all
 
-  GetSelectReminderOptions: (reminders) ->
-    unformatted = CalendarMapper.allUnformattedTimes()
-    options = []
-    if Manager.IsValid(unformatted)
-      for reminder in unformatted
-        if Manager.IsValid(reminder)
-          options.push
-            label: CalendarMapper.readableReminderBeforeTimeframes(reminder)
-            value: reminder
-    return options
-
-  GetExistingReminderOptions: (reminders) ->
-    options = []
-    if Manager.IsValid(reminders)
-      for reminder in reminders
-        if Manager.IsValid(reminder)
-          options.push
-            label: CalendarMapper.readableReminderBeforeTimeframes(reminder)
-            value: reminder
-    return options
-
-  readableReminderBeforeTimeframes: (timeframe) ->
+  GetReadableReminderTime: (timeframe) ->
     if Manager.Contains(timeframe,'hour', false)
-      return  '1 hour before'
-    if Manager.Contains(timeframe,'halfHour', false)
-      return  '30 minutes before'
-    if Manager.Contains(timeframe,'fiveMinutes', false)
-      return  '5 minutes before'
-    if Manager.Contains(timeframe,'timeOfEvent', false)
-      return  'At event time'
+      return  '1 Hour Before'
+    if Manager.Contains(timeframe,'half', false)
+      return  '30 Minutes Before'
+    if Manager.Contains(timeframe,'five', false)
+      return  '5 Minutes Before'
+    if Manager.Contains(timeframe,'time', false)
+      return  'At Event Time'
+
+  GetShortenedReadableReminderTime: (timeframe) ->
+    if Manager.Contains(timeframe,'hour', false)
+      return  '1 Hour'
+    if Manager.Contains(timeframe,'half', false)
+      return  '30 Minutes'
+    if Manager.Contains(timeframe,'five', false)
+      return  '5 Minutes'
+    if Manager.Contains(timeframe,'time', false)
+      return  'Time of Event'
 
   readableRepeatIntervals: (selectedInterval) ->
     interval = null

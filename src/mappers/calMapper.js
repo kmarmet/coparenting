@@ -10,7 +10,7 @@ import moment from "moment";
 import Manager from "../managers/manager";
 
 CalendarMapper = {
-  reminderTimes: function(timeframe) {
+  GetReminderTimes: function(timeframe) {
     if (Manager.Contains(timeframe, 'hour')) {
       return ReminderTimes.hour;
     }
@@ -24,13 +24,13 @@ CalendarMapper = {
       return ReminderTimes.timeOfEvent;
     }
   },
-  allReadableReminderTimes: function() {
+  GetReadableReminderTimes: function() {
     var i, len, readableTimes, ref, time;
     readableTimes = [];
     ref = Object.keys(ReminderTimes);
     for (i = 0, len = ref.length; i < len; i++) {
       time = ref[i];
-      readableTimes.push(CalendarMapper.readableReminderBeforeTimeframes(time));
+      readableTimes.push(CalendarMapper.GetReadableReminderTime(time));
     }
     return readableTimes;
   },
@@ -39,51 +39,32 @@ CalendarMapper = {
     all = ["timeOfEvent", "fiveMinutes", "halfHour", "hour"];
     return all;
   },
-  GetSelectReminderOptions: function(reminders) {
-    var i, len, options, reminder, unformatted;
-    unformatted = CalendarMapper.allUnformattedTimes();
-    options = [];
-    if (Manager.IsValid(unformatted)) {
-      for (i = 0, len = unformatted.length; i < len; i++) {
-        reminder = unformatted[i];
-        if (Manager.IsValid(reminder)) {
-          options.push({
-            label: CalendarMapper.readableReminderBeforeTimeframes(reminder),
-            value: reminder
-          });
-        }
-      }
-    }
-    return options;
-  },
-  GetExistingReminderOptions: function(reminders) {
-    var i, len, options, reminder;
-    options = [];
-    if (Manager.IsValid(reminders)) {
-      for (i = 0, len = reminders.length; i < len; i++) {
-        reminder = reminders[i];
-        if (Manager.IsValid(reminder)) {
-          options.push({
-            label: CalendarMapper.readableReminderBeforeTimeframes(reminder),
-            value: reminder
-          });
-        }
-      }
-    }
-    return options;
-  },
-  readableReminderBeforeTimeframes: function(timeframe) {
+  GetReadableReminderTime: function(timeframe) {
     if (Manager.Contains(timeframe, 'hour', false)) {
-      return '1 hour before';
+      return '1 Hour Before';
     }
-    if (Manager.Contains(timeframe, 'halfHour', false)) {
-      return '30 minutes before';
+    if (Manager.Contains(timeframe, 'half', false)) {
+      return '30 Minutes Before';
     }
-    if (Manager.Contains(timeframe, 'fiveMinutes', false)) {
-      return '5 minutes before';
+    if (Manager.Contains(timeframe, 'five', false)) {
+      return '5 Minutes Before';
     }
-    if (Manager.Contains(timeframe, 'timeOfEvent', false)) {
-      return 'At event time';
+    if (Manager.Contains(timeframe, 'time', false)) {
+      return 'At Event Time';
+    }
+  },
+  GetShortenedReadableReminderTime: function(timeframe) {
+    if (Manager.Contains(timeframe, 'hour', false)) {
+      return '1 Hour';
+    }
+    if (Manager.Contains(timeframe, 'half', false)) {
+      return '30 Minutes';
+    }
+    if (Manager.Contains(timeframe, 'five', false)) {
+      return '5 Minutes';
+    }
+    if (Manager.Contains(timeframe, 'time', false)) {
+      return 'Time of Event';
     }
   },
   readableRepeatIntervals: function(selectedInterval) {

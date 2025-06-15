@@ -26,7 +26,7 @@ import Label from '../shared/label'
 import ShareWithDropdown from '../shared/shareWithDropdown'
 import Spacer from '../shared/spacer'
 import ToggleButton from '../shared/toggleButton'
-import ViewSelector from '../shared/viewSelector'
+import ViewDropdown from '../shared/viewDropdown'
 
 export default function NewSwapRequest() {
   const {state, setState} = useContext(globalState)
@@ -188,8 +188,8 @@ export default function NewSwapRequest() {
       title={'Request Visitation Swap'}
       subtitle="Request for your child(ren) to remain with you during the designated visitation time of your co-parent."
       viewSelector={
-        <ViewSelector
-          labels={['Day', 'Days', 'Hours']}
+        <ViewDropdown
+          views={['Day', 'Days', 'Hours']}
           updateState={(e) => {
             if (e === 'Day') {
               ChangeSwapDuration(SwapDurations.single)

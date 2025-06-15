@@ -1,17 +1,17 @@
-import Spacer from '../../shared/spacer'
-import ViewSelector from '../../shared/viewSelector'
-import DB from '../../../database/DB'
-import Manager from '../../../managers/manager'
-import Checklist from '../../../models/new/checklist.js'
 import React, {useContext, useEffect, useState} from 'react'
 import {MdOutlineChecklist} from 'react-icons/md'
 import {PiListChecksFill, PiTrashSimpleFill} from 'react-icons/pi'
 import globalState from '../../../context'
+import DB from '../../../database/DB'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
+import Checklist from '../../../models/new/checklist.js'
 // Path: src\components\screens\childInfo\checklists.jsx
 import Form from '../../shared/form'
+import Spacer from '../../shared/spacer'
+import ViewDropdown from '../../shared/viewDropdown'
 
 export default function Checklists({showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
@@ -41,7 +41,7 @@ export default function Checklists({showCard, hideCard}) {
     } else {
       setActiveItems([...activeItems, el.target.textContent.toLowerCase()])
     }
-    DomManager.toggleActive(el.target)
+    DomManager.ToggleActive(el.target)
   }
 
   const deleteItem = async (el) => {
@@ -139,7 +139,7 @@ export default function Checklists({showCard, hideCard}) {
       hasSubmitButton={false}
       title={'Checklists'}
       viewSelector={
-        <ViewSelector
+        <ViewDropdown
           shouldUpdateStateOnLoad={false}
           updateState={(text) => {
             const _view = text.toLowerCase()
@@ -150,7 +150,7 @@ export default function Checklists({showCard, hideCard}) {
             }
           }}
           wrapperClasses={'child-info'}
-          labels={destinationLabels}
+          views={destinationLabels}
         />
       }
       subtitle={`Review transfer checklists to guarantee that all items are accounted for during transitions to or from a co-parent's home.  ${DomManager.tapOrClick(

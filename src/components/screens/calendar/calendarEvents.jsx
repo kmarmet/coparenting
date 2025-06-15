@@ -1,22 +1,39 @@
 // Path: src\components\screens\calendar\calendarEvents.jsx
-import DatetimeFormats from '../../../constants/datetimeFormats'
-import Manager from '../../../managers/manager'
 import moment from 'moment'
 import React, {useContext, useEffect} from 'react'
 import {BiSolidBellRing} from 'react-icons/bi'
 import {FaChildren, FaNoteSticky} from 'react-icons/fa6'
 import {MdAssistantNavigation, MdEventRepeat, MdLocalPhone} from 'react-icons/md'
 import {PiLinkBold} from 'react-icons/pi'
+import {useSwipeable} from 'react-swipeable'
+import DatetimeFormats from '../../../constants/datetimeFormats'
 import globalState from '../../../context.js'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import DatasetManager from '../../../managers/datasetManager.coffee'
 import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 
 export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (event) => {}}) {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
   const {currentUser} = useCurrentUser()
+
+  const handlers = useSwipeable({
+    swipeDuration: 300,
+    preventScrollOnSwipe: true,
+    onSwipedLeft: (e) => {
+      const row = e.event.currentTarget
+      // setActiveSwipeRow(row)
+      console.log('here')
+      // row.classList.add('active')
+    },
+    onSwipedRight: (e) => {
+      const row = e.event.currentTarget
+      // setActiveSwipeRow(row)
+      // row.classList.remove('active')
+    },
+  })
 
   const GetRowDotColor = (dayDate) => {
     const arr = [...eventsOfActiveDay]
@@ -114,7 +131,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
                 data-from-date={startDate}
                 className={`row ${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className}
                 `}>
-                <div className="text flex space-between">
+                <div className="text flex space-between" {...handlers}>
                   {/* EVENT NAME */}
                   <div className="flex space-between" id="title-wrapper">
                     <p className="title flex" id="title" data-event-id={event?.id}>
