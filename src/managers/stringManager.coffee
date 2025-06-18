@@ -40,7 +40,7 @@ StringManager = {
     if Manager.IsValid(fullName, true)
       names = fullName.split(" ")
       firstName = names[0]
-      lastNameInitial = if names.length > 1 then names[names.length - 1][0] else ""
+      lastNameInitial = if names?.length > 1 then names?[names?.length - 1]?[0] else ""
       "#{firstName} #{lastNameInitial}"
     else
       fullName
@@ -62,7 +62,7 @@ StringManager = {
     returnString = name.toString()
     return returnString if !returnString  or returnString.length == 0
     returnString = returnString.split(' ')[0]
-    StringManager.uppercaseFirstLetterOfAllWords(returnString)
+    StringManager.UppercaseFirstLetterOfAllWords(returnString)
 
   RemoveAllLetters: (input) ->
     return input.replace(/[a-zA-Z]/g, '')
@@ -194,7 +194,7 @@ StringManager = {
   getFirstWord: (input) ->
     input.toString().replace(/ .*/, '')
 
-  uppercaseFirstLetterOfAllWords: (input) ->
+  UppercaseFirstLetterOfAllWords: (input) ->
     if !Manager.IsValid(input, true)
       return input
     words = input?.toString()
@@ -210,7 +210,7 @@ StringManager = {
 
   formatEventTitle: (title) ->
     if title and title.length > 0
-      title = StringManager.uppercaseFirstLetterOfAllWords(title)
+      title = StringManager.UppercaseFirstLetterOfAllWords(title)
       title = StringManager.FormatTitle(title)
       return title
 
@@ -222,7 +222,7 @@ StringManager = {
       return title
 
     if uppercase
-      title = StringManager.uppercaseFirstLetterOfAllWords(title)
+      title = StringManager.UppercaseFirstLetterOfAllWords(title)
 
     title = title.toString()
       .replaceAll(" To ", " to ")

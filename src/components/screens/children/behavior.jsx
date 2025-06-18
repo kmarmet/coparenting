@@ -1,9 +1,4 @@
 // Path: src\components\screens\childInfo\behavior.jsx
-import InputField from '../../shared/inputField'
-import DB from '../../../database/DB'
-import DB_UserScoped from '../../../database/db_userScoped'
-import AlertManager from '../../../managers/alertManager'
-import Manager from '../../../managers/manager'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -13,9 +8,14 @@ import {FaBrain, FaMinus, FaPlus} from 'react-icons/fa6'
 
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
+import DB from '../../../database/DB'
+import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useSharedChildInfo from '../../../hooks/useSharedChildInfo'
+import AlertManager from '../../../managers/alertManager'
+import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
+import InputField from '../../shared/inputField'
 import Spacer from '../../shared/spacer'
 
 export default function Behavior({activeChild}) {
@@ -109,7 +109,7 @@ export default function Behavior({activeChild}) {
             {behaviorValues &&
               behaviorValues.map((prop, index) => {
                 let infoLabel = StringManager.spaceBetweenWords(prop[0])
-                infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel).replaceAll('OF', ' of ')
+                infoLabel = StringManager.UppercaseFirstLetterOfAllWords(infoLabel).replaceAll('OF', ' of ')
                 const value = prop[1]
                 return (
                   <div key={index} className="data-row">

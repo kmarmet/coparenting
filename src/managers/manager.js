@@ -111,7 +111,13 @@ const Manager = {
       return v.toString(16)
     })
   },
-  Contains: (variable, stringToCheckFor) => _.includes(variable, stringToCheckFor),
+  Contains: (variable, stringToCheckFor) => {
+    if (Manager.IsValid(variable) && Manager.IsValid(stringToCheckFor)) {
+      return _.includes(variable, stringToCheckFor)
+    } else {
+      return false
+    }
+  },
   GenerateHash: (str) => btoa(str),
   DecodeHash: (str) => atob(str),
   GetURLParam: (urlString, param) => {

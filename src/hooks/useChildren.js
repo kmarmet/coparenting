@@ -3,8 +3,8 @@ import {useEffect, useState} from 'react'
 import DB from '../database/DB'
 import DatasetManager from '../managers/datasetManager'
 import Manager from '../managers/manager'
-import useCurrentUser from './useCurrentUser'
 import StringManager from '../managers/stringManager'
+import useCurrentUser from './useCurrentUser'
 
 const useChildren = () => {
   const {currentUser} = useCurrentUser()
@@ -25,16 +25,16 @@ const useChildren = () => {
         const formattedChildren = DatasetManager.GetValidArray(snapshot.val())
         if (Manager.IsValid(currentUser) && Manager.IsValid(formattedChildren)) {
           setChildren(formattedChildren)
-          let keys = []
+          let options = []
           for (let child of formattedChildren) {
             if (Manager.IsValid(child)) {
-              keys.push({
+              options.push({
                 value: child?.id,
                 label: StringManager.GetFirstNameAndLastInitial(child?.general?.name),
               })
             }
           }
-          setChildrenDropdownOptions(keys)
+          setChildrenDropdownOptions(options)
         } else {
           setChildren([])
         }

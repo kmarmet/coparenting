@@ -1,6 +1,6 @@
 // Path: src\styles\accordions.scss
-@import './_mixins.scss';
-@import './_variables.scss';
+@import 'mixins';
+@import 'variables';
 @import './palette';
 
 #external-overrides {

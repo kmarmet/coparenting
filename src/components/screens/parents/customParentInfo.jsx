@@ -27,7 +27,7 @@ export default function CustomParentInfo({hideCard, activeCoparent, showCard}) {
     setState({
       ...state,
       refreshKey: Manager.GetUid(),
-      successAlertMessage: hasMessage ? `${StringManager.uppercaseFirstLetterOfAllWords(title)} Property Added` : null,
+      successAlertMessage: hasMessage ? `${StringManager.UppercaseFirstLetterOfAllWords(title)} Property Added` : null,
     })
     hideCard()
   }

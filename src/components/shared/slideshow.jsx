@@ -1,6 +1,7 @@
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {useSwipeable} from 'react-swipeable'
+import ButtonThemes from '../../constants/buttonThemes'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import globalState from '../../context'
 import useChildren from '../../hooks/useChildren'
@@ -9,9 +10,9 @@ import useCurrentUser from '../../hooks/useCurrentUser'
 import useParents from '../../hooks/useParents'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
-import Overlay from './overlay'
 import CardButton from './cardButton'
-import ButtonThemes from '../../constants/buttonThemes'
+import LazyImage from './lazyImage'
+import Overlay from './overlay'
 
 export default function Slideshow({activeIndex = 0, images = [], wrapperClasses = '', show = false, hide = () => {}}) {
   const {state, setState} = useContext(globalState)
@@ -92,6 +93,7 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
 
   useEffect(() => {
     setActiveImageIndex(activeIndex)
+
     console.log(images)
   }, [activeIndex])
 
@@ -104,7 +106,7 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
               <div key={index} className={index === activeImageIndex && show ? 'active content' : 'content'}>
                 {imageData?.title?.length > 0 && activeImageIndex === index && <p className={'title'}>{imageData?.title}</p>}
                 {imageData?.notes?.length > 0 && activeImageIndex === index && <p className={'notes'}>{imageData?.notes}</p>}
-                <img src={imageData?.url} alt="" />
+                <LazyImage imgName={imageData?.name} alt={imageData?.alt} />
 
                 {imageData?.date?.length > 0 && activeImageIndex === index && (
                   <p className={'capture-date'}>

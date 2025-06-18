@@ -9,18 +9,19 @@ $login_logo: '../img/logo.png';
 /*#endregion  LOGIN */
 
 /*#region  INSTALLATION */
-$desktop_installation: '../img/desktop-installation.png';
+$desktop_installation: '';
+//$desktop_installation: '../img/computer-installation.png';
 /*#endregion  INSTALLATION */
 
-$brokenImage: '../img/desktop-installation.png';
+//$brokenImage: '../img/computer-installation.png';
 
 .img {
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
 
-  &.desktop-installation {
-    background-image: url($desktop_installation);
+  &.computer-installation {
+    //background-image: url($desktop_installation);
     min-height: 90px;
     margin-bottom: 10px;
     width: 100%;
@@ -28,7 +29,7 @@ $brokenImage: '../img/desktop-installation.png';
   }
 
   &.broken-image {
-    background-image: url($brokenImage);
+    //background-image: url($brokenImage);
     display: block;
   }
 

@@ -385,7 +385,7 @@ export default function SwapRequests() {
                             {request?.ownerName !== currentUser?.name && <span>from {request?.ownerName}</span>}
                           </p>
                           <span className={`${request?.status} status`} id="request-status">
-                            {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
+                            {StringManager.UppercaseFirstLetterOfAllWords(request?.status)}
                           </span>
                         </div>
                       )}
@@ -399,7 +399,7 @@ export default function SwapRequests() {
                               {request?.ownerName !== currentUser?.name && <span>from {request?.ownerName}</span>}
                             </p>
                             <span className={`${request?.status} status`} id="request-status">
-                              {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
+                              {StringManager.UppercaseFirstLetterOfAllWords(request?.status)}
                             </span>
                           </>
                         )}
@@ -410,7 +410,7 @@ export default function SwapRequests() {
                               {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)}
                             </p>
                             <span className={`${request?.status} status`} id="request-status">
-                              {StringManager.uppercaseFirstLetterOfAllWords(request?.status)}
+                              {StringManager.UppercaseFirstLetterOfAllWords(request?.status)}
                             </span>
                           </>
                         )}

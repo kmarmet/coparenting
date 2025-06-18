@@ -17,7 +17,7 @@ export default ArchiveManager = {
       for (j = 0, len1 = obj.length; j < len1; j++) {
         key = obj[j];
         obj[key] = StringManager.spaceBetweenWords(key);
-        obj[key] = StringManager.uppercaseFirstLetterOfAllWords(key);
+        obj[key] = StringManager.UppercaseFirstLetterOfAllWords(key);
       }
     }
     // Remove headers the user does not need to see
@@ -27,7 +27,7 @@ export default ArchiveManager = {
     for (k = 0, len2 = headers.length; k < len2; k++) {
       header = headers[k];
       header = StringManager.spaceBetweenWords(header);
-      header = StringManager.uppercaseFirstLetterOfAllWords(header);
+      header = StringManager.UppercaseFirstLetterOfAllWords(header);
       formattedHeaders.push(header);
     }
     // Add headers

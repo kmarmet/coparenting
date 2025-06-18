@@ -1,6 +1,6 @@
 @import './palette';
-@import './variables';
-@import './mixins';
+@import 'variables';
+@import 'mixins';
 
 .lg-react-element {
   display: flex !important;

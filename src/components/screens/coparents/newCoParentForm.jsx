@@ -74,7 +74,7 @@ const NewCoParentForm = ({showCard, hideCard}) => {
     let newCoparent = new Coparent()
     newCoparent.id = Manager.GetUid()
     newCoparent.address = address
-    newCoparent.name = StringManager.uppercaseFirstLetterOfAllWords(name.trim())
+    newCoparent.name = StringManager.UppercaseFirstLetterOfAllWords(name.trim())
     newCoparent.parentType = parentType
     newCoparent.email = email
     newCoparent.userKey = Manager.GetUid()
@@ -117,8 +117,8 @@ const NewCoParentForm = ({showCard, hideCard}) => {
   return (
     <Form
       onSubmit={Submit}
-      submitText={name.length > 0 ? `Add ${StringManager.uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
-      title={`Add ${Manager.IsValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} Contact`}
+      submitText={name.length > 0 ? `Add ${StringManager.UppercaseFirstLetterOfAllWords(name)}` : 'Add'}
+      title={`Add ${Manager.IsValid(name, true) ? StringManager.UppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} Contact`}
       wrapperClass="new-coparent-card"
       showCard={showCard}
       onClose={ResetForm}>

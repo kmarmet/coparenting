@@ -70,7 +70,7 @@ ImageManager =
       .replace(/\.[^/.]+$/, '')
       .replaceAll(' - ', ' ')
       .replaceAll('_', ' ')
-      .uppercaseFirstLetterOfAllWords()
+      .UppercaseFirstLetterOfAllWords()
 
   blobToImage: (blob) ->
     new Promise (resolve) ->

@@ -542,7 +542,7 @@ const Chat = ({show, hide, recipient}) => {
                     className={`${toneObject?.color} ${Manager.IsValid(toneObject) && Manager.IsValid(messageText, true) ? 'active' : ''}`}>
                     <span className="emotion-text">EMOTION</span>
                     <span className="icon">{toneObject?.icon}</span>
-                    <span className="tone">{StringManager.uppercaseFirstLetterOfAllWords(toneObject?.tone)}</span>
+                    <span className="tone">{StringManager.UppercaseFirstLetterOfAllWords(toneObject?.tone)}</span>
                   </div>
                   {/* MESSAGE INPUT & SEND BUTTON */}
                   <div

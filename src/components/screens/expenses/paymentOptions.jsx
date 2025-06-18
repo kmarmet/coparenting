@@ -73,7 +73,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
                 </div>
                 <iframe
                   src={venmoVideoLink}
-                  title="Paying or Requesting Payment From Multiple Users in a Single Transaction"
+                  title="Paying or Requesting Payment From Multiple CoParents in a Single Transaction"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"

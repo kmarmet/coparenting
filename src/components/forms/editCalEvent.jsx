@@ -14,14 +14,12 @@ import useCurrentUser from '../../hooks/useCurrentUser'
 import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
 import CalendarManager from '../../managers/calendarManager.js'
-import DatasetManager from '../../managers/datasetManager'
 import DomManager from '../../managers/domManager'
 import LogManager from '../../managers/logManager'
 import Manager from '../../managers/manager'
 import SelectDropdownManager from '../../managers/selectDropdownManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
-import {default as CalMapper} from '../../mappers/calMapper'
 import AddressInput from '../shared/addressInput'
 import DetailBlock from '../shared/detailBlock'
 import Form from '../shared/form'
@@ -43,7 +41,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const {currentUser} = useCurrentUser()
   const {calendarEvents} = useCalendarEvents(event?.ownerKey)
   const {users} = useUsers()
-  const {children, childrenDropdownOptions} = useChildren()
+  const {children} = useChildren()
 
   // Event Details
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
@@ -52,11 +50,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
   // State
   const [isVisitation, setIsVisitation] = useState(false)
-  const [shareWithNames, setShareWithNames] = useState([])
   const [clonedDates, setClonedDates] = useState([])
   const [view, setView] = useState('Details')
-  const [childrenDropdownSelections, setChildrenDropdownSelections] = useState([])
-  const [selectedReminderOptions, setSelectedReminderOptions] = useState(SelectDropdownManager.GetSelected.ReminderOptions(event?.reminderTimes))
+  const [selectedChildrenOptions, setSelectedChildrenOptions] = useState(
+    SelectDropdownManager.GetSelected.Children(event?.children?.map((x) => x?.general?.name))
+  )
+  const [selectedReminderOptions, setSelectedReminderOptions] = useState(SelectDropdownManager.GetSelected.Reminders(event?.reminderTimes))
+
   // REF
   const updatedEvent = useRef({...event, startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)})
 
@@ -68,7 +68,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setEventIsRecurring(false)
     setEventIsCloned(false)
     setView('Details')
-    setSelectedReminderOptions([])
 
     setState({
       ...state,
@@ -115,8 +114,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       updatedEvent.current.directionsLink = Manager.GetDirectionsLink(updatedEvent?.current?.address)
       updatedEvent.current.websiteUrl = updatedEvent?.current?.websiteUrl
       updatedEvent.current.fromVisitationSchedule = isVisitation
-      updatedEvent.current.children = childrenDropdownSelections.map((x) => x.label)
-      updatedEvent.current.reminderTimes = selectedReminderOptions.map((x) => x.value)
+      updatedEvent.current.children = Manager.IsValid(selectedChildrenOptions) ? selectedChildrenOptions : event?.children
+      updatedEvent.current.reminderTimes = Manager.IsValid(selectedReminderOptions) ? selectedReminderOptions : event?.reminderTimes
 
       // Add birthday cake
       if (Manager.Contains(updatedEvent?.current?.title, 'birthday')) {
@@ -204,26 +203,14 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     }
   }
 
-  const HandleShareWithSelection = (e) => {
-    updatedEvent.current.shareWith = e.map((x) => x.value)
-  }
-
   const SetDefaultValues = async () => {
     setView('Details')
     setEventIsRecurring(updatedEvent?.current?.isRecurring)
     setEventIsDateRange(updatedEvent?.current?.isDateRange)
 
-    // Get shareWith Names
-    const securedShareWith =
-      updatedEvent?.current?.shareWith?.filter((x) => x !== currentUser?.key && currentUser?.sharedDataUsers.includes(x)) ||
-      updatedEvent?.current?.shareWith
-    let mappedShareWithNames = Manager.MapKeysToUsers(securedShareWith, users)
-    mappedShareWithNames = mappedShareWithNames.filter((x) => x?.name !== StringManager.GetFirstNameOnly(currentUser?.name)).flat()
-    setShareWithNames(DatasetManager.GetValidArray(mappedShareWithNames))
-
     // Repeating
     if (Manager.IsValid(updatedEvent?.current?.recurringInterval)) {
-      DomManager.SetDefaultCheckboxes('repeating', event, 'recurringInterval', false).then((r) => r)
+      DomManager.SetDefaultCheckboxes('repeating', event, 'recurringInterval', false)
     }
   }
 
@@ -263,14 +250,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     }
   }
 
-  const GetReadableReminder = (timeframe) => {
-    let readable = timeframe
-    readable = CalMapper.GetReadableReminderTime(readable).replace('before', '')
-    readable = readable.replace('At', '')
-    readable = StringManager.uppercaseFirstLetterOfAllWords(readable)
-    return readable
-  }
-
   useEffect(() => {
     if (Manager.IsValid(event)) {
       updatedEvent.current = event
@@ -301,7 +280,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         onClose={async () => {
           await ResetForm()
         }}
-        title={StringManager.formatEventTitle(StringManager.uppercaseFirstLetterOfAllWords(updatedEvent?.current?.title))}
+        title={StringManager.formatEventTitle(StringManager.UppercaseFirstLetterOfAllWords(updatedEvent?.current?.title))}
         showCard={showCard}
         deleteButtonText="Delete"
         className="Edit-calendar-event"
@@ -355,7 +334,10 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               <DetailBlock valueToValidate={updatedEvent?.current?.createdBy} text={GetCreatedBy()} title={'Creator'} />
 
               {/*  Shared With */}
-              <MultilineDetailBlock title={'Shared with'} dataType={MultilineDetailBlockDataTypes.ShareWith} array={event?.shareWith} />
+              <MultilineDetailBlock
+                title={'Shared with'}
+                array={SelectDropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users, true)}
+              />
 
               {/* Reminders */}
               <MultilineDetailBlock
@@ -405,7 +387,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                         isNavLink={true}
                         text={updatedEvent?.current?.address}
                         linkUrl={updatedEvent?.current?.address}
-                        title={'Go'}
+                        title={'Navigation'}
                       />
                     </>
                   )}
@@ -420,7 +402,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   <MdEventRepeat />
                   DatetimeFormats
                 </b>
-                <span>{StringManager.uppercaseFirstLetterOfAllWords(updatedEvent?.current?.recurringFrequency)}</span>
+                <span>{StringManager.UppercaseFirstLetterOfAllWords(updatedEvent?.current?.recurringFrequency)}</span>
               </div>
             )}
 
@@ -487,10 +469,10 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
             {/* Share with */}
             <ShareWithDropdown
-              defaultValues={Manager.IsValid(updatedEvent?.current?.shareWith) ? updatedEvent?.current?.shareWith : event?.shareWith}
+              selectedValues={Manager.IsValid(updatedEvent?.current?.shareWith) ? updatedEvent?.current?.shareWith : event?.shareWith}
               placeholder={'Share with'}
               required={false}
-              onSelection={(e) => (updatedEvent.current.shareWith = e?.map((x) => x.label))}
+              onSelection={(e) => (updatedEvent.current.shareWith = e?.map((x) => x.value))}
               containerClass={`share-with-parents`}
             />
 
@@ -498,29 +480,26 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
             {/* REMINDERS */}
             <SelectDropdown
-              options={SelectDropdownManager.GetDefault.ReminderOptions}
-              value={SelectDropdownManager.GetSelected.ReminderOptions(
-                Manager.IsValid(selectedReminderOptions) ? selectedReminderOptions : event?.reminderTimes
-              )}
+              options={SelectDropdownManager.GetDefault.Reminders}
+              value={SelectDropdownManager.GetSelected.Reminders(selectedReminderOptions ? selectedReminderOptions : event?.reminderTimes)}
               isMultiple={true}
               placeholder={'Select Reminders'}
-              onSelection={(e) => setSelectedReminderOptions(e)}
+              onSelection={(e) => setSelectedReminderOptions(e.map((x) => x.value))}
             />
 
             <Spacer height={2} />
 
             {/* INCLUDING WHICH CHILDREN */}
-            {Manager.IsValid(children) && (
-              <SelectDropdown
-                options={childrenDropdownOptions}
-                value={childrenDropdownSelections}
-                placeholder={'Select Children to Include'}
-                onSelection={(e) => {
-                  setChildrenDropdownSelections(e)
-                }}
-                isMultiple={true}
-              />
-            )}
+            <SelectDropdown
+              options={SelectDropdownManager.GetDefault.Children(children)}
+              value={SelectDropdownManager.GetSelected.Children(selectedChildrenOptions ? selectedChildrenOptions : event?.children)}
+              placeholder={'Select Children to Include'}
+              onSelection={(e) => {
+                console.log(e)
+                setSelectedChildrenOptions(e.map((x) => x.label))
+              }}
+              isMultiple={true}
+            />
 
             <hr />
 

@@ -1,4 +1,4 @@
-@import './_mixins.scss';
+@import 'mixins';
 #error-screen {
   height: 100vh;
   width: 100vw;
@@ -142,11 +142,7 @@
 }
 
 .skeleton {
-  min-height: 100px;
-  min-width: 100px;
   @include loadingSkeleton;
-
-  width: 100vw;
 }
 
 .location-pin-animation {
@@ -193,6 +189,30 @@
 
   &::after {
     animation-delay: -1s;
+  }
+}
+
+.pac-container {
+  width: calc(100vw - 30px) !important;
+  margin: 0 auto !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+  border-radius: $buttonBorderRadius !important;
+  top: 60px !important;
+  @include bestShadow;
+
+  &::after {
+    display: none !important;
+  }
+
+  .pac-item {
+    padding: 8px !important;
+
+    .pac-icon {
+      &.pac-icon-marker {
+        color: $blend !important;
+      }
+    }
   }
 }
 
@@ -997,9 +1017,7 @@
           max-width: 90% !important;
           white-space: nowrap !important;
           line-height: 1 !important;
-          top: 3px !important;
           position: relative !important;
-          height: min-content !important;
 
           &[aria-expanded='true'] {
             padding-top: 2px !important;
@@ -1025,15 +1043,15 @@
 
         /*#region  GOOGLE MAPS INPUT */
         [class*='-menu'] {
-          background: white !important;
-          @include centerHoriz;
+          background: transparent !important;
           z-index: $maxZIndex !important;
           border-radius: $bigBorderRadius !important;
           min-height: 100px !important;
+          max-height: unset !important;
           overflow: auto !important;
-          position: absolute !important;
+          position: relative !important;
           top: 40px !important;
-          width: calc(100% - 30px) !important;
+          width: 100% !important;
           transition: all 0.3s ease-in-out !important;
           box-shadow: $boxShadow_bottom_only_dark;
 
@@ -1050,12 +1068,11 @@
         // PARENT
         [class*='-container'] {
           width: 100% !important;
-          @include centerVert;
-          position: absolute !important;
+          position: relative !important;
           z-index: 99999999999 !important;
           left: 0 !important;
           align-items: center;
-          display: flex;
+          //display: flex;
           padding-top: 6px !important;
           outline: none !important;
 
@@ -1063,6 +1080,7 @@
             border: 0 !important;
             background: transparent !important;
             padding: 0 !important;
+            background: #5e4aca !important;
             min-height: 20px !important;
             border-radius: 0 !important;
             position: relative !important;

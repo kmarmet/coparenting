@@ -1,6 +1,6 @@
-@import './cssReset';
-@import './mixins';
-@import './variables';
+@import 'cssReset';
+@import 'mixins';
+@import 'variables';
 @import './muiOverrides';
 @import './sweetAlertOverrides';
 @import './styles';
@@ -34,6 +34,6 @@
 @import './darkMode';
 @import './responsive';
 @import './responsive/phone';
-@import './utilityClasses';
+@import 'utilityClasses';
 @import './slideshow';
 @import './images';

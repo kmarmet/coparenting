@@ -1,9 +1,4 @@
 // Path: src\components\screens\parents\newParentForm.jsx
-import CheckboxGroup from '../../shared/checkboxGroup'
-import Form from '../../shared/form'
-import InputField from '../../shared/inputField'
-import AlertManager from '../../../managers/alertManager'
-import Manager from '../../../managers/manager'
 import React, {useContext, useState} from 'react'
 import validator from 'validator'
 import InputTypes from '../../../constants/inputTypes'
@@ -12,11 +7,16 @@ import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
+import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
 import ObjectManager from '../../../managers/objectManager'
 import StringManager from '../../../managers/stringManager'
 import Parent from '../../../models/users/parent'
 import AddressInput from '../../shared/addressInput'
+import CheckboxGroup from '../../shared/checkboxGroup'
+import Form from '../../shared/form'
+import InputField from '../../shared/inputField'
 import Label from '../../shared/label'
 import Spacer from '../../shared/spacer'
 import ToggleButton from '../../shared/toggleButton'
@@ -69,7 +69,7 @@ const NewParentForm = ({showCard, hideCard}) => {
     newParent.email = email
     newParent.id = Manager.GetUid()
     newParent.address = address
-    newParent.name = StringManager.uppercaseFirstLetterOfAllWords(name.trim())
+    newParent.name = StringManager.UppercaseFirstLetterOfAllWords(name.trim())
     newParent.parentType = parentType
     newParent.userKey = Manager.GetUid()
 
@@ -113,8 +113,8 @@ const NewParentForm = ({showCard, hideCard}) => {
   return (
     <Form
       onSubmit={Submit}
-      submitText={name.length > 0 ? `Add ${StringManager.uppercaseFirstLetterOfAllWords(name)}` : 'Add'}
-      title={`Add ${Manager.IsValid(name, true) ? StringManager.uppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} to Your Profile`}
+      submitText={name.length > 0 ? `Add ${StringManager.UppercaseFirstLetterOfAllWords(name)}` : 'Add'}
+      title={`Add ${Manager.IsValid(name, true) ? StringManager.UppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} to Your Profile`}
       wrapperClass="new-parent-card"
       showCard={showCard}
       onClose={ResetForm}>

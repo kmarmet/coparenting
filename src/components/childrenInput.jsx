@@ -1,13 +1,13 @@
 // Path: src\components\childrenInput.jsx
 import phone from 'phone'
 import React, {useContext, useState} from 'react'
-import InputWrapper from '.../../shared/inputWrapper'
 import globalState from '../context'
 import AlertManager from '../managers/alertManager'
 import Manager from '../managers/manager'
 
 import StringManager from '../managers/stringManager.coffee'
 import ChildUser from '../models/child/childUser'
+import InputField from './shared/inputField'
 
 export default function ChildrenInput({add, childrenCount}) {
   const {state, setState} = useContext(globalState)
@@ -24,7 +24,7 @@ export default function ChildrenInput({add, childrenCount}) {
   return (
     <div id="child-input-container">
       <p id="child-label">
-        Child #{childrenCount} {`- ${StringManager.uppercaseFirstLetterOfAllWords(name)}`}
+        Child #{childrenCount} {`- ${StringManager.UppercaseFirstLetterOfAllWords(name)}`}
       </p>
       <InputField inputType={'input'} placeholder={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
       <InputField inputType={'input'} inputValueType="number" placeholder={'Phone Number'} onChange={(e) => setUserPhone(e.target.value)} />
@@ -50,7 +50,7 @@ export default function ChildrenInput({add, childrenCount}) {
             add(child)
             setShowAddButton(false)
           }}>
-          Save {StringManager.uppercaseFirstLetterOfAllWords(name)}
+          Save {StringManager.UppercaseFirstLetterOfAllWords(name)}
         </button>
       )}
     </div>

@@ -18,10 +18,10 @@ import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import NavBar from '../navBar'
+import AccordionTitle from '../shared/accordionTitle'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer'
-import AccordionTitle from '../shared/accordionTitle'
 
 export default function Updates() {
   const {state, setState} = useContext(globalState)
@@ -180,7 +180,7 @@ export default function Updates() {
                       <div className="row-content">
                         {criticalCategories.includes(category) && <span className={`dot ${GetCriticalCategoryColor(category)}`}></span>}
                         <div>
-                          <p className={`card-title ${className}`}>{StringManager.uppercaseFirstLetterOfAllWords(title)}</p>
+                          <p className={`card-title ${className}`}>{StringManager.UppercaseFirstLetterOfAllWords(title)}</p>
                           <p className="text">{text}</p>
                           <p id="date">{moment(timestamp, DatetimeFormats.timestamp).format(DatetimeFormats.readableDatetime)}</p>
                         </div>

@@ -10,7 +10,7 @@ export default SmsManager = {
   signature: "\r\nThank You,\r\nPeaceful coParenting",
   Templates: {
     ParentChildVerification: function(childName, verificationCode) {
-      return `${StringManager.uppercaseFirstLetterOfAllWords(childName)} is requesting sharing access. ${SmsManager.lineBreak}${SmsManager.lineBreak}If you would like to grant access, please share this code with them: ${verificationCode} ${SmsManager.lineBreak}${SmsManager.signature}`;
+      return `${StringManager.UppercaseFirstLetterOfAllWords(childName)} is requesting sharing access. ${SmsManager.lineBreak}${SmsManager.lineBreak}If you would like to grant access, please share this code with them: ${verificationCode} ${SmsManager.lineBreak}${SmsManager.signature}`;
     },
     Invitation: function(currentUser, userName, recipientPhone) {
       return `Hello ${userName},${SmsManager.lineBreak}${SmsManager.lineBreak} You have been invited to join Peaceful coParenting by ${currentUser != null ? currentUser.name : void 0}. To accept the invite please visit ${SmsManager.lineBreak}https://peaceful-coparenting.app?type=invite&senderKey=${currentUser != null ? currentUser.key : void 0} ${SmsManager.lineBreak}  ${SmsManager.lineBreak}${SmsManager.signature}`;

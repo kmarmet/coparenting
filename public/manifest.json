@@ -1,27 +1,27 @@
 {
-  "name": "Peaceful coParenting",
-  "short_name": "Peaceful",
+  "name": "Peaceful Co-Parenting",
+  "short_name": "Co-Parenting",
   "start_url": "/",
   "scope": "/",
   "display": "fullscreen",
-  "background_color": "#eef0f4",
-  "theme_color": "#5e65ff",
+  "background_color": "#5769ff",
+  "theme_color": "#5769ff",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "./192.png",
+      "src": "assets/icons/ios/192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./512.png",
+      "src": "assets/icons/ios/512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./144.png",
+      "src": "assets/icons/ios/144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"

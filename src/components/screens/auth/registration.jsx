@@ -1,9 +1,4 @@
 // Path: src\components\screens\auth\registration.jsx
-import InputField from '../../shared/inputField'
-import Spacer from '../../shared/spacer'
-import firebaseConfig from '../../../firebaseConfig'
-import AlertManager from '../../../managers/alertManager'
-import SmsManager from '../../../managers/smsManager.js'
 import {initializeApp} from 'firebase/app'
 import {createUserWithEmailAndPassword, getAuth} from 'firebase/auth'
 import React, {useContext, useEffect, useRef, useState} from 'react'
@@ -15,16 +10,21 @@ import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
 import DB_UserScoped from '../../../database/db_userScoped'
+import firebaseConfig from '../../../firebaseConfig'
+import AlertManager from '../../../managers/alertManager'
 import DatasetManager from '../../../managers/datasetManager'
 import DomManager from '../../../managers/domManager'
 import LogManager from '../../../managers/logManager'
 import Manager from '../../../managers/manager'
 import ObjectManager from '../../../managers/objectManager'
+import SmsManager from '../../../managers/smsManager.js'
 import StringManager from '../../../managers/stringManager'
 import Child from '../../../models/child/child'
 import General from '../../../models/child/general'
 import CheckboxGroup from '../../shared/checkboxGroup'
 import Form from '../../shared/form'
+import InputField from '../../shared/inputField'
+import Spacer from '../../shared/spacer'
 
 const Steps = {
   Form: 'form',
@@ -238,7 +238,7 @@ export default function Registration() {
             const childToAdd = new Child()
             const general = new General()
             general.phone = currentUserToUse?.phone
-            general.name = StringManager.uppercaseFirstLetterOfAllWords(name)
+            general.name = StringManager.UppercaseFirstLetterOfAllWords(name)
             general.email = currentUserToUse?.email
             childToAdd.general = general
             childToAdd.userKey = currentUserToUse?.key

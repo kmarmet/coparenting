@@ -17,53 +17,62 @@ DomManager = {
         for element in classOfElementsToAnimate
           element.classList.remove(classToRemove)
 
-    FadeInRight: (variableToCheck,  fastSlowOrDefault = "") ->
+    FadeInRight: (variableToCheck, fastSlowOrDefault = "") ->
       if typeof variableToCheck == 'boolean'
         if (variableToCheck == true)
-          return "animate__animated animate__fadeInRight #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+          return "animate__animated animate__fadeInRight #{Manager.IsValid(fastSlowOrDefault, true) ?
+          "animate__#{fastSlowOrDefault}": ''}"
         else
           return 'animate__animated animate__fadeOut'
       if Manager.IsValid(variableToCheck)
-        return "animate__animated animate__fadeInRight #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+        return "animate__animated animate__fadeInRight #{Manager.IsValid(fastSlowOrDefault, true) ?
+        "animate__#{fastSlowOrDefault}": ''}"
       else
         return 'animate__animated animate__fadeOut'
 
-    FadeInUp: (variableToCheck,  fastSlowOrDefault = "") ->
+    FadeInUp: (variableToCheck, fastSlowOrDefault = "") ->
       if typeof variableToCheck == 'boolean'
         if (variableToCheck == true)
-          return "animate__animated animate__fadeInUp #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+          return "animate__animated animate__fadeInUp #{Manager.IsValid(fastSlowOrDefault, true) ?
+          "animate__#{fastSlowOrDefault}": ''}"
         else
           return 'animate__animated animate__fadeOutDown'
       if Manager.IsValid(variableToCheck)
-        return "animate__animated animate__fadeInUp #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+        return "animate__animated animate__fadeInUp #{Manager.IsValid(fastSlowOrDefault, true) ?
+        "animate__#{fastSlowOrDefault}": ''}"
       else
         return 'animate__animated animate__fadeOutDown'
 
-    FadeInDown: (variableToCheck,  fastSlowOrDefault = "") ->
+    FadeInDown: (variableToCheck, fastSlowOrDefault = "") ->
       if Manager.IsValid(variableToCheck) or variableToCheck == true
-        return "animate__animated animate__fadeInDown #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+        return "animate__animated animate__fadeInDown #{Manager.IsValid(fastSlowOrDefault, true) ?
+        "animate__#{fastSlowOrDefault}": ''}"
       else
         return 'animate__animated animate__fadeOutUp'
 
-    ZoomIn: (variableToCheck,  fastSlowOrDefault = "") ->
+    ZoomIn: (variableToCheck, fastSlowOrDefault = "") ->
       if typeof variableToCheck == 'boolean'
         if (variableToCheck == true)
-          return "animate__animated animate__zoomIn #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+          return "animate__animated animate__zoomIn #{Manager.IsValid(fastSlowOrDefault, true) ?
+          "animate__#{fastSlowOrDefault}": ''}"
         else
           return 'animate__animated animate__zoomOut'
       if Manager.IsValid(variableToCheck)
-        return "animate__animated animate__zoomIn #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+        return "animate__animated animate__zoomIn #{Manager.IsValid(fastSlowOrDefault, true) ?
+        "animate__#{fastSlowOrDefault}": ''}"
       else
         return 'animate__animated animate__zoomOut'
 
-    ZoomInDown: (variableToCheck,  fastSlowOrDefault = "") ->
+    ZoomInDown: (variableToCheck, fastSlowOrDefault = "") ->
       if typeof variableToCheck == 'boolean'
         if (variableToCheck == true)
-          return "animate__animated animate__zoomInDown #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+          return "animate__animated animate__zoomInDown #{Manager.IsValid(fastSlowOrDefault, true) ?
+          "animate__#{fastSlowOrDefault}": ''}"
         else
           return 'animate__animated animate__zoomOutDown'
       if Manager.IsValid(variableToCheck)
-        return "animate__animated animate__zoomInDown #{Manager.IsValid(fastSlowOrDefault, true) ?  "animate__#{fastSlowOrDefault}" : ''}"
+        return "animate__animated animate__zoomInDown #{Manager.IsValid(fastSlowOrDefault, true) ?
+        "animate__#{fastSlowOrDefault}": ''}"
       else
         return 'animate__animated animate__zoomOutDown'
 
@@ -130,7 +139,7 @@ DomManager = {
         datetimeParent.classList.add(currentUser?.settings?.theme)
     , 100
 
-  ToggleAnimation:(addOrRemove, itemsClass, animateName, delay = 80, slower=false) ->
+  ToggleAnimation: (addOrRemove, itemsClass, animateName, delay = 80, slower = false) ->
     allMenuItems = document.querySelectorAll(".#{itemsClass}")
 
     AddClasses = (item) ->
@@ -153,7 +162,7 @@ DomManager = {
         , index * delay
 
   SetDefaultCheckboxes: (checkboxContainerClass, object, propName, isArray = false, values) ->
-    # Share With
+# Share With
     if checkboxContainerClass == 'share-with'
       if Manager.IsValid(values)
         for phone in values
@@ -202,7 +211,7 @@ DomManager = {
       # CHECK
       if onCheck? then onCheck(label)
 
-    # UNCHECK
+# UNCHECK
     else if onCheckRemoval? then onCheckRemoval(label)
 
   HandleShareWithSelection: (e, currentUser, shareWith, refToUpdate) ->
@@ -213,7 +222,15 @@ DomManager = {
 
     return DatasetManager.GetValidArray(updated)
 
-  BuildCheckboxGroup: ({currentUser, labelType, defaultLabels = [], customLabelArray = [], labelProp, uidProp, predefinedType}) ->
+  BuildCheckboxGroup: ({
+    currentUser,
+    labelType,
+    defaultLabels = [],
+    customLabelArray = [],
+    labelProp,
+    uidProp,
+    predefinedType
+  }) ->
     checkboxLabels = []
     checkboxGroup = []
 
@@ -268,7 +285,7 @@ DomManager = {
               key: label?.replaceAll(' ', '')
               isActive: isActive
 
-    # ITERATE THROUGH OBJECTS
+# ITERATE THROUGH OBJECTS
     else
       for obj in customLabelArray
         if Manager.IsValid(obj[labelProp]) and Manager.IsValid(obj[uidProp])
@@ -336,6 +353,7 @@ DomManager = {
     else
       if DomManager.isMobile() then return "Tap"
       return "Click"
+
   debounce: (callback, delay) ->
     timeout = null
 
@@ -374,11 +392,12 @@ DomManager = {
     if Manager.IsValid(el)
       rect = el.getBoundingClientRect()
       scrollWrapperHeight = scrollWrapper.getBoundingClientRect().height
-      pxCloseToEl =rect.top - scrollWrapperHeight;
+      pxCloseToEl = rect.top - scrollWrapperHeight;
 
       pxCloseToEl <= -170
 
-  addScrollListener: (scrollableElement, callback, delay) ->
+  AddScrollListener: (scrollableElement, callback, delay) ->
+    console.log(scrollableElement)
     scrollableElement.addEventListener 'scroll', DomManager.debounce  ->
       callback()
     , delay
@@ -402,7 +421,6 @@ DomManager = {
     else if document.selection
 # IE?
       document.selection.empty()
-
 }
 
 export default DomManager

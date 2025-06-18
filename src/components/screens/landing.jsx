@@ -1,8 +1,4 @@
 import React, {useContext, useEffect, useState} from 'react'
-import ScreenNames from '../../constants/screenNames'
-import AppManager from '../../managers/appManager.js'
-import DomManager from '../../managers/domManager'
-import Manager from '../../managers/manager'
 import {AiTwotoneMessage, AiTwotoneSafetyCertificate, AiTwotoneTool} from 'react-icons/ai'
 import {BsFillEnvelopeHeartFill} from 'react-icons/bs'
 import {IoIosArrowUp, IoIosChatbubbles} from 'react-icons/io'
@@ -10,14 +6,16 @@ import {IoSyncCircle} from 'react-icons/io5'
 import {MdLooksOne, MdPeopleAlt, MdStyle} from 'react-icons/md'
 import {PiCalendarDotsDuotone, PiDevicesFill} from 'react-icons/pi'
 import {TbSunMoon} from 'react-icons/tb'
+import {useLongPress} from 'use-long-press'
+import AppImages from '../../constants/appImages'
+import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
+import AppManager from '../../managers/appManager.js'
+import DomManager from '../../managers/domManager'
+import Manager from '../../managers/manager'
+import LazyImage from '../shared/lazyImage'
 import Slideshow from '../shared/slideshow'
 import Spacer from '../shared/spacer'
-import {useLongPress} from 'use-long-press'
-import AppImageNames from '../../constants/appImageNames'
-import Storage from '../../database/storage'
-import StringManager from '../../managers/stringManager'
-import Img from '../shared/Img'
 
 export default function Landing() {
   const {state, setState} = useContext(globalState)
@@ -28,7 +26,6 @@ export default function Landing() {
   const [showExpensesSlideshow, setShowExpensesSlideshow] = useState(false)
   const [showDevicesSlideshow, setShowDevicesSlideshow] = useState(false)
   const [showCollabSlideshow, setShowCollabSlideshow] = useState(false)
-  const [images, setImages] = useState([])
 
   const bind = useLongPress((element) => {
     setState({...state, currentScreen: ScreenNames.login})
@@ -55,7 +52,7 @@ export default function Landing() {
   }
 
   const GetFadeUpClass = (element) => {
-    const scrollWrapper = document.querySelector('#wrapper')
+    const scrollWrapper = document.querySelector('#landing-wrapper')
     if (DomManager.mostIsInViewport(scrollWrapper, element)) {
       if (!Manager.Contains(element.classList, DomManager.AnimateClasses.names.fadeInUp)) {
         return `${DomManager.AnimateClasses.names.fadeInUp} ${DomManager.AnimateClasses.names.default}`
@@ -63,9 +60,9 @@ export default function Landing() {
     }
   }
 
-  const HandleScroll = () => {
+  const HandleScrollToTop = () => {
     const firstViewableBox = document.querySelector('#first-scroll-button-candidate')
-    const scrollWrapper = document.querySelector('#wrapper')
+    const scrollWrapper = document.querySelector('#landing-wrapper')
     const scrollToTopButton = document.querySelector('#scroll-to-top-button-wrapper')
 
     if (DomManager.mostIsInViewport(scrollWrapper, firstViewableBox)) {
@@ -83,35 +80,24 @@ export default function Landing() {
     header.scrollIntoView({behavior: 'smooth'})
   }
 
-  const GetImages = async () => {
-    const images = await Storage.GetAppImages(AppImageNames.dirs.landing)
-
-    let mappedImages = []
-    for (let image of images) {
-      mappedImages.push({
-        name: StringManager.removeFileExtension(Storage.GetImageNameFromUrl(image)),
-        url: image,
-      })
-    }
-    setImages(mappedImages)
-  }
-
-  const GetUrl = (imageName) => {
-    if (Manager.IsValid(images)) {
-      return images.find((x) => x.name === StringManager.removeFileExtension(imageName))?.url
-    }
-    return ''
-  }
-
+  // Check for current screen -> hide loading
   useEffect(() => {
     if (currentScreen === ScreenNames.landing) {
       setState({...state, isLoading: false})
     }
   }, [currentScreen])
 
+  // Check for query string params
   useEffect(() => {
-    GetImages().then((r) => r)
     const requestType = AppManager.getQueryStringParams('type')
+    const defaultScreen = AppManager.getQueryStringParams('defaultScreen')
+
+    // Check for default screen queryString param -> if login, show login screen
+    if (Manager.IsValid(defaultScreen) && defaultScreen === 'login') {
+      setState({...state, currentScreen: ScreenNames.login})
+    }
+
+    // Check for request type -> if it is invite, show invite screen
     if (Manager.IsValid(requestType)) {
       if (requestType === 'invite') {
         // Invitation Sender Key
@@ -123,20 +109,15 @@ export default function Landing() {
         }
       }
     }
-    const scrollWrapper = document.querySelector('#wrapper')
 
     const appWrapper = document.getElementById('app-content-with-sidebar')
     if (appWrapper) {
       appWrapper.classList.add('home')
     }
-
-    if (Manager.IsValid(scrollWrapper)) {
-      DomManager.addScrollListener(scrollWrapper, HandleScroll, 200)
-    }
   }, [])
 
   return (
-    <div id="wrapper" onScroll={HandleScroll}>
+    <div id="landing-wrapper" onScroll={HandleScrollToTop}>
       {/* SLIDESHOWS */}
 
       {/* Documents */}
@@ -146,13 +127,13 @@ export default function Landing() {
         activeIndex={0}
         images={[
           {
-            url: GetUrl(AppImageNames.landing.tableOfContents),
-            name: 'Table of Contents',
+            name: AppImages.landing.tableOfContents.name,
+            title: 'Table of Contents',
             alt: 'Table of Contents',
           },
           {
-            url: GetUrl(AppImageNames.landing.customDocHeaders),
-            name: 'Custom Headers',
+            name: AppImages.landing.customDocHeaders.name,
+            title: 'Custom Headers',
             alt: 'Custom Headers',
           },
         ]}
@@ -165,14 +146,18 @@ export default function Landing() {
         hide={() => setShowTrioSlideshow(false)}
         images={[
           {
+            name: AppImages.landing.memories.name,
             title: 'Memories',
-            url: GetUrl(AppImageNames.landing.memories),
             notes: "Share your child's valuable memories with your co-parents or children",
           },
-          {title: 'Calendar', url: GetUrl(AppImageNames.landing.calendar), notes: 'Schedule important dates with your co-parents or children'},
           {
-            title: 'Child Info',
-            url: GetUrl(AppImageNames.landing.childInfo),
+            name: AppImages.landing.calendar.name,
+            title: 'Shared Calendar',
+            notes: 'Schedule important dates with your co-parents or children',
+          },
+          {
+            name: AppImages.landing.childInfo.name,
+            title: 'Child Information',
             notes: 'Share important details about your child with your co-parents or children',
           },
         ]}
@@ -184,9 +169,9 @@ export default function Landing() {
         hide={() => setShowDevicesSlideshow(false)}
         activeIndex={1}
         images={[
-          {url: GetUrl(AppImageNames.landing.phone), title: 'Compatible with all Phones'},
-          {url: GetUrl(AppImageNames.landing.tablet), title: 'Compatible with all Tablets'},
-          {url: GetUrl(AppImageNames.landing.laptop), title: 'Compatible with all Computers'},
+          {title: 'Compatible with all Phones', name: AppImages.landing.phone.name},
+          {title: 'Compatible with all Tablets', name: AppImages.landing.tablet.name},
+          {title: 'Compatible with all Computers', name: AppImages.landing.laptop.name},
         ]}
       />
 
@@ -194,7 +179,7 @@ export default function Landing() {
       <Slideshow
         images={[
           {
-            url: '../../Img/landing/menu.png',
+            name: AppImages.landing.collaboration.name,
             title: 'Collaboration',
             alt: 'Collaboration',
           },
@@ -207,8 +192,8 @@ export default function Landing() {
       <Slideshow
         images={[
           {
-            url: GetUrl(AppImageNames.landing.expenseTracker),
             alt: 'Expenses',
+            name: AppImages.landing.expenseTracker.name,
             title: 'Expense Tracker',
             notes: 'Assign and track all expenses between you and your co-parents',
           },
@@ -225,7 +210,7 @@ export default function Landing() {
         hide={() => setShowEmotionMeterSlideshow(false)}
         images={[
           {
-            url: '../../Img/landing/emotion-meter.png',
+            name: AppImages.landing.emotionMeter.name,
             title: 'Emotion Meter',
             alt: 'Emotion Meter',
           },
@@ -240,7 +225,7 @@ export default function Landing() {
       <div id="above-fold-wrapper" className="section above-fold">
         <div id="home-navbar" className="flex">
           <div {...bind()}>
-            {Manager.IsValid(images) && <Img classes={'logo'} src={GetUrl(AppImageNames.landing.logo)} alt="Peaceful Co-Parenting" />}
+            <LazyImage classes={'logo'} imgName={AppImages.landing.logo.name} alt="Peaceful Co-Parenting" />
           </div>
           <div className="login-buttons">
             <div className="choose-peace-text flex">
@@ -258,9 +243,9 @@ export default function Landing() {
         <Spacer height={10} />
 
         <div className="flex" id="images" onClick={() => setShowTrioSlideshow(true)}>
-          <Img src={GetUrl(AppImageNames.landing.memories)} alt="Memories" />
-          <Img src={GetUrl(AppImageNames.landing.calendar)} alt="Calendar" />
-          <Img src={GetUrl(AppImageNames.landing.childInfo)} alt="Children" />
+          <LazyImage imgName={AppImages.landing.memories.name} alt="Memories" classes={'trio'} />
+          <LazyImage imgName={AppImages.landing.calendar.name} alt="Calendar" classes={'trio'} />
+          <LazyImage imgName={AppImages.landing.childInfo.name} alt="Children" classes={'trio'} />
         </div>
       </div>
       <Spacer height={20} />
@@ -303,7 +288,7 @@ export default function Landing() {
                 Effective communication with a foundation of respect is crucial for successful co-parenting. The Emotion Meter plays a vital role in
                 facilitating this essential aspect.
               </p>
-              <Img src={GetUrl(AppImageNames.landing.emotionMeter)} alt="Emotion Meter" />
+              <LazyImage onClick={() => setShowEmotionMeterSlideshow(true)} imgName={AppImages.landing.emotionMeter.name} alt="Emotion Meter" />
             </div>
           </div>
         </div>
@@ -511,7 +496,7 @@ export default function Landing() {
                 </div>
               </div>
 
-              {/* MULTIPLE COPARENTS */}
+              {/* MULTIPLE CO-PARENTS */}
               <div className="feature" onClick={(e) => ToggleFeature(e)} data-name={'multiple-coparents'}>
                 <div className="feature-title-wrapper">
                   <p className="feature-title">Multiple Co-Parent Support</p>
@@ -695,9 +680,13 @@ export default function Landing() {
 
             <p className="light-gallery-instructions">{DomManager.tapOrClick()} an image to enlarge</p>
 
-            <Img onClick={() => setShowDocumentsSlideshow(true)} src={GetUrl(AppImageNames.landing.customDocHeaders)} alt="Custom Document Headers" />
+            <LazyImage
+              onClick={() => setShowDocumentsSlideshow(true)}
+              imgName={AppImages.landing.customDocHeaders.name}
+              alt="Custom Document Headers"
+            />
             <Spacer height={5} />
-            <Img onClick={() => setShowDocumentsSlideshow(true)} src={GetUrl(AppImageNames.landing.tableOfContents)} alt="Table of Contents" />
+            <LazyImage onClick={() => setShowDocumentsSlideshow(true)} imgName={AppImages.landing.tableOfContents.name} alt="Table of Contents" />
             <Spacer height={8} />
           </div>
         </div>
@@ -714,7 +703,7 @@ export default function Landing() {
             </p>
           </div>
 
-          <Img onClick={() => setShowExpensesSlideshow(true)} src={GetUrl(AppImageNames.landing.expenseTracker)} alt="Expense Tracker" />
+          <LazyImage onClick={() => setShowExpensesSlideshow(true)} imgName={AppImages.landing.expenseTracker.name} alt="Expense Tracker" />
         </div>
 
         <hr className="landing" />
@@ -739,7 +728,7 @@ export default function Landing() {
               </p>
             </div>
 
-            <Img src={GetUrl(AppImageNames.landing.collaboration)} alt="Collaboration" />
+            {/*<LazyImage imgName=etImageUrl('collaboration')} alt="Collaboration" />*/}
           </div>
         </div>
         <hr className="landing" />
@@ -793,9 +782,9 @@ export default function Landing() {
             </div>
 
             <div onClick={() => setShowDevicesSlideshow(true)}>
-              <Img src={GetUrl(AppImageNames.landing.phone)} alt="" />
-              <Img src={GetUrl(AppImageNames.landing.tablet)} alt="" />
-              <Img src={GetUrl(AppImageNames.landing.laptop)} alt="" />
+              <LazyImage imgName={AppImages.landing.phone.name} alt="Phone" />
+              <LazyImage imgName={AppImages.landing.laptop.name} alt="Laptop" />
+              <LazyImage imgName={AppImages.landing.tablet.name} alt="Tablet" />
             </div>
 
             <p className="subtitle mt-25 mb-0" id="multiple-device-usage">

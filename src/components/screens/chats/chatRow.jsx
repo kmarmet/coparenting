@@ -133,7 +133,7 @@ export default function ChatRow({index, onClick, chat}) {
         <div className="row-text">
           <div className={'row-text-content'}>
             <div className={'name-and-timestamp'}>
-              <p className="coParent-name">{StringManager.uppercaseFirstLetterOfAllWords(otherMember?.name)}</p>
+              <p className="coParent-name">{StringManager.UppercaseFirstLetterOfAllWords(otherMember?.name)}</p>
               <p className="timestamp">{lastMessageTimestamp} </p>
             </div>
             <p className="last-message">{lastMessage}</p>

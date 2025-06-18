@@ -1,11 +1,11 @@
 // Path: src\components\parentInput.jsx
-import React, {useContext, useState} from 'react'
-import globalState from '../context'
 import {phone} from 'phone'
-import AlertManager from '../managers/alertManager'
-import InputField from './shared/inputField'
+import React, {useContext, useState} from 'react'
 import {RiUserAddLine} from 'react-icons/ri'
+import globalState from '../context'
+import AlertManager from '../managers/alertManager'
 import StringManager from '../managers/stringManager'
+import InputField from './shared/inputField'
 
 export default function ParentInput({add, parentsLength = 1, labels}) {
   const {state, setState} = useContext(globalState)
@@ -22,7 +22,7 @@ export default function ParentInput({add, parentsLength = 1, labels}) {
   return (
     <div id="parent-input-container">
       <p id="group-label">
-        Parent #{parentsLength} {`- ${StringManager.uppercaseFirstLetterOfAllWords(name)}`}
+        Parent #{parentsLength} {`- ${StringManager.UppercaseFirstLetterOfAllWords(name)}`}
       </p>
       <InputField inputType={'input'} placeholder={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
       <InputField

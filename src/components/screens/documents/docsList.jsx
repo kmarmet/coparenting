@@ -64,7 +64,7 @@ export default function DocsList() {
                             }
                           }}>
                           {fileType === 'Document' ? <HiDocumentText className={'file-type'} /> : <FaFileImage className={'file-type'} />}
-                          {StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(doc.name))}
+                          {StringManager.removeFileExtension(StringManager.UppercaseFirstLetterOfAllWords(doc.name))}
                         </p>
                         <div className="svg-wrapper" onClick={DeleteDoc}>
                           <FaMinus className={'delete-icon'} />

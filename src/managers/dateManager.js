@@ -13,9 +13,9 @@ const DateManager = {
     let repeatingEvents = await DB.getTable(DB.tables.calendarEvents)
     repeatingEvents = repeatingEvents.filter((event) => event.title === eventTitle)
     const recurringInterval = object.recurringInterval
-    const active = document.querySelector(`[data-label=${StringManager.uppercaseFirstLetterOfAllWords(recurringInterval)}]`)
+    const active = document.querySelector(`[data-label=${StringManager.UppercaseFirstLetterOfAllWords(recurringInterval)}]`)
     if (Manager.IsValid(active)) {
-      document.querySelector(`[data-label=${StringManager.uppercaseFirstLetterOfAllWords(recurringInterval)}]`).classList.add('active')
+      document.querySelector(`[data-label=${StringManager.UppercaseFirstLetterOfAllWords(recurringInterval)}]`).classList.add('active')
     }
     return repeatingEvents
   },

@@ -84,7 +84,7 @@ ImageManager = {
     return imageModal.classList.add('active');
   },
   formatImageName: function(imageName) {
-    return imageName.replace(/\.[^\/.]+$/, '').replaceAll(' - ', ' ').replaceAll('_', ' ').uppercaseFirstLetterOfAllWords();
+    return imageName.replace(/\.[^\/.]+$/, '').replaceAll(' - ', ' ').replaceAll('_', ' ').UppercaseFirstLetterOfAllWords();
   },
   blobToImage: function(blob) {
     return new Promise(function(resolve) {

@@ -240,7 +240,7 @@ export default function Vault() {
               <SelectDropdown
                 labelText={'Sort By'}
                 id={'sorting-dropdown'}
-                options={SelectDropdownManager.GetDefault.ReminderOptions(Object.values(SortByTypes))}
+                options={SelectDropdownManager.GetDefault.Reminders(Object.values(SortByTypes))}
                 wrapperClasses={'sorting-dropdown white'}
                 value={sortMethod}
                 onChange={HandleSortBySelection}>

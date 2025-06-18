@@ -7,13 +7,13 @@ import Manager from '../../managers/manager'
 import SelectDropdownManager from '../../managers/selectDropdownManager'
 import SelectDropdown from './selectDropdown'
 
-export default function ShareWithDropdown({defaultValues = [], onSelection = (e) => {}}) {
+export default function ShareWithDropdown({selectedValues = [], onSelection = (e) => {}}) {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
   const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {users} = useUsers()
   const [dropdownOptions, setDropdownOptions] = useState([])
-  const [defaults, setDefaults] = useState([])
+  const [selected, setSelected] = useState([])
 
   const SetShareWithUsers = async () => {
     const sharedDataUsers = currentUser?.sharedDataUsers
@@ -30,14 +30,12 @@ export default function ShareWithDropdown({defaultValues = [], onSelection = (e)
   }, [currentUser, users])
 
   useEffect(() => {
-    if (Manager.IsValid(defaultValues)) {
-      const sharedDataUsers = currentUser?.sharedDataUsers
-      const sharedDataUsersAccounts = users?.filter((x) => sharedDataUsers?.includes(x.key))
-      const defaults = SelectDropdownManager.GetSelected.ShareWith(defaultValues, sharedDataUsersAccounts)
-      setDefaults(defaults)
-      console.log(defaults)
+    if (Manager.IsValid(selectedValues)) {
+      const accountsFromKeys = users?.filter((x) => selectedValues?.includes(x.key))
+      const _selected = SelectDropdownManager.GetSelected.ShareWith(accountsFromKeys)
+      setSelected(_selected)
     }
-  }, [defaultValues])
+  }, [selectedValues])
 
   return (
     <SelectDropdown
@@ -45,10 +43,10 @@ export default function ShareWithDropdown({defaultValues = [], onSelection = (e)
       wrapperClasses="share-with-select-dropdown"
       isMultiple={true}
       onSelection={(e) => {
-        setDefaults(e)
+        setSelected(e)
         onSelection(e)
       }}
-      value={defaults}
+      value={selected}
       options={dropdownOptions}
     />
   )

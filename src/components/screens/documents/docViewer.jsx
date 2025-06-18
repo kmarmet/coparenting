@@ -1,13 +1,3 @@
-import Form from '../../shared/form'
-import InputField from '../../shared/inputField'
-import ScreenNames from '../../../constants/screenNames'
-import DB from '../../../database/DB'
-import AlertManager from '../../../managers/alertManager'
-import DocumentConversionManager from '../../../managers/documentConversionManager'
-import DomManager from '../../../managers/domManager'
-import Manager from '../../../managers/manager'
-import StringManager from '../../../managers/stringManager'
-import DocumentHeader from '../../../models/documentHeader'
 import debounce from 'debounce'
 import _ from 'lodash'
 import React, {useContext, useEffect, useState} from 'react'
@@ -19,11 +9,21 @@ import {MdDriveFileRenameOutline} from 'react-icons/md'
 import {TbFileSearch} from 'react-icons/tb'
 import searchTextHL from 'search-text-highlight'
 import InputTypes from '../../../constants/inputTypes'
+import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
+import DB from '../../../database/DB'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useDocuments from '../../../hooks/useDocuments'
+import AlertManager from '../../../managers/alertManager'
 import DatasetManager from '../../../managers/datasetManager.coffee'
+import DocumentConversionManager from '../../../managers/documentConversionManager'
+import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager'
+import DocumentHeader from '../../../models/documentHeader'
 import NavBar from '../../navBar'
+import Form from '../../shared/form'
+import InputField from '../../shared/inputField'
 import Label from '../../shared/label.jsx'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
@@ -560,12 +560,7 @@ export default function DocViewer() {
         onSubmit={RenameFile}
         className="rename-file"
         title={'Rename Document'}>
-        <InputField
-          placeholder={'New document name'}
-          required={true}
-          inputType={InputTypes.text}
-          onChange={(e) => setNewFileName(e.target.value)}
-        />
+        <InputField placeholder={'New document name'} required={true} inputType={InputTypes.text} onChange={(e) => setNewFileName(e.target.value)} />
       </Form>
 
       {/* SCREEN ACTIONS */}
@@ -664,7 +659,7 @@ export default function DocViewer() {
 
       {/* PAGE CONTAINER / TEXT */}
       <div id="documents-container" className={`${theme} page-container  documents`}>
-        <ScreenHeader title={StringManager.removeFileExtension(StringManager.uppercaseFirstLetterOfAllWords(docToView?.name)).replaceAll('-', ' ')} />
+        <ScreenHeader title={StringManager.removeFileExtension(StringManager.UppercaseFirstLetterOfAllWords(docToView?.name)).replaceAll('-', ' ')} />
         <div className="screen-content">
           <div id="doc-text"></div>
         </div>

@@ -1,6 +1,6 @@
 @import './palette';
-@import './variables';
-@import './mixins';
+@import 'variables';
+@import 'mixins';
 
 #external-overrides {
   .checkbox {
@@ -597,9 +597,8 @@
     display: block !important;
 
     &.MuiFormControl-fullWidth {
-        height: 40px !important;
+      height: 40px !important;
       * {
-
         max-width: 100% !important;
         width: 100% !important;
       }
@@ -651,9 +650,6 @@
 
     .MuiInputBase-root {
       background-color: transparent !important;
-
-
-
     }
 
     .MuiInputLabel-root {
@@ -692,9 +688,9 @@
         height: min-content !important;
 
         .in-form {
-            background: rgba(255, 255, 255, 0.1) !important;
-            background: rgba(255, 255, 255, 0.1) !important;
-            background:red !important;
+          background: rgba(255, 255, 255, 0.1) !important;
+          background: rgba(255, 255, 255, 0.1) !important;
+          background: red !important;
         }
 
         * {

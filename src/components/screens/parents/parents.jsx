@@ -1,11 +1,4 @@
 // Path: src\components\screens\parents\parents.jsx
-import NavBar from '../../navBar'
-import InputField from '../../shared/inputField'
-import NoDataFallbackText from '../../shared/noDataFallbackText'
-import DB_UserScoped from '../../../database/db_userScoped'
-import AlertManager from '../../../managers/alertManager'
-import Manager from '../../../managers/manager'
-import StringManager from '../../../managers/stringManager'
 import React, {useContext, useEffect, useState} from 'react'
 import {BsFillSendFill} from 'react-icons/bs'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
@@ -14,12 +7,19 @@ import {IoClose, IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
+import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useParents from '../../../hooks/useParents'
+import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
 import EmailManager from '../../../managers/emailManager'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager'
+import NavBar from '../../navBar'
 import AddressInput from '../../shared/addressInput'
 import Form from '../../shared/form'
+import InputField from '../../shared/inputField'
+import NoDataFallbackText from '../../shared/noDataFallbackText'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import Spacer from '../../shared/spacer'
 import CustomParentInfo from './customParentInfo'
@@ -222,7 +222,7 @@ export default function Parents() {
               {Manager.IsValid(activeParent) &&
                 Object.entries(activeParent).map((propArray, index) => {
                   let infoLabel = propArray[0]
-                  infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
+                  infoLabel = StringManager.UppercaseFirstLetterOfAllWords(infoLabel)
                   infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
                   infoLabel = StringManager.FormatTitle(infoLabel, true)
                   const value = propArray[1]

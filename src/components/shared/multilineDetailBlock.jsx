@@ -1,11 +1,10 @@
 import React, {useContext, useState} from 'react'
-import MultilineDetailBlockTypes from '../../constants/multilineDetailBlockTypes'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 
-const MultilineDetailBlock = ({array = [], title = '', dataType = MultilineDetailBlockTypes.Reminders}) => {
+const MultilineDetailBlock = ({array = [], title = ''}) => {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
   const [showAll, setShowAll] = useState(false)
@@ -22,22 +21,16 @@ const MultilineDetailBlock = ({array = [], title = '', dataType = MultilineDetai
             setShowAll(!showAll)
           }}>
           <p className={`block-text list`}>
-            {dataType === MultilineDetailBlockTypes.ShareWith && StringManager.GetFirstNameAndLastInitial(array[0])}
-            {dataType === MultilineDetailBlockTypes.Reminders && StringManager.uppercaseFirstLetterOfAllWords(array[0])}
-            {array.length > 1 && !showAll && <span className="ellipsis">...</span>}
+            {StringManager.FormatTitle(array[0], true)}
+            {array?.length > 1 && !showAll && <span className="ellipsis">...</span>}
           </p>
           <div className="rest-of-list-items">
-            {array?.flat()?.map((arrItem, index) => {
+            {array?.map((arrItem, index) => {
               if (index < 1) return
               return (
-                <div key={index}>
-                  {dataType === MultilineDetailBlockTypes.ShareWith && (
-                    <p className={`block-text`}>{StringManager.GetFirstNameAndLastInitial(arrItem)}</p>
-                  )}
-                  {dataType === MultilineDetailBlockTypes.Reminders && (
-                    <p className={`block-text`}>{StringManager.uppercaseFirstLetterOfAllWords(arrItem)}</p>
-                  )}
-                </div>
+                <p key={index} className={`block-text`}>
+                  {StringManager.FormatTitle(arrItem, true)}
+                </p>
               )
             })}
           </div>

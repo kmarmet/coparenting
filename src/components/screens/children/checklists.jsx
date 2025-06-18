@@ -166,7 +166,7 @@ export default function Checklists({showCard, hideCard}) {
             <div key={index} id="checklist-item-row" className="flex">
               <p onClick={toggleActive} className="row">
                 {activeItems.includes(item.toLowerCase()) && <PiListChecksFill />}
-                {StringManager.uppercaseFirstLetterOfAllWords(item)}
+                {StringManager.UppercaseFirstLetterOfAllWords(item)}
               </p>
               <PiTrashSimpleFill className={'close-x'} onClick={deleteItem} />
             </div>

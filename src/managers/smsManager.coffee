@@ -8,7 +8,7 @@ export default SmsManager =
 
   Templates:
     ParentChildVerification: (childName, verificationCode) ->
-      "#{StringManager.uppercaseFirstLetterOfAllWords(childName)} is requesting sharing access. #{SmsManager.lineBreak}#{SmsManager.lineBreak}If you would like to grant access, please share this code
+      "#{StringManager.UppercaseFirstLetterOfAllWords(childName)} is requesting sharing access. #{SmsManager.lineBreak}#{SmsManager.lineBreak}If you would like to grant access, please share this code
    with them: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
 
     Invitation: (currentUser,userName, recipientPhone) ->

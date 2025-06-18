@@ -332,7 +332,7 @@ export default function ExpenseTracker() {
       {/* DETAILS CARD */}
       <Form
         submitText={'Update'}
-        title={`${StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.name || '')}`}
+        title={`${StringManager.UppercaseFirstLetterOfAllWords(activeExpense?.name || '')}`}
         onSubmit={Update}
         hasSubmitButton={view === 'Edit'}
         className="expense-tracker form"
@@ -445,7 +445,7 @@ export default function ExpenseTracker() {
                 {/*  Recurring Frequency */}
                 <DetailBlock
                   title={'Recurring Frequency'}
-                  text={StringManager.uppercaseFirstLetterOfAllWords(activeExpense?.recurringFrequency)}
+                  text={StringManager.UppercaseFirstLetterOfAllWords(activeExpense?.recurringFrequency)}
                   valueToValidate={activeExpense?.frequency}
                 />
 
@@ -614,7 +614,7 @@ export default function ExpenseTracker() {
                   wrapperClasses={'sorting-accordion white-bg'}
                   value={sortMethod}
                   labelText={'Sort by'}
-                  options={SelectDropdownManager.GetDefault.ReminderOptions(Object.values(SortByTypes))}
+                  options={SelectDropdownManager.GetDefault.Reminders(Object.values(SortByTypes))}
                   onChange={HandleSortBySelection}></SelectDropdown>
               </div>
             </AccordionDetails>
@@ -650,7 +650,7 @@ export default function ExpenseTracker() {
                       {/* EXPENSE NAME */}
                       <div id="name-wrapper" className="flex align-center">
                         <p className="name row-title">
-                          {StringManager.uppercaseFirstLetterOfAllWords(expense?.name)}
+                          {StringManager.UppercaseFirstLetterOfAllWords(expense?.name)}
                           {expense?.isRecurring && <MdOutlineEventRepeat />}
                           {Manager.IsValid(expense?.imageName) && <BsCardImage />}
                         </p>
@@ -660,7 +660,7 @@ export default function ExpenseTracker() {
                           <>
                             {!dueInADay && !dueInHours && (
                               <span className={`${expense?.paidStatus} status`} id="request-status">
-                                {isPastDue ? 'PAST DUE' : StringManager.uppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
+                                {isPastDue ? 'PAST DUE' : StringManager.UppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
                               </span>
                             )}
                             {dueInADay ||

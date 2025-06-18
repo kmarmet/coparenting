@@ -27,7 +27,7 @@ export default function CoparentInputs({add, coparentsLength = 1}) {
   return (
     <div id="coparent-input-container">
       <p id="coparent-label">
-        Co-Parent #{coparentsLength} {`- ${StringManager.uppercaseFirstLetterOfAllWords(name)}`}
+        Co-Parent #{coparentsLength} {`- ${StringManager.UppercaseFirstLetterOfAllWords(name)}`}
       </p>
       <InputField inputType={'input'} placeholder={'Name'} required={true} onChange={(e) => setName(e.target.value)} />
       <InputField
@@ -38,7 +38,7 @@ export default function CoparentInputs({add, coparentsLength = 1}) {
         onChange={(e) => setUserPhone(e.target.value)}
       />
       <CheckboxGroup
-        parentLabel={name.length > 0 ? `${StringManager.uppercaseFirstLetterOfAllWords(name)}'s Parent Type` : 'Parent Type'}
+        parentLabel={name.length > 0 ? `${StringManager.UppercaseFirstLetterOfAllWords(name)}'s Parent Type` : 'Parent Type'}
         className="coparent-type"
         skipNameFormatting={true}
         checkboxviews={['Step-Parent', 'Biological Parent', "Partner's Co-Parent"]}
@@ -63,7 +63,7 @@ export default function CoparentInputs({add, coparentsLength = 1}) {
             setShowAddButton(false)
             add({name, phone: userPhone, parentType})
           }}>
-          Save {StringManager.uppercaseFirstLetterOfAllWords(name)}
+          Save {StringManager.UppercaseFirstLetterOfAllWords(name)}
         </button>
       )}
     </div>

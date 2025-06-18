@@ -1,9 +1,4 @@
 // Path: src\components\screens\childInfo\schooling.jsx
-import InputField from '../../shared/inputField'
-import DB from '../../../database/DB'
-import DB_UserScoped from '../../../database/db_userScoped'
-import AlertManager from '../../../managers/alertManager'
-import Manager from '../../../managers/manager'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -13,8 +8,13 @@ import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {IoSchool} from 'react-icons/io5'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
+import DB from '../../../database/DB'
+import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import AlertManager from '../../../managers/alertManager'
+import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
+import InputField from '../../shared/inputField'
 
 export default function Schooling({activeChild}) {
   const {state, setState} = useContext(globalState)
@@ -107,7 +107,7 @@ export default function Schooling({activeChild}) {
           <div className="gradient padding">
             {Manager.IsValid(schoolingValues) &&
               schoolingValues.map((prop, index) => {
-                let infoLabel = StringManager.uppercaseFirstLetterOfAllWords(StringManager.spaceBetweenWords(prop[0]))
+                let infoLabel = StringManager.UppercaseFirstLetterOfAllWords(StringManager.spaceBetweenWords(prop[0]))
                 const value = prop.flat()[1]
                 return (
                   <div key={index} className="data-row">

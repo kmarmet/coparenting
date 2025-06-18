@@ -116,7 +116,7 @@ export default function Checklist({fromOrTo, activeChildId}) {
                   <div data-checklist-text={item} key={index} className="data-row" className="checklist-item-row">
                     <p onClick={ToggleActive} className="checklist-item">
                       {activeItems.includes(item.toLowerCase()) && <IoCheckmarkCircleSharp className={'checkmark'} />}
-                      {StringManager.uppercaseFirstLetterOfAllWords(item)}
+                      {StringManager.UppercaseFirstLetterOfAllWords(item)}
                     </p>
                     <CgClose className={'close-x children'} onClick={DeleteItem} />
                   </div>

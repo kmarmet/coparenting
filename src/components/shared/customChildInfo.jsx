@@ -52,13 +52,13 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
       await UpdateManager.SendToShareWith(
         info.current.shareWith,
         currentUser,
-        `${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Updated for ${activeChild?.general?.name}`,
+        `${StringManager.UppercaseFirstLetterOfAllWords(infoSection)} Info Updated for ${activeChild?.general?.name}`,
         `${info.current.title} - ${info.current.value}`,
         infoSection
       )
     }
 
-    ResetForm(`${StringManager.uppercaseFirstLetterOfAllWords(infoSection)} Info Added`)
+    ResetForm(`${StringManager.UppercaseFirstLetterOfAllWords(infoSection)} Info Added`)
   }
 
   const HandleInfoTypeSelection = (e) => {

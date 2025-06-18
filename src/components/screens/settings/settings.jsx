@@ -1,23 +1,23 @@
 // Path: src\components\screens\settings\settings.jsx
-import NavBar from '../../navBar'
-import InputField from '../../shared/inputField'
-import Label from '../../shared/label'
-import DatetimeFormats from '../../../constants/datetimeFormats'
-import DB from '../../../database/DB'
-import DB_UserScoped from '../../../database/db_userScoped'
-import DateManager from '../../../managers/dateManager'
-import UpdateManager from '../../../managers/updateManager.js'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
+import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
+import DB from '../../../database/DB'
+import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import DateManager from '../../../managers/dateManager'
 import DomManager from '../../../managers/domManager'
 import StringManager from '../../../managers/stringManager'
+import UpdateManager from '../../../managers/updateManager.js'
+import NavBar from '../../navBar'
 import CheckboxGroup from '../../shared/checkboxGroup'
+import InputField from '../../shared/inputField'
+import Label from '../../shared/label'
+import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 import ToggleButton from '../../shared/toggleButton'
-import ScreenHeader from '../../shared/screenHeader'
 
 export default function Settings() {
   const {state, setState} = useContext(globalState)
@@ -147,7 +147,7 @@ export default function Settings() {
               checkboxArray={DomManager.BuildCheckboxGroup({
                 currentUser,
                 customLabelArray: ['Light', 'Dark'],
-                defaultLabels: [StringManager.uppercaseFirstLetterOfAllWords(currentUser?.settings?.theme)],
+                defaultLabels: [StringManager.UppercaseFirstLetterOfAllWords(currentUser?.settings?.theme)],
               })}
               isDefaultChecked={currentUser?.settings?.theme === 'dark'}
               elClass={`${currentUser?.settings?.theme} `}

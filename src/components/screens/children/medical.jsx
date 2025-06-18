@@ -1,8 +1,4 @@
 // Path: src\components\screens\childInfo\medical.jsx
-import InputField from '../../shared/inputField'
-import DB from '../../../database/DB'
-import DB_UserScoped from '../../../database/db_userScoped'
-import Manager from '../../../managers/manager'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -12,9 +8,13 @@ import {FaBriefcaseMedical} from 'react-icons/fa'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
+import DB from '../../../database/DB'
+import DB_UserScoped from '../../../database/db_userScoped'
 import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
+import InputField from '../../shared/inputField'
 
 export default function Medical({activeChild}) {
   const {state, setState} = useContext(globalState)
@@ -132,7 +132,7 @@ export default function Medical({activeChild}) {
                         <InputField
                           hasBottomSpacer={false}
                           inputType={InputTypes.text}
-                          placeholder={`${StringManager.uppercaseFirstLetterOfAllWords(infoLabel)} ${
+                          placeholder={`${StringManager.UppercaseFirstLetterOfAllWords(infoLabel)} ${
                             Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''
                           }`}
                           defaultValue={value}

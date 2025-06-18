@@ -250,7 +250,7 @@ export default function CoParents() {
               {Manager.IsValid(activeCoParent) &&
                 Object.entries(activeCoParent).map((propArray, index) => {
                   let infoLabel = propArray[0]
-                  infoLabel = StringManager.uppercaseFirstLetterOfAllWords(infoLabel)
+                  infoLabel = StringManager.UppercaseFirstLetterOfAllWords(infoLabel)
                   infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
                   infoLabel = StringManager.FormatTitle(infoLabel, true)
                   const value = propArray[1]

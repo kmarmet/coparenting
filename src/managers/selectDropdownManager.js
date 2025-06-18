@@ -22,7 +22,7 @@ SelectDropdownManager = {
     return readableTimes;
   },
   GetSelected: {
-    ReminderOptions: function(reminders) {
+    Reminders: function(reminders) {
       var i, len, options, reminder;
       options = [];
       if (Manager.IsValid(reminders)) {
@@ -36,21 +36,61 @@ SelectDropdownManager = {
       }
       return options;
     },
-    ShareWith: function(names) {
-      var i, len, name, options;
+    Children: function(childNames) {
+      var childName, i, len, options;
       options = [];
-      for (i = 0, len = names.length; i < len; i++) {
-        name = names[i];
-        options.push({
-          value: name,
-          label: name
+      if (Manager.IsValid(childNames)) {
+        for (i = 0, len = childNames.length; i < len; i++) {
+          childName = childNames[i];
+          options.push({
+            label: StringManager.FormatTitle(childName),
+            value: childName
+          });
+        }
+      }
+      return options;
+    },
+    ShareWith: function(accountsFromKeys) {
+      var i, len, options, user;
+      options = [];
+      if (Manager.IsValid(accountsFromKeys)) {
+        for (i = 0, len = accountsFromKeys.length; i < len; i++) {
+          user = accountsFromKeys[i];
+          options.push({
+            value: user != null ? user.key : void 0,
+            label: StringManager.GetFirstNameAndLastInitial(user != null ? user.name : void 0)
+          });
+        }
+      }
+      return options;
+    },
+    ShareWithFromKeys: function(accountKeys, users, labelsOnly = false) {
+      var i, key, len, options, user;
+      options = [];
+      if (Manager.IsValid(accountKeys) && Manager.IsValid(users)) {
+        for (i = 0, len = accountKeys.length; i < len; i++) {
+          key = accountKeys[i];
+          user = users != null ? users.find((x) => {
+            return (x != null ? x.key : void 0) === key;
+          }) : void 0;
+          if (Manager.IsValid(user)) {
+            options.push({
+              value: user != null ? user.key : void 0,
+              label: StringManager.GetFirstNameAndLastInitial(user != null ? user.name : void 0)
+            });
+          }
+        }
+      }
+      if (labelsOnly) {
+        return options.map((x) => {
+          return x != null ? x.label : void 0;
         });
       }
       return options;
     }
   },
   GetDefault: {
-    ReminderOptions: [
+    Reminders: [
       {
         label: "5 Minutes Before",
         value: "fiveMinutes"
@@ -76,61 +116,36 @@ SelectDropdownManager = {
           user = shareWith[i];
           options.push({
             value: user != null ? user.key : void 0,
-            label: StringManager != null ? StringManager.uppercaseFirstLetterOfAllWords(user != null ? user.name : void 0) : void 0
+            label: StringManager != null ? StringManager.UppercaseFirstLetterOfAllWords(user != null ? user.name : void 0) : void 0
           });
         }
       }
       return options;
     },
-    Users: function(users) {
-      var i, len, options, ref, user;
+    CoParents: function(users) {
+      var i, len, options, user;
       options = [];
       if (Manager.IsValid(users)) {
         for (i = 0, len = users.length; i < len; i++) {
           user = users[i];
-          if ((user != null ? user.accountType : void 0) === 'parent') {
-            options.push({
-              value: user != null ? user.key : void 0,
-              label: StringManager != null ? StringManager.uppercaseFirstLetterOfAllWords(user != null ? user.name : void 0) : void 0
-            });
-          }
-          if ((user != null ? user.accountType : void 0) === 'child') {
-            options.push({
-              value: user != null ? user.userKey : void 0,
-              label: StringManager != null ? StringManager.uppercaseFirstLetterOfAllWords(user != null ? (ref = user.general) != null ? ref.name : void 0 : void 0) : void 0
-            });
-          }
+          options.push({
+            value: user != null ? user.key : void 0,
+            label: StringManager != null ? StringManager.UppercaseFirstLetterOfAllWords(user != null ? user.name : void 0) : void 0
+          });
         }
       }
       return options;
     },
-    GetSelectOptions: function(optionsArray = [], isUsers = false, isStringsOnly = false, isReminders = false, isFormattedReminders = false) {
-      var i, len, option, options, ref;
+    Children: function(children) {
+      var child, i, len, options, ref;
       options = [];
-      if (Manager.IsValid(optionsArray)) {
-        for (i = 0, len = optionsArray.length; i < len; i++) {
-          option = optionsArray[i];
-          // Users
-          if (isUsers) {
-            if ((option != null ? option.accountType : void 0) === 'parent') {
-              options.push({
-                value: option != null ? option.key : void 0,
-                label: StringManager != null ? StringManager.uppercaseFirstLetterOfAllWords(option != null ? option.name : void 0) : void 0
-              });
-            }
-            if ((option != null ? option.accountType : void 0) === 'child') {
-              options.push({
-                value: option != null ? option.userKey : void 0,
-                label: StringManager != null ? StringManager.uppercaseFirstLetterOfAllWords(option != null ? (ref = option.general) != null ? ref.name : void 0 : void 0) : void 0
-              });
-            }
-          // Strings
-          } else if (isStringsOnly) {
-            options.push({
-              label: StringManager.uppercaseFirstLetterOfAllWords(option),
-              value: option
-            });
-          }
+      if (Manager.IsValid(children)) {
+        for (i = 0, len = children.length; i < len; i++) {
+          child = children[i];
+          options.push({
+            label: StringManager.FormatTitle(child != null ? (ref = child.general) != null ? ref.name : void 0 : void 0),
+            value: child != null ? child.id : void 0
+          });
         }
       }
       return options;

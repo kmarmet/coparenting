@@ -13,14 +13,14 @@ export default ArchiveManager = {
     for obj in data
       for key in obj
         obj[key] = StringManager.spaceBetweenWords(key)
-        obj[key] = StringManager.uppercaseFirstLetterOfAllWords(key)
+        obj[key] = StringManager.UppercaseFirstLetterOfAllWords(key)
 
     # Remove headers the user does not need to see
     headers = headers.filter (header) -> header != "id" && header != "isRecurring" && header != "shareWith" && header != "imageName" && header != "ownerKey" && header != "notificationSent" && header != "senderKey" && header != "recipientKey"
 
     for header in headers
       header = StringManager.spaceBetweenWords(header)
-      header = StringManager.uppercaseFirstLetterOfAllWords(header)
+      header = StringManager.UppercaseFirstLetterOfAllWords(header)
       formattedHeaders.push(header)
 
     # Add headers

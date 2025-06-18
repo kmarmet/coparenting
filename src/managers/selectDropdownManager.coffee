@@ -12,7 +12,7 @@ SelectDropdownManager =
     return readableTimes
 
   GetSelected:
-    ReminderOptions: (reminders) ->
+    Reminders: (reminders) ->
       options = []
       if Manager.IsValid(reminders)
         for reminder in reminders
@@ -21,19 +21,46 @@ SelectDropdownManager =
             value: reminder
       return options
 
-    ShareWith: (names) ->
+    Children: (childNames) ->
       options = []
-      for name in names
-        options.push
-          value: name
-          label: name
+      if Manager.IsValid(childNames)
+        for childName in childNames
+          options.push
+            label: StringManager.FormatTitle(childName)
+            value: childName
+      return options
+
+    ShareWith: (accountsFromKeys) ->
+      options = []
+      if Manager.IsValid(accountsFromKeys)
+        for user in accountsFromKeys
+          options.push
+            value:  user?.key
+            label: StringManager.GetFirstNameAndLastInitial(user?.name)
+      return options
+
+    ShareWithFromKeys: (accountKeys, users, labelsOnly = false) ->
+      options = []
+
+      if (Manager.IsValid(accountKeys) && Manager.IsValid(users))
+        for key in accountKeys
+          user = users?.find((x) => x?.key == key)
+
+          if Manager.IsValid(user)
+            options.push
+              value:  user?.key
+              label: StringManager.GetFirstNameAndLastInitial(user?.name)
+
+      if labelsOnly
+        return options.map((x) => x?.label)
+
       return options
 
   GetDefault:
-     ReminderOptions:
+     Reminders:
        [
-         {label: "5 Minutes Before", value: "fiveMinutes",}
-         {label: "30 Minutes Before", value: "halfHour",}
+         {label: "5 Minutes Before", value: "fiveMinutes"}
+         {label: "30 Minutes Before", value: "halfHour"}
          {label: "1 Hour Before", value: "hour"}
          {label: "At Event Time", value: "timeOfEvent"}
        ]
@@ -44,50 +71,27 @@ SelectDropdownManager =
          for user in shareWith
            options.push
              value: user?.key
-             label: StringManager?.uppercaseFirstLetterOfAllWords(user?.name)
+             label: StringManager?.UppercaseFirstLetterOfAllWords(user?.name)
        return options
 
-     Users: (users) ->
+     CoParents: (users) ->
        options = []
        if Manager.IsValid(users)
          for user in users
-           if user?.accountType == 'parent'
-             options.push
-               value:  user?.key
-               label: StringManager?.uppercaseFirstLetterOfAllWords(user?.name)
-
-
-           if user?.accountType == 'child'
-             options.push
-               value: user?.userKey
-               label: StringManager?.uppercaseFirstLetterOfAllWords(user?.general?.name)
+           options.push
+             value:  user?.key
+             label: StringManager?.UppercaseFirstLetterOfAllWords(user?.name)
 
        return options
 
-     GetSelectOptions: (optionsArray = [], isUsers = false, isStringsOnly = false, isReminders = false, isFormattedReminders = false) ->
-      options = []
-      if Manager.IsValid(optionsArray)
-        for option in optionsArray
-    # Users
-          if isUsers
-            if option?.accountType == 'parent'
-              options.push
-                value:  option?.key
-                label: StringManager?.uppercaseFirstLetterOfAllWords(option?.name)
+     Children: (children) ->
+       options = []
+       if Manager.IsValid(children)
+         for child in children
+           options.push
+             label: StringManager.FormatTitle(child?.general?.name)
+             value: child?.id
 
-
-            if option?.accountType == 'child'
-              options.push
-                value: option?.userKey
-                label: StringManager?.uppercaseFirstLetterOfAllWords(option?.general?.name)
-
-    # Strings
-          else if isStringsOnly
-            options.push
-              label: StringManager.uppercaseFirstLetterOfAllWords(option)
-              value: option
-
-      return options
-
+       return options
 
 export default SelectDropdownManager

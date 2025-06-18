@@ -127,11 +127,11 @@ export default function TransferRequests() {
 
   const CheckIn = async () => {
     setShowDetails(false)
-    let notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser?.name))} at ${
+    let notificationMessage = `${StringManager.getFirstWord(StringManager.UppercaseFirstLetterOfAllWords(currentUser?.name))} at ${
       activeRequest?.address
     }`
     if (!sendWithAddress) {
-      notificationMessage = `${StringManager.getFirstWord(StringManager.uppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
+      notificationMessage = `${StringManager.getFirstWord(StringManager.UppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
     }
     const recipient = coParents?.find((x) => x.key === activeRequest?.recipient?.key)
 
@@ -376,7 +376,7 @@ export default function TransferRequests() {
                         <p id="title" className="flex date row-title">
                           {moment(request.startDate).format(DatetimeFormats.readableMonthAndDay)}
                           <span className={`${request.status} status`} id="request-status">
-                            {StringManager.uppercaseFirstLetterOfAllWords(request.status)}
+                            {StringManager.UppercaseFirstLetterOfAllWords(request.status)}
                           </span>
                         </p>
                         {request?.recipient?.key === currentUser?.key && (

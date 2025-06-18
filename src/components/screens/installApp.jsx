@@ -9,10 +9,8 @@ import globalState from '../../context'
 import AppManager from '../../managers/appManager'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
-import SlideshowImage from '../../models/slideshowImage'
 import NavBar from '../navBar'
 import ScreenHeader from '../shared/screenHeader'
-import Slideshow from '../shared/slideshow'
 import Spacer from '../shared/spacer'
 import SuspenseImage from '../shared/suspenseImage'
 
@@ -28,19 +26,19 @@ export default function InstallApp() {
   return (
     <>
       {/*  DESKTOP INSTALLATION SLIDESHOW */}
-      <Slideshow
-        activeIndex={0}
-        show={showComputerInstallSlideshow}
-        hide={() => setShowComputerInstallSlideshow(false)}
-        images={[
-          new SlideshowImage({
-            classes: 'desktop-installation',
-            url: '../../img/desktop-installation.png',
-            title: 'Computer Installation',
-            notes: 'Easily install via any web browser on your computer',
-          }),
-        ]}
-      />
+      {/*<Slideshow*/}
+      {/*  activeIndex={0}*/}
+      {/*  show={showComputerInstallSlideshow}*/}
+      {/*  hide={() => setShowComputerInstallSlideshow(false)}*/}
+      {/*  images={[*/}
+      {/*    new SlideshowImage({*/}
+      {/*      classes: 'computer-installation',*/}
+      {/*      url: '../../img/computer-installation.png',*/}
+      {/*      title: 'Computer Installation',*/}
+      {/*      notes: 'Easily install via any web browser on your computer',*/}
+      {/*    }),*/}
+      {/*  ]}*/}
+      {/*/>*/}
       <div className="page-container install-app">
         <div id="install-app-wrapper">
           <ScreenHeader
@@ -152,7 +150,7 @@ export default function InstallApp() {
                   <p>{DomManager.tapOrClick(true)} the installation button in the address bar</p>
                 </div>
 
-                <SuspenseImage classes="installation desktop-installation" onClick={() => setShowComputerInstallSlideshow(true)} />
+                <SuspenseImage classes="installation computer-installation" onClick={() => setShowComputerInstallSlideshow(true)} />
                 <div className="flex">
                   <span className="step-number">3.</span>
                   <p>

@@ -386,7 +386,7 @@ export default function NewCalendarEvent() {
             <SelectDropdown
               isMultiple={true}
               placeholder={'Select Reminders'}
-              options={SelectDropdownManager.GetDefault.ReminderOptions}
+              options={SelectDropdownManager.GetDefault.Reminders}
               onSelection={(e) => {
                 setRemindersDropdownSelections(e)
               }}

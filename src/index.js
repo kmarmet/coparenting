@@ -77,6 +77,10 @@ if ('serviceWorker' in navigator) {
     self.skipWaiting()
   })
 
+  self.addEventListener('fetch', (event) => {
+    event.respondWith(fetch(event.request))
+  })
+
   // Listen for the appinstalled event (is app installed?)
   window.addEventListener('appinstalled', () => {
     // If visible, hide the install promotion

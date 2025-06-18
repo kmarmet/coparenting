@@ -1,7 +1,3 @@
-import NavBar from '../../navBar'
-import DB from '../../../database/DB'
-import AppManager from '../../../managers/appManager'
-import DateManager from '../../../managers/dateManager'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
@@ -13,17 +9,21 @@ import {useLongPress} from 'use-long-press'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
+import DB from '../../../database/DB'
 import useAppUpdates from '../../../hooks/useAppUpdates'
 import useCalendarEvents from '../../../hooks/useCalendarEvents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
+import AppManager from '../../../managers/appManager'
+import DateManager from '../../../managers/dateManager'
 import Manager from '../../../managers/manager'
 import SmsManager from '../../../managers/smsManager'
 import StringManager from '../../../managers/stringManager'
 import AppUpdate from '../../../models/appUpdate'
+import NavBar from '../../navBar'
 import InputField from '../../shared/inputField'
-import Spacer from '../../shared/spacer'
 import ScreenHeader from '../../shared/screenHeader'
+import Spacer from '../../shared/spacer'
 
 export default function AdminDashboard() {
   const {state, setState} = useContext(globalState)
@@ -143,7 +143,7 @@ export default function AdminDashboard() {
               {dbTables.map((table, index) => {
                 return (
                   <MenuItem key={index} value={table}>
-                    {StringManager.uppercaseFirstLetterOfAllWords(table)}
+                    {StringManager.UppercaseFirstLetterOfAllWords(table)}
                   </MenuItem>
                 )
               })}

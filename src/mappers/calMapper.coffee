@@ -25,23 +25,23 @@ CalendarMapper =
     return all
 
   GetReadableReminderTime: (timeframe) ->
-    if Manager.Contains(timeframe,'hour', false)
+    if Manager.Contains(timeframe,'hour')
       return  '1 Hour Before'
-    if Manager.Contains(timeframe,'half', false)
+    if Manager.Contains(timeframe,'half')
       return  '30 Minutes Before'
-    if Manager.Contains(timeframe,'five', false)
+    if Manager.Contains(timeframe,'five')
       return  '5 Minutes Before'
-    if Manager.Contains(timeframe,'time', false)
+    if Manager.Contains(timeframe,'time')
       return  'At Event Time'
 
   GetShortenedReadableReminderTime: (timeframe) ->
-    if Manager.Contains(timeframe,'hour', false)
+    if Manager.Contains(timeframe,'hour')
       return  '1 Hour'
-    if Manager.Contains(timeframe,'half', false)
+    if Manager.Contains(timeframe,'half')
       return  '30 Minutes'
-    if Manager.Contains(timeframe,'five', false)
+    if Manager.Contains(timeframe,'five')
       return  '5 Minutes'
-    if Manager.Contains(timeframe,'time', false)
+    if Manager.Contains(timeframe,'time')
       return  'Time of Event'
 
   readableRepeatIntervals: (selectedInterval) ->

@@ -349,7 +349,7 @@ export default function NewExpenseForm() {
 
           {/* CATEGORY */}
           <SelectDropdown
-            options={SelectDropdownManager.GetDefault.ReminderOptions}
+            options={SelectDropdownManager.GetDefault.Reminders}
             value={Object.keys(ExpenseCategories)[0]}
             onChange={HandleCategorySelection}
             placeholder={'Select a Category'}
@@ -381,7 +381,7 @@ export default function NewExpenseForm() {
           {/* PAYER */}
           {Manager.IsValid(coParents) && (
             <SelectDropdown
-              options={SelectDropdownManager.GetDefault.Users(coParents)}
+              options={SelectDropdownManager.GetDefault.CoParents(coParents)}
               placeholder={'Select Expense Payer'}
               onChange={HandlePayerSelection}
             />
@@ -393,7 +393,7 @@ export default function NewExpenseForm() {
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.IsValid(children) && (
             <SelectDropdown
-              options={SelectDropdownManager.GetDefault.Users(children)}
+              options={SelectDropdownManager.GetDefault.CoParents(children)}
               placeholder={'Select Children to Include'}
               onChange={HandleChildSelection}
               isMultiple={true}

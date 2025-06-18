@@ -1,4 +1,4 @@
-@import './mixins';
+@import 'mixins';
 #external-overrides {
   #app-container {
     .screen-overlay {
@@ -59,7 +59,7 @@
           grid-template-columns: 1fr 1fr 1fr;
           height: 80px;
           border-top: 1px inset $translucentLightest;
-          background: rgba(255, 255, 255, 0.15);
+          //background: rgba(255, 255, 255, 0.15);
           box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
           backdrop-filter: blur(6px);
 
@@ -88,6 +88,7 @@
 
             &:nth-child(1) {
               border-right: 1px solid $translucentLightest;
+              color: $brightGreen;
 
               svg {
                 position: relative;
@@ -95,10 +96,11 @@
               }
             }
             &:nth-child(2) {
-              border-right: 1px solid $translucentLightest;
+              color: white;
             }
             &:nth-child(3) {
               border-right: 1px solid $translucentLightest;
+              color: $brightGreen;
               svg {
                 position: relative;
                 right: -10px;

@@ -123,7 +123,7 @@ export default function Form({
             <div className="header">
               <p className={'form-title'} onClick={(e) => DomManager.ToggleActive(e.currentTarget)}>
                 {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
-                {title}
+                {StringManager.FormatTitle(title, true)}
               </p>
               {Manager.IsValid(subtitle, true) && <StringAsHtmlElement classes={'subtitle'} text={subtitle} />}
             </div>

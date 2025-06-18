@@ -1,15 +1,15 @@
 // Path: src\database\db_userScoped.js
-import DatasetManager from '../managers/datasetManager'
-import ObjectManager from '../managers/objectManager'
-import StringManager from '../managers/stringManager.coffee'
 import {child, get, getDatabase, push, ref, remove, set, update} from 'firebase/database'
 import _ from 'lodash'
 import moment from 'moment'
 import DatetimeFormats from '../constants/datetimeFormats'
 import ModelNames from '../constants/modelNames'
 import AppManager from '../managers/appManager'
+import DatasetManager from '../managers/datasetManager'
 import LogManager from '../managers/logManager'
 import Manager from '../managers/manager'
+import ObjectManager from '../managers/objectManager'
+import StringManager from '../managers/stringManager.coffee'
 import User from '../models/users/user'
 import DB from './DB'
 import Storage from './storage'
@@ -333,7 +333,7 @@ const DB_UserScoped = {
     newUser.key = key
     newUser.creationDate = moment().format(DatetimeFormats.dateForDb)
     newUser.location = locationDetails
-    newUser.name = StringManager.uppercaseFirstLetterOfAllWords(name).trim()
+    newUser.name = StringManager.UppercaseFirstLetterOfAllWords(name).trim()
     newUser.accountType = accountType.toLowerCase()
     newUser.phone = StringManager.FormatPhone(phone)
     const cleanUser = ObjectManager.GetModelValidatedObject(newUser, accountType === 'parent' ? ModelNames.user : ModelNames.childUser)

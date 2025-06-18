@@ -1,7 +1,7 @@
 import React from 'react'
 import {FaDirections} from 'react-icons/fa'
 import {HiPhoneArrowUpRight} from 'react-icons/hi2'
-import {MdEmail, MdWebAsset} from 'react-icons/md'
+import {MdEmail, MdLaunch} from 'react-icons/md'
 import {RiUserSharedFill} from 'react-icons/ri'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
@@ -10,6 +10,7 @@ import Spacer from './spacer'
 const DetailBlock = ({
   text,
   title,
+  titleIcon = '',
   valueToValidate,
   classes = '',
   isFullWidth = false,
@@ -44,7 +45,7 @@ const DetailBlock = ({
               {isLink && (
                 <>
                   <a href={linkUrl} target="_blank" className={'block-text website'} rel="noreferrer">
-                    <MdWebAsset className={'website'} />
+                    <MdLaunch className={'website'} />
                   </a>
                   <Spacer height={2} />
                 </>
@@ -97,7 +98,10 @@ const DetailBlock = ({
           )}
 
           {/* TITLE */}
-          <p className={`block-title ${isFullWidth ? 'full-width' : ''}`}>{title}</p>
+          <p className={`block-title ${isFullWidth ? 'full-width' : ''}`}>
+            {title}
+            {titleIcon}
+          </p>
           <Spacer height={bottomSpacerMargin > 0 ? bottomSpacerMargin : 0} />
         </div>
       )}

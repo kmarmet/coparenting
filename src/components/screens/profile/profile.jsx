@@ -23,8 +23,8 @@ import NavBar from '../../navBar'
 import AddressInput from '../../shared/addressInput'
 import Form from '../../shared/form'
 import InputField from '../../shared/inputField'
-import Spacer from '../../shared/spacer'
 import ScreenHeader from '../../shared/screenHeader'
+import Spacer from '../../shared/spacer'
 
 export default function Profile() {
   const {state, setState} = useContext(globalState)
@@ -68,7 +68,7 @@ export default function Profile() {
     AlertManager.successAlert('Email has been updated!')
     if (!Manager.IsValid(email)) {
       AlertManager.throwError(
-        `Please enter your new ${StringManager.uppercaseFirstLetterOfAllWords(updateType)} ${updateType === 'phone' ? 'number' : 'Address'}`
+        `Please enter your new ${StringManager.UppercaseFirstLetterOfAllWords(updateType)} ${updateType === 'phone' ? 'number' : 'Address'}`
       )
       return false
     }
@@ -113,7 +113,7 @@ export default function Profile() {
 
   const UpdateUserPhone = async () => {
     if (!Manager.IsValid(phone)) {
-      AlertManager.throwError(`Please enter your new ${StringManager.uppercaseFirstLetterOfAllWords(updateType)} Number`)
+      AlertManager.throwError(`Please enter your new ${StringManager.UppercaseFirstLetterOfAllWords(updateType)} Number`)
       return false
     }
     if (!validator.isMobilePhone(phone)) {
@@ -219,7 +219,7 @@ export default function Profile() {
         }}
         wrapperClass="update-card"
         showCard={showUpdateCard}
-        title={`Update your ${StringManager.uppercaseFirstLetterOfAllWords(updateType)}`}>
+        title={`Update your ${StringManager.UppercaseFirstLetterOfAllWords(updateType)}`}>
         <div id="update-contact-info-container" className={`${theme}`}>
           <InputField
             inputType={InputTypes.email}
