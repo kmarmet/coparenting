@@ -591,7 +591,6 @@
 
       &.children {
         transform: scale(1.3);
-        margin-left: 10px;
       }
     }
 
@@ -986,7 +985,7 @@
     }
 
     .input-field,
-    #address-input-field {
+    .address-input-field {
       @include inputField;
       height: 50px;
       overflow: unset;
@@ -994,28 +993,50 @@
         padding-left: 10px;
       }
 
-      &#address-input-field {
+      &.address-input-field {
         flex-direction: row;
         align-items: center;
         position: relative;
+        width: auto;
+        background: transparent;
+        padding: 0;
 
         * {
           outline: none !important;
         }
 
+        display: flex;
+        justify-content: flex-start;
         &.white {
           [class*='placeholder'] {
             color: $primaryText !important;
           }
         }
 
+        .background {
+          background: $inputBackground;
+          display: flex;
+          width: 100%;
+          border-radius: $borderRadius;
+
+          input {
+            padding-left: 40px !important;
+          }
+        }
+
+        span {
+          font-size: 12px;
+          margin-left: 10px;
+          text-transform: uppercase;
+          color: white;
+        }
         input {
           z-index: $maxZIndex !important;
           align-self: stretch !important;
           bottom: 0 !important;
           display: flex !important;
           align-items: center !important;
-          width: calc(100% - 30px) !important;
+          width: auto !important;
           max-width: 90% !important;
           white-space: nowrap !important;
           line-height: 1 !important;
@@ -1080,7 +1101,6 @@
 
           [class*='-control'] {
             border: 0 !important;
-            background: transparent !important;
             padding: 0 !important;
             background: #5e4aca !important;
             min-height: 20px !important;

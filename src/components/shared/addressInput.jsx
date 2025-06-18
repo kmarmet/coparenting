@@ -10,13 +10,23 @@ export default function AddressInput({onChange = (e) => {}, defaultValue, labelT
   const {state, setState} = useContext(globalState)
   const {refreshKey} = state
   const [addressType, setAddressType] = useState('address')
+
+  const ClearInput = () => {
+    const input = document.querySelector('.google-autocomplete-input')
+    input.value = ''
+  }
+
   return (
     <>
-      <div key={refreshKey} id="address-input-field" className={`${wrapperClasses}`}>
-        <FaMapLocationDot className={'input-icon maps'} />
-        <GoogleAutocomplete onChange={onChange} defaultValue={defaultValue} addressType={addressType} />
+      <div key={refreshKey} className={`${wrapperClasses} address-input-field`}>
+        <div className={'background'}>
+          <FaMapLocationDot className={'input-icon maps'} />
+          <GoogleAutocomplete onChange={onChange} defaultValue={defaultValue} addressType={addressType} />
+        </div>
+        <span onClick={ClearInput}>Clear</span>
       </div>
       <CheckboxGroup
+        elClass={wrapperClasses}
         checkboxArray={[
           {label: 'Address', key: 'address', isActive: addressType === 'address'},
           {label: 'Point of Interest', key: 'point_of_interest', isActive: addressType === 'point_of_interest'},

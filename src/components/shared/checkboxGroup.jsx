@@ -19,9 +19,11 @@ export default function CheckboxGroup({
   const {state, setState} = useContext(globalState)
   const {theme} = state
 
+  console.log(elClass)
+
   return (
     <>
-      <div className={`${theme} ${elClass} checkbox-group`}>
+      <div className={`checkbox-group${Manager.IsValid(elClass) ? ` ${elClass}` : ''}`}>
         {parentLabel.length > 0 && (
           <Label classes="standalone-label-wrapper always-show" text={parentLabel} required={required} icon={icon ? icon : ''} />
         )}
@@ -34,7 +36,14 @@ export default function CheckboxGroup({
                 label = StringManager.GetFirstNameOnly(label.toString())
               }
               return (
-                <Checkbox key={index} text={label} dataKey={obj?.key} dataLabel={label} isActive={obj.isActive} onCheck={onCheck}>
+                <Checkbox
+                  wrapperClass={elClass}
+                  key={index}
+                  text={label}
+                  dataKey={obj?.key}
+                  dataLabel={label}
+                  isActive={obj.isActive}
+                  onCheck={onCheck}>
                   <IoCloseOutline />
                 </Checkbox>
               )

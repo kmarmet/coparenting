@@ -112,8 +112,6 @@ export default function NewCalendarEvent() {
 
       //#endregion FILL NEW EVENT
       const cleaned = ObjectManager.CleanObject(newEvent.current)
-      console.log(cleaned)
-      return
       if (Manager.IsValid(newEvent.current)) {
         //#region VALIDATION
         if (Manager.IsValid(newEvent.current.phone, true)) {
@@ -440,7 +438,7 @@ export default function NewCalendarEvent() {
                     setShowCloneInput(true)
                     const dateWrapperElements = document.querySelectorAll('.cloned-date-wrapper input')
                     if (showCloneInput && dateWrapperElements.length === 0) {
-                      AddDateInput()
+                      AppendDynamicInput()
                     }
                   }}
                   onUncheck={() => setShowCloneInput(false)}

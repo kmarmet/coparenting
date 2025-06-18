@@ -30,12 +30,13 @@ export default function ShareWithDropdown({selectedValues = [], onSelection = (e
   }, [currentUser, users])
 
   useEffect(() => {
-    if (Manager.IsValid(selectedValues)) {
+    if (Manager.IsValid(selectedValues) && Manager.IsValid(users)) {
       const accountsFromKeys = users?.filter((x) => selectedValues?.includes(x.key))
-      const _selected = DropdownManager.GetSelected.ShareWith(accountsFromKeys)
+      const _selected = DropdownManager.GetSelected.ShareWithFromKeys(selectedValues, accountsFromKeys)
+      console.log('Selected Values', _selected)
       setSelected(_selected)
     }
-  }, [selectedValues])
+  }, [selectedValues, users])
 
   return (
     <SelectDropdown

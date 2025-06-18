@@ -49,12 +49,12 @@ export default function CoParents() {
   }
 
   const Update = async (prop, value) => {
-    const coparentIndex = DB.GetTableIndexByUserKey(coParents, activeCoParent?.userKey)
+    const coParentIndex = DB.GetTableIndexByUserKey(coParents, activeCoParent?.userKey)
 
-    if (!Manager.IsValid(coparentIndex)) {
+    if (!Manager.IsValid(coParentIndex)) {
       return
     }
-    await DB_UserScoped.UpdateCoparent(currentUser?.key, coparentIndex, StringManager.formatDbProp(prop), value)
+    await DB_UserScoped.UpdateCoparent(currentUser?.key, coParentIndex, StringManager.formatDbProp(prop), value)
     setState({...state, successAlertMessage: `${StringManager.FormatTitle(prop, true)} has been updated`})
   }
 
@@ -66,6 +66,12 @@ export default function CoParents() {
     }
     await DB_UserScoped.DeleteCoparent(currentUser?.key, coparentIndex)
     await DB_UserScoped.DeleteSharedDataUserKey(currentUser, activeCoParent?.userKey)
+  }
+
+  const HandleCoParentChange = (coParent) => {
+    setActiveCoParent(coParent)
+    setShowCustomInfoCard(false)
+    setState({...state, refreshKey: Manager.GetUid()})
   }
 
   useEffect(() => {
@@ -227,13 +233,13 @@ export default function CoParents() {
         <div style={DomManager.AnimateDelayStyle(1)} className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(true, '.fade-up-wrapper')}`}>
           <div className="screen-content">
             {/* CO-PARENT ICONS CONTAINER */}
-            <div id="co-parent-container">
+            <div id="co-parent-container" key={activeCoParent?.id}>
               {Manager.IsValid(coParents) &&
                 coParents?.map((coParent, index) => {
                   const coParentKey = activeCoParent?.userKey
                   return (
                     <div
-                      onClick={() => setActiveCoParent(coParent)}
+                      onClick={() => HandleCoParentChange(coParent)}
                       className={coParentKey && coParentKey === coParent?.userKey ? 'active co-parent' : 'co-parent'}
                       key={index}>
                       <span className="co-parent-name">{StringManager.GetFirstNameAndLastInitial(coParent?.name)?.[0]}</span>
@@ -254,6 +260,7 @@ export default function CoParents() {
                   infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
                   infoLabel = StringManager.FormatTitle(infoLabel, true)
                   const value = propArray[1]
+                  console.log(value)
 
                   const inputsToSkip = ['address', 'key', 'id', 'user key']
 
@@ -262,7 +269,8 @@ export default function CoParents() {
                       {/* ADDRESS */}
                       {infoLabel.toLowerCase().includes('address') && (
                         <AddressInput
-                          className={'address-input'}
+                          key={activeCoParent?.id}
+                          wrapperClasses={'address-input blue-background'}
                           defaultValue={value}
                           placeholder="Home Address"
                           onChange={(address) => Update('address', address)}

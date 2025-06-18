@@ -28,8 +28,10 @@ export default function ChatRow({index, onClick, chat}) {
   const handlers = useSwipeable({
     swipeDuration: 300,
     preventScrollOnSwipe: true,
+    trackTouch: true,
+    trackMouse: true,
     onSwipedLeft: (e) => {
-      const row = e.event.currentTarget
+      const row = e?.event?.currentTarget
       setActiveSwipeRow(row)
       row.classList.add('active')
     },
@@ -116,15 +118,16 @@ export default function ChatRow({index, onClick, chat}) {
   }, [chat])
 
   return (
-    <div key={refreshKey} className={'two-column-chat-row'} {...handlers}>
+    <div key={refreshKey} className={'two-column-chat-row'}>
       <div
+        {...handlers}
         onClick={(e) => {
-          e.stopPropagation()
+          // e.stopPropagation()
           if (DomManager.CheckIfElementIsTag(e, 'path') || DomManager.CheckIfElementIsTag(e, 'svg')) return false
           if (e.currentTarget.classList.contains('chat-row')) {
             OpenChat()
           }
-          if (e.target !== e.currentTarget) return false
+          // if (e.target !== e.currentTarget) return false
         }}
         data-thread-id={chat?.id}
         style={DomManager.AnimateDelayStyle(index)}

@@ -25,7 +25,7 @@
       }
       .current-user-visitation-dot,
       .current-user-event-dot {
-        background-color: $main;
+        background-color: $blend;
       }
 
       .coparent-visitation-dot,
@@ -358,7 +358,7 @@
                   @include centerHoriz;
                   height: 20px;
                   border-radius: 50px !important;
-                  background: $blend;
+                  @include mainColorsGradient;
                 }
               }
 

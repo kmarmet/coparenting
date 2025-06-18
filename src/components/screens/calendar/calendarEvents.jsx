@@ -5,7 +5,6 @@ import {BiSolidBellRing} from 'react-icons/bi'
 import {FaChildren, FaNoteSticky} from 'react-icons/fa6'
 import {MdAssistantNavigation, MdEventRepeat, MdLocalPhone} from 'react-icons/md'
 import {PiLinkBold} from 'react-icons/pi'
-import {useSwipeable} from 'react-swipeable'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import globalState from '../../../context.js'
 import useCurrentUser from '../../../hooks/useCurrentUser'
@@ -18,22 +17,6 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
   const {currentUser} = useCurrentUser()
-
-  const handlers = useSwipeable({
-    swipeDuration: 300,
-    preventScrollOnSwipe: true,
-    onSwipedLeft: (e) => {
-      const row = e.event.currentTarget
-      // setActiveSwipeRow(row)
-      console.log('here')
-      // row.classList.add('active')
-    },
-    onSwipedRight: (e) => {
-      const row = e.event.currentTarget
-      // setActiveSwipeRow(row)
-      // row.classList.remove('active')
-    },
-  })
 
   const GetRowDotColor = (dayDate) => {
     const arr = [...eventsOfActiveDay]
@@ -86,10 +69,9 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
     if (clickedEvent?.ownerKey !== currentUser?.key && clickedEvent?.fromVisitationSchedule) {
       return false
     }
-    // setState({...state, refreshKey: Manager.GetUid()})
     setTimeout(() => {
       setState({...state, dateToEdit: clickedEvent.startDate})
-    }, 500)
+    }, 300)
     setEventToEdit(clickedEvent)
   }
 
@@ -128,11 +110,12 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
               <div
                 onClick={() => HandleEventRowClick(event).then((r) => r)}
                 key={index}
+                style={{touchAction: 'pan-y'}}
                 data-event-id={event?.id}
                 data-from-date={startDate}
                 className={`row ${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className}
                 `}>
-                <div className="text flex space-between" {...handlers}>
+                <div className="text flex space-between">
                   {/* EVENT NAME */}
                   <div className="flex space-between" id="title-wrapper">
                     <p className="title flex" id="title" data-event-id={event?.id}>
@@ -192,7 +175,6 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
                     {event?.isRecurring && <MdEventRepeat />}
                   </div>
                 )}
-                <div className="delete-event-button">DELETE</div>
               </div>
             )
           })}

@@ -185,7 +185,7 @@ StringManager = {
 
   formatDbProp: (prop) ->
     prop = StringManager.toCamelCase(prop).replaceAll(' ', '')
-    StringManager.removeSpecialChars(prop)
+    return StringManager.removeSpecialChars(prop)
 
   addSpaceBetweenWords: (str) ->
     str = str.replace(/([a-z])([A-Z])/, '$1 $2')

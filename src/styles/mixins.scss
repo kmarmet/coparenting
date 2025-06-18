@@ -489,13 +489,13 @@
 
 @mixin mainColorsGradient {
   background-image: linear-gradient(
-    130deg,
-    hsl(228deg 100% 63%) 0%,
-    hsl(232deg 100% 65%) 31%,
-    hsl(236deg 100% 67%) 53%,
-    hsl(238deg 100% 69%) 70%,
-    hsl(238deg 100% 69%) 84%,
-    hsl(239deg 100% 70%) 100%
+    135deg,
+    hsl(234deg 100% 67%) 10%,
+    hsl(236deg 92% 66%) 15%,
+    hsl(240deg 84% 66%) 31%,
+    hsl(244deg 78% 63%) 46%,
+    hsl(248, 60%, 57%) 67%,
+    hsl(252, 49%, 50%) 80%
   );
 }
 
@@ -2208,6 +2208,35 @@
   display: block;
   gap: 10px;
 
+  &.blue-background {
+    .checkbox-wrapper {
+      border: 1px solid $inputBackground;
+      position: relative;
+
+      * {
+        transition: all 0.3s ease-in-out;
+      }
+
+      p {
+        color: $mediumTransWhite;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        line-height: 1;
+      }
+      .checkbox-text {
+      }
+      &.active {
+        background: $inputBackground;
+        border: 0;
+
+        p {
+          color: white;
+        }
+      }
+    }
+  }
+
   &.holiday-checkboxes-wrapper {
     #checkboxes {
       &#checkboxes {
@@ -2941,10 +2970,10 @@
           }
 
           &.active {
-            border: 1px solid $mediumTransWhite;
-            background-color: transparent;
+            background-color: $inputBackground;
             p {
               font-weight: $fwMediumBold;
+              color: white;
             }
             .checkmark {
               opacity: 1;
@@ -3694,7 +3723,7 @@
 
       .close-x {
         color: $red;
-        margin-left: 10px;
+        margin-left: 5px;
         font-size: 26px;
         position: relative;
         top: -5px;

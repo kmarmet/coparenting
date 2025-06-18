@@ -35,21 +35,23 @@
         margin-bottom: 20px;
         border: 0;
         align-items: flex-start;
+
         .delete-event-button {
           background: $red;
           justify-content: center;
           align-items: center;
           display: flex;
-          position: absolute;
+          //position: absolute;
           right: 0;
           height: 100%;
           color: white;
           font-size: 12px;
           font-weight: $fwMediumBold;
           line-height: 1;
+          align-self: stretch;
           margin: 0;
-          opacity: 0;
-          max-width: 0;
+          //opacity: 0;
+          //max-width: 0;
           padding: 0;
           transition: all 0.5s ease-in-out;
 
