@@ -2,10 +2,10 @@ import {getAuth, signOut} from 'firebase/auth'
 import React from 'react'
 import './styles/bundle.scss'
 import {createRoot} from 'react-dom/client'
-import {ErrorBoundary} from 'react-error-boundary'
 import {FaSadTear} from 'react-icons/fa'
 import {IoEllipsisVerticalSharp} from 'react-icons/io5'
 import App from './App'
+import ErrorBoundary from './components/errorBoundary'
 import Spacer from './components/shared/spacer'
 import AlertManager from './managers/alertManager'
 import AppManager from './managers/appManager'
@@ -186,7 +186,14 @@ root.render(
           <div className="flex" id="steps">
             <span className="step-number">2.</span>
             <p>
-              Search for and tap on Safari <img src={'../../img/safari-icon.png'} alt="Safari" id="safari-icon" />
+              Search for and tap on Safari{' '}
+              <img
+                alt="safari-icon"
+                id={'safari-icon'}
+                src={
+                  'https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fmisc%2Fsafari.png?alt=media&token=aa3e9550-3beb-4d44-862d-79d90ab45338'
+                }
+              />
             </p>
           </div>
           <div className="flex" id="steps">

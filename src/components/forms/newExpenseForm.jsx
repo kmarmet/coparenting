@@ -11,7 +11,6 @@ import CreationForms from '../../constants/creationForms'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import ExpenseCategories from '../../constants/expenseCategories.js'
 import InputTypes from '../../constants/inputTypes'
-import ModelNames from '../../constants/modelNames'
 import globalState from '../../context'
 import DB from '../../database/DB'
 import DB_UserScoped from '../../database/db_userScoped'
@@ -21,13 +20,12 @@ import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useExpenses from '../../hooks/useExpenses'
 import AlertManager from '../../managers/alertManager'
-import DatasetManager from '../../managers/datasetManager.coffee'
 import DateManager from '../../managers/dateManager'
 import DomManager from '../../managers/domManager'
+import DropdownManager from '../../managers/dropdownManager'
 import ImageManager from '../../managers/imageManager'
 import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
-import SelectDropdownManager from '../../managers/selectDropdownManager'
 import StringManager from '../../managers/stringManager.coffee'
 import UpdateManager from '../../managers/updateManager'
 import CalendarMapper from '../../mappers/calMapper'
@@ -41,9 +39,6 @@ import UploadButton from '../shared/uploadButton'
 export default function NewExpenseForm() {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey, authUser, creationFormToShow} = state
-  const [expenseName, setExpenseName] = useState('')
-  const [expenseImage, setExpenseImage] = useState('')
-  const [isRecurring, setIsRecurring] = useState(false)
   const [recurringFrequency, setRecurringFrequency] = useState('')
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
   const {currentUser} = useCurrentUser()
@@ -51,20 +46,17 @@ export default function NewExpenseForm() {
   const {coParents} = useCoParents()
   const {expenses} = useExpenses()
 
-  const formRef = useRef(new Expense())
+  const formRef = useRef({...new Expense()})
 
   const ResetForm = async (showAlert) => {
     Manager.ResetForm('expenses-wrapper')
-    setExpenseName('')
-    setExpenseImage('')
-    setIsRecurring(false)
     setRecurringFrequency('')
     setRepeatingEndDate('')
     setState({
       ...state,
       refreshKey: Manager.GetUid(),
       creationFormToShow: '',
-      successAlertMessage: showAlert ? `${StringManager.FormatTitle(expenseName)} Added` : null,
+      successAlertMessage: showAlert ? `${StringManager.FormatTitle(formRef.current.image.name)} Added` : null,
     })
   }
 
@@ -102,39 +94,39 @@ export default function NewExpenseForm() {
     const newExpense = {...formRef.current}
     newExpense.dueDate = Manager.IsValid(formRef.current.dueDate) ? moment(formRef.current.dueDate).format(DatetimeFormats.dateForDb) : ''
     newExpense.paidStatus = 'unpaid'
-    newExpense.imageName = expenseImage.name ?? ''
+    newExpense.imageName = formRef.current.image.name ?? ''
     newExpense.recurringFrequency = recurringFrequency
     newExpense.ownerKey = currentUser?.key
-    newExpense.isRecurring = isRecurring
+    newExpense.isRecurring = formRef.current.isRecurring
     newExpense.recipient = {
       key: currentUser?.key,
       name: currentUser?.name,
     }
 
     // If expense has image
-    if (expenseImage) {
-      newExpense.imageName = expenseImage.name
-      setExpenseImage(await ImageManager.compressImage(expenseImage))
+    if (formRef.current.image) {
+      newExpense.imageName = formRef.current.image.name
+      newExpense.image = await ImageManager.compressImage(formRef.current.image)
     }
 
-    // Get coparent name
+    // Get co-parent name
     newExpense.recipientName = StringManager.GetFirstNameOnly(currentUser?.name)
 
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
 
-    if (Manager.IsValid(activeRepeatIntervals) && activeRepeatIntervals.length > 0 && !expenseDueDate) {
+    if (Manager.IsValid(activeRepeatIntervals) && activeRepeatIntervals.length > 0 && !formRef.current.dueDate) {
       AlertManager.throwError('When selecting a recurring frequency, you must also set a due date')
       return false
     }
 
     // IMAGE UPLOAD
-    if (Manager.IsValid(expenseImage?.name)) {
-      await Storage.upload(Storage.directories.expenseImages, currentUser?.key, expenseImage, expenseImage.name).then((url) => {
+    if (Manager.IsValid(formRef.current.image?.name)) {
+      await Storage.upload(Storage.directories.expenseImages, currentUser?.key, formRef.current.image, formRef.current.image.name).then((url) => {
         newExpense.imageUrl = url
       })
     }
 
-    const cleanObject = ObjectManager.GetModelValidatedObject(newExpense, ModelNames.expense)
+    const cleanObject = ObjectManager.CleanObject(newExpense)
     console.log(cleanObject)
 
     // Add to DB
@@ -150,7 +142,7 @@ export default function NewExpenseForm() {
           formRef.current.shareWith,
           currentUser,
           `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a new expense`,
-          `${expenseName} - $${formRef.current.amount}`,
+          `${formRef.current.name} - $${formRef.current.amount}`,
           ActivityCategory.expenses
         )
       }
@@ -162,26 +154,27 @@ export default function NewExpenseForm() {
 
   const AddRepeatingExpensesToDb = async () => {
     let expensesToPush = []
-    let datesToRepeat = CalendarMapper.recurringEvents(recurringFrequency, expenseDueDate, repeatingEndDate)
+    let datesToRepeat = CalendarMapper.recurringEvents(recurringFrequency, formRef.current.dueDate, repeatingEndDate)
 
     if (Manager.IsValid(datesToRepeat)) {
       datesToRepeat.forEach((date) => {
-        const newExpense = new Expense()
-        newExpense.id = Manager.GetUid()
-        newExpense.name = expenseName
-        newExpense.children = expenseChildren
-        newExpense.amount = expenseAmount
+        let newExpense = new Expense({...formRef.current})
+        newExpense.owner = {
+          key: currentUser?.key,
+          name: StringManager.GetFirstNameOnly(currentUser?.name),
+          phone: currentUser?.phone,
+        }
+        newExpense.recipient = {
+          key: currentUser?.key,
+          name: StringManager.GetFirstNameOnly(currentUser?.name),
+        }
         newExpense.imageName = ''
-        newExpense.phone = currentUser?.key
-        newExpense.dueDate = DateManager.DateIsValid(date) ? moment(date).format(DatetimeFormats.dateForDb) : ''
+        newExpense.dueDate = Manager.IsValid(date) ? moment(date).format(DatetimeFormats.dateForDb) : ''
         newExpense.creationDate = DateManager.GetCurrentJavascriptDate()
-        newExpense.notes = expenseNotes
         newExpense.paidStatus = 'unpaid'
-        newExpense.createdBy = currentUser?.name
-        newExpense.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
-        newExpense.recipientName = StringManager.GetFirstNameOnly(currentUser?.name)
         newExpense.isRecurring = true
-        expensesToPush.push(newExpense)
+        const cleaned = ObjectManager.CleanObject(newExpense)
+        expensesToPush.push(cleaned)
       })
       await DB_UserScoped.addMultipleExpenses(currentUser, expensesToPush)
     }
@@ -202,7 +195,7 @@ export default function NewExpenseForm() {
 
   const HandleRecurringSelection = async (e) => {
     const repeatingWrapper = document.getElementById('repeating-container')
-    const checkboxWrappers = repeatingWrapper.querySelectorAll('#checkbox-wrapper, #label-wrapper')
+    const checkboxWrappers = repeatingWrapper.querySelectorAll('#checkbox-wrapper, .label-wrapper')
     checkboxWrappers.forEach((wrapper) => {
       wrapper.classList.remove('active')
     })
@@ -269,7 +262,7 @@ export default function NewExpenseForm() {
             if (input.target.files.length === 0) {
               AlertManager.throwError('Please choose an image first')
             } else {
-              setExpenseImage(input.target.files[0])
+              formRef.current.image = input.target.files[0]
             }
           }}
           containerClass={`${theme} new-expense-card`}
@@ -341,7 +334,7 @@ export default function NewExpenseForm() {
                 const inputField = document.getElementById('amount-input-field')
                 const amountInput = inputField.querySelector('input')
                 amountInput.value = null
-                setExpenseAmount(0)
+                formRef.current.amount = 0
               }}>
               Reset <GrPowerReset />
             </button>
@@ -349,7 +342,7 @@ export default function NewExpenseForm() {
 
           {/* CATEGORY */}
           <SelectDropdown
-            options={SelectDropdownManager.GetDefault.Reminders}
+            options={DropdownManager.GetDefault.Reminders}
             value={Object.keys(ExpenseCategories)[0]}
             onChange={HandleCategorySelection}
             placeholder={'Select a Category'}
@@ -381,7 +374,7 @@ export default function NewExpenseForm() {
           {/* PAYER */}
           {Manager.IsValid(coParents) && (
             <SelectDropdown
-              options={SelectDropdownManager.GetDefault.CoParents(coParents)}
+              options={DropdownManager.GetDefault.CoParents(coParents)}
               placeholder={'Select Expense Payer'}
               onChange={HandlePayerSelection}
             />
@@ -393,7 +386,7 @@ export default function NewExpenseForm() {
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.IsValid(children) && (
             <SelectDropdown
-              options={SelectDropdownManager.GetDefault.CoParents(children)}
+              options={DropdownManager.GetDefault.CoParents(children)}
               placeholder={'Select Children to Include'}
               onChange={HandleChildSelection}
               isMultiple={true}
@@ -403,9 +396,9 @@ export default function NewExpenseForm() {
           {/* RECURRING? */}
           <div className="flex">
             <Label text={'Recurring'} classes="always-show" />
-            <ToggleButton onCheck={() => setIsRecurring(true)} onUncheck={() => setIsRecurring(false)} />
+            <ToggleButton onCheck={() => (formRef.current.isRecurring = true)} onUncheck={() => (formRef.current.isRecurring = false)} />
           </div>
-          {isRecurring && (
+          {formRef.current.isRecurring && (
             <CheckboxGroup
               onCheck={HandleRecurringSelection}
               checkboxArray={DomManager.BuildCheckboxGroup({

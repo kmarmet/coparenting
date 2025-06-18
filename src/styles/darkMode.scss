@@ -753,7 +753,7 @@
       #checkbox-group {
         #checkboxes {
           &#checkboxes {
-            #label-wrapper {
+            .label-wrapper {
               label {
                 color: $darkText;
               }
@@ -788,7 +788,7 @@
       #share-with-checkbox-group {
         #checkboxes {
           &#checkboxes {
-            #label-wrapper {
+            .label-wrapper {
               label {
                 color: $darkText;
               }
@@ -820,7 +820,7 @@
       }
 
       // LABEL WRAPPER
-      #label-wrapper {
+      .label-wrapper {
         background: transparent;
         label {
           color: $darkText;
@@ -840,7 +840,7 @@
           background: unset;
         }
         // LABEL WRAPPER
-        #label-wrapper {
+        .label-wrapper {
           background: transparent;
           label {
             color: $darkText;

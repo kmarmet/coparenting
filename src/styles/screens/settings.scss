@@ -3,7 +3,7 @@
 #external-overrides {
   #settings-container {
     .settings-section-title {
-      &#label-wrapper {
+      &.label-wrapper {
         label {
           font-weight: bold;
         }
@@ -15,7 +15,7 @@
       border-top: 0;
     }
 
-    #label-wrapper {
+    .label-wrapper {
       #medium-title {
         font-size: 18px;
       }

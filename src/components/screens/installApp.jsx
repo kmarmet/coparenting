@@ -4,15 +4,16 @@ import {BsAndroid2} from 'react-icons/bs'
 import {FaApple} from 'react-icons/fa6'
 import {GrPersonalComputer} from 'react-icons/gr'
 import {MdOutlineIosShare} from 'react-icons/md'
+import AppImages from '../../constants/appImages'
 import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import AppManager from '../../managers/appManager'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import NavBar from '../navBar'
+import LazyImage from '../shared/lazyImage'
 import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer'
-import SuspenseImage from '../shared/suspenseImage'
 
 export default function InstallApp() {
   const {state, setState} = useContext(globalState)
@@ -150,7 +151,12 @@ export default function InstallApp() {
                   <p>{DomManager.tapOrClick(true)} the installation button in the address bar</p>
                 </div>
 
-                <SuspenseImage classes="installation computer-installation" onClick={() => setShowComputerInstallSlideshow(true)} />
+                <LazyImage
+                  imgName={AppImages.misc.desktopInstallation.name}
+                  alt={'Desktop Installation'}
+                  classes="installation computer-installation"
+                  onClick={() => setShowComputerInstallSlideshow(true)}
+                />
                 <div className="flex">
                   <span className="step-number">3.</span>
                   <p>

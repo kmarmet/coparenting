@@ -614,7 +614,7 @@ export default function ExpenseTracker() {
                   wrapperClasses={'sorting-accordion white-bg'}
                   value={sortMethod}
                   labelText={'Sort by'}
-                  options={SelectDropdownManager.GetDefault.Reminders(Object.values(SortByTypes))}
+                  options={DropdownManager.GetDefault.Reminders(Object.values(SortByTypes))}
                   onChange={HandleSortBySelection}></SelectDropdown>
               </div>
             </AccordionDetails>

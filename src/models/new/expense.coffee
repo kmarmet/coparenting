@@ -13,15 +13,23 @@ class Expense
     @creationDate = moment().format(DateFormats.dateForDb)
     @children = options?.children ? []
     @dueDate = options?.dueDate ? ''
-    @ownerKey = options?.ownerKey ? ''
     @notes = options?.notes ? ''
-    @recipientName = options?.ownerKey ? ''
     @isRecurring = options?.isRecurring ? false
     @recurringFrequency = options?.recurringFrequency ? ''
     @category = options?.category ? ''
+
+    # Owner
+    @owner =
+      key: options?.owner?.key ? ''
+      name: options?.owner?.name ? ''
+      phone: options?.owner?.phone ? ''
+
+    # Recipient
     @recipient =
       key: options?.recipient?.key ? ''
       name: options?.recipient?.name ? ''
+
+    # Payer
     @payer =
       phone: options?.payer?.ownerKey ? ''
       key: options?.payer?.key ? ''

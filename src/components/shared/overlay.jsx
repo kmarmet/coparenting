@@ -6,7 +6,6 @@ import Manager from '../../managers/manager'
 const Overlay = ({children, show}) => {
   const {state, setState} = useContext(globalState)
   const {menuIsOpen, showScreenActions, showCreationMenu} = state
-
   const HideOverlay = (e, force = false) => {
     let overlay = e.target
 
@@ -53,12 +52,18 @@ const Overlay = ({children, show}) => {
   }, [show])
 
   return (
-    <div
-      className={`screen-overlay ${show ? 'active gradient' : ''} ${menuIsOpen || showScreenActions || showCreationMenu ? 'blur' : ''}`}
-      onClick={HideOverlay}>
-      {menuIsOpen || showScreenActions || (showCreationMenu && <IoClose className={'close-overlay-icon'} onClick={(e) => HideOverlay(e, true)} />)}
-      {children}
-    </div>
+    <>
+      {(show || menuIsOpen || showScreenActions || showCreationMenu) && (
+        <div
+          className={`screen-overlay ${show ? ` active gradient` : ''}${menuIsOpen || showScreenActions || showCreationMenu ? ' blur' : ''}`}
+          onClick={HideOverlay}>
+          {menuIsOpen ||
+            showScreenActions ||
+            (showCreationMenu && <IoClose className={'close-overlay-icon'} onClick={(e) => HideOverlay(e, true)} />)}
+          {children}
+        </div>
+      )}
+    </>
   )
 }
 

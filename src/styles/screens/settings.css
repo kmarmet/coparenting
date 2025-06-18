@@ -354,7 +354,7 @@
   border-radius: 0 0 8px 8px;
   border-top: 0;
 }
-#external-overrides #settings-container #label-wrapper #medium-title {
+#external-overrides #settings-container .label-wrapper #medium-title {
   font-size: 22px;
   margin-bottom: 10px;
 }

@@ -1,23 +1,24 @@
 // Path: src\components\screens\auth\login.jsx
-import InputField from '../../shared/inputField'
-import ScreenNames from '../../../constants/screenNames'
-import globalState from '../../../context.js'
-import firebaseConfig from '../../../firebaseConfig'
-import AlertManager from '../../../managers/alertManager'
-import DomManager from '../../../managers/domManager'
-import Manager from '../../../managers/manager'
 import {initializeApp} from 'firebase/app'
 import {browserLocalPersistence, getAuth, sendEmailVerification, setPersistence, signInWithEmailAndPassword} from 'firebase/auth'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {PiEyeClosedDuotone, PiEyeDuotone} from 'react-icons/pi'
 import Turnstile, {useTurnstile} from 'react-turnstile'
 import validator from 'validator'
+import AppImages from '../../../constants/appImages'
 import InputTypes from '../../../constants/inputTypes'
+import ScreenNames from '../../../constants/screenNames'
+import globalState from '../../../context.js'
+import firebaseConfig from '../../../firebaseConfig'
+import AlertManager from '../../../managers/alertManager'
+import DomManager from '../../../managers/domManager'
 import LogManager from '../../../managers/logManager'
+import Manager from '../../../managers/manager'
 import Checkbox from '../../shared/checkbox'
+import InputField from '../../shared/inputField'
+import LazyImage from '../../shared/lazyImage'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
-import SuspenseImage from '../../shared/suspenseImage'
 
 export default function Login() {
   const {state, setState} = useContext(globalState)
@@ -138,7 +139,7 @@ export default function Login() {
 
         <ScreenHeader wrapperClass="login-header">
           {/*onClick={() => setState({...state, currentScreen: ScreenNames.landing})}*/}
-          <SuspenseImage classes={'login logo'} />
+          <LazyImage imgName={AppImages.landing.logo.name} alt={'Peaceful Co-Parenting'} classes={'login logo'} />
           {/* QUOTE CONTAINER */}
           <div id="quote-container">
             <p id="quote">

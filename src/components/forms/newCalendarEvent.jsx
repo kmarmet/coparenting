@@ -20,12 +20,12 @@ import AlertManager from '../../managers/alertManager'
 import CalendarManager from '../../managers/calendarManager'
 import DatasetManager from '../../managers/datasetManager'
 import DomManager from '../../managers/domManager'
+import DropdownManager from '../../managers/dropdownManager'
 import LogManager from '../../managers/logManager'
 import Manager from '../../managers/manager'
-import SelectDropdownManager from '../../managers/selectDropdownManager'
+import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
-import CalMapper from '../../mappers/calMapper'
 import CalendarEvent from '../../models/new/calendarEvent'
 import AddressInput from '../shared/addressInput'
 import Button from '../shared/button'
@@ -66,7 +66,7 @@ export default function NewCalendarEvent() {
   const [childrenDropdownSelections, setChildrenDropdownSelections] = useState([])
 
   // REF
-  const newEvent = useRef(new CalendarEvent({startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)}))
+  const newEvent = useRef({...new CalendarEvent({startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)})})
 
   const ResetForm = async (showSuccessAlert = false) => {
     setEventLength(EventLengths.single)
@@ -94,23 +94,26 @@ export default function NewCalendarEvent() {
       //#region FILL NEW EVENT
 
       if (isVisitation) {
-        newEvent.current.title = `${StringManager.formatEventTitle(newEvent.current.title)} (Visitation)`
+        newEvent.current.title = `${StringManager.FormatEventTitle(newEvent.current.title)} (Visitation)`
+      }
+      newEvent.current.owner = {
+        key: currentUser?.key,
+        name: currentUser?.name,
       }
       newEvent.current.directionsLink = Manager.GetDirectionsLink(newEvent.current.address)
-      newEvent.current.ownerKey = currentUser?.key
-      newEvent.current.createdBy = StringManager.GetFirstNameOnly(currentUser?.name)
       newEvent.current.recurringInterval = recurringFrequency
       newEvent.current.fromVisitationSchedule = isVisitation
       newEvent.current.isRecurring = eventIsRecurring
       newEvent.current.isCloned = Manager.IsValid(clonedDates)
       newEvent.current.isDateRange = eventIsDateRange
-      newEvent.current.children = childrenDropdownSelections.map((x) => x.label)
-      newEvent.current.reminderTimes = remindersDropdownSelections.map((x) => (x = CalMapper.GetReminderTimes(x.value)))
-
+      newEvent.current.children = DropdownManager.MappedForDatabase.ChildrenFromArray(childrenDropdownSelections)
+      newEvent.current.reminderTimes = DropdownManager.MappedForDatabase.RemindersFromArray(remindersDropdownSelections)
       // return false
 
       //#endregion FILL NEW EVENT
-
+      const cleaned = ObjectManager.CleanObject(newEvent.current)
+      console.log(cleaned)
+      return
       if (Manager.IsValid(newEvent.current)) {
         //#region VALIDATION
         if (Manager.IsValid(newEvent.current.phone, true)) {
@@ -148,13 +151,7 @@ export default function NewCalendarEvent() {
         //#region MULTIPLE DATES
         // Date Range
         if (eventIsDateRange) {
-          const dates = CalendarManager.BuildArrayOfEvents(
-            currentUser,
-            newEvent.current,
-            'range',
-            newEvent.current.startDate,
-            newEvent.current.endDate
-          )
+          const dates = CalendarManager.BuildArrayOfEvents(currentUser, cleaned, 'range', cleaned.startDate, cleaned.endDate)
           await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
         }
 
@@ -162,7 +159,7 @@ export default function NewCalendarEvent() {
         if (Manager.IsValid(clonedDates)) {
           const dates = CalendarManager.BuildArrayOfEvents(
             currentUser,
-            newEvent.current,
+            cleaned,
             'cloned',
             moment(clonedDates[0]).format(DatetimeFormats.dateForDb),
             moment(clonedDates[clonedDates.length - 1]).format(DatetimeFormats.dateForDb)
@@ -172,13 +169,7 @@ export default function NewCalendarEvent() {
 
         // Recurring
         if (eventIsRecurring) {
-          const dates = CalendarManager.BuildArrayOfEvents(
-            currentUser,
-            newEvent.current,
-            'recurring',
-            newEvent.current.startDate,
-            newEvent.current.endDate
-          )
+          const dates = CalendarManager.BuildArrayOfEvents(currentUser, cleaned, 'recurring', cleaned.startDate, cleaned.endDate)
           await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
         }
 
@@ -186,14 +177,14 @@ export default function NewCalendarEvent() {
 
         //#region SINGLE DATE
         if (!eventIsRecurring && !eventIsDateRange && !eventIsCloned) {
-          await CalendarManager.addCalendarEvent(currentUser, newEvent.current)
+          await CalendarManager.addCalendarEvent(currentUser, cleaned)
 
           // Send notification
           await UpdateManager.SendToShareWith(
-            newEvent.current.shareWith,
+            cleaned.shareWith,
             currentUser,
             `New Event 📅`,
-            `${newEvent.current.title} on ${moment(newEvent.current.startDate).format(DatetimeFormats.readableMonthAndDay)}`,
+            `${cleaned.title} on ${moment(cleaned.startDate).format(DatetimeFormats.readableMonthAndDay)}`,
             ActivityCategory.calendar
           )
         }
@@ -311,7 +302,7 @@ export default function NewCalendarEvent() {
             inputValue={newEvent.current.title}
             onChange={async (e) => {
               const inputValue = e.target.value
-              newEvent.current.title = StringManager.formatEventTitle(inputValue)
+              newEvent.current.title = StringManager.FormatEventTitle(inputValue)
             }}
           />
 
@@ -386,7 +377,7 @@ export default function NewCalendarEvent() {
             <SelectDropdown
               isMultiple={true}
               placeholder={'Select Reminders'}
-              options={SelectDropdownManager.GetDefault.Reminders}
+              options={DropdownManager.GetDefault.Reminders}
               onSelection={(e) => {
                 setRemindersDropdownSelections(e)
               }}
@@ -397,7 +388,7 @@ export default function NewCalendarEvent() {
           {/* IS VISITATION? */}
           <div>
             <div className="flex">
-              <Label text={'Visitation Event'} classes="toggle" />
+              <Label text={'Visitation Event'} classes="toggle lowercase" />
               <ToggleButton isDefaultChecked={false} onCheck={() => setIsVisitation(true)} onUncheck={() => setIsVisitation(false)} />
             </div>
           </div>
@@ -408,7 +399,7 @@ export default function NewCalendarEvent() {
               <Accordion id={'checkboxes'} expanded={eventIsRecurring}>
                 <AccordionSummary>
                   <div className="flex">
-                    <Label text={'Recurring'} classes="toggle" />
+                    <Label text={'Recurring'} classes="toggle lowercase" />
                     <ToggleButton onCheck={() => setEventIsRecurring(true)} onUncheck={() => setEventIsRecurring(false)} />
                   </div>
                 </AccordionSummary>
@@ -417,7 +408,7 @@ export default function NewCalendarEvent() {
                   {/*<CheckboxGroup*/}
                   {/*  elClass={`${theme}`}*/}
                   {/*  onCheck={HandleRepeatingSelection}*/}
-                  {/*  checkboxArray={SelectDropdownManager.GetDefault.ReminderOptions(*/}
+                  {/*  checkboxArray={DropdownManager.GetDefault.ReminderOptions(*/}
                   {/*    DomManager.BuildCheckboxGroup({*/}
                   {/*      currentUser,*/}
                   {/*      labelType: 'recurring-intervals',*/}
@@ -442,7 +433,7 @@ export default function NewCalendarEvent() {
           {eventLength === EventLengths.single && (
             <>
               <div className="flex">
-                <Label text={'Duplicate'} classes="toggle" />
+                <Label text={'Duplicate'} classes="toggle lowercase" />
                 <ToggleButton
                   isDefaultChecked={false}
                   onCheck={() => {

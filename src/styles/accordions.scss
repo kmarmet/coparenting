@@ -120,7 +120,7 @@
       /*#region  EXPENSES*/
       &#expenses-accordion {
         .filter-row {
-          #label-wrapper {
+          .label-wrapper {
             label {
               color: $darkerGrey !important;
             }
@@ -360,7 +360,7 @@
               }
             }
 
-            #label-wrapper {
+            .label-wrapper {
               label {
                 white-space: nowrap;
                 color: $darkerGrey !important;

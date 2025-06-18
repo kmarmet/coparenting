@@ -990,18 +990,18 @@
   height: 100%;
   width: 100%;
 }
-#external-overrides #app-container #label-wrapper {
+#external-overrides #app-container .label-wrapper {
   margin-bottom: 0;
 }
-#external-overrides #app-container #label-wrapper.sorting label {
+#external-overrides #app-container .label-wrapper.sorting label {
   font-weight: 500;
 }
-#external-overrides #app-container #label-wrapper label {
+#external-overrides #app-container .label-wrapper label {
   font-weight: 400;
   margin: 0;
   line-height: 1.3;
 }
-#external-overrides #app-container #label-wrapper label.bold {
+#external-overrides #app-container .label-wrapper label.bold {
   font-weight: 500;
   opacity: 0.9;
 }
@@ -1030,11 +1030,11 @@
   display: block;
   gap: 10px;
 }
-#external-overrides #app-container #checkbox-group #label-wrapper label {
+#external-overrides #app-container #checkbox-group .label-wrapper label {
   font-size: 16px;
   font-weight: 400;
 }
-#external-overrides #app-container #checkbox-group #label-wrapper label.asterisk {
+#external-overrides #app-container #checkbox-group .label-wrapper label.asterisk {
   color: #d57179;
 }
 #external-overrides #app-container #checkbox-group svg {
@@ -1047,7 +1047,7 @@
 #external-overrides #app-container #checkbox-group.parent-type #checkboxes #checkbox-container {
   width: 45%;
 }
-#external-overrides #app-container #checkbox-group #label-wrapper {
+#external-overrides #app-container #checkbox-group .label-wrapper {
   width: 100%;
 }
 #external-overrides #app-container #checkbox-group #parent-label-wrapper {
@@ -1892,7 +1892,7 @@
   justify-content: center;
   width: 100%;
 }
-#external-overrides #app-container #checkbox-wrapper #label-wrapper label {
+#external-overrides #app-container #checkbox-wrapper .label-wrapper label {
   line-height: 1;
   font-weight: 350;
   font-size: 14px;
@@ -1902,7 +1902,7 @@
   color: black;
   opacity: 0.7;
 }
-#external-overrides #app-container #checkbox-wrapper #label-wrapper.active label {
+#external-overrides #app-container #checkbox-wrapper .label-wrapper.active label {
   transition: all 0.3s ease-in-out;
   color: #547eff;
   opacity: 1;
@@ -1999,7 +1999,7 @@
   transform: translate(-50%, -50%) scale(1);
   z-index: 9999;
 }
-#external-overrides #app-container #checkbox-wrapper.active #label-wrapper label {
+#external-overrides #app-container #checkbox-wrapper.active .label-wrapper label {
   transition: all 0.3s ease-in-out;
   color: #547eff;
   opacity: 1;
@@ -2620,7 +2620,7 @@
   margin: 0;
   height: 50px;
 }
-#external-overrides #app-container #bottom-card.new-calendar-event #relative-wrapper .flex.event-times-wrapper #input-wrapper #label-wrapper {
+#external-overrides #app-container #bottom-card.new-calendar-event #relative-wrapper .flex.event-times-wrapper #input-wrapper .label-wrapper {
   margin: 0;
   top: 0;
 }
@@ -3038,10 +3038,10 @@
   margin-left: 10px;
   opacity: 0.7;
 }
-#external-overrides #app-container #bottom-card.doc-tips-card #label-wrapper {
+#external-overrides #app-container #bottom-card.doc-tips-card .label-wrapper {
   margin-top: 20px;
 }
-#external-overrides #app-container #bottom-card.doc-tips-card #label-wrapper label {
+#external-overrides #app-container #bottom-card.doc-tips-card .label-wrapper label {
   font-size: 18px;
   color: #547eff;
   font-weight: 400;
@@ -3326,11 +3326,11 @@
   display: block;
   gap: 10px;
 }
-#external-overrides #app-container #share-with-checkbox-group #label-wrapper label {
+#external-overrides #app-container #share-with-checkbox-group .label-wrapper label {
   font-size: 16px;
   font-weight: 400;
 }
-#external-overrides #app-container #share-with-checkbox-group #label-wrapper label.asterisk {
+#external-overrides #app-container #share-with-checkbox-group .label-wrapper label.asterisk {
   color: #d57179;
 }
 #external-overrides #app-container #share-with-checkbox-group svg {
@@ -3343,7 +3343,7 @@
 #external-overrides #app-container #share-with-checkbox-group.parent-type #checkboxes #checkbox-container {
   width: 45%;
 }
-#external-overrides #app-container #share-with-checkbox-group #label-wrapper {
+#external-overrides #app-container #share-with-checkbox-group .label-wrapper {
   width: 100%;
 }
 #external-overrides #app-container #share-with-checkbox-group #parent-label-wrapper {
@@ -3441,7 +3441,7 @@
   max-height: 150px;
   border-radius: 15px;
 }
-#external-overrides #app-container #input-wrapper #label-wrapper {
+#external-overrides #app-container #input-wrapper .label-wrapper {
   position: relative;
   background: white;
   padding: 0 10px;
@@ -3450,20 +3450,20 @@
   top: -12px;
   left: -100px;
 }
-#external-overrides #app-container #input-wrapper #label-wrapper.active {
+#external-overrides #app-container #input-wrapper .label-wrapper.active {
   left: 15px;
   transition: all 0.5s ease-in-out;
   opacity: 1;
   border-radius: 5px 5px 0 0;
 }
-#external-overrides #app-container #input-wrapper #label-wrapper label {
+#external-overrides #app-container #input-wrapper .label-wrapper label {
   color: #5b84ff;
   font-weight: 400;
   opacity: 1;
   text-transform: uppercase;
   font-size: 12px;
 }
-#external-overrides #app-container #input-wrapper #label-wrapper label .asterisk {
+#external-overrides #app-container #input-wrapper .label-wrapper label .asterisk {
   color: #d57179;
 }
 #external-overrides #app-container #input-wrapper input:focus {

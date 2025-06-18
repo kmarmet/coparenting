@@ -41,9 +41,9 @@ StringManager = {
       names = fullName.split(" ")
       firstName = names[0]
       lastNameInitial = if names?.length > 1 then names?[names?.length - 1]?[0] else ""
-      "#{firstName} #{lastNameInitial}"
+      return "#{firstName} #{lastNameInitial}"
     else
-      fullName
+      return fullName
 
   getReadablePhoneNumber: (phoneNumber) ->
     formattedPhone = phoneNumber;
@@ -189,7 +189,7 @@ StringManager = {
 
   addSpaceBetweenWords: (str) ->
     str = str.replace(/([a-z])([A-Z])/, '$1 $2')
-    str
+    return str
 
   getFirstWord: (input) ->
     input.toString().replace(/ .*/, '')
@@ -199,16 +199,13 @@ StringManager = {
       return input
     words = input?.toString()
     if words and words != undefined
-      if words?.indexOf('-') > -1
-        words = input.replace(/-/g, ' ').split(' ')
-      else
-        words = words?.split(' ')
+      words = words?.split(' ')
       words = words?.filter (x) -> x.length > 0
       words = words?.map (word) -> word[0].toUpperCase() + word.substr(1)
       words = words?.join(' ') if words?.length > 0
     words
 
-  formatEventTitle: (title) ->
+  FormatEventTitle: (title) ->
     if title and title.length > 0
       title = StringManager.UppercaseFirstLetterOfAllWords(title)
       title = StringManager.FormatTitle(title)

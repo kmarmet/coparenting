@@ -5,13 +5,13 @@ import Manager from "../managers/manager"
 
 CalendarMapper =
   GetReminderTimes: (timeframe) ->
-    if Manager.Contains(timeframe,'hour')
+    if  timeframe == ReminderTimes.hour
       return ReminderTimes.hour
-    if Manager.Contains(timeframe,'30')
+    if timeframe == ReminderTimes.halfHour
       return ReminderTimes.halfHour
-    if Manager.Contains(timeframe,'5')
+    if timeframe == ReminderTimes.fiveMinutes
       return ReminderTimes.fiveMinutes
-    if Manager.Contains(timeframe,'event')
+    if timeframe == ReminderTimes.timeOfEvent
       return ReminderTimes.timeOfEvent
 
   GetReadableReminderTimes: () ->

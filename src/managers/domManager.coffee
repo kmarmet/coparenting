@@ -384,7 +384,7 @@ DomManager = {
               parent = input.parentNode
               if parent
                 parent.classList.add('active')
-                labelWrapper = parent.querySelector("#label-wrapper")
+                labelWrapper = parent.querySelector(".label-wrapper")
                 if labelWrapper
                   labelWrapper.classList.add("active")
 

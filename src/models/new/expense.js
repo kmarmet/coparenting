@@ -9,7 +9,7 @@ import DateFormats from "../../constants/datetimeFormats";
 
 Expense = class Expense {
   constructor(options = {}) {
-    var ref, ref1, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, ref2, ref20, ref21, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
+    var ref, ref1, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, ref2, ref20, ref21, ref22, ref23, ref24, ref25, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
     this.id = Manager.GetUid();
     this.paidStatus = 'unpaid';
     this.name = (ref = options != null ? options.name : void 0) != null ? ref : '';
@@ -19,20 +19,26 @@ Expense = class Expense {
     this.creationDate = moment().format(DateFormats.dateForDb);
     this.children = (ref4 = options != null ? options.children : void 0) != null ? ref4 : [];
     this.dueDate = (ref5 = options != null ? options.dueDate : void 0) != null ? ref5 : '';
-    this.ownerKey = (ref6 = options != null ? options.ownerKey : void 0) != null ? ref6 : '';
-    this.notes = (ref7 = options != null ? options.notes : void 0) != null ? ref7 : '';
-    this.recipientName = (ref8 = options != null ? options.ownerKey : void 0) != null ? ref8 : '';
-    this.isRecurring = (ref9 = options != null ? options.isRecurring : void 0) != null ? ref9 : false;
-    this.recurringFrequency = (ref10 = options != null ? options.recurringFrequency : void 0) != null ? ref10 : '';
-    this.category = (ref11 = options != null ? options.category : void 0) != null ? ref11 : '';
-    this.recipient = {
-      key: (ref12 = options != null ? (ref13 = options.recipient) != null ? ref13.key : void 0 : void 0) != null ? ref12 : '',
-      name: (ref14 = options != null ? (ref15 = options.recipient) != null ? ref15.name : void 0 : void 0) != null ? ref14 : ''
+    this.notes = (ref6 = options != null ? options.notes : void 0) != null ? ref6 : '';
+    this.isRecurring = (ref7 = options != null ? options.isRecurring : void 0) != null ? ref7 : false;
+    this.recurringFrequency = (ref8 = options != null ? options.recurringFrequency : void 0) != null ? ref8 : '';
+    this.category = (ref9 = options != null ? options.category : void 0) != null ? ref9 : '';
+    // Owner
+    this.owner = {
+      key: (ref10 = options != null ? (ref11 = options.owner) != null ? ref11.key : void 0 : void 0) != null ? ref10 : '',
+      name: (ref12 = options != null ? (ref13 = options.owner) != null ? ref13.name : void 0 : void 0) != null ? ref12 : '',
+      phone: (ref14 = options != null ? (ref15 = options.owner) != null ? ref15.phone : void 0 : void 0) != null ? ref14 : ''
     };
+    // Recipient
+    this.recipient = {
+      key: (ref16 = options != null ? (ref17 = options.recipient) != null ? ref17.key : void 0 : void 0) != null ? ref16 : '',
+      name: (ref18 = options != null ? (ref19 = options.recipient) != null ? ref19.name : void 0 : void 0) != null ? ref18 : ''
+    };
+    // Payer
     this.payer = {
-      phone: (ref16 = options != null ? (ref17 = options.payer) != null ? ref17.ownerKey : void 0 : void 0) != null ? ref16 : '',
-      key: (ref18 = options != null ? (ref19 = options.payer) != null ? ref19.key : void 0 : void 0) != null ? ref18 : '',
-      name: (ref20 = options != null ? (ref21 = options.payer) != null ? ref21.name : void 0 : void 0) != null ? ref20 : ''
+      phone: (ref20 = options != null ? (ref21 = options.payer) != null ? ref21.ownerKey : void 0 : void 0) != null ? ref20 : '',
+      key: (ref22 = options != null ? (ref23 = options.payer) != null ? ref23.key : void 0 : void 0) != null ? ref22 : '',
+      name: (ref24 = options != null ? (ref25 = options.payer) != null ? ref25.name : void 0 : void 0) != null ? ref24 : ''
     };
   }
 

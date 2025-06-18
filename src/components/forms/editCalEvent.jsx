@@ -13,11 +13,13 @@ import useChildren from '../../hooks/useChildren'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
+import AppManager from '../../managers/appManager'
 import CalendarManager from '../../managers/calendarManager.js'
 import DomManager from '../../managers/domManager'
+import DropdownManager from '../../managers/dropdownManager'
 import LogManager from '../../managers/logManager'
 import Manager from '../../managers/manager'
-import SelectDropdownManager from '../../managers/selectDropdownManager'
+import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
 import AddressInput from '../shared/addressInput'
@@ -53,9 +55,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const [clonedDates, setClonedDates] = useState([])
   const [view, setView] = useState('Details')
   const [selectedChildrenOptions, setSelectedChildrenOptions] = useState(
-    SelectDropdownManager.GetSelected.Children(event?.children?.map((x) => x?.general?.name))
+    DropdownManager.GetSelected.Children(event?.children?.map((x) => x?.general?.name))
   )
-  const [selectedReminderOptions, setSelectedReminderOptions] = useState(SelectDropdownManager.GetSelected.Reminders(event?.reminderTimes))
+  const [selectedReminderOptions, setSelectedReminderOptions] = useState(DropdownManager.GetSelected.Reminders(event?.reminderTimes))
 
   // REF
   const updatedEvent = useRef({...event, startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)})
@@ -135,9 +137,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
         const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
 
+        const cleaned = ObjectManager.CleanObject(updatedEvent?.current)
+
+        console.log(cleaned)
+
         // Events with multiple days
-        if (updatedEvent?.current?.isRecurring || updatedEvent?.current?.isDateRange || updatedEvent?.current?.isCloned) {
-          const existing = calendarEvents.filter((x) => x.multipleDatesId === updatedEvent?.current?.multipleDatesId)
+        if (cleaned.isRecurring || cleaned.isDateRange || cleaned.isCloned) {
+          const existing = calendarEvents.filter((x) => x.multipleDatesId === cleaned.multipleDatesId)
 
           if (!Manager.IsValid(existing)) {
             return false
@@ -149,25 +155,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           }
 
           if (eventIsDateRange) {
-            const dates = await CalendarManager.BuildArrayOfEvents(
-              currentUser,
-              updatedEvent.current,
-              'range',
-              existing[0].startDate,
-              updatedEvent?.current?.endDate
-            )
+            const dates = await CalendarManager.BuildArrayOfEvents(currentUser, cleaned, 'range', existing[0].startDate, cleaned.endDate)
             await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
           }
 
           // Add repeating dates
           if (eventIsRecurring) {
-            const dates = await CalendarManager.BuildArrayOfEvents(
-              currentUser,
-              updatedEvent.current,
-              'recurring',
-              existing[0]?.startDate,
-              updatedEvent?.current?.endDate
-            )
+            const dates = await CalendarManager.BuildArrayOfEvents(currentUser, cleaned, 'recurring', existing[0]?.startDate, cleaned.endDate)
             await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
           }
 
@@ -177,11 +171,11 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
         // Update Single Event
         else {
-          if (updatedEvent?.current?.ownerKey === currentUser?.key) {
-            await DB.updateEntireRecord(`${dbPath}`, updatedEvent?.current, updatedEvent.current.id)
+          if (cleaned.ownerKey === currentUser?.key) {
+            await DB.updateEntireRecord(`${dbPath}`, updatedEvent?.current, cleaned.id)
           }
         }
-        if (updatedEvent?.current?.ownerKey === currentUser?.key) {
+        if (cleaned.ownerKey === currentUser?.key) {
           if (Manager.IsValid(updatedEvent?.current?.shareWith)) {
             UpdateManager.SendToShareWith(
               updatedEvent?.current?.shareWith,
@@ -207,6 +201,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setView('Details')
     setEventIsRecurring(updatedEvent?.current?.isRecurring)
     setEventIsDateRange(updatedEvent?.current?.isDateRange)
+    updatedEvent.current = {...event}
+    console.log(updatedEvent?.current)
 
     // Repeating
     if (Manager.IsValid(updatedEvent?.current?.recurringInterval)) {
@@ -254,6 +250,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     if (Manager.IsValid(event)) {
       updatedEvent.current = event
       SetDefaultValues().then((r) => r)
+      const index = DB.GetTableIndexById(calendarEvents, event?.id)
     }
   }, [event])
 
@@ -280,7 +277,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         onClose={async () => {
           await ResetForm()
         }}
-        title={StringManager.formatEventTitle(StringManager.UppercaseFirstLetterOfAllWords(updatedEvent?.current?.title))}
+        title={StringManager.FormatEventTitle(StringManager.UppercaseFirstLetterOfAllWords(updatedEvent?.current?.title))}
         showCard={showCard}
         deleteButtonText="Delete"
         className="Edit-calendar-event"
@@ -334,16 +331,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               <DetailBlock valueToValidate={updatedEvent?.current?.createdBy} text={GetCreatedBy()} title={'Creator'} />
 
               {/*  Shared With */}
-              <MultilineDetailBlock
-                title={'Shared with'}
-                array={SelectDropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users, true)}
-              />
+              <MultilineDetailBlock title={'Shared with'} array={DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users, true)} />
 
               {/* Reminders */}
               <MultilineDetailBlock
                 title={'Reminders'}
                 dataType={MultilineDetailBlockDataTypes.Reminders}
-                array={SelectDropdownManager.GetReadableReminderTimes(event?.reminderTimes)}
+                array={DropdownManager.GetReadableReminderTimes(event?.reminderTimes)}
               />
 
               {/* Children */}
@@ -407,7 +401,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             )}
 
             {/* Map */}
-            {!DomManager.isMobile() && Manager.IsValid(updatedEvent?.current?.address) && <Map locationString={updatedEvent?.current?.address} />}
+            {!AppManager.IsDevMode() && Manager.IsValid(updatedEvent?.current?.address) && <Map locationString={updatedEvent?.current?.address} />}
           </div>
 
           {/* EDIT */}
@@ -422,7 +416,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               onChange={async (e) => {
                 const inputValue = e.target.value
                 if (inputValue.length > 1) {
-                  updatedEvent.current.title = StringManager.formatEventTitle(inputValue)
+                  updatedEvent.current.title = StringManager.FormatEventTitle(inputValue)
                 }
               }}
             />
@@ -480,8 +474,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
             {/* REMINDERS */}
             <SelectDropdown
-              options={SelectDropdownManager.GetDefault.Reminders}
-              value={SelectDropdownManager.GetSelected.Reminders(selectedReminderOptions ? selectedReminderOptions : event?.reminderTimes)}
+              options={DropdownManager.GetDefault.Reminders}
+              value={DropdownManager.GetSelected.Reminders(selectedReminderOptions ? selectedReminderOptions : event?.reminderTimes)}
               isMultiple={true}
               placeholder={'Select Reminders'}
               onSelection={(e) => setSelectedReminderOptions(e.map((x) => x.value))}
@@ -491,11 +485,10 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
             {/* INCLUDING WHICH CHILDREN */}
             <SelectDropdown
-              options={SelectDropdownManager.GetDefault.Children(children)}
-              value={SelectDropdownManager.GetSelected.Children(selectedChildrenOptions ? selectedChildrenOptions : event?.children)}
+              options={DropdownManager.GetDefault.Children(children)}
+              value={DropdownManager.GetSelected.Children(selectedChildrenOptions ? selectedChildrenOptions : event?.children)}
               placeholder={'Select Children to Include'}
               onSelection={(e) => {
-                console.log(e)
                 setSelectedChildrenOptions(e.map((x) => x.label))
               }}
               isMultiple={true}

@@ -5,38 +5,41 @@ import Manager from "../../managers/manager";
 
 CalendarEvent = class CalendarEvent {
   constructor(options = {}) {
-    var ref, ref1, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, ref2, ref20, ref21, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
+    var ref, ref1, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, ref2, ref20, ref21, ref22, ref23, ref24, ref25, ref26, ref27, ref28, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
     // STRINGS
     this.id = Manager.GetUid();
-    this.multipleDatesId = (ref = options.multipleDatesId) != null ? ref : '';
-    this.websiteUrl = (ref1 = options.websiteUrl) != null ? ref1 : '';
-    this.notes = (ref2 = options.notes) != null ? ref2 : '';
-    this.endDate = (ref3 = options.endDate) != null ? ref3 : '';
-    this.startDate = (ref4 = options.startDate) != null ? ref4 : '';
-    this.staticStartDate = (ref5 = options.staticStartDate) != null ? ref5 : '';
-    this.startTime = (ref6 = options.startTime) != null ? ref6 : '';
-    this.ownerKey = (ref7 = options.ownerKey) != null ? ref7 : '';
-    this.address = (ref8 = options.address) != null ? ref8 : '';
-    this.title = (ref9 = options.title) != null ? ref9 : '';
-    this.phone = (ref10 = options.phone) != null ? ref10 : '';
-    this.createdBy = (ref11 = options.createdBy) != null ? ref11 : '';
-    this.directionsLink = (ref12 = options.directionsLink) != null ? ref12 : '';
-    this.endTime = (ref13 = options.endTime) != null ? ref13 : '';
-    this.recurringInterval = (ref14 = options.recurringInterval) != null ? ref14 : '';
-    this.visitationPeriodEndDate = (ref15 = options.visitationPeriodEndDate) != null ? ref15 : '';
-    this.holidayName = (ref16 = options.holidayName) != null ? ref16 : '';
-    this.visitationSchedule = (ref17 = options.visitationSchedule) != null ? ref17 : '';
+    this.multipleDatesId = (ref = options != null ? options.multipleDatesId : void 0) != null ? ref : '';
+    this.websiteUrl = (ref1 = options != null ? options.websiteUrl : void 0) != null ? ref1 : '';
+    this.notes = (ref2 = options != null ? options.notes : void 0) != null ? ref2 : '';
+    this.endDate = (ref3 = options != null ? options.endDate : void 0) != null ? ref3 : '';
+    this.startDate = (ref4 = options != null ? options.startDate : void 0) != null ? ref4 : '';
+    this.staticStartDate = (ref5 = options != null ? options.staticStartDate : void 0) != null ? ref5 : '';
+    this.startTime = (ref6 = options != null ? options.startTime : void 0) != null ? ref6 : '';
+    this.address = (ref7 = options != null ? options.address : void 0) != null ? ref7 : '';
+    this.title = (ref8 = options != null ? options.title : void 0) != null ? ref8 : '';
+    this.phone = (ref9 = options != null ? options.phone : void 0) != null ? ref9 : '';
+    this.directionsLink = (ref10 = options != null ? options.directionsLink : void 0) != null ? ref10 : '';
+    this.endTime = (ref11 = options != null ? options.endTime : void 0) != null ? ref11 : '';
+    this.recurringInterval = (ref12 = options != null ? options.recurringInterval : void 0) != null ? ref12 : '';
+    this.visitationPeriodEndDate = (ref13 = options != null ? options.visitationPeriodEndDate : void 0) != null ? ref13 : '';
+    this.holidayName = (ref14 = options != null ? options.holidayName : void 0) != null ? ref14 : '';
+    this.visitationSchedule = (ref15 = options != null ? options.visitationSchedule : void 0) != null ? ref15 : '';
+    // OWNER
+    this.owner = {
+      name: (ref16 = options != null ? (ref17 = options.owner) != null ? ref17.name : void 0 : void 0) != null ? ref16 : '',
+      key: (ref18 = options != null ? (ref19 = options.owner) != null ? ref19.key : void 0 : void 0) != null ? ref18 : ''
+    };
     // ARRAYS
-    this.GetReminderTimes = (ref18 = options.GetReminderTimes) != null ? ref18 : [];
-    this.shareWith = (ref19 = options.shareWith) != null ? ref19 : [];
-    this.children = (ref20 = options.children) != null ? ref20 : [];
-    this.sentReminders = (ref21 = options.sentReminders) != null ? ref21 : [];
+    this.reminderTimes = (ref20 = options != null ? options.reminderTimes : void 0) != null ? ref20 : [];
+    this.shareWith = (ref21 = options != null ? options.shareWith : void 0) != null ? ref21 : [];
+    this.children = (ref22 = options != null ? options.children : void 0) != null ? ref22 : [];
+    this.sentReminders = (ref23 = options != null ? options.sentReminders : void 0) != null ? ref23 : [];
     // BOOLEANS
-    this.fromVisitationSchedule = false;
-    this.isHoliday = false;
-    this.isRecurring = false;
-    this.isCloned = false;
-    this.isDateRange = false;
+    this.fromVisitationSchedule = (ref24 = options != null ? options.fromVisitationSchedule : void 0) != null ? ref24 : false;
+    this.isHoliday = (ref25 = options != null ? options.isHoliday : void 0) != null ? ref25 : false;
+    this.isRecurring = (ref26 = options != null ? options.isRecurring : void 0) != null ? ref26 : false;
+    this.isCloned = (ref27 = options != null ? options.isCloned : void 0) != null ? ref27 : false;
+    this.isDateRange = (ref28 = options != null ? options.isDateRange : void 0) != null ? ref28 : false;
   }
 
 };

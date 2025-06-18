@@ -67,6 +67,25 @@ ObjectManager = {
           return result
     return undefined
 
+  CleanObject: (obj) ->
+    if Array.isArray(obj)
+      if !Manager.IsValid(obj)
+        return
+      return obj
+        .map(ObjectManager.CleanObject)
+        .filter (item) -> item isnt undefined
+    else if obj isnt null and typeof obj is 'object'
+      return Object.entries(obj).reduce (acc, [key, value]) ->
+        cleaned = ObjectManager.CleanObject(value)
+        if cleaned isnt undefined
+          acc[key] = cleaned
+        acc
+      , {}
+    else if obj isnt undefined and obj isnt null and obj isnt ""
+      return obj
+    # Return undefined to signal deletion
+    return undefined
+
   GetValidObject: (obj) -> Object.fromEntries((Object.entries(obj).filter ([_, value]) -> Manager.IsValid(value)))
 
   RemoveUnusedProperties: (obj, modelKeys) ->
@@ -93,7 +112,7 @@ ObjectManager = {
         Object.keys(new User())
       when ModelNames.coparent
         Object.keys(new Coparent())
-      when ModelNames.chatThread
+      when ModelNames.chat
         Object.keys(new ChatThread())
       when ModelNames.chatMessage
         Object.keys(new ChatMessage())
@@ -118,13 +137,11 @@ ObjectManager = {
         new TransferChangeRequest()
       when ModelNames.swapRequest
         new SwapRequest()
-      when ModelNames.inputSuggestion
-        new InputSuggestion()
       when ModelNames.user
         new User()
       when ModelNames.coparent
         new Coparent()
-      when ModelNames.chatThread
+      when ModelNames.chat
         new ChatThread()
       when ModelNames.chatMessage
         new ChatMessage()
@@ -162,13 +179,13 @@ ObjectManager = {
           returnObject?[prop] = '' if returnObject?[prop] in [undefined, null] or returnObject?[prop]?.toString()?.toLowerCase()?.includes('invalid')
         returnObject?[prop] = returnObject?[prop]
 
-    returnObject
+    return returnObject
 
   merge: (objectWithValuesToKeep, objectWithValuesToAdd) ->
     _.assign(objectWithValuesToKeep, objectWithValuesToAdd)
 
   isEmpty: (obj) ->
-    _.isEmpty(obj)
+    return _.isEmpty(obj)
 }
 
 export default ObjectManager

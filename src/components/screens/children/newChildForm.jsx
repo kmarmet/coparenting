@@ -3,7 +3,6 @@ import moment from 'moment'
 import React, {useContext, useRef, useState} from 'react'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
-import ModelNames from '../../../constants/modelNames'
 import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
 import Storage from '../../../database/storage'
@@ -34,7 +33,7 @@ const NewChildForm = ({hideCard, showCard}) => {
   // State
   const [childHasAccount, setChildHasAccount] = useState(false)
 
-  const newChild = useRef(new Child())
+  const newChild = useRef({...new Child()})
 
   const ResetForm = async (successMessage = '') => {
     Manager.ResetForm('new-child-wrapper')
@@ -88,19 +87,18 @@ const NewChildForm = ({hideCard, showCard}) => {
     }
 
     // Get valid objected
-    const cleanChild = ObjectManager.GetModelValidatedObject(newChild.current, ModelNames.child)
 
     // Add Child's Birthday to Calendar
     if (Manager.IsValid(newChild.current.general.dateOfBirth, true)) {
       const childBirthdayEvent = new CalendarEvent()
-      childBirthdayEvent.title = `${cleanChild.general.name}'s Birthday`
-      childBirthdayEvent.startDate = cleanChild.general.dateOfBirth
+      childBirthdayEvent.title = `${newChild.current.general.name}'s Birthday`
+      childBirthdayEvent.startDate = newChild.current.dateOfBirth
       childBirthdayEvent.ownerKey = currentUser.key
       await CalendarManager.addCalendarEvent(currentUser, childBirthdayEvent)
     }
 
     // Add child to DB
-    await DB_UserScoped.AddChildToParentProfile(currentUser, cleanChild)
+    await DB_UserScoped.AddChildToParentProfile(currentUser, newChild)
 
     await ResetForm(`${StringManager.GetFirstNameOnly(StringManager.FormatTitle(name, true))} Added to Your Profile`)
   }

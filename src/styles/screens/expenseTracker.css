@@ -537,10 +537,10 @@
 #external-overrides #expense-tracker #filters .filter-row {
   margin-bottom: 10px;
 }
-#external-overrides #expense-tracker #filters .filter-row #label-wrapper label {
+#external-overrides #expense-tracker #filters .filter-row .label-wrapper label {
   line-height: 1;
 }
-#external-overrides #expense-tracker #filters .filter-row #label-wrapper label span {
+#external-overrides #expense-tracker #filters .filter-row .label-wrapper label span {
   padding: 0;
   font-weight: 500;
 }
@@ -552,10 +552,10 @@
   display: flex;
   align-items: center;
 }
-#external-overrides #expense-tracker #filters #label-wrapper.sorting label {
+#external-overrides #expense-tracker #filters .label-wrapper.sorting label {
   line-height: 1;
 }
-#external-overrides #expense-tracker #filters #label-wrapper.sorting label span {
+#external-overrides #expense-tracker #filters .label-wrapper.sorting label span {
   padding: 0;
   font-weight: 500;
   opacity: 0.9;

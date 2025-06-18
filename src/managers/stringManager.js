@@ -217,11 +217,7 @@ StringManager = {
     }
     words = input != null ? input.toString() : void 0;
     if (words && words !== void 0) {
-      if ((words != null ? words.indexOf('-') : void 0) > -1) {
-        words = input.replace(/-/g, ' ').split(' ');
-      } else {
-        words = words != null ? words.split(' ') : void 0;
-      }
+      words = words != null ? words.split(' ') : void 0;
       words = words != null ? words.filter(function(x) {
         return x.length > 0;
       }) : void 0;
@@ -234,7 +230,7 @@ StringManager = {
     }
     return words;
   },
-  formatEventTitle: function(title) {
+  FormatEventTitle: function(title) {
     if (title && title.length > 0) {
       title = StringManager.UppercaseFirstLetterOfAllWords(title);
       title = StringManager.FormatTitle(title);

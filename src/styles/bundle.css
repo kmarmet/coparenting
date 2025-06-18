@@ -4207,7 +4207,7 @@ div:where(.swal2-container) {
   height: 100%;
   width: 100%;
 }
-#external-overrides #app-container #label-wrapper {
+#external-overrides #app-container .label-wrapper {
   margin-bottom: 0;
   transition: all 0.3s ease-out;
   font-size: 12px;
@@ -4219,10 +4219,10 @@ div:where(.swal2-container) {
   padding-top: 3px;
   display: none;
 }
-#external-overrides #app-container #label-wrapper.always-show {
+#external-overrides #app-container .label-wrapper.always-show {
   display: block;
 }
-#external-overrides #app-container #label-wrapper.always-show label {
+#external-overrides #app-container .label-wrapper.always-show label {
   font-style: normal;
   line-height: 1;
   white-space: nowrap;
@@ -4233,19 +4233,19 @@ div:where(.swal2-container) {
   text-transform: uppercase;
   padding-bottom: 5px;
 }
-#external-overrides #app-container #label-wrapper.always-show.dark label {
+#external-overrides #app-container .label-wrapper.always-show.dark label {
   color: #575757;
 }
-#external-overrides #app-container #label-wrapper.always-show.black label {
+#external-overrides #app-container .label-wrapper.always-show.black label {
   color: #575757;
 }
-#external-overrides #app-container #label-wrapper.time {
+#external-overrides #app-container .label-wrapper.time {
   display: block;
   top: 50%;
   transform: translateY(-50%);
   padding-left: 0 !important;
 }
-#external-overrides #app-container #label-wrapper.time label {
+#external-overrides #app-container .label-wrapper.time label {
   opacity: 0.5;
   font-style: normal;
   color: #faf9f6;
@@ -4255,21 +4255,21 @@ div:where(.swal2-container) {
   line-height: 1;
   white-space: nowrap;
 }
-#external-overrides #app-container #label-wrapper.input-field-label {
+#external-overrides #app-container .label-wrapper.input-field-label {
   padding-left: 10px;
 }
-#external-overrides #app-container #label-wrapper.date, #external-overrides #app-container #label-wrapper.time {
+#external-overrides #app-container .label-wrapper.date, #external-overrides #app-container .label-wrapper.time {
   display: block;
 }
-#external-overrides #app-container #label-wrapper.active {
+#external-overrides #app-container .label-wrapper.active {
   opacity: 1;
   display: block;
   transition: all 0.3s ease-in;
 }
-#external-overrides #app-container #label-wrapper.sorting label {
+#external-overrides #app-container .label-wrapper.sorting label {
   font-weight: 500;
 }
-#external-overrides #app-container #label-wrapper.address-label label {
+#external-overrides #app-container .label-wrapper.address-label label {
   color: #86868f;
   text-transform: uppercase;
   font-size: 12px;
@@ -4277,7 +4277,7 @@ div:where(.swal2-container) {
   font-weight: 500;
   transition: all 0.3s ease-in-out;
 }
-#external-overrides #app-container #label-wrapper label {
+#external-overrides #app-container .label-wrapper label {
   font-weight: 600;
   font-size: 12px;
   margin: 0;
@@ -4290,17 +4290,17 @@ div:where(.swal2-container) {
   width: min-content;
   overflow: hidden;
 }
-#external-overrides #app-container #label-wrapper label svg {
+#external-overrides #app-container .label-wrapper label svg {
   position: relative;
   top: 3px;
   margin-right: 5px;
   font-size: 20px;
   width: 20px;
 }
-#external-overrides #app-container #label-wrapper label svg.type {
+#external-overrides #app-container .label-wrapper label svg.type {
   font-size: 16px;
 }
-#external-overrides #app-container #label-wrapper label .asterisk {
+#external-overrides #app-container .label-wrapper label .asterisk {
   color: #ee4b2b;
   display: block;
   font-size: 13px;
@@ -4389,9 +4389,9 @@ div:where(.swal2-container) {
   align-items: center;
   flex-wrap: wrap;
 }
-#external-overrides #app-container .checkbox-group .checkboxes.checkboxes #label-wrapper,
-#external-overrides #app-container .checkbox-group #standalone-checkbox-container.checkboxes #label-wrapper,
-#external-overrides #app-container .checkbox-group #share-with-checkbox-container.checkboxes #label-wrapper {
+#external-overrides #app-container .checkbox-group .checkboxes.checkboxes .label-wrapper,
+#external-overrides #app-container .checkbox-group #standalone-checkbox-container.checkboxes .label-wrapper,
+#external-overrides #app-container .checkbox-group #share-with-checkbox-container.checkboxes .label-wrapper {
   margin-right: 10px;
 }
 #external-overrides #app-container .checkbox-group .checkboxes.checkboxes label,
@@ -4474,9 +4474,11 @@ div:where(.swal2-container) {
 }
 #external-overrides #app-container #alert-container .screen-header.login-header img,
 #external-overrides #app-container .page-container .screen-header.login-header img {
-  width: 150px;
+  height: 50px;
+  width: 50px;
   background: white;
   position: relative;
+  margin: 0 auto;
 }
 #external-overrides #app-container #alert-container .screen-header.login-header *,
 #external-overrides #app-container .page-container .screen-header.login-header * {
@@ -4665,10 +4667,10 @@ div:where(.swal2-container) {
   height: 14px;
   width: 14px;
 }
-#external-overrides #app-container .form .form-card .content-wrapper .content #label-wrapper.toggle {
+#external-overrides #app-container .form .form-card .content-wrapper .content .label-wrapper.toggle {
   display: flex;
 }
-#external-overrides #app-container .form .form-card .content-wrapper .content #label-wrapper.toggle label {
+#external-overrides #app-container .form .form-card .content-wrapper .content .label-wrapper.toggle label {
   font-weight: 500 !important;
   color: white !important;
   font-size: 14px !important;
@@ -5897,13 +5899,13 @@ div:where(.swal2-container) {
   margin-left: 10px;
   opacity: 0.7;
 }
-#external-overrides #app-container .form.doc-tips-card #label-wrapper {
+#external-overrides #app-container .form.doc-tips-card .label-wrapper {
   margin-top: 15px;
 }
-#external-overrides #app-container .form.doc-tips-card #label-wrapper:first-child {
+#external-overrides #app-container .form.doc-tips-card .label-wrapper:first-child {
   margin-top: 0;
 }
-#external-overrides #app-container .form.doc-tips-card #label-wrapper label {
+#external-overrides #app-container .form.doc-tips-card .label-wrapper label {
   font-size: 18px;
   color: #7458ff;
   font-weight: 500;
@@ -7975,10 +7977,10 @@ div:where(.swal2-container) {
   height: 14px;
   width: 14px;
 }
-#external-overrides #app-container .form-wrapper .form-card .content-wrapper .content #label-wrapper.toggle {
+#external-overrides #app-container .form-wrapper .form-card .content-wrapper .content .label-wrapper.toggle {
   display: flex;
 }
-#external-overrides #app-container .form-wrapper .form-card .content-wrapper .content #label-wrapper.toggle label {
+#external-overrides #app-container .form-wrapper .form-card .content-wrapper .content .label-wrapper.toggle label {
   font-weight: 500 !important;
   color: white !important;
   font-size: 14px !important;
@@ -9207,13 +9209,13 @@ div:where(.swal2-container) {
   margin-left: 10px;
   opacity: 0.7;
 }
-#external-overrides #app-container .form-wrapper.doc-tips-card #label-wrapper {
+#external-overrides #app-container .form-wrapper.doc-tips-card .label-wrapper {
   margin-top: 15px;
 }
-#external-overrides #app-container .form-wrapper.doc-tips-card #label-wrapper:first-child {
+#external-overrides #app-container .form-wrapper.doc-tips-card .label-wrapper:first-child {
   margin-top: 0;
 }
-#external-overrides #app-container .form-wrapper.doc-tips-card #label-wrapper label {
+#external-overrides #app-container .form-wrapper.doc-tips-card .label-wrapper label {
   font-size: 18px;
   color: #7458ff;
   font-weight: 500;
@@ -9454,9 +9456,9 @@ div:where(.swal2-container) {
   align-items: center;
   flex-wrap: wrap;
 }
-#external-overrides #app-container #share-with-checkbox-group .checkboxes.checkboxes #label-wrapper,
-#external-overrides #app-container #share-with-checkbox-group #standalone-checkbox-container.checkboxes #label-wrapper,
-#external-overrides #app-container #share-with-checkbox-group #share-with-checkbox-container.checkboxes #label-wrapper {
+#external-overrides #app-container #share-with-checkbox-group .checkboxes.checkboxes .label-wrapper,
+#external-overrides #app-container #share-with-checkbox-group #standalone-checkbox-container.checkboxes .label-wrapper,
+#external-overrides #app-container #share-with-checkbox-group #share-with-checkbox-container.checkboxes .label-wrapper {
   margin-right: 10px;
 }
 #external-overrides #app-container #share-with-checkbox-group .checkboxes.checkboxes label,
@@ -9587,9 +9589,9 @@ div:where(.swal2-container) {
 #external-overrides #app-container #address-input-field.time.time {
   user-select: none !important;
 }
-#external-overrides #app-container .input-field.date.time #label-wrapper, #external-overrides #app-container .input-field.time.time #label-wrapper,
-#external-overrides #app-container #address-input-field.date.time #label-wrapper,
-#external-overrides #app-container #address-input-field.time.time #label-wrapper {
+#external-overrides #app-container .input-field.date.time .label-wrapper, #external-overrides #app-container .input-field.time.time .label-wrapper,
+#external-overrides #app-container #address-input-field.date.time .label-wrapper,
+#external-overrides #app-container #address-input-field.time.time .label-wrapper {
   padding-bottom: 6px;
 }
 #external-overrides #app-container .input-field input,
@@ -9646,8 +9648,8 @@ div:where(.swal2-container) {
   justify-content: flex-start;
   justify-self: flex-start;
 }
-#external-overrides #app-container .input-field #label-wrapper,
-#external-overrides #app-container #address-input-field #label-wrapper {
+#external-overrides #app-container .input-field .label-wrapper,
+#external-overrides #app-container #address-input-field .label-wrapper {
   padding-left: 10px;
 }
 #external-overrides #app-container .input-field#address-input-field,
@@ -10628,9 +10630,11 @@ div:where(.swal2-container) {
   flex-wrap: wrap;
 }
 #external-overrides #app-container #loading-gif-container .screen-header.login-header img {
-  width: 150px;
+  height: 50px;
+  width: 50px;
   background: white;
   position: relative;
+  margin: 0 auto;
 }
 #external-overrides #app-container #loading-gif-container .screen-header.login-header * {
   width: 100%;
@@ -11906,7 +11910,7 @@ div:where(.swal2-container) {
 #external-overrides .MuiPaper-root.MuiAccordion-root#legend .MuiCollapse-root .MuiAccordion-region, #external-overrides .MuiPaper-root.MuiAccordion-root.memories-accordion .MuiCollapse-root .MuiAccordion-region {
   padding: 0 12px 12px 12px !important;
 }
-#external-overrides .MuiPaper-root.MuiAccordion-root#expenses-accordion .filter-row #label-wrapper label {
+#external-overrides .MuiPaper-root.MuiAccordion-root#expenses-accordion .filter-row .label-wrapper label {
   color: #86868f !important;
 }
 #external-overrides .MuiPaper-root.MuiAccordion-root#expenses-accordion .filter-row #filters {
@@ -12074,7 +12078,7 @@ div:where(.swal2-container) {
   height: 18px;
   width: 18px;
 }
-#external-overrides .MuiPaper-root.MuiAccordion-root .MuiAccordion-heading .MuiAccordionSummary-root .MuiAccordionSummary-content #label-wrapper label {
+#external-overrides .MuiPaper-root.MuiAccordion-root .MuiAccordion-heading .MuiAccordionSummary-root .MuiAccordionSummary-content .label-wrapper label {
   white-space: nowrap;
   color: #86868f !important;
   font-weight: 300 !important;
@@ -12688,17 +12692,17 @@ div:where(.swal2-container) {
 #external-overrides #expense-tracker #filters .filter-row .buttons button.default {
   height: 30px;
 }
-#external-overrides #expense-tracker #filters .filter-row #label-wrapper label {
+#external-overrides #expense-tracker #filters .filter-row .label-wrapper label {
   line-height: 1;
 }
-#external-overrides #expense-tracker #filters .filter-row #label-wrapper label span {
+#external-overrides #expense-tracker #filters .filter-row .label-wrapper label span {
   padding: 0;
   font-weight: 500;
 }
-#external-overrides #expense-tracker #filters #label-wrapper.sorting label {
+#external-overrides #expense-tracker #filters .label-wrapper.sorting label {
   line-height: 1;
 }
-#external-overrides #expense-tracker #filters #label-wrapper.sorting label span {
+#external-overrides #expense-tracker #filters .label-wrapper.sorting label span {
   padding: 0;
   font-weight: 500;
   opacity: 0.9;
@@ -13805,10 +13809,10 @@ div:where(.swal2-container) {
   height: 14px;
   width: 14px;
 }
-#swap-requests #swap-requests-container .request .details #request-form .form .form-card .content-wrapper .content #label-wrapper.toggle {
+#swap-requests #swap-requests-container .request .details #request-form .form .form-card .content-wrapper .content .label-wrapper.toggle {
   display: flex;
 }
-#swap-requests #swap-requests-container .request .details #request-form .form .form-card .content-wrapper .content #label-wrapper.toggle label {
+#swap-requests #swap-requests-container .request .details #request-form .form .form-card .content-wrapper .content .label-wrapper.toggle label {
   font-weight: 500 !important;
   color: white !important;
   font-size: 14px !important;
@@ -15037,13 +15041,13 @@ div:where(.swal2-container) {
   margin-left: 10px;
   opacity: 0.7;
 }
-#swap-requests #swap-requests-container .request .details #request-form .form.doc-tips-card #label-wrapper {
+#swap-requests #swap-requests-container .request .details #request-form .form.doc-tips-card .label-wrapper {
   margin-top: 15px;
 }
-#swap-requests #swap-requests-container .request .details #request-form .form.doc-tips-card #label-wrapper:first-child {
+#swap-requests #swap-requests-container .request .details #request-form .form.doc-tips-card .label-wrapper:first-child {
   margin-top: 0;
 }
-#swap-requests #swap-requests-container .request .details #request-form .form.doc-tips-card #label-wrapper label {
+#swap-requests #swap-requests-container .request .details #request-form .form.doc-tips-card .label-wrapper label {
   font-size: 18px;
   color: #7458ff;
   font-weight: 500;
@@ -15975,10 +15979,10 @@ div:where(.swal2-container) {
   height: 14px;
   width: 14px;
 }
-#transfer-requests-container #request-form .form .form-card .content-wrapper .content #label-wrapper.toggle {
+#transfer-requests-container #request-form .form .form-card .content-wrapper .content .label-wrapper.toggle {
   display: flex;
 }
-#transfer-requests-container #request-form .form .form-card .content-wrapper .content #label-wrapper.toggle label {
+#transfer-requests-container #request-form .form .form-card .content-wrapper .content .label-wrapper.toggle label {
   font-weight: 500 !important;
   color: white !important;
   font-size: 14px !important;
@@ -17207,13 +17211,13 @@ div:where(.swal2-container) {
   margin-left: 10px;
   opacity: 0.7;
 }
-#transfer-requests-container #request-form .form.doc-tips-card #label-wrapper {
+#transfer-requests-container #request-form .form.doc-tips-card .label-wrapper {
   margin-top: 15px;
 }
-#transfer-requests-container #request-form .form.doc-tips-card #label-wrapper:first-child {
+#transfer-requests-container #request-form .form.doc-tips-card .label-wrapper:first-child {
   margin-top: 0;
 }
-#transfer-requests-container #request-form .form.doc-tips-card #label-wrapper label {
+#transfer-requests-container #request-form .form.doc-tips-card .label-wrapper label {
   font-size: 18px;
   color: #7458ff;
   font-weight: 500;
@@ -24142,7 +24146,7 @@ div:where(.swal2-container) {
 /*#endregion  COMPONENTS*/
 /*#region  MENU*/
 /*#endregion  MENU*/
-#external-overrides #settings-container .settings-section-title#label-wrapper label {
+#external-overrides #settings-container .settings-section-title.label-wrapper label {
   font-weight: bold;
 }
 #external-overrides #settings-container .rs-panel-body-collapse {
@@ -24150,7 +24154,7 @@ div:where(.swal2-container) {
   border-radius: 0 0 8px 8px;
   border-top: 0;
 }
-#external-overrides #settings-container #label-wrapper #medium-title {
+#external-overrides #settings-container .label-wrapper #medium-title {
   font-size: 18px;
 }
 #external-overrides #settings-container .back-button {
@@ -25350,7 +25354,7 @@ div:where(.swal2-container) {
   text-align: center;
   color: #7458ff;
 }
-#external-overrides #registration-container #onboarding #label-wrapper label#screen-2-label {
+#external-overrides #registration-container #onboarding .label-wrapper label#screen-2-label {
   font-size: 18px;
   color: #5e5e67;
 }
@@ -33897,7 +33901,7 @@ div:where(.swal2-container) {
 #external-overrides #app-container.dark #navbar #menu-items .menu-item.active:not(#add-new-button) {
   color: #4c6fff;
 }
-#external-overrides #app-container.dark #checkbox-group #checkboxes#checkboxes #label-wrapper label {
+#external-overrides #app-container.dark #checkbox-group #checkboxes#checkboxes .label-wrapper label {
   color: #dcdbe0;
 }
 #external-overrides #app-container.dark #checkbox-group #checkbox-container.flex span {
@@ -33917,7 +33921,7 @@ div:where(.swal2-container) {
   background: #4c6fff;
   border: unset;
 }
-#external-overrides #app-container.dark #share-with-checkbox-group #checkboxes#checkboxes #label-wrapper label {
+#external-overrides #app-container.dark #share-with-checkbox-group #checkboxes#checkboxes .label-wrapper label {
   color: #dcdbe0;
 }
 #external-overrides #app-container.dark #share-with-checkbox-group #share-with-checkbox-container.flex span {
@@ -33937,14 +33941,14 @@ div:where(.swal2-container) {
   background: #4c6fff;
   border: unset;
 }
-#external-overrides #app-container.dark #label-wrapper {
+#external-overrides #app-container.dark .label-wrapper {
   background: transparent;
 }
-#external-overrides #app-container.dark #label-wrapper label {
+#external-overrides #app-container.dark .label-wrapper label {
   color: #dcdbe0;
   background: transparent;
 }
-#external-overrides #app-container.dark #label-wrapper label .asterisk {
+#external-overrides #app-container.dark .label-wrapper label .asterisk {
   background: transparent;
 }
 #external-overrides #app-container.dark .input-field {
@@ -33953,14 +33957,14 @@ div:where(.swal2-container) {
 #external-overrides #app-container.dark .input-field * {
   background: unset;
 }
-#external-overrides #app-container.dark .input-field #label-wrapper {
+#external-overrides #app-container.dark .input-field .label-wrapper {
   background: transparent;
 }
-#external-overrides #app-container.dark .input-field #label-wrapper label {
+#external-overrides #app-container.dark .input-field .label-wrapper label {
   color: #dcdbe0;
   background: transparent;
 }
-#external-overrides #app-container.dark .input-field #label-wrapper label .asterisk {
+#external-overrides #app-container.dark .input-field .label-wrapper label .asterisk {
   background: transparent;
 }
 #external-overrides #app-container.dark .input-field input,

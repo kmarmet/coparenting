@@ -3,8 +3,8 @@ import React, {useContext, useEffect, useState} from 'react'
 import globalState from '../../context'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useUsers from '../../hooks/useUsers'
+import DropdownManager from '../../managers/dropdownManager'
 import Manager from '../../managers/manager'
-import SelectDropdownManager from '../../managers/selectDropdownManager'
 import SelectDropdown from './selectDropdown'
 
 export default function ShareWithDropdown({selectedValues = [], onSelection = (e) => {}}) {
@@ -19,7 +19,7 @@ export default function ShareWithDropdown({selectedValues = [], onSelection = (e
     const sharedDataUsers = currentUser?.sharedDataUsers
     const sharedDataUsersAccounts = users?.filter((x) => sharedDataUsers?.includes(x.key))
     let options = []
-    options = SelectDropdownManager.GetDefault.ShareWith(sharedDataUsersAccounts)
+    options = DropdownManager.GetDefault.ShareWith(sharedDataUsersAccounts)
     setDropdownOptions(options)
   }
 
@@ -32,7 +32,7 @@ export default function ShareWithDropdown({selectedValues = [], onSelection = (e
   useEffect(() => {
     if (Manager.IsValid(selectedValues)) {
       const accountsFromKeys = users?.filter((x) => selectedValues?.includes(x.key))
-      const _selected = SelectDropdownManager.GetSelected.ShareWith(accountsFromKeys)
+      const _selected = DropdownManager.GetSelected.ShareWith(accountsFromKeys)
       setSelected(_selected)
     }
   }, [selectedValues])

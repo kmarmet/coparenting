@@ -117,7 +117,7 @@ DatasetManager = {
 
   getUniqueByPropValue: (arr, propName) ->
     uniqueUsers = _.uniqBy(arr, propName);
-    uniqueUsers
+    return uniqueUsers
 
   getUniqueArrayFromMultiple: (arrOne, arrTwo) ->
     _.uniqBy(_.flattenDeep(arrOne, arrTwo))

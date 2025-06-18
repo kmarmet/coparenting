@@ -1,18 +1,19 @@
-import React from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import {FaDirections} from 'react-icons/fa'
 import {HiPhoneArrowUpRight} from 'react-icons/hi2'
 import {MdEmail, MdLaunch} from 'react-icons/md'
 import {RiUserSharedFill} from 'react-icons/ri'
+import globalState from '../../context'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
-import Spacer from './spacer'
+import Spacer from '../shared/spacer'
 
 const DetailBlock = ({
   text,
   title,
   titleIcon = '',
   valueToValidate,
-  classes = '',
+  classes = null,
   isFullWidth = false,
   isLink = false,
   isPhone = false,
@@ -26,12 +27,23 @@ const DetailBlock = ({
   topSpacerMargin = 0,
   bottomSpacerMargin = 0,
 }) => {
+  const {state, setState} = useContext(globalState)
+  const {theme, refreshKey, dateToEdit} = state
+  const [showContent, setShowContent] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (Manager.IsValid(valueToValidate?.toString(), true)) {
+      DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 80)
+    }
+  }, [valueToValidate])
+
   return (
     <>
-      {Manager.IsValid(valueToValidate?.toString()) && (
+      {Manager.IsValid(valueToValidate?.toString(), true) && (
         <div
           style={DomManager.AnimateDelayStyle(1, 0.2)}
-          className={`block ${classes} ${DomManager.Animate.FadeInUp(valueToValidate)} ${isFullWidth ? 'full-width' : ''}`}>
+          className={`block${Manager.IsValid(classes) ? ` ${classes}` : ''}${isFullWidth ? ' full-width' : ''}`}>
           {/* CUSTOM */}
           {isCustom && children}
 

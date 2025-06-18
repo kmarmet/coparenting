@@ -1,6 +1,6 @@
 // Path: src\components\fullMenu.jsx
 import {getAuth, signOut} from 'firebase/auth'
-import React, {useContext, useEffect} from 'react'
+import React, {useContext, useEffect, useRef} from 'react'
 import {AiOutlineLogout} from 'react-icons/ai'
 import {BsHouses, BsImages} from 'react-icons/bs'
 import {GrInstallOption, GrSettingsOption, GrUserAdmin} from 'react-icons/gr'
@@ -12,17 +12,17 @@ import {PiFiles, PiNotificationFill, PiSealQuestion, PiSwap, PiUsers, PiUsersThr
 import {RiAccountPinCircleLine, RiParentLine} from 'react-icons/ri'
 import {TbTransferIn} from 'react-icons/tb'
 import {useSwipeable} from 'react-swipeable'
+import NotificationBadge from '../components/shared/notificationBadge'
+import Overlay from '../components/shared/overlay'
+import feedbackEmotions from '../constants/feedbackEmotions'
 import ScreenNames from '../constants/screenNames'
 import globalState from '../context'
+import DB from '../database/DB'
 import useCurrentUser from '../hooks/useCurrentUser'
+import useFeedback from '../hooks/useFeedback'
 import DomManager from '../managers/domManager'
 import Manager from '../managers/manager'
-import NotificationBadge from '../components/shared/notificationBadge'
-import useFeedback from '../hooks/useFeedback'
-import feedbackEmotions from '../constants/feedbackEmotions'
-import DB from '../database/DB'
 import FeedbackEmotionsTracker from '../models/feedbackEmotionsTracker'
-import Overlay from '../components/shared/overlay'
 
 export default function FullMenu() {
   const {state, setState} = useContext(globalState)
@@ -30,6 +30,8 @@ export default function FullMenu() {
   const {currentUser} = useCurrentUser()
   const {feedback} = useFeedback()
   const auth = getAuth()
+  const ref = useRef(null)
+
   const handlers = useSwipeable({
     swipeDuration: 300,
     preventScrollOnSwipe: true,
@@ -356,10 +358,10 @@ export default function FullMenu() {
 
                 {/* FEEDBACK WRAPPER */}
                 <div id="feedback-wrapper">
-                  <p id="feedback-title">How is the app performing today?</p>
+                  <p id="feedback-title">How do you feel about the app today?</p>
                   <p id="feedback-subtitle">
-                    {DomManager.tapOrClick(true)} an emoji to convey how you feel at the moment. You may do this as frequently as you like; the
-                    numbers reflect the total feedback received from all users.
+                    {DomManager.tapOrClick(true)} an emoji to convey how you feel at the moment. Feel free to do this as often as you wish; the
+                    figures show the overall feedback you've provided since you began using our app.
                   </p>
                   <div id="icon-and-label-wrapper">
                     <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.unhappy)}>

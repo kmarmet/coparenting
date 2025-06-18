@@ -652,10 +652,10 @@
   background: #5c8df7;
   border: unset;
 }
-#external-overrides #app-container.dark #label-wrapper label {
+#external-overrides #app-container.dark .label-wrapper label {
   color: white;
 }
-#external-overrides #app-container.dark #label-wrapper label#medium-title {
+#external-overrides #app-container.dark .label-wrapper label#medium-title {
   color: #ffcb6b;
 }
 #external-overrides #app-container.dark #input-wrapper input,

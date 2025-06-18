@@ -103,6 +103,29 @@ ObjectManager = {
     }
     return void 0;
   },
+  CleanObject: function(obj) {
+    if (Array.isArray(obj)) {
+      if (!Manager.IsValid(obj)) {
+        return;
+      }
+      return obj.map(ObjectManager.CleanObject).filter(function(item) {
+        return item !== void 0;
+      });
+    } else if (obj !== null && typeof obj === 'object') {
+      return Object.entries(obj).reduce(function(acc, [key, value]) {
+        var cleaned;
+        cleaned = ObjectManager.CleanObject(value);
+        if (cleaned !== void 0) {
+          acc[key] = cleaned;
+        }
+        return acc;
+      }, {});
+    } else if (obj !== void 0 && obj !== null && obj !== "") {
+      return obj;
+    }
+    // Return undefined to signal deletion
+    return void 0;
+  },
   GetValidObject: function(obj) {
     return Object.fromEntries(Object.entries(obj).filter(function([_, value]) {
       return Manager.IsValid(value);
@@ -136,7 +159,7 @@ ObjectManager = {
         return Object.keys(new User());
       case ModelNames.coparent:
         return Object.keys(new Coparent());
-      case ModelNames.chatThread:
+      case ModelNames.chat:
         return Object.keys(new ChatThread());
       case ModelNames.chatMessage:
         return Object.keys(new ChatMessage());
@@ -162,13 +185,11 @@ ObjectManager = {
         return new TransferChangeRequest();
       case ModelNames.swapRequest:
         return new SwapRequest();
-      case ModelNames.inputSuggestion:
-        return new InputSuggestion();
       case ModelNames.user:
         return new User();
       case ModelNames.coparent:
         return new Coparent();
-      case ModelNames.chatThread:
+      case ModelNames.chat:
         return new ChatThread();
       case ModelNames.chatMessage:
         return new ChatMessage();

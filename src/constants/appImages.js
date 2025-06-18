@@ -8,7 +8,15 @@ AppImages = {
     onboarding: 'onboarding'
   },
   misc: {
-    brokenImagePlaceholder: 'broken-image-placeholder'
+    brokenImagePlaceholder: 'broken-image-placeholder',
+    safari: {
+      name: 'safari',
+      url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fmisc%2Fsafari.png?alt=media&token=aa3e9550-3beb-4d44-862d-79d90ab45338"
+    },
+    desktopInstallation: {
+      name: 'desktopInstallation',
+      url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fmisc%2FDesktopInstallation.png?alt=media&token=303f9520-5313-4f06-8485-ef8b17d80767"
+    }
   },
   landing: {
     calendar: {

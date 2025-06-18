@@ -1,8 +1,10 @@
 import Manager from "./manager"
 import StringManager from "./stringManager"
 import CalMapper from "../mappers/calMapper"
+import CalendarMapper from "../mappers/calMapper"
+import DatasetManager from "./datasetManager"
 
-SelectDropdownManager =
+DropdownManager =
   GetReadableReminderTimes: (reminderTimes) ->
     readableTimes = []
     if Manager.IsValid(reminderTimes)
@@ -10,6 +12,23 @@ SelectDropdownManager =
         if Manager.IsValid(time, true)
           readableTimes.push(CalMapper.GetShortenedReadableReminderTime(time))
     return readableTimes
+
+  MappedForDatabase:
+    RemindersFromArray: (times) ->
+      formatted = []
+      if Manager.IsValid(times)
+        for time in times
+          formatted.push(CalendarMapper.GetReminderTimes(time?.value))
+
+      return DatasetManager.GetValidArray(formatted,true)
+
+    ChildrenFromArray: (times) ->
+      formatted = []
+      if Manager.IsValid(times)
+        for time in times
+          formatted.push(time?.label)
+
+      return DatasetManager.GetValidArray(formatted,true)
 
   GetSelected:
     Reminders: (reminders) ->
@@ -94,4 +113,4 @@ SelectDropdownManager =
 
        return options
 
-export default SelectDropdownManager
+export default DropdownManager

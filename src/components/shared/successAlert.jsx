@@ -29,10 +29,14 @@ const SuccessAlert = () => {
   }, [successAlertMessage])
 
   return (
-    <div id="success-alert-wrapper" onClick={Dismiss} className={`success-alert`}>
-      <p className="success-alert-text">{successAlertMessage}</p>
-      <IoClose className={'alert-close-icon'} />
-    </div>
+    <>
+      {Manager.IsValid(successAlertMessage, true) && (
+        <div id="success-alert-wrapper" onClick={Dismiss} className={`success-alert`}>
+          <p className="success-alert-text">{successAlertMessage}</p>
+          <IoClose className={'alert-close-icon'} />
+        </div>
+      )}
+    </>
   )
 }
 

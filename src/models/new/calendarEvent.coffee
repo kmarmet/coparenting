@@ -4,36 +4,39 @@ class CalendarEvent
   constructor: (options = {}) ->
   # STRINGS
     @id = Manager.GetUid()
-    @multipleDatesId = options.multipleDatesId ? ''
-    @websiteUrl = options.websiteUrl ? ''
-    @notes = options.notes ? ''
-    @endDate = options.endDate ? ''
-    @startDate = options.startDate ? ''
-    @staticStartDate = options.staticStartDate ? ''
-    @startTime = options.startTime ? ''
-    @ownerKey = options.ownerKey ? ''
-    @address = options.address ? ''
-    @title = options.title ? ''
-    @phone = options.phone ? ''
-    @createdBy = options.createdBy ? ''
-    @directionsLink = options.directionsLink ? ''
-    @endTime = options.endTime ? ''
-    @recurringInterval = options.recurringInterval ? ''
-    @visitationPeriodEndDate = options.visitationPeriodEndDate ? ''
-    @holidayName = options.holidayName ? ''
-    @visitationSchedule = options.visitationSchedule ? ''
+    @multipleDatesId = options?.multipleDatesId ? ''
+    @websiteUrl = options?.websiteUrl ? ''
+    @notes = options?.notes ? ''
+    @endDate = options?.endDate ? ''
+    @startDate = options?.startDate ? ''
+    @staticStartDate = options?.staticStartDate ? ''
+    @startTime = options?.startTime ? ''
+    @address = options?.address ? ''
+    @title = options?.title ? ''
+    @phone = options?.phone ? ''
+    @directionsLink = options?.directionsLink ? ''
+    @endTime = options?.endTime ? ''
+    @recurringInterval = options?.recurringInterval ? ''
+    @visitationPeriodEndDate = options?.visitationPeriodEndDate ? ''
+    @holidayName = options?.holidayName ? ''
+    @visitationSchedule = options?.visitationSchedule ? ''
+
+  # OWNER
+    @owner =
+      name: options?.owner?.name ? ''
+      key: options?.owner?.key ? ''
 
   # ARRAYS
-    @GetReminderTimes = options.GetReminderTimes ? []
-    @shareWith = options.shareWith ? []
-    @children = options.children ? []
-    @sentReminders = options.sentReminders ? []
+    @reminderTimes = options?.reminderTimes ? []
+    @shareWith = options?.shareWith ? []
+    @children = options?.children ? []
+    @sentReminders = options?.sentReminders ? []
 
   # BOOLEANS
-    @fromVisitationSchedule = false
-    @isHoliday = false
-    @isRecurring = false
-    @isCloned = false
-    @isDateRange = false
+    @fromVisitationSchedule = options?.fromVisitationSchedule ? false
+    @isHoliday = options?.isHoliday ? false
+    @isRecurring = options?.isRecurring ? false
+    @isCloned = options?.isCloned ? false
+    @isDateRange = options?.isDateRange ? false
 
 export default CalendarEvent

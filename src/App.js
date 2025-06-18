@@ -8,7 +8,6 @@ import {initializeApp} from 'firebase/app'
 import {getAuth, onAuthStateChanged} from 'firebase/auth'
 import moment from 'moment'
 import React, {useEffect, useState} from 'react'
-
 import EditCalEvent from './components/forms/editCalEvent.jsx'
 import NewCalendarEvent from './components/forms/newCalendarEvent.jsx'
 import NewExpenseForm from './components/forms/newExpenseForm.jsx'
@@ -47,7 +46,6 @@ import Visitation from './components/screens/visitation.jsx'
 import BrandBar from './components/shared/brandBar'
 import CreationMenu from './components/shared/creationMenu'
 import DesktopLeftSidebar from './components/shared/desktopLeftSidebar'
-import Loading from './components/shared/loading'
 import SuccessAlert from './components/shared/successAlert'
 import CreationForms from './constants/creationForms'
 import DatetimeFormats from './constants/datetimeFormats'
@@ -106,7 +104,7 @@ export default function App() {
   })
 
   // State to include in App.js
-  const {isLoading, currentScreen, loadingText, currentUser, theme, authUser, creationFormToShow} = state
+  const {isLoading, currentScreen, loadingText, currentUser, theme, authUser, creationFormToShow, successAlertMessage} = state
 
   // ON PAGE LOAD
   useEffect(() => {
@@ -216,15 +214,27 @@ export default function App() {
     LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
   }, [])
 
+  // Refresh on error resolution in development
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      // const interval = setInterval(() => {
+      //   fetch(window.location.href)
+      //     .then(() => {
+      //       window.location.reload()
+      //     })
+      //     .catch(() => {}) // still broken
+      // }, 3000) // check every 3s
+      // return () => clearInterval(interval)
+    }
+  }, [])
+
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <div className={`App ${theme}`} id="app-container">
-        {/* LOADING */}
-        <Loading isLoading={isLoading} theme={currentUser?.settings?.theme} />
-
         <globalState.Provider value={stateToUpdate}>
           {/* SUCCESS ALERT */}
           <SuccessAlert />
+
           {/* FULL MENU */}
           <FullMenu />
 

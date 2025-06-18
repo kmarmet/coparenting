@@ -1,6 +1,6 @@
 // Path: src\components\shared\map.jsx
 import {GoogleMap, MarkerF, useJsApiLoader} from '@react-google-maps/api'
-import React, {useCallback, useContext, useEffect, useState} from 'react'
+import React, {useCallback, useContext, useEffect, useRef, useState} from 'react'
 import {fromAddress, setKey} from 'react-geocode'
 import globalState from '../../context.js'
 import Manager from '../../managers/manager.js'
@@ -10,6 +10,7 @@ export default function Map({locationString}) {
   const {theme, refreshKey} = state
   const [map, setMap] = useState(null)
   const [mapCenter, setMapCenter] = useState(null)
+  const mapRef = useRef(null)
 
   let zoom = 15
 
@@ -74,6 +75,7 @@ export default function Map({locationString}) {
   return isLoaded ? (
     <div key={refreshKey}>
       <GoogleMap
+        ref={mapRef}
         // options={{ mapTypeControl: false, streetViewControl: false }}
         mapContainerStyle={mapStyle}
         center={mapCenter}

@@ -86,6 +86,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
     if (clickedEvent?.ownerKey !== currentUser?.key && clickedEvent?.fromVisitationSchedule) {
       return false
     }
+    // setState({...state, refreshKey: Manager.GetUid()})
     setTimeout(() => {
       setState({...state, dateToEdit: clickedEvent.startDate})
     }, 500)

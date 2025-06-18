@@ -39,7 +39,7 @@ export default function Form({
 
       if (form) {
         setTimeout(() => {
-          const labelWrappers = form.querySelectorAll('#label-wrapper')
+          const labelWrappers = form.querySelectorAll('.label-wrapper')
           if (Manager.IsValid(labelWrappers)) {
             labelWrappers.forEach((label) => {
               label.classList.remove('active')
@@ -59,14 +59,15 @@ export default function Form({
     let activeForm = document.querySelector(`.${wrapperClass}.form-wrapper.active`)
 
     if (showCard) {
+      // setState({...state, refreshKey: Manager.GetUid()})
       const allActiveFadeInUp = document.querySelectorAll('.animate__animated.animate__fadeInUp')
 
       // Add block animation
-      if (Manager.IsValid(allActiveFadeInUp)) {
-        setTimeout(() => {
-          DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
-        }, 300)
-      }
+      // if (Manager.IsValid(allActiveFadeInUp)) {
+      //   setTimeout(() => {
+      //     DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
+      //   }, 300)
+      // }
 
       // Focus first input
       if (Manager.IsValid(activeForm)) {
