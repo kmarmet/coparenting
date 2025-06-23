@@ -102,7 +102,7 @@ const Chats = () => {
       {chats?.length === 0 && <NoDataFallbackText text={'There are currently no conversations'} />}
 
       {/* PAGE CONTAINER */}
-      <div id="chats-container" className={`${theme} page-container `}>
+      <div id="chats-container" className={`${theme} chats page-container`}>
         <ScreenHeader
           screenName={ScreenNames.chats}
           title={'Chats'}

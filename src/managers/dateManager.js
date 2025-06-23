@@ -84,14 +84,18 @@ const DateManager = {
       return DatetimeFormats.jsDate
     }
   },
-  getValidDate: (date) => {
+  GetValidDate: (date, outputFormat = DatetimeFormats.dateForDb) => {
+    if (typeof date === 'string' && !Manager.IsValid(date, true)) {
+      return ''
+    }
     if (!Manager.IsValid(date)) {
-      return null
+      return ''
     }
     const format = DateManager.getMomentFormat(date)
-    const asMoment = moment(date, format).format(DatetimeFormats.dateForDb)
+    console.log(format)
+    const asMoment = moment(date, format).format(outputFormat)
     if (Manager.Contains(asMoment, 'Invalid')) {
-      return null
+      return ''
     }
     console.log(asMoment)
     return asMoment

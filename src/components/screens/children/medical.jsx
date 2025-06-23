@@ -114,7 +114,7 @@ export default function Medical({activeChild}) {
           <div className="gradient padding">
             {Manager.IsValid(medicalValues) &&
               medicalValues.map((prop, index) => {
-                const infoLabel = StringManager.spaceBetweenWords(prop[0])
+                const infoLabel = StringManager.SpaceBetweenWords(prop[0])
                 const value = prop[1]
 
                 return (

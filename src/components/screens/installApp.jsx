@@ -49,7 +49,7 @@ export default function InstallApp() {
           <Spacer height={10} />
 
           <div className="screen-content">
-            <img src={require('../../img/logo.png')} alt="" />
+            <LazyImage classes={'logo'} imgName={AppImages.landing.logo.name} alt="Peaceful Co-Parenting" />
             {Manager.IsValid(operatingSystem) && (
               <p className="screen-intro-text">
                 The operating system of the device you are currently on appears to be&nbsp;

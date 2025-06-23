@@ -366,6 +366,12 @@
                 color: $darkerGrey !important;
                 font-weight: $fwLight !important;
               }
+
+              &.white {
+                label {
+                  color: white !important;
+                }
+              }
             }
 
             button {

@@ -117,11 +117,11 @@ const NewParentForm = ({showCard, hideCard}) => {
       title={`Add ${Manager.IsValid(name, true) ? StringManager.UppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} to Your Profile`}
       wrapperClass="new-parent-card"
       showCard={showCard}
-      onClose={ResetForm}>
+      onClose={() => ResetForm()}>
       <div className="new-parent-wrapper">
         <Spacer height={5} />
-        <div id="new-parent-container" className={`${theme} form`}>
-          <div className="form new-parent-form">
+        <div id="new-parent-container" className={`${theme}`}>
+          <div className="new-parent-form">
             <InputField inputType={InputTypes.text} required={true} placeholder={'Name'} onChange={(e) => setName(e.target.value)} />
             <InputField
               inputType={InputTypes.email}

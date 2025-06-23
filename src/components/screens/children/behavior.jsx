@@ -108,7 +108,7 @@ export default function Behavior({activeChild}) {
           <div className="gradient padding">
             {behaviorValues &&
               behaviorValues.map((prop, index) => {
-                let infoLabel = StringManager.spaceBetweenWords(prop[0])
+                let infoLabel = StringManager.SpaceBetweenWords(prop[0])
                 infoLabel = StringManager.UppercaseFirstLetterOfAllWords(infoLabel).replaceAll('OF', ' of ')
                 const value = prop[1]
                 return (

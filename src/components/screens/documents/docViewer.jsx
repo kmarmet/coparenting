@@ -464,7 +464,7 @@ export default function DocViewer() {
       {/* SEARCH CARD */}
       <Form
         wrapperClass="doc-search-card"
-        className="form search-card"
+        className="search-card"
         submitText={'Find Text'}
         showCard={showSearch}
         title={'Search'}

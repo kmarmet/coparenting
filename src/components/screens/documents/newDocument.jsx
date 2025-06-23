@@ -213,7 +213,7 @@ export default function NewDocument() {
       submitText={'Upload'}
       showCard={creationFormToShow === CreationForms.documents}
       title={'Upload Document'}
-      onClose={ResetForm}>
+      onClose={() => ResetForm()}>
       <div className="upload-doc-wrapper">
         <Spacer height={5} />
         {/* PAGE CONTAINER */}

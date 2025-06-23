@@ -194,7 +194,7 @@ export default function SwapRequests() {
           setActiveRequest(null)
           await ResetForm()
         }}
-        viewSelector={<ViewDropdown views={['details', 'edit']} visibleviews={['details']} updateState={(e) => setView(e.toLowerCase())} />}
+        viewDropdown={<ViewDropdown views={['details', 'edit']} visibleviews={['details']} onSelect={(e) => setView(e.toLowerCase())} />}
         showCard={showDetails}>
         {/* DETAILS */}
         {view === 'details' && (

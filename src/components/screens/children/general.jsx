@@ -1,8 +1,4 @@
 // Path: src\components\screens\childInfo\general.jsx
-import InputField from '../../shared/inputField'
-import DB from '../../../database/DB'
-import Manager from '../../../managers/manager'
-import StringManager from '../../../managers/stringManager.coffee'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -12,10 +8,14 @@ import {FaMinus, FaPlus} from 'react-icons/fa6'
 import {PiIdentificationCardFill} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
+import DB from '../../../database/DB'
 import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useSharedChildInfo from '../../../hooks/useSharedChildInfo'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager.coffee'
 import AddressInput from '../../shared/addressInput'
+import InputField from '../../shared/inputField'
 
 function General({activeChild}) {
   const {state, setState} = useContext(globalState)
@@ -95,7 +95,7 @@ function General({activeChild}) {
             <div className="gradient padding">
               {Manager.IsValid(generalValues) &&
                 generalValues.map((prop, index) => {
-                  let infoLabel = StringManager.spaceBetweenWords(prop[0])
+                  let infoLabel = StringManager.SpaceBetweenWords(prop[0])
                   const value = prop[1]
                   return (
                     <div
@@ -103,6 +103,7 @@ function General({activeChild}) {
                       className={`data-row ${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''} ${index === generalValues.length - 1 ? 'last' : ''}`}>
                       {Manager.Contains(infoLabel.toLowerCase(), 'address') && (
                         <AddressInput
+                          showAddressTypeSelector={false}
                           labelText="Home Address"
                           onChange={(address) => Update(infoLabel, address)}
                           defaultValue={activeChild?.general?.address}

@@ -68,9 +68,9 @@ const Contacts = () => {
       groupType = 'parents'
     }
 
-    // Coparents
+    // Co-parents
     else if (currentUser?.accountType === 'parent' && GetAccountType() === 'parent') {
-      userIndex = DB.GetTableIndexById(coparents, activeContact?.id)
+      userIndex = DB.GetTableIndexById(coParents, activeContact?.id)
       groupType = 'coparents'
     }
 
@@ -90,13 +90,13 @@ const Contacts = () => {
       `I'm Sure`,
       true,
       async () => {
-        // Remove coparent
+        // Remove co-parent
         if (currentUser?.accountType === 'parent' && activeContact?.accountType === 'parent') {
           let toRemove = coParents?.find((x) => x.id === activeContact?.id)
 
           if (Manager.IsValid(toRemove)) {
-            const coparentIndex = DB.GetTableIndexById(coparents, activeContact?.id)
-            await DB_UserScoped.DeleteCoparent(currentUser, coparentIndex, toRemove?.userKey)
+            const coParentIndex = DB.GetTableIndexById(coParents, activeContact?.id)
+            await DB_UserScoped.DeleteCoparent(currentUser, coParentIndex, toRemove?.userKey)
           }
         }
 
@@ -228,13 +228,13 @@ const Contacts = () => {
         onDelete={RemoveContact}
         deleteButtonText={`Remove`}
         submitText={'Update'}
-        viewSelector={
+        viewDropdown={
           <ViewDropdown
             show={showModal}
             key={refreshKey}
             dropdownPlaceholder="Details"
             views={['Details', 'Edit']}
-            updateState={(labelText) => {
+            onSelect={(labelText) => {
               setView(labelText)
             }}
           />
@@ -456,10 +456,10 @@ const Contacts = () => {
           {/* CO-PARENTS */}
           {currentUser?.accountType === 'parent' && (
             <div id="contacts-wrapper">
-              <Label classes={'black toggle always-show'} text={'COPARENTS'} />
+              <Label classes={'black toggle always-show'} text={'CO-PARENTS'} />
               <Spacer height={3} />
-              {Manager.IsValid(coparents) &&
-                coparents.map((contact, index) => {
+              {Manager.IsValid(coParents) &&
+                coParents.map((contact, index) => {
                   return (
                     <div
                       onClick={() => {

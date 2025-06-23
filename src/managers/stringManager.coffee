@@ -137,8 +137,8 @@ StringManager = {
   formatFileName: (fileName) ->
     fileName.replaceAll(' ', '-').replaceAll('(', '').replaceAll(')', '')
 
-  spaceBetweenWords: (input) ->
-    input.toString().replace(/([a-z])([A-Z])/g, '$1 $2')
+  SpaceBetweenWords: (input) ->
+    return input.toString().replace(/([a-z])([A-Z])/g, '$1 $2')
 
   addLongTextClass: (text) ->
      if StringManager.GetWordCount(text) > 10
@@ -191,8 +191,8 @@ StringManager = {
     str = str.replace(/([a-z])([A-Z])/, '$1 $2')
     return str
 
-  getFirstWord: (input) ->
-    input.toString().replace(/ .*/, '')
+  GetFirstWord: (input) ->
+    return input.toString().replace(/ .*/, '')
 
   UppercaseFirstLetterOfAllWords: (input) ->
     if !Manager.IsValid(input, true)

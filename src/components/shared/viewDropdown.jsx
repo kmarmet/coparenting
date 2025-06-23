@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import ViewTypes from '../../constants/views'
 import SelectDropdown from './selectDropdown'
 
@@ -6,23 +6,24 @@ export default function ViewDropdown({
   selectedView = ViewTypes.DetailsEdit.Details,
   views = ViewTypes.DetailsEdit.All,
   dropdownPlaceholder = '',
-  isMultiple = false,
-  updateState = (e) => {},
+  onSelect = (e) => {},
   wrapperClasses = '',
   show = false,
 }) {
+  useEffect(() => {
+    onSelect(selectedView)
+  }, [selectedView])
+
   return (
     <div className={`${wrapperClasses} views-dropdown`}>
       <SelectDropdown
         options={views}
         wrapperClasses={`${wrapperClasses}`}
         value={selectedView}
-        isMultiple={isMultiple}
+        selectMultiple={false}
         className={wrapperClasses}
         placeholder={dropdownPlaceholder}
-        onSelection={(e) => {
-          updateState(e.label)
-        }}
+        onSelect={(e) => onSelect(e)}
         show={show}
       />
     </div>

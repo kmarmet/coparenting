@@ -127,11 +127,11 @@ export default function TransferRequests() {
 
   const CheckIn = async () => {
     setShowDetails(false)
-    let notificationMessage = `${StringManager.getFirstWord(StringManager.UppercaseFirstLetterOfAllWords(currentUser?.name))} at ${
+    let notificationMessage = `${StringManager.GetFirstWord(StringManager.UppercaseFirstLetterOfAllWords(currentUser?.name))} at ${
       activeRequest?.address
     }`
     if (!sendWithAddress) {
-      notificationMessage = `${StringManager.getFirstWord(StringManager.UppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
+      notificationMessage = `${StringManager.GetFirstWord(StringManager.UppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
     }
     const recipient = coParents?.find((x) => x.key === activeRequest?.recipient?.key)
 
@@ -143,7 +143,7 @@ export default function TransferRequests() {
     if (key === currentUser?.key) {
       return 'Me'
     } else {
-      returncoParents?.find((c) => c.userKey === key)?.name
+      return coParents?.find((c) => c.userKey === key)?.name
     }
   }
 
@@ -183,8 +183,8 @@ export default function TransferRequests() {
         hasDelete={activeRequest?.ownerKey === currentUser?.key && view === 'edit'}
         hasSubmitButton={activeRequest?.ownerKey !== currentUser?.key}
         onSubmit={() => SelectDecision(Decisions.approved)}
-        wrapperClass="transfer-change form at-top"
-        viewSelector={<ViewDropdown dropdownPlaceholder="Details" views={['Details', 'Edit']} updateState={(e) => setView(e)} />}
+        wrapperClass="transfer-change at-top"
+        viewDropdown={<ViewDropdown dropdownPlaceholder="Details" views={['Details', 'Edit']} onSelect={(e) => setView(e)} />}
         thirdButtonText="Decline"
         className="transfer-change"
         extraButtons={[
@@ -214,7 +214,7 @@ export default function TransferRequests() {
           />,
         ]}
         hasThirdButton={true}
-        onClose={ResetForm}
+        onClose={() => ResetForm()}
         showCard={showDetails}>
         <div className={` details content ${activeRequest?.requestReason?.length > 20 ? 'long-text' : ''}`}>
           {view.toLowerCase() === 'details' && (

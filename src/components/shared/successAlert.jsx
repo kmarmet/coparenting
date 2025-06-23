@@ -10,10 +10,13 @@ const SuccessAlert = () => {
 
   const Dismiss = () => {
     const successAlertWrapper = document.querySelector('#success-alert-wrapper')
-    successAlertWrapper.classList.remove('animate__fadeInDown')
-    successAlertWrapper.classList.remove('animate__fadeInUp')
-    successAlertWrapper.classList.add('animate__fadeOutUp')
-    setState({...state, successAlertMessage: null})
+
+    if (Manager.IsValid(successAlertWrapper)) {
+      successAlertWrapper.classList.remove('animate__fadeInDown')
+      successAlertWrapper.classList.remove('animate__fadeInUp')
+      successAlertWrapper.classList.add('animate__fadeOutUp')
+      setState({...state, successAlertMessage: null})
+    }
   }
 
   useEffect(() => {

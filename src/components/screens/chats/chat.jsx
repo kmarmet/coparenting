@@ -290,7 +290,7 @@ const Chat = ({show, hide, recipient}) => {
     <>
       <Form
         title={'Search'}
-        className="form conversation-search-card"
+        className="conversation-search-card"
         wrapperClass="conversation-search"
         submitText={'Search'}
         submitIcon={<TbMessageCircleSearch />}

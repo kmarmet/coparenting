@@ -7,7 +7,7 @@ import DropdownManager from '../../managers/dropdownManager'
 import Manager from '../../managers/manager'
 import SelectDropdown from './selectDropdown'
 
-export default function ShareWithDropdown({selectedValues = [], onSelection = (e) => {}}) {
+export default function ShareWithDropdown({selectedValues = [], onSelect = (e) => {}}) {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
   const {currentUser, currentUserIsLoading} = useCurrentUser()
@@ -33,7 +33,6 @@ export default function ShareWithDropdown({selectedValues = [], onSelection = (e
     if (Manager.IsValid(selectedValues) && Manager.IsValid(users)) {
       const accountsFromKeys = users?.filter((x) => selectedValues?.includes(x.key))
       const _selected = DropdownManager.GetSelected.ShareWithFromKeys(selectedValues, accountsFromKeys)
-      console.log('Selected Values', _selected)
       setSelected(_selected)
     }
   }, [selectedValues, users])
@@ -43,9 +42,10 @@ export default function ShareWithDropdown({selectedValues = [], onSelection = (e
       placeholder="Select Contacts to Share With"
       wrapperClasses="share-with-select-dropdown"
       isMultiple={true}
-      onSelection={(e) => {
+      onSelect={(e) => {
+        console.log(e)
         setSelected(e)
-        onSelection(e)
+        onSelect(e)
       }}
       value={selected}
       options={dropdownOptions}

@@ -1,34 +1,34 @@
 // Path: src\components\screens\childInfo\childInfo.jsx
-import NavBar from '../../navBar'
-import Behavior from '../../screens/children/behavior'
-import General from '../../screens/children/general'
-import Medical from '../../screens/children/medical'
-import NewChildForm from '../../screens/children/newChildForm'
-import Schooling from '../../screens/children/schooling'
-import NoDataFallbackText from '../../shared/noDataFallbackText'
-import Storage from '../../../database/storage'
-import AlertManager from '../../../managers/alertManager'
-import DomManager from '../../../managers/domManager'
-import Manager from '../../../managers/manager'
-import StringManager from '../../../managers/stringManager'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import {PiCameraRotateFill, PiListChecksFill} from 'react-icons/pi'
 import globalState from '../../../context'
+import DB from '../../../database/DB'
 import DB_UserScoped from '../../../database/db_userScoped'
+import Storage from '../../../database/storage'
 import useActiveChild from '../../../hooks/useActiveChild'
 import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import AlertManager from '../../../managers/alertManager'
+import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
+import StringManager from '../../../managers/stringManager'
+import NavBar from '../../navBar'
+import Behavior from '../../screens/children/behavior'
+import General from '../../screens/children/general'
+import Medical from '../../screens/children/medical'
+import NewChildForm from '../../screens/children/newChildForm'
+import Schooling from '../../screens/children/schooling'
 import CustomChildInfo from '../../shared/customChildInfo'
+import NoDataFallbackText from '../../shared/noDataFallbackText'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 import AddOrUpdateTransferChecklists from './addOrUpdateTransferChecklists'
 import Checklist from './checklist'
 import Checklists from './checklists'
-import DB from '../../../database/DB'
 
 export default function Children() {
   const {state, setState} = useContext(globalState)
@@ -41,7 +41,7 @@ export default function Children() {
   const [showChecklistsCard, setShowChecklistsCard] = useState(false)
   const [activeChildId, setActiveChildId] = useState(currentUser?.children?.[0]?.id)
   const {activeChild} = useActiveChild(activeChildId)
-  const imgRef = useRef()
+  const imgRef = useRef(null)
 
   const UploadProfilePic = async (fromButton = false) => {
     const uploadIcon = document.querySelector(`[data-id="${activeChild?.id}" ]`)

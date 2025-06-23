@@ -1,8 +1,8 @@
 import React, {useContext, useEffect} from 'react'
+import {IoClose} from 'react-icons/io5'
 import {useSwipeable} from 'react-swipeable'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager'
-import Overlay from './overlay'
 import Spacer from './spacer'
 
 const ScreenActionsMenu = ({children, centeredActionItem, title = 'Parent'}) => {
@@ -18,39 +18,26 @@ const ScreenActionsMenu = ({children, centeredActionItem, title = 'Parent'}) => 
   })
 
   useEffect(() => {
-    const pageContainer = document.querySelector('.page-container')
-
-    if (showScreenActions) {
-      DomManager.ToggleAnimation('add', 'action-item', DomManager.AnimateClasses.names.fadeInUp, 30)
-    } else {
-      DomManager.ToggleAnimation('remove', 'action-item', DomManager.AnimateClasses.names.fadeInUp, 50)
-    }
-
-    if (pageContainer) {
-      if (showScreenActions) {
-        pageContainer.classList.add('disable-scroll')
-      } else {
-        pageContainer.classList.remove('disable-scroll')
-      }
-    }
+    DomManager.ToggleDisableScrollClass(showScreenActions ? 'disable-scroll' : '')
   }, [showScreenActions])
 
   return (
-    <Overlay show={showScreenActions}>
-      <div className="slide-up-card-wrapper">
-        <div className="swipe-bar"></div>
-        <div
-          {...handlers}
-          style={DomManager.AnimateDelayStyle(1, 0.1)}
-          className={`bottom-menu-wrapper screen-actions ${DomManager.Animate.FadeInUp(showScreenActions, '.fade-up-wrapper')}`}>
-          <div className={centeredActionItem ? 'centered action-items' : 'action-items'}>
-            <p className="slide-up-header">{title}</p>
-            <Spacer height={10} />
-            {children}
+    <div className={`screen-actions-menu-wrapper${showScreenActions ? ' active' : ''}`}>
+      {showScreenActions && <IoClose className="close-overlay-icon" onClick={() => setState({...state, showScreenActions: false})} />}
+      <div className={'screen-actions-menu-overlay'}>
+        <div className={'screen-actions-card-wrapper'}>
+          <div {...handlers} className={`screen-actions-card`}>
+            <div className="swipe-bar"></div>
+            <Spacer height={3} />
+            <div className={centeredActionItem ? 'centered action-items' : 'action-items'}>
+              <p className="screen-actions-menu-title">{title}</p>
+              <Spacer height={10} />
+              {children}
+            </div>
           </div>
         </div>
       </div>
-    </Overlay>
+    </div>
   )
 }
 

@@ -14,8 +14,10 @@ import DatetimeFormats from '../../constants/datetimeFormats'
 import EventLengths from '../../constants/eventLengths'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
+import DB_UserScoped from '../../database/db_userScoped'
 import useChildren from '../../hooks/useChildren'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
 import CalendarManager from '../../managers/calendarManager'
 import DatasetManager from '../../managers/datasetManager'
@@ -29,12 +31,12 @@ import UpdateManager from '../../managers/updateManager'
 import CalendarEvent from '../../models/new/calendarEvent'
 import AddressInput from '../shared/addressInput'
 import Button from '../shared/button'
+import CheckboxGroup from '../shared/checkboxGroup'
 import Form from '../shared/form'
 import InputField from '../shared/inputField'
 import Label from '../shared/label'
 import MyConfetti from '../shared/myConfetti.js'
 import SelectDropdown from '../shared/selectDropdown'
-import ShareWithDropdown from '../shared/shareWithDropdown'
 import Spacer from '../shared/spacer.jsx'
 import ToggleButton from '../shared/toggleButton'
 import ViewDropdown from '../shared/viewDropdown'
@@ -48,43 +50,44 @@ export default function NewCalendarEvent() {
   const [eventLength, setEventLength] = useState(EventLengths.single)
   const [recurringFrequency, setRecurringFrequency] = useState('')
   const [clonedDates, setClonedDates] = useState([])
-  const [eventChildren, setEventChildren] = useState([])
-  const [eventReminderTimes, setEventReminderTimes] = useState([])
   const [eventIsRecurring, setEventIsRecurring] = useState(false)
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
   const [eventIsCloned, setEventIsCloned] = useState(false)
   const {currentUser} = useCurrentUser()
+  const {users} = useUsers()
   const {children, childrenDropdownOptions} = useChildren()
 
   // COMPONENT STATE
   const [showCloneInput, setShowCloneInput] = useState(false)
   const [showReminders, setShowReminders] = useState(false)
-  const [includeChildren, setIncludeChildren] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
   const [dynamicInputs, setDynamicInputs] = useState([])
-  const [remindersDropdownSelections, setRemindersDropdownSelections] = useState([])
-  const [childrenDropdownSelections, setChildrenDropdownSelections] = useState([])
+  const [view, setView] = useState({label: 'Single Day', value: 'Single Day'})
 
+  // DROPDOWN STATE
+  const [selectedReminderOptions, setSelectedReminderOptions] = useState([])
+  const [selectedChildrenOptions, setSelectedChildrenOptions] = useState([])
+  const [selectedShareWithOptions, setSelectedShareWithOptions] = useState(DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users))
+  const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
   // REF
-  const newEvent = useRef({...new CalendarEvent({startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)})})
+  const formRef = useRef({...new CalendarEvent({startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)})})
 
   const ResetForm = async (showSuccessAlert = false) => {
     setEventLength(EventLengths.single)
-    setClonedDates([])
-    setEventChildren([])
-    setEventReminderTimes([])
     setEventIsDateRange(false)
     setEventIsRecurring(false)
     setShowCloneInput(false)
     setShowReminders(false)
-    setIncludeChildren(false)
     setIsVisitation(false)
     setDynamicInputs([])
+    setClonedDates([])
+    setSelectedReminderOptions([])
+    setSelectedChildrenOptions([])
+    setSelectedShareWithOptions([])
+    setDefaultShareWithOptions([])
     setState({
       ...state,
-      showBottomMenu: false,
       creationFormToShow: '',
-      refreshKey: Manager.GetUid(),
       successAlertMessage: showSuccessAlert ? 'Event Created' : null,
     })
   }
@@ -94,36 +97,40 @@ export default function NewCalendarEvent() {
       //#region FILL NEW EVENT
 
       if (isVisitation) {
-        newEvent.current.title = `${StringManager.FormatEventTitle(newEvent.current.title)} (Visitation)`
+        formRef.current.title = `${StringManager.FormatEventTitle(formRef.current.title)} (Visitation)`
       }
-      newEvent.current.owner = {
+      formRef.current.owner = {
         key: currentUser?.key,
         name: currentUser?.name,
       }
-      newEvent.current.directionsLink = Manager.GetDirectionsLink(newEvent.current.address)
-      newEvent.current.recurringInterval = recurringFrequency
-      newEvent.current.fromVisitationSchedule = isVisitation
-      newEvent.current.isRecurring = eventIsRecurring
-      newEvent.current.isCloned = Manager.IsValid(clonedDates)
-      newEvent.current.isDateRange = eventIsDateRange
-      newEvent.current.children = DropdownManager.MappedForDatabase.ChildrenFromArray(childrenDropdownSelections)
-      newEvent.current.reminderTimes = DropdownManager.MappedForDatabase.RemindersFromArray(remindersDropdownSelections)
+      formRef.current.directionsLink = Manager.GetDirectionsLink(formRef.current.address)
+      formRef.current.recurringInterval = recurringFrequency
+      formRef.current.fromVisitationSchedule = isVisitation
+      formRef.current.isRecurring = eventIsRecurring
+      formRef.current.isCloned = Manager.IsValid(clonedDates)
+      formRef.current.isDateRange = eventIsDateRange
+
+      // Map dropdown selections to database
+      formRef.current.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
+      formRef.current.reminderTimes = DropdownManager.MappedForDatabase.RemindersFromArray(selectedReminderOptions)
+      formRef.current.shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
       // return false
 
       //#endregion FILL NEW EVENT
-      const cleaned = ObjectManager.CleanObject(newEvent.current)
-      if (Manager.IsValid(newEvent.current)) {
+      const cleaned = ObjectManager.CleanObject(formRef.current)
+
+      if (Manager.IsValid(formRef.current)) {
         //#region VALIDATION
-        if (Manager.IsValid(newEvent.current.phone, true)) {
-          if (!validator.isMobilePhone(newEvent.current.phone)) {
+        if (Manager.IsValid(formRef.current.phone, true)) {
+          if (!validator.isMobilePhone(formRef.current.phone)) {
             AlertManager.throwError('Phone number is not valid')
             return false
           }
         }
 
         const errorString = Manager.GetInvalidInputsErrorString([
-          {name: 'Event Name', value: newEvent.current.title},
-          {name: 'Date', value: newEvent.current.startDate},
+          {name: 'Event Name', value: formRef.current.title},
+          {name: 'Date', value: formRef.current.startDate},
         ])
 
         if (Manager.IsValid(errorString)) {
@@ -131,7 +138,7 @@ export default function NewCalendarEvent() {
           return false
         }
 
-        if (showReminders && !Manager.IsValid(newEvent.current.startTime)) {
+        if (showReminders && !Manager.IsValid(formRef.current.startTime)) {
           AlertManager.throwError('Please select a start time when using reminders')
           return false
         }
@@ -187,47 +194,11 @@ export default function NewCalendarEvent() {
           )
         }
         //#endregion SINGLE DATE
-        await ResetForm()
+        await ResetForm(true)
       }
     } catch (error) {
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
-  }
-
-  const HandleChildSelection = (e) => setEventChildren(e?.map((x) => x?.label?.trim()))
-
-  const HandleShareWithSelection = (e) => (newEvent.current.shareWith = e.map((x) => x.value))
-
-  const HandleReminderSelection = (e) => setEventReminderTimes(e?.map((x) => x?.value?.trim()))
-
-  const HandleRepeatingSelection = async (e) => {
-    DomManager.HandleCheckboxSelection(
-      e,
-      (e) => {
-        let selection = ''
-        if (e.toLowerCase()?.indexOf('week') > -1) {
-          selection = 'weekly'
-        }
-        if (e.toLowerCase()?.indexOf('bi') > -1) {
-          selection = 'biweekly'
-        }
-        if (e.toLowerCase()?.indexOf('daily') > -1) {
-          selection = 'daily'
-        }
-        if (e.toLowerCase()?.indexOf('monthly') > -1) {
-          selection = 'monthly'
-        }
-        setRecurringFrequency(selection)
-        setShowCloneInput(false)
-      },
-      (e) => {
-        if (recurringFrequency.toLowerCase() === e.toLowerCase()) {
-          setRecurringFrequency(null)
-          setShowCloneInput(true)
-        }
-      },
-      false
-    )
   }
 
   const AppendDynamicInput = () => {
@@ -245,9 +216,19 @@ export default function NewCalendarEvent() {
     ])
   }
 
+  const SetDefaultDropdownOptions = async () => {
+    setSelectedChildrenOptions(DropdownManager.GetSelected.Children([]))
+    setSelectedReminderOptions(DropdownManager.GetSelected.Reminders([]))
+    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(validAccounts))
+    console.log(DropdownManager.GetDefault.ShareWith(validAccounts))
+    setView({label: 'Single Day', value: 'Single Day'})
+  }
+
   useEffect(() => {
     if (dateToEdit) {
-      newEvent.current.startDate = moment(dateToEdit).format(DatetimeFormats.dateForDb)
+      formRef.current.startDate = moment(dateToEdit).format(DatetimeFormats.dateForDb)
+      SetDefaultDropdownOptions().then((r) => r)
     }
   }, [dateToEdit])
 
@@ -265,27 +246,26 @@ export default function NewCalendarEvent() {
     <>
       {/* FORM WRAPPER */}
       <Form
-        submitText={`Done`}
+        submitText={`Create`}
         className={`${theme} new-event-form new-calendar-event`}
-        onClose={ResetForm}
+        onClose={() => ResetForm()}
         onSubmit={Submit}
         showCard={creationFormToShow === CreationForms.calendar}
         wrapperClass={`new-calendar-event at-top`}
         contentClass={eventLength === EventLengths.single ? 'single-view' : 'multiple-view'}
         title={`Create Event`}
         submitIcon={<BsCalendarCheck />}
-        viewSelector={
+        viewDropdown={
           <ViewDropdown
             show={true}
-            views={['Single Day', 'Multiple Days']}
+            views={[
+              {label: 'Single Day', value: EventLengths.single},
+              {label: 'Multiple Days', value: EventLengths.multiple},
+            ]}
+            selectedView={view}
             dropdownPlaceholder={'Single Day'}
-            updateState={(labelText) => {
-              console.log(labelText)
-              if (Manager.Contains(labelText.toLowerCase(), 'single')) {
-                setEventLength(EventLengths.single)
-              } else {
-                setEventLength(EventLengths.multiple)
-              }
+            onSelect={(view) => {
+              setView(view)
             }}
           />
         }>
@@ -296,16 +276,14 @@ export default function NewCalendarEvent() {
             inputType={InputTypes.text}
             placeholder="Event Name"
             required={true}
-            inputValueType="input"
-            inputValue={newEvent.current.title}
             onChange={async (e) => {
               const inputValue = e.target.value
-              newEvent.current.title = StringManager.FormatEventTitle(inputValue)
+              formRef.current.title = StringManager.FormatEventTitle(inputValue)
             }}
           />
 
           {/* START DATE */}
-          {eventLength === EventLengths.single && (
+          {view?.label === 'Single Day' && (
             <InputField
               defaultValue={dateToEdit}
               placeholder="Date"
@@ -313,13 +291,13 @@ export default function NewCalendarEvent() {
               inputType={InputTypes.date}
               required={true}
               onDateOrTimeSelection={(e) => {
-                newEvent.current.startDate = moment(e).format(DatetimeFormats.dateForDb)
+                formRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb)
               }}
             />
           )}
 
           {/* DATE RANGE */}
-          {eventLength === EventLengths.multiple && (
+          {view?.label === 'Multiple Days' && (
             <InputField
               wrapperClasses="date-range-input"
               placeholder={'Date Range'}
@@ -327,34 +305,57 @@ export default function NewCalendarEvent() {
               inputType={InputTypes.dateRange}
               onDateOrTimeSelection={(dateArray) => {
                 if (Manager.IsValid(dateArray)) {
-                  newEvent.current.startDate = moment(dateArray[0]).format(DatetimeFormats.dateForDb)
-                  newEvent.current.endDate = moment(dateArray[dateArray.length - 1]).format(DatetimeFormats.dateForDb)
+                  formRef.current.startDate = moment(dateArray[0]).format(DatetimeFormats.dateForDb)
+                  formRef.current.endDate = moment(dateArray[dateArray.length - 1]).format(DatetimeFormats.dateForDb)
                   setEventIsDateRange(true)
                 }
               }}
             />
           )}
-          {eventLength === EventLengths.single && (
+          {view?.label === 'Single Day' && (
             <>
               {/* EVENT WITH TIME */}
               <InputField
                 labelText={'Start Time'}
                 uidClass="event-start-time time"
                 inputType={InputTypes.time}
-                onDateOrTimeSelection={(e) => (newEvent.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}
+                onDateOrTimeSelection={(e) => (formRef.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}
               />
               <InputField
                 labelText={'End Time'}
                 uidClass="event-end-time time"
                 inputType={InputTypes.time}
-                onDateOrTimeSelection={(e) => (newEvent.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}
+                onDateOrTimeSelection={(e) => (formRef.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}
               />
             </>
           )}
 
           <hr />
-          {/* Share with */}
-          <ShareWithDropdown required={false} onCheck={HandleShareWithSelection} containerClass={`share-with`} />
+
+          {/* SHARE WITH */}
+          <SelectDropdown
+            options={defaultShareWithOptions}
+            isMultiple={true}
+            placeholder={'Share with'}
+            onSelect={(e) => {
+              setSelectedShareWithOptions(e)
+            }}
+          />
+
+          <Spacer height={2} />
+
+          {/* REMINDER */}
+          {view?.label === 'Single Day' && (
+            <SelectDropdown
+              isMultiple={true}
+              placeholder={'Select Reminders'}
+              options={DropdownManager.GetDefault.Reminders}
+              onSelect={(e) => {
+                setSelectedReminderOptions(e)
+              }}
+            />
+          )}
+
           <Spacer height={2} />
 
           {/* INCLUDING WHICH CHILDREN */}
@@ -362,63 +363,49 @@ export default function NewCalendarEvent() {
             <SelectDropdown
               options={childrenDropdownOptions}
               placeholder={'Select Children to Include'}
-              onSelection={(e) => {
-                setChildrenDropdownSelections(e)
+              onSelect={(e) => {
+                setSelectedChildrenOptions(e)
               }}
               isMultiple={true}
             />
           )}
-          <Spacer height={2} />
 
-          {/* REMINDER */}
-          {eventLength === EventLengths.single && (
-            <SelectDropdown
-              isMultiple={true}
-              placeholder={'Select Reminders'}
-              options={DropdownManager.GetDefault.Reminders}
-              onSelection={(e) => {
-                setRemindersDropdownSelections(e)
-              }}
-            />
-          )}
           <Spacer height={8} />
 
           {/* IS VISITATION? */}
           <div>
             <div className="flex">
-              <Label text={'Visitation Event'} classes="toggle lowercase" />
+              <Label text={'Visitation Event'} classes="toggle lowercase always-show" />
               <ToggleButton isDefaultChecked={false} onCheck={() => setIsVisitation(true)} onUncheck={() => setIsVisitation(false)} />
             </div>
           </div>
 
           {/* RECURRING */}
-          {eventLength === EventLengths.single && (
+          {view?.label === 'Single Day' && (
             <div id="repeating-container">
               <Accordion id={'checkboxes'} expanded={eventIsRecurring}>
                 <AccordionSummary>
                   <div className="flex">
-                    <Label text={'Recurring'} classes="toggle lowercase" />
+                    <Label text={'Recurring'} classes="toggle lowercase white" />
                     <ToggleButton onCheck={() => setEventIsRecurring(true)} onUncheck={() => setEventIsRecurring(false)} />
                   </div>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Spacer height={2} />
-                  {/*<CheckboxGroup*/}
-                  {/*  elClass={`${theme}`}*/}
-                  {/*  onCheck={HandleRepeatingSelection}*/}
-                  {/*  checkboxArray={DropdownManager.GetDefault.ReminderOptions(*/}
-                  {/*    DomManager.BuildCheckboxGroup({*/}
-                  {/*      currentUser,*/}
-                  {/*      labelType: 'recurring-intervals',*/}
-                  {/*    }).map((x) => x.label)*/}
-                  {/*  )}*/}
-                  {/*/>*/}
+                  <CheckboxGroup
+                    elClass={`${theme}`}
+                    // onCheck={HandleRepeatingSelection}
+                    checkboxArray={DomManager.BuildCheckboxGroup({
+                      currentUser,
+                      labelType: 'recurring-intervals',
+                    })}
+                  />
 
                   {Manager.IsValid(recurringFrequency) && (
                     <InputField inputType={'date'} placeholder={'Date to End Recurring Events'} required={true}>
                       <MobileDatePicker
                         className={`${theme}`}
-                        onChange={(e) => (newEvent.current.endDate = moment(e).format(DatetimeFormats.dateForDb))}
+                        onChange={(e) => (formRef.current.endDate = moment(e).format(DatetimeFormats.dateForDb))}
                       />
                     </InputField>
                   )}
@@ -428,7 +415,7 @@ export default function NewCalendarEvent() {
           )}
 
           {/* DUPLICATE */}
-          {eventLength === EventLengths.single && (
+          {view?.label === 'Single Day' && (
             <>
               <div className="flex">
                 <Label text={'Duplicate'} classes="toggle lowercase" />
@@ -465,27 +452,27 @@ export default function NewCalendarEvent() {
             placeholder={'Website/Link'}
             required={false}
             inputType={InputTypes.url}
-            onChange={(e) => (newEvent.current.websiteUrl = e.target.value)}
+            onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
           />
           {/* ADDRESS */}
           <AddressInput
-            wrapperClasses={Manager.IsValid(newEvent.current.address, true) ? 'show-label' : ''}
+            wrapperClasses={Manager.IsValid(formRef.current.address, true) ? 'show-label' : ''}
             placeholder={'Location'}
             required={false}
-            onChange={(address) => (newEvent.current.address = address)}
+            onChange={(address) => (formRef.current.address = address)}
           />
           {/* PHONE */}
           <InputField
             inputType={InputTypes.phone}
             placeholder="Phone"
-            onChange={(e) => (newEvent.current.phone = StringManager.FormatPhone(e.target.value))}
+            onChange={(e) => (formRef.current.phone = StringManager.FormatPhone(e.target.value))}
           />
           {/* NOTES */}
           <InputField
             placeholder={'Notes'}
             required={false}
             inputType={InputTypes.textarea}
-            onChange={(e) => (newEvent.current.notes = e.target.value)}
+            onChange={(e) => (formRef.current.notes = e.target.value)}
           />
         </div>
       </Form>

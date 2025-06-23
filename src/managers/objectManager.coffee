@@ -5,7 +5,6 @@ import Memory from "../models/new/memory"
 import TransferChangeRequest from "../models/new/transferChangeRequest"
 import SwapRequest from "../models/new/swapRequest"
 import User from "../models/users/user"
-import Coparent from "../models/users/coParent"
 import ChatThread from "../models/chat/chat"
 import Chat from "../models/chat/chat"
 import ChatMessage from "../models/chat/chatMessage"
@@ -16,6 +15,7 @@ import _ from "lodash"
 import Parent from "../models/users/parent"
 import Manager from "./manager"
 import LogManager from "./logManager"
+import CoParent from "../models/users/coParent"
 
 ObjectManager = {
   SetObjectPropertyByPath: (obj, path, value) ->
@@ -111,7 +111,7 @@ ObjectManager = {
       when ModelNames.user
         Object.keys(new User())
       when ModelNames.coparent
-        Object.keys(new Coparent())
+        Object.keys(new CoParent())
       when ModelNames.chat
         Object.keys(new ChatThread())
       when ModelNames.chatMessage
@@ -140,7 +140,7 @@ ObjectManager = {
       when ModelNames.user
         new User()
       when ModelNames.coparent
-        new Coparent()
+        new CoParent()
       when ModelNames.chat
         new ChatThread()
       when ModelNames.chatMessage
@@ -162,7 +162,7 @@ ObjectManager = {
       when ModelNames.transferChangeRequest then  new TransferChangeRequest()
       when ModelNames.swapRequest then  new SwapRequest()
       when ModelNames.user then  new User()
-      when ModelNames.coparent then  new Coparent()
+      when ModelNames.coparent then  new CoParent()
       when ModelNames.chat then  new Chat()
       when ModelNames.chatMessage then  new ChatMessage()
       when ModelNames.childUser then  new ChildUser()
@@ -181,8 +181,11 @@ ObjectManager = {
 
     return returnObject
 
-  merge: (objectWithValuesToKeep, objectWithValuesToAdd) ->
-    _.assign(objectWithValuesToKeep, objectWithValuesToAdd)
+  merge: (objectWithValuesToKeep, objectWithValuesToAdd, deepOrShallow = 'shallow') ->
+    if deepOrShallow == 'shallow'
+      return _.assign(objectWithValuesToKeep, objectWithValuesToAdd)
+    else
+      return _.merge(objectWithValuesToKeep, objectWithValuesToAdd)
 
   isEmpty: (obj) ->
     return _.isEmpty(obj)

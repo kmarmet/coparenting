@@ -107,7 +107,7 @@ export default function Schooling({activeChild}) {
           <div className="gradient padding">
             {Manager.IsValid(schoolingValues) &&
               schoolingValues.map((prop, index) => {
-                let infoLabel = StringManager.UppercaseFirstLetterOfAllWords(StringManager.spaceBetweenWords(prop[0]))
+                let infoLabel = StringManager.UppercaseFirstLetterOfAllWords(StringManager.SpaceBetweenWords(prop[0]))
                 const value = prop.flat()[1]
                 return (
                   <div key={index} className="data-row">

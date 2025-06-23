@@ -2,22 +2,26 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
-import React, {useContext, useEffect, useState} from 'react'
-import {BsCardImage} from 'react-icons/bs'
-import {MdOutlineEventRepeat} from 'react-icons/md'
-import {LazyLoadImage} from 'react-lazy-load-image-component'
+import React, {useContext, useEffect, useRef, useState} from 'react'
+import {FaBookReader, FaClinicMedical, FaPlaneDeparture, FaTooth} from 'react-icons/fa'
+import {FaGasPump, FaHandsHoldingChild, FaMoneyCheckDollar} from 'react-icons/fa6'
+import {GiClothes} from 'react-icons/gi'
+import {HiGift} from 'react-icons/hi'
+import {MdLocalActivity, MdPets, MdSportsFootball} from 'react-icons/md'
 import ActivityCategory from '../../../constants/activityCategory'
 import ButtonThemes from '../../../constants/buttonThemes'
 import DatetimeFormats from '../../../constants/datetimeFormats.js'
 import ExpenseCategories from '../../../constants/expenseCategories'
+import ExpenseSortByTypes from '../../../constants/expenseSortByTypes'
 import InputTypes from '../../../constants/inputTypes'
-import ModelNames from '../../../constants/modelNames'
 import globalState from '../../../context.js'
 import DB from '../../../database/DB.js'
+import useChildren from '../../../hooks/useChildren'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useExpenses from '../../../hooks/useExpenses'
 import DatasetManager from '../../../managers/datasetManager'
 import DomManager from '../../../managers/domManager'
+import DropdownManager from '../../../managers/dropdownManager'
 import ExpenseManager from '../../../managers/expenseManager.js'
 import Manager from '../../../managers/manager'
 import ObjectManager from '../../../managers/objectManager'
@@ -32,6 +36,7 @@ import DetailBlock from '../../shared/detailBlock'
 import Form from '../../shared/form.jsx'
 import InputField from '../../shared/inputField.jsx'
 import Label from '../../shared/label.jsx'
+import LazyImage from '../../shared/lazyImage'
 import MyConfetti from '../../shared/myConfetti.js'
 import NoDataFallbackText from '../../shared/noDataFallbackText.jsx'
 import ScreenHeader from '../../shared/screenHeader'
@@ -41,13 +46,19 @@ import Spacer from '../../shared/spacer'
 import ViewDropdown from '../../shared/viewDropdown.jsx'
 import PaymentOptions from './paymentOptions.jsx'
 
-const SortByTypes = {
-  nearestDueDate: 'Nearest Due Date',
-  recentlyAdded: 'Recently Added',
-  amountDesc: 'Amount: High to Low',
-  amountAsc: 'Amount: Low to High',
-  nameAsc: 'Name (ascending)',
-  nameDesc: 'Name (descending)',
+const ExpenseIcons = {
+  Miscellaneous: <FaMoneyCheckDollar className={'category-icon misc'} />,
+  Entertainment: <MdLocalActivity className={'category-icon entertainment'} />,
+  Clothing: <GiClothes className={'category-icon clothing'} />,
+  Medical: <FaClinicMedical className={'category-icon medical'} />,
+  Childcare: <FaHandsHoldingChild className={'category-icon childcare'} />,
+  Sports: <MdSportsFootball className={'category-icon sports'} />,
+  Educational: <FaBookReader className={'category-icon educational'} />,
+  Travel: <FaPlaneDeparture className={'category-icon travel'} />,
+  Transportation: <FaGasPump className={'category-icon transportation'} />,
+  Dental: <FaTooth className={'category-icon dental'} />,
+  Gifting: <HiGift className={'category-icon gifting'} />,
+  Pet: <MdPets className={'category-icon pet'} />,
 }
 
 export default function ExpenseTracker() {
@@ -55,67 +66,46 @@ export default function ExpenseTracker() {
   const {theme} = state
   const [showPaymentOptionsCard, setShowPaymentOptionsCard] = useState(false)
   const [showNewExpenseCard, setShowNewExpenseCard] = useState(false)
-  const [categoriesInUse, setCategoriesInUse] = useState([])
   const [activeExpense, setActiveExpense] = useState(null)
   const [showDetails, setShowDetails] = useState(false)
   const [view, setView] = useState('Details')
-  const [category, setCategory] = useState(activeExpense?.category)
-  const [amount, setAmount] = useState('')
-  const [payer, setPayer] = useState('')
-  const [notes, setNotes] = useState('')
-  const [dueDate, setDueDate] = useState('')
-  const [children, setChildren] = useState([])
-  const [shareWith, setShareWith] = useState([])
-  const [paidStatus, setPaidStatus] = useState('unpaid')
-  const [imageName, setImageName] = useState('')
-  const [recipientName, setRecipientName] = useState('')
-  const [name, setName] = useState('')
-  const [sortMethod, setSortMethod] = useState(SortByTypes.recentlyAdded)
+  const [sortMethod, setSortMethod] = useState(ExpenseSortByTypes.recentlyAdded)
+  const [selectedChildren, setSelectedChildren] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState([])
   const [categoriesAsArray, setCategoriesAsArray] = useState([])
   const [expenseDateType, setExpenseDateType] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
   const [sortedExpenses, setSortedExpenses] = useState([])
   const {expenses} = useExpenses()
+  const {children} = useChildren()
   const {currentUser} = useCurrentUser()
   const [showSlideshow, setShowSlideshow] = useState(false)
 
+  const formRef = useRef(null)
+
   const Update = async () => {
     // Fill/overwrite
-    let updatedExpense = {...activeExpense}
-    updatedExpense.category = category
-    updatedExpense.amount = amount?.toString()
-    updatedExpense.payer = payer
-    updatedExpense.notes = notes
-    updatedExpense.dueDate = dueDate
-    updatedExpense.children = children
-    updatedExpense.shareWith = shareWith
-    updatedExpense.paidStatus = paidStatus
-    updatedExpense.imageName = imageName
-    updatedExpense.recipientName = recipientName
-    updatedExpense.name = name
-
-    if (!Manager.IsValid(dueDate)) {
-      updatedExpense.dueDate = moment(dueDate).format(DatetimeFormats.dateForDb)
-    }
-    const cleanedExpense = ObjectManager.GetModelValidatedObject(updatedExpense, ModelNames.expense)
-    cleanedExpense.ownerKey = activeExpense.ownerKey
+    let updatedExpense = ObjectManager.merge(formRef.current, activeExpense, 'deep')
+    formRef.current.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildren)
+    const cleanedExpense = ObjectManager.CleanObject(updatedExpense)
     const updateIndex = DB.GetTableIndexById(expenses, activeExpense?.id)
     await ExpenseManager.UpdateExpense(currentUser?.key, updateIndex, cleanedExpense)
-    await GetSecuredExpenses()
     setActiveExpense(updatedExpense)
     setShowDetails(false)
+    setView('Details')
+    setState({...state, successAlertMessage: 'Expense Updated'})
   }
 
   const TogglePaidStatus = async () => {
     const updatedStatus = activeExpense.paidStatus === 'paid' ? 'unpaid' : 'paid'
-    setPaidStatus(updatedStatus)
+    // setPaidStatus(updatedStatus)
     activeExpense.paidStatus = updatedStatus
     const updateIndex = DB.GetTableIndexById(expenses, activeExpense?.id)
     await ExpenseManager.UpdateExpense(currentUser?.key, updateIndex, activeExpense).then(async () => {
       UpdateManager.SendUpdate(
         `Expense Paid`,
         `An expense has been marked ${updatedStatus.toUpperCase()} by ${currentUser?.name} \nExpense Name: ${activeExpense?.name}`,
-        payer?.key,
+        // payer?.key,
         currentUser,
         activeExpense.category
       )
@@ -124,14 +114,6 @@ export default function ExpenseTracker() {
         MyConfetti.fire()
       }
     })
-  }
-
-  const GetSecuredExpenses = async () => {
-    let categories = expenses.map((x) => x.category).filter((x) => x !== '')
-    categories.unshift('None')
-    setCategoriesInUse(categories)
-    setSortedExpenses(expenses)
-    return expenses
   }
 
   const SendReminder = async (expense) => {
@@ -163,9 +145,9 @@ export default function ExpenseTracker() {
     DomManager.ToggleActive(element.target, '.filter-button.paid-status', true)
     if (status === 'all') {
       setSortedExpenses(expenses)
-      setPaidStatus('all')
+      // setPaidStatus('all')
     } else {
-      setPaidStatus(status)
+      // setPaidStatus(status)
       setSortedExpenses(expenses.filter((x) => x.paidStatus === status))
     }
   }
@@ -176,81 +158,50 @@ export default function ExpenseTracker() {
       expense.amount = parseInt(expense?.amount)
       return expense
     })
-    if (sortByName === SortByTypes.recentlyAdded) {
+    if (sortByName === ExpenseSortByTypes.recentlyAdded) {
       setSortedExpenses(expenses.sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse())
-      setSortMethod(SortByTypes.recentlyAdded)
+      setSortMethod(ExpenseSortByTypes.recentlyAdded)
     }
-    if (sortByName === SortByTypes.recentlyAdded) {
+    if (sortByName === ExpenseSortByTypes.recentlyAdded) {
       const sortedByDateAsc = DatasetManager.sortByProperty(expenses, 'creationDate', 'asc', true)
       setSortedExpenses(sortedByDateAsc)
     }
-    if (sortByName === SortByTypes.nearestDueDate) {
+    if (sortByName === ExpenseSortByTypes.nearestDueDate) {
       const sortedByDueDateDesc = DatasetManager.sortByProperty(expenses, 'dueDate', 'desc', true)
       setSortedExpenses(sortedByDueDateDesc)
     }
     // High -> Low
-    if (sortByName === SortByTypes.amountDesc) {
+    if (sortByName === ExpenseSortByTypes.amountDesc) {
       const sortByAmountDesc = DatasetManager.sortByProperty(expensesAsNumbers, 'amount', 'desc')
       setSortedExpenses(sortByAmountDesc)
-      setSortMethod(SortByTypes.amountDesc)
+      setSortMethod(ExpenseSortByTypes.amountDesc)
     }
     // Low -> High
-    if (sortByName === SortByTypes.amountAsc) {
+    if (sortByName === ExpenseSortByTypes.amountAsc) {
       const sortedByAmountAsc = DatasetManager.sortByProperty(expensesAsNumbers, 'amount', 'asc')
       setSortedExpenses(sortedByAmountAsc)
-      setSortMethod(SortByTypes.amountAsc)
+      setSortMethod(ExpenseSortByTypes.amountAsc)
     }
 
     // Name Ascending
-    if (sortByName === SortByTypes.nameAsc) {
+    if (sortByName === ExpenseSortByTypes.nameAsc) {
       const sortedByNameAsc = DatasetManager.sortByProperty(expenses, 'name', 'asc')
       setSortedExpenses(sortedByNameAsc)
-      setSortMethod(SortByTypes.nameAsc)
+      setSortMethod(ExpenseSortByTypes.nameAsc)
     }
 
     // Name Descending
-    if (sortByName === SortByTypes.nameDesc) {
+    if (sortByName === ExpenseSortByTypes.nameDesc) {
       const sortedByNameDesc = DatasetManager.sortByProperty(expenses, 'name', 'desc')
       setSortedExpenses(sortedByNameDesc)
-      setSortMethod(SortByTypes.nameDesc)
+      setSortMethod(ExpenseSortByTypes.nameDesc)
     }
 
-    if (sortByName === SortByTypes.nearestDueDate) {
+    if (sortByName === ExpenseSortByTypes.nearestDueDate) {
       const sortedByNearestDueDate = DatasetManager.sortByProperty(expenses, 'dueDate', 'asc')
       setSortedExpenses(sortedByNearestDueDate)
-      setSortMethod(SortByTypes.nearestDueDate)
+      setSortMethod(ExpenseSortByTypes.nearestDueDate)
     }
-  }
-
-  const HandleCategorySelection = async (element) => {
-    const allExpenses = await GetSecuredExpenses()
-    const category = element.target.textContent
-    let expensesByCategory = allExpenses.filter((x) => x.category === category)
-    if (element.target.classList.contains('active')) {
-      expensesByCategory = allExpenses.filter((x) => x.category !== category)
-    }
-    DomManager.ToggleActive(element.target)
-    if (category === 'None') {
-      setSortedExpenses(allExpenses)
-    } else {
-      setSortedExpenses(expensesByCategory)
-    }
-    setCategory(category)
-  }
-
-  const SetDefaults = () => {
-    setCategory(activeExpense?.category)
-    setAmount(activeExpense?.amount)
-    setName(activeExpense?.name)
-    setPayer(activeExpense?.payer)
-    setNotes(activeExpense?.notes)
-    setDueDate(activeExpense?.dueDate)
-    setChildren(activeExpense?.children)
-    setShareWith(activeExpense?.shareWith)
-    setPaidStatus(activeExpense?.paidStatus)
-    setImageName(activeExpense?.imageName)
-    setRecipientName(activeExpense?.recipientName)
-    setView('Details')
   }
 
   const DeleteExpense = async () => await DB.deleteById(`${DB.tables.expenses}/${currentUser?.key}`, activeExpense?.id)
@@ -281,31 +232,15 @@ export default function ExpenseTracker() {
     }
   }
 
-  const GetDetailsDueDate = () => {
-    if (activeExpense?.dueDate) {
-      const text = GetShortRecurringDateText(activeExpense)
-
-      switch (text) {
-        case 'Every Day':
-          return 'Daily'
-        case 'Every Week':
-          return moment(activeExpense?.dueDate).format('dddd')
-        case 'Every Month':
-          return moment(activeExpense?.dueDate).format('Do')
-        case 'Every 2 Weeks':
-          return moment(activeExpense?.dueDate).format('Do')
-      }
-    }
-  }
-
+  // Set Categories
   useEffect(() => {
     setView('Details')
     const catsAsArray = Object.keys(ExpenseCategories)
     catsAsArray.unshift('None')
     setCategoriesAsArray(catsAsArray)
-    SetDefaults()
   }, [])
 
+  // Set Sorted Expenses
   useEffect(() => {
     if (Manager.IsValid(expenses)) {
       setSortedExpenses(expenses)
@@ -332,25 +267,23 @@ export default function ExpenseTracker() {
       {/* DETAILS CARD */}
       <Form
         submitText={'Update'}
-        title={`${StringManager.UppercaseFirstLetterOfAllWords(activeExpense?.name || '')}`}
+        title={`${StringManager.UppercaseFirstLetterOfAllWords(activeExpense?.name)}`}
         onSubmit={Update}
         hasSubmitButton={view === 'Edit'}
-        className="expense-tracker form"
+        className="expense-tracker"
         wrapperClass="expense-tracker"
         onClose={() => {
           setActiveExpense(null)
           setShowDetails(false)
-          setState({...state, refreshKey: Manager.GetUid()})
+          setView('Details')
         }}
         onDelete={DeleteExpense}
-        viewSelector={
+        viewDropdown={
           <ViewDropdown
-            wrapperClasses="full-width"
-            show={showDetails}
             dropdownPlaceholder="Details"
-            views={['Details', 'Edit']}
-            updateState={(e) => {
-              setView(e)
+            selectedView={view}
+            onSelect={(view) => {
+              setView(view)
             }}
           />
         }
@@ -368,7 +301,7 @@ export default function ExpenseTracker() {
               </CardButton>
             )}
 
-            <CardButton classes=" grey center lh-1_3" onClick={SendReminder}>
+            <CardButton classes="center lh-1_3" onClick={SendReminder}>
               Send <br /> Reminder
             </CardButton>
           </>,
@@ -376,27 +309,11 @@ export default function ExpenseTracker() {
         showCard={showDetails}>
         <div className={`details content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
           {/* DETAILS */}
-          {view === 'Details' && (
+          {view?.label === 'Details' && (
             <>
               <div className="blocks">
                 {/*  Amount */}
                 <DetailBlock title={'Amount'} text={`$${activeExpense?.amount}`} valueToValidate={activeExpense?.amount} />
-
-                {/*  Due Date */}
-                {!activeExpense?.isRecurring && (
-                  <DetailBlock
-                    title={'Due Date'}
-                    text={moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                    valueToValidate={moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                  />
-                )}
-                {activeExpense?.isRecurring && (
-                  <DetailBlock
-                    title={'Due Date'}
-                    text={GetDetailsDueDate(activeExpense)}
-                    valueToValidate={moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                  />
-                )}
 
                 {/*  Date Added */}
                 <DetailBlock
@@ -404,6 +321,24 @@ export default function ExpenseTracker() {
                   text={moment(activeExpense?.creationDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
                   valueToValidate={moment(activeExpense?.creationDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
                 />
+
+                {/*  Due Date */}
+                {!activeExpense?.isRecurring && (
+                  <DetailBlock
+                    title={'Due Date'}
+                    text={moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                    valueToValidate={moment(activeExpense?.dueDate, DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                  />
+                )}
+
+                {/*  Due Date - Recurring */}
+                {activeExpense?.isRecurring && (
+                  <DetailBlock
+                    title={'Due Date'}
+                    text={moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                    valueToValidate={moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                  />
+                )}
 
                 {/*  Frequency */}
                 <DetailBlock
@@ -425,15 +360,15 @@ export default function ExpenseTracker() {
                 {/*  Pay To */}
                 <DetailBlock
                   title={'Pay To'}
-                  text={StringManager.GetFirstNameOnly(activeExpense?.recipientName)}
-                  valueToValidate={StringManager.GetFirstNameOnly(activeExpense?.recipientName)}
+                  text={StringManager.GetFirstNameOnly(currentUser?.name)}
+                  valueToValidate={StringManager.GetFirstNameOnly(currentUser?.name)}
                 />
 
                 {/*  Payer */}
                 <DetailBlock
                   title={'Payer'}
-                  text={StringManager.GetFirstNameOnly(payer?.name)}
-                  valueToValidate={StringManager.GetFirstNameOnly(payer?.name)}
+                  text={StringManager.GetFirstNameOnly(formRef?.current?.payer?.name)}
+                  valueToValidate={StringManager.GetFirstNameOnly(formRef?.current?.payer?.name)}
                 />
 
                 {/*  Recurring */}
@@ -469,21 +404,17 @@ export default function ExpenseTracker() {
 
                 {/* EXPENSE IMAGE */}
                 {Manager.IsValid(activeExpense?.imageUrl) && (
-                  <>
-                    <div id="expense-image" className="block">
-                      <LazyLoadImage
-                        style={{backgroundImage: `url(${activeExpense?.imageUrl})`}}
-                        src={activeExpense?.imageUrl}
-                        id="img-container"
-                        className="flex"
-                        onClick={() => {
-                          setShowDetails(false)
-                          setShowSlideshow(true)
-                        }}
-                      />
-                      <p className="block-text">Image</p>
-                    </div>
-                  </>
+                  <div id="expense-image" className="block">
+                    <LazyImage
+                      src={activeExpense?.imageUrl}
+                      classes="flex"
+                      onClick={() => {
+                        setShowDetails(false)
+                        setShowSlideshow(true)
+                      }}
+                    />
+                    <p className="block-text">Image</p>
+                  </div>
                 )}
 
                 <Spacer height={5} />
@@ -492,13 +423,13 @@ export default function ExpenseTracker() {
           )}
 
           {/* EDIT */}
-          {view === 'Edit' && (
+          {view?.label === 'Edit' && (
             <>
               <InputField
                 inputType={InputTypes.text}
                 placeholder={'Name'}
                 defaultValue={activeExpense?.name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => (formRef.current.name = e.target.value)}
               />
 
               {/* AMOUNT */}
@@ -506,7 +437,7 @@ export default function ExpenseTracker() {
                 placeholder={'Amount'}
                 defaultValue={activeExpense?.amount}
                 inputType={InputTypes.number}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => (formRef.current.amount = e.target.value)}
               />
 
               {/* DUE DATE */}
@@ -515,16 +446,26 @@ export default function ExpenseTracker() {
                 inputType={'date'}
                 placeholder={'Due Date'}
                 uidClass="expense-tracker-due-date"
-                onDateOrTimeSelection={(e) => setDueDate(moment(e).format('MM/DD/yyyy'))}
+                onDateOrTimeSelection={(e) => (formRef.current.dueDate = moment(e).format('MM/DD/yyyy'))}
               />
 
               {/* CATEGORY */}
               <SelectDropdown
-                wrapperClasses={'expense-tracker in-form'}
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                options={categoriesAsArray}
+                value={DropdownManager.GetSelected.ExpenseCategory(activeExpense?.category)}
+                onSelect={(e) => (formRef.current.category = e.value)}
+                options={DropdownManager.GetDefault.ExpenseCategories()}
                 placeholder={'Category'}
+              />
+
+              <Spacer height={5} />
+
+              {/* INCLUDING WHICH CHILDREN */}
+              <SelectDropdown
+                options={DropdownManager.GetDefault.Children(children)}
+                value={selectedChildren}
+                placeholder={'Select Children to Include'}
+                onSelect={(e) => setSelectedChildren(DropdownManager.GetSelected.Children(e.map((x) => x.label)))}
+                isMultiple={true}
               />
 
               <Spacer height={5} />
@@ -532,7 +473,7 @@ export default function ExpenseTracker() {
               {/* NOTES */}
               <InputField
                 defaultValue={activeExpense?.notes}
-                onChange={(e) => setNotes(e.target.value)}
+                onChange={(e) => (formRef.current.notes = e.target.value)}
                 inputType={InputTypes.textarea}
                 placeholder={'Notes'}
               />
@@ -569,7 +510,7 @@ export default function ExpenseTracker() {
                   <div className="buttons flex type">
                     <Button classes={`filter-button expense-type`} onClick={(e) => HandleExpenseTypeSelection(e, 'all')} text={'All'} />
                     <Button
-                      buttonType={ButtonThemes.blend}
+                      theme={ButtonThemes.blend}
                       text={'One-time'}
                       classes={`filter-button expense-type`}
                       onClick={(e) => HandleExpenseTypeSelection(e, 'single')}
@@ -586,36 +527,36 @@ export default function ExpenseTracker() {
                   </div>
                 </div>
 
-                {categoriesInUse.length > 0 && <Label isBold={true} text={'Category'} classes="mb-5" />}
+                {/*{categoriesInUse.length > 0 && <Label isBold={true} text={'Category'} classes="mb-5" />}*/}
 
-                {/* CATEGORIES */}
-                {Manager.IsValid(categoriesInUse) && (
-                  <div className="filter-row">
-                    <div className="buttons category">
-                      {categoriesAsArray.map((cat, index) => {
-                        return (
-                          <>
-                            {categoriesInUse.includes(cat) && Manager.IsValid(cat, true) && (
-                              <button
-                                key={index}
-                                onClick={HandleCategorySelection}
-                                className={category === cat ? 'button default active' : 'button default'}>
-                                {cat}
-                              </button>
-                            )}
-                          </>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )}
+                {/*/!* CATEGORIES *!/*/}
+                {/*{Manager.IsValid(categoriesInUse) && (*/}
+                {/*  <div className="filter-row">*/}
+                {/*    <div className="buttons category">*/}
+                {/*      {categoriesAsArray.map((cat, index) => {*/}
+                {/*        return (*/}
+                {/*          <>*/}
+                {/*            {categoriesInUse.includes(cat) && Manager.IsValid(cat, true) && (*/}
+                {/*              <button*/}
+                {/*                key={index}*/}
+                {/*                onClick={HandleCategorySelection}*/}
+                {/*                className={category === cat ? 'button default active' : 'button default'}>*/}
+                {/*                {cat}*/}
+                {/*              </button>*/}
+                {/*            )}*/}
+                {/*          </>*/}
+                {/*        )*/}
+                {/*      })}*/}
+                {/*    </div>*/}
+                {/*  </div>*/}
+                {/*)}*/}
                 <Label text={''} classes="sorting" />
                 <SelectDropdown
                   wrapperClasses={'sorting-accordion white-bg'}
                   value={sortMethod}
                   labelText={'Sort by'}
-                  options={DropdownManager.GetDefault.Reminders(Object.values(SortByTypes))}
-                  onChange={HandleSortBySelection}></SelectDropdown>
+                  options={DropdownManager.GetDefault.ExpenseSortByTypes()}
+                  onSelect={HandleSortBySelection}></SelectDropdown>
               </div>
             </AccordionDetails>
           </Accordion>
@@ -624,7 +565,7 @@ export default function ExpenseTracker() {
           <div id="expenses-container">
             {Manager.IsValid(sortedExpenses) &&
               sortedExpenses.map((expense, index) => {
-                let dueDate = moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay) ?? ''
+                let dueDate = moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly) ?? ''
                 const readableDueDate = moment(moment(expense?.dueDate).startOf('day')).fromNow().toString()
                 const isPastDue = readableDueDate.toString().includes('ago')
                 const dueInADay = readableDueDate.toString().includes('in a day')
@@ -635,57 +576,67 @@ export default function ExpenseTracker() {
                 }
                 return (
                   <div
-                    key={index}
-                    style={DomManager.AnimateDelayStyle(index)}
-                    className={`row ${DomManager.Animate.FadeInRight(sortedExpenses, '.row')}`}
+                    key={Manager.GetUid()}
+                    style={DomManager.AnimateDelayStyle(index, 0.1)}
+                    className={`row ${DomManager.Animate.FadeInUp(sortedExpenses)}`}
                     onClick={() => {
+                      formRef.current = expense
                       setActiveExpense(expense)
                       setShowDetails(true)
                     }}>
-                    <div id="primary-icon-wrapper">
-                      <span className="amount">${expense?.amount}</span>
-                    </div>
+                    {/* EXPENSE ICON */}
+                    {Manager.IsValid(expense?.category) && ExpenseIcons[expense?.category]}
+                    {!Manager.IsValid(expense?.category) && ExpenseIcons?.Miscellaneous}
 
-                    <div id="content" data-expense-id={expense?.id} className={`expense wrap`}>
+                    <div className="expenses content" data-expense-id={expense?.id}>
                       {/* EXPENSE NAME */}
-                      <div id="name-wrapper" className="flex align-center">
-                        <p className="name row-title">
-                          {StringManager.UppercaseFirstLetterOfAllWords(expense?.name)}
-                          {expense?.isRecurring && <MdOutlineEventRepeat />}
-                          {Manager.IsValid(expense?.imageName) && <BsCardImage />}
-                        </p>
+                      <div className="content-columns">
+                        <div className={'left'}>
+                          <p className={'category'}>{expense?.category}</p>
+                          {/* DATE */}
+                          <div className="flex below-title">
+                            <p className={`name ${!Manager.IsValid(expense?.category) ? 'no-category' : ''}`}>
+                              {StringManager.UppercaseFirstLetterOfAllWords(expense?.name)}
+                            </p>
+                            {/*{Manager.IsValid(dueDate, true) && (*/}
+                            {/*  <>*/}
+                            {/*    {!expense?.isRecurring && (*/}
+                            {/*      <p className={`due-date`}>*/}
+                            {/*        {moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay)} ({readableDueDate.toString()})*/}
+                            {/*      </p>*/}
+                            {/*    )}*/}
+                            {/*    {expense?.isRecurring && <p className={`due-date`}>{GetRecurringDateText(expense)}</p>}*/}
+                            {/*  </>*/}
+                            {/*)}*/}
+                            {/*{!Manager.IsValid(dueDate, true) && <p className="due-date no-due-date">no due date</p>}*/}
+                          </div>
+                        </div>
+
+                        <div className={'right'}>
+                          <p className="amount">${expense?.amount}</p>
+                          <div className={'icons'}>
+                            <p className="due-date">{dueDate}</p>
+                            {/*{expense?.isRecurring && <MdOutlineEventRepeat />}*/}
+                            {/*{Manager.IsValid(expense?.imageName) && <BsCardImage />}*/}
+                          </div>
+                        </div>
 
                         {/*  STATUS */}
-                        {!expense?.isRecurring && (
-                          <>
-                            {!dueInADay && !dueInHours && (
-                              <span className={`${expense?.paidStatus} status`} id="request-status">
-                                {isPastDue ? 'PAST DUE' : StringManager.UppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}
-                              </span>
-                            )}
-                            {dueInADay ||
-                              (dueInHours && (
-                                <span className={`status soon`} id="request-status">
-                                  Soon
-                                </span>
-                              ))}
-                          </>
-                        )}
-                      </div>
-
-                      {/* DATE */}
-                      <div className="flex" id="below-title">
-                        {Manager.IsValid(dueDate, true) && (
-                          <>
-                            {!expense?.isRecurring && (
-                              <p className={`due-date`}>
-                                {moment(expense?.dueDate).format(DatetimeFormats.readableMonthAndDay)} ({readableDueDate.toString()})
-                              </p>
-                            )}
-                            {expense?.isRecurring && <p className={`due-date`}>{GetRecurringDateText(expense)}</p>}
-                          </>
-                        )}
-                        {!Manager.IsValid(dueDate, true) && <p className="due-date no-due-date">no due date</p>}
+                        {/*{!expense?.isRecurring && (*/}
+                        {/*  <>*/}
+                        {/*    {!dueInADay && !dueInHours && (*/}
+                        {/*      <span className={`${expense?.paidStatus} status`} id="request-status">*/}
+                        {/*        {isPastDue ? 'PAST DUE' : StringManager.UppercaseFirstLetterOfAllWords(expense?.paidStatus.toUpperCase())}*/}
+                        {/*      </span>*/}
+                        {/*    )}*/}
+                        {/*    {dueInADay ||*/}
+                        {/*      (dueInHours && (*/}
+                        {/*        <span className={`status soon`} id="request-status">*/}
+                        {/*          Soon*/}
+                        {/*        </span>*/}
+                        {/*      ))}*/}
+                        {/*  </>*/}
+                        {/*)}*/}
                       </div>
                     </div>
                   </div>

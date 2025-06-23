@@ -1,10 +1,9 @@
-import React, {useContext, useEffect, useRef, useState} from 'react'
+import React, {useContext, useRef, useState} from 'react'
 import {FaDirections} from 'react-icons/fa'
 import {HiPhoneArrowUpRight} from 'react-icons/hi2'
 import {MdEmail, MdLaunch} from 'react-icons/md'
 import {RiUserSharedFill} from 'react-icons/ri'
 import globalState from '../../context'
-import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import Spacer from '../shared/spacer'
 
@@ -32,18 +31,10 @@ const DetailBlock = ({
   const [showContent, setShowContent] = useState(false)
   const ref = useRef(null)
 
-  useEffect(() => {
-    if (Manager.IsValid(valueToValidate?.toString(), true)) {
-      DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 80)
-    }
-  }, [valueToValidate])
-
   return (
     <>
       {Manager.IsValid(valueToValidate?.toString(), true) && (
-        <div
-          style={DomManager.AnimateDelayStyle(1, 0.2)}
-          className={`block${Manager.IsValid(classes) ? ` ${classes}` : ''}${isFullWidth ? ' full-width' : ''}`}>
+        <div className={`block${Manager.IsValid(classes) ? ` ${classes}` : ''}${isFullWidth ? ' full-width' : ''}`}>
           {/* CUSTOM */}
           {isCustom && children}
 

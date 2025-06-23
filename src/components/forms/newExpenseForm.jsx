@@ -1,15 +1,14 @@
 // Path: src\components\forms\newExpenseForm.jsx
 import moment from 'moment'
 import React, {useContext, useRef, useState} from 'react'
-import {GrPowerReset} from 'react-icons/gr'
 import CheckboxGroup from '../../components/shared/checkboxGroup'
 import Form from '../../components/shared/form'
 import SelectDropdown from '../../components/shared/selectDropdown'
 import Spacer from '../../components/shared/spacer.jsx'
 import ActivityCategory from '../../constants/activityCategory'
+import ButtonThemes from '../../constants/buttonThemes'
 import CreationForms from '../../constants/creationForms'
 import DatetimeFormats from '../../constants/datetimeFormats'
-import ExpenseCategories from '../../constants/expenseCategories.js'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
 import DB from '../../database/DB'
@@ -30,6 +29,7 @@ import StringManager from '../../managers/stringManager.coffee'
 import UpdateManager from '../../managers/updateManager'
 import CalendarMapper from '../../mappers/calMapper'
 import Expense from '../../models/new/expense.js'
+import Button from '../shared/button'
 import InputField from '../shared/inputField'
 import Label from '../shared/label'
 import ShareWithDropdown from '../shared/shareWithDropdown'
@@ -41,11 +41,16 @@ export default function NewExpenseForm() {
   const {theme, refreshKey, authUser, creationFormToShow} = state
   const [recurringFrequency, setRecurringFrequency] = useState('')
   const [repeatingEndDate, setRepeatingEndDate] = useState('')
+  const [isRecurring, setIsRecurring] = useState(false)
   const {currentUser} = useCurrentUser()
   const {children, childrenDropdownOptions} = useChildren()
   const {coParents} = useCoParents()
   const {expenses} = useExpenses()
 
+  // Selections
+  const [categorySelection, setCategorySelection] = useState()
+
+  // Ref
   const formRef = useRef({...new Expense()})
 
   const ResetForm = async (showAlert) => {
@@ -56,7 +61,7 @@ export default function NewExpenseForm() {
       ...state,
       refreshKey: Manager.GetUid(),
       creationFormToShow: '',
-      successAlertMessage: showAlert ? `${StringManager.FormatTitle(formRef.current.image.name)} Added` : null,
+      successAlertMessage: showAlert ? `${StringManager.FormatTitle(formRef.current.name)} Added` : null,
     })
   }
 
@@ -92,12 +97,17 @@ export default function NewExpenseForm() {
     //#endregion VALIDATION
 
     const newExpense = {...formRef.current}
-    newExpense.dueDate = Manager.IsValid(formRef.current.dueDate) ? moment(formRef.current.dueDate).format(DatetimeFormats.dateForDb) : ''
+    newExpense.name = formRef.current.name
+    newExpense.dueDate = DateManager.GetValidDate(formRef.current.dueDate)
     newExpense.paidStatus = 'unpaid'
-    newExpense.imageName = formRef.current.image.name ?? ''
+    newExpense.imageName = formRef?.current?.image?.name ?? ''
     newExpense.recurringFrequency = recurringFrequency
-    newExpense.ownerKey = currentUser?.key
-    newExpense.isRecurring = formRef.current.isRecurring
+    newExpense.isRecurring = isRecurring
+    newExpense.category = categorySelection?.value
+    newExpense.owner = {
+      key: currentUser?.key,
+      name: currentUser?.name,
+    }
     newExpense.recipient = {
       key: currentUser?.key,
       name: currentUser?.name,
@@ -109,9 +119,6 @@ export default function NewExpenseForm() {
       newExpense.image = await ImageManager.compressImage(formRef.current.image)
     }
 
-    // Get co-parent name
-    newExpense.recipientName = StringManager.GetFirstNameOnly(currentUser?.name)
-
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
 
     if (Manager.IsValid(activeRepeatIntervals) && activeRepeatIntervals.length > 0 && !formRef.current.dueDate) {
@@ -120,13 +127,14 @@ export default function NewExpenseForm() {
     }
 
     // IMAGE UPLOAD
-    if (Manager.IsValid(formRef.current.image?.name)) {
+    if (Manager.IsValid(formRef?.current?.image?.name)) {
       await Storage.upload(Storage.directories.expenseImages, currentUser?.key, formRef.current.image, formRef.current.image.name).then((url) => {
         newExpense.imageUrl = url
       })
     }
 
     const cleanObject = ObjectManager.CleanObject(newExpense)
+    cleanObject.category = categorySelection
     console.log(cleanObject)
 
     // Add to DB
@@ -184,15 +192,6 @@ export default function NewExpenseForm() {
 
   const HandleShareWithSelection = (e) => (formRef.current.shareWith = e.map((x) => x.value))
 
-  const HandlePayerSelection = (e) => {
-    const payerUser = coParents?.find((x) => x?.userKey === e?.value)
-    formRef.current.payer = {
-      name: payerUser?.name,
-      key: payerUser?.userKey,
-      phone: payerUser?.phone,
-    }
-  }
-
   const HandleRecurringSelection = async (e) => {
     const repeatingWrapper = document.getElementById('repeating-container')
     const checkboxWrappers = repeatingWrapper.querySelectorAll('#checkbox-wrapper, .label-wrapper')
@@ -232,14 +231,10 @@ export default function NewExpenseForm() {
     const currentNumber = parseInt(formRef.current.amount || 0)
     const total = asNumber + currentNumber
     formRef.current.amount = total
-    const activeForm = document.querySelector('.form.active')
+    const activeForm = document.querySelector('.form-wrapper.active')
     const inputField = activeForm.querySelector('.input-field')
     const amountInput = inputField.querySelector('input')
     amountInput.value = total
-    numberButton.classList.add('pressed', 'animate', 'active')
-    setTimeout(() => {
-      numberButton.classList.remove('pressed')
-    }, 50)
   }
 
   const HandleCategorySelection = (category) => (formRef.current.category = category.label)
@@ -252,7 +247,7 @@ export default function NewExpenseForm() {
       submitText={'Done'}
       title={'Create Expense'}
       className="new-expense-card"
-      wrapperClass="new-expense-card form at-top"
+      wrapperClass="new-expense-card at-top"
       showCard={creationFormToShow === CreationForms.expense}
       extraButtons={[
         <UploadButton
@@ -270,7 +265,7 @@ export default function NewExpenseForm() {
           uploadButtonText="Choose"
         />,
       ]}
-      onClose={ResetForm}>
+      onClose={() => ResetForm()}>
       <div className="expenses-wrapper">
         {/* PAGE CONTAINER */}
         <div id="add-expense-form" className={`${theme} at-top`}>
@@ -292,65 +287,40 @@ export default function NewExpenseForm() {
               />
             </span>
           </div>
-
           {/* DEFAULT EXPENSE AMOUNTS */}
           <div id="default-expense-amounts">
-            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
-              $5
-            </button>
-            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
-              $10
-            </button>
-            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
-              $20
-            </button>
-            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
-              $30
-            </button>
-            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
-              $40
-            </button>
-            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
-              $50
-            </button>
-            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
-              $60
-            </button>
-            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
-              $70
-            </button>
-            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
-              $80
-            </button>
-            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
-              $90
-            </button>
-            <button className="default-amount-button default button" onClick={OnDefaultAmountPress}>
-              $100
-            </button>
-            <button
+            <Button theme={ButtonThemes.translucent} text={'$5'} className="default-amount-button" onClick={OnDefaultAmountPress} />
+            <Button theme={ButtonThemes.translucent} text={'$10'} className="default-amount-button" onClick={OnDefaultAmountPress} />
+            <Button theme={ButtonThemes.translucent} text={'$20'} className="default-amount-button" onClick={OnDefaultAmountPress} />
+            <Button theme={ButtonThemes.translucent} text={'$30'} className="default-amount-button" onClick={OnDefaultAmountPress} />
+            <Button theme={ButtonThemes.translucent} text={'$40'} className="default-amount-button" onClick={OnDefaultAmountPress} />
+            <Button theme={ButtonThemes.translucent} text={'$50'} className="default-amount-button" onClick={OnDefaultAmountPress} />
+            <Button theme={ButtonThemes.translucent} text={'$60'} className="default-amount-button" onClick={OnDefaultAmountPress} />
+            <Button theme={ButtonThemes.translucent} text={'$70'} className="default-amount-button" onClick={OnDefaultAmountPress} />
+            <Button theme={ButtonThemes.translucent} text={'$80'} className="default-amount-button" onClick={OnDefaultAmountPress} />
+            <Button theme={ButtonThemes.translucent} text={'$90'} className="default-amount-button" onClick={OnDefaultAmountPress} />
+            <Button theme={ButtonThemes.translucent} text={'$100'} className="default-amount-button" onClick={OnDefaultAmountPress} />
+            <Button
+              text={'Reset'}
               className="default-amount-button reset"
               onClick={() => {
                 const inputField = document.getElementById('amount-input-field')
                 const amountInput = inputField.querySelector('input')
                 amountInput.value = null
                 formRef.current.amount = 0
-              }}>
-              Reset <GrPowerReset />
-            </button>
+              }}
+            />
           </div>
-
           {/* CATEGORY */}
           <SelectDropdown
-            options={DropdownManager.GetDefault.Reminders}
-            value={Object.keys(ExpenseCategories)[0]}
-            onChange={HandleCategorySelection}
+            options={DropdownManager.GetDefault.ExpenseCategories()}
+            value={DropdownManager.GetSelected.ExpenseCategory(categorySelection)}
+            onSelect={(e) => setCategorySelection(e.value)}
             placeholder={'Select a Category'}
             required={true}
             show={true}
           />
           <Spacer height={5} />
-
           {/* EXPENSE NAME */}
           <InputField
             onChange={(e) => (formRef.current.name = e.target.value)}
@@ -358,7 +328,6 @@ export default function NewExpenseForm() {
             placeholder={'Expense Title'}
             required={true}
           />
-
           {/* DUE DATE */}
           <InputField
             inputType={InputTypes.date}
@@ -366,29 +335,37 @@ export default function NewExpenseForm() {
             placeholder={'Due Date'}
             onDateOrTimeSelection={(date) => (formRef.current.dueDate = moment(date).format(DatetimeFormats.dateForDb))}
           />
-
           {/* NOTES */}
           <InputField onChange={(e) => (formRef.current.notes = e.target.value)} inputType={'textarea'} placeholder={'Notes'} />
           <hr />
-
           {/* PAYER */}
           {Manager.IsValid(coParents) && (
             <SelectDropdown
               options={DropdownManager.GetDefault.CoParents(coParents)}
               placeholder={'Select Expense Payer'}
-              onChange={HandlePayerSelection}
+              onSelect={(e) => {
+                console.log({
+                  name: e.label,
+                  key: e.value,
+                })
+                formRef.current.payer = {
+                  name: e.label,
+                  key: e.value,
+                }
+              }}
             />
           )}
-
+          <Spacer height={5} />
           {/* SHARE WITH */}
           <ShareWithDropdown onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coParents'} />
+          <Spacer height={5} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.IsValid(children) && (
             <SelectDropdown
               options={DropdownManager.GetDefault.CoParents(children)}
               placeholder={'Select Children to Include'}
-              onChange={HandleChildSelection}
+              onSelect={HandleChildSelection}
               isMultiple={true}
             />
           )}
@@ -396,9 +373,9 @@ export default function NewExpenseForm() {
           {/* RECURRING? */}
           <div className="flex">
             <Label text={'Recurring'} classes="always-show" />
-            <ToggleButton onCheck={() => (formRef.current.isRecurring = true)} onUncheck={() => (formRef.current.isRecurring = false)} />
+            <ToggleButton onCheck={() => setIsRecurring(true)} onUncheck={() => setIsRecurring(false)} />
           </div>
-          {formRef.current.isRecurring && (
+          {isRecurring && (
             <CheckboxGroup
               onCheck={HandleRecurringSelection}
               checkboxArray={DomManager.BuildCheckboxGroup({

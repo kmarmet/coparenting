@@ -113,7 +113,7 @@ export default function CustomWeekends({hide, showCard}) {
       wrapperClass="custom-weekends-schedule"
       title={'Custom Weekends Schedule'}
       showCard={showCard}
-      onClose={ResetForm}>
+      onClose={() => ResetForm()}>
       <hr className="mt-5" />
       <CheckboxGroup
         parentLabel={'Weekend YOU will have the child(ren)'}

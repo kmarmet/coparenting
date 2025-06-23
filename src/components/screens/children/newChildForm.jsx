@@ -111,10 +111,10 @@ const NewChildForm = ({hideCard, showCard}) => {
       wrapperClass="new-child-card"
       title={`Create ${name.length > 0 ? StringManager.GetFirstNameOnly(name) : 'Child'} Contact`}
       showCard={showCard}
-      onClose={ResetForm}>
-      <div id="new-child-container" className={`${theme}  form`}>
+      onClose={() => ResetForm()}>
+      <div id="new-child-container" className={`${theme}`}>
         <Spacer height={5} />
-        <div className="form new-child-form">
+        <div className="new-child-form">
           {/* NAME */}
           <InputField
             placeholder={'Name'}

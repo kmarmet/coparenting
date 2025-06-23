@@ -3,16 +3,17 @@ var ExpenseCategories;
 
 ExpenseCategories = {
   Childcare: 'Childcare',
-  ExtracurricularActivities: 'Extracurricular Activities',
-  Sports: 'Sports',
+  Clothing: 'Clothing',
   Educational: 'Educational',
-  Medical: 'Medical',
-  Travel: 'Travel',
-  Transportation: 'Transportation',
+  Entertainment: 'Entertainment',
   Dental: 'Dental',
   Gifting: 'Gifting',
+  Medical: 'Medical',
+  Miscellaneous: 'Miscellaneous',
   Pet: 'Pet',
-  General: "General"
+  Sports: 'Sports',
+  Transportation: 'Transportation',
+  Travel: 'Travel'
 };
 
 export default ExpenseCategories;

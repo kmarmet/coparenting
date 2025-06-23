@@ -8,6 +8,7 @@ import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
 import DB from '../../database/DB'
+import DB_UserScoped from '../../database/db_userScoped'
 import useCalendarEvents from '../../hooks/useCalendarEvents'
 import useChildren from '../../hooks/useChildren'
 import useCurrentUser from '../../hooks/useCurrentUser'
@@ -15,7 +16,6 @@ import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
 import AppManager from '../../managers/appManager'
 import CalendarManager from '../../managers/calendarManager.js'
-import DomManager from '../../managers/domManager'
 import DropdownManager from '../../managers/dropdownManager'
 import LogManager from '../../managers/logManager'
 import Manager from '../../managers/manager'
@@ -30,7 +30,6 @@ import Label from '../shared/label'
 import Map from '../shared/map'
 import MultilineDetailBlock from '../shared/multilineDetailBlock'
 import SelectDropdown from '../shared/selectDropdown'
-import ShareWithDropdown from '../shared/shareWithDropdown'
 import Spacer from '../shared/spacer.jsx'
 import ToggleButton from '../shared/toggleButton'
 import ViewDropdown from '../shared/viewDropdown'
@@ -53,12 +52,17 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   // State
   const [isVisitation, setIsVisitation] = useState(false)
   const [clonedDates, setClonedDates] = useState([])
-  const [view, setView] = useState('Details')
-  const [selectedChildrenOptions, setSelectedChildrenOptions] = useState([])
-  const [selectedReminderOptions, setSelectedReminderOptions] = useState([])
+  const [view, setView] = useState({label: 'Details', value: 'Details'})
 
+  // Set Default Dropdown Options
+  const [selectedChildrenOptions, setSelectedChildrenOptions] = useState(
+    DropdownManager.GetSelected.Children(event?.children?.map((x) => x?.general?.name))
+  )
+  const [selectedReminderOptions, setSelectedReminderOptions] = useState(DropdownManager.GetSelected.Reminders(event?.reminderTimes))
+  const [selectedShareWithOptions, setSelectedShareWithOptions] = useState(DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users))
+  const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
   // REF
-  const updatedEvent = useRef({...event, startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)})
+  const formRef = useRef({...event})
 
   const ResetForm = async (alertMessage = '') => {
     Manager.ResetForm('edit-event-form')
@@ -67,37 +71,35 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setIsVisitation(false)
     setEventIsRecurring(false)
     setEventIsCloned(false)
-    setView('Details')
-
+    setView({label: 'Details', value: 'Details'})
     setState({
       ...state,
       successAlertMessage: alertMessage,
       dateToEdit: moment().format(DatetimeFormats.dateForDb),
-      refreshKey: Manager.GetUid(),
     })
     hideCard()
   }
 
-  const EditNonOwnerEvent = async (_updatedEvent) => {
-    if (Manager.IsValid(updatedEvent?.current?.shareWith)) {
+  const EditNonOwnerEvent = async (_formRef) => {
+    if (Manager.IsValid(formRef?.current?.shareWith)) {
       // Remove currentUser from original event shareWith
       const shareWithWithoutCurrentUser = event.shareWith.filter((x) => x !== currentUser?.key)
       event.shareWith = shareWithWithoutCurrentUser
-      const updateIndex = DB.GetTableIndexById(calendarEvents, updatedEvent?.current?.id)
+      const updateIndex = DB.GetTableIndexById(calendarEvents, formRef?.current?.id)
 
       if (!Manager.IsValid(updateIndex)) {
         return false
       }
 
-      await CalendarManager.UpdateEvent(updatedEvent?.current?.ownerKey, updateIndex, event)
+      await CalendarManager.UpdateEvent(formRef?.current?.owner?.key, updateIndex, event)
 
       // Add cloned event for currentUser
-      await CalendarManager.addCalendarEvent(currentUser, _updatedEvent)
+      await CalendarManager.addCalendarEvent(currentUser, _formRef)
       UpdateManager.SendToShareWith(
         shareWithWithoutCurrentUser,
         currentUser,
         'Event Updated',
-        `${updatedEvent?.current?.title} has been updated`,
+        `${formRef?.current?.title} has been updated`,
         ActivityCategory.calendar
       )
     }
@@ -106,36 +108,37 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   // SUBMIT
   const Submit = async () => {
     try {
-      updatedEvent.current.isDateRange = eventIsDateRange
-      updatedEvent.current.isCloned = eventIsCloned
-      updatedEvent.current.isRecurring = eventIsRecurring
-      updatedEvent.current.ownerKey = currentUser?.key
-      updatedEvent.current.createdBy = currentUser?.name
-      updatedEvent.current.directionsLink = Manager.GetDirectionsLink(updatedEvent?.current?.address)
-      updatedEvent.current.websiteUrl = updatedEvent?.current?.websiteUrl
-      updatedEvent.current.fromVisitationSchedule = isVisitation
-      updatedEvent.current.children = Manager.IsValid(selectedChildrenOptions) ? selectedChildrenOptions : event?.children
-      updatedEvent.current.reminderTimes = Manager.IsValid(selectedReminderOptions) ? selectedReminderOptions : event?.reminderTimes
+      let updatedEvent = ObjectManager.merge(formRef.current, event, 'deep')
 
-      // Add birthday cake
-      if (Manager.Contains(updatedEvent?.current?.title, 'birthday')) {
-        updatedEvent.current.title += ' 🎂'
+      // Map Dropdown to Database
+      updatedEvent.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
+      updatedEvent.reminderTimes = DropdownManager.MappedForDatabase.RemindersFromArray(selectedReminderOptions)
+      updatedEvent.shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
+
+      // Set owner
+      updatedEvent.owner = {
+        key: currentUser?.key,
+        name: currentUser?.name,
       }
 
-      if (Manager.IsValid(updatedEvent.current)) {
-        if (!Manager.IsValid(updatedEvent?.current?.title)) {
+      // Add birthday cake emoji to title
+      if (Manager.Contains(updatedEvent?.title, 'birthday')) {
+        updatedEvent.title += ' 🎂'
+      }
+
+      if (Manager.IsValid(updatedEvent)) {
+        if (!Manager.IsValid(updatedEvent?.title)) {
           AlertManager.throwError('Event name is required')
           return false
         }
 
-        if (!Manager.IsValid(updatedEvent?.current?.startDate)) {
+        if (!Manager.IsValid(updatedEvent?.startDate)) {
           AlertManager.throwError('Please select a date for this event')
           return false
         }
 
         const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
-
-        const cleaned = ObjectManager.CleanObject(updatedEvent?.current)
+        const cleaned = ObjectManager.CleanObject(updatedEvent)
 
         // Events with multiple days
         if (cleaned.isRecurring || cleaned.isDateRange || cleaned.isCloned) {
@@ -167,25 +170,25 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
         // Update Single Event
         else {
-          if (cleaned.ownerKey === currentUser?.key) {
-            await DB.updateEntireRecord(`${dbPath}`, updatedEvent?.current, cleaned.id)
+          if (cleaned?.owner?.key === currentUser?.key) {
+            await DB.updateEntireRecord(`${dbPath}`, cleaned, cleaned.id)
           }
         }
         if (cleaned.ownerKey === currentUser?.key) {
-          if (Manager.IsValid(updatedEvent?.current?.shareWith)) {
+          if (Manager.IsValid(updatedEvent?.shareWith)) {
             UpdateManager.SendToShareWith(
-              updatedEvent?.current?.shareWith,
+              updatedEvent?.shareWith,
               currentUser,
               'Event Updated',
-              `${updatedEvent?.current?.title} has been updated`,
+              `${updatedEvent?.title} has been updated`,
               ActivityCategory.calendar
             )
           }
         }
       }
 
-      if (updatedEvent?.current?.ownerKey !== currentUser?.key) {
-        await EditNonOwnerEvent(updatedEvent.current)
+      if (updatedEvent?.ownerKey !== currentUser?.key) {
+        await EditNonOwnerEvent(formRef.current)
       }
       await ResetForm('Event Updated')
     } catch (error) {
@@ -193,23 +196,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     }
   }
 
-  const SetDefaultValues = async () => {
-    setView('Details')
-    setEventIsRecurring(updatedEvent?.current?.isRecurring)
-    setEventIsDateRange(updatedEvent?.current?.isDateRange)
-    updatedEvent.current = {...event}
-    console.log('Children', DropdownManager.GetSelected.Children(event?.children))
-    setSelectedReminderOptions(DropdownManager.GetSelected.Reminders(event?.reminderTimes))
-    setSelectedChildrenOptions(DropdownManager.GetSelected.Children(event?.children))
-
-    // Repeating
-    if (Manager.IsValid(updatedEvent?.current?.recurringInterval)) {
-      DomManager.SetDefaultCheckboxes('repeating', event, 'recurringInterval', false)
-    }
-  }
-
   const DeleteEvent = async () => {
-    const eventCount = calendarEvents.filter((x) => x?.title.toLowerCase() === updatedEvent?.current?.title.toLowerCase())?.length
+    const eventCount = calendarEvents.filter((x) => x?.title.toLowerCase() === event?.title.toLowerCase())?.length
 
     if (eventCount === 1) {
       await CalendarManager.deleteEvent(currentUser, event.id)
@@ -217,7 +205,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     } else {
       let clonedEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
       if (Manager.IsValid(clonedEvents)) {
-        clonedEvents = clonedEvents.filter((x) => x.title === updatedEvent?.current?.title)
+        clonedEvents = clonedEvents.filter((x) => x.title === event?.title)
         await CalendarManager.deleteMultipleEvents(clonedEvents, currentUser)
         await ResetForm('Event Deleted')
       }
@@ -225,36 +213,36 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   }
 
   const SetLocalConfirmMessage = () => {
-    let message = 'Are you sure you want to Delete this event?'
+    let message = 'Are you sure you want to delete this event?'
 
-    if (updatedEvent?.current?.isRecurring || updatedEvent?.current?.isCloned || updatedEvent?.current?.isDateRange) {
-      message = 'Are you sure you would like to Delete ALL events with these Details?'
+    if (formRef?.current?.isRecurring || formRef?.current?.isCloned || formRef?.current?.isDateRange) {
+      message = 'Are you sure you would like to delete ALL events with these details?'
     }
 
     return message
   }
 
-  const GetCreatedBy = () => {
-    if (Manager.IsValid(updatedEvent?.current?.createdBy)) {
-      if (updatedEvent?.current?.ownerKey === currentUser?.key) {
-        return 'Me'
-      } else {
-        return StringManager.GetFirstNameOnly(updatedEvent?.current?.createdBy)
-      }
-    }
+  const SetDefaultDropdownOptions = async () => {
+    setSelectedChildrenOptions(DropdownManager.GetSelected.Children(event?.children, children))
+    setSelectedReminderOptions(DropdownManager.GetSelected.Reminders(event?.reminderTimes))
+    setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users))
+    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(validAccounts))
+    setView({label: 'Details', value: 'Details'})
   }
 
   useEffect(() => {
     if (Manager.IsValid(event)) {
-      SetDefaultValues().then((r) => r)
       const index = DB.GetTableIndexById(calendarEvents, event?.id)
+      SetDefaultDropdownOptions().then((r) => r)
+      console.log('Updated Event: ', event, 'Index', index)
     }
   }, [event])
 
   return (
     <>
       <Form
-        key={refreshKey}
+        key={event?.id}
         onDelete={() => {
           AlertManager.confirmAlert(
             SetLocalConfirmMessage(),
@@ -267,275 +255,274 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             theme
           )
         }}
-        hasDelete={currentUser?.key === updatedEvent?.current?.ownerKey}
+        hasDelete={currentUser?.key === event?.owner?.key}
+        formRef={formRef}
         onSubmit={Submit}
         submitText={'Update'}
-        hasSubmitButton={view === 'Edit'}
-        onClose={async () => {
-          await ResetForm()
-        }}
-        title={StringManager.FormatEventTitle(StringManager.UppercaseFirstLetterOfAllWords(updatedEvent?.current?.title))}
+        hasSubmitButton={view?.label === 'Edit'}
+        onClose={() => ResetForm()}
+        title={StringManager.FormatEventTitle(StringManager.UppercaseFirstLetterOfAllWords(formRef?.current?.title))}
         showCard={showCard}
         deleteButtonText="Delete"
-        className="Edit-calendar-event"
-        viewSelector={
+        className="edit-calendar-event"
+        viewDropdown={
           <ViewDropdown
             show={showCard}
-            isMultiple={false}
             dropdownPlaceholder="Details"
-            selectedView={[{label: view, value: view}]}
-            updateState={(view) => {
+            selectedView={view}
+            onSelect={(view) => {
               setView(view)
             }}
           />
         }
-        wrapperClass={`Edit-calendar-event at-top ${updatedEvent?.current?.ownerKey === currentUser?.key ? 'owner' : 'non-owner'}`}>
+        wrapperClass={`edit-calendar-event at-top ${event?.owner?.key === currentUser?.key ? 'owner' : 'non-owner'}`}>
         <div id="edit-cal-event-container" className={`${theme} edit-event-form'`}>
-          {/* DETAILS */}
-          <div className={view === 'Details' ? 'view-wrapper details active' : 'view-wrapper'}>
-            <div className="blocks">
-              {/*  Date */}
-              <DetailBlock
-                valueToValidate={updatedEvent?.current?.isDateRange ? updatedEvent?.current?.staticStartDate : updatedEvent?.current?.startDate}
-                text={moment(updatedEvent?.current?.isDateRange ? updatedEvent?.current?.staticStartDate : updatedEvent?.current?.startDate).format(
-                  DatetimeFormats.readableMonthAndDayWithDayDigitOnly
-                )}
-                title={updatedEvent?.current?.isDateRange ? 'Start Date' : 'Date'}
-              />
+          <div className={'content-wrapper'}>
+            {/* DETAILS */}
+            <div className={`view-wrapper${view?.label === 'Details' ? ' details active' : ' details'}`}>
+              <div className="blocks">
+                {/*  Date */}
+                <DetailBlock
+                  valueToValidate={event?.isDateRange ? event?.staticStartDate : event?.startDate}
+                  text={moment(event?.isDateRange ? event?.staticStartDate : event?.startDate).format(
+                    DatetimeFormats.readableMonthAndDayWithDayDigitOnly
+                  )}
+                  title={event?.isDateRange ? 'Start Date' : 'Date'}
+                />
 
-              {/*  End Date */}
-              <DetailBlock
-                valueToValidate={updatedEvent?.current?.endDate}
-                text={moment(updatedEvent?.current?.endDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                title={'End Date'}
-              />
+                {/*  End Date */}
+                <DetailBlock
+                  valueToValidate={event?.endDate}
+                  text={moment(event?.endDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                  title={'End Date'}
+                />
 
-              {/*  Start Time */}
-              <DetailBlock
-                valueToValidate={updatedEvent?.current?.startTime}
-                text={moment(updatedEvent?.current?.startTime, DatetimeFormats.timeForDb).format('h:mma')}
-                title={'Start Time'}
-              />
+                {/*  Start Time */}
+                <DetailBlock
+                  valueToValidate={event?.startTime}
+                  text={moment(event?.startTime, DatetimeFormats.timeForDb).format('h:mma')}
+                  title={'Start Time'}
+                />
 
-              {/*  End Time */}
-              <DetailBlock
-                valueToValidate={updatedEvent?.current?.endTime}
-                text={moment(updatedEvent?.current?.endTime, DatetimeFormats.timeForDb).format('h:mma')}
-                title={'End time'}
-              />
+                {/*  End Time */}
+                <DetailBlock
+                  valueToValidate={event?.endTime}
+                  text={moment(event?.endTime, DatetimeFormats.timeForDb).format('h:mma')}
+                  title={'End time'}
+                />
 
-              {/*  Created By */}
-              <DetailBlock valueToValidate={updatedEvent?.current?.createdBy} text={GetCreatedBy()} title={'Creator'} />
+                {/*  Created By */}
+                <DetailBlock valueToValidate={event?.owner?.name} text={event?.owner?.name} title={'Creator'} />
 
-              {/*  Shared With */}
-              <MultilineDetailBlock title={'Shared with'} array={DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users, true)} />
+                {/*  Shared With */}
+                <MultilineDetailBlock title={'Shared with'} array={DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users, true)} />
 
-              {/* Reminders */}
-              <MultilineDetailBlock
-                title={'Reminders'}
-                dataType={MultilineDetailBlockDataTypes.Reminders}
-                array={DropdownManager.GetReadableReminderTimes(event?.reminderTimes)}
-              />
+                {/* Reminders */}
+                <MultilineDetailBlock
+                  title={'Reminders'}
+                  dataType={MultilineDetailBlockDataTypes.Reminders}
+                  array={DropdownManager.GetReadableReminderTimes(event?.reminderTimes)}
+                />
 
-              {/* Children */}
-              <MultilineDetailBlock title={'Children'} array={updatedEvent?.current?.children} />
+                {/* Children */}
+                <MultilineDetailBlock title={'Children'} array={event?.children} />
 
-              {/*  Notes */}
-              <DetailBlock valueToValidate={updatedEvent?.current?.notes} text={updatedEvent?.current?.notes} isFullWidth={true} title={'Notes'} />
+                {/*  Notes */}
+                <DetailBlock valueToValidate={event?.notes} text={formRef?.current?.notes} isFullWidth={true} title={'Notes'} />
+              </div>
+
+              {(Manager.IsValid(event?.address) || Manager.IsValid(event?.phone) || Manager.IsValid(event?.websiteUrl)) && (
+                <>
+                  <div className="blocks">
+                    {/*  Phone */}
+                    <DetailBlock
+                      valueToValidate={event?.phone}
+                      isPhone={true}
+                      text={StringManager.FormatPhone(event?.phone)}
+                      title={'Call'}
+                      topSpacerMargin={8}
+                      bottomSpacerMargin={8}
+                    />
+
+                    {/*  Website */}
+                    <DetailBlock
+                      valueToValidate={event?.websiteUrl}
+                      linkUrl={event?.websiteUrl}
+                      text={decodeURIComponent(event?.websiteUrl)}
+                      isLink={true}
+                      title={'Website/Link'}
+                    />
+
+                    {Manager.IsValid(event?.address) && (
+                      <>
+                        {/*  Location */}
+                        <DetailBlock
+                          topSpacerMargin={8}
+                          bottomSpacerMargin={8}
+                          valueToValidate={event?.address}
+                          isNavLink={true}
+                          text={event?.address}
+                          linkUrl={event?.address}
+                          title={'Navigation'}
+                        />
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* Recurring Frequency */}
+              {event?.isRecurring && (
+                <div className="flex">
+                  <b>
+                    <MdEventRepeat />
+                    DatetimeFormats
+                  </b>
+                  <span>{StringManager.UppercaseFirstLetterOfAllWords(event?.recurringFrequency)}</span>
+                </div>
+              )}
+
+              {/* Map */}
+              {!AppManager.IsDevMode() && Manager.IsValid(event?.address) && <Map locationString={event?.address} />}
             </div>
 
-            {(Manager.IsValid(updatedEvent?.current?.address) ||
-              Manager.IsValid(updatedEvent?.current?.phone) ||
-              Manager.IsValid(updatedEvent?.current?.websiteUrl)) && (
-              <>
-                <div className="blocks">
-                  {/*  Phone */}
-                  <DetailBlock
-                    valueToValidate={updatedEvent?.current?.phone}
-                    isPhone={true}
-                    text={StringManager.FormatPhone(updatedEvent?.current?.phone)}
-                    title={'Call'}
-                    topSpacerMargin={8}
-                    bottomSpacerMargin={8}
-                  />
-
-                  {/*  Website */}
-                  <DetailBlock
-                    valueToValidate={updatedEvent?.current?.websiteUrl}
-                    linkUrl={updatedEvent?.current?.websiteUrl}
-                    text={decodeURIComponent(updatedEvent?.current?.websiteUrl)}
-                    isLink={true}
-                    title={'Website/Link'}
-                  />
-
-                  {Manager.IsValid(updatedEvent?.current?.address) && (
-                    <>
-                      {/*  Location */}
-                      <DetailBlock
-                        topSpacerMargin={8}
-                        bottomSpacerMargin={8}
-                        valueToValidate={updatedEvent?.current?.address}
-                        isNavLink={true}
-                        text={updatedEvent?.current?.address}
-                        linkUrl={updatedEvent?.current?.address}
-                        title={'Navigation'}
-                      />
-                    </>
-                  )}
-                </div>
-              </>
-            )}
-
-            {/* Recurring Frequency */}
-            {updatedEvent?.current?.isRecurring && (
-              <div className="flex">
-                <b>
-                  <MdEventRepeat />
-                  DatetimeFormats
-                </b>
-                <span>{StringManager.UppercaseFirstLetterOfAllWords(updatedEvent?.current?.recurringFrequency)}</span>
-              </div>
-            )}
-
-            {/* Map */}
-            {!AppManager.IsDevMode() && Manager.IsValid(updatedEvent?.current?.address) && <Map locationString={updatedEvent?.current?.address} />}
-          </div>
-
-          {/* EDIT */}
-          <div className={view === 'Edit' ? 'view-wrapper edit active content' : 'view-wrapper content edit'}>
-            {/* EVENT NAME */}
-            <InputField
-              inputType={InputTypes.text}
-              placeholder={'Event Name'}
-              defaultValue={updatedEvent.current?.title}
-              wrapperClasses="show-label"
-              required={true}
-              onChange={async (e) => {
-                const inputValue = e.target.value
-                if (inputValue.length > 1) {
-                  updatedEvent.current.title = StringManager.FormatEventTitle(inputValue)
-                }
-              }}
-            />
-
-            {/* DATE */}
-            {!eventIsDateRange && (
+            {/* EDIT */}
+            <div className={`view-wrapper${view?.label === 'Edit' ? ' edit active' : ''}`}>
+              {/* EVENT NAME */}
               <InputField
-                placeholder={'Date'}
+                inputType={InputTypes.text}
+                placeholder={'Event Name'}
+                defaultValue={event?.title}
+                wrapperClasses="show-label"
                 required={true}
-                inputType={InputTypes.date}
-                onDateOrTimeSelection={(date) => (updatedEvent.current.startDate = moment(date).format(DatetimeFormats.dateForDb))}
-                defaultValue={updatedEvent.current.startDate}
+                onChange={async (e) => {
+                  const inputValue = e.target.value
+                  if (inputValue.length > 1) {
+                    formRef.current.title = StringManager.FormatEventTitle(inputValue)
+                  }
+                }}
               />
-            )}
 
-            {/* EVENT START/END TIME */}
-            {!eventIsDateRange && (
-              <>
-                {/* START TIME */}
+              {/* DATE */}
+              {!eventIsDateRange && (
                 <InputField
-                  wrapperClasses="start-time"
-                  labelText={'Start Time'}
-                  uidClass="event-start-time"
-                  required={false}
-                  inputType={InputTypes.time}
-                  defaultValue={updatedEvent?.current?.startTime}
-                  onDateOrTimeSelection={(e) => (updatedEvent.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}
+                  labelText={'Date'}
+                  required={true}
+                  inputType={InputTypes.date}
+                  onDateOrTimeSelection={(date) => (formRef.current.startDate = moment(date).format(DatetimeFormats.dateForDb))}
+                  defaultValue={event?.startDate}
                 />
+              )}
 
-                {/* END TIME */}
-                <InputField
-                  uidClass="event-end-time"
-                  wrapperClasses="end-time"
-                  labelText={'End Time'}
-                  required={false}
-                  defaultValue={updatedEvent?.current?.endTime}
-                  inputType={InputTypes.time}
-                  onDateOrTimeSelection={(e) => (updatedEvent.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}
-                />
-              </>
-            )}
+              {/* EVENT START/END TIME */}
 
-            <hr />
+              {!eventIsDateRange && (
+                <>
+                  {/* START TIME */}
+                  <InputField
+                    wrapperClasses="start-time"
+                    labelText={'Start Time'}
+                    uidClass="event-start-time"
+                    required={false}
+                    inputType={InputTypes.time}
+                    defaultValue={event?.startTime}
+                    onDateOrTimeSelection={(e) => (formRef.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}
+                  />
 
-            {/* SHARE WITH */}
-            <ShareWithDropdown
-              selectedValues={updatedEvent?.current?.shareWith}
-              placeholder={'Share with'}
-              required={false}
-              onSelection={(e) => (updatedEvent.current.shareWith = e?.map((x) => x.value))}
-              containerClass={`share-with-parents`}
-            />
+                  {/* END TIME */}
+                  <InputField
+                    uidClass="event-end-time"
+                    wrapperClasses="end-time"
+                    labelText={'End Time'}
+                    required={false}
+                    defaultValue={event?.endTime}
+                    inputType={InputTypes.time}
+                    onDateOrTimeSelection={(e) => (formRef.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}
+                  />
+                </>
+              )}
 
-            <Spacer height={2} />
+              <hr />
 
-            {/* REMINDERS */}
-            <SelectDropdown
-              options={DropdownManager.GetDefault.Reminders}
-              value={selectedReminderOptions}
-              isMultiple={true}
-              placeholder={'Select Reminders'}
-              onSelection={(e) => setSelectedReminderOptions(e.map((x) => x.value))}
-            />
-
-            <Spacer height={2} />
-
-            {/* INCLUDING WHICH CHILDREN */}
-            <SelectDropdown
-              options={DropdownManager.GetDefault.Children(children)}
-              value={selectedChildrenOptions}
-              placeholder={'Select Children to Include'}
-              onSelection={(e) => {
-                setSelectedChildrenOptions(e.map((x) => x.label))
-              }}
-              isMultiple={true}
-            />
-
-            <hr />
-
-            {/* URL/WEBSITE */}
-            <InputField
-              defaultValue={updatedEvent?.current?.websiteUrl}
-              placeholder={'URL/Website'}
-              wrapperClasses={Manager.IsValid(updatedEvent?.current?.websiteUrl) ? 'show-label' : ''}
-              required={false}
-              inputType={InputTypes.url}
-              onChange={(e) => (updatedEvent.current.websiteUrl = e.target.value)}
-            />
-
-            <AddressInput
-              defaultValue={updatedEvent?.current?.address}
-              placeholder={'Location'}
-              onChange={(address) => (updatedEvent.current.address = address)}
-            />
-
-            {/* PHONE */}
-            <InputField
-              wrapperClasses={Manager.IsValid(updatedEvent?.current?.phone) ? 'show-label' : ''}
-              defaultValue={updatedEvent?.current?.phone}
-              inputType={InputTypes.phone}
-              placeholder={'Phone'}
-              onChange={(e) => (updatedEvent.current.phone = StringManager.FormatPhone(e.target.value))}
-            />
-
-            {/* NOTES */}
-            <InputField
-              defaultValue={updatedEvent?.current?.notes}
-              placeholder={'Notes'}
-              required={false}
-              wrapperClasses={Manager.IsValid(updatedEvent?.current?.notes) ? 'show-label textarea' : 'textarea'}
-              inputType={InputTypes.textarea}
-              onChange={(e) => (updatedEvent.current.notes = e.target.value)}
-            />
-
-            {/* IS VISITATION? */}
-            <div className="flex visitation-toggle">
-              <Label classes="toggle" text={'Visitation Event'} />
-              <ToggleButton
-                isDefaultChecked={updatedEvent?.current?.fromVisitationSchedule}
-                onCheck={() => setIsVisitation(!isVisitation)}
-                onUncheck={() => setIsVisitation(!isVisitation)}
+              {/* SHARE WITH */}
+              <SelectDropdown
+                options={defaultShareWithOptions}
+                value={selectedShareWithOptions}
+                isMultiple={true}
+                placeholder={'Share with'}
+                onSelect={(e) => {
+                  setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWith(e.map((x) => x.value)))
+                }}
               />
+
+              <Spacer height={2} />
+
+              {/* REMINDERS */}
+              <SelectDropdown
+                options={DropdownManager.GetDefault.Reminders}
+                value={selectedReminderOptions}
+                isMultiple={true}
+                placeholder={'Select Reminders'}
+                onSelect={(e) => setSelectedReminderOptions(DropdownManager.GetSelected.Reminders(e.map((x) => x.value)))}
+              />
+              <Spacer height={2} />
+
+              {/* INCLUDING WHICH CHILDREN */}
+              <SelectDropdown
+                options={DropdownManager.GetDefault.Children(children)}
+                value={selectedChildrenOptions}
+                placeholder={'Select Children to Include'}
+                onSelect={(e) => setSelectedChildrenOptions(DropdownManager.GetSelected.Children(e.map((x) => x.label)))}
+                isMultiple={true}
+              />
+
+              <hr />
+
+              {/* URL/WEBSITE */}
+              <InputField
+                defaultValue={event?.websiteUrl}
+                placeholder={'URL/Website'}
+                wrapperClasses={Manager.IsValid(formRef?.current?.websiteUrl) ? 'show-label' : ''}
+                required={false}
+                inputType={InputTypes.url}
+                onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
+              />
+
+              {/* ADDRESS */}
+              <AddressInput
+                defaultValue={event?.address}
+                placeholder={'Location'}
+                onChange={(address) => (formRef.current.address = Manager.GetDirectionsLink(address))}
+              />
+
+              {/* PHONE */}
+              <InputField
+                wrapperClasses={Manager.IsValid(event?.phone) ? 'show-label' : ''}
+                defaultValue={event?.phone}
+                inputType={InputTypes.phone}
+                placeholder={'Phone'}
+                onChange={(e) => (formRef.current.phone = StringManager.FormatPhone(e.target.value))}
+              />
+
+              {/* NOTES */}
+              <InputField
+                defaultValue={event?.notes}
+                placeholder={'Notes'}
+                required={false}
+                wrapperClasses={Manager.IsValid(event?.notes) ? 'show-label textarea' : 'textarea'}
+                inputType={InputTypes.textarea}
+                onChange={(e) => (formRef.current.notes = e.target.value)}
+              />
+
+              {/* IS VISITATION? */}
+              <div className="flex visitation-toggle">
+                <Label classes="toggle" text={'Visitation Event'} />
+                <ToggleButton
+                  isDefaultChecked={event?.fromVisitationSchedule}
+                  onCheck={() => setIsVisitation(!isVisitation)}
+                  onUncheck={() => setIsVisitation(!isVisitation)}
+                />
+              </div>
             </div>
           </div>
         </div>

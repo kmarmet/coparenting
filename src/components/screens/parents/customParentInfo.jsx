@@ -49,7 +49,7 @@ export default function CustomParentInfo({hideCard, activeCoparent, showCard}) {
       wrapperClass="custom-coparent-card"
       title={'Add Custom Info'}
       showCard={showCard}
-      onClose={ResetForm}>
+      onClose={() => ResetForm()}>
       <Spacer height={8} />
       <div className="custom-coparent-info-wrapper">
         <InputField

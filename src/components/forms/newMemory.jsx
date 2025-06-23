@@ -161,7 +161,7 @@ export default function NewMemory() {
       wrapperClass="new-memory"
       submitText={'Upload'}
       title={'Share Memory'}
-      onClose={ResetForm}
+      onClose={() => ResetForm()}
       showCard={creationFormToShow === creationForms.memories}>
       <div className="new-memory-wrapper">
         {/* TITLE */}

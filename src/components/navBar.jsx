@@ -21,7 +21,7 @@ export default function NavBar({children, navbarClass}) {
 
   const screensToHideUpdates = [ScreenNames.children, ScreenNames.coparents, ScreenNames.chats, ScreenNames.contacts, ScreenNames.docViewer]
 
-  const changeCurrentScreen = async (screen) => {
+  const ChangeCurrentScreen = async (screen) => {
     setState({
       ...state,
       currentScreen: screen,
@@ -48,7 +48,7 @@ export default function NavBar({children, navbarClass}) {
           {/* CALENDAR */}
           <div
             style={DomManager.AnimateDelayStyle(1, 0.02)}
-            onClick={() => changeCurrentScreen(ScreenNames.calendar)}
+            onClick={() => ChangeCurrentScreen(ScreenNames.calendar)}
             className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
             <div id="calendar-and-month">
               <BsCalendar className={'calendar'} />
@@ -62,7 +62,7 @@ export default function NavBar({children, navbarClass}) {
             <div
               style={DomManager.AnimateDelayStyle(1, 0.03)}
               id="chat-menu-item"
-              onClick={() => changeCurrentScreen(ScreenNames.chats)}
+              onClick={() => ChangeCurrentScreen(ScreenNames.chats)}
               className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
               <IoChatbubblesOutline className={'chats'} />
               <p>Chats</p>
@@ -84,7 +84,7 @@ export default function NavBar({children, navbarClass}) {
             <div
               style={DomManager.AnimateDelayStyle(1, 0.05)}
               id="memories-menu-item"
-              onClick={() => changeCurrentScreen(ScreenNames.memories)}
+              onClick={() => ChangeCurrentScreen(ScreenNames.memories)}
               className={`${currentScreen === ScreenNames.memories ? 'active menu-item' : 'menu-item'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
               <IoMdImages />
               <p>Memories</p>
@@ -95,7 +95,7 @@ export default function NavBar({children, navbarClass}) {
           {currentUser?.accountType === 'parent' && !screensToHideUpdates.includes(currentScreen) && (
             <div
               style={DomManager.AnimateDelayStyle(1, 0.06)}
-              onClick={() => changeCurrentScreen(ScreenNames.updates)}
+              onClick={() => ChangeCurrentScreen(ScreenNames.updates)}
               className={`${Manager.IsValid(updates) ? 'unread' : ''} ${currentScreen === ScreenNames.updates ? 'active menu-item updates' : 'menu-item updates'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
               <PiNotificationFill className={'updates'} />
               <p>

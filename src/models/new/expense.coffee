@@ -24,11 +24,6 @@ class Expense
       name: options?.owner?.name ? ''
       phone: options?.owner?.phone ? ''
 
-    # Recipient
-    @recipient =
-      key: options?.recipient?.key ? ''
-      name: options?.recipient?.name ? ''
-
     # Payer
     @payer =
       phone: options?.payer?.ownerKey ? ''

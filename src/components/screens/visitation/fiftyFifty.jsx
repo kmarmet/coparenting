@@ -96,7 +96,7 @@ export default function FiftyFifty({hide, showCard}) {
       wrapperClass="add-fifty-fifty-schedule"
       title={'50/50 Visitation Schedule'}
       showCard={showCard}
-      onClose={ResetForm}>
+      onClose={() => ResetForm()}>
       <div className="text">
         <Spacer height={5} />
         <Accordion id={'fifty-fifty-info'} expanded={expandFiftyFiftyInfoText}>

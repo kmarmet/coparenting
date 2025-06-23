@@ -187,10 +187,10 @@ export default function NewSwapRequest() {
       wrapperClass="new-swap-request"
       title={'Request Visitation Swap'}
       subtitle="Request for your child(ren) to remain with you during the designated visitation time of your co-parent."
-      viewSelector={
+      viewDropdown={
         <ViewDropdown
           views={['Day', 'Days', 'Hours']}
-          updateState={(e) => {
+          onSelect={(e) => {
             if (e === 'Day') {
               ChangeSwapDuration(SwapDurations.single)
             }
@@ -204,10 +204,10 @@ export default function NewSwapRequest() {
         />
       }
       showCard={creationFormToShow === creationForms.swapRequest}
-      onClose={ResetForm}>
-      <div id="new-swap-request-container" className={`${theme} form`}>
+      onClose={() => ResetForm()}>
+      <div id="new-swap-request-container" className={`${theme}`}>
         {/* FORM */}
-        <div id="request-form" className="form single">
+        <div id="request-form" className="single">
           {/* SINGLE DATE */}
           {swapDuration === SwapDurations.single && (
             <InputField

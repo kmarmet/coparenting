@@ -19,8 +19,6 @@ export default function CheckboxGroup({
   const {state, setState} = useContext(globalState)
   const {theme} = state
 
-  console.log(elClass)
-
   return (
     <>
       <div className={`checkbox-group${Manager.IsValid(elClass) ? ` ${elClass}` : ''}`}>

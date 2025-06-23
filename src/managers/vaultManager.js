@@ -16,7 +16,7 @@ export default ArchiveManager = {
       obj = data[i];
       for (j = 0, len1 = obj.length; j < len1; j++) {
         key = obj[j];
-        obj[key] = StringManager.spaceBetweenWords(key);
+        obj[key] = StringManager.SpaceBetweenWords(key);
         obj[key] = StringManager.UppercaseFirstLetterOfAllWords(key);
       }
     }
@@ -26,7 +26,7 @@ export default ArchiveManager = {
     });
     for (k = 0, len2 = headers.length; k < len2; k++) {
       header = headers[k];
-      header = StringManager.spaceBetweenWords(header);
+      header = StringManager.SpaceBetweenWords(header);
       header = StringManager.UppercaseFirstLetterOfAllWords(header);
       formattedHeaders.push(header);
     }

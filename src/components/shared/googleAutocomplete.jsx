@@ -23,7 +23,7 @@ const GoogleAutocomplete = ({onChange = (e) => {}, defaultValue, addressType = '
     })
   }, [addressType])
 
-  return <input ref={inputRef} defaultValue={defaultValue} className="google-autocomplete-input" placeholder="Enter a location" />
+  return <input ref={inputRef} defaultValue={defaultValue} className="google-autocomplete-input" placeholder="Address" />
 }
 
 export default GoogleAutocomplete

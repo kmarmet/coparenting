@@ -138,10 +138,10 @@ export default function Checklists({showCard, hideCard}) {
       showCard={showCard}
       hasSubmitButton={false}
       title={'Checklists'}
-      viewSelector={
+      viewDropdown={
         <ViewDropdown
           shouldUpdateStateOnLoad={false}
-          updateState={(text) => {
+          onSelect={(text) => {
             const _view = text.toLowerCase()
             if (Manager.Contains(_view, 'to')) {
               setView('to')

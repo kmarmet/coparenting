@@ -127,10 +127,10 @@ export default function NewTransferChangeRequest() {
     <Form
       onSubmit={Submit}
       submitText={'Send'}
-      wrapperClass="new-transfer-request form at-top"
+      wrapperClass="new-transfer-request at-top"
       title={'Request Transfer Change '}
       showCard={creationFormToShow === creationForms.transferRequest}
-      onClose={ResetForm}>
+      onClose={() => ResetForm()}>
       <div className="transfer-request-wrapper">
         <div id="transfer-change-container" className={`${theme}`}>
           <div className="transfer-change">

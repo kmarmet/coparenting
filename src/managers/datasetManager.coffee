@@ -125,9 +125,9 @@ DatasetManager = {
   sortByProperty: (arr, prop, direction) ->
 #    arr = arr.filter (x) -> x[prop] isnt ""
     if direction is "asc"
-      _.sortBy arr, prop
+      return _.sortBy arr, prop
     else
-      _.sortBy(arr, prop).reverse()
+      return _.sortBy(arr, prop).reverse()
   sortDates: (arr, direction = "asc") ->
     _.sortBy arr, (date) -> moment(date).toDate()
   sort: (arr, direction) ->

@@ -8,7 +8,7 @@ import {initializeApp} from 'firebase/app'
 import {getAuth, onAuthStateChanged} from 'firebase/auth'
 import moment from 'moment'
 import React, {useEffect, useState} from 'react'
-import EditCalEvent from './components/forms/editCalEvent.jsx'
+import EditCalEvent from './components/forms/editCalEvent'
 import NewCalendarEvent from './components/forms/newCalendarEvent.jsx'
 import NewExpenseForm from './components/forms/newExpenseForm.jsx'
 import NewMemory from './components/forms/newMemory.jsx'
@@ -242,12 +242,12 @@ export default function App() {
           <CreationMenu />
 
           {/* NEW FORMS */}
-          <NewCalendarEvent showCard={creationFormToShow === CreationForms.calendar} />
-          <NewSwapRequest showCard={creationFormToShow === CreationForms.swapRequest} />
-          <NewTransferChangeRequest showCard={creationFormToShow === CreationForms.transferRequest} />
-          <NewMemory showCard={creationFormToShow === CreationForms.memories} />
-          <NewDocument showCard={creationFormToShow === CreationForms.documents} />
-          <NewExpenseForm showCard={creationFormToShow === CreationForms.expense} />
+          <NewCalendarEvent />
+          <NewSwapRequest />
+          <NewTransferChangeRequest />
+          <NewMemory />
+          <NewDocument />
+          <NewExpenseForm />
           <NewCoParentForm
             showCard={creationFormToShow === CreationForms.coparent}
             hideCard={() => setState({...state, creationFormToShow: '', refreshKey: Manager.GetUid()})}

@@ -23,8 +23,8 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
     const dayEvents = arr.filter((x) => x.startDate === dayDate)
     let dotObjects = []
     for (let event of dayEvents) {
-      const isCurrentUserDot = event?.ownerKey === currentUser?.key
-      if (event?.isHoliday && !event?.fromVisitationSchedule && !Manager.IsValid(event?.ownerKey)) {
+      const isCurrentUserDot = event?.owner?.key === currentUser?.key
+      if (event?.isHoliday && !event?.fromVisitationSchedule && !Manager.IsValid(event?.owner?.key)) {
         dotObjects.push({
           className: 'holiday-event-dot',
           id: event?.id,
@@ -66,7 +66,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
     if (clickedEvent.isHoliday) {
       return false
     }
-    if (clickedEvent?.ownerKey !== currentUser?.key && clickedEvent?.fromVisitationSchedule) {
+    if (clickedEvent?.owner?.key !== currentUser?.key && clickedEvent?.fromVisitationSchedule) {
       return false
     }
     setTimeout(() => {
@@ -144,7 +144,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
 
                       {/* TO DATE */}
                       {Manager.IsValid(event?.endDate, true) && event?.endDate !== startDate && (
-                        <span id="subtitle">{moment(event?.endDate).format(DatetimeFormats.readableDay)}</span>
+                        <span id="subtitle">{moment(event?.endDate).format(DatetimeFormats.readableMonthAndDay)}</span>
                       )}
 
                       {/* START/END TIMES */}

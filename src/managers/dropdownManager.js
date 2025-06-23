@@ -11,7 +11,12 @@ import CalendarMapper from "../mappers/calMapper";
 
 import DatasetManager from "./datasetManager";
 
+import ExpenseCategories from "../constants/expenseCategories";
+
+import ExpenseSortByTypes from "../constants/expenseSortByTypes";
+
 DropdownManager = {
+  // HELPERS
   GetReadableReminderTimes: function(reminderTimes) {
     var i, len, readableTimes, time;
     readableTimes = [];
@@ -25,6 +30,7 @@ DropdownManager = {
     }
     return readableTimes;
   },
+  // MAPPERS
   MappedForDatabase: {
     RemindersFromArray: function(times) {
       var formatted, i, len, time;
@@ -35,20 +41,32 @@ DropdownManager = {
           formatted.push(CalendarMapper.GetReminderTimes(time != null ? time.value : void 0));
         }
       }
-      return DatasetManager.GetValidArray(formatted, true);
+      return DatasetManager.GetValidArray(formatted);
     },
-    ChildrenFromArray: function(times) {
-      var formatted, i, len, time;
+    ShareWithFromArray: function(users) {
+      var formatted, i, len, user;
       formatted = [];
-      if (Manager.IsValid(times)) {
-        for (i = 0, len = times.length; i < len; i++) {
-          time = times[i];
-          formatted.push(time != null ? time.label : void 0);
+      if (Manager.IsValid(users)) {
+        for (i = 0, len = users.length; i < len; i++) {
+          user = users[i];
+          formatted.push(user != null ? user.value : void 0);
         }
       }
-      return DatasetManager.GetValidArray(formatted, true);
+      return DatasetManager.GetValidArray(formatted);
+    },
+    ChildrenFromArray: function(children) {
+      var child, formatted, i, len;
+      formatted = [];
+      if (Manager.IsValid(children)) {
+        for (i = 0, len = children.length; i < len; i++) {
+          child = children[i];
+          formatted.push(child != null ? child.label : void 0);
+        }
+      }
+      return DatasetManager.GetValidArray(formatted);
     }
   },
+  // GET SELECTED
   GetSelected: {
     Reminders: function(reminders) {
       var i, len, options, reminder;
@@ -78,15 +96,38 @@ DropdownManager = {
       }
       return options;
     },
-    ShareWith: function(accountsFromKeys) {
-      var i, len, options, user;
+    ExpenseCategory: function(category) {
+      if (!Manager.IsValid(category)) {
+        return 'Category';
+      }
+      return [
+        {
+          label: category,
+          value: category
+        }
+      ];
+    },
+    View: function(view) {
+      if (!Manager.IsValid(view)) {
+        return 'Select View';
+      }
+      return [
+        {
+          label: view,
+          value: view
+        }
+      ];
+    },
+    ShareWith: function(names) {
+      var i, len, name, options;
       options = [];
-      if (Manager.IsValid(accountsFromKeys)) {
-        for (i = 0, len = accountsFromKeys.length; i < len; i++) {
-          user = accountsFromKeys[i];
+      console.log(names);
+      if (Manager.IsValid(names)) {
+        for (i = 0, len = names.length; i < len; i++) {
+          name = names[i];
           options.push({
-            value: user != null ? user.key : void 0,
-            label: StringManager.GetFirstNameAndLastInitial(user != null ? user.name : void 0)
+            value: name,
+            label: name
           });
         }
       }
@@ -101,13 +142,13 @@ DropdownManager = {
           user = users != null ? users.find((x) => {
             return (x != null ? x.key : void 0) === key;
           }) : void 0;
-          if (Manager.IsValid(user)) {
-            options.push({
-              value: user != null ? user.key : void 0,
-              label: StringManager.GetFirstNameAndLastInitial(user != null ? user.name : void 0)
-            });
-          }
         }
+      }
+      if (Manager.IsValid(user)) {
+        options.push({
+          value: user != null ? user.key : void 0,
+          label: StringManager.GetFirstNameAndLastInitial(user != null ? user.name : void 0)
+        });
       }
       if (labelsOnly) {
         return options.map((x) => {
@@ -117,7 +158,46 @@ DropdownManager = {
       return options;
     }
   },
+  // GET DEFAULT
   GetDefault: {
+    ExpenseCategories: function() {
+      var category, i, len, options, ref;
+      options = [];
+      ref = Object.keys(ExpenseCategories);
+      for (i = 0, len = ref.length; i < len; i++) {
+        category = ref[i];
+        options.push({
+          value: category,
+          label: category
+        });
+      }
+      return options;
+    },
+    Views: function(views) {
+      var i, len, options, view;
+      options = [];
+      for (i = 0, len = views.length; i < len; i++) {
+        view = views[i];
+        options.push({
+          value: view,
+          label: view
+        });
+      }
+      return options;
+    },
+    ExpenseSortByTypes: function() {
+      var category, i, len, options, ref;
+      options = [];
+      ref = Object.keys(ExpenseSortByTypes);
+      for (i = 0, len = ref.length; i < len; i++) {
+        category = ref[i];
+        options.push({
+          value: category,
+          label: category
+        });
+      }
+      return options;
+    },
     Reminders: [
       {
         label: "5 Minutes Before",
@@ -136,15 +216,15 @@ DropdownManager = {
         value: "timeOfEvent"
       }
     ],
-    ShareWith: function(shareWith) {
-      var i, len, options, user;
+    ShareWith: function(validUserAccounts) {
+      var i, len, options, ref, user;
       options = [];
-      if (Manager.IsValid(shareWith)) {
-        for (i = 0, len = shareWith.length; i < len; i++) {
-          user = shareWith[i];
+      if (Manager.IsValid(validUserAccounts)) {
+        for (i = 0, len = validUserAccounts.length; i < len; i++) {
+          user = validUserAccounts[i];
           options.push({
-            value: user != null ? user.key : void 0,
-            label: StringManager != null ? StringManager.UppercaseFirstLetterOfAllWords(user != null ? user.name : void 0) : void 0
+            value: (user != null ? user.key : void 0) || (user != null ? user.userKey : void 0),
+            label: StringManager != null ? StringManager.UppercaseFirstLetterOfAllWords((user != null ? user.name : void 0) || (user != null ? (ref = user.general) != null ? ref.name : void 0 : void 0)) : void 0
           });
         }
       }
@@ -157,7 +237,7 @@ DropdownManager = {
         for (i = 0, len = users.length; i < len; i++) {
           user = users[i];
           options.push({
-            value: user != null ? user.key : void 0,
+            value: user != null ? user.userKey : void 0,
             label: StringManager != null ? StringManager.UppercaseFirstLetterOfAllWords(user != null ? user.name : void 0) : void 0
           });
         }

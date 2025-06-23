@@ -3,7 +3,7 @@ import {getAuth, signOut} from 'firebase/auth'
 import React, {useContext, useEffect, useRef} from 'react'
 import {AiOutlineLogout} from 'react-icons/ai'
 import {BsHouses, BsImages} from 'react-icons/bs'
-import {GrInstallOption, GrSettingsOption, GrUserAdmin} from 'react-icons/gr'
+import {GrInstallOption, GrUserAdmin, TfiSettings} from 'react-icons/gr'
 import {IoChatbubblesOutline} from 'react-icons/io5'
 import {LiaFileInvoiceDollarSolid} from 'react-icons/lia'
 import {LuCalendarDays} from 'react-icons/lu'
@@ -11,9 +11,9 @@ import {MdOutlineContacts} from 'react-icons/md'
 import {PiFiles, PiNotificationFill, PiSealQuestion, PiSwap, PiUsers, PiUsersThree, PiVault} from 'react-icons/pi'
 import {RiAccountPinCircleLine, RiParentLine} from 'react-icons/ri'
 import {TbTransferIn} from 'react-icons/tb'
+import {TfiSettings} from 'react-icons/tfi'
 import {useSwipeable} from 'react-swipeable'
 import NotificationBadge from '../components/shared/notificationBadge'
-import Overlay from '../components/shared/overlay'
 import feedbackEmotions from '../constants/feedbackEmotions'
 import ScreenNames from '../constants/screenNames'
 import globalState from '../context'
@@ -30,7 +30,7 @@ export default function FullMenu() {
   const {currentUser} = useCurrentUser()
   const {feedback} = useFeedback()
   const auth = getAuth()
-  const ref = useRef(null)
+  const scrollRef = useRef(null)
 
   const handlers = useSwipeable({
     swipeDuration: 300,
@@ -79,16 +79,24 @@ export default function FullMenu() {
 
   useEffect(() => {
     if (menuIsOpen) {
-      setState({...state, showOverlay: true})
+      const sharingSection = document.querySelector('.section.sharing')
+      setTimeout(() => {
+        if (Manager.IsValid(sharingSection)) {
+          sharingSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          })
+        }
+      }, 1000)
     }
   }, [menuIsOpen])
 
   return (
-    <Overlay show={menuIsOpen}>
-      <div className="swipe-bar"></div>
-      {Manager.IsValid(currentUser) && (
-        <div id="full-menu-wrapper" {...handlers} className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(menuIsOpen, '.fade-up-wrapper')}`}>
-          <div id="full-menu" className={`full-menu-wrapper ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
+    <div id="full-menu-wrapper" className={menuIsOpen ? 'active' : ''}>
+      <div id={'full-menu-overlay'}>
+        <div className="swipe-bar"></div>
+        {Manager.IsValid(currentUser) && (
+          <div ref={scrollRef} id="full-menu-card" {...handlers}>
             <div id="menu-sections">
               {/* SHARING */}
               <div style={DomManager.AnimateDelayStyle(1, 0.3)} className={`section sharing ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
@@ -303,7 +311,7 @@ export default function FullMenu() {
                     onClick={(e) => ChangeCurrentScreen(ScreenNames.settings, e)}>
                     <div className="content">
                       <div className="svg-wrapper">
-                        <GrSettingsOption />
+                        <TfiSettings />
                       </div>
                       <p>Settings</p>
                     </div>
@@ -385,8 +393,8 @@ export default function FullMenu() {
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </Overlay>
+        )}
+      </div>
+    </div>
   )
 }

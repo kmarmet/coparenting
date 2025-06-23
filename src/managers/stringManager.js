@@ -149,7 +149,7 @@ StringManager = {
   formatFileName: function(fileName) {
     return fileName.replaceAll(' ', '-').replaceAll('(', '').replaceAll(')', '');
   },
-  spaceBetweenWords: function(input) {
+  SpaceBetweenWords: function(input) {
     return input.toString().replace(/([a-z])([A-Z])/g, '$1 $2');
   },
   addLongTextClass: function(text) {
@@ -207,7 +207,7 @@ StringManager = {
     str = str.replace(/([a-z])([A-Z])/, '$1 $2');
     return str;
   },
-  getFirstWord: function(input) {
+  GetFirstWord: function(input) {
     return input.toString().replace(/ .*/, '');
   },
   UppercaseFirstLetterOfAllWords: function(input) {

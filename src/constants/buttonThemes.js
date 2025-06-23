@@ -9,7 +9,8 @@ ButtonThemes = {
   blend: "blend",
   grey: "grey",
   accent: "accent",
-  purple: "purple"
+  purple: "purple",
+  translucent: "translucent"
 };
 
 export default ButtonThemes;

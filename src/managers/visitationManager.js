@@ -204,7 +204,7 @@ const VisitationManager = {
     ]
     holidays.forEach((holiday) => {
       visitationRelatedHolidays.forEach((mainHoliday) => {
-        if (StringManager.getFirstWord(mainHoliday) === StringManager.getFirstWord(holiday.name)) {
+        if (StringManager.GetFirstWord(mainHoliday) === StringManager.GetFirstWord(holiday.name)) {
           const exists = visitationHolidays.filter((x) => Manager.Contains(x.name, holiday.name))
           if (exists.length === 0) {
             if (holiday.name === 'Juneteenth National Independence Day') {

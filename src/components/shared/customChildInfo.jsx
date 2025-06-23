@@ -92,15 +92,15 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
       submitText={'Done'}
       className="custom-child-info-wrapper"
       wrapperClass="custom-child-info-card"
-      onClose={ResetForm}
+      onClose={() => ResetForm()}
       title={'Add Your Own Info'}
       submitIcon={<GrCheckmark />}
-      viewSelector={
+      viewDropdown={
         <ViewDropdown
           defaultView={'General'}
           wrapperClasses="child-info"
           views={['General', 'Medical', 'Schooling', 'Behavior']}
-          updateState={(e) => setInfoSection(e.toLowerCase())}
+          onSelect={(e) => setInfoSection(e.toLowerCase())}
         />
       }
       showCard={showCard}>

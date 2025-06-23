@@ -75,7 +75,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
       onSubmit={AddToCalendar}
       title={'Every other Weekend Visitation Schedule'}
       showCard={showCard}
-      onClose={ResetForm}>
+      onClose={() => ResetForm()}>
       <Label text={'Please specify the upcoming Friday you would like to use as the starting point for the visitation schedule'} />
       <Spacer height={5} />
       <InputField

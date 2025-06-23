@@ -8,8 +8,8 @@ export default function SelectDropdown({
   value,
   wrapperClasses,
   uidClass = '',
-  isMultiple = false,
-  onSelection = (e) => {},
+  isMultiple: selectMultiple = false,
+  onSelect = (e) => {},
   placeholder = '',
   options = [],
 }) {
@@ -23,13 +23,13 @@ export default function SelectDropdown({
         isClearable={false}
         captureMenuScroll={false}
         blurInputOnSelect={false}
-        closeMenuOnSelect={!isMultiple}
+        closeMenuOnSelect={!selectMultiple}
         className={`${wrapperClasses} select-dropdown`}
         uidClass={uidClass}
-        isMulti={isMultiple}
+        isMulti={selectMultiple}
         menuShouldScrollIntoView={true}
         value={value}
-        onChange={onSelection}
+        onChange={onSelect}
         options={options}
         onMenuOpen={(e) => {}}
       />

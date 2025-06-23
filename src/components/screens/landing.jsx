@@ -53,7 +53,7 @@ export default function Landing() {
 
   const GetFadeUpClass = (element) => {
     const scrollWrapper = document.querySelector('#landing-wrapper')
-    if (DomManager.mostIsInViewport(scrollWrapper, element)) {
+    if (DomManager.MostIsInViewport(scrollWrapper, element)) {
       if (!Manager.Contains(element.classList, DomManager.AnimateClasses.names.fadeInUp)) {
         return `${DomManager.AnimateClasses.names.fadeInUp} ${DomManager.AnimateClasses.names.default}`
       }
@@ -65,7 +65,7 @@ export default function Landing() {
     const scrollWrapper = document.querySelector('#landing-wrapper')
     const scrollToTopButton = document.querySelector('#scroll-to-top-button-wrapper')
 
-    if (DomManager.mostIsInViewport(scrollWrapper, firstViewableBox)) {
+    if (DomManager.MostIsInViewport(scrollWrapper, firstViewableBox)) {
       scrollToTopButton.classList.remove('hide')
     } else {
       scrollToTopButton.classList.add('hide')

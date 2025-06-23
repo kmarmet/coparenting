@@ -6,7 +6,7 @@ import DB_UserScoped from "../database/db_userScoped"
 import CalMapper from "../mappers/calMapper"
 import DateManager from "./dateManager"
 
-DomManager = {
+DomManager =
   AnimateDelayStyle: (index, delay = .2) ->
     return {animationDelay: "#{index * delay}s"}
 
@@ -161,8 +161,21 @@ DomManager = {
           AddClasses(item)
         , index * delay
 
+  ToggleDisableScrollClass: (addOrRemove) ->
+    appContentWithSidebar = document.querySelector '#app-content-with-sidebar'
+    pageContainer = document.querySelector '.page-container'
+    if pageContainer && addOrRemove is 'add'
+      pageContainer.classList.add 'disable-scroll'
+      document.body.classList.add 'disable-scroll'
+      appContentWithSidebar?.classList?.add 'disable-scroll'
+    else
+      if pageContainer
+        pageContainer.classList.remove 'disable-scroll'
+
+      document.body.classList.remove 'disable-scroll'
+      appContentWithSidebar?.classList?.remove 'disable-scroll'
+
   SetDefaultCheckboxes: (checkboxContainerClass, object, propName, isArray = false, values) ->
-# Share With
     if checkboxContainerClass == 'share-with'
       if Manager.IsValid(values)
         for phone in values
@@ -181,6 +194,7 @@ DomManager = {
           box = document.querySelector("[data-label='#{CalMapper.GetReadableReminderTime(timeframe)}'] .box")
           if Manager.IsValid(box)
             box.classList.add('active')
+
 
   CheckIfElementIsTag: (element, tag) ->
     return element.target.tagName == tag
@@ -221,6 +235,9 @@ DomManager = {
     DomManager.ToggleActive(clickedEl)
 
     return DatasetManager.GetValidArray(updated)
+
+  GetRandomHexColor: () ->
+    return "#" + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0')
 
   BuildCheckboxGroup: ({
     currentUser,
@@ -374,27 +391,13 @@ DomManager = {
         rect.bottom <= (window.innerHeight or document.documentElement.clientHeight) and
         rect.right <= (window.innerWidth or document.documentElement.clientWidth)
 
-  showInputLabels: (wrapperClass) ->
-    inputs = wrapperClass.querySelectorAll('input,textarea')
-    for input in inputs
-      if (input)
-        if input.value.length > 0 || input?.textContent.length > 0
-          if !input.classList.contains("react-toggle-screenreader-only")
-            if !input.classList.contains("MuiBase-input")
-              parent = input.parentNode
-              if parent
-                parent.classList.add('active')
-                labelWrapper = parent.querySelector(".label-wrapper")
-                if labelWrapper
-                  labelWrapper.classList.add("active")
-
-  mostIsInViewport: (scrollWrapper, el) ->
+  MostIsInViewport: (scrollWrapper, el) ->
     if Manager.IsValid(el)
       rect = el.getBoundingClientRect()
       scrollWrapperHeight = scrollWrapper.getBoundingClientRect().height
       pxCloseToEl = rect.top - scrollWrapperHeight;
-
-      pxCloseToEl <= -170
+      console.log(true)
+      return pxCloseToEl <= -170
 
   AddScrollListener: (scrollableElement, callback, delay) ->
     console.log(scrollableElement)
@@ -412,15 +415,13 @@ DomManager = {
 
   clearTextSelection: ->
     if window.getSelection
-# Chrome
       if window.getSelection().empty
         window.getSelection().empty()
       else if window.getSelection().removeAllRanges
-# Firefox
         window.getSelection().removeAllRanges()
     else if document.selection
-# IE?
       document.selection.empty()
-}
+
+
 
 export default DomManager
