@@ -86,7 +86,28 @@ ObjectManager = {
     # Return undefined to signal deletion
     return undefined
 
-  GetValidObject: (obj) -> Object.fromEntries((Object.entries(obj).filter ([_, value]) -> Manager.IsValid(value)))
+
+  GetValidObject: (obj) ->
+    if Array.isArray(obj)
+      return obj
+        .map(ObjectManager.GetValidObject)
+        .filter (item) ->
+    else if typeof obj is 'object' and obj isnt null
+      return Object.entries(obj)
+        .reduce (acc, [key, value]) ->
+
+          cleanedValue = ObjectManager.GetValidObject(value)
+
+          isValidValue = cleanedValue isnt undefined and cleanedValue isnt null and
+            not (typeof cleanedValue is 'object' and not Array.isArray(cleanedValue) and Object.keys(cleanedValue).length is 0)
+
+          if isValidValue
+            acc[key] = cleanedValue
+
+          return acc
+      , {}
+
+    return obj
 
   RemoveUnusedProperties: (obj, modelKeys) ->
     console.log(obj, modelKeys);

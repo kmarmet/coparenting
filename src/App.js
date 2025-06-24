@@ -16,6 +16,7 @@ import NewSwapRequest from './components/forms/newSwapRequest.jsx'
 import NewTransferChangeRequest from './components/forms/newTransferRequest.jsx'
 import FullMenu from './components/fullMenu'
 import AdminDashboard from './components/screens/admin/adminDashboard'
+import Changelog from './components/screens/admin/changelog'
 import Login from './components/screens/auth/login.jsx'
 import Registration from './components/screens/auth/registration.jsx'
 import EventCalendar from './components/screens/calendar/calendar.jsx'
@@ -265,6 +266,7 @@ export default function App() {
 
             {/* ADMIN */}
             {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}
+            {currentScreen === ScreenNames.changelog && <Changelog />}
 
             {/* AUTHENTICATION */}
             {currentScreen === ScreenNames.login && <Login />}

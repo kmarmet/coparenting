@@ -15,6 +15,8 @@ import ExpenseCategories from "../constants/expenseCategories";
 
 import ExpenseSortByTypes from "../constants/expenseSortByTypes";
 
+import DB_UserScoped from "../database/db_userScoped";
+
 DropdownManager = {
   // HELPERS
   GetReadableReminderTimes: function(reminderTimes) {
@@ -118,17 +120,19 @@ DropdownManager = {
         }
       ];
     },
-    ShareWith: function(names) {
-      var i, len, name, options;
+    ShareWith: async function(currentUser) {
+      var account, i, len, options, ref, validAccounts;
       options = [];
-      console.log(names);
-      if (Manager.IsValid(names)) {
-        for (i = 0, len = names.length; i < len; i++) {
-          name = names[i];
-          options.push({
-            value: name,
-            label: name
-          });
+      validAccounts = (await DB_UserScoped.getValidAccountsForUser(currentUser));
+      if (Manager.IsValid(validAccounts)) {
+        for (i = 0, len = validAccounts.length; i < len; i++) {
+          account = validAccounts[i];
+          if (Manager.IsValid(account) && (Manager.IsValid(account.userKey) || Manager.IsValid(account.key))) {
+            options.push({
+              value: account.key || account.userKey,
+              label: (account != null ? account.name : void 0) || (account != null ? (ref = account.general) != null ? ref.name : void 0 : void 0)
+            });
+          }
         }
       }
       return options;
@@ -173,28 +177,18 @@ DropdownManager = {
       }
       return options;
     },
-    Views: function(views) {
-      var i, len, options, view;
-      options = [];
-      for (i = 0, len = views.length; i < len; i++) {
-        view = views[i];
-        options.push({
-          value: view,
-          label: view
-        });
-      }
-      return options;
-    },
     ExpenseSortByTypes: function() {
       var category, i, len, options, ref;
       options = [];
-      ref = Object.keys(ExpenseSortByTypes);
-      for (i = 0, len = ref.length; i < len; i++) {
-        category = ref[i];
-        options.push({
-          value: category,
-          label: category
-        });
+      if (Manager.IsValid(ExpenseSortByTypes)) {
+        ref = Object.keys(ExpenseSortByTypes);
+        for (i = 0, len = ref.length; i < len; i++) {
+          category = ref[i];
+          options.push({
+            value: category,
+            label: category
+          });
+        }
       }
       return options;
     },
@@ -216,17 +210,20 @@ DropdownManager = {
         value: "timeOfEvent"
       }
     ],
-    ShareWith: function(validUserAccounts) {
-      var i, len, options, ref, user;
-      options = [];
-      if (Manager.IsValid(validUserAccounts)) {
-        for (i = 0, len = validUserAccounts.length; i < len; i++) {
-          user = validUserAccounts[i];
-          options.push({
-            value: (user != null ? user.key : void 0) || (user != null ? user.userKey : void 0),
-            label: StringManager != null ? StringManager.UppercaseFirstLetterOfAllWords((user != null ? user.name : void 0) || (user != null ? (ref = user.general) != null ? ref.name : void 0 : void 0)) : void 0
-          });
-        }
+    ShareWith: function(children, coParents) {
+      var childAccounts, merged, options;
+      if (Manager.IsValid(children) && Manager.IsValid(coParents)) {
+        childAccounts = children.filter(function(x) {
+          return x != null ? x.userKey : void 0;
+        });
+        merged = DatasetManager.CombineArrays(childAccounts, coParents);
+        options = merged.map(function(x) {
+          var ref;
+          return {
+            label: (x != null ? (ref = x.general) != null ? ref.name : void 0 : void 0) || (x != null ? x.name : void 0),
+            value: (x != null ? x.userKey : void 0) || (x != null ? x.key : void 0)
+          };
+        });
       }
       return options;
     },

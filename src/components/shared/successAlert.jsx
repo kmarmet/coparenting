@@ -1,7 +1,6 @@
 import React, {useContext, useEffect} from 'react'
 import {IoClose} from 'react-icons/io5'
 import globalState from '../../context'
-import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 
 const SuccessAlert = () => {
@@ -20,26 +19,24 @@ const SuccessAlert = () => {
   }
 
   useEffect(() => {
+    const successAlertWrapper = document.getElementById('success-alert-wrapper')
     if (Manager.IsValid(successAlertMessage, true)) {
-      DomManager.ToggleAnimation('add', 'success-alert', DomManager.AnimateClasses.names.fadeInDown)
+      successAlertWrapper.classList.add('active')
       setTimeout(() => {
         setTimeout(() => {
           setState({...state, successAlertMessage: null})
+          successAlertWrapper.classList.remove('active')
           Dismiss()
-        }, 1000)
-      }, 2200)
+        }, 500)
+      }, 1500)
     }
   }, [successAlertMessage])
 
   return (
-    <>
-      {Manager.IsValid(successAlertMessage, true) && (
-        <div id="success-alert-wrapper" onClick={Dismiss} className={`success-alert`}>
-          <p className="success-alert-text">{successAlertMessage}</p>
-          <IoClose className={'alert-close-icon'} />
-        </div>
-      )}
-    </>
+    <div id="success-alert-wrapper" onClick={Dismiss} className={`success-alert`}>
+      <p className="success-alert-text">{successAlertMessage}</p>
+      <IoClose className={'alert-close-icon'} />
+    </div>
   )
 }
 

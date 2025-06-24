@@ -15,11 +15,15 @@
   z-index: 99999;
   overscroll-behavior: none;
   padding: 0 0 25vh 0;
-  position: sticky;
+  position: relative;
   top: 0;
 
   .screen-content {
     padding: 0 15px 200px 15px;
+
+    &.dashboard {
+      padding-top: 140px;
+    }
 
     &.bottom-padding-only {
       padding: 0 0 200px 0;
@@ -46,6 +50,13 @@
       left: 0;
       right: 0;
       bottom: 0;
+    }
+
+    &.dashboard {
+      img {
+        height: max-content;
+        //    height: 400px;
+      }
     }
 
     &.login-header {
@@ -885,13 +896,17 @@
   width: max-content;
   min-width: calc(100vw - 30px);
   background: $greenForWhiteText;
-  z-index: $maxZIndex;
-  top: -200px;
+  top: 0;
   transition: all 2s cubic-bezier(0.17, 0.67, 0.21, 0.95);
+  pointer-events: none;
+  z-index: -1;
+  transform: translateY(-100px);
   @include bestShadow;
-  &.animate__fadeInDown {
+  &.active {
+    opacity: 1;
+    transform: translateY(70px);
+    z-index: $maxZIndex;
     transition: all 1s cubic-bezier(0.17, 0.67, 0.21, 0.95);
-    top: 60px;
   }
 
   .alert-close-icon {
@@ -3154,7 +3169,7 @@
 
 @mixin form {
   overflow: hidden;
-  position: fixed;
+  position: absolute;
   height: 100vh;
   width: 100vw;
   align-items: center;
@@ -3170,15 +3185,17 @@
   align-self: center;
   padding: 10px 10px 0 10px;
   opacity: 0;
-  z-index: $maxZIndex;
   pointer-events: none;
-  transition: all 0.7s ease;
+  transition: all 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: -1;
+
   @include mainColorsGradient;
 
   &.active {
+    z-index: $maxZIndex;
     opacity: 1;
     pointer-events: auto;
-    transition: all 0.7s ease;
+    transition: all 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
   // Edit/Details/Single Day .etc
@@ -3229,7 +3246,6 @@
     transform: translateY(100%);
     z-index: $maxZIndex;
     pointer-events: none;
-    padding-top: 45px;
 
     &.active {
       pointer-events: auto;
@@ -4739,6 +4755,15 @@
             position: relative;
             transition: all 0.3s ease-out;
             width: 50%;
+
+            &.children {
+              .content {
+                .svg-wrapper {
+                  transform: scale(1.2);
+                }
+              }
+            }
+
             .content {
               display: flex;
               align-items: center;
@@ -4943,6 +4968,23 @@
 
   &.hidden {
     bottom: -200px;
+  }
+
+  &.transparent {
+    background-color: transparent;
+
+    .actions,
+    #menu-items {
+      background-color: transparent;
+    }
+
+    #svg-wrapper {
+      background-image: unset;
+      box-shadow: unset;
+      margin-top: 10px;
+      position: relative;
+      top: -5px;
+    }
   }
 
   /*#region  SVGS BY CLASS*/

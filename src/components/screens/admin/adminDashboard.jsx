@@ -97,6 +97,7 @@ export default function AdminDashboard() {
         appUpdates,
         new AppUpdate({currentVersion: newVersion, timestamp: moment().format(DatetimeFormats.dateForDb)})
       )
+      setState({...state, successAlertMessage: `New Version Updated`})
     } else {
       await DB.Add(`${DB.tables.appUpdates}`, appUpdates, new AppUpdate({currentVersion: 1, timestamp: moment().format(DatetimeFormats.dateForDb)}))
     }
@@ -112,13 +113,13 @@ export default function AdminDashboard() {
 
   return (
     <div id="admin-dashboard-wrapper" className="page-container">
-      <ScreenHeader>
+      <ScreenHeader wrapperClass="dashboard">
         <img src="https://i.redd.it/16o63vp3mpg91.jpg" alt="" />{' '}
       </ScreenHeader>
       <Spacer height={10} />
 
       {/* TOOLBOXES */}
-      <div className="flex grid gap-10 screen-content">
+      <div className="flex grid gap-10 screen-content dashboard">
         {/* UPDATE */}
         <div className="tool-box">
           <p className="box-title">App Updates</p>

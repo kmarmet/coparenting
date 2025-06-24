@@ -167,6 +167,14 @@ const Manager = {
         }
       }
     }
+
+    if (parseInt(variable) === -1) {
+      if (variable < 1) {
+        return false
+      }
+    }
+
+    // Date Check
     if (typeof variable === 'string' && variable.indexOf('Invalid') > -1) {
       return false
     }

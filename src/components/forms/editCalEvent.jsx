@@ -8,7 +8,6 @@ import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
 import DB from '../../database/DB'
-import DB_UserScoped from '../../database/db_userScoped'
 import useCalendarEvents from '../../hooks/useCalendarEvents'
 import useChildren from '../../hooks/useChildren'
 import useCurrentUser from '../../hooks/useCurrentUser'
@@ -40,7 +39,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
   // Hooks
   const {currentUser} = useCurrentUser()
-  const {calendarEvents} = useCalendarEvents(event?.ownerKey)
+  const {calendarEvents} = useCalendarEvents(event?.owner?.key)
   const {users} = useUsers()
   const {children} = useChildren()
 
@@ -137,11 +136,17 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           return false
         }
 
+        if (Manager.IsValid(formRef.current.reminderTimes) && !Manager.IsValid(formRef.current.startTime)) {
+          AlertManager.throwError('Please select a start time when using reminders')
+          return false
+        }
+
         const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
         const cleaned = ObjectManager.CleanObject(updatedEvent)
 
-        // Events with multiple days
+        //#region MULTIPLE DAYS
         if (cleaned.isRecurring || cleaned.isDateRange || cleaned.isCloned) {
+          //#endregion MULTIPLE DAYS
           const existing = calendarEvents.filter((x) => x.multipleDatesId === cleaned.multipleDatesId)
 
           if (!Manager.IsValid(existing)) {
@@ -167,14 +172,15 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           // Delete all before updated
           await DB.deleteMultipleRows(`${DB.tables.calendarEvents}/${currentUser?.key}`, existing, currentUser)
         }
-
         // Update Single Event
         else {
           if (cleaned?.owner?.key === currentUser?.key) {
-            await DB.updateEntireRecord(`${dbPath}`, cleaned, cleaned.id)
+            const index = DB.GetTableIndexById(calendarEvents, cleaned?.id)
+            if (parseInt(index) === -1) return false
+            await DB.ReplaceEntireRecord(`${dbPath}/${index}`, cleaned)
           }
         }
-        if (cleaned.ownerKey === currentUser?.key) {
+        if (cleaned.owner?.key === currentUser?.key) {
           if (Manager.IsValid(updatedEvent?.shareWith)) {
             UpdateManager.SendToShareWith(
               updatedEvent?.shareWith,
@@ -187,7 +193,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         }
       }
 
-      if (updatedEvent?.ownerKey !== currentUser?.key) {
+      if (updatedEvent?.owner?.key !== currentUser?.key) {
         await EditNonOwnerEvent(formRef.current)
       }
       await ResetForm('Event Updated')
@@ -222,19 +228,17 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     return message
   }
 
-  const SetDefaultDropdownOptions = async () => {
+  const SetDropdownOptions = async () => {
     setSelectedChildrenOptions(DropdownManager.GetSelected.Children(event?.children, children))
     setSelectedReminderOptions(DropdownManager.GetSelected.Reminders(event?.reminderTimes))
     setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users))
-    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(validAccounts))
     setView({label: 'Details', value: 'Details'})
   }
 
   useEffect(() => {
     if (Manager.IsValid(event)) {
       const index = DB.GetTableIndexById(calendarEvents, event?.id)
-      SetDefaultDropdownOptions().then((r) => r)
+      SetDropdownOptions().then((r) => r)
       console.log('Updated Event: ', event, 'Index', index)
     }
   }, [event])
@@ -447,12 +451,10 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               {/* SHARE WITH */}
               <SelectDropdown
                 options={defaultShareWithOptions}
+                selectMultiple={true}
                 value={selectedShareWithOptions}
-                isMultiple={true}
-                placeholder={'Share with'}
-                onSelect={(e) => {
-                  setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWith(e.map((x) => x.value)))
-                }}
+                placeholder={'Select Contacts to Share With'}
+                onSelect={setSelectedShareWithOptions}
               />
 
               <Spacer height={2} />
@@ -461,9 +463,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               <SelectDropdown
                 options={DropdownManager.GetDefault.Reminders}
                 value={selectedReminderOptions}
-                isMultiple={true}
+                selectMultiple={true}
                 placeholder={'Select Reminders'}
-                onSelect={(e) => setSelectedReminderOptions(DropdownManager.GetSelected.Reminders(e.map((x) => x.value)))}
+                onSelect={setSelectedReminderOptions}
               />
               <Spacer height={2} />
 
@@ -472,8 +474,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 options={DropdownManager.GetDefault.Children(children)}
                 value={selectedChildrenOptions}
                 placeholder={'Select Children to Include'}
-                onSelect={(e) => setSelectedChildrenOptions(DropdownManager.GetSelected.Children(e.map((x) => x.label)))}
-                isMultiple={true}
+                onSelect={setSelectedChildrenOptions}
+                selectMultiple={true}
               />
 
               <hr />

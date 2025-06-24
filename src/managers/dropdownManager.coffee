@@ -5,6 +5,7 @@ import CalendarMapper from "../mappers/calMapper"
 import DatasetManager from "./datasetManager"
 import ExpenseCategories from "../constants/expenseCategories"
 import ExpenseSortByTypes from "../constants/expenseSortByTypes"
+import DB_UserScoped from "../database/db_userScoped"
 
 DropdownManager =
 # HELPERS
@@ -75,14 +76,15 @@ DropdownManager =
         {label: view, value: view}
       ]
 
-    ShareWith: (names) ->
+    ShareWith: (currentUser) ->
       options = []
-      console.log(names)
-      if Manager.IsValid(names)
-        for name in names
-          options.push
-            value:  name
-            label: name
+      validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+      if Manager.IsValid(validAccounts)
+        for account in validAccounts
+          if Manager.IsValid(account) and (Manager.IsValid(account.userKey) or Manager.IsValid(account.key))
+            options.push
+              value: account.key or account.userKey
+              label: account?.name or account?.general?.name
 
       return options
 
@@ -112,20 +114,13 @@ DropdownManager =
           label: category
       return options
 
-    Views: (views) ->
-      options = []
-      for view in views
-        options.push
-          value: view
-          label: view
-      return options
-
     ExpenseSortByTypes : () ->
       options = []
-      for category in Object.keys(ExpenseSortByTypes)
-        options.push
-          value: category
-          label: category
+      if Manager.IsValid(ExpenseSortByTypes)
+        for category in Object.keys(ExpenseSortByTypes)
+          options.push
+            value: category
+            label: category
       return options
 
     Reminders:
@@ -136,13 +131,13 @@ DropdownManager =
         {label: "At Event Time", value: "timeOfEvent"}
       ]
 
-    ShareWith: (validUserAccounts) ->
-      options = []
-      if Manager.IsValid(validUserAccounts)
-        for user in validUserAccounts
-          options.push
-            value: user?.key || user?.userKey
-            label: StringManager?.UppercaseFirstLetterOfAllWords(user?.name || user?.general?.name)
+
+    ShareWith: (children, coParents) ->
+      if Manager.IsValid(children) and Manager.IsValid(coParents)
+        childAccounts = children.filter (x) -> x?.userKey
+        merged = DatasetManager.CombineArrays(childAccounts, coParents)
+        options = merged.map (x) -> {label: x?.general?.name or x?.name, value: x?.userKey or x?.key}
+
       return options
 
     CoParents: (users) ->

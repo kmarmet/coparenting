@@ -133,7 +133,12 @@ export default function CustomWeekends({hide, showCard}) {
         })}
       />
       <Spacer height={5} />
-      <ShareWithDropdown required={false} onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coparents'} />
+      <ShareWithDropdown
+        required={false}
+        onCheck={HandleShareWithSelection}
+        placeholder={'Select Contacts to Share With'}
+        containerClass={'share-with-coparents'}
+      />
       <hr className="mt-5 mb-10" />
     </Form>
   )

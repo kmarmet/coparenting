@@ -14,8 +14,8 @@ import DatetimeFormats from '../../constants/datetimeFormats'
 import EventLengths from '../../constants/eventLengths'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
-import DB_UserScoped from '../../database/db_userScoped'
 import useChildren from '../../hooks/useChildren'
+import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
@@ -55,11 +55,12 @@ export default function NewCalendarEvent() {
   const [eventIsCloned, setEventIsCloned] = useState(false)
   const {currentUser} = useCurrentUser()
   const {users} = useUsers()
+  const {coParents} = useCoParents()
   const {children, childrenDropdownOptions} = useChildren()
 
   // COMPONENT STATE
+  const [refresh, setRefresh] = useState('aeryhg')
   const [showCloneInput, setShowCloneInput] = useState(false)
-  const [showReminders, setShowReminders] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
   const [dynamicInputs, setDynamicInputs] = useState([])
   const [view, setView] = useState({label: 'Single Day', value: 'Single Day'})
@@ -67,7 +68,7 @@ export default function NewCalendarEvent() {
   // DROPDOWN STATE
   const [selectedReminderOptions, setSelectedReminderOptions] = useState([])
   const [selectedChildrenOptions, setSelectedChildrenOptions] = useState([])
-  const [selectedShareWithOptions, setSelectedShareWithOptions] = useState(DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users))
+  const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
   const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
   // REF
   const formRef = useRef({...new CalendarEvent({startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)})})
@@ -77,7 +78,6 @@ export default function NewCalendarEvent() {
     setEventIsDateRange(false)
     setEventIsRecurring(false)
     setShowCloneInput(false)
-    setShowReminders(false)
     setIsVisitation(false)
     setDynamicInputs([])
     setClonedDates([])
@@ -85,6 +85,9 @@ export default function NewCalendarEvent() {
     setSelectedChildrenOptions([])
     setSelectedShareWithOptions([])
     setDefaultShareWithOptions([])
+    setTimeout(() => {
+      setRefresh(Manager.GetUid())
+    }, 500)
     setState({
       ...state,
       creationFormToShow: '',
@@ -95,7 +98,6 @@ export default function NewCalendarEvent() {
   const Submit = async () => {
     try {
       //#region FILL NEW EVENT
-
       if (isVisitation) {
         formRef.current.title = `${StringManager.FormatEventTitle(formRef.current.title)} (Visitation)`
       }
@@ -138,7 +140,7 @@ export default function NewCalendarEvent() {
           return false
         }
 
-        if (showReminders && !Manager.IsValid(formRef.current.startTime)) {
+        if (Manager.IsValid(formRef.current.reminderTimes) && !Manager.IsValid(formRef.current.startTime)) {
           AlertManager.throwError('Please select a start time when using reminders')
           return false
         }
@@ -217,18 +219,22 @@ export default function NewCalendarEvent() {
   }
 
   const SetDefaultDropdownOptions = async () => {
-    setSelectedChildrenOptions(DropdownManager.GetSelected.Children([]))
-    setSelectedReminderOptions(DropdownManager.GetSelected.Reminders([]))
-    const validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
-    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(validAccounts))
-    console.log(DropdownManager.GetDefault.ShareWith(validAccounts))
+    setSelectedChildrenOptions(DropdownManager.GetSelected.Children(event?.children, children))
+    setSelectedReminderOptions(DropdownManager.GetSelected.Reminders(event?.reminderTimes))
+    setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users))
+    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
     setView({label: 'Single Day', value: 'Single Day'})
   }
 
   useEffect(() => {
+    if (Manager.IsValid(children) && Manager.IsValid(users)) {
+      SetDefaultDropdownOptions().then((r) => r)
+    }
+  }, [children, users])
+
+  useEffect(() => {
     if (dateToEdit) {
       formRef.current.startDate = moment(dateToEdit).format(DatetimeFormats.dateForDb)
-      SetDefaultDropdownOptions().then((r) => r)
     }
   }, [dateToEdit])
 
@@ -246,6 +252,7 @@ export default function NewCalendarEvent() {
     <>
       {/* FORM WRAPPER */}
       <Form
+        key={refresh}
         submitText={`Create`}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={() => ResetForm()}
@@ -335,11 +342,9 @@ export default function NewCalendarEvent() {
           {/* SHARE WITH */}
           <SelectDropdown
             options={defaultShareWithOptions}
-            isMultiple={true}
-            placeholder={'Share with'}
-            onSelect={(e) => {
-              setSelectedShareWithOptions(e)
-            }}
+            selectMultiple={true}
+            placeholder={'Select Contacts to Share With'}
+            onSelect={setSelectedShareWithOptions}
           />
 
           <Spacer height={2} />
@@ -347,7 +352,7 @@ export default function NewCalendarEvent() {
           {/* REMINDER */}
           {view?.label === 'Single Day' && (
             <SelectDropdown
-              isMultiple={true}
+              selectMultiple={true}
               placeholder={'Select Reminders'}
               options={DropdownManager.GetDefault.Reminders}
               onSelect={(e) => {
@@ -363,10 +368,8 @@ export default function NewCalendarEvent() {
             <SelectDropdown
               options={childrenDropdownOptions}
               placeholder={'Select Children to Include'}
-              onSelect={(e) => {
-                setSelectedChildrenOptions(e)
-              }}
-              isMultiple={true}
+              onSelect={setSelectedChildrenOptions}
+              selectMultiple={true}
             />
           )}
 

@@ -59,7 +59,6 @@ export default function NewExpenseForm() {
     setRepeatingEndDate('')
     setState({
       ...state,
-      refreshKey: Manager.GetUid(),
       creationFormToShow: '',
       successAlertMessage: showAlert ? `${StringManager.FormatTitle(formRef.current.name)} Added` : null,
     })
@@ -357,7 +356,11 @@ export default function NewExpenseForm() {
           )}
           <Spacer height={5} />
           {/* SHARE WITH */}
-          <ShareWithDropdown onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coParents'} />
+          <ShareWithDropdown
+            onCheck={HandleShareWithSelection}
+            placeholder={'Select Contacts to Share With'}
+            containerClass={'share-with-coParents'}
+          />
           <Spacer height={5} />
 
           {/* INCLUDING WHICH CHILDREN */}

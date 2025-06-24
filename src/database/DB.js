@@ -4,7 +4,6 @@ import _ from 'lodash'
 import DatasetManager from '../managers/datasetManager'
 import LogManager from '../managers/logManager.js'
 import Manager from '../managers/manager'
-import ObjectManager from '../managers/objectManager'
 
 const DB = {
   tables: {
@@ -230,14 +229,15 @@ const DB = {
     try {
       const dbRef = getDatabase()
       // console.log('updatedRow', updatedRow)
-      updatedRow = ObjectManager.GetValidObject(updatedRow)
-      // console.log('DB', updatedRow)
-      update(ref(dbRef, path), updatedRow)
+      //updatedRow = ObjectManager.GetValidObject(updatedRow)
+      console.log('DB', updatedRow)
+      await set(ref(dbRef, path), updatedRow)
         .then()
         .catch((error) => {
           LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
         })
     } catch (error) {
+      console.log(error)
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },

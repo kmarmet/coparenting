@@ -3,7 +3,7 @@ import ViewTypes from '../../constants/views'
 import SelectDropdown from './selectDropdown'
 
 export default function ViewDropdown({
-  selectedView = ViewTypes.DetailsEdit.Details,
+  selectedView,
   views = ViewTypes.DetailsEdit.All,
   dropdownPlaceholder = '',
   onSelect = (e) => {},

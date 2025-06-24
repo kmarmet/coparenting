@@ -8,7 +8,7 @@ export default function SelectDropdown({
   value,
   wrapperClasses,
   uidClass = '',
-  isMultiple: selectMultiple = false,
+  selectMultiple = false,
   onSelect = (e) => {},
   placeholder = '',
   options = [],

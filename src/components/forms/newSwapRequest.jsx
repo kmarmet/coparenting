@@ -290,7 +290,12 @@ export default function NewSwapRequest() {
           <Spacer height={8} />
 
           {/* WHO SHOULD SEE IT? */}
-          <ShareWithDropdown required={true} onCheck={HandleShareWithSelection} placeholder={'Share with'} containerClass={'share-with-coparents'} />
+          <ShareWithDropdown
+            required={true}
+            onCheck={HandleShareWithSelection}
+            placeholder={'Select Contacts to Share With'}
+            containerClass={'share-with-coparents'}
+          />
 
           <Spacer height={8} />
 

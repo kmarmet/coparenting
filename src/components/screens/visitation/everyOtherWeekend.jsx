@@ -7,6 +7,8 @@ import ScheduleTypes from '../../../constants/scheduleTypes'
 import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import AlertManager from '../../../managers/alertManager'
+import DatasetManager from '../../../managers/datasetManager'
+import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 import VisitationManager from '../../../managers/visitationManager'
@@ -90,7 +92,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
         required={false}
         shareWith={currentUser?.coParents?.map((x) => x.phone)}
         onCheck={HandleShareWithSelection}
-        placeholder={'Share with'}
+        placeholder={'Select Contacts to Share With'}
         containerClass={'share-with-coparents'}
       />
     </Form>

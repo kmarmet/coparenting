@@ -3,10 +3,10 @@ import {getAuth, signOut} from 'firebase/auth'
 import React, {useContext, useEffect, useRef} from 'react'
 import {AiOutlineLogout} from 'react-icons/ai'
 import {BsHouses, BsImages} from 'react-icons/bs'
-import {GrInstallOption, GrUserAdmin, TfiSettings} from 'react-icons/gr'
+import {GrInstallOption, GrUserAdmin} from 'react-icons/gr'
 import {IoChatbubblesOutline} from 'react-icons/io5'
 import {LiaFileInvoiceDollarSolid} from 'react-icons/lia'
-import {LuCalendarDays} from 'react-icons/lu'
+import {LuCalendarDays, LuListChecks} from 'react-icons/lu'
 import {MdOutlineContacts} from 'react-icons/md'
 import {PiFiles, PiNotificationFill, PiSealQuestion, PiSwap, PiUsers, PiUsersThree, PiVault} from 'react-icons/pi'
 import {RiAccountPinCircleLine, RiParentLine} from 'react-icons/ri'
@@ -185,10 +185,10 @@ export default function FullMenu() {
                     <>
                       {/* CHILDREN */}
                       <div
-                        className={`menu-item child-info ${currentScreen === ScreenNames.children ? 'active' : ''}`}
+                        className={`menu-item children${currentScreen === ScreenNames.children ? 'active' : ''}`}
                         onClick={(e) => ChangeCurrentScreen(ScreenNames.children, e)}>
                         <div className="content">
-                          <div className="svg-wrapper">
+                          <div className="svg-wrapper children">
                             <PiUsersThree />
                           </div>
                           <p>Children</p>
@@ -320,7 +320,7 @@ export default function FullMenu() {
                   {/* ADMIN DASHBOARD */}
                   {currentUser?.email === 'kmarmet1@gmail.com' && (
                     <div
-                      className={`menu-item settings ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
+                      className={`menu-item dashboard ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
                       onClick={(e) => ChangeCurrentScreen(ScreenNames.adminDashboard, e)}>
                       <div className="svg-wrapper">
                         <GrUserAdmin />
@@ -359,6 +359,15 @@ export default function FullMenu() {
                       </div>
                       <p>Logout</p>
                     </div>
+                  </div>
+                  {/* CHANGELOG */}
+                  <div
+                    className={`menu-item changelog ${currentScreen === ScreenNames.changelog ? 'active' : ''}`}
+                    onClick={(e) => ChangeCurrentScreen(ScreenNames.changelog, e)}>
+                    <div className="svg-wrapper">
+                      <LuListChecks />
+                    </div>
+                    <p>Latest Changes</p>
                   </div>
                 </div>
 

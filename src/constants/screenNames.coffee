@@ -9,6 +9,7 @@ ScreenNames = {
   help: 'help'
   coparents: 'coparents'
   dashboard: 'dashboard'
+  changelog: 'changelog'
   docViewer: 'docViewer'
   docsList: 'docsList'
   editCalendarEvent: 'editCalendarEvent'
