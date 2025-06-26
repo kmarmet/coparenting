@@ -6,6 +6,7 @@ import DateFormats from "../constants/datetimeFormats"
 import UpdateSubscriber from "../models/updateSubscriber"
 import Update from "../models/new/update"
 import LogManager from "./logManager"
+import Apis from "../api/apis"
 
 
 export default UpdateManager =
@@ -116,10 +117,6 @@ export default UpdateManager =
       method: 'DELETE'
 
   SendUpdate: (title, message, recipientKey, currentUser = null, category = '') ->
-    myHeaders = new Headers()
-    myHeaders.append "Accept", "application/json"
-    myHeaders.append "Content-Type", "application/json"
-    myHeaders.append "Authorization", "Basic #{UpdateManager.apiKey}"
     allSubs = await DB.getTable("#{DB.tables.updateSubscribers}")
     subIdRecord = allSubs.find (sub) -> sub.key == recipientKey
 
@@ -139,12 +136,6 @@ export default UpdateManager =
       include_subscription_ids: [subId]
       app_id: UpdateManager.appId
 
-    requestOptions = {
-      method: "POST"
-      headers: myHeaders
-      body: raw
-      redirect: "follow"
-    }
 
     # Add notification to database
     newNotification = new Update()
@@ -157,15 +148,7 @@ export default UpdateManager =
     newNotification.category = category
 
     await DB.Add "#{DB.tables.updates}/#{recipientKey}", [],newNotification
-    console.log("Sent to #{recipientKey}")
-    # Do not send notification in dev
-    if !window.location.href.includes("localhost")
-      fetch "https://api.onesignal.com/notifications", requestOptions
-        .then (response) -> response.text()
-        .then (result) ->
-#          console.log result
-          console.log("Sent to #{subId}")
-        .catch (error) -> console.error error
+    await Apis.OneSignal.SendUpdate(subId, raw)
 
   SendToShareWith: (shareWithKeys, currentUser, title, message, category = '') ->
     if Manager.IsValid(shareWithKeys)

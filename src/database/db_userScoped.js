@@ -10,6 +10,7 @@ import LogManager from '../managers/logManager'
 import Manager from '../managers/manager'
 import ObjectManager from '../managers/objectManager'
 import StringManager from '../managers/stringManager.coffee'
+import FeedbackEmotionsTracker from '../models/feedbackEmotionsTracker'
 import User from '../models/users/user'
 import DB from './DB'
 import Storage from './storage'
@@ -337,6 +338,21 @@ const DB_UserScoped = {
     newUser.accountType = accountType.toLowerCase()
     newUser.phone = StringManager.FormatPhone(phone)
     const cleanUser = ObjectManager.GetModelValidatedObject(newUser, accountType === 'parent' ? ModelNames.user : ModelNames.childUser)
+
+    const feedback = new FeedbackEmotionsTracker({
+      loveCount: 0,
+      unhappyCount: 0,
+      peacefulCount: 0,
+      neutralCount: 0,
+      owner: {
+        key: key,
+        name: name,
+        email: email,
+      },
+    })
+
+    await DB.Add(`${DB.tables.feedbackEmotionsTracker}/${key}`, feedback)
+
     // Insert
     await set(child(dbRef, `${DB.tables.users}/${key}`), cleanUser).catch((error) => {
       console.log(error)

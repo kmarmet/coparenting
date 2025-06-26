@@ -5,4 +5,9 @@ class FeedbackEmotionsTracker
     @neutralCount = options?.neutralCount ? 0
     @unhappyCount  = options?.unhappyCount ? 0
 
+    # OWNER
+    @owner =
+      key: options?.owner?.key ? ''
+      name: options?.owner?.name ? ''
+
 export default FeedbackEmotionsTracker

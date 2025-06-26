@@ -3,11 +3,16 @@ var FeedbackEmotionsTracker;
 
 FeedbackEmotionsTracker = class FeedbackEmotionsTracker {
   constructor(options = {}) {
-    var ref, ref1, ref2, ref3;
+    var ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7;
     this.peacefulCount = (ref = options != null ? options.peacefulCount : void 0) != null ? ref : 0;
     this.loveCount = (ref1 = options != null ? options.loveCount : void 0) != null ? ref1 : 0;
     this.neutralCount = (ref2 = options != null ? options.neutralCount : void 0) != null ? ref2 : 0;
     this.unhappyCount = (ref3 = options != null ? options.unhappyCount : void 0) != null ? ref3 : 0;
+    // OWNER
+    this.owner = {
+      key: (ref4 = options != null ? (ref5 = options.owner) != null ? ref5.key : void 0 : void 0) != null ? ref4 : '',
+      name: (ref6 = options != null ? (ref7 = options.owner) != null ? ref7.name : void 0 : void 0) != null ? ref6 : ''
+    };
   }
 
 };

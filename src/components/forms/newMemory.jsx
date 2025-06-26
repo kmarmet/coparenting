@@ -1,19 +1,23 @@
 // Path: src\components\forms\newMemoryForm.jsx
 import moment from 'moment'
-import React, {useContext, useRef, useState} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import ActivityCategory from '../../constants/activityCategory'
 import creationForms from '../../constants/creationForms'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
-import ModelNames from '../../constants/modelNames'
+import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import DB from '../../database/DB'
 import Storage from '../../database/storage'
+import useChildren from '../../hooks/useChildren'
+import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useMemories from '../../hooks/useMemories'
+import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
 import AppManager from '../../managers/appManager'
 import DatasetManager from '../../managers/datasetManager'
+import DropdownManager from '../../managers/dropdownManager'
 import ImageManager from '../../managers/imageManager'
 import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
@@ -23,27 +27,41 @@ import Memory from '../../models/new/memory'
 import Form from '../shared/form'
 import InputField from '../shared/inputField'
 import MyConfetti from '../shared/myConfetti'
-import ShareWithDropdown from '../shared/shareWithDropdown'
+import SelectDropdown from '../shared/selectDropdown'
 import Spacer from '../shared/spacer'
 import UploadButton from '../shared/uploadButton'
 
 export default function NewMemory() {
   const {state, setState} = useContext(globalState)
   const {theme, creationFormToShow} = state
+
+  // App State
   const [images, setImages] = useState([])
+
+  // Hooks
   const {currentUser} = useCurrentUser()
   const {memories} = useMemories()
-  const newMemory = useRef(new Memory())
+  const {users} = useUsers()
+  const {children} = useChildren()
+  const {coParents} = useCoParents()
 
-  const ResetForm = async () => {
-    // Manager.ResetForm('new-memory-wrapper')
-    setState({...state, isLoading: false, refreshKey: Manager.GetUid(), creationFormToShow: ''})
+  // Dropdown State
+  const [selectedShareWithOptions, setSelectedShareWithOptions] = useState(DropdownManager.GetSelected.ShareWithFromKeys([], users))
+  const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
+
+  // Form Ref
+  const formRef = useRef({...new Memory()})
+
+  const ResetForm = () => {
+    Manager.ResetForm('new-memory-wrapper')
+    setTimeout(() => {
+      setState({...state, creationFormToShow: ''})
+    }, 500)
   }
-
-  const HandleShareWithSelection = (e) => (newMemory.current.shareWith = e.map((x) => x.value))
 
   const Upload = async () => {
     setState({...state, isLoading: true})
+    const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
 
     //#region Validation
     const validAccounts = currentUser?.sharedDataUsers?.length
@@ -56,7 +74,7 @@ export default function NewMemory() {
       return false
     }
 
-    if (validAccounts > 0 && !Manager.IsValid(newMemory.current.shareWith)) {
+    if (validAccounts > 0 && !Manager.IsValid(shareWith)) {
       AlertManager.throwError('Please choose who you would like to share this memory with')
       setState({...state, isLoading: false})
       return false
@@ -95,12 +113,14 @@ export default function NewMemory() {
     let shouldProceed = true
 
     for (let img of validImgArray) {
-      const existingMemory = memories.find((x) => Manager.DecodeHash(x.name) === Manager.GenerateHash(img.name))
-      if (Manager.IsValid(existingMemory)) {
-        AlertManager.throwError('This memory already exists')
-        shouldProceed = false
-        setState({...state, isLoading: false})
-        return false
+      if (Manager.IsValid(img?.title, true)) {
+        const existingMemory = memories.find((x) => x?.id === img?.id)
+        if (Manager.IsValid(existingMemory)) {
+          AlertManager.throwError('This memory already exists')
+          shouldProceed = false
+          setState({...state, isLoading: false})
+          return false
+        }
       }
     }
 
@@ -109,16 +129,11 @@ export default function NewMemory() {
       return false
     }
 
-    const clean = ObjectManager.GetModelValidatedObject(newMemory.current, ModelNames.memory)
+    const clean = ObjectManager.CleanObject(formRef.current)
 
     // Upload Image
     await Storage.uploadMultiple(`${Storage.directories.memories}/`, currentUser?.key, imagesToUpload)
-      .then(() => {
-        const checkedCheckbox = document.querySelector('.share-with-container .box.active')
-        if (checkedCheckbox) {
-          checkedCheckbox.classList.remove('active')
-        }
-      })
+      .then(() => {})
       .finally(async () => {
         // Add memories to 'memories' property for currentUser
         await Storage.getUrlsFromFiles(Storage.directories.memories, currentUser?.key, imagesToUpload)
@@ -126,10 +141,14 @@ export default function NewMemory() {
             // Add to user memories object
             for (const url of urls) {
               const imageName = Storage.GetImageNameFromUrl(url)
-
+              clean.shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
               clean.url = url
-              clean.name = Manager.GenerateHash(imageName)
-              clean.ownerKey = currentUser?.key
+              clean.title = StringManager.removeSpecialChars(formRef?.current?.title.replace('/ /g', '_'))
+              clean.owner = {
+                key: currentUser?.key,
+                name: currentUser?.name,
+              }
+
               // Add to Database
               await DB.Add(`${DB.tables.memories}/${currentUser?.key}`, memories, clean)
             }
@@ -144,16 +163,27 @@ export default function NewMemory() {
             )
           })
           .catch((error) => {
-            console.error(error)
+            setState({...state, isLoading: false})
           })
           .finally(async () => {
+            AppManager.SetAppBadge(1)
+            setState({...state, isLoading: false, currentScreen: ScreenNames.memories})
             MyConfetti.fire()
-            await ResetForm()
+            ResetForm()
           })
-        AppManager.SetAppBadge(1)
-        setState({...state, isLoading: false})
       })
   }
+
+  const SetDropdownOptions = () => {
+    setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
+    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
+  }
+
+  useEffect(() => {
+    if (Manager.IsValid(children) && Manager.IsValid(coParents) && Manager.IsValid(users)) {
+      SetDropdownOptions()
+    }
+  }, [children, coParents, users])
 
   return (
     <Form
@@ -169,7 +199,7 @@ export default function NewMemory() {
           inputType={InputTypes.text}
           placeholder={'Title'}
           onChange={(e) => {
-            newMemory.current.title = e.target.value
+            formRef.current.title = e.target.value
           }}
         />
 
@@ -179,17 +209,22 @@ export default function NewMemory() {
           labelText={'Capture Date'}
           inputType={InputTypes.date}
           onDateOrTimeSelection={(e) => {
-            newMemory.current.captureDate = moment(e).format(DatetimeFormats.dateForDb)
+            formRef.current.captureDate = moment(e).format(DatetimeFormats.dateForDb)
           }}
         />
 
         {/* NOTES */}
-        <InputField onChange={(e) => (newMemory.current.notes = e.target.value)} inputType={InputTypes.textarea} placeholder={'Notes'} />
+        <InputField onChange={(e) => (formRef.current.notes = e.target.value)} inputType={InputTypes.textarea} placeholder={'Notes'} />
         <div id="new-memory-form-container" className={`${theme}`}>
-          <Spacer height={8} />
-
           {/* SHARE WITH */}
-          <ShareWithDropdown onCheck={HandleShareWithSelection} />
+          <SelectDropdown
+            required={true}
+            options={defaultShareWithOptions}
+            selectMultiple={true}
+            value={selectedShareWithOptions}
+            placeholder={'Select Contacts to Share With'}
+            onSelect={setSelectedShareWithOptions}
+          />
 
           <Spacer height={8} />
           {/* UPLOAD BUTTON */}

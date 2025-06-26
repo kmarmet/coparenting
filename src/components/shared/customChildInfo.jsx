@@ -1,6 +1,6 @@
 // Path: src\components\shared\customChildInfo.jsx
 import moment from 'moment'
-import React, {useContext, useRef, useState} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import {GrCheckmark} from 'react-icons/gr'
 import validator from 'validator'
 import DatetimeFormats from '../../constants/datetimeFormats'
@@ -8,8 +8,10 @@ import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
 import DB_UserScoped from '../../database/db_userScoped'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
 import DomManager from '../../managers/domManager'
+import DropdownManager from '../../managers/dropdownManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
@@ -17,43 +19,48 @@ import AddressInput from './addressInput'
 import CheckboxGroup from './checkboxGroup'
 import Form from './form'
 import InputField from './inputField'
-import ShareWithDropdown from './shareWithDropdown'
+import SelectDropdown from './selectDropdown'
 import Spacer from './spacer'
-import ViewDropdown from './viewDropdown'
 
 export default function CustomChildInfo({hideCard, showCard, activeChild}) {
   const {state, setState} = useContext(globalState)
   const {theme} = state
   const [infoSection, setInfoSection] = useState('general')
   const [infoType, setInfoType] = useState('text')
+  const [view, setView] = useState({label: 'Details', value: 'Details'})
   const {currentUser} = useCurrentUser()
-  const info = useRef({title: '', value: '', shareWith: ''})
+  const {users} = useUsers()
+  const [selectedShareWithOptions, setSelectedShareWithOptions] = useState(DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users))
+  const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
+  const formRef = useRef({title: '', value: '', shareWith: ''})
 
   const Add = async () => {
-    if (info.current.title.length === 0 || info.current.value.length === 0) {
+    if (formRef.current.title.length === 0 || formRef.current.value.length === 0) {
       AlertManager.throwError('Please fill/select required fields')
       return false
     }
-    if (infoType === 'phone' && !validator.isMobilePhone(info.current.value)) {
+    if (infoType === 'phone' && !validator.isMobilePhone(formRef.current.value)) {
       AlertManager.throwError('Please enter a valid phone number')
       return false
     }
+
+    const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
 
     await DB_UserScoped.addUserChildProp(
       currentUser,
       activeChild,
       infoSection,
-      StringManager.toCamelCase(info.current.title),
-      info.current.value,
-      info.current.shareWith
+      StringManager.toCamelCase(formRef.current.title),
+      formRef.current.value,
+      shareWith
     )
 
-    if (Manager.IsValid(info.current.shareWith)) {
+    if (Manager.IsValid(shareWith)) {
       await UpdateManager.SendToShareWith(
-        info.current.shareWith,
+        shareWith,
         currentUser,
         `${StringManager.UppercaseFirstLetterOfAllWords(infoSection)} Info Updated for ${activeChild?.general?.name}`,
-        `${info.current.title} - ${info.current.value}`,
+        `${formRef.current.title} - ${formRef.current.value}`,
         infoSection
       )
     }
@@ -75,16 +82,18 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
     )
   }
 
-  const HandleShareWithSelection = (e) => {
-    info.current.shareWith = DomManager.HandleShareWithSelection(e, currentUser, info.current.shareWith, info)
-  }
-
   const ResetForm = (successMessage = '') => {
     Manager.ResetForm('custom-child-info-wrapper')
     setInfoSection('')
     hideCard()
     setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
   }
+
+  useEffect(() => {
+    if (showCard) {
+      setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
+    }
+  }, [showCard])
 
   return (
     <Form
@@ -95,14 +104,6 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
       onClose={() => ResetForm()}
       title={'Add Your Own Info'}
       submitIcon={<GrCheckmark />}
-      viewDropdown={
-        <ViewDropdown
-          defaultView={'General'}
-          wrapperClasses="child-info"
-          views={['General', 'Medical', 'Schooling', 'Behavior']}
-          onSelect={(e) => setInfoSection(e.toLowerCase())}
-        />
-      }
       showCard={showCard}>
       <Spacer height={6} />
 
@@ -126,9 +127,9 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
             inputType={InputTypes.text}
             placeholder={'Title/Label'}
             required={true}
-            onChange={(e) => (info.current.title = e.target.value)}
+            onChange={(e) => (formRef.current.title = e.target.value)}
           />
-          <InputField inputType={InputTypes.text} placeholder={'Value'} required={true} onChange={(e) => (info.current.value = e.target.value)} />
+          <InputField inputType={InputTypes.text} placeholder={'Value'} required={true} onChange={(e) => (formRef.current.value = e.target.value)} />
         </>
       )}
 
@@ -138,13 +139,13 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
             inputType={InputTypes.text}
             placeholder={'Title/Label'}
             required={true}
-            onChange={(e) => (info.current.title = e.target.value)}
+            onChange={(e) => (formRef.current.title = e.target.value)}
           />
           <InputField
             inputType={InputTypes.phone}
             placeholder={'Phone Number'}
             required={true}
-            onChange={(e) => (info.current.value = StringManager.FormatPhone(e.target.value))}
+            onChange={(e) => (formRef.current.value = StringManager.FormatPhone(e.target.value))}
           />
         </>
       )}
@@ -155,14 +156,14 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
             inputType={InputTypes.text}
             placeholder={'Title/Label'}
             required={true}
-            onChange={(e) => (info.current.title = e.target.value)}
+            onChange={(e) => (formRef.current.title = e.target.value)}
           />
           <InputField
             placeholder={'Date'}
             required={true}
             uidClass="child-info-custom-date"
             inputType={InputTypes.date}
-            onDateOrTimeSelection={(e) => (info.current.value = moment(e).format(DatetimeFormats.dateForDb))}
+            onDateOrTimeSelection={(e) => (formRef.current.value = moment(e).format(DatetimeFormats.dateForDb))}
           />
         </div>
       )}
@@ -173,19 +174,26 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
             inputType={InputTypes.text}
             placeholder={'Title/Label'}
             required={true}
-            onChange={(e) => (info.current.title = e.target.value)}
+            onChange={(e) => (formRef.current.title = e.target.value)}
           />
           <AddressInput
             placeholder={'Address'}
             required={true}
             onChange={(address) => {
-              info.current.value = address
+              formRef.current.value = address
             }}
           />
         </>
       )}
       <Spacer height={6} />
-      <ShareWithDropdown onCheck={HandleShareWithSelection} labelText="CONTACTS TO Share with" required={false} />
+      {/* SHARE WITH */}
+      <SelectDropdown
+        options={defaultShareWithOptions}
+        selectMultiple={true}
+        value={selectedShareWithOptions}
+        placeholder={'Select Contacts to Share With'}
+        onSelect={setSelectedShareWithOptions}
+      />
     </Form>
   )
 }

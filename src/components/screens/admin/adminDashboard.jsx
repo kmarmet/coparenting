@@ -91,7 +91,8 @@ export default function AdminDashboard() {
   const UpdateAppVersion = async () => {
     if (Manager.IsValid(appUpdates)) {
       let latestVersion = appUpdates[appUpdates?.length - 1]?.currentVersion
-      const newVersion = latestVersion + 1
+      const newVersion = StringManager.IncrementPatchVersion(latestVersion)
+      console.log(newVersion)
       await DB.Add(
         `${DB.tables.appUpdates}`,
         appUpdates,

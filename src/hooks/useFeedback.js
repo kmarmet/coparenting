@@ -3,6 +3,7 @@ import {useContext, useEffect, useState} from 'react'
 import globalState from '../context'
 import DB from '../database/DB'
 import Manager from '../managers/manager'
+import useCurrentUser from './useCurrentUser'
 
 const useFeedback = () => {
   const {state, setState} = useContext(globalState)
@@ -10,7 +11,8 @@ const useFeedback = () => {
   const [feedback, setFeedback] = useState(null)
   const [feedbackIsLoading, setFeedbackIsLoading] = useState(true)
   const [error, setError] = useState(null)
-  const path = `${DB.tables.feedbackEmotionsTracker}`
+  const {currentUser} = useCurrentUser()
+  const path = `${DB.tables.feedbackEmotionsTracker}/${currentUser?.key}`
   const queryKey = ['realtime', path]
 
   useEffect(() => {
@@ -20,6 +22,7 @@ const useFeedback = () => {
     const listener = onValue(
       dataRef,
       async (snapshot) => {
+        // console.log(snapshot.val())
         if (Manager.IsValid(snapshot.val())) {
           setFeedback(snapshot.val())
         } else {
@@ -36,7 +39,7 @@ const useFeedback = () => {
     return () => {
       off(dataRef, 'value', listener)
     }
-  }, [path])
+  }, [path, currentUser])
 
   return {
     feedback,

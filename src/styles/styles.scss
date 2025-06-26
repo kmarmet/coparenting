@@ -258,10 +258,12 @@
 
     // Chips
     [class*='-multiValue'] {
-      background: $inputBackground !important;
-      border-radius: $borderRadius !important;
+      background: $barelyVisibleWhite !important;
+      border-radius: 50px !important;
       padding: 0 5px !important;
+      border: 0 !important;
       color: white !important;
+      box-shadow: none !important;
       max-width: unset !important;
       width: auto !important;
       margin-right: 5px !important;
@@ -288,6 +290,7 @@
     [class*='-placeholder'] {
       color: white !important;
       font-size: 16px !important;
+      font-weight: $fwLight !important;
     }
   }
 
@@ -351,6 +354,7 @@
     outline: none;
   }
 
+  // APP CONTAINER
   #app-container {
     position: relative;
     max-width: 100vw;
@@ -598,7 +602,7 @@
       justify-content: center;
       align-items: center;
       font-size: 18px;
-      margin: 0;
+      margin: 0 0 0 10px;
       padding: 0;
       line-height: 1;
       max-width: max-content;
@@ -847,14 +851,13 @@
       }
     }
 
-    // Select Dropdown
+    // Datepicker
     fieldset {
       top: 50% !important;
       left: 0;
       transform: translateY(-50%);
       padding: 0 !important;
       margin: 0 !important;
-      z-index: $maxZIndex !important;
       overflow: hidden !important;
       height: 30px !important;
       legend {
@@ -867,6 +870,7 @@
           padding-right: 0 !important;
           opacity: 1 !important;
           color: white;
+          font-weight: $fwLight !important;
           line-height: 1 !important;
           white-space: nowrap !important;
         }
@@ -1007,7 +1011,7 @@
       transition: all 0.5s ease-in-out;
       height: 100vh;
       top: 0;
-      z-index: 999999;
+      z-index: $lowerZIndex;
       overscroll-behavior: none;
 
       @media screen and (min-width: 800px) {
@@ -1994,6 +1998,7 @@
 
     /*#endregion  CLASS/ID DEFAULTS*/
   }
+
   // MENU
   #full-menu-wrapper {
     @include fullMenu;

@@ -634,7 +634,7 @@
       input {
         display: block !important;
         outline: 0 !important;
-        font-weight: 400 !important;
+        font-weight: $fwLight !important;
         transition: all 0.2s ease-in-out !important;
         max-height: unset !important;
         padding: 0 !important;
@@ -655,10 +655,10 @@
     .MuiInputLabel-root {
       margin: 0 auto 0 0 !important;
       line-height: 1 !important;
-      z-index: 99999 !important;
+      z-index: $middleZIndex !important;
       padding: 0 10px 0 0 !important;
       @include fontType;
-      font-size: 16px !important;
+      font-size: 15px !important;
       font-style: italic !important;
       color: $transWhite;
       font-weight: $fwLight !important;

@@ -290,7 +290,7 @@ export default function ExpenseTracker() {
         extraButtons={[
           <>
             {activeExpense?.paidStatus === 'unpaid' && (
-              <CardButton buttonType={ButtonThemes.green} classes=" default" onClick={TogglePaidStatus}>
+              <CardButton buttonTheme={ButtonThemes.green} classes=" default" onClick={TogglePaidStatus}>
                 Paid
               </CardButton>
             )}

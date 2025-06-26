@@ -195,6 +195,13 @@ DomManager =
           if Manager.IsValid(box)
             box.classList.add('active')
 
+  AddActiveClassWithDelay: (elements, delay = 0.2) ->
+    if Manager.IsValid(elements)
+      elements.forEach (el, i) ->
+        # delay per element
+        setTimeout ->
+          el.classList.add 'active'
+        , i * delay
 
   CheckIfElementIsTag: (element, tag) ->
     return element.target.tagName == tag

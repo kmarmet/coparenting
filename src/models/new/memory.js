@@ -9,16 +9,20 @@ import Manager from "../../managers/manager";
 
 Memory = class Memory {
   constructor(options = {}) {
-    var ref, ref1, ref2, ref3, ref4, ref5, ref6;
+    var ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8;
     this.id = Manager.GetUid();
     this.creationDate = moment().format(DateFormats.dateForDb);
-    this.name = (ref = options != null ? options.name : void 0) != null ? ref : '';
-    this.captureDate = (ref1 = options != null ? options.captureDate : void 0) != null ? ref1 : '';
-    this.notes = (ref2 = options != null ? options.notes : void 0) != null ? ref2 : '';
-    this.shareWith = (ref3 = options != null ? options.shareWith : void 0) != null ? ref3 : [];
-    this.title = (ref4 = options != null ? options.title : void 0) != null ? ref4 : '';
-    this.url = (ref5 = options != null ? options.url : void 0) != null ? ref5 : '';
-    this.ownerKey = (ref6 = options != null ? options.ownerKey : void 0) != null ? ref6 : '';
+    this.captureDate = (ref = options != null ? options.captureDate : void 0) != null ? ref : '';
+    this.notes = (ref1 = options != null ? options.notes : void 0) != null ? ref1 : '';
+    this.title = (ref2 = options != null ? options.title : void 0) != null ? ref2 : '';
+    this.url = (ref3 = options != null ? options.url : void 0) != null ? ref3 : '';
+    // ARRAYS
+    this.shareWith = (ref4 = options != null ? options.shareWith : void 0) != null ? ref4 : [];
+    // OWNER
+    this.owner = {
+      name: (ref5 = options != null ? (ref6 = options.owner) != null ? ref6.name : void 0 : void 0) != null ? ref5 : '',
+      key: (ref7 = options != null ? (ref8 = options.owner) != null ? ref8.key : void 0 : void 0) != null ? ref7 : ''
+    };
   }
 
 };

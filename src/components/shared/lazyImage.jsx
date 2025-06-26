@@ -3,7 +3,7 @@ import {InView} from 'react-intersection-observer'
 import AppImages from '../../constants/appImages'
 import Manager from '../../managers/manager'
 
-const LazyImage = ({imgName, alt, classes = '', onClick = () => {}}) => {
+const LazyImage = ({imgName, alt, dynamicSrc = null, classes = '', onClick = () => {}}) => {
   const [isInViewport, setIsInViewport] = useState(false)
   const [src, setSrc] = useState('')
 
@@ -12,6 +12,10 @@ const LazyImage = ({imgName, alt, classes = '', onClick = () => {}}) => {
       const url = AppImages.landing[imgName]?.url
       if (Manager.IsValid(url, true)) {
         setSrc(url)
+      }
+    } else {
+      if (Manager.IsValid(dynamicSrc, true)) {
+        setSrc(dynamicSrc)
       }
     }
   }, [imgName])

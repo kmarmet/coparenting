@@ -7,6 +7,7 @@ import DatetimeFormats from "../constants/datetimeFormats"
 import DB_UserScoped from "../database/db_userScoped"
 import CalendarManager from "./calendarManager"
 import Storage from "../database/storage"
+import Apis from "../api/apis"
 
 export default AppManager =
   OperatingSystems:
@@ -34,6 +35,10 @@ export default AppManager =
     # Last refresh does not exist -> set one
     else
       localStorage.setItem 'lastAutoRefresh', moment().format(DatetimeFormats.timestamp)
+
+  GetCurrentAppVersion: () ->
+    versions = await  DB.getTable("#{DB.tables.appUpdates}")
+    return versions[versions?.length - 1]?.currentVersion
 
   UpdateOrRefreshIfNecessary: (currentUser, latestVersion) ->
     AppManager.RefreshIfNecessary();
@@ -68,38 +73,14 @@ export default AppManager =
     return os
 
   GetIPAddress: () ->
-    ipAddress = ''
-    myHeaders = new Headers()
-
-    requestOptions =
-      method: "GET"
-      headers: myHeaders
-      redirect: "follow"
-
-    try
-      response = await fetch "https://api.ipify.org", requestOptions
-      result = await response.text()
-      ipAddress = result
-#      console.log result
-    catch error
-      console.error error
-    return ipAddress
+    return await Apis.IPify.GetIPAddress()
 
   GetTimezone: () ->
     ipAddress = await AppManager.GetIPAddress()
     timezone = ''
-    myHeaders = new Headers()
-    myHeaders.append "x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY
-
-    requestOptions =
-      method: "GET"
-      headers: myHeaders
-      redirect: "follow"
 
     try
-      response = await fetch "https://api.manyapis.com/v1-get-ip-detail?ip=#{ipAddress}", requestOptions
-      result = await response.json()
-      timezone = result?.city?.timezone
+      timezone = await Apis.ManyApis.GetTimezone(ipAddress)
 #      console.log result?.city?.timezone
     catch error
       console.error error
@@ -107,7 +88,7 @@ export default AppManager =
     return timezone
 
   GetLocationDetails: () ->
-    ipAddress = await AppManager.GetIPAddress()
+    ipAddress = await Apis.IPify.GetIPAddress()
     location = {
       city: '',
       timezone: '',
@@ -115,23 +96,15 @@ export default AppManager =
       latitude: '',
       longitude: ''
     }
-    myHeaders = new Headers()
-    myHeaders.append "x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY
-
-    requestOptions =
-      method: "GET"
-      headers: myHeaders
-      redirect: "follow"
 
     try
-      response = await fetch "https://api.manyapis.com/v1-get-ip-detail?ip=#{ipAddress}", requestOptions
-      result = await response.json()
+      locationDetails = await Apis.ManyApis.GetLocationDetails(ipAddress)
       location.ipAddress = ipAddress
-      location.city = result?.city?.name
-      location.country = result?.country?.name
-      location.latitude = result?.city?.latitude
-      location.longitude = result?.city?.longitude
-      location.timezone = result?.city?.timezone
+      location.city = locationDetails?.city?.name
+      location.country = locationDetails?.country?.name
+      location.latitude = locationDetails?.city?.latitude
+      location.longitude = locationDetails?.city?.longitude
+      location.timezone = locationDetails?.city?.timezone
 #      console.log(location)
 #      console.log result
     catch error

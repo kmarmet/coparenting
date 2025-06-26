@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import Select from 'react-select'
 import makeAnimated from 'react-select/animated'
 
@@ -12,13 +12,16 @@ export default function SelectDropdown({
   onSelect = (e) => {},
   placeholder = '',
   options = [],
+  required = false,
 }) {
+  const [defaultValue, setDefaultValue] = useState(value)
+
   return (
     <div className={wrapperClasses}>
       <Select
-        required={true}
+        required={required}
         components={animatedComponents}
-        placeholder={placeholder}
+        placeholder={`${placeholder}${required ? ' (required)' : ''}`}
         isSearchable={false}
         isClearable={false}
         captureMenuScroll={false}
@@ -28,7 +31,7 @@ export default function SelectDropdown({
         uidClass={uidClass}
         isMulti={selectMultiple}
         menuShouldScrollIntoView={true}
-        value={value}
+        value={defaultValue !== value ? value : defaultValue}
         onChange={onSelect}
         options={options}
         onMenuOpen={(e) => {}}

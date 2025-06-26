@@ -15,7 +15,6 @@
       padding: 20px 0;
 
       .child {
-        //        transition: all 0.3s ease-in-out;
         justify-content: center;
         position: relative;
         display: flex;
@@ -45,6 +44,11 @@
           position: relative;
           height: 80px;
           width: 80px;
+          transition: all 0.3s ease-in;
+
+          svg {
+            color: $darkGrey;
+          }
 
           &.no-image {
             border: 1px solid $lightBorderColor;
@@ -53,8 +57,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: all 0.3s ease-in;
             span {
-              font-size: 14px;
+              font-size: 12px;
               color: $darkerGrey;
               font-style: italic;
             }
@@ -90,7 +95,7 @@
           opacity: 1;
 
           * {
-            transition: all 0.2s ease-in;
+            transition: all 0.2s ease;
             opacity: 1;
           }
 
@@ -98,6 +103,14 @@
             transform: scale(1.2);
             position: relative;
             top: -10px;
+
+            &.no-image {
+              background-color: $blendPurple;
+
+              svg {
+                color: white;
+              }
+            }
           }
 
           .child-name {

@@ -137,22 +137,25 @@ DropdownManager = {
       }
       return options;
     },
-    ShareWithFromKeys: function(accountKeys, users, labelsOnly = false) {
+    ShareWithFromKeys: function(accountKeys, users, labelsOnly = false, currentUserKey) {
       var i, key, len, options, user;
       options = [];
+      accountKeys = accountKeys != null ? accountKeys.filter(function(x) {
+        return x !== currentUserKey;
+      }) : void 0;
       if (Manager.IsValid(accountKeys) && Manager.IsValid(users)) {
         for (i = 0, len = accountKeys.length; i < len; i++) {
           key = accountKeys[i];
           user = users != null ? users.find((x) => {
             return (x != null ? x.key : void 0) === key;
           }) : void 0;
+          if (Manager.IsValid(user)) {
+            options.push({
+              value: user != null ? user.key : void 0,
+              label: StringManager.GetFirstNameAndLastInitial(user != null ? user.name : void 0)
+            });
+          }
         }
-      }
-      if (Manager.IsValid(user)) {
-        options.push({
-          value: user != null ? user.key : void 0,
-          label: StringManager.GetFirstNameAndLastInitial(user != null ? user.name : void 0)
-        });
       }
       if (labelsOnly) {
         return options.map((x) => {

@@ -30,7 +30,7 @@
 
       .coparent-visitation-dot,
       .coparent-event-dot {
-        background-color: $coparentPurple;
+        background-color: $coParentPurple;
       }
 
       .holiday-event-dot {
@@ -118,7 +118,7 @@
       p {
         opacity: 1 !important;
         &.coparent {
-          color: $coparentPurple;
+          color: $coParentPurple;
         }
 
         &.financial {
@@ -146,7 +146,7 @@
         }
 
         &.coparent {
-          background: $coparentPurple;
+          background: $coParentPurple;
           top: -5px;
         }
 

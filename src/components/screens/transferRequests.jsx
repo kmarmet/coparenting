@@ -188,7 +188,7 @@ export default function TransferRequests() {
         thirdButtonText="Decline"
         className="transfer-change"
         extraButtons={[
-          <CardButton buttonType={ButtonThemes.green} key={Manager.GetUid()} onClick={Update} text={'Update'} />,
+          <CardButton buttonTheme={ButtonThemes.green} key={Manager.GetUid()} onClick={Update} text={'Update'} />,
           <CardButton
             onClick={() => {
               AlertManager.inputAlert(
@@ -209,7 +209,7 @@ export default function TransferRequests() {
               )
             }}
             text="Decline"
-            buttonType={ButtonThemes.red}
+            buttonTheme={ButtonThemes.red}
             key={Manager.GetUid()}
           />,
         ]}
@@ -217,7 +217,7 @@ export default function TransferRequests() {
         onClose={() => ResetForm()}
         showCard={showDetails}>
         <div className={` details content ${activeRequest?.requestReason?.length > 20 ? 'long-text' : ''}`}>
-          {view.toLowerCase() === 'details' && (
+          {view?.label?.ToLowerCase() === 'details' && (
             <>
               {/* BLOCKS */}
               <div className="blocks">
@@ -300,7 +300,7 @@ export default function TransferRequests() {
             </>
           )}
 
-          {view.toLowerCase() === 'edit' && (
+          {view?.label?.ToLowerCase() === 'edit' && (
             <>
               {/* DATE */}
               <InputField

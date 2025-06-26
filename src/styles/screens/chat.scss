@@ -158,9 +158,9 @@
 
               .timestamp {
                 font-size: 14px;
-                font-weight: $fwRegular;
-                color: $mediumGreyDarker;
+                font-weight: $fwLight;
                 margin-left: auto;
+                color: $darkGrey;
               }
 
               .coParent-name {
@@ -496,7 +496,7 @@
 
           &.from {
             z-index: 100;
-            background-color: $blend;
+            background-color: $blendPurple;
             color: white;
             display: flex;
             justify-content: space-between;

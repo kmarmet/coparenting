@@ -110,7 +110,7 @@ function InputField({
               minutesStep={5}
               onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
               key={refreshKey}
-              format={'hh:mma'}
+              format={'h:mma'}
               onAccept={onDateOrTimeSelection}
             />
           </>
@@ -120,7 +120,7 @@ function InputField({
         {inputType === InputTypes.text && (
           <DebounceInput
             value={Manager.IsValid(defaultValue) ? defaultValue : ''}
-            placeholder={placeholder}
+            placeholder={`${placeholder}${required ? ' (required)' : ''}`}
             className={`${inputClasses}`}
             onChange={onChange}
             name={inputName}
@@ -158,7 +158,7 @@ function InputField({
               name={inputName}
               maxLength={16}
               className={`${inputClasses} with-icon`}
-              placeholder={placeholder}
+              placeholder={`${placeholder}${required ? ' (required)' : ''}`}
               key={refreshKey}
               pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
               defaultValue={defaultValue}
@@ -179,7 +179,7 @@ function InputField({
             <input
               type="url"
               id="url"
-              placeholder={placeholder}
+              placeholder={`${placeholder}${required ? ' (required)' : ''}`}
               onChange={(e) => {
                 onChange(e)
               }}
@@ -198,7 +198,7 @@ function InputField({
             <input
               type="email"
               id="email"
-              placeholder={placeholder}
+              placeholder={`${placeholder}${required ? ' (required)' : ''}`}
               onChange={onChange}
               name={inputName}
               className={`${inputClasses} with-icon`}
@@ -213,7 +213,7 @@ function InputField({
           <input
             type="password"
             id="password"
-            placeholder={placeholder}
+            placeholder={`${placeholder}${required ? ' (required)' : ''}`}
             onChange={onChange}
             className={inputClasses}
             defaultValue={defaultValue}
@@ -227,7 +227,7 @@ function InputField({
             <MdNotes className={'input-icon notes'} />
             <textarea
               id="textarea"
-              placeholder={placeholder}
+              placeholder={`${placeholder}${required ? ' (required)' : ''}`}
               onChange={(e) => {
                 onChange(e)
               }}
@@ -243,7 +243,7 @@ function InputField({
         {/* CHAT */}
         {inputType === InputTypes.chat && (
           <textarea
-            placeholder={placeholder}
+            placeholder={`${placeholder}${required ? ' (required)' : ''}`}
             onChange={(e) => {
               onChange(e)
             }}

@@ -118,8 +118,6 @@ export default function NewDocument() {
           .replaceAll(' a.m.', 'am ')
           .replaceAll(' .', '. ')
           .replaceAll('Triday', 'Friday')
-        const test = await StringManager.typoCorrection(html).then()
-        // html = await StringManager.typoCorrection(html).then()
       } catch (error) {
         console.log(error)
         AlertManager.throwError('Unable to process image. Please try again after awhile.')

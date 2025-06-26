@@ -24,7 +24,7 @@ export default function ChatRow({index, onClick, chat}) {
   const {currentUser} = useCurrentUser()
   const {chats} = useChats()
   const {chatMessages} = useChatMessages(chat?.id)
-  const [activeSwipeRow, setActiveSwipeRow] = useState()
+
   const handlers = useSwipeable({
     swipeDuration: 300,
     preventScrollOnSwipe: true,
@@ -32,13 +32,13 @@ export default function ChatRow({index, onClick, chat}) {
     trackMouse: true,
     onSwipedLeft: (e) => {
       const row = e?.event?.currentTarget
-      setActiveSwipeRow(row)
-      row.classList.add('active')
+      const twoColumnChatRow = row.closest('.two-column-chat-row')
+      twoColumnChatRow.classList.add('active')
     },
     onSwipedRight: (e) => {
-      const row = e.event.currentTarget
-      setActiveSwipeRow(row)
-      row.classList.remove('active')
+      const row = e?.event?.currentTarget
+      const twoColumnChatRow = row.closest('.two-column-chat-row')
+      twoColumnChatRow.classList.remove('active')
     },
   })
 
@@ -46,7 +46,8 @@ export default function ChatRow({index, onClick, chat}) {
 
   const PauseChat = async () => {
     if (Manager.IsValid(otherMember)) {
-      const playPauseWrapper = activeSwipeRow?.querySelector('.play-pause-wrapper')
+      const activeTwoColumnChatRow = document.querySelector('.two-column-chat-row.active')
+      const playPauseWrapper = activeTwoColumnChatRow?.querySelector('.play-pause-wrapper')
       const twoColumnChatRow = document.querySelectorAll('.two-column-chat-row')
       await ChatManager.PauseChat(currentUser, otherMember?.key, chat).finally(() => {
         for (let column of twoColumnChatRow) {
@@ -61,7 +62,8 @@ export default function ChatRow({index, onClick, chat}) {
 
   const UnpauseChat = async () => {
     if (Manager.IsValid(otherMember)) {
-      const playPauseWrapper = activeSwipeRow?.querySelector('.play-pause-wrapper')
+      const activeTwoColumnChatRow = document.querySelector('.two-column-chat-row.active')
+      const playPauseWrapper = activeTwoColumnChatRow?.querySelector('.play-pause-wrapper')
       const twoColumnChatRow = document.querySelectorAll('.two-column-chat-row')
       await ChatManager.ResumeChat(currentUser, otherMember?.key, chat).finally(() => {
         for (let column of twoColumnChatRow) {
@@ -132,12 +134,12 @@ export default function ChatRow({index, onClick, chat}) {
         data-thread-id={chat?.id}
         style={DomManager.AnimateDelayStyle(index)}
         className={`chat-row chats-animation-row ${DomManager.Animate.FadeInUp(Manager.IsValid(chat?.id))}`}>
-        {/* CO-PARENT NAME */}
+        {/* CO-PARENT NAME, TIMESTAMP, AND LAST MESSAGE */}
         <div className="row-text">
           <div className={'row-text-content'}>
             <div className={'name-and-timestamp'}>
               <p className="coParent-name">{StringManager.UppercaseFirstLetterOfAllWords(otherMember?.name)}</p>
-              <p className="timestamp">{lastMessageTimestamp} </p>
+              <p className="timestamp">{StringManager.UppercaseFirstLetterOfAllWords(lastMessageTimestamp)} </p>
             </div>
             <p className="last-message">{lastMessage}</p>
           </div>
@@ -150,6 +152,7 @@ export default function ChatRow({index, onClick, chat}) {
             <FaPlay className={'play icon'} onClick={UnpauseChat} />
           </div>
         )}
+
         {/* PAUSE CHAT BUTTON */}
         {!chat?.isPausedFor?.includes(currentUser?.key) && (
           <div id="pause-wrapper">

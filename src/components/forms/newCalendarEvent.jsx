@@ -219,9 +219,9 @@ export default function NewCalendarEvent() {
   }
 
   const SetDefaultDropdownOptions = async () => {
-    setSelectedChildrenOptions(DropdownManager.GetSelected.Children(event?.children, children))
-    setSelectedReminderOptions(DropdownManager.GetSelected.Reminders(event?.reminderTimes))
-    setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users))
+    setSelectedChildrenOptions(DropdownManager.GetSelected.Children([], children))
+    setSelectedReminderOptions(DropdownManager.GetSelected.Reminders([]))
+    setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
     setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
     setView({label: 'Single Day', value: 'Single Day'})
   }

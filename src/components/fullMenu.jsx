@@ -6,7 +6,7 @@ import {BsHouses, BsImages} from 'react-icons/bs'
 import {GrInstallOption, GrUserAdmin} from 'react-icons/gr'
 import {IoChatbubblesOutline} from 'react-icons/io5'
 import {LiaFileInvoiceDollarSolid} from 'react-icons/lia'
-import {LuCalendarDays, LuListChecks} from 'react-icons/lu'
+import {LuCalendarDays} from 'react-icons/lu'
 import {MdOutlineContacts} from 'react-icons/md'
 import {PiFiles, PiNotificationFill, PiSealQuestion, PiSwap, PiUsers, PiUsersThree, PiVault} from 'react-icons/pi'
 import {RiAccountPinCircleLine, RiParentLine} from 'react-icons/ri'
@@ -22,11 +22,10 @@ import useCurrentUser from '../hooks/useCurrentUser'
 import useFeedback from '../hooks/useFeedback'
 import DomManager from '../managers/domManager'
 import Manager from '../managers/manager'
-import FeedbackEmotionsTracker from '../models/feedbackEmotionsTracker'
 
 export default function FullMenu() {
   const {state, setState} = useContext(globalState)
-  const {currentScreen, menuIsOpen} = state
+  const {currentScreen, menuIsOpen, currentAppVersion} = state
   const {currentUser} = useCurrentUser()
   const {feedback} = useFeedback()
   const auth = getAuth()
@@ -63,18 +62,9 @@ export default function FullMenu() {
   }
 
   const UpdateFeedbackCounter = async (feedbackType) => {
-    if (Manager.IsValid(feedback)) {
-      const prop = `${feedbackType}Count`
-      let count = feedback[prop] + 1
-      await DB.updateByPath(`${DB.tables.feedbackEmotionsTracker}/${prop}`, count)
-    } else {
-      const prop = `${feedbackType}Count`
-      let count = 1
-      let newFeedback = new FeedbackEmotionsTracker()
-      newFeedback[prop] = count
-
-      await DB.updateByPath(`${DB.tables.feedbackEmotionsTracker}`, newFeedback)
-    }
+    const updatedFeedback = {...feedback}
+    updatedFeedback[`${feedbackType}Count`] = feedback[`${feedbackType}Count`] + 1
+    await DB.updateByPath(`${DB.tables.feedbackEmotionsTracker}/${currentUser?.key}`, updatedFeedback)
   }
 
   useEffect(() => {
@@ -90,6 +80,47 @@ export default function FullMenu() {
       }, 1000)
     }
   }, [menuIsOpen])
+
+  // Set active section
+  useEffect(() => {
+    if (Manager.IsValid(currentScreen) && menuIsOpen) {
+      const sharingSection = document.querySelector('.section.sharing')
+      const coParentingSection = document.querySelector('.section.coparenting')
+      const informationDatabaseSection = document.querySelector('.section.info-storage')
+      const settingsAndSupportSection = document.querySelector('.section.profile-settings-support')
+
+      console.log(currentScreen)
+      if ([ScreenNames.calendar, ScreenNames.docsList, ScreenNames.memories, ScreenNames.updates].includes(currentScreen)) {
+        if (Manager.IsValid(sharingSection)) {
+          sharingSection.classList.add('active')
+        }
+      } else if (
+        [ScreenNames.contacts, ScreenNames.coparents, ScreenNames.vault, ScreenNames.visitation, ScreenNames.children].includes(currentScreen)
+      ) {
+        if (Manager.IsValid(informationDatabaseSection)) {
+          informationDatabaseSection.classList.add('active')
+        }
+      } else if ([ScreenNames.transferRequests, ScreenNames.swapRequests, ScreenNames.chats, ScreenNames.expenseTracker].includes(currentScreen)) {
+        if (Manager.IsValid(coParentingSection)) {
+          coParentingSection.classList.add('active')
+        }
+      } else if (
+        [
+          ScreenNames.profile,
+          ScreenNames.installApp,
+          ScreenNames.settings,
+          ScreenNames.help,
+          ScreenNames.changelog,
+          ScreenNames.feedback,
+          ScreenNames.adminDashboard,
+        ].includes(currentScreen)
+      ) {
+        if (Manager.IsValid(settingsAndSupportSection)) {
+          settingsAndSupportSection.classList.add('active')
+        }
+      }
+    }
+  }, [currentScreen, menuIsOpen])
 
   return (
     <div id="full-menu-wrapper" className={menuIsOpen ? 'active' : ''}>
@@ -156,7 +187,7 @@ export default function FullMenu() {
               <hr />
 
               {/* INFORMATION DATABASE */}
-              <div className={`section info-storage ${DomManager.Animate.FadeInUp(menuIsOpen)}`} style={DomManager.AnimateDelayStyle(1, 0.4)}>
+              <div className={`section info-storage  ${DomManager.Animate.FadeInUp(menuIsOpen)}`} style={DomManager.AnimateDelayStyle(1, 0.4)}>
                 <p className={`menu-title info-storage`}>Information Database</p>
                 <div className={`menu-items info-storage`}>
                   {/* CONTACTS */}
@@ -237,7 +268,7 @@ export default function FullMenu() {
               {currentUser?.accountType === 'parent' && (
                 <div
                   style={DomManager.AnimateDelayStyle(1, 0.5)}
-                  className={`section coparenting ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
+                  className={`section coparenting  ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
                   <p className={`menu-title coparenting`}>Co-Parenting</p>
                   <div className={`menu-items coparenting`}>
                     {/* TRANSFER CHANGE */}
@@ -292,7 +323,7 @@ export default function FullMenu() {
               {/* PROFILE SETTINGS & SUPPORT */}
               <div
                 style={DomManager.AnimateDelayStyle(1, 0.6)}
-                className={`section profile-settings-support ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
+                className={`section profile-settings-support  ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
                 <p className="menu-title">Settings & Support</p>
                 <div className={`menu-items profile-settings-support`}>
                   {/* PROFILE */}
@@ -360,15 +391,6 @@ export default function FullMenu() {
                       <p>Logout</p>
                     </div>
                   </div>
-                  {/* CHANGELOG */}
-                  <div
-                    className={`menu-item changelog ${currentScreen === ScreenNames.changelog ? 'active' : ''}`}
-                    onClick={(e) => ChangeCurrentScreen(ScreenNames.changelog, e)}>
-                    <div className="svg-wrapper">
-                      <LuListChecks />
-                    </div>
-                    <p>Latest Changes</p>
-                  </div>
                 </div>
 
                 <hr />
@@ -400,6 +422,9 @@ export default function FullMenu() {
                   </div>
                 </div>
               </div>
+              <p id="current-app-version" onClick={(e) => ChangeCurrentScreen(ScreenNames.changelog, e)}>
+                v.{currentAppVersion}
+              </p>
             </div>
           </div>
         )}

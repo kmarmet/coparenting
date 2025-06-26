@@ -2,9 +2,9 @@ import React from 'react'
 import ButtonThemes from '../../constants/buttonThemes'
 import Manager from '../../managers/manager'
 
-const CardButton = ({text, onClick, classes, buttonType = ButtonThemes.white, children}) => {
+const CardButton = ({text, onClick, classes, buttonTheme = ButtonThemes.white, children}) => {
   return (
-    <button className={`${classes} ${buttonType} card-button`} onClick={onClick}>
+    <button className={`${classes} ${buttonTheme} card-button`} onClick={onClick}>
       {Manager.IsValid(children) && children}
       {!Manager.IsValid(children) && text}
     </button>

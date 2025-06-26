@@ -8,16 +8,19 @@ import useChildren from '../../hooks/useChildren'
 import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useParents from '../../hooks/useParents'
-import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import CardButton from './cardButton'
 import LazyImage from './lazyImage'
-import Overlay from './overlay'
 
 export default function Slideshow({activeIndex = 0, images = [], wrapperClasses = '', show = false, hide = () => {}}) {
   const {state, setState} = useContext(globalState)
   const {refreshKey} = state
+
+  // App State
   const [activeImageIndex, setActiveImageIndex] = useState(activeIndex)
+  const [activeImgHeight, setActiveImageHeight] = useState(0)
+  const [activeImgWidth, setActiveImageWidth] = useState(0)
+  // Hooks
   const {currentUser} = useCurrentUser()
   const {children} = useChildren()
   const {coParents} = useCoParents()
@@ -93,32 +96,66 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
 
   useEffect(() => {
     setActiveImageIndex(activeIndex)
-
-    console.log(images)
   }, [activeIndex])
 
-  return (
-    <Overlay show={show}>
-      <div {...handlers} style={DomManager.AnimateDelayStyle(1)} className={`${show ? 'active' : ''} slideshow-wrapper`}>
-        {Manager.IsValid(images) &&
-          images.map((imageData, index) => {
-            return (
-              <div key={index} className={index === activeImageIndex && show ? 'active content' : 'content'}>
-                {imageData?.title?.length > 0 && activeImageIndex === index && <p className={'title'}>{imageData?.title}</p>}
-                {imageData?.notes?.length > 0 && activeImageIndex === index && <p className={'notes'}>{imageData?.notes}</p>}
-                <LazyImage imgName={imageData?.name} alt={imageData?.alt} />
+  useEffect(() => {
+    if (Manager.IsValid(images)) {
+      console.log('INdex:', activeImageIndex)
+      const newImage = new Image()
+      newImage.src = images[activeImageIndex]?.url
+      newImage.onload = () => {
+        setActiveImageHeight(newImage.naturalHeight)
+        setActiveImageWidth(newImage.naturalWidth)
+      }
+    }
+  }, [activeImageIndex])
 
-                {imageData?.date?.length > 0 && activeImageIndex === index && (
-                  <p className={'capture-date'}>
-                    Memory was captured on {moment(imageData?.date, DatetimeFormats.dateForDb).format(DatetimeFormats.readableMonthAndDayWithYear)}
-                  </p>
-                )}
-                {Manager.IsValid(imageData?.ownerKey) && activeImageIndex === index && (
-                  <p className={'shared-by'}>{GetOwnerName(imageData?.ownerKey)}</p>
-                )}
-              </div>
-            )
-          })}
+  const SetImageSize = () => {}
+
+  return (
+    <div id={'slideshow-wrapper'} className={`${show ? 'active' : ''}${wrapperClasses}`}>
+      <div id="slideshow-overlay">
+        <div
+          {...handlers}
+          id={'images-wrapper'}
+          style={{
+            backgroundImage: `url(${Manager.IsValid(images) ? images[activeImageIndex]?.url : ''})`,
+            height: `${activeImgHeight}px`,
+          }}
+          className={`${show ? 'active' : ''}`}>
+          {Manager.IsValid(images) &&
+            images.map((imageData, index) => {
+              return (
+                <div key={index} className={index === activeImageIndex && show ? 'active content' : 'content'}>
+                  {/* IMAGE */}
+                  <LazyImage dynamicSrc={imageData?.url} alt={imageData?.alt} />
+                  {Manager.IsValid(imageData?.notes, true) ||
+                    Manager.IsValid(imageData?.notes, true) ||
+                    (Manager.IsValid(imageData?.title, true) && (
+                      <div className={`${activeImgHeight > 700 ? 'top text' : 'regular text'}`}>
+                        {/* TITLE */}
+                        {imageData?.title?.length > 0 && activeImageIndex === index && <p className={'title'}>{imageData?.title}</p>}
+
+                        {/* CAPTURE DATE */}
+                        {Manager.IsValid(imageData?.captureDate) && activeImageIndex === index && (
+                          <p className={'capture-date'}>
+                            Captured on{' '}
+                            {moment(imageData?.captureDate, DatetimeFormats.dateForDb).format(DatetimeFormats.readableMonthAndDayWithYear)}
+                          </p>
+                        )}
+
+                        {/* SHARED BY */}
+                        {Manager.IsValid(imageData?.ownerKey) && activeImageIndex === index && (
+                          <p className={'shared-by'}>{GetOwnerName(imageData?.ownerKey)}</p>
+                        )}
+                        {/* NOTES */}
+                        {imageData?.notes?.length > 0 && activeImageIndex === index && <p className={'notes'}>{imageData?.notes}</p>}
+                      </div>
+                    ))}
+                </div>
+              )
+            })}
+        </div>
         {/* NAVIGATION */}
         {images?.length > 1 && (
           <p className="count">
@@ -129,13 +166,13 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
           {images?.length > 1 && (
             <>
               <CardButton onClick={() => Navigate('left')} classes="button" text={'Previous'} />
-              <CardButton buttonType={ButtonThemes.white} classes="button close" onClick={hide} text={'Close'} />
+              <CardButton buttonTheme={ButtonThemes.white} classes="button close" onClick={hide} text={'Close'} />
               <CardButton onClick={() => Navigate('right')} classes="button" text={'Next'} />
             </>
           )}
-          {images?.length === 1 && <CardButton buttonType={ButtonThemes.white} classes="button close" onClick={hide} text={'Close'} />}
+          {images?.length === 1 && <CardButton buttonTheme={ButtonThemes.white} classes="button close" onClick={hide} text={'Close'} />}
         </div>
       </div>
-    </Overlay>
+    </div>
   )
 }

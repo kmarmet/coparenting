@@ -1,5 +1,6 @@
 // Path: src\components\screens\childInfo\childInfo.jsx
 import React, {useContext, useEffect, useRef, useState} from 'react'
+import {FaUserAlt} from 'react-icons/fa'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
@@ -32,7 +33,7 @@ import Checklists from './checklists'
 
 export default function Children() {
   const {state, setState} = useContext(globalState)
-  const {theme} = state
+  const {theme, showScreenActions} = state
   const {currentUser} = useCurrentUser()
   const {children} = useChildren()
   const [showInfoCard, setShowInfoCard] = useState(false)
@@ -113,45 +114,49 @@ export default function Children() {
       <ScreenActionsMenu title="Manage Children">
         {/* ADD CHILD */}
         <div
-          className="action-item"
+          style={DomManager.AnimateDelayStyle(0)}
+          className={`action-item ${DomManager.Animate.FadeInUp(showScreenActions)}`}
           onClick={() => {
             setShowNewChildForm(true)
             setState({...state, showScreenActions: false})
           }}>
           <div className="content">
-            <div className="svg-wrapper add-child">
-              <IoPersonAdd className={'Add-child'} />
-            </div>
             <p>
               Add a Child
               <span className="subtitle">
                 Store information and provide sharing permissions for a child that has not been added to your profile yet
               </span>
             </p>
+            <div className="svg-wrapper add-child">
+              <IoPersonAdd className={'Add-child'} />
+            </div>
           </div>
         </div>
         {Manager.IsValid(children) && (
           <>
             {/* CUSTOM INFO */}
             <div
-              className="action-item"
+              style={DomManager.AnimateDelayStyle(1.5)}
+              className={`action-item ${DomManager.Animate.FadeInUp(showScreenActions)}`}
               onClick={() => {
                 setShowInfoCard(true)
                 setState({...state, showScreenActions: false})
               }}>
               <div className="content">
-                <div className="svg-wrapper">
-                  <FaWandMagicSparkles className={'magic'} />
-                </div>
                 <p>
                   Add your Own Info<span className="subtitle">Include personalized details about your child</span>
                 </p>
+                <div className="svg-wrapper">
+                  <FaWandMagicSparkles className={'magic'} />
+                </div>
               </div>
             </div>
 
             {/* PROFILE PIC */}
-
-            <div className="action-item" onClick={() => setState({...state, showScreenActions: false})}>
+            <div
+              style={DomManager.AnimateDelayStyle(2)}
+              className={`action-item ${DomManager.Animate.FadeInUp(showScreenActions)}`}
+              onClick={() => setState({...state, showScreenActions: false})}>
               <div className="content">
                 <input
                   ref={imgRef}
@@ -162,9 +167,6 @@ export default function Children() {
                   accept="image/*"
                   onChange={() => UploadProfilePic(false)}
                 />
-                <div className="svg-wrapper">
-                  <PiCameraRotateFill className={'profile-pic'} />
-                </div>
                 <p>
                   Manage Profile Picture
                   <span className="subtitle">
@@ -172,43 +174,48 @@ export default function Children() {
                     uploaded
                   </span>
                 </p>
+                <div className="svg-wrapper">
+                  <PiCameraRotateFill className={'profile-pic'} />
+                </div>
               </div>
             </div>
 
             {/* EDIT/ADD CHECKLIST */}
             <div
-              className="action-item"
+              style={DomManager.AnimateDelayStyle(2.5)}
+              className={`action-item ${DomManager.Animate.FadeInUp(showScreenActions)}`}
               onClick={() => {
                 setShowNewChecklistCard(true)
                 setState({...state, showScreenActions: false})
               }}>
               <div className="content">
-                <div className="svg-wrapper">
-                  <PiListChecksFill className={'checklist'} />
-                </div>
                 <p>
                   Manage Checklists <span className="subtitle">Add or edit checklists for transferring to or from a co-parent&#39;s home</span>
                 </p>
+                <div className="svg-wrapper">
+                  <PiListChecksFill className={'checklist'} />
+                </div>
               </div>
             </div>
 
             {/*  UNLINK CHILD */}
             <div
-              className="action-item"
+              style={DomManager.AnimateDelayStyle(3)}
+              className={`action-item ${DomManager.Animate.FadeInUp(showScreenActions)}`}
               onClick={async () => {
                 await DeleteChild()
                 setState({...state, showScreenActions: false})
               }}>
               <div className="content">
-                <div className="svg-wrapper add-child">
-                  <IoPersonRemove className={'remove-child'} />
-                </div>
                 <p>
                   Unlink {activeChild?.general?.name} from Your Profile
                   <span className="subtitle">
                     Remove sharing permissions for {activeChild?.general?.name} along with the information stored about them
                   </span>
                 </p>
+                <div className="svg-wrapper add-child">
+                  <IoPersonRemove className={'remove-child'} />
+                </div>
               </div>
             </div>
           </>
@@ -246,7 +253,7 @@ export default function Children() {
                       {!Manager.IsValid(child?.profilePic, true) && (
                         <div onClick={() => setActiveChildId(child?.id)} className={activeChild?.id === child?.id ? 'child active' : 'child'}>
                           <div className="child-image no-image">
-                            <span>No Image</span>
+                            <FaUserAlt />
                           </div>
                           {/* CHILD NAME */}
                           <span className="child-name">{StringManager.GetFirstNameOnly(child?.general?.name)}</span>

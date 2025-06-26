@@ -5,30 +5,13 @@ import DB from "../database/DB"
 import {saveAs} from 'file-saver'
 import Storage from '../database/storage'
 import domtoimage from 'dom-to-image'
-import AlertManager from "./alertManager";
+import AlertManager from "./alertManager"
+import Apis from "../api/apis";
 
 ImageManager =
   shortenUrl: (url) ->
-    shortenedUrlObject = ''
-    myHeaders = new Headers()
-    myHeaders.append "content-type", "application/json"
-    myHeaders.append "x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY
-
-    raw = JSON.stringify
-      expiry: "5m"
-      url: url
-
-    requestOptions =
-      method: "POST"
-      headers: myHeaders
-      body: raw
-      redirect: "follow"
-
     try
-      response = await fetch("https://api.manyapis.com/v1-create-short-url", requestOptions)
-
-      result = await response.json()
-      shortenedUrlObject = result;
+      shortenedUrlObject = await Apis.ManyApis.GetShortUrl(url);
     catch error
       console.error error
       AlertManager.throwError('Unable to parse image. Please try again after a few minutes.')

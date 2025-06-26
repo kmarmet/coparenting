@@ -86,13 +86,15 @@ export default function Form({
     <div key={refreshKey} className={`form-wrapper${showCard ? ` active` : ''} ${wrapperClass}`}>
       <div style={DomManager.AnimateDelayStyle(1, 0.002)} className={`form-card${showCard ? ` active` : ''}`}>
         <div className="content-wrapper">
-          <div className="header">
-            <p className={'form-title'} onClick={(e) => DomManager.ToggleActive(e.currentTarget)}>
-              {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
-              {StringManager.FormatTitle(title, true)}
-            </p>
-            {Manager.IsValid(subtitle, true) && <StringAsHtmlElement classes={'subtitle'} text={subtitle} />}
-          </div>
+          {Manager.IsValid(title) && (
+            <div className="header">
+              <p className={'form-title'} onClick={(e) => DomManager.ToggleActive(e.currentTarget)}>
+                {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
+                {StringManager.FormatTitle(title, true)}
+              </p>
+              {Manager.IsValid(subtitle, true) && <StringAsHtmlElement classes={'subtitle'} text={subtitle} />}
+            </div>
+          )}
 
           {viewDropdown}
           {Manager.IsValid(viewDropdown) && <hr />}
@@ -103,7 +105,7 @@ export default function Form({
       <div className={`flex card-buttons`}>
         {hasSubmitButton && (
           <CardButton
-            buttonType={ButtonThemes.green}
+            buttonTheme={ButtonThemes.green}
             text={submitText}
             classes="card-button"
             onClick={() => {
@@ -112,7 +114,7 @@ export default function Form({
           />
         )}
 
-        {hasDelete && <CardButton text={deleteButtonText} buttonType={ButtonThemes.red} classes="card-button" onClick={onDelete} />}
+        {hasDelete && <CardButton text={deleteButtonText} buttonTheme={ButtonThemes.red} classes="card-button" onClick={onDelete} />}
 
         {/* EXTRA BUTTONS */}
         {Manager.IsValid(extraButtons) &&
@@ -120,7 +122,7 @@ export default function Form({
             return cloneElement(button, {key: index})
           })}
 
-        <CardButton text={cancelButtonText} buttonType={ButtonThemes.white} classes="card-button" onClick={onClose} />
+        <CardButton text={cancelButtonText} buttonTheme={ButtonThemes.white} classes="card-button" onClick={onClose} />
       </div>
     </div>
   )

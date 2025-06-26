@@ -1,5 +1,4 @@
 import React, {useContext, useEffect} from 'react'
-import {IoClose} from 'react-icons/io5'
 import {useSwipeable} from 'react-swipeable'
 import globalState from '../../context'
 import DomManager from '../../managers/domManager'
@@ -23,17 +22,14 @@ const ScreenActionsMenu = ({children, centeredActionItem, title = 'Parent'}) => 
 
   return (
     <div className={`screen-actions-menu-wrapper${showScreenActions ? ' active' : ''}`}>
-      {showScreenActions && <IoClose className="close-overlay-icon" onClick={() => setState({...state, showScreenActions: false})} />}
       <div className={'screen-actions-menu-overlay'}>
-        <div className={'screen-actions-card-wrapper'}>
-          <div {...handlers} className={`screen-actions-card`}>
-            <div className="swipe-bar"></div>
-            <Spacer height={3} />
-            <div className={centeredActionItem ? 'centered action-items' : 'action-items'}>
-              <p className="screen-actions-menu-title">{title}</p>
-              <Spacer height={10} />
-              {children}
-            </div>
+        <div {...handlers} className={`screen-actions-card`}>
+          <div className="swipe-bar"></div>
+          <Spacer height={3} />
+          <div className={centeredActionItem ? 'centered action-items' : 'action-items'}>
+            <p className="screen-actions-menu-title">{title}</p>
+            <Spacer height={10} />
+            {children}
           </div>
         </div>
       </div>

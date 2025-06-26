@@ -1,6 +1,6 @@
+import Apis from '../api/apis'
 import Storage from '../database/storage'
 import AlertManager from './alertManager'
-import ImageManager from './imageManager'
 import LogManager from './logManager'
 import StringManager from './stringManager'
 
@@ -137,7 +137,7 @@ const DocumentConversionManager = {
     const extension = StringManager.GetFileExtension(fileName)
     const myHeaders = new Headers()
     myHeaders.append('Content-Type', 'image/*')
-    let shortenedUrl = await ImageManager.shortenUrl(url)
+    let shortenedUrl = await Apis.ManyApis.GetShortUrl(url)
 
     const requestOptions = {
       method: 'GET',
@@ -146,18 +146,7 @@ const DocumentConversionManager = {
     }
 
     try {
-      // REACT_APP_OCR_API_KEY
-      const response = await fetch(
-        // eslint-disable-next-line no-undef
-        `https://api.ocr.space/parse/imageurl?apikey=${process.env.REACT_APP_OCR_API_KEY}&url=${shortenedUrl}&OCREngine=2&filetype=${extension}`,
-        requestOptions
-      ).catch((error) => {
-        AlertManager.throwError('Unable to parse image. Please try again after a few minutes.')
-        console.log(error)
-        return false
-      })
-      const result = await response.json()
-      returnHtml = result
+      returnHtml = await Apis.OCR.GetHTMLFromImage(extension, shortenedUrl)
     } catch (error) {
       AlertManager.throwError('Unable to parse image. Please try again after a few minutes.')
       console.error(error)

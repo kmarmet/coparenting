@@ -207,7 +207,7 @@ export default function EventCalendar() {
     let userVisitationHolidays = []
     if (currentUser.accountType === 'parent') {
       userVisitationHolidays = allEvents.filter(
-        (x) => x.isHoliday === true && x.ownerKey === currentUser?.key && Manager.Contains(x.title.toLowerCase(), 'holiday')
+        (x) => x.isHoliday === true && x?.owner?.key === currentUser?.key && Manager.Contains(x.title.toLowerCase(), 'holiday')
       )
     }
     userVisitationHolidays.forEach((holiday) => {
@@ -245,11 +245,11 @@ export default function EventCalendar() {
           event?.title.toLowerCase().includes('paid') ||
           event?.title.toLowerCase().includes('salary') ||
           event?.title.toLowerCase().includes('expense')
-        const isCurrentUserDot = event?.ownerKey === currentUser?.key
+        const isCurrentUserDot = event?.owner?.key === currentUser?.key
         if (isPayEvent) {
           payEvents.push(event.startDate)
         }
-        if (event?.isHoliday && !event.fromVisitationSchedule && !Manager.IsValid(event.ownerKey)) {
+        if (event?.isHoliday && !event.fromVisitationSchedule && !Manager.IsValid(event.owner?.key)) {
           dotClasses.push('holiday-event-dot')
         }
         if (!event?.isHoliday && isCurrentUserDot && !isPayEvent) {
@@ -297,7 +297,6 @@ export default function EventCalendar() {
     const shouldRefresh = await AppManager.UpdateOrRefreshIfNecessary(currentUser, latestVersionNumber).then()
     if (shouldRefresh) {
       setState({...state, successAlertMessage: 'Updating App...'})
-
       setTimeout(() => {
         setState({...state, successAlertMessage: ''})
         window.location.reload()
@@ -328,7 +327,6 @@ export default function EventCalendar() {
     }
   }, [showHolidays])
 
-  // ON PAGE LOAD
   useEffect(() => {
     // Append Holidays/Search Cal Buttons
     if (!currentUserIsLoading) {
@@ -358,16 +356,17 @@ export default function EventCalendar() {
   }, [currentScreen, currentUserIsLoading])
 
   useEffect(() => {
-    setTimeout(() => {
-      AddMonthText()
-    }, 500)
-  }, [])
-
-  useEffect(() => {
     if (Manager.IsValid(appUpdates) && Manager.IsValid(currentUser)) {
       UpdateOrRefreshIfNecessary().then((r) => r)
     }
   }, [appUpdates, currentUser])
+
+  // ON PAGE LOAD
+  useEffect(() => {
+    setTimeout(() => {
+      AddMonthText()
+    }, 500)
+  }, [])
 
   return (
     <>
@@ -413,7 +412,6 @@ export default function EventCalendar() {
         {/* EDIT EVENT */}
         <EditCalEvent showCard={showEditCard} hideCard={() => setShowEditCard(false)} event={eventToEdit} />
       </>
-
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme}`}>
         <Spacer height={32.5} />

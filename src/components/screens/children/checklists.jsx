@@ -140,17 +140,11 @@ export default function Checklists({showCard, hideCard}) {
       title={'Checklists'}
       viewDropdown={
         <ViewDropdown
-          shouldUpdateStateOnLoad={false}
-          onSelect={(text) => {
-            const _view = text.toLowerCase()
-            if (Manager.Contains(_view, 'to')) {
-              setView('to')
-            } else {
-              setView('from')
-            }
+          dropdownPlaceholder="To Co-Parent's Home"
+          selectedView={view}
+          onSelect={(view) => {
+            setView(view)
           }}
-          wrapperClasses={'child-info'}
-          views={destinationLabels}
         />
       }
       subtitle={`Review transfer checklists to guarantee that all items are accounted for during transitions to or from a co-parent's home.  ${DomManager.tapOrClick(

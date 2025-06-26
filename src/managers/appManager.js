@@ -24,6 +24,8 @@ import CalendarManager from "./calendarManager";
 
 import Storage from "../database/storage";
 
+import Apis from "../api/apis";
+
 export default AppManager = {
   OperatingSystems: {
     Windows: 'Windows',
@@ -50,6 +52,11 @@ export default AppManager = {
       // Last refresh does not exist -> set one
       return localStorage.setItem('lastAutoRefresh', moment().format(DatetimeFormats.timestamp));
     }
+  },
+  GetCurrentAppVersion: async function() {
+    var ref1, versions;
+    versions = (await DB.getTable(`${DB.tables.appUpdates}`));
+    return (ref1 = versions[(versions != null ? versions.length : void 0) - 1]) != null ? ref1.currentVersion : void 0;
   },
   UpdateOrRefreshIfNecessary: async function(currentUser, latestVersion) {
     var ref1, ref2;
@@ -87,40 +94,14 @@ export default AppManager = {
     return os;
   },
   GetIPAddress: async function() {
-    var error, ipAddress, myHeaders, requestOptions, response, result;
-    ipAddress = '';
-    myHeaders = new Headers();
-    requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow"
-    };
-    try {
-      response = (await fetch("https://api.ipify.org", requestOptions));
-      result = (await response.text());
-      ipAddress = result;
-    } catch (error1) {
-      //      console.log result
-      error = error1;
-      console.error(error);
-    }
-    return ipAddress;
+    return (await Apis.IPify.GetIPAddress());
   },
   GetTimezone: async function() {
-    var error, ipAddress, myHeaders, ref1, requestOptions, response, result, timezone;
+    var error, ipAddress, timezone;
     ipAddress = (await AppManager.GetIPAddress());
     timezone = '';
-    myHeaders = new Headers();
-    myHeaders.append("x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY);
-    requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow"
-    };
     try {
-      response = (await fetch(`https://api.manyapis.com/v1-get-ip-detail?ip=${ipAddress}`, requestOptions));
-      result = (await response.json());
-      timezone = result != null ? (ref1 = result.city) != null ? ref1.timezone : void 0 : void 0;
+      timezone = (await Apis.ManyApis.GetTimezone(ipAddress));
     } catch (error1) {
       //      console.log result?.city?.timezone
       error = error1;
@@ -129,8 +110,8 @@ export default AppManager = {
     return timezone;
   },
   GetLocationDetails: async function() {
-    var error, ipAddress, location, myHeaders, ref1, ref2, ref3, ref4, ref5, requestOptions, response, result;
-    ipAddress = (await AppManager.GetIPAddress());
+    var error, ipAddress, location, locationDetails, ref1, ref2, ref3, ref4, ref5;
+    ipAddress = (await Apis.IPify.GetIPAddress());
     location = {
       city: '',
       timezone: '',
@@ -138,22 +119,14 @@ export default AppManager = {
       latitude: '',
       longitude: ''
     };
-    myHeaders = new Headers();
-    myHeaders.append("x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY);
-    requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow"
-    };
     try {
-      response = (await fetch(`https://api.manyapis.com/v1-get-ip-detail?ip=${ipAddress}`, requestOptions));
-      result = (await response.json());
+      locationDetails = (await Apis.ManyApis.GetLocationDetails(ipAddress));
       location.ipAddress = ipAddress;
-      location.city = result != null ? (ref1 = result.city) != null ? ref1.name : void 0 : void 0;
-      location.country = result != null ? (ref2 = result.country) != null ? ref2.name : void 0 : void 0;
-      location.latitude = result != null ? (ref3 = result.city) != null ? ref3.latitude : void 0 : void 0;
-      location.longitude = result != null ? (ref4 = result.city) != null ? ref4.longitude : void 0 : void 0;
-      location.timezone = result != null ? (ref5 = result.city) != null ? ref5.timezone : void 0 : void 0;
+      location.city = locationDetails != null ? (ref1 = locationDetails.city) != null ? ref1.name : void 0 : void 0;
+      location.country = locationDetails != null ? (ref2 = locationDetails.country) != null ? ref2.name : void 0 : void 0;
+      location.latitude = locationDetails != null ? (ref3 = locationDetails.city) != null ? ref3.latitude : void 0 : void 0;
+      location.longitude = locationDetails != null ? (ref4 = locationDetails.city) != null ? ref4.longitude : void 0 : void 0;
+      location.timezone = locationDetails != null ? (ref5 = locationDetails.city) != null ? ref5.timezone : void 0 : void 0;
     } catch (error1) {
       //      console.log(location)
       //      console.log result

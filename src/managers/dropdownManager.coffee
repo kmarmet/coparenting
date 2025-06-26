@@ -88,16 +88,17 @@ DropdownManager =
 
       return options
 
-    ShareWithFromKeys: (accountKeys, users, labelsOnly = false) ->
+    ShareWithFromKeys: (accountKeys, users, labelsOnly = false, currentUserKey) ->
       options = []
+      accountKeys = accountKeys?.filter (x) -> x != currentUserKey
       if (Manager.IsValid(accountKeys) && Manager.IsValid(users))
         for key in accountKeys
           user = users?.find((x) => x?.key == key)
 
-      if Manager.IsValid(user)
-        options.push
-          value:  user?.key
-          label: StringManager.GetFirstNameAndLastInitial(user?.name)
+          if Manager.IsValid(user)
+            options.push
+              value:  user?.key
+              label: StringManager.GetFirstNameAndLastInitial(user?.name)
 
       if labelsOnly
         return options.map((x) => x?.label)
@@ -119,6 +120,7 @@ DropdownManager =
       if Manager.IsValid(ExpenseSortByTypes)
         for category in Object.keys(ExpenseSortByTypes)
           options.push
+
             value: category
             label: category
       return options

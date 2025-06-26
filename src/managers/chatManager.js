@@ -26,6 +26,8 @@ import Chat from "../models/chat/chat";
 
 import DB_UserScoped from "../database/db_userScoped";
 
+import Sapler from "../api/apis";
+
 ChatManager = {
   CreateAndInsertChat: async function(sender, recipient) {
     var dbRef, error, existingChats, newChat, updatedChats;
@@ -89,8 +91,8 @@ ChatManager = {
   },
   GetToneAndSentiment: async function(message) {
     var color, icon, ref1, ref2, ref3, ref4, ref5, ref6, returnSentiment, returnTone, sentiment, tone, warningSentiments;
-    tone = (await ChatManager.GetTone(message));
-    sentiment = (await ChatManager.GetSentiment(message));
+    tone = (await Sapler.GetToneOrSentiment('tone', message));
+    sentiment = (await Sapler.GetToneOrSentiment('sentiment', message));
     if (!Manager.IsValid(tone) || !Manager.IsValid(sentiment)) {
       return false;
     }
@@ -108,47 +110,6 @@ ChatManager = {
       color: color,
       icon: icon
     };
-  },
-  GetSentiment: function(message) {
-    return new Promise(function(resolve, reject) {
-      return fetch('https://api.sapling.ai/api/v1/sentiment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          key: '7E3IFZEMEKYEHVIMJHENF9ETHHTKARA4',
-          text: message
-        })
-      }).then(function(response) {
-        return response;
-      }).then(function(result) {
-        return resolve(result.json());
-      }).catch(function(error) {
-        console.log(error.message);
-        return reject(error);
-      });
-    });
-  },
-  GetTone: function(message) {
-    return new Promise(function(resolve, reject) {
-      return fetch('https://api.sapling.ai/api/v1/tone', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          key: '7E3IFZEMEKYEHVIMJHENF9ETHHTKARA4',
-          text: message
-        })
-      }).then(function(response) {
-        return response;
-      }).then(function(result) {
-        return resolve(result.json());
-      }).catch(function(error) {
-        return reject(error);
-      });
-    });
   },
   GetScopedChat: async function(currentUser, messageToUserKey) {
     var chat, chatToReturn, error, i, len, memberKeys, securedChats;

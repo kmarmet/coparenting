@@ -10,6 +10,7 @@ import globalState from '../../context'
 import DB from '../../database/DB'
 import useCalendarEvents from '../../hooks/useCalendarEvents'
 import useChildren from '../../hooks/useChildren'
+import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
@@ -42,6 +43,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const {calendarEvents} = useCalendarEvents(event?.owner?.key)
   const {users} = useUsers()
   const {children} = useChildren()
+  const {coParents} = useCoParents()
 
   // Event Details
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
@@ -60,8 +62,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const [selectedReminderOptions, setSelectedReminderOptions] = useState(DropdownManager.GetSelected.Reminders(event?.reminderTimes))
   const [selectedShareWithOptions, setSelectedShareWithOptions] = useState(DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users))
   const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
+
   // REF
-  const formRef = useRef({...event})
+  const formRef = useRef(null)
 
   const ResetForm = async (alertMessage = '') => {
     Manager.ResetForm('edit-event-form')
@@ -71,6 +74,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setEventIsRecurring(false)
     setEventIsCloned(false)
     setView({label: 'Details', value: 'Details'})
+    setTimeout(() => {
+      setState({...state, refreshKey: Manager.GetUid()})
+    }, 500)
     setState({
       ...state,
       successAlertMessage: alertMessage,
@@ -107,14 +113,14 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   // SUBMIT
   const Submit = async () => {
     try {
-      let updatedEvent = ObjectManager.merge(formRef.current, event, 'deep')
+      let updatedEvent = ObjectManager.merge(event, formRef.current, 'deep')
 
       // Map Dropdown to Database
       updatedEvent.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
       updatedEvent.reminderTimes = DropdownManager.MappedForDatabase.RemindersFromArray(selectedReminderOptions)
       updatedEvent.shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
 
-      // Set owner
+      // Set Owner
       updatedEvent.owner = {
         key: currentUser?.key,
         name: currentUser?.name,
@@ -231,7 +237,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const SetDropdownOptions = async () => {
     setSelectedChildrenOptions(DropdownManager.GetSelected.Children(event?.children, children))
     setSelectedReminderOptions(DropdownManager.GetSelected.Reminders(event?.reminderTimes))
-    setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users))
+    setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users, false, currentUser?.key))
+    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
     setView({label: 'Details', value: 'Details'})
   }
 
@@ -239,7 +246,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     if (Manager.IsValid(event)) {
       const index = DB.GetTableIndexById(calendarEvents, event?.id)
       SetDropdownOptions().then((r) => r)
-      console.log('Updated Event: ', event, 'Index', index)
     }
   }, [event])
 
@@ -265,21 +271,19 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         submitText={'Update'}
         hasSubmitButton={view?.label === 'Edit'}
         onClose={() => ResetForm()}
-        title={StringManager.FormatEventTitle(StringManager.UppercaseFirstLetterOfAllWords(formRef?.current?.title))}
+        title={StringManager.FormatEventTitle(StringManager.UppercaseFirstLetterOfAllWords(event?.title))}
         showCard={showCard}
         deleteButtonText="Delete"
-        className="edit-calendar-event"
+        wrapperClass={`edit-calendar-event at-top${event?.owner?.key === currentUser?.key ? ' owner' : ' non-owner'}`}
         viewDropdown={
           <ViewDropdown
-            show={showCard}
             dropdownPlaceholder="Details"
             selectedView={view}
             onSelect={(view) => {
               setView(view)
             }}
           />
-        }
-        wrapperClass={`edit-calendar-event at-top ${event?.owner?.key === currentUser?.key ? 'owner' : 'non-owner'}`}>
+        }>
         <div id="edit-cal-event-container" className={`${theme} edit-event-form'`}>
           <div className={'content-wrapper'}>
             {/* DETAILS */}
@@ -319,7 +323,10 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 <DetailBlock valueToValidate={event?.owner?.name} text={event?.owner?.name} title={'Creator'} />
 
                 {/*  Shared With */}
-                <MultilineDetailBlock title={'Shared with'} array={DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users, true)} />
+                <MultilineDetailBlock
+                  title={'Shared with'}
+                  array={DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users, true, currentUser?.key)}
+                />
 
                 {/* Reminders */}
                 <MultilineDetailBlock
@@ -419,7 +426,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               )}
 
               {/* EVENT START/END TIME */}
-
               {!eventIsDateRange && (
                 <>
                   {/* START TIME */}

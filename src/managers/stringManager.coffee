@@ -30,6 +30,11 @@ StringManager = {
       return true
     not (new RegExp("^#{str[0]}+$").test(str))
 
+  IncrementPatchVersion: (version) ->
+    parts = version.split('.').map(Number)
+    parts[2] += 1
+    return parts.join('.')
+
   FormatAsWholeNumber: (number) ->
     asString = number.toString()
     if asString.indexOf('.') > -1
@@ -105,35 +110,6 @@ StringManager = {
     console.log(decompressed)
     return decompressed
 
-  typoCorrection: (text) ->
-    fixedText = ''
-    myHeaders = new Headers()
-    myHeaders.append "Content-Type", "application/json"
-
-    raw = JSON.stringify
-      key: process.env.REACT_APP_SAPLER_TONE_API_KEY
-      text: text
-      session_id: Manager.GetUid()
-      auto_apply: true
-      lang: 'en'
-      variety: 'us-variety'
-
-    requestOptions =
-      method: "POST"
-      headers: myHeaders
-      body: raw
-      redirect: "follow"
-
-    try
-      response = await fetch "https://api.sapling.ai/api/v1/spellcheck", requestOptions
-      result = await response.json()
-      fixedText = result.applied_text
-      console.log result
-    catch error
-      console.error error
-
-    return fixedText
-
   formatFileName: (fileName) ->
     fileName.replaceAll(' ', '-').replaceAll('(', '').replaceAll(')', '')
 
@@ -147,13 +123,13 @@ StringManager = {
       return ''
 
   GetFileExtension: (fileName) ->
-    fileName.split('.').pop()
+    return fileName.split('.').pop()
 
   lowercaseShouldBeLowercase: (input) ->
-    input.replace('Of', 'of')
+    return input.replace('Of', 'of')
 
   removeFileExtension: (input) ->
-    input.replace(/\.[^/.]+$/, '')
+    return input.replace(/\.[^/.]+$/, '')
 
   GetWordCount: (input) ->
     if Manager.IsValid input, true

@@ -19,27 +19,13 @@ import domtoimage from 'dom-to-image';
 
 import AlertManager from "./alertManager";
 
+import Apis from "../api/apis";
+
 ImageManager = {
   shortenUrl: async function(url) {
-    var error, myHeaders, raw, requestOptions, response, result, shortenedUrlObject;
-    shortenedUrlObject = '';
-    myHeaders = new Headers();
-    myHeaders.append("content-type", "application/json");
-    myHeaders.append("x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY);
-    raw = JSON.stringify({
-      expiry: "5m",
-      url: url
-    });
-    requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow"
-    };
+    var error, shortenedUrlObject;
     try {
-      response = (await fetch("https://api.manyapis.com/v1-create-short-url", requestOptions));
-      result = (await response.json());
-      shortenedUrlObject = result;
+      shortenedUrlObject = (await Apis.ManyApis.GetShortUrl(url));
     } catch (error1) {
       error = error1;
       console.error(error);

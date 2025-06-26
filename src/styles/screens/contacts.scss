@@ -19,7 +19,7 @@
         &.button {
           &.default {
             &:first-child {
-              background: $coparentPurple;
+              background: $coParentPurple;
             }
           }
         }
@@ -58,7 +58,7 @@
 
           &.no-pic {
             border: 0;
-            @include mainColorsGradient;
+            background-color: $blendPurple;
 
             span {
               font-weight: $fwMediumBold;

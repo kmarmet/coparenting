@@ -8,6 +8,7 @@ import LogManager from './logManager'
 import SecurityManager from './securityManager'
 import Chat from "../models/chat/chat"
 import DB_UserScoped from "../database/db_userScoped"
+import Sapler from "../api/apis"
 
 ChatManager =
   CreateAndInsertChat:  (sender,recipient) ->
@@ -54,8 +55,8 @@ ChatManager =
     return inactive
 
   GetToneAndSentiment: (message) ->
-    tone = await ChatManager.GetTone(message)
-    sentiment = await ChatManager.GetSentiment(message)
+    tone = await Sapler.GetToneOrSentiment('tone', message)
+    sentiment = await Sapler.GetToneOrSentiment('sentiment', message)
 
     if !Manager.IsValid(tone) or !Manager.IsValid(sentiment)
       return false
@@ -73,39 +74,6 @@ ChatManager =
     sentiment: returnSentiment
     color: color
     icon: icon
-
-  GetSentiment: (message) ->
-    new Promise (resolve, reject) ->
-      fetch('https://api.sapling.ai/api/v1/sentiment',
-        method: 'POST'
-        headers:
-          'Content-Type': 'application/json'
-        body: JSON.stringify(
-          key: '7E3IFZEMEKYEHVIMJHENF9ETHHTKARA4'
-          text: message
-        )
-      )
-        .then (response) -> response
-        .then (result) -> resolve(result.json())
-        .catch (error) ->
-          console.log(error.message)
-          reject(error)
-
-  GetTone: (message) ->
-    new Promise (resolve, reject) ->
-      fetch('https://api.sapling.ai/api/v1/tone',
-        method: 'POST'
-        headers:
-          'Content-Type': 'application/json'
-        body: JSON.stringify(
-          key: '7E3IFZEMEKYEHVIMJHENF9ETHHTKARA4'
-          text: message
-        )
-      )
-        .then (response) -> response
-        .then (result) -> resolve(result.json())
-        .catch (error) ->
-          reject(error)
 
   GetScopedChat:  (currentUser, messageToUserKey) ->
     try

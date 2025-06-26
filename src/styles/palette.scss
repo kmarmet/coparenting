@@ -8,9 +8,11 @@ $accentTwo: #674bdb;
 $secondaryAccent: #6c73c8;
 $main: #4c6fff;
 //$main: #578bff;
-//$blend: #5e65ff;
+$blendPurple: #4248ff;
+$blendPurple2: #5b42ff;
+$blendDark: #4c5ee2;
 $blend: #5769ff;
-$linkColor: #4c6fff;
+$linkColor: #4255ff;
 /*#endregion  PRIMARY COLORS */
 
 /*#region  GREENS */
@@ -23,7 +25,7 @@ $bootstrapGreenBorder: rgba(96, 122, 114, 0.3);
 $bootstrapGreen: #0f5132;
 $darkGreen: #239960;
 $secondaryGreen: #30c67d;
-$greenForWhiteText: #2e8b57;
+$greenForWhiteText: #3baf6e;
 $flatGreen: #7af1ca;
 /*#endregion  GREENS */
 
@@ -42,7 +44,9 @@ $bootstrapYellowBg: #fff3cd;
 $bootstrapYellowBorder: #cebb87;
 $bootstrapYellow: #897235;
 $yellow: #fbd872;
-$gold: #ffcb6b;
+$gold: #ffcf66;
+$softYellow: #f6e8b3;
+$softerYellow: rgba(243, 232, 179, 0.52);
 $brightYellow: #ffe75b;
 $darkYellow: #b49639;
 /*#endregion  YELLOWS */
@@ -55,7 +59,7 @@ $holidayOrange: #ffc511;
 /*#region PURPLES */
 $lightPurple: #f5f0ff;
 $purple: #856ab8;
-$coparentPurple: #7458ff;
+$coParentPurple: #7458ff;
 $darkPurple: #2c1d52;
 /*#endregion PURPLES */
 
@@ -68,6 +72,8 @@ $translucentLightest: rgba(255, 255, 255, 0.09);
 /*#region  WHITES  */
 $offWhite: #faf9f6;
 $tanWhite: #f9f7f3;
+$subtleWhite: #f9f9f9;
+$barelyVisibleWhite: rgba(255, 255, 255, 0.15);
 $transWhite: rgba(255, 255, 255, 0.55);
 $darkerTransWhite: rgba(255, 255, 255, 0.45);
 $mediumTransWhite: rgba(255, 255, 255, 0.8);

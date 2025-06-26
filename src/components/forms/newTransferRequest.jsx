@@ -33,7 +33,7 @@ export default function NewTransferChangeRequest() {
   const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {coParents, coParentsAreLoading} = useCoParents()
   const {transferRequests, transferRequestsIsLoading} = useTransferRequests()
-  const updateRef = useRef(new TransferChangeRequest())
+  const formRef = useRef(new TransferChangeRequest())
 
   const ResetForm = async (showSuccessAlert = false) => {
     Manager.ResetForm('transfer-request-wrapper')
@@ -62,16 +62,16 @@ export default function NewTransferChangeRequest() {
       AlertManager.throwError('Please choose who to Send the request to')
       return false
     }
-    if (!Manager.IsValid(updateRef.current.address) && !Manager.IsValid(updateRef.current.time)) {
+    if (!Manager.IsValid(formRef.current.address) && !Manager.IsValid(formRef.current.time)) {
       AlertManager.throwError('Please choose a new location or time')
       return false
     }
-    if (!Manager.IsValid(updateRef.current.startDate)) {
+    if (!Manager.IsValid(formRef.current.startDate)) {
       AlertManager.throwError('Please choose the day of the requested transfer change')
       return false
     }
     if (validAccounts > 0) {
-      if (!Manager.IsValid(updateRef.current.shareWith)) {
+      if (!Manager.IsValid(formRef.current.shareWith)) {
         AlertManager.throwError('Please choose who you would like to share this request with')
         return false
       }
@@ -81,22 +81,22 @@ export default function NewTransferChangeRequest() {
     const recipient = coParents.find((x) => x.key === requestRecipientKey)
 
     if (Manager.IsValid(recipient)) {
-      updateRef.current.recipient.key = recipient?.key
-      updateRef.current.recipient.name = recipient?.name
+      formRef.current.recipient.key = recipient?.key
+      formRef.current.recipient.name = recipient?.name
     }
 
-    updateRef.current.ownerKey = currentUser?.key
-    updateRef.current.directionsLink = Manager.GetDirectionsLink(updateRef.current.address)
+    formRef.current.ownerKey = currentUser?.key
+    formRef.current.directionsLink = Manager.GetDirectionsLink(formRef.current.address)
 
     // Update address
-    if (Manager.IsValid(updateRef.current.address, true)) {
+    if (Manager.IsValid(formRef.current.address, true)) {
       const coParent = currentUser?.coParents.filter((x) => x.key === requestRecipientKey)[0]
       const key = DB.GetTableIndexById(coParent, coParent?.id)
-      await DB_UserScoped.updateUserRecord(currentUser?.key, `coparents/${key}/preferredTransferAddress`, updateRef.current.address)
+      await DB_UserScoped.updateUserRecord(currentUser?.key, `coparents/${key}/preferredTransferAddress`, formRef.current.address)
     }
 
     // // Add record
-    await DB.Add(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, transferRequests, updateRef.current)
+    await DB.Add(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, transferRequests, formRef.current)
 
     // Notify
     await UpdateManager.SendUpdate(
@@ -111,7 +111,7 @@ export default function NewTransferChangeRequest() {
   }
 
   const HandleShareWithSelection = (e) => {
-    updateRef.current.shareWith = DomManager.HandleShareWithSelection(e, currentUser, updateRef.current.shareWith, updateRef)
+    formRef.current.shareWith = DomManager.HandleShareWithSelection(e, currentUser, formRef.current.shareWith, formRef)
   }
 
   const HandleRequestRecipient = (e) => {
@@ -140,7 +140,7 @@ export default function NewTransferChangeRequest() {
               uidClass="transfer-request-date"
               labelText={'Day'}
               required={true}
-              onDateOrTimeSelection={(e) => (updateRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb))}
+              onDateOrTimeSelection={(e) => (formRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb))}
             />
 
             {/* TIME */}
@@ -148,7 +148,7 @@ export default function NewTransferChangeRequest() {
               inputType={InputTypes.time}
               labelText={'New Time'}
               uidClass="transfer-request-time"
-              onDateOrTimeSelection={(e) => (updateRef.current.time = moment(e).format(DatetimeFormats.timeForDb))}
+              onDateOrTimeSelection={(e) => (formRef.current.time = moment(e).format(DatetimeFormats.timeForDb))}
             />
 
             {/* RESPONSE DUE DATE */}
@@ -157,27 +157,27 @@ export default function NewTransferChangeRequest() {
               uidClass="transfer-request-response-date"
               labelText={'Requested Response Date'}
               required={true}
-              onDateOrTimeSelection={(e) => (updateRef.current.requestedResponseDate = moment(e).format(DatetimeFormats.dateForDb))}
+              onDateOrTimeSelection={(e) => (formRef.current.requestedResponseDate = moment(e).format(DatetimeFormats.dateForDb))}
             />
 
             {/*  NEW LOCATION*/}
             <AddressInput
               labelText={'Address'}
               onChange={(address) => {
-                updateRef.current.address = address
+                formRef.current.address = address
               }}
             />
 
             {/* REASON */}
-            <InputField inputType={InputTypes.textarea} placeholder={'Reason'} onChange={(e) => (updateRef.current.reason = e.target.value)} />
+            <InputField inputType={InputTypes.textarea} placeholder={'Reason'} onChange={(e) => (formRef.current.reason = e.target.value)} />
 
             <Spacer height={8} />
             {/*  SET AS PREFERRED LOCATION */}
             <div className="flex">
               <Label text={'Set as Preferred Location'} classes="toggle" />
               <ToggleButton
-                onCheck={() => (updateRef.current.preferredTransferAddress = updateRef.current.address)}
-                onUncheck={() => (updateRef.current.preferredTransferAddress = '')}
+                onCheck={() => (formRef.current.preferredTransferAddress = formRef.current.address)}
+                onUncheck={() => (formRef.current.preferredTransferAddress = '')}
               />
             </div>
 

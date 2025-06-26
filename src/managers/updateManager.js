@@ -17,6 +17,8 @@ import Update from "../models/new/update";
 
 import LogManager from "./logManager";
 
+import Apis from "../api/apis";
+
 export default UpdateManager = {
   currentUser: null,
   lineBreak: '\r\n',
@@ -132,11 +134,7 @@ export default UpdateManager = {
     });
   },
   SendUpdate: async function(title, message, recipientKey, currentUser = null, category = '') {
-    var allSubs, myHeaders, newNotification, raw, requestOptions, subId, subIdRecord;
-    myHeaders = new Headers();
-    myHeaders.append("Accept", "application/json");
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Authorization", `Basic ${UpdateManager.apiKey}`);
+    var allSubs, newNotification, raw, subId, subIdRecord;
     allSubs = (await DB.getTable(`${DB.tables.updateSubscribers}`));
     subIdRecord = allSubs.find(function(sub) {
       return sub.key === recipientKey;
@@ -157,12 +155,6 @@ export default UpdateManager = {
       include_subscription_ids: [subId],
       app_id: UpdateManager.appId
     });
-    requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow"
-    };
     // Add notification to database
     newNotification = new Update();
     newNotification.id = Manager.GetUid();
@@ -173,17 +165,7 @@ export default UpdateManager = {
     newNotification.text = message;
     newNotification.category = category;
     await DB.Add(`${DB.tables.updates}/${recipientKey}`, [], newNotification);
-    console.log(`Sent to ${recipientKey}`);
-    if (!window.location.href.includes("localhost")) {
-      return fetch("https://api.onesignal.com/notifications", requestOptions).then(function(response) {
-        return response.text();
-      }).then(function(result) {
-        //          console.log result
-        return console.log(`Sent to ${subId}`);
-      }).catch(function(error) {
-        return console.error(error);
-      });
-    }
+    return (await Apis.OneSignal.SendUpdate(subId, raw));
   },
   SendToShareWith: async function(shareWithKeys, currentUser, title, message, category = '') {
     var i, key, len, results;

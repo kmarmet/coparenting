@@ -16,7 +16,7 @@ import NewSwapRequest from './components/forms/newSwapRequest.jsx'
 import NewTransferChangeRequest from './components/forms/newTransferRequest.jsx'
 import FullMenu from './components/fullMenu'
 import AdminDashboard from './components/screens/admin/adminDashboard'
-import Changelog from './components/screens/admin/changelog'
+import LatestVersionUpdates from './components/screens/admin/latestVersionUpdates'
 import Login from './components/screens/auth/login.jsx'
 import Registration from './components/screens/auth/registration.jsx'
 import EventCalendar from './components/screens/calendar/calendar.jsx'
@@ -56,6 +56,7 @@ import globalState from './context.js'
 import DB from './database/DB'
 import DB_UserScoped from './database/db_userScoped'
 import firebaseConfig from './firebaseConfig.js'
+import appManager from './managers/appManager'
 import AppManager from './managers/appManager.js'
 import DomManager from './managers/domManager'
 import Manager from './managers/manager'
@@ -145,6 +146,7 @@ export default function App() {
 
           let updates = []
           let currentUserFromDb
+          const appVersion = await appManager.GetCurrentAppVersion()
           currentUserFromDb = users?.find((u) => u?.email === user?.email)
           // User Exists
           if (Manager.IsValid(currentUserFromDb)) {
@@ -190,6 +192,7 @@ export default function App() {
               currentScreen: screenToNavigateTo,
               userIsLoggedIn: true,
               isLoading: false,
+              currentAppVersion: appVersion,
               loadingText: '',
               theme: currentUserFromDb?.settings?.theme,
               notificationCount: updates?.length,
@@ -266,7 +269,7 @@ export default function App() {
 
             {/* ADMIN */}
             {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}
-            {currentScreen === ScreenNames.changelog && <Changelog />}
+            {currentScreen === ScreenNames.changelog && <LatestVersionUpdates />}
 
             {/* AUTHENTICATION */}
             {currentScreen === ScreenNames.login && <Login />}

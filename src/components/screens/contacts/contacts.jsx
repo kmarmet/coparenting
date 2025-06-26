@@ -230,12 +230,10 @@ const Contacts = () => {
         submitText={'Update'}
         viewDropdown={
           <ViewDropdown
-            show={showModal}
-            key={refreshKey}
             dropdownPlaceholder="Details"
-            views={['Details', 'Edit']}
-            onSelect={(labelText) => {
-              setView(labelText)
+            selectedView={view}
+            onSelect={(view) => {
+              setView(view)
             }}
           />
         }
@@ -243,7 +241,7 @@ const Contacts = () => {
         title={`${GetContactName()}`}
         showCard={showModal}>
         {/* DETAILS */}
-        <div className={view.toLowerCase() === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
+        <div className={view?.label?.toLowerCase() === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
           <div className="blocks">
             <DetailBlock isCustom={true} isFullWidth={true} valueToValidate={activeContact} text={''} title={''}>
               <p className="custom-text">
@@ -293,7 +291,7 @@ const Contacts = () => {
         </div>
 
         {/* EDIT */}
-        <div className={view.toLowerCase() === 'edit' ? 'view-wrapper edit active' : 'edit view-wrapper'}>
+        <div className={view?.label?.toLowerCase() === 'edit' ? 'view-wrapper edit active' : 'edit view-wrapper'}>
           {/* NAME */}
           <InputField
             inputType={InputTypes.text}

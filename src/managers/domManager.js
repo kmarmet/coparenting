@@ -20,12 +20,12 @@ DomManager = {
   },
   Animate: {
     RemoveAnimationClasses: function(classOfElementsToAnimate, classToRemove) {
-      var element, i, len, results;
+      var element, j, len, results;
       if (Manager.IsValid(classOfElementsToAnimate)) {
         classOfElementsToAnimate = document.querySelectorAll(`${classOfElementsToAnimate}`);
         results = [];
-        for (i = 0, len = classOfElementsToAnimate.length; i < len; i++) {
-          element = classOfElementsToAnimate[i];
+        for (j = 0, len = classOfElementsToAnimate.length; j < len; j++) {
+          element = classOfElementsToAnimate[j];
           results.push(element.classList.remove(classToRemove));
         }
         return results;
@@ -230,11 +230,11 @@ DomManager = {
     }
   },
   SetDefaultCheckboxes: async function(checkboxContainerClass, object, propName, isArray = false, values) {
-    var box, i, j, len, len1, phone, reminderIsValid, reminderTimes, results, timeframe;
+    var box, j, k, len, len1, phone, reminderIsValid, reminderTimes, results, timeframe;
     if (checkboxContainerClass === 'share-with') {
       if (Manager.IsValid(values)) {
-        for (i = 0, len = values.length; i < len; i++) {
-          phone = values[i];
+        for (j = 0, len = values.length; j < len; j++) {
+          phone = values[j];
           document.querySelector(`.${checkboxContainerClass} [data-phone='${phone}'] .box`).classList.add('active');
         }
       }
@@ -249,8 +249,8 @@ DomManager = {
       reminderTimes = values;
       if (reminderIsValid) {
         results = [];
-        for (j = 0, len1 = reminderTimes.length; j < len1; j++) {
-          timeframe = reminderTimes[j];
+        for (k = 0, len1 = reminderTimes.length; k < len1; k++) {
+          timeframe = reminderTimes[k];
           box = document.querySelector(`[data-label='${CalMapper.GetReadableReminderTime(timeframe)}'] .box`);
           if (Manager.IsValid(box)) {
             results.push(box.classList.add('active'));
@@ -262,11 +262,21 @@ DomManager = {
       }
     }
   },
+  AddActiveClassWithDelay: function(elements, delay = 0.2) {
+    if (Manager.IsValid(elements)) {
+      return elements.forEach(function(el, i) {
+        // delay per element
+        return setTimeout(function() {
+          return el.classList.add('active');
+        }, i * delay);
+      });
+    }
+  },
   CheckIfElementIsTag: function(element, tag) {
     return element.target.tagName === tag;
   },
   HandleCheckboxSelection: function(element, onCheck, onCheckRemoval, canSelectAll = false) {
-    var checkboxWrappers, checkboxes, checkmark, clickedEl, i, label, len, thisLabel, wrapper;
+    var checkboxWrappers, checkboxes, checkmark, clickedEl, j, label, len, thisLabel, wrapper;
     clickedEl = element;
     checkboxes = clickedEl.parentNode;
     checkboxWrappers = checkboxes.querySelectorAll('.checkbox-wrapper');
@@ -277,8 +287,8 @@ DomManager = {
       // UNCHECK OTHERS
       if (!canSelectAll) {
         if (Manager.IsValid(checkboxWrappers)) {
-          for (i = 0, len = checkboxWrappers.length; i < len; i++) {
-            wrapper = checkboxWrappers[i];
+          for (j = 0, len = checkboxWrappers.length; j < len; j++) {
+            wrapper = checkboxWrappers[j];
             thisLabel = wrapper.dataset.label;
             checkmark = wrapper.querySelector('.checkmark');
             if (Manager.IsValid(checkmark)) {
@@ -311,7 +321,7 @@ DomManager = {
     return "#" + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
   },
   BuildCheckboxGroup: function({currentUser, labelType, defaultLabels = [], customLabelArray = [], labelProp, uidProp, predefinedType}) {
-    var checkboxGroup, checkboxLabels, i, isActive, j, k, label, len, len1, len2, obj, ref;
+    var checkboxGroup, checkboxLabels, isActive, j, k, l, label, len, len1, len2, obj, ref;
     checkboxLabels = [];
     checkboxGroup = [];
     // PREDEFINED TYPES
@@ -320,8 +330,8 @@ DomManager = {
         checkboxLabels = DB_UserScoped.getCoparentObjArray(currentUser, currentUser != null ? currentUser.coparents : void 0);
       }
       if (Manager.IsValid(checkboxLabels)) {
-        for (i = 0, len = checkboxLabels.length; i < len; i++) {
-          label = checkboxLabels[i];
+        for (j = 0, len = checkboxLabels.length; j < len; j++) {
+          label = checkboxLabels[j];
           checkboxGroup.push({
             label: label['name'],
             key: label['key']
@@ -364,8 +374,8 @@ DomManager = {
     // ITERATE THROUGH LABELS
     if (!Manager.IsValid(labelProp) && !Manager.IsValid(uidProp)) {
       if (Manager.IsValid(checkboxLabels)) {
-        for (j = 0, len1 = checkboxLabels.length; j < len1; j++) {
-          label = checkboxLabels[j];
+        for (k = 0, len1 = checkboxLabels.length; k < len1; k++) {
+          label = checkboxLabels[k];
           isActive = false;
           if (Manager.IsValid(defaultLabels) && defaultLabels.includes(label)) {
             isActive = true;
@@ -384,8 +394,8 @@ DomManager = {
       }
     } else {
 // ITERATE THROUGH OBJECTS
-      for (k = 0, len2 = customLabelArray.length; k < len2; k++) {
-        obj = customLabelArray[k];
+      for (l = 0, len2 = customLabelArray.length; l < len2; l++) {
+        obj = customLabelArray[l];
         if (Manager.IsValid(obj[labelProp]) && Manager.IsValid(obj[uidProp])) {
           checkboxGroup.push({
             isActive: Manager.IsValid(defaultLabels),

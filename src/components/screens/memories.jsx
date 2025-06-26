@@ -14,11 +14,11 @@ import ImageManager from '../../managers/imageManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import NavBar from '../navBar'
+import AccordionTitle from '../shared/accordionTitle'
 import NoDataFallbackText from '../shared/noDataFallbackText'
 import ScreenHeader from '../shared/screenHeader'
 import Slideshow from '../shared/slideshow'
 import Spacer from '../shared/spacer'
-import AccordionTitle from '../shared/accordionTitle'
 
 export default function Memories() {
   const {state, setState} = useContext(globalState)
@@ -33,7 +33,7 @@ export default function Memories() {
     const imageName = Storage.GetImageNameFromUrl(firebaseImagePath)
 
     // Current user is record owner
-    if (record?.ownerKey === currentUser?.key) {
+    if (record?.owner?.key === currentUser?.key) {
       // Delete from Firebase Realtime DB
       await DB.deleteMemory(currentUser?.key, record).then(async () => {
         // Delete from Firebase Storage
@@ -44,7 +44,7 @@ export default function Memories() {
     else {
       const memoryKey = DB.GetTableIndexById(memories, record?.id)
       if (Manager.IsValid(memoryKey)) {
-        const updatedShareWith = record.shareWith.filter((x) => x !== currentUser?.key)
+        const updatedShareWith = record.shareWith.filter((x) => x?.owner?.key !== currentUser?.key)
         await DB.updateByPath(`${DB.tables.memories}/${record?.ownerKey}/${memoryKey}/shareWith`, updatedShareWith)
       }
     }
@@ -57,17 +57,12 @@ export default function Memories() {
     }
   }
 
-  const ExecuteAnimations = () => {
-    setTimeout(() => {
-      DomManager.ToggleAnimation('add', 'memory', DomManager.AnimateClasses.names.fadeInRight, 85)
-    }, 300)
-  }
-
   useEffect(() => {
-    if (!currentUserIsLoading && !memoriesAreLoading) {
-      ExecuteAnimations()
+    if (Manager.IsValid(memories)) {
+      const memoryElements = document.querySelectorAll('.memory-wrapper')
+      DomManager.AddActiveClassWithDelay(memoryElements, 1)
     }
-  }, [currentUserIsLoading, memoriesAreLoading, memories])
+  }, [memories])
 
   return (
     <>
@@ -103,7 +98,7 @@ export default function Memories() {
           {Manager.IsValid(memories) &&
             memories?.map((imgObj, index) => {
               return (
-                <div className={`memory ${DomManager.Animate.FadeInRight(imgObj, '.memory')}`} key={index}>
+                <div className={`memory memory-wrapper ${theme}`} key={index}>
                   {/* IMAGE */}
                   <div
                     id="memory-image-wrapper"
@@ -126,7 +121,7 @@ export default function Memories() {
                       DELETE
                     </p>
                     {/* DOWNLOAD BUTTON */}
-                    <p onClick={() => SaveMemoryImage(imgObj?.url)} id="download-text">
+                    <p onClick={() => SaveMemoryImage(imgObj?.url)} id="download-button">
                       DOWNLOAD
                     </p>
                   </div>
