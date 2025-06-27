@@ -9,28 +9,34 @@ import moment from "moment";
 
 SwapRequest = class SwapRequest {
   constructor(options = {}) {
-    var ref, ref1, ref10, ref11, ref12, ref13, ref14, ref15, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
+    var ref, ref1, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
     this.id = Manager.GetUid();
     this.status = 'pending';
     this.startDate = (ref = options != null ? options.startDate : void 0) != null ? ref : '';
     this.shareWith = (ref1 = options != null ? options.shareWith : void 0) != null ? ref1 : [];
     this.endDate = (ref2 = options != null ? options.endDate : void 0) != null ? ref2 : '';
     this.creationDate = moment().format(DateFormats.dateForDb);
-    this.recipient = {
-      key: options != null ? (ref3 = options.recipient) != null ? ref3.key('') : void 0 : void 0,
-      name: options != null ? (ref4 = options.recipient) != null ? ref4.name('') : void 0 : void 0
+    this.reason = (ref3 = options != null ? options.reason : void 0) != null ? ref3 : '';
+    this.duration = (ref4 = options != null ? options.duration : void 0) != null ? ref4 : '';
+    this.ownerKey = (ref5 = options != null ? options.ownerKey : void 0) != null ? ref5 : '';
+    this.ownerName = (ref6 = options != null ? options.ownerName : void 0) != null ? ref6 : '';
+    this.children = (ref7 = options != null ? options.children : void 0) != null ? ref7 : [];
+    this.fromHour = (ref8 = options != null ? options.fromHour : void 0) != null ? ref8 : '';
+    this.toHour = (ref9 = options != null ? options.toHour : void 0) != null ? ref9 : '';
+    this.declineReason = (ref10 = options != null ? options.declineReason : void 0) != null ? ref10 : '';
+    this.responseDate = (ref11 = options != null ? options.responseDate : void 0) != null ? ref11 : '';
+    this.range = (ref12 = options != null ? options.range : void 0) != null ? ref12 : [];
+    this.requestedResponseDate = (ref13 = options != null ? options.requestedResponseDate : void 0) != null ? ref13 : '';
+    // Owner
+    this.owner = {
+      name: (ref14 = options != null ? (ref15 = options.owner) != null ? ref15.name : void 0 : void 0) != null ? ref14 : '',
+      key: (ref16 = options != null ? (ref17 = options.owner) != null ? ref17.key : void 0 : void 0) != null ? ref16 : ''
     };
-    this.reason = (ref5 = options != null ? options.reason : void 0) != null ? ref5 : '';
-    this.duration = (ref6 = options != null ? options.duration : void 0) != null ? ref6 : '';
-    this.ownerKey = (ref7 = options != null ? options.ownerKey : void 0) != null ? ref7 : '';
-    this.ownerName = (ref8 = options != null ? options.ownerName : void 0) != null ? ref8 : '';
-    this.children = (ref9 = options != null ? options.children : void 0) != null ? ref9 : [];
-    this.fromHour = (ref10 = options != null ? options.fromHour : void 0) != null ? ref10 : '';
-    this.toHour = (ref11 = options != null ? options.toHour : void 0) != null ? ref11 : '';
-    this.declineReason = (ref12 = options != null ? options.declineReason : void 0) != null ? ref12 : '';
-    this.responseDate = (ref13 = options != null ? options.responseDate : void 0) != null ? ref13 : '';
-    this.range = (ref14 = options != null ? options.range : void 0) != null ? ref14 : [];
-    this.requestedResponseDate = (ref15 = options != null ? options.requestedResponseDate : void 0) != null ? ref15 : '';
+    // Recipient
+    this.recipient = {
+      key: options != null ? (ref18 = options.recipient) != null ? ref18.key('') : void 0 : void 0,
+      name: options != null ? (ref19 = options.recipient) != null ? ref19.name('') : void 0 : void 0
+    };
   }
 
 };

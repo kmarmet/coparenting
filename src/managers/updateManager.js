@@ -68,9 +68,7 @@ export default UpdateManager = {
       return OneSignalDeferred.push(function() {
         return OneSignal.init({
           appId: UpdateManager.appId
-        }).then(function() {
-          return OneSignal.User.PushSubscription.addEventListener('change', UpdateManager.eventListener);
-        });
+        }.then(function() {}), OneSignal.User.PushSubscription.addEventListener('change', UpdateManager.eventListener));
       });
     } catch (error1) {
       error = error1;

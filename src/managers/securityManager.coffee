@@ -6,10 +6,10 @@ import DB_UserScoped from "../database/db_userScoped"
 import DatasetManager from "./datasetManager"
 
 SecurityManager =
-  getSharedItems: (currentUser,  table) ->
-    linkedAccounts= await  DB_UserScoped.getLinkedAccounts(currentUser)
+  getSharedItems: (currentUser, table) ->
+    linkedAccounts = await DB_UserScoped.getLinkedAccounts(currentUser)
     linkedAccountKeys = linkedAccounts.accountKeys
-    sharedItems  = []
+    sharedItems = []
 
     if Manager.IsValid(currentUser) && Manager.IsValid(linkedAccountKeys)
       for accountKey in linkedAccountKeys
@@ -19,12 +19,12 @@ SecurityManager =
             if item?.shareWith?.includes currentUser?.key
               sharedItems.push(item)
 
-    DatasetManager.GetValidArray(sharedItems)
+    return DatasetManager.GetValidArray(sharedItems)
 
   getShareWithItems: (currentUser, table) ->
-    sharedItems  = []
+    sharedItems = []
 
-#   COPARENT ACCOUNTS
+    #   COPARENT ACCOUNTS
     if Manager.IsValid(currentUser) && Manager.IsValid(currentUser?.coparents)
       for coparent in currentUser?.coparents
         coparentItems = await DB.getTable("#{table}/#{coparent?.userKey}")
@@ -33,7 +33,7 @@ SecurityManager =
             if item?.shareWith?.includes currentUser?.key
               sharedItems.push(item)
 
-#   PARENT ACCOUNTS
+    #   PARENT ACCOUNTS
     if Manager.IsValid(currentUser) && Manager.IsValid(currentUser?.parents)
       for parent in currentUser?.parents
         parentItems = await DB.getTable("#{table}/#{parent?.userKey}")

@@ -169,7 +169,7 @@ export default function NewCalendarEvent() {
             cleaned,
             'cloned',
             moment(clonedDates[0]).format(DatetimeFormats.dateForDb),
-            moment(clonedDates[clonedDates.length - 1]).format(DatetimeFormats.dateForDb)
+            moment(clonedDates[clonedDates.length - 1]).format(DatetimeFormats.dateForDb),
           )
           await CalendarManager.addMultipleCalEvents(currentUser, dates)
         }
@@ -192,7 +192,7 @@ export default function NewCalendarEvent() {
             currentUser,
             `New Event 📅`,
             `${cleaned.title} on ${moment(cleaned.startDate).format(DatetimeFormats.readableMonthAndDay)}`,
-            ActivityCategory.calendar
+            ActivityCategory.calendar,
           )
         }
         //#endregion SINGLE DATE
@@ -230,7 +230,7 @@ export default function NewCalendarEvent() {
     if (Manager.IsValid(children) && Manager.IsValid(users)) {
       SetDefaultDropdownOptions().then((r) => r)
     }
-  }, [children, users])
+  }, [children, coParents])
 
   useEffect(() => {
     if (dateToEdit) {

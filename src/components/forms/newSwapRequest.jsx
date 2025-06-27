@@ -1,65 +1,63 @@
 // Path: src\components\forms\newSwapRequest.jsx
 import moment from 'moment'
-import React, {useContext, useState} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import CheckboxGroup from '../../components/shared/checkboxGroup'
 import Form from '../../components/shared/form'
 import ActivityCategory from '../../constants/activityCategory'
 import creationForms from '../../constants/creationForms'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
-import ModelNames from '../../constants/modelNames'
 import SwapDurations from '../../constants/swapDurations'
 import globalState from '../../context'
 import DB from '../../database/DB'
 import useChildren from '../../hooks/useChildren'
+import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
+import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
-import DatasetManager from '../../managers/datasetManager'
 import DomManager from '../../managers/domManager'
+import DropdownManager from '../../managers/dropdownManager'
 import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
 import SwapRequest from '../../models/new/swapRequest'
 import InputField from '../shared/inputField'
-import Label from '../shared/label'
-import ShareWithDropdown from '../shared/shareWithDropdown'
+import SelectDropdown from '../shared/selectDropdown'
 import Spacer from '../shared/spacer'
-import ToggleButton from '../shared/toggleButton'
 import ViewDropdown from '../shared/viewDropdown'
 
 export default function NewSwapRequest() {
   const {state, setState} = useContext(globalState)
-  const {theme, creationFormToShow} = state
-  const [requestReason, setRequestReason] = useState('')
-  const [requestChildren, setRequestChildren] = useState([])
-  const [shareWith, setShareWith] = useState([])
-  const [requestFromHour, setRequestFromHour] = useState('')
-  const [requestToHour, setRequestToHour] = useState('')
-  const [swapDuration, setSwapDuration] = useState('single')
-  const [includeChildren, setIncludeChildren] = useState(false)
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
-  const [requestedResponseDate, setResponseDueDate] = useState('')
+  const {theme, creationFormToShow, refreshKey} = state
+
+  // State
+  const [view, setView] = useState({label: 'Single Day', value: 'single'})
   const [recipientKey, setRecipientKey] = useState('')
   const [recipientName, setRecipientName] = useState()
-  const {currentUser} = useCurrentUser()
-  const {children} = useChildren()
 
-  const ResetForm = async (showSuccessAlert = false) => {
+  // DROPDOWN STATE
+  const [selectedReminderOptions, setSelectedReminderOptions] = useState([])
+  const [selectedChildrenOptions, setSelectedChildrenOptions] = useState([])
+  const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
+  const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
+
+  // Hooks
+  const {currentUser} = useCurrentUser()
+  const {children, childrenDropdownOptions} = useChildren()
+  const {users} = useUsers()
+  const {coParents} = useCoParents()
+
+  const formRef = useRef({...new SwapRequest()})
+
+  const ResetForm = (showSuccessAlert = false) => {
     Manager.ResetForm('swap-request-wrapper')
-    setRequestReason('')
-    setRequestChildren([])
-    setShareWith([])
-    setRequestFromHour('')
-    setRequestToHour('')
-    setSwapDuration('single')
-    setIncludeChildren(false)
-    setStartDate('')
-    setEndDate('')
+
+    // setTimeout(() => {
+    //   setState({...state, refreshKey: Manager.GetUid()})
+    // }, 800)
     setState({
       ...state,
-      refreshKey: Manager.GetUid(),
       isLoading: false,
       creationFormToShow: '',
       successAlertMessage: showSuccessAlert ? 'Swap Request Sent' : null,
@@ -67,18 +65,22 @@ export default function NewSwapRequest() {
   }
 
   const Submit = async () => {
+    // Map Dropdown to Database
+    formRef.current.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
+    formRef.current.reminderTimes = DropdownManager.MappedForDatabase.RemindersFromArray(selectedReminderOptions)
+    formRef.current.shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
     const errorString = Manager.GetInvalidInputsErrorString([
       {
-        value: requestReason,
+        value: formRef.current.reason,
         name: 'Request Reason',
       },
       {
-        value: startDate,
+        value: formRef.current.startDate,
         name: 'Date',
       },
       {
-        value: requestedResponseDate,
-        name: 'Requested Response  Date',
+        value: formRef.current.requestedResponseDate,
+        name: 'Requested Response Date',
       },
       {
         value: recipientName,
@@ -95,71 +97,43 @@ export default function NewSwapRequest() {
     if (validAccounts.length === 0) {
       AlertManager.throwError(
         'No co-parent to \n assign requests to',
-        'It appears that you have not created any co-parents, or it is possible that they may have deactivated their profile.'
+        'It appears that you have not created any co-parents, or it is possible that they may have deactivated their profile.',
       )
       return false
     }
 
     if (validAccounts.length > 0) {
-      if (!Manager.IsValid(shareWith)) {
+      if (!Manager.IsValid(formRef.current.shareWith)) {
         AlertManager.throwError('Please choose who you would like to share this request with')
         return false
       }
     }
     //#endregion VALIDATION
 
-    let newRequest = new SwapRequest()
-    newRequest.children = requestChildren
-    newRequest.startDate = startDate
-    newRequest.endDate = endDate
-    newRequest.reason = requestReason
-    newRequest.duration = swapDuration
-    newRequest.ownerName = currentUser?.name
-    newRequest.fromHour = requestFromHour
-    newRequest.requestedResponseDate = requestedResponseDate
-    newRequest.recipient = {
+    formRef.current.duration = view?.value
+    formRef.current.recipient = {
       key: recipientKey,
       name: recipientName,
     }
-    newRequest.toHour = requestToHour
-    newRequest.ownerKey = currentUser?.key
-    newRequest.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
+    formRef.current.owner = {
+      key: currentUser?.key,
+      name: currentUser?.name,
+    }
 
-    const cleanObject = ObjectManager.GetModelValidatedObject(newRequest, ModelNames.swapRequest)
+    const cleanObject = ObjectManager.CleanObject(formRef.current)
 
     // Send Notification
-    await DB.Add(`${DB.tables.swapRequests}/${currentUser?.key}`, cleanObject).finally(() => {
+    await DB.Add(`${DB.tables.swapRequests}/${currentUser?.key}`, [], cleanObject).finally(() => {
       UpdateManager.SendToShareWith(
-        shareWith,
+        formRef.current.shareWith,
         currentUser,
         'New Swap Request',
         `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
-        ActivityCategory.swapRequest
+        ActivityCategory.swapRequest,
       )
-      setSwapDuration(SwapDurations.single)
     })
 
-    await ResetForm(true)
-  }
-
-  const HandleChildSelection = (e) => {
-    const selectedValue = e.getAttribute('data-label')
-    DomManager.HandleCheckboxSelection(
-      e,
-      () => {
-        setRequestChildren([...requestChildren, selectedValue])
-      },
-      () => {
-        let filtered = requestChildren.filter((x) => x !== selectedValue)
-        setRequestChildren(filtered)
-      },
-      true
-    )
-  }
-
-  const HandleShareWithSelection = (e) => {
-    const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
-    setShareWith(updated)
+    ResetForm(true)
   }
 
   const HandleRecipientSelection = (e) => {
@@ -174,14 +148,31 @@ export default function NewSwapRequest() {
         setRecipientName('')
         setRecipientKey('')
       },
-      false
+      false,
     )
   }
 
-  const ChangeSwapDuration = (duration) => setSwapDuration(duration)
+  const SetDefaultDropdownOptions = () => {
+    setSelectedChildrenOptions(DropdownManager.GetSelected.Children([], children))
+    setSelectedReminderOptions(DropdownManager.GetSelected.Reminders([]))
+    setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
+    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
+    setView({label: 'Single Day', value: 'single'})
+  }
+
+  useEffect(() => {
+    if (Manager.IsValid(children) && Manager.IsValid(users)) {
+      SetDefaultDropdownOptions()
+    }
+  }, [children, users])
+
+  useEffect(() => {
+    console.log(view?.label, view?.value)
+  }, [view])
 
   return (
     <Form
+      key={refreshKey}
       submitText={'Send'}
       onSubmit={Submit}
       wrapperClass="new-swap-request"
@@ -189,45 +180,55 @@ export default function NewSwapRequest() {
       subtitle="Request for your child(ren) to remain with you during the designated visitation time of your co-parent."
       viewDropdown={
         <ViewDropdown
-          views={['Day', 'Days', 'Hours']}
-          onSelect={(e) => {
-            if (e === 'Day') {
-              ChangeSwapDuration(SwapDurations.single)
-            }
-            if (e === 'Days') {
-              ChangeSwapDuration(SwapDurations.multiple)
-            }
-            if (e === 'Hours') {
-              ChangeSwapDuration(SwapDurations.intra)
-            }
-          }}
+          hasSpacer={true}
+          views={[{label: 'Single Day', value: 'single'}, {label: 'Multiple Days', value: 'multiple'}, {label: 'Hours', value: 'intraday'}]}
+          dropdownPlaceholder="Single Day"
+          selectedView={view}
+          onSelect={(view) => setView(view)}
         />
       }
       showCard={creationFormToShow === creationForms.swapRequest}
       onClose={() => ResetForm()}>
+      <Spacer height={3} />
       <div id="new-swap-request-container" className={`${theme}`}>
         {/* FORM */}
         <div id="request-form" className="single">
           {/* SINGLE DATE */}
-          {swapDuration === SwapDurations.single && (
+          {view?.value === SwapDurations.single && (
             <InputField
               uidClass="swap-single-date"
               inputType={InputTypes.date}
               placeholder={'Date'}
               required={true}
-              onDateOrTimeSelection={(day) => setStartDate(moment(day).format(DatetimeFormats.dateForDb))}
+              onDateOrTimeSelection={(day) => formRef.current.startDate = (moment(day).format(DatetimeFormats.dateForDb))}
+            />
+          )}
+
+          {/* MULTIPLE DAYS */}
+          {view?.value === SwapDurations.multiple && (
+            <InputField
+              onDateOrTimeSelection={(dateArray) => {
+                if (Manager.IsValid(dateArray)) {
+                  formRef.current.startDate = (moment(dateArray[0]).format(DatetimeFormats.dateForDb))
+                  formRef.current.endDate = (moment(dateArray[1]).format(DatetimeFormats.dateForDb))
+                }
+              }}
+              useNativeDate={true}
+              labelText={'Date Range'}
+              required={true}
+              inputType={InputTypes.dateRange}
             />
           )}
 
           {/* INTRA DAY - HOURS */}
-          {swapDuration === SwapDurations.intra && (
+          {view?.value === SwapDurations.intra && (
             <>
               <InputField
                 uidClass="swap-hours-date"
                 inputType={InputTypes.date}
                 placeholder={'Day'}
                 required={true}
-                onDateOrTimeSelection={(day) => setStartDate(moment(day).format(DatetimeFormats.dateForDb))}
+                onDateOrTimeSelection={(day) => formRef.current.startDate = (moment(day).format(DatetimeFormats.dateForDb))}
               />
 
               {/* TIMES */}
@@ -235,32 +236,16 @@ export default function NewSwapRequest() {
                 inputType={InputTypes.time}
                 uidClass="swap-request-from-hour"
                 placeholder={'Start Time'}
-                onDateOrTimeSelection={(e) => setRequestFromHour(moment(e).format('ha'))}
+                onDateOrTimeSelection={(e) => formRef.current.fromHour = (moment(e).format('ha'))}
               />
 
               <InputField
                 inputType={InputTypes.time}
                 uidClass="swap-request-to-hour"
                 placeholder={'End Time'}
-                onDateOrTimeSelection={(e) => setRequestToHour(moment(e).format('ha'))}
+                onDateOrTimeSelection={(e) => formRef.current.toHour = (moment(e).format('ha'))}
               />
             </>
-          )}
-
-          {/* MULTIPLE DAYS */}
-          {swapDuration === SwapDurations.multiple && (
-            <InputField
-              onDateOrTimeSelection={(dateArray) => {
-                if (Manager.IsValid(dateArray)) {
-                  setStartDate(moment(dateArray[0]).format(DatetimeFormats.dateForDb))
-                  setEndDate(moment(dateArray[1]).format(DatetimeFormats.dateForDb))
-                }
-              }}
-              useNativeDate={true}
-              placeholder={'Date Range'}
-              required={true}
-              inputType={InputTypes.dateRange}
-            />
           )}
 
           {/* RESPONSE DUE DATE */}
@@ -269,7 +254,7 @@ export default function NewSwapRequest() {
             inputType={InputTypes.date}
             placeholder={'Requested Response Date'}
             required={true}
-            onDateOrTimeSelection={(day) => setResponseDueDate(moment(day).format(DatetimeFormats.dateForDb))}
+            onDateOrTimeSelection={(day) => formRef.current.requestedResponseDate = (moment(day).format(DatetimeFormats.dateForDb))}
           />
 
           <Spacer height={5} />
@@ -289,39 +274,33 @@ export default function NewSwapRequest() {
 
           <Spacer height={8} />
 
-          {/* WHO SHOULD SEE IT? */}
-          <ShareWithDropdown
-            required={true}
-            onCheck={HandleShareWithSelection}
+
+          {/* SHARE WITH */}
+          <SelectDropdown
+            options={defaultShareWithOptions}
+            selectMultiple={true}
             placeholder={'Select Contacts to Share With'}
-            containerClass={'share-with-coparents'}
+            onSelect={setSelectedShareWithOptions}
           />
+
 
           <Spacer height={8} />
 
-          {/* INCLUDE CHILDREN */}
+          {/* INCLUDING WHICH CHILDREN */}
           {Manager.IsValid(children) && (
-            <div className="share-with-container ">
-              <div className="flex">
-                <Label text={'Include Child(ren)'} classes="always-show" />
-                <ToggleButton onCheck={() => setIncludeChildren(!includeChildren)} onUncheck={() => setIncludeChildren(!includeChildren)} />
-              </div>
-              {includeChildren && (
-                <CheckboxGroup
-                  checkboxArray={DomManager.BuildCheckboxGroup({
-                    currentUser,
-                    labelType: 'children',
-                  })}
-                  onCheck={HandleChildSelection}
-                />
-              )}
-            </div>
+            <SelectDropdown
+              options={childrenDropdownOptions}
+              placeholder={'Select Children to Include'}
+              onSelect={setSelectedChildrenOptions}
+              selectMultiple={true}
+            />
           )}
+
 
           <Spacer height={5} />
 
           {/* NOTES */}
-          <InputField inputType={'textarea'} placeholder={'Reason'} onChange={(e) => setRequestReason(e.target.value)} />
+          <InputField inputType={'textarea'} placeholder={'Reason'} onChange={(e) => formRef.current.reason = (e.target.value)} />
         </div>
       </div>
     </Form>

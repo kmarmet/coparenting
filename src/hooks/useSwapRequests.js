@@ -26,10 +26,12 @@ const useSwapRequests = () => {
         const formattedRequests = DatasetManager.GetValidArray(snapshot.val())
         const shared = await SecurityManager.getSharedItems(currentUser, DB.tables.swapRequests)
         const formattedShared = DatasetManager.GetValidArray(shared)
+        console.log(formattedRequests, formattedShared)
         if (Manager.IsValid(formattedRequests) || Manager.IsValid(formattedShared)) {
           const combined = DatasetManager.CombineArrays(formattedRequests, formattedShared)
           setSwapRequests(DatasetManager.GetValidArray(combined))
-        } else {
+        }
+        else {
           setSwapRequests([])
         }
         setIsLoading(false)
@@ -37,7 +39,7 @@ const useSwapRequests = () => {
       (err) => {
         setError(err)
         setIsLoading(false)
-      }
+      },
     )
 
     return () => {

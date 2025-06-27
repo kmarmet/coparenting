@@ -3053,7 +3053,7 @@
   pointer-events: none;
   transition: all 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
   z-index: $maxZIndex;
-  //max-height: 0;
+
   @include mainColorsGradient;
 
   &.active {
@@ -3149,7 +3149,7 @@
           }
 
           p {
-            color: $mediumTransWhite;
+            color: $inputBackground;
             display: flex;
             align-items: center;
             white-space: nowrap;
@@ -3446,7 +3446,7 @@
           white-space: nowrap;
           font-weight: $fwMediumBold;
           width: min-content;
-          padding: 0 15px;
+          padding: 45px 15px 0 15px;
           border-bottom: 1px solid $inputBackground;
           margin: 0 auto 8px auto;
           text-decoration: none;

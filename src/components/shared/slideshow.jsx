@@ -8,11 +8,14 @@ import useChildren from '../../hooks/useChildren'
 import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useParents from '../../hooks/useParents'
+import DatasetManager from '../../managers/datasetManager'
 import Manager from '../../managers/manager'
 import CardButton from './cardButton'
-import LazyImage from './lazyImage'
 
-export default function Slideshow({activeIndex = 0, images = [], wrapperClasses = '', show = false, hide = () => {}}) {
+export default function Slideshow({
+                                    activeIndex = 0, images = [], wrapperClasses = '', show = false, hide = () => {
+  },
+                                  }) {
   const {state, setState} = useContext(globalState)
   const {refreshKey} = state
 
@@ -40,14 +43,16 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
     onSwipedLeft: () => {
       if (activeImageIndex < images.length - 1) {
         setActiveImageIndex(activeImageIndex + 1)
-      } else {
+      }
+      else {
         setActiveImageIndex(0)
       }
     },
     onSwipedRight: () => {
       if (activeImageIndex > 0) {
         setActiveImageIndex(activeImageIndex - 1)
-      } else {
+      }
+      else {
         setActiveImageIndex(images.length - 1)
       }
     },
@@ -82,13 +87,16 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
     if (direction === 'left') {
       if (activeImageIndex > 0) {
         setActiveImageIndex(activeImageIndex - 1)
-      } else {
+      }
+      else {
         setActiveImageIndex(images.length - 1)
       }
-    } else {
+    }
+    else {
       if (activeImageIndex < images.length - 1) {
         setActiveImageIndex(activeImageIndex + 1)
-      } else {
+      }
+      else {
         setActiveImageIndex(0)
       }
     }
@@ -100,17 +108,14 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
 
   useEffect(() => {
     if (Manager.IsValid(images)) {
-      console.log('INdex:', activeImageIndex)
       const newImage = new Image()
-      newImage.src = images[activeImageIndex]?.url
+      newImage.src = DatasetManager.getUniqueArray(images, true)[activeImageIndex]?.url
       newImage.onload = () => {
         setActiveImageHeight(newImage.naturalHeight)
         setActiveImageWidth(newImage.naturalWidth)
       }
     }
   }, [activeImageIndex])
-
-  const SetImageSize = () => {}
 
   return (
     <div id={'slideshow-wrapper'} className={`${show ? 'active' : ''}${wrapperClasses}`}>
@@ -124,11 +129,10 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
           }}
           className={`${show ? 'active' : ''}`}>
           {Manager.IsValid(images) &&
-            images.map((imageData, index) => {
+            DatasetManager.getUniqueArray(images, true).map((imageData, index) => {
               return (
                 <div key={index} className={index === activeImageIndex && show ? 'active content' : 'content'}>
                   {/* IMAGE */}
-                  <LazyImage dynamicSrc={imageData?.url} alt={imageData?.alt} />
                   {Manager.IsValid(imageData?.notes, true) ||
                     Manager.IsValid(imageData?.notes, true) ||
                     (Manager.IsValid(imageData?.title, true) && (

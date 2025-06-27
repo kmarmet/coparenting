@@ -107,7 +107,7 @@ export default function ExpenseTracker() {
         `An expense has been marked ${updatedStatus.toUpperCase()} by ${currentUser?.name} \nExpense Name: ${activeExpense?.name}`,
         // payer?.key,
         currentUser,
-        activeExpense.category
+        activeExpense.category,
       )
       setShowDetails(false)
       if (updatedStatus === 'paid') {
@@ -146,7 +146,8 @@ export default function ExpenseTracker() {
     if (status === 'all') {
       setSortedExpenses(expenses)
       // setPaidStatus('all')
-    } else {
+    }
+    else {
       // setPaidStatus(status)
       setSortedExpenses(expenses.filter((x) => x.paidStatus === status))
     }
@@ -296,7 +297,7 @@ export default function ExpenseTracker() {
             )}
 
             {activeExpense?.paidStatus === 'paid' && (
-              <CardButton classes=" default" onClick={TogglePaidStatus}>
+              <CardButton classes="default" onClick={TogglePaidStatus}>
                 Mark Unpaid
               </CardButton>
             )}

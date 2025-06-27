@@ -3,23 +3,52 @@ import {InView} from 'react-intersection-observer'
 import AppImages from '../../constants/appImages'
 import Manager from '../../managers/manager'
 
-const LazyImage = ({imgName, alt, dynamicSrc = null, classes = '', onClick = () => {}}) => {
+const LazyImage = ({
+                     imgName, alt, classes = '', onClick = () => {
+  },
+                   }) => {
   const [isInViewport, setIsInViewport] = useState(false)
   const [src, setSrc] = useState('')
 
-  useEffect(() => {
+  const GetUrlByName = () => {
+    const imgObj = FlattenObjects(AppImages, '', {})
     if (Manager.IsValid(imgName, true)) {
-      const url = AppImages.landing[imgName]?.url
-      if (Manager.IsValid(url, true)) {
-        setSrc(url)
-      }
-    } else {
-      if (Manager.IsValid(dynamicSrc, true)) {
-        setSrc(dynamicSrc)
+      if (Manager.IsValid(imgObj) && Manager.IsValid(imgObj, true)) {
+        setSrc(imgObj[imgName])
       }
     }
-  }, [imgName])
 
+    return ''
+  }
+
+  const FlattenObjects = (obj, prefix, result = {}) => {
+    for (const key in obj) {
+      const value = obj[key]
+      const newKey = ''
+
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        if ('name' in value && 'url' in value && Object.keys(value).length === 2) {
+          // Case: { name, url }
+          result[value.name] = value.url
+        }
+        else {
+          // Continue recursion
+          FlattenObjects(value, newKey, result)
+        }
+      }
+      else {
+        // Primitive value (e.g., string)
+        result[newKey] = value
+      }
+    }
+    return result
+  }
+
+  useEffect(() => {
+    if ((Manager.IsValid(imgName, true))) {
+      GetUrlByName()
+    }
+  }, [imgName])
   return (
     <>
       {!Manager.IsValid(src, true) && !isInViewport && <div className={'skeleton'}></div>}
@@ -30,10 +59,9 @@ const LazyImage = ({imgName, alt, dynamicSrc = null, classes = '', onClick = () 
             setIsInViewport(true)
           }
         }}>
-        <img className={`${classes}`} src={isInViewport ? src : ''} alt={alt} onClick={onClick} />
+        <img className={`${classes}`} src={Manager.IsValid(src, true) ? src : ''} alt={alt} onClick={onClick} />
       </InView>
     </>
   )
 }
-
 export default LazyImage

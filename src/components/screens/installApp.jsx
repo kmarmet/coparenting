@@ -5,14 +5,17 @@ import {FaApple} from 'react-icons/fa6'
 import {GrPersonalComputer} from 'react-icons/gr'
 import {MdOutlineIosShare} from 'react-icons/md'
 import AppImages from '../../constants/appImages'
+import ButtonThemes from '../../constants/buttonThemes'
 import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import AppManager from '../../managers/appManager'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import NavBar from '../navBar'
+import Button from '../shared/button'
 import LazyImage from '../shared/lazyImage'
 import ScreenHeader from '../shared/screenHeader'
+import Slideshow from '../shared/slideshow'
 import Spacer from '../shared/spacer'
 
 export default function InstallApp() {
@@ -27,19 +30,22 @@ export default function InstallApp() {
   return (
     <>
       {/*  DESKTOP INSTALLATION SLIDESHOW */}
-      {/*<Slideshow*/}
-      {/*  activeIndex={0}*/}
-      {/*  show={showComputerInstallSlideshow}*/}
-      {/*  hide={() => setShowComputerInstallSlideshow(false)}*/}
-      {/*  images={[*/}
-      {/*    new SlideshowImage({*/}
-      {/*      classes: 'computer-installation',*/}
-      {/*      url: '../../img/computer-installation.png',*/}
-      {/*      title: 'Computer Installation',*/}
-      {/*      notes: 'Easily install via any web browser on your computer',*/}
-      {/*    }),*/}
-      {/*  ]}*/}
-      {/*/>*/}
+      <Slideshow
+        activeIndex={0}
+        show={showComputerInstallSlideshow}
+        hide={() => setShowComputerInstallSlideshow(false)}
+        images={[
+          {
+            classes: 'computer-installation',
+            dbName: AppImages.misc.desktopInstallation.name,
+            url: AppImages.misc.desktopInstallation.url,
+            title: 'Computer Installation',
+            notes: 'Easily install via any web browser on your computer',
+          },
+        ]}
+      />
+
+
       <div className="page-container install-app">
         <div id="install-app-wrapper">
           <ScreenHeader
@@ -48,8 +54,8 @@ export default function InstallApp() {
           />
           <Spacer height={10} />
 
+
           <div className="screen-content">
-            <LazyImage classes={'logo'} imgName={AppImages.landing.logo.name} alt="Peaceful Co-Parenting" />
             {Manager.IsValid(operatingSystem) && (
               <p className="screen-intro-text">
                 The operating system of the device you are currently on appears to be&nbsp;
@@ -66,7 +72,7 @@ export default function InstallApp() {
                 <div className="flex">
                   <span className="step-number">1.</span>
                   <a href="https://peaceful-coparenting.app" target="_blank" rel="noreferrer">
-                    Open our site
+                    Open our site in your browser
                   </a>
                 </div>
                 <div className="flex">
@@ -107,7 +113,7 @@ export default function InstallApp() {
                 <div className="flex">
                   <span className="step-number">1.</span>
                   <a href="https://peaceful-coparenting.app" target="_blank" rel="noreferrer">
-                    Open our site
+                    Open our site in your browser
                   </a>
                 </div>
                 <div className="flex">
@@ -143,14 +149,13 @@ export default function InstallApp() {
                 <div className="flex">
                   <span className="step-number">1.</span>
                   <a href="https://peaceful-coparenting.app" target="_blank" rel="noreferrer">
-                    Open our site
+                    Open our site in your browser
                   </a>
                 </div>
                 <div className="flex">
                   <span className="step-number">2.</span>
                   <p>{DomManager.tapOrClick(true)} the installation button in the address bar</p>
                 </div>
-
                 <LazyImage
                   imgName={AppImages.misc.desktopInstallation.name}
                   alt={'Desktop Installation'}
@@ -167,9 +172,7 @@ export default function InstallApp() {
             </div>
             <Spacer height={10} />
             {!Manager.IsValid(authUser) && (
-              <button className="button default back-to-login-button" onClick={() => setState({...state, currentScreen: ScreenNames.login})}>
-                Back to Login
-              </button>
+              <Button text={'Back to Login'} theme={ButtonThemes.blend} classes="back-to-login-button center" onClick={() => setState({...state, currentScreen: ScreenNames.login})} />
             )}
             {Manager.IsValid(authUser) && <NavBar navbarClass={'child-info no-Add-new-button'} />}
           </div>

@@ -173,7 +173,8 @@
     #static-calendar {
       width: 100vw !important;
       position: relative;
-      top: -20px;
+      padding: 20px 0 !important;
+
       .MuiDayCalendar-monthContainer {
         position: unset !important;
       }

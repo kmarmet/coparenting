@@ -12,37 +12,37 @@ import Apis from "../api/apis"
 export default UpdateManager =
   currentUser: null
   lineBreak: '\r\n'
-  # Define message templates
+# Define message templates
   templates:
-  # Template for event tomorrow reminder
+# Template for event tomorrow reminder
     eventIsTomorrowReminder: (event) ->
-      "#{event.title} is tomorrow #{if Manager.IsValid(event.fromTime) then '@ ' + event.fromTime else ''}"
+      return "#{event.title} is tomorrow #{if Manager.IsValid(event.fromTime) then '@ ' + event.fromTime else ''}"
 
-  # Template for event in an hour reminder
+# Template for event in an hour reminder
     eventIsInAnHourReminder: (event) ->
-      "#{event.title} is in 1 hour"
+      return "#{event.title} is in 1 hour"
 
-  # Template for event in half hour reminder
+# Template for event in half hour reminder
     eventIsInHalfHourReminder: (event) ->
-      "#{event.title} is in 30 minutes"
+      return "#{event.title} is in 30 minutes"
 
-  # Template for update reminder
+# Template for update reminder
     updateReminder: ->
-      'Visit New Updates in the menu to learn more'
+      return 'Visit New Updates in the menu to learn more'
 
-  # Template for swap request decision
+# Template for swap request decision
     swapRequestApproval: (request, recipientName) ->
-      "Swap Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{UpdateManager.lineBreak}#{UpdateManager.lineBreak}"
+      return "Swap Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{UpdateManager.lineBreak}#{UpdateManager.lineBreak}"
 
     swapRequestRejection: (request, recipientName) ->
-      "Swap Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{UpdateManager.lineBreak}#{UpdateManager.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed with the
+      return "Swap Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{UpdateManager.lineBreak}#{UpdateManager.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed with the
  request, please contact #{recipientName} to negotiate a potential agreement"
 
     transferRequestApproval: (request, recipientName) ->
-      "Transfer Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{UpdateManager.lineBreak}#{UpdateManager.lineBreak}"
+      return "Transfer Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{UpdateManager.lineBreak}#{UpdateManager.lineBreak}"
 
     transferRequestRejection: (request, recipientName) ->
-      "Transfer Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{UpdateManager.lineBreak}#{UpdateManager.lineBreak} Reason: #{request.declineReason}. If you
+      return "Transfer Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{UpdateManager.lineBreak}#{UpdateManager.lineBreak} Reason: #{request.declineReason}. If you
  would still
  prefer to proceed
  with the
@@ -63,7 +63,7 @@ export default UpdateManager =
       OneSignalDeferred.push ->
         OneSignal.init
           appId: UpdateManager.appId
-        .then () ->
+          .then () ->
           OneSignal.User.PushSubscription.addEventListener 'change', UpdateManager.eventListener
     catch error
       LogManager.Log("Error: #{error} | Code File:  | Function:  ")
@@ -90,12 +90,12 @@ export default UpdateManager =
 
               # If user already exists -> replace record
               if Manager.IsValid(existingSubscriber)
-                existingSubscriber =  currentUpdates.find((x) => x?.email == UpdateManager?.currentUser?.email)
+                existingSubscriber = currentUpdates.find((x) => x?.email == UpdateManager?.currentUser?.email)
                 existingSubscriber.subscriptionId = subId;
                 existingSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
                 index = DB.GetTableIndexById(currentUpdates, existingSubscriber?.id)
                 await DB.updateEntireRecord("#{DB.tables.updateSubscribers}/#{index}", existingSubscriber)
-              # Else create new record
+  # Else create new record
               else
                 await DB.Add("#{DB.tables.updateSubscribers}", newSubscriber)
         , 500
@@ -147,7 +147,7 @@ export default UpdateManager =
     newNotification.text = message
     newNotification.category = category
 
-    await DB.Add "#{DB.tables.updates}/#{recipientKey}", [],newNotification
+    await DB.Add "#{DB.tables.updates}/#{recipientKey}", [], newNotification
     await Apis.OneSignal.SendUpdate(subId, raw)
 
   SendToShareWith: (shareWithKeys, currentUser, title, message, category = '') ->

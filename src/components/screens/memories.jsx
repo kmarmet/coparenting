@@ -28,7 +28,6 @@ export default function Memories() {
   const [showDisclaimer, setShowDisclaimer] = useState(false)
   const [showSlideshow, setShowSlideshow] = useState(false)
   const [activeImgIndex, setActiveImgIndex] = useState(0)
-
   const DeleteMemory = async (firebaseImagePath, record) => {
     const imageName = Storage.GetImageNameFromUrl(firebaseImagePath)
 

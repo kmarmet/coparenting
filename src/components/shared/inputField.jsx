@@ -14,24 +14,26 @@ import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 
 function InputField({
-  wrapperClasses = '',
-  labelText = '',
-  inputType = InputTypes.text,
-  required,
-  onChange,
-  defaultValue = null,
-  inputClasses = '',
-  onKeyUp = (e) => {},
-  onDateOrTimeSelection = (e) => {},
-  timeViews = ['hours', 'minutes'],
-  dateViews = ['month', 'day'],
-  placeholder = '',
-  dateFormat = DatetimeFormats.readableMonthAndDay,
-  inputName = '',
-  isCurrency = false,
-  customDebounceDelay = 1000,
-  errorMessage = '',
-}) {
+                      wrapperClasses = '',
+                      labelText = '',
+                      inputType = InputTypes.text,
+                      required,
+                      onChange,
+                      defaultValue = null,
+                      inputClasses = '',
+                      onKeyUp = (e) => {
+                      },
+                      onDateOrTimeSelection = (e) => {
+                      },
+                      timeViews = ['hours', 'minutes'],
+                      dateViews = ['month', 'day'],
+                      placeholder = '',
+                      dateFormat = DatetimeFormats.readableMonthAndDay,
+                      inputName = '',
+                      isCurrency = false,
+                      customDebounceDelay = 1000,
+                      errorMessage = '',
+                    }) {
   const {state, setState} = useContext(globalState)
   const {refreshKey, theme} = state
   const {currentUser} = useCurrentUser()
@@ -59,7 +61,7 @@ function InputField({
         {inputType === InputTypes.date && (
           <MobileDatePicker
             showDaysOutsideCurrentMonth={true}
-            label={labelText}
+            label={labelText ? labelText : placeholder}
             onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
             views={dateViews}
             name={inputName}

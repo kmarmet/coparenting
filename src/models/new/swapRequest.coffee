@@ -10,9 +10,6 @@ class SwapRequest
     @shareWith = options?.shareWith ? []
     @endDate =  options?.endDate ? ''
     @creationDate = moment().format(DateFormats.dateForDb)
-    @recipient =
-      key: options?.recipient?.key ''
-      name: options?.recipient?.name ''
     @reason = options?.reason ? ''
     @duration = options?.duration ? ''
     @ownerKey = options?.ownerKey ? ''
@@ -24,5 +21,15 @@ class SwapRequest
     @responseDate = options?.responseDate ? ''
     @range = options?.range ? []
     @requestedResponseDate = options?.requestedResponseDate ? ''
+
+    # Owner
+    @owner =
+      name: options?.owner?.name ? ''
+      key: options?.owner?.key ? ''
+
+# Recipient
+    @recipient =
+      key: options?.recipient?.key ''
+      name: options?.recipient?.name ''
 
 export default SwapRequest
