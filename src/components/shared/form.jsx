@@ -86,6 +86,7 @@ export default function Form({
     <div key={refreshKey} className={`form-wrapper${showCard ? ` active` : ''} ${wrapperClass}`}>
       <div style={DomManager.AnimateDelayStyle(1, 0.002)} className={`form-card${showCard ? ` active` : ''}`}>
         <div className="content-wrapper">
+          <p>Hello</p>
           {Manager.IsValid(title) && (
             <div className="header">
               <p className={'form-title'} onClick={(e) => DomManager.ToggleActive(e.currentTarget)}>

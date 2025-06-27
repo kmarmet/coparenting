@@ -48,136 +48,134 @@ const CreationMenu = () => {
 
   return (
     <div className={`creation-menu-wrapper${showCreationMenu ? ' active' : ''}`}>
-      <div className={'creation-menu-overlay'}>
-        <div key={refreshKey} {...handlers} style={DomManager.AnimateDelayStyle(1, 0)} className={`creation-card`}>
-          <div className="swipe-bar"></div>
-          <Spacer height={3} />
-          <div className="action-items centered">
-            <p className="creation-menu-title">Create Resource</p>
-            {/* CALENDAR */}
-            <div
-              style={DomManager.AnimateDelayStyle(1)}
-              className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
-              onClick={() => {
-                console.log('clicked')
-                setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.calendar, dateToEdit: dateToEdit})
-              }}>
-              <div className="content">
-                <p className="calendar">Calendar Event</p>
-                <div className="svg-wrapper calendar">
-                  <BsCalendarWeekFill className={'calendar'} />
-                </div>
+      <div key={refreshKey} {...handlers} style={DomManager.AnimateDelayStyle(1, 0)} className={`creation-card`}>
+        <div className="swipe-bar"></div>
+        <Spacer height={3} />
+        <div className="action-items centered">
+          <p className="creation-menu-title">Create Resource</p>
+          {/* CALENDAR */}
+          <div
+            style={DomManager.AnimateDelayStyle(1)}
+            className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
+            onClick={() => {
+              console.log('clicked')
+              setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.calendar, dateToEdit: dateToEdit})
+            }}>
+            <div className="content">
+              <p className="calendar">Calendar Event</p>
+              <div className="svg-wrapper calendar">
+                <BsCalendarWeekFill className={'calendar'} />
               </div>
             </div>
+          </div>
 
-            {currentUser?.accountType === 'parent' && (
-              <>
-                {/* EXPENSE */}
-                <div
-                  style={DomManager.AnimateDelayStyle(2)}
-                  className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
-                  onClick={() => {
-                    setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.expense})
-                  }}>
-                  <div className="content">
-                    <p className="expense">Expense</p>
-                    <div className="svg-wrapper expense">
-                      <FaDonate className={'expense'} />
-                    </div>
+          {currentUser?.accountType === 'parent' && (
+            <>
+              {/* EXPENSE */}
+              <div
+                style={DomManager.AnimateDelayStyle(2)}
+                className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
+                onClick={() => {
+                  setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.expense})
+                }}>
+                <div className="content">
+                  <p className="expense">Expense</p>
+                  <div className="svg-wrapper expense">
+                    <FaDonate className={'expense'} />
                   </div>
-                </div>
-
-                {/* TRANSFER */}
-                <div
-                  style={DomManager.AnimateDelayStyle(2.2)}
-                  className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
-                  onClick={() => {
-                    setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.transferRequest})
-                  }}>
-                  <div className="content">
-                    <p className="transfer">Transfer Change Request</p>
-                    <div className="svg-wrapper transfer">
-                      <RiMapPinTimeFill className={'transfer'} />
-                    </div>
-                  </div>
-                </div>
-
-                {/* SWAPS */}
-                <div
-                  style={DomManager.AnimateDelayStyle(2.4)}
-                  className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
-                  onClick={() => {
-                    setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.swapRequest})
-                  }}>
-                  <div className="content">
-                    <p className="swap">Swap Request</p>
-                    <div className="svg-wrapper swap">
-                      <MdSwapHorizontalCircle className={'swap'} />
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* MEMORY */}
-            <div
-              style={DomManager.AnimateDelayStyle(2.6)}
-              className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
-              onClick={() => {
-                setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.memories})
-              }}>
-              <div className="content">
-                <p className="memory-icon">Memory</p>
-                <div className="svg-wrapper memory">
-                  <IoMdPhotos className={'memory'} />
                 </div>
               </div>
-            </div>
 
-            {currentUser?.accountType === 'parent' && (
-              <>
-                {/* CHAT */}
-                {showChatAction === true && (
-                  <div
-                    style={DomManager.AnimateDelayStyle(2.8)}
-                    className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
-                    onClick={() => {
-                      setState({...state, showCreationMenu: false, currentScreen: ScreenNames.chats, creationFormToShow: CreationForms.chat})
-                    }}>
-                    <div className="content">
-                      <p className="chat">Chat</p>
-                      <div className="svg-wrapper chat">
-                        <IoChatbubbles className={'chat'} />
-                      </div>
-                    </div>
+              {/* TRANSFER */}
+              <div
+                style={DomManager.AnimateDelayStyle(2.2)}
+                className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
+                onClick={() => {
+                  setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.transferRequest})
+                }}>
+                <div className="content">
+                  <p className="transfer">Transfer Change Request</p>
+                  <div className="svg-wrapper transfer">
+                    <RiMapPinTimeFill className={'transfer'} />
                   </div>
-                )}
+                </div>
+              </div>
 
-                {/* DOCS */}
+              {/* SWAPS */}
+              <div
+                style={DomManager.AnimateDelayStyle(2.4)}
+                className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
+                onClick={() => {
+                  setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.swapRequest})
+                }}>
+                <div className="content">
+                  <p className="swap">Swap Request</p>
+                  <div className="svg-wrapper swap">
+                    <MdSwapHorizontalCircle className={'swap'} />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* MEMORY */}
+          <div
+            style={DomManager.AnimateDelayStyle(2.6)}
+            className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
+            onClick={() => {
+              setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.memories})
+            }}>
+            <div className="content">
+              <p className="memory-icon">Memory</p>
+              <div className="svg-wrapper memory">
+                <IoMdPhotos className={'memory'} />
+              </div>
+            </div>
+          </div>
+
+          {currentUser?.accountType === 'parent' && (
+            <>
+              {/* CHAT */}
+              {showChatAction === true && (
                 <div
-                  style={DomManager.AnimateDelayStyle(3)}
+                  style={DomManager.AnimateDelayStyle(2.8)}
                   className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
                   onClick={() => {
-                    setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.documents})
+                    setState({...state, showCreationMenu: false, currentScreen: ScreenNames.chats, creationFormToShow: CreationForms.chat})
                   }}>
                   <div className="content">
-                    <p className="document">Document Upload</p>
-                    <div className="svg-wrapper document">
-                      <FaFileUpload className={'document'} />
+                    <p className="chat">Chat</p>
+                    <div className="svg-wrapper chat">
+                      <IoChatbubbles className={'chat'} />
                     </div>
                   </div>
                 </div>
-              </>
-            )}
-            <div
-              style={DomManager.AnimateDelayStyle(3.5)}
-              onClick={() => setState({...state, showCreationMenu: false})}
-              className={`action-item close ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}>
-              <div className="content">
-                <p className="close">Close</p>
-                <div className="svg-wrapper close">
-                  <IoCloseSharp className={'close'} />
+              )}
+
+              {/* DOCS */}
+              <div
+                style={DomManager.AnimateDelayStyle(3)}
+                className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
+                onClick={() => {
+                  setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.documents})
+                }}>
+                <div className="content">
+                  <p className="document">Document Upload</p>
+                  <div className="svg-wrapper document">
+                    <FaFileUpload className={'document'} />
+                  </div>
                 </div>
+              </div>
+            </>
+          )}
+          <div
+            style={DomManager.AnimateDelayStyle(3.5)}
+            onClick={() => setState({...state, showCreationMenu: false})}
+            className={`action-item close ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}>
+            <div className="content">
+              <p className="close">Close</p>
+              <div className="svg-wrapper close">
+                <IoCloseSharp className={'close'} />
               </div>
             </div>
           </div>

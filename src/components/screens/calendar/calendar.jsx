@@ -22,7 +22,6 @@ import DateManager from '../../../managers/dateManager'
 import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
 import InputField from '../../shared/inputField'
-import Spacer from '../../shared/spacer'
 import CalendarEvents from './calendarEvents.jsx'
 import CalendarLegend from './calendarLegend.jsx'
 import DesktopLegend from './desktopLegend.jsx'
@@ -414,7 +413,7 @@ export default function EventCalendar() {
       </>
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme}`}>
-        <Spacer height={32.5} />
+        {/*<Spacer height={32.5} />*/}
 
         {/* STATIC CALENDAR */}
         <div id="static-calendar" className={`${theme}`}>
