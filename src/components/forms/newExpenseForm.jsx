@@ -96,7 +96,7 @@ export default function NewExpenseForm() {
     //#endregion VALIDATION
 
     const newExpense = {...formRef.current}
-    newExpense.name = formRef.current.name
+    newExpense.name = StringManager.FormatTitle(formRef.current.name)
     newExpense.dueDate = DateManager.GetValidDate(formRef.current.dueDate)
     newExpense.paidStatus = 'unpaid'
     newExpense.imageName = formRef?.current?.image?.name ?? ''

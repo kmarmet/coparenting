@@ -168,11 +168,80 @@ DatasetManager = {
       return moment(date).toDate();
     });
   },
-  sort: function(arr, direction) {
-    if (direction === 'asc') {
-      return arr.sort();
+  ConvertToObject: function(arr) {
+    return Object.assign({}, arr);
+  },
+  SortByTime: function(arr, direction = "asc") {
+    if (direction === "asc") {
+      return arr.sort(function(a, b) {
+        var timeA, timeB;
+        timeA = moment(a.startTime, 'h:mma');
+        timeB = moment(b.startTime, 'h:mma');
+        return timeA - timeB;
+      });
+    } else {
+      return arr.sort(function(a, b) {
+        var timeA, timeB;
+        timeA = moment(a.startTime, 'h:mma');
+        timeB = moment(b.startTime, 'h:mma');
+        return timeB - timeA;
+      });
     }
-    return arr.sort();
+  },
+  SortByDateAndTime: function(arr, direction = "asc") {
+    if (direction === "asc") {
+      return arr.sort(function(a, b) {
+        var datetimeA, datetimeB;
+        datetimeA = moment(`${a != null ? a.startDate : void 0} ${a != null ? a.startTime : void 0}`, 'MM/DD/YYYY h:mma');
+        datetimeB = moment(`${b.startDate} ${b.startTime}`, 'MM/DD/YYYY h:mma');
+        return datetimeA - datetimeB;
+      });
+    } else {
+      return arr.sort(function(a, b) {
+        var datetimeA, datetimeB;
+        datetimeA = moment(`${a != null ? a.startDate : void 0} ${a != null ? a.startTime : void 0}`, 'MM/DD/YYYY h:mma');
+        datetimeB = moment(`${b.startDate} ${b.startTime}`, 'MM/DD/YYYY h:mma');
+        return datetimeB - datetimeA;
+      });
+    }
+  },
+  SortByDate: function(arr, direction = "asc", customDateProp = "startDate") {
+    if (direction === "asc") {
+      return arr.sort(function(a, b) {
+        return moment(a[customDateProp], 'MM/DD/YYYY') - moment(b[customDateProp], 'MM/DD/YYYY');
+      });
+    } else {
+      return arr.sort(function(a, b) {
+        return moment(b[customDateProp], 'MM/DD/YYYY') - moment(a[customDateProp], 'MM/DD/YYYY');
+      });
+    }
+  },
+  SortExpenses: function(arr, dataType = "string", direction) {
+    if (direction === 'asc') {
+      if (dataType === 'int') {
+        return arr.sort(function(a, b) {
+          return a.amount - b.amount;
+        });
+      } else {
+        return arr.sort(function(a, b) {
+          return a.name.localeCompare(b.name, void 0, {
+            sensitivity: 'base'
+          });
+        });
+      }
+    } else if (direction === 'desc') {
+      if (dataType === 'int') {
+        return arr.sort(function(a, b) {
+          return b.amount - a.amount;
+        });
+      } else {
+        return arr.sort(function(a, b) {
+          return b.name.localeCompare(a.name, void 0, {
+            sensitivity: 'base'
+          });
+        });
+      }
+    }
   },
   transformArrayProp: function(arr, prop, newType) {
     var i, len, ref, ref1, ref2, val;

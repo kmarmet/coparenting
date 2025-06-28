@@ -48,9 +48,9 @@ DropdownManager =
       options = []
       if Manager.IsValid(reminders)
         for reminder in reminders
-         options.push
-          label: CalMapper.GetShortenedReadableReminderTime(reminder)
-          value: reminder
+          options.push
+            label: CalMapper.GetShortenedReadableReminderTime(reminder)
+            value: reminder
       return options
 
     Children: (childNames) ->
@@ -58,15 +58,15 @@ DropdownManager =
       if Manager.IsValid(childNames)
         for childName in childNames
           options.push
-           label: StringManager.FormatTitle(childName)
-           value: childName
+            label: StringManager.FormatTitle(childName)
+            value: childName
       return options
 
     ExpenseCategory: (category) ->
       if !Manager.IsValid(category)
-       return 'Category'
+        return 'Category'
       return [
-       {label: category, value: category}
+        {label: category, value: category}
       ]
 
     View: (view) ->
@@ -97,7 +97,7 @@ DropdownManager =
 
           if Manager.IsValid(user)
             options.push
-              value:  user?.key
+              value: user?.key
               label: StringManager.GetFirstNameAndLastInitial(user?.name)
 
       if labelsOnly
@@ -115,14 +115,16 @@ DropdownManager =
           label: category
       return options
 
-    ExpenseSortByTypes : () ->
-      options = []
-      if Manager.IsValid(ExpenseSortByTypes)
-        for category in Object.keys(ExpenseSortByTypes)
-          options.push
+    ValueRecordTypes: () ->
+      return [{label: "Expenses", value: "expenses"}, {label: "Chats", value: "chats"}]
 
-            value: category
-            label: category
+    ExpenseSortByTypes: () ->
+      options = []
+
+      for key, value of ExpenseSortByTypes
+        options.push
+          value: key
+          label: value
       return options
 
     Reminders:
@@ -147,7 +149,7 @@ DropdownManager =
       if Manager.IsValid(users)
         for user in users
           options.push
-            value:  user?.userKey
+            value: user?.userKey
             label: StringManager?.UppercaseFirstLetterOfAllWords(user?.name)
 
       return options

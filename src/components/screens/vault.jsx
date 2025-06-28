@@ -1,12 +1,11 @@
 // Path: src\components\screens\archives.jsx
-import MenuItem from '@mui/material/MenuItem'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {RiFileExcel2Fill} from 'react-icons/ri'
 import CheckboxGroup from '../.../../shared/checkboxGroup.jsx'
 import Label from '../.../../shared/label.jsx'
-import SelectDropdown from '../.../../shared/selectDropdown.jsx'
 import DatetimeFormats from '../../constants/datetimeFormats.coffee'
+import ExpenseSortByTypes from '../../constants/expenseSortByTypes'
 import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import useChatMessages from '../../hooks/useChatMessages'
@@ -16,36 +15,28 @@ import useCurrentUser from '../../hooks/useCurrentUser'
 import useExpenses from '../../hooks/useExpenses'
 import DatasetManager from '../../managers/datasetManager.coffee'
 import DomManager from '../../managers/domManager'
+import DropdownManager from '../../managers/dropdownManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager.coffee'
 import VaultManager from '../../managers/vaultManager'
 import NavBar from '../navBar'
 import ScreenHeader from '../shared/screenHeader'
+import SelectDropdown from '../shared/selectDropdown'
 import Spacer from '../shared/spacer'
-
-const SortByTypes = {
-  nearestDueDate: 'Nearest Due Date',
-  recentlyAdded: 'Recently Added',
-  amountDesc: 'Amount: High to Low',
-  amountAsc: 'Amount: Low to High',
-  nameAsc: 'Name (ascending)',
-  nameDesc: 'Name (descending)',
-}
-
-const RecordTypes = {
-  Expenses: 'Expenses',
-  Chats: 'Chats',
-}
 
 export default function Vault() {
   const {state, setState} = useContext(globalState)
   const {theme} = state
-  const [recordType, setRecordType] = useState(RecordTypes.Expenses)
-  const [sortMethod, setSortMethod] = useState(SortByTypes.recentlyAdded)
+
+  // State
+  const [recordType, setRecordType] = useState('Expenses')
+  const [sortMethod, setSortMethod] = useState({label: 'Recently Added', value: 'recentlyAdded'})
   const [activeChats, setActiveChats] = useState([])
-  const [expensePayers, setExpensePayers] = useState([])
+  const [payer, setPayer] = useState([])
   const [sortedExpenses, setSortedExpenses] = useState([])
   const [selectedChatId, setSelectedChatId] = useState()
+
+  // Hooks
   const {coParents} = useCoParents()
   const {expenses} = useExpenses()
   const {currentUser} = useCurrentUser()
@@ -67,29 +58,55 @@ export default function Vault() {
       if (payerKey === 'Me') {
         payerNames.push('Me')
       } else {
-        const coParent = coParents?.find((x) => x.userKey === payerKey)
+        const coParent = coParents?.find((x) => x?.userKey === payerKey)
         payerNames.push(coParent?.name)
       }
     }
 
-    setExpensePayers(DatasetManager.GetValidArray(payerNames))
-    const _sortedExpenses = expenses?.sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse()
+    setPayer(DatasetManager.GetValidArray(payerNames))
+    const _sortedExpenses = DatasetManager.SortByDate(expenses, 'desc', 'creationDate')
     setSortedExpenses(_sortedExpenses)
 
     return expenses
   }
 
-  const HandleRecordTypeSelection = (e) => {
-    DomManager.HandleCheckboxSelection(
-      e,
-      (e) => {
-        setRecordType(e)
-      },
-      () => {
-        setRecordType('')
-      },
-      false
-    )
+  const HandleSortBySelection = (e) => {
+    const expenseTypes = DatasetManager.ConvertToObject(ExpenseSortByTypes)
+    const label = StringManager.RemoveLeadingAndTrailingSpaces(e.label)
+    setSortMethod(e)
+
+    if (label === expenseTypes.recentlyAdded) {
+      setSortedExpenses(DatasetManager?.SortByDate(expenses, 'desc', 'creationDate'))
+    }
+
+    // Amount: High -> Low
+    if (label === expenseTypes.amountDesc) {
+      const sortByAmountDesc = DatasetManager.SortExpenses(expenses, 'int', 'desc')
+      setSortedExpenses(sortByAmountDesc)
+    }
+
+    // Amount: Low -> High
+    if (label === expenseTypes.amountAsc) {
+      const sortedByAmountAsc = DatasetManager.SortExpenses(expenses, 'int', 'asc')
+      setSortedExpenses(sortedByAmountAsc)
+    }
+
+    // Name Ascending
+    if (label === expenseTypes.nameAsc) {
+      const sortedByNameAsc = DatasetManager.SortExpenses(expenses, 'string', 'asc')
+      setSortedExpenses(sortedByNameAsc)
+    }
+
+    // Name Descending
+    if (label === expenseTypes.nameDesc) {
+      const sortedByNameDesc = DatasetManager.SortExpenses(expenses, 'string', 'desc')
+      setSortedExpenses(sortedByNameDesc)
+    }
+
+    if (label === expenseTypes.nearestDueDate) {
+      const sortedByNearestDueDate = DatasetManager.SortExpenses(expenses, 'string', 'asc')
+      setSortedExpenses(sortedByNearestDueDate)
+    }
   }
 
   const HandlePayerSelection = (e) => {
@@ -100,7 +117,7 @@ export default function Vault() {
         if (e === 'Me') {
           filteredExpenses = expenses?.filter((x) => x.payer?.key === currentUser?.key)
         } else {
-          const coParent = currentUser?.coParents?.find((x) => x.name.includes(e))
+          const coParent = coParents?.find((x) => x.name.includes(e))
           filteredExpenses = expenses?.filter((x) => x.payer?.key === coParent?.userKey)
         }
 
@@ -115,50 +132,6 @@ export default function Vault() {
       },
       false
     )
-  }
-
-  const HandleSortBySelection = (e) => {
-    const sortByName = e.value
-    const expensesAsNumbers = expenses?.map((expense) => {
-      expense.amount = parseInt(expense?.amount)
-      return expense
-    })
-    if (sortByName === SortByTypes.recentlyAdded) {
-      setSortedExpenses(expenses?.sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse())
-      setSortMethod(SortByTypes.recentlyAdded)
-    }
-    // High -> Low
-    if (sortByName === SortByTypes.amountDesc) {
-      const sortByAmountDesc = DatasetManager.sortByProperty(expensesAsNumbers, 'amount', 'desc')
-      setSortedExpenses(sortByAmountDesc)
-      setSortMethod(SortByTypes.amountDesc)
-    }
-    // Low -> High
-    if (sortByName === SortByTypes.amountAsc) {
-      const sortedByAmountAsc = DatasetManager.sortByProperty(expensesAsNumbers, 'amount', 'asc')
-      setSortedExpenses(sortedByAmountAsc)
-      setSortMethod(SortByTypes.amountAsc)
-    }
-
-    // Name Ascending
-    if (sortByName === SortByTypes.nameAsc) {
-      const sortedByNameAsc = DatasetManager.sortByProperty(expenses, 'name', 'asc')
-      setSortedExpenses(sortedByNameAsc)
-      setSortMethod(SortByTypes.nameAsc)
-    }
-
-    // Name Descending
-    if (sortByName === SortByTypes.nameDesc) {
-      const sortedByNameDesc = DatasetManager.sortByProperty(expenses, 'name', 'desc')
-      setSortedExpenses(sortedByNameDesc)
-      setSortMethod(SortByTypes.nameDesc)
-    }
-
-    if (sortByName === SortByTypes.nearestDueDate) {
-      const sortedByNearestDueDate = DatasetManager.sortByProperty(expenses, 'dueDate', 'asc')
-      setSortedExpenses(sortedByNearestDueDate)
-      setSortMethod(SortByTypes.nearestDueDate)
-    }
   }
 
   const ExportExpenses = () => VaultManager.createCSV(expenses, 'Peaceful_coParenting_Exported_Expenses', 'expenses')
@@ -198,78 +171,64 @@ export default function Vault() {
 
         <Spacer height={10} />
         <div className="screen-content">
-          <p>Data can be exported as an Excel spreadsheet format, with options to apply filters or sorting as needed.</p>
+          {/* EXPORT TEXT */}
+          <p className={'export-text'}>Data can be exported as an Excel spreadsheet format, with options to apply filters or sorting as needed.</p>
           <Spacer height={10} />
-          {/* RECORD TYPE */}
-          <Label text={'Record Type'} classes={'always-show dark'} />
-          <CheckboxGroup
-            containerClass={'reminder-times'}
-            elClass={`${theme}`}
-            skipNameFormatting={true}
-            checkboxArray={DomManager.BuildCheckboxGroup({
-              currentUser,
-              labelType: 'record-types',
-              defaultLabels: ['Expenses'],
-            })}
-            onCheck={HandleRecordTypeSelection}
-          />
 
+          {/* RECORD TYPE */}
+          <SelectDropdown
+            wrapperClasses={'white-bg'}
+            options={DropdownManager.GetDefault.ValueRecordTypes()}
+            placeholder={'Select Record Type'}
+            onSelect={(e) => setRecordType(e.label)}
+          />
+          <Spacer height={3} />
           {/* PAYERS */}
-          {coParents?.length > 1 && recordType === RecordTypes.Expenses && (
-            <>
-              <Spacer height={8} />
-              <Label text={'Payers'} classes={'always-show dark'} />
-              <CheckboxGroup
-                elClass={'payers'}
-                skipNameFormatting={true}
-                checkboxArray={DomManager.BuildCheckboxGroup({
-                  currentUser,
-                  customLabelArray: expensePayers,
-                })}
-                onCheck={HandlePayerSelection}
+          {recordType === 'Expenses' && (
+            <SelectDropdown
+              wrapperClasses={'white-bg'}
+              options={DropdownManager.GetDefault.CoParents(coParents)}
+              placeholder={'Select Payer'}
+              onSelect={(e) => setPayer(e.value)}
+            />
+          )}
+
+          <Spacer height={3} />
+
+          {/* SORTING */}
+          {recordType === 'Expenses' && Manager.IsValid(expenses) && (
+            <div id="sorting-wrapper">
+              <SelectDropdown
+                wrapperClasses={'white-bg'}
+                placeholder={'Select Sorting Method'}
+                options={DropdownManager.GetDefault.ExpenseSortByTypes()}
+                value={sortMethod}
+                onSelect={(e) => HandleSortBySelection(e)}
               />
-            </>
+            </div>
           )}
 
           <Spacer height={8} />
 
-          {/* SORTING */}
-          {recordType === RecordTypes.Expenses && Manager.IsValid(expenses) && (
-            <div id="sorting-wrapper">
-              <Label text={'Sorting'} />
-              <SelectDropdown
-                labelText={'Sort By'}
-                id={'sorting-dropdown'}
-                options={DropdownManager.GetDefault.Reminders(Object.values(SortByTypes))}
-                wrapperClasses={'sorting-dropdown white'}
-                value={sortMethod}
-                onChange={HandleSortBySelection}>
-                <MenuItem value={SortByTypes.recentlyAdded}>{SortByTypes.recentlyAdded}</MenuItem>
-                <MenuItem value={SortByTypes.amountDesc}>{SortByTypes.amountDesc}</MenuItem>
-                <MenuItem value={SortByTypes.amountAsc}>{SortByTypes.amountAsc}</MenuItem>
-              </SelectDropdown>
-            </div>
-          )}
-
-          <Spacer height={5} />
-
           {/* EXPENSES EXPORT BUTTON */}
-          {recordType === RecordTypes.Expenses && Manager.IsValid(expenses) && (
+          {recordType === 'Expenses' && Manager.IsValid(expenses) && (
             <p id="export-button" onClick={ExportExpenses}>
               Export <RiFileExcel2Fill />
             </p>
           )}
 
           {/* CHATS EXPORT BUTTON */}
-          {recordType === RecordTypes.Chats && Manager.IsValid(chatMessages) && (
+          {recordType === 'Chats' && Manager.IsValid(chatMessages) && (
             <p id="export-button" onClick={ExportChat}>
               Export <RiFileExcel2Fill />
             </p>
           )}
 
+          <Spacer height={12} />
+
           {/* EXPENSES */}
           {Manager.IsValid(sortedExpenses) &&
-            recordType === RecordTypes.Expenses &&
+            recordType === 'Expenses' &&
             sortedExpenses.map((expense, index) => {
               return (
                 <div
@@ -277,20 +236,22 @@ export default function Vault() {
                   className={`${recordType.toLowerCase()} ${DomManager.Animate.FadeInUp(expense, '.record-row')} record-row`}
                   style={DomManager.AnimateDelayStyle(index)}>
                   <p className="title">
-                    {StringManager.FormatTitle(expense?.name)} <span>${expense?.amount}</span>
+                    {StringManager.FormatTitle(expense?.name)}
+                    <span className={`amount ${expense?.paidStatus === 'paid' ? 'paid' : 'unpaid'}`}>${expense?.amount}</span>
                   </p>
                   <p className="date">
-                    Date Created <span>{moment(expense?.creationDate).format(DatetimeFormats.monthDayYear)}</span>
+                    Date Added <span>{moment(expense?.creationDate).format(DatetimeFormats.monthDayYear)}</span>
                   </p>
                 </div>
               )
             })}
 
           {/* CHATS */}
-          {recordType === RecordTypes.Chats && (
+          {recordType === 'Chats' && (
             <>
-              <Label text={'Select chat to export'} classes={'always-show dark'} />
+              <Label text={'Select Chat to Export'} classes={'always-show dark'} />
               <CheckboxGroup
+                elClass={'white-bg'}
                 onCheck={(e) => {
                   const chatKey = e.dataset.key
                   DomManager.HandleCheckboxSelection(

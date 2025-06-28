@@ -2,73 +2,85 @@
 
 #external-overrides {
   #records-wrapper {
-    // ROW
-    .record-row {
-      flex-wrap: wrap;
-      @include row;
-
-      * {
-        line-height: 1;
+    .screen-content {
+      .export-text {
+        font-weight: $fwLight;
       }
 
-      .date {
-        display: flex;
-        justify-content: space-between;
-        font-size: 14px;
-        color: $darkerGrey;
-        padding-top: 5px;
-        width: 100%;
+      // ROW
+      .record-row {
+        flex-wrap: wrap;
+        @include row;
 
-        span {
+        * {
+          line-height: 1;
+        }
+
+        .date {
+          display: flex;
+          justify-content: space-between;
           font-size: 14px;
+          color: $darkGrey;
+          padding-top: 5px;
+          width: 100%;
+
+          span {
+            font-size: 14px;
+          }
+        }
+
+        .title {
+          font-weight: $fwRegular;
+          width: 100%;
+          text-align: center;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: $primaryText;
+
+          .amount {
+            &.unpaid {
+              color: $redForLightBg;
+            }
+
+            &.paid {
+              color: $green;
+            }
+            font-size: 16px;
+            font-weight: $fwMedium;
+          }
         }
       }
 
-      .title {
-        font-weight: $fwMedium;
-        width: 100%;
-        text-align: center;
+      .payers {
+        padding: 0 0 5px 0;
+      }
+
+      // FILTER DROPDOWN
+      .sorting-dropdown {
+        background: $blendPurple2 !important;
+        border-radius: $borderRadius !important;
+        [role='combobox'] {
+          padding: 10px;
+          height: auto !important;
+        }
+      }
+
+      #export-button {
+        border-bottom: 1px solid $green;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        color: $blend;
-
-        span {
-          color: $red;
-          font-size: 16px;
-          font-weight: $fwMedium;
-        }
-      }
-    }
-
-    .payers {
-      padding: 0 0 5px 0;
-    }
-
-    // FILTER DROPDOWN
-    .sorting-dropdown {
-      background: white;
-      border-radius: $borderRadius !important;
-      [role='combobox'] {
-        padding: 10px;
-        height: auto !important;
-      }
-    }
-
-    #export-button {
-      border-bottom: 1px solid $green;
-      display: flex;
-      align-items: center;
-      color: $green;
-      width: 90px;
-      padding-bottom: 3px;
-      justify-content: center;
-      margin: 0 auto 15px auto;
-
-      svg {
         color: $green;
-        font-size: 18px;
-        margin-left: 8px;
+        width: 90px;
+        padding-bottom: 3px;
+        justify-content: center;
+        margin: 0 auto 15px auto;
+
+        svg {
+          color: $green;
+          font-size: 18px;
+          margin-left: 8px;
+        }
       }
     }
   }

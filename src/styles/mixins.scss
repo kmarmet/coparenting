@@ -152,7 +152,7 @@
   position: relative;
   opacity: 1;
   color: $blend;
-  font-weight: $fwMediumBold;
+  font-weight: $fwRegular;
   font-size: 35px;
   margin: 0;
   border: 0;
@@ -509,7 +509,7 @@
 }
 
 @mixin mainColorsGradient {
-  background: linear-gradient(180deg, $blendPurple 20%, $gradientPurple 80%);
+  background: linear-gradient(180deg, $blendPurple 50%, $gradientPurple 100%);
 }
 
 @mixin fadeEdges {
@@ -1976,11 +1976,10 @@
       font-style: normal;
       line-height: 1;
       white-space: nowrap;
-      font-weight: $fwMedium !important;
+      font-weight: $fwRegular !important;
       color: white;
       display: flex;
       font-size: 16px !important;
-      text-transform: uppercase;
       padding-bottom: 5px;
     }
     &.dark {
@@ -2052,10 +2051,9 @@
   }
 
   label {
-    font-weight: $fwMediumBold;
+    font-weight: $fwRegular;
     font-size: 12px;
     margin: 0;
-    text-transform: uppercase;
     line-height: 1;
     letter-spacing: 0;
     color: $transWhite;
@@ -2335,17 +2333,40 @@
 @mixin checkboxWrapper {
   align-items: center;
   justify-content: flex-start;
-  transition: all 0.5s ease-out;
+  transition: all 0.5s ease;
   display: flex;
   gap: 5px;
   padding: 6px 15px;
   border-radius: $cardBorderRadius;
   border: 1px solid $transWhite;
+
+  * {
+    transition: all 0.5s ease;
+  }
+
   &.active {
     border: 1px solid white;
+    transition: all 0.5s ease;
     .checkbox-text {
-      font-weight: $fwRegular;
       color: white;
+    }
+  }
+
+  &.white-bg {
+    border: 1px solid $darkerGrey !important;
+    opacity: 0.6;
+    .checkbox-text {
+      color: $darkerGrey;
+    }
+    .checkmark {
+      color: $darkerGrey;
+    }
+
+    &.active {
+      opacity: 1;
+      .checkbox-text {
+        color: $darkerGrey;
+      }
     }
   }
 
@@ -2373,6 +2394,7 @@
     line-height: 1;
     white-space: nowrap;
     color: $transWhite;
+    font-weight: $fwRegular;
 
     svg {
       color: white;

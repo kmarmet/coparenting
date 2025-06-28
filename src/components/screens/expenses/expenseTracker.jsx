@@ -107,7 +107,7 @@ export default function ExpenseTracker() {
         `An expense has been marked ${updatedStatus.toUpperCase()} by ${currentUser?.name} \nExpense Name: ${activeExpense?.name}`,
         // payer?.key,
         currentUser,
-        activeExpense.category,
+        activeExpense.category
       )
       setShowDetails(false)
       if (updatedStatus === 'paid') {
@@ -146,8 +146,7 @@ export default function ExpenseTracker() {
     if (status === 'all') {
       setSortedExpenses(expenses)
       // setPaidStatus('all')
-    }
-    else {
+    } else {
       // setPaidStatus(status)
       setSortedExpenses(expenses.filter((x) => x.paidStatus === status))
     }
@@ -160,7 +159,7 @@ export default function ExpenseTracker() {
       return expense
     })
     if (sortByName === ExpenseSortByTypes.recentlyAdded) {
-      setSortedExpenses(expenses.sort((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse())
+      setSortedExpenses(expenses.SortExpenses((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse())
       setSortMethod(ExpenseSortByTypes.recentlyAdded)
     }
     if (sortByName === ExpenseSortByTypes.recentlyAdded) {

@@ -213,6 +213,24 @@ StringManager = {
       return title;
     }
   },
+  FixCamelCaseWord: function(word) {
+    return word.replace(/([A-Z])/g, ' $1').trim().split(' ').map(function(w) {
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    }).join('');
+  },
+  FixCamelCaseSentence: function(str) {
+    return str.split(' ').map(function(word) {
+      return StringManager.FixCamelCaseWord(word);
+    }).join(' ');
+  },
+  RemoveLeadingAndTrailingSpaces: function(str) {
+    // Remove first character if it's a space
+    if (str[0] === ' ') {
+      str = str.slice(1);
+    }
+    // Remove trailing whitespace
+    return str.replace(/\s+$/, '');
+  },
   FormatTitle: function(title, uppercase = true) {
     if (!title || (title != null ? title.length : void 0) === 0) {
       return title;
@@ -225,6 +243,8 @@ StringManager = {
     }
     title = title.toString().replaceAll(" To ", " to ").replaceAll(" A ", " a ").replaceAll(" An ", " an ").replaceAll(" Or ", " or ").replaceAll(" Vs ", " vs ").replaceAll(" With ", " with ").replaceAll(" At ", " at ").replaceAll(" About ", " about ").replaceAll(" From ", " from ").replaceAll(" The ", " the ").replaceAll(" For ", " for ").replaceAll(" Thru ", " thru ").replaceAll(" Has ", " has ").replaceAll(" And ", " and ").replaceAll(" Is ", " is ").replaceAll(" Not ", " not ").replaceAll(" Off ", " off ").replaceAll(" But ", " but ").replaceAll(" By ", " by ").replaceAll(" In ", " in ").replaceAll(" Of ", " of ").replaceAll(" On ", " on ").replaceAll(" Per ", " per ").replaceAll(" Up ", " up ").replaceAll(" Via ", " via ");
     title = StringManager.removeSpecialChars(title);
+    title = StringManager.RemoveLeadingAndTrailingSpaces(title);
+    title = StringManager.FixCamelCaseSentence(title);
     return title;
   }
 };

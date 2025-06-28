@@ -40,7 +40,7 @@ const DateManager = {
     return currentDate.tz(currentUser?.location?.timezone).format(DatetimeFormats.timeForDb)
   },
   SortCalendarEvents: (events, datePropertyName, timePropertyName) => {
-    const sorted = events.sort((a, b) => moment(a.startTime, DatetimeFormats.timeForDb).diff(moment(b.startTime, DatetimeFormats.timeForDb)))
+    const sorted = events.SortExpenses((a, b) => moment(a.startTime, DatetimeFormats.timeForDb).diff(moment(b.startTime, DatetimeFormats.timeForDb)))
     // console.Log(sorted)
     let nestedSort =
       (prop1, prop2 = null, direction = 'asc') =>
@@ -56,7 +56,7 @@ const DateManager = {
     return sorted
   },
   sortByTime: (events) => {
-    const sorted = events.sort((a, b) => moment(a.startTime).diff(moment(b.startTime)))
+    const sorted = events.SortExpenses((a, b) => moment(a.startTime).diff(moment(b.startTime)))
     console.log(sorted)
     return []
   },

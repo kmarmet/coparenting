@@ -180,18 +180,27 @@ DropdownManager = {
       }
       return options;
     },
-    ExpenseSortByTypes: function() {
-      var category, i, len, options, ref;
-      options = [];
-      if (Manager.IsValid(ExpenseSortByTypes)) {
-        ref = Object.keys(ExpenseSortByTypes);
-        for (i = 0, len = ref.length; i < len; i++) {
-          category = ref[i];
-          options.push({
-            value: category,
-            label: category
-          });
+    ValueRecordTypes: function() {
+      return [
+        {
+          label: "Expenses",
+          value: "expenses"
+        },
+        {
+          label: "Chats",
+          value: "chats"
         }
+      ];
+    },
+    ExpenseSortByTypes: function() {
+      var key, options, value;
+      options = [];
+      for (key in ExpenseSortByTypes) {
+        value = ExpenseSortByTypes[key];
+        options.push({
+          value: key,
+          label: value
+        });
       }
       return options;
     },

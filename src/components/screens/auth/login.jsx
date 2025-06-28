@@ -190,7 +190,8 @@ export default function Login() {
 
             <div id="below-inputs-wrapper" className="flex space-between align-center">
               {/* REMEMBER ME */}
-              <Checkbox text={'Remember Me'} onCheck={() => setIsPersistent(!isPersistent)} />
+              <Checkbox wrapperClass={'white-bg'} text={'Remember Me'} onCheck={() => setIsPersistent(!isPersistent)} />
+
               {/* FORGOT PASSWORD BUTTON */}
               <p id="forgot-password-link" onClick={() => setState({...state, currentScreen: ScreenNames.resetPassword})}>
                 Forgot Password

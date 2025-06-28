@@ -5,16 +5,16 @@ import Manager from "./manager"
 import ObjectManager from "./objectManager"
 
 DatasetManager = {
-  GetDatabaseKeyFromArray: (arr,getSingleObjectPropName, getSingleObjectProp) ->
+  GetDatabaseKeyFromArray: (arr, getSingleObjectPropName, getSingleObjectProp) ->
     if getSingleObjectProp
       formatted = Object.entries(arr).map (x) -> x[1]
-      console.log(ObjectManager.RecursivelyFindProperty(formatted,getSingleObjectPropName), getSingleObjectProp);
-      return formatted.find (x) -> ObjectManager.RecursivelyFindProperty(formatted,getSingleObjectPropName) == getSingleObjectProp
+      console.log(ObjectManager.RecursivelyFindProperty(formatted, getSingleObjectPropName), getSingleObjectProp);
+      return formatted.find (x) -> ObjectManager.RecursivelyFindProperty(formatted, getSingleObjectPropName) == getSingleObjectProp
 
     else
       return Object.entries(arr).flat()
 
-  CombineArrays : (arrOne = [], arrTwo = [], isUnique = true, isFlattened = true) ->
+  CombineArrays: (arrOne = [], arrTwo = [], isUnique = true, isFlattened = true) ->
     returnArray = []
 
     arrOne = DatasetManager.GetValidArray(arrOne)
@@ -41,7 +41,7 @@ DatasetManager = {
     if not Manager.IsValid(arr)
       returnArray = [newItem]
 
-    if Manager.IsValid(arr) and Array.isArray(arr) and  arr.length > 0
+    if Manager.IsValid(arr) and Array.isArray(arr) and arr.length > 0
       returnArray = [arr..., newItem]
 
     if Manager.IsValid(arr) and Array.isArray(arr) and arr.length == 0
@@ -55,7 +55,7 @@ DatasetManager = {
       returnArray = returnArray.filter (x) -> x != newItem
 
     if Manager.IsValid(returnArray)
-       returnArray = DatasetManager.GetValidArray(returnArray)
+      returnArray = DatasetManager.GetValidArray(returnArray)
 
     return returnArray
 
@@ -68,7 +68,7 @@ DatasetManager = {
       else
         return [arr..., key]
 
-  GetValidArray: (source,  isUnique = true, isFlattened = true, getObjectValuesOnly = false) ->
+  GetValidArray: (source, isUnique = true, isFlattened = true, getObjectValuesOnly = false) ->
     returnArray = []
 
     if not Manager.IsValid(source)
@@ -83,7 +83,7 @@ DatasetManager = {
     returnArray = asArray
 
     if not Manager.IsValid asArray
-      # NOT Array
+# NOT Array
       if not Array.isArray(source)
         source = [source]
 
@@ -128,12 +128,57 @@ DatasetManager = {
       return _.sortBy arr, prop
     else
       return _.sortBy(arr, prop).reverse()
+
   sortDates: (arr, direction = "asc") ->
     _.sortBy arr, (date) -> moment(date).toDate()
-  sort: (arr, direction) ->
+
+  ConvertToObject: (arr) ->
+    return Object.assign({}, arr)
+
+  SortByTime: (arr, direction = "asc") ->
+    if direction is "asc"
+      return arr.sort (a, b) ->
+        timeA = moment(a.startTime, 'h:mma')
+        timeB = moment(b.startTime, 'h:mma')
+        timeA - timeB
+    else
+      return arr.sort (a, b) ->
+        timeA = moment(a.startTime, 'h:mma')
+        timeB = moment(b.startTime, 'h:mma')
+        timeB - timeA
+
+  SortByDateAndTime: (arr, direction = "asc") ->
+    if direction is "asc"
+      return arr.sort (a, b) ->
+        datetimeA = moment("#{a?.startDate} #{a?.startTime}", 'MM/DD/YYYY h:mma')
+        datetimeB = moment("#{b.startDate} #{b.startTime}", 'MM/DD/YYYY h:mma')
+        datetimeA - datetimeB
+    else
+      return arr.sort (a, b) ->
+        datetimeA = moment("#{a?.startDate} #{a?.startTime}", 'MM/DD/YYYY h:mma')
+        datetimeB = moment("#{b.startDate} #{b.startTime}", 'MM/DD/YYYY h:mma')
+        datetimeB - datetimeA
+
+  SortByDate: (arr, direction = "asc", customDateProp = "startDate") ->
+    if direction is "asc"
+      return arr.sort (a, b) -> moment(a[customDateProp], 'MM/DD/YYYY') - moment(b[customDateProp], 'MM/DD/YYYY')
+    else
+      return arr.sort (a, b) -> moment(b[customDateProp], 'MM/DD/YYYY') - moment(a[customDateProp], 'MM/DD/YYYY')
+
+  SortExpenses: (arr, dataType = "string", direction) ->
     if direction == 'asc'
-      return arr.sort()
-    return arr.sort()
+      if dataType == 'int'
+        return arr.sort (a, b) -> a.amount - b.amount
+      else
+        return arr.sort (a, b) -> a.name.localeCompare b.name, undefined, sensitivity: 'base'
+
+
+    else if direction == 'desc'
+      if dataType == 'int'
+        return arr.sort (a, b) -> b.amount - a.amount
+      else
+        return arr.sort (a, b) -> b.name.localeCompare a.name, undefined, sensitivity: 'base'
+
   transformArrayProp: (arr, prop, newType) ->
     for val in arr
       switch newType

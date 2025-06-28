@@ -8,14 +8,14 @@ import Manager from "./manager"
 #return str.substring(0, firstIndex).replaceAll(target, replacement) +
 #  str.substring(firstIndex);
 StringManager = {
-  ReplaceAllButFirst:  (str, target, replacement, firstOccurrence = true) ->
+  ReplaceAllButFirst: (str, target, replacement, firstOccurrence = true) ->
     firstIndex = str.indexOf target
     returnString = ""
     if firstIndex is -1
       return str # Target string not found
 
     if firstOccurrence
-      substring =  str.substring(0, firstIndex)
+      substring = str.substring(0, firstIndex)
       returnString = substring.replace(target, replacement) + str.substring(firstIndex)
       return  returnString
 
@@ -65,7 +65,7 @@ StringManager = {
   GetFirstNameOnly: (name) ->
     return name if !name
     returnString = name.toString()
-    return returnString if !returnString  or returnString.length == 0
+    return returnString if !returnString or returnString.length == 0
     returnString = returnString.split(' ')[0]
     StringManager.UppercaseFirstLetterOfAllWords(returnString)
 
@@ -96,7 +96,7 @@ StringManager = {
     return phone
 
   compressString: (string) ->
-    # Import the lz-string library dependency
+# Import the lz-string library dependency
     compressed = lzstring.compress(string)
 
     console.log 'Original:', string.length, 'bytes'
@@ -117,9 +117,9 @@ StringManager = {
     return input.toString().replace(/([a-z])([A-Z])/g, '$1 $2')
 
   addLongTextClass: (text) ->
-     if StringManager.GetWordCount(text) > 10
-       return "long-text"
-     else
+    if StringManager.GetWordCount(text) > 10
+      return "long-text"
+    else
       return ''
 
   GetFileExtension: (fileName) ->
@@ -146,9 +146,9 @@ StringManager = {
     return firstWord + str.slice(str[1], str.length)
 
   toCamelCase: (str) ->
-    str =  str.replace /(?:^\w|[A-Z]|\b\w)/g, (word, index) ->
+    str = str.replace /(?:^\w|[A-Z]|\b\w)/g, (word, index) ->
       if index == 0 then word.toLowerCase() else word.toUpperCase()
-    str =  str.replace(/\s+/g, '').replaceAll(" ",  "")
+    str = str.replace(/\s+/g, '').replaceAll(" ", "")
     return str
 
   removeSpecialChars: (str) ->
@@ -179,13 +179,35 @@ StringManager = {
       words = words?.filter (x) -> x.length > 0
       words = words?.map (word) -> word[0].toUpperCase() + word.substr(1)
       words = words?.join(' ') if words?.length > 0
-    words
+    return words
 
   FormatEventTitle: (title) ->
     if title and title.length > 0
       title = StringManager.UppercaseFirstLetterOfAllWords(title)
       title = StringManager.FormatTitle(title)
       return title
+
+  FixCamelCaseWord: (word) ->
+    return word
+      .replace /([A-Z])/g, ' $1'
+      .trim()
+      .split(' ')
+      .map (w) -> w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+      .join ''
+
+  FixCamelCaseSentence: (str) ->
+    return str
+      .split(' ')
+      .map (word) -> StringManager.FixCamelCaseWord(word)
+      .join ' '
+
+  RemoveLeadingAndTrailingSpaces: (str) ->
+# Remove first character if it's a space
+    if str[0] is ' '
+      str = str.slice 1
+
+    # Remove trailing whitespace
+    return str.replace /\s+$/, ''
 
   FormatTitle: (title, uppercase = true) ->
     if !title || title?.length == 0
@@ -225,6 +247,9 @@ StringManager = {
       .replaceAll(" Via ", " via ")
 
     title = StringManager.removeSpecialChars(title)
+    title = StringManager.RemoveLeadingAndTrailingSpaces(title)
+    title = StringManager.FixCamelCaseSentence(title)
+
 
     return title
 

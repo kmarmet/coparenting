@@ -57,19 +57,19 @@ export default function EventCalendar() {
     if (!activeDay) {
       dateToUse = selectedDate
     }
-
-    // All secured events
-    const sortedEvents = DateManager.SortCalendarEvents(calendarEvents, 'startDate', 'startTime')
-
-    // Set events of day
-    _eventsOfDay = sortedEvents?.filter((x) => x.startDate === moment(dateToUse).format(DatetimeFormats.dateForDb))
-    _eventsOfDay = DateManager.SortCalendarEvents(_eventsOfDay, 'startTime', 'asc')
-
-    // Set Holidays
+    const eventsWithoutTime = calendarEvents.filter((x) => !Manager.IsValid(x?.startTime))
+    const eventsWithTime = calendarEvents.filter((x) => Manager.IsValid(x?.startTime))
     const holidaysToLoop = holidays.filter(
       (x) => moment(x.startDate).format(DatetimeFormats.dateForDb) === moment(dateToUse).format(DatetimeFormats.dateForDb)
     )
-    _eventsOfDay = DatasetManager.CombineArrays(_eventsOfDay, holidaysToLoop)
+    const allDayEvents = DatasetManager.CombineArrays(eventsWithoutTime, holidaysToLoop)
+    const eventsWithTimeFirst = DatasetManager.CombineArrays(eventsWithTime, allDayEvents)
+    const sortedEvents = DatasetManager.SortByTime(eventsWithTimeFirst, 'asc')
+
+    // Set events of day
+    _eventsOfDay = sortedEvents?.filter((x) => x.startDate === moment(dateToUse).format(DatetimeFormats.dateForDb))
+
+    // Set Holidays
     setEventsOfActiveDay(DatasetManager.GetValidArray(_eventsOfDay))
 
     // ADD DAY INDICATORS

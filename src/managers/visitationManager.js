@@ -1,5 +1,6 @@
 // Path: src\managers\visitationManager.js
 import moment from 'moment'
+import DatetimeFormats from '../constants/datetimeFormats'
 import DB from '../database/DB'
 import Manager from '../managers/manager'
 import StringManager from '../managers/stringManager'
@@ -306,10 +307,10 @@ const VisitationManager = {
 
     // Formatted Date Arrays
     const formattedSecondPeriodArray = DatasetManager.getUniqueArray(secondPeriodArray.filter((x) => x !== 'Invalid date'))
-      .sort()
+      .SortExpenses()
       .flat()
     const formattedFirstPeriodArray = DatasetManager.getUniqueArray(firstPeriodArray.filter((x) => x !== 'Invalid date'))
-      .sort()
+      .SortExpenses()
       .flat()
     const formattedThirdPeriodArray = DatasetManager.getUniqueArray(thirdPeriodArray.filter((x) => x !== 'Invalid date')).flat()
 
