@@ -1,65 +1,88 @@
-import React, {useContext, useState} from 'react'
+import {Loader} from '@googlemaps/js-api-loader'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import {FaMapLocationDot} from 'react-icons/fa6'
 import globalState from '../../context'
-import Manager from '../../managers/manager'
-import CheckboxGroup from './checkboxGroup'
-import GoogleAutocomplete from './googleAutocomplete'
+import SelectDropdown from './selectDropdown'
 import Spacer from './spacer'
 
-export default function AddressInput({
-  onChange = (e) => {},
-  showAddressTypeSelector = true,
-  defaultValue,
-  labelText = '',
-  required = false,
-  wrapperClasses = '',
-}) {
-  const {state, setState} = useContext(globalState)
+const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
+  const {state} = useContext(globalState)
   const {refreshKey} = state
+
+  // State
   const [addressType, setAddressType] = useState('address')
 
+  // Refs
+  const inputRef = useRef(null)
+  const autocompleteRef = useRef(null)
+  const listenerRef = useRef(null)
+
   const ClearInput = () => {
+    console.log('true')
     const input = document.querySelector('.google-autocomplete-input')
-    input.value = ''
+    if (!input) return
+    inputRef.current.value = ''
+    setAddressType('address')
   }
 
-  return (
-    <>
-      <div key={refreshKey} className={`${wrapperClasses} address-input-field`}>
-        <div className={'background'}>
-          <FaMapLocationDot className={'input-icon maps'} />
-          <GoogleAutocomplete onChange={onChange} defaultValue={defaultValue} addressType={addressType} />
-        </div>
-        <span onClick={ClearInput}>Clear</span>
-      </div>
-      {showAddressTypeSelector && (
-        <CheckboxGroup
-          elClass={wrapperClasses}
-          checkboxArray={[
-            {label: 'Address', key: 'address', isActive: addressType === 'address'},
-            {label: 'Point of Interest', key: 'point_of_interest', isActive: addressType === 'point_of_interest'},
-          ]}
-          onCheck={(e) => {
-            const parent = e.parentNode
+  useEffect(() => {
+    let isMounted = true
 
-            if (Manager.IsValid(parent)) {
-              const allCheckboxWrappers = parent.querySelectorAll('.checkbox-wrapper')
-              allCheckboxWrappers.forEach((wrapper) => {
-                if (wrapper.dataset.label !== e.dataset.label) {
-                  wrapper.classList.remove('active')
-                } else {
-                  wrapper.classList.add('active')
-                }
-              })
-            }
-            setAddressType(e.dataset.key)
-          }}
-          skipNameFormatting={true}
-          parentLabel={labelText}
-          required={required}
-        />
-      )}
-      <Spacer height={5} />
-    </>
+    const loader = new Loader({
+      apiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+      libraries: ['places'],
+    })
+    loader.load().then(() => {
+      if (!inputRef.current) return
+
+      autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
+        fields: ['name', 'formatted_address'],
+        types: [addressType],
+      })
+
+      listenerRef.current = autocompleteRef.current.addListener('place_changed', () => {
+        const place = autocompleteRef.current.getPlace()
+        if (onChange) {
+          onChange(place?.formatted_address)
+        }
+      })
+
+      return () => {
+        isMounted = false
+
+        // remove event listener
+        if (listenerRef.current) {
+          listenerRef.current.remove()
+          listenerRef.current = null
+        }
+
+        autocompleteRef.current = null
+      }
+    })
+  }, [onChange, addressType])
+
+  return (
+    <div className={'google-autocomplete-wrapper'}>
+      <div className="input-wrapper">
+        <FaMapLocationDot className={'input-icon maps'} />
+        <input ref={inputRef} type={'text'} defaultValue={defaultValue} className="google-autocomplete-input" placeholder="Address" />
+        <span className={'clear-input-button'} onClick={ClearInput}>
+          Clear
+        </span>
+      </div>
+      <Spacer height={3} />
+
+      <SelectDropdown
+        placeholder={'Address Type'}
+        options={[
+          {value: 'address', label: 'Address'},
+          {value: 'point_of_interest', label: 'Point of Interest'},
+        ]}
+        onSelect={(e) => setAddressType(e?.value)}
+      />
+      <Spacer height={3} />
+    </div>
   )
 }
+
+export default AddressInput

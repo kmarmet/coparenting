@@ -36,34 +36,6 @@
         border: 0;
         align-items: flex-start;
 
-        .delete-event-button {
-          background: $red;
-          justify-content: center;
-          align-items: center;
-          display: flex;
-          //position: absolute;
-          right: 0;
-          height: 100%;
-          color: white;
-          font-size: 12px;
-          font-weight: $fwMediumBold;
-          line-height: 1;
-          align-self: stretch;
-          margin: 0;
-          //opacity: 0;
-          //max-width: 0;
-          padding: 0;
-          transition: all 0.5s ease-in-out;
-
-          &.active {
-            padding: 0 15px;
-            max-width: 300px;
-            opacity: 1;
-            transition: all 0.5s ease-in-out;
-            border-radius: 6px;
-          }
-        }
-
         #icon-row {
           align-items: flex-start;
           gap: 5px;
@@ -72,10 +44,15 @@
           position: relative;
           top: 1px;
           svg {
-            color: $darkGrey;
+            color: $iconGrey;
             padding: 0;
             margin: 0;
             @include square(18px);
+
+            &.children-icon,
+            &.phone-icon {
+              @include square(20px);
+            }
           }
         }
 
@@ -113,57 +90,51 @@
             }
           }
 
-          #title-wrapper {
-            width: 100%;
-            justify-content: space-between;
-            display: flex;
+          // ROW TITLE
+          .row-title {
+            padding: 0;
+            opacity: 1;
+            font-style: normal;
+            font-weight: $fwRegular;
+            color: $headerText;
+            max-width: 90%;
+            justify-content: flex-start;
 
-            &:after {
-              top: 0;
-              left: 0;
-              transform: none;
-            }
+            .event-type-dot {
+              height: 8px;
+              width: 8px;
+              margin-right: 11px;
+              border-radius: 100%;
+              display: block;
+              align-self: flex-start;
+              position: relative;
+              top: 3px;
+              left: 2px;
 
-            .title {
-              padding: 0;
-              opacity: 1;
-              font-style: normal;
-              font-weight: $fwRegular;
-              color: $headerText;
-              max-width: 90%;
+              &.financial-dot {
+                background-color: $green;
+              }
 
-              .event-type-dot {
-                height: 8px;
-                width: 8px;
-                margin-right: 11px;
-                border-radius: 100%;
-                display: block;
-                align-self: flex-start;
-                position: relative;
-                top: 3px;
-                left: 2px;
+              &.holiday-event-dot {
+                background: $holidayOrange;
+              }
 
-                &.financial-dot {
-                  background-color: $green;
-                }
+              &.coparent-event-dot {
+                background: $coParentPurple;
+              }
 
-                &.holiday-event-dot {
-                  background: $holidayOrange;
-                }
+              &.current-user-event-dot {
+                background: $main;
+              }
 
-                &.coparent-event-dot {
-                  background: $coParentPurple;
-                }
-
-                &.current-user-event-dot {
-                  background: $main;
-                }
-
-                &.current-user-visitation {
-                  background: $main;
-                }
+              &.current-user-visitation {
+                background: $main;
               }
             }
+          }
+
+          .date-wrapper {
+            padding-left: 20px;
           }
 
           // DATE CONTAINER

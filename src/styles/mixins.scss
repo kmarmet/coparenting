@@ -437,11 +437,6 @@
   display: flex;
   background: $inputBackground;
   @include square(55px);
-  .location-pin-animation {
-    transform: scale(0.65) rotate(45deg);
-    position: relative;
-    top: -3px;
-  }
 
   svg {
     color: $mediumTransWhite;
@@ -1802,9 +1797,30 @@
   display: flex;
   opacity: 0;
 
-  &.active {
-    max-height: 10000px;
-    //transition: all 0.3s ease-in-out;
+  * {
+    line-height: 1;
+  }
+
+  .row-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 5px;
+    color: $primaryText;
+  }
+
+  .row-subtitle {
+    padding-top: 2px;
+    margin-top: 0;
+    width: 100%;
+    line-height: 1;
+    font-size: 14px;
+    color: $subtitleText;
+
+    &.calendar {
+      margin-left: 20px;
+    }
   }
 
   &.chats {
@@ -1812,10 +1828,6 @@
     border: 0;
     opacity: 0;
     margin-bottom: 8px;
-  }
-
-  * {
-    line-height: 1;
   }
 
   .at-symbol {
@@ -1850,7 +1862,7 @@
     }
   }
 
-  .status {
+  .request-status {
     margin-left: auto;
     padding: 5px 10px 4px 10px;
     border-radius: $cardBorderRadius;
@@ -1882,19 +1894,6 @@
     &.declined {
       background-color: $flatRed;
       color: white;
-    }
-  }
-
-  #subtitle {
-    padding-top: 2px;
-    margin-top: 0;
-    width: 100%;
-    line-height: 1;
-    font-size: 14px;
-    color: $darkerGrey;
-
-    &.calendar {
-      margin-left: 20px;
     }
   }
 
@@ -2093,11 +2092,11 @@
   justify-content: flex-end;
   width: 100%;
   transition: all 0.1s ease-in-out;
-  overflow: hidden;
   padding: 0 10px;
   border-radius: $borderRadius;
   background-color: $inputBackground;
   margin-bottom: 8px;
+  overflow: hidden;
 
   &.active {
     border: 1px solid $greyBorderColor;
@@ -3062,7 +3061,6 @@
 }
 
 @mixin form {
-  //overflow: hidden;
   position: fixed;
   height: 100vh;
   width: 100vw;
@@ -3073,17 +3071,14 @@
   align-self: center;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.7s ease;
   z-index: $maxZIndex;
-
   @include mainColorsGradient;
 
   &.active {
-    z-index: $maxZIndex;
-    max-height: unset;
     opacity: 1;
     pointer-events: auto;
-    transition: all 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: all 0.7s ease;
   }
 
   // Edit/Details/Single Day .etc
@@ -3119,12 +3114,10 @@
     position: fixed;
     top: 0;
     background: transparent;
-    //overflow: hidden;
     border-radius: 0;
     transition: all 0.8s ease;
     height: 100vh;
     opacity: 0;
-    transform: translateY(100%);
     z-index: $maxZIndex;
     pointer-events: none;
     padding: 0 10px;
@@ -3133,7 +3126,6 @@
 
     &.active {
       pointer-events: auto;
-      transform: translateY(0);
       opacity: 1;
       transition: all 0.7s ease;
     }
@@ -3149,7 +3141,6 @@
       top: 0;
       left: 0;
       width: 100%;
-      //position: fixed;
 
       .share-with-checkbox-group {
         .checkboxes {

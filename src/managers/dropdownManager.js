@@ -222,20 +222,35 @@ DropdownManager = {
         value: "timeOfEvent"
       }
     ],
-    ShareWith: function(children, coParents) {
+    ShareWith: function(children, coParents, coParentsOnly = false) {
       var childAccounts, merged, options;
-      if (Manager.IsValid(children) && Manager.IsValid(coParents)) {
-        childAccounts = children.filter(function(x) {
+      options = [];
+      // CoParents Only
+      if (Manager.IsValid(coParents) && coParentsOnly) {
+        coParents = coParents.filter(function(x) {
           return x != null ? x.userKey : void 0;
         });
-        merged = DatasetManager.CombineArrays(childAccounts, coParents);
-        options = merged.map(function(x) {
-          var ref;
+        options = coParents.map(function(x) {
           return {
-            label: (x != null ? (ref = x.general) != null ? ref.name : void 0 : void 0) || (x != null ? x.name : void 0),
+            label: x != null ? x.name : void 0,
             value: (x != null ? x.userKey : void 0) || (x != null ? x.key : void 0)
           };
         });
+      } else {
+        // Children and CoParents
+        if (Manager.IsValid(children) && Manager.IsValid(coParents)) {
+          childAccounts = children.filter(function(x) {
+            return x != null ? x.userKey : void 0;
+          });
+          merged = DatasetManager.CombineArrays(childAccounts, coParents);
+          options = merged.map(function(x) {
+            var ref;
+            return {
+              label: (x != null ? (ref = x.general) != null ? ref.name : void 0 : void 0) || (x != null ? x.name : void 0),
+              value: (x != null ? x.userKey : void 0) || (x != null ? x.key : void 0)
+            };
+          });
+        }
       }
       return options;
     },

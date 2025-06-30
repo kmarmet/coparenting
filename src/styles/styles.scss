@@ -1,4 +1,6 @@
 @import 'mixins';
+
+// ERROR BOUNDARY SCREEN
 #error-screen {
   height: 100vh;
   width: 100vw;
@@ -138,27 +140,6 @@
   @include loadingSkeleton;
 }
 
-.location-pin-animation {
-  width: 40px;
-  aspect-ratio: 1;
-  position: relative;
-  transform: rotate(45deg);
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 50% 50% 0 50%;
-    background: $blend;
-    // -webkit-mask: radial-gradient(circle 10px at 50% 50%, #0000 94%, #000);
-  }
-  &::after {
-    animation: locationPinAnimation 1.3s infinite linear reverse;
-    transform: perspective(400px) translateZ(0px);
-  }
-}
-
 .loading-animation {
   width: 20px;
   aspect-ratio: 1;
@@ -186,14 +167,80 @@
 }
 
 // GOOGLE MAPS
+.google-autocomplete-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+
+  .input-wrapper {
+    height: 50px;
+    width: 100%;
+    display: flex;
+    position: relative;
+    background: $inputBackground;
+    border-radius: $borderRadius;
+    align-items: center;
+    justify-content: space-between;
+    input {
+      margin-left: 40px;
+      background: transparent;
+    }
+
+    .clear-input-button {
+      font-size: 14px !important;
+      color: $transWhite !important;
+      margin-right: 10px !important;
+      position: relative;
+      z-index: $maxZIndex;
+    }
+
+    svg {
+      @include centerVert;
+      position: absolute;
+      color: $transWhite;
+      left: 10px;
+      width: 20px;
+      height: 20px;
+      font-size: 22px;
+    }
+  }
+
+  .google-autocomplete-input {
+    position: relative;
+    background: $inputBackground;
+    border: 0;
+    outline: 0;
+    border-radius: 0;
+    caret-color: white;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-weight: $fwLight;
+    color: white;
+    z-index: 9;
+    overscroll-behavior: none;
+    overflow: auto;
+    height: 100%;
+    padding: 0;
+
+    &::placeholder {
+      font-style: italic;
+      color: $transWhite;
+      font-size: 15px;
+      font-weight: $fwLight;
+      text-transform: capitalize;
+    }
+  }
+  .select-dropdown {
+    width: 100% !important;
+  }
+}
 .pac-container {
   width: calc(100vw - 30px) !important;
   margin: 0 auto !important;
-  left: 50% !important;
-  transform: translateX(-50%);
+  z-index: 9999 !important;
   border-radius: $buttonBorderRadius !important;
-  top: 150px !important;
-  @include bestShadow;
+  box-shadow: $boxShadow_bottom_only;
   &::after {
     display: none !important;
   }
@@ -291,8 +338,7 @@
   &[class*='-container'] {
     border-radius: $borderRadius !important;
     border: 0 !important;
-    max-width: calc(100vw - 30px) !important;
-    margin: 0 auto !important;
+    max-width: calc(100vw - 20px) !important;
 
     &.white,
     &.white-bg {
@@ -305,6 +351,11 @@
 
     &.white-bg {
       background: white !important;
+      [id*='listbox'] {
+        max-height: unset !important;
+        background: white !important;
+      }
+
       [class*='-control'] {
         background: white !important;
 
@@ -338,11 +389,11 @@
 
     [id*='listbox'] {
       max-height: unset !important;
-      background: white !important;
     }
   }
 }
 
+// PASSWORD VALIDATION
 .password-validation {
   .checklist-icon {
     font-size: 15px !important;
@@ -366,6 +417,7 @@
   }
 }
 
+// External Overrides
 #external-overrides {
   p,
   button,
@@ -665,7 +717,8 @@
     }
 
     /*#region  BLOCKS */
-    .blocks {
+    .blocks,
+    .multiline-blocks {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -673,6 +726,22 @@
       justify-content: center;
       margin-top: 15px;
       margin-right: 15px;
+
+      &.multiline-blocks {
+        width: calc(100vw - 20px);
+        margin: 15px auto;
+        display: flex;
+        gap: 0;
+        justify-content: center;
+
+        .blocks {
+          margin: 0;
+          .block {
+            width: calc(100% / 4);
+          }
+        }
+      }
+
       .block {
         width: 50%;
         align-items: center;

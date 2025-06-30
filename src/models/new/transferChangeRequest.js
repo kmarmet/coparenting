@@ -16,20 +16,25 @@ TransferChangeRequest = class TransferChangeRequest {
     this.startDate = (ref = options != null ? options.startDate : void 0) != null ? ref : '';
     this.endDate = (ref1 = options != null ? options.endDate : void 0) != null ? ref1 : '';
     this.time = (ref2 = options != null ? options.time : void 0) != null ? ref2 : '';
-    this.ownerKey = (ref3 = options != null ? options.ownerKey : void 0) != null ? ref3 : '';
-    this.address = (ref4 = options != null ? options.address : void 0) != null ? ref4 : '';
-    this.directionsLink = (ref5 = Manager.GetDirectionsLink(options != null ? options.address : void 0)) != null ? ref5 : '';
-    this.shareWith = (ref6 = options != null ? options.shareWith : void 0) != null ? ref6 : [];
-    this.requestReason = (ref7 = options != null ? options.requestReason : void 0) != null ? ref7 : '';
-    this.declineReason = (ref8 = options != null ? options.declineReason : void 0) != null ? ref8 : '';
-    this.recipientKey = (ref9 = options != null ? options.recipientKey : void 0) != null ? ref9 : '';
+    this.address = (ref3 = options != null ? options.address : void 0) != null ? ref3 : '';
+    this.directionsLink = (ref4 = Manager.GetDirectionsLink(options != null ? options.address : void 0)) != null ? ref4 : '';
+    this.shareWith = (ref5 = options != null ? options.shareWith : void 0) != null ? ref5 : [];
+    this.requestReason = (ref6 = options != null ? options.requestReason : void 0) != null ? ref6 : '';
+    this.declineReason = (ref7 = options != null ? options.declineReason : void 0) != null ? ref7 : '';
+    this.requestedResponseDate = (ref8 = options != null ? options.requestedResponseDate : void 0) != null ? ref8 : '';
+    this.preferredTransferAddress = (ref9 = options != null ? options.preferredTransferAddress : void 0) != null ? ref9 : '';
+    // RECIPIENT
     this.recipient = {
       name: options != null ? (ref10 = options.recipient) != null ? ref10.name('', {
         key: options != null ? (ref11 = options.recipient) != null ? ref11.key('') : void 0 : void 0
       }) : void 0 : void 0
     };
-    this.requestedResponseDate = (ref12 = options != null ? options.requestedResponseDate : void 0) != null ? ref12 : '';
-    this.preferredTransferAddress = (ref13 = options != null ? options.preferredTransferAddress : void 0) != null ? ref13 : '';
+    // OWNER
+    this.owner = {
+      name: options != null ? (ref12 = options.owner) != null ? ref12.name('', {
+        key: options != null ? (ref13 = options.owner) != null ? ref13.key('') : void 0 : void 0
+      }) : void 0 : void 0
+    };
   }
 
 };

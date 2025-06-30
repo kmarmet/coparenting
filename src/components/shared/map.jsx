@@ -1,4 +1,3 @@
-// Path: src\components\shared\map.jsx
 import {GoogleMap, MarkerF, useJsApiLoader} from '@react-google-maps/api'
 import React, {useCallback, useContext, useEffect, useRef, useState} from 'react'
 import {fromAddress, setKey} from 'react-geocode'
@@ -6,13 +5,12 @@ import globalState from '../../context.js'
 import Manager from '../../managers/manager.js'
 
 export default function Map({locationString}) {
-  const {state, setState} = useContext(globalState)
-  const {theme, refreshKey} = state
+  const {state} = useContext(globalState)
+  const {refreshKey} = state
   const [map, setMap] = useState(null)
   const [mapCenter, setMapCenter] = useState(null)
   const mapRef = useRef(null)
-
-  let zoom = 15
+  const zoom = 15
 
   const mapStyle = {
     width: '100%',
@@ -20,73 +18,76 @@ export default function Map({locationString}) {
     borderRadius: '15px',
   }
 
-  // GoogleMaps loading instructions
   const {isLoaded} = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     version: 'weekly',
   })
 
-  const onLoad = (map) => {
+  const onLoad = (mapInstance) => {
     retrySetMapCenter()
-    setMap(map)
+    setMap(mapInstance)
   }
 
-  const onUnmount = useCallback(function callback(map) {
+  const onUnmount = useCallback(() => {
     setMapCenter(null)
     setMap(null)
   }, [])
 
   const retrySetMapCenter = () => {
-    if (Manager.IsValid(locationString, true)) {
-      fromAddress(locationString).then(({results}) => {
-        const location = results[0].geometry.location
-        setMapCenter({
-          lat: location.lat,
-          lng: location.lng,
+    if (typeof locationString === 'string' && locationString.trim().length > 0 && Manager.IsValid(locationString, true)) {
+      fromAddress(locationString)
+        .then(({results}) => {
+          if (results && results.length > 0) {
+            const location = results[0].geometry.location
+            setMapCenter({
+              lat: location.lat,
+              lng: location.lng,
+            })
+          } else {
+            console.warn('No results from geocoding API')
+          }
         })
-      })
+        .catch((err) => {
+          console.error('Error fetching location:', err)
+        })
+    } else {
+      console.warn('Invalid location string for geocoding:', locationString)
     }
   }
+
+  const MarkerClicked = (marker) => {
+    if (!marker || !marker.latLng) return
+    const markerLatLng = marker.latLng.toJSON()
+    console.log('Marker clicked:', markerLatLng)
+  }
+
+  useEffect(() => {
+    if (process.env.REACT_APP_GOOGLE_MAPS_API_KEY) {
+      setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY)
+    } else {
+      console.warn('Missing Google Maps API Key')
+    }
+  }, [])
 
   useEffect(() => {
     retrySetMapCenter()
   }, [locationString])
 
-  // Function executed when a marker is clicked
-  const MarkerClicked = (marker) => {
-    console.log('map value on marker click: ')
-    console.log(map)
-    // This stores the marker coordinates
-    // in which we will use for the center of your circle
-    const markerLatLng = marker.latLng.toJSON()
-    console.log(markerLatLng)
-    // this is for you to see that the circles array is updated.
-  }
-
-  useEffect(() => {
-    setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY)
-  }, [])
-
-  if (!isLoaded) {
-    return null
-  }
-
   return isLoaded ? (
     <div key={refreshKey}>
       <GoogleMap
         ref={mapRef}
-        // options={{ mapTypeControl: false, streetViewControl: false }}
         mapContainerStyle={mapStyle}
         center={mapCenter}
+        zoom={zoom}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
         options={{
           disableDefaultUI: false,
           fullscreenControl: true,
-        }}
-        zoom={zoom}
-        onLoad={onLoad}
-        onUnmount={onUnmount}>
-        {Manager.IsValid(mapCenter) && <MarkerF position={{lat: mapCenter.lat, lng: mapCenter.lng}} onClick={MarkerClicked}></MarkerF>}
+        }}>
+        {mapCenter && <MarkerF position={{lat: mapCenter.lat, lng: mapCenter.lng}} onClick={MarkerClicked} />}
       </GoogleMap>
     </div>
   ) : (

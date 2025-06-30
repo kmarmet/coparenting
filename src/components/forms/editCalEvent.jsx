@@ -75,7 +75,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     setEventIsCloned(false)
     setView({label: 'Details', value: 'Details'})
     setTimeout(() => {
-      setState({...state, refreshKey: Manager.GetUid()})
+      // setState({...state, refreshKey: Manager.GetUid()})
     }, 500)
     setState({
       ...state,
@@ -339,59 +339,61 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 <MultilineDetailBlock title={'Children'} array={event?.children} />
 
                 {/*  Notes */}
-                <DetailBlock valueToValidate={event?.notes} text={formRef?.current?.notes} isFullWidth={true} title={'Notes'} />
+                {Manager.IsValid(event?.notes, true) && (
+                  <DetailBlock valueToValidate={event?.notes} text={event?.notes} isFullWidth={true} title={'Notes'} />
+                )}
               </div>
-
-              {(Manager.IsValid(event?.address) || Manager.IsValid(event?.phone) || Manager.IsValid(event?.websiteUrl)) && (
-                <>
-                  <div className="blocks">
-                    {/*  Phone */}
-                    <DetailBlock
-                      valueToValidate={event?.phone}
-                      isPhone={true}
-                      text={StringManager.FormatPhone(event?.phone)}
-                      title={'Call'}
-                      topSpacerMargin={8}
-                      bottomSpacerMargin={8}
-                    />
-
-                    {/*  Website */}
-                    <DetailBlock
-                      valueToValidate={event?.websiteUrl}
-                      linkUrl={event?.websiteUrl}
-                      text={decodeURIComponent(event?.websiteUrl)}
-                      isLink={true}
-                      title={'Website/Link'}
-                    />
-
-                    {Manager.IsValid(event?.address) && (
-                      <>
-                        {/*  Location */}
-                        <DetailBlock
-                          topSpacerMargin={8}
-                          bottomSpacerMargin={8}
-                          valueToValidate={event?.address}
-                          isNavLink={true}
-                          text={event?.address}
-                          linkUrl={event?.address}
-                          title={'Navigation'}
-                        />
-                      </>
-                    )}
-                  </div>
-                </>
-              )}
 
               {/* Recurring Frequency */}
               {event?.isRecurring && (
                 <div className="flex">
-                  <b>
-                    <MdEventRepeat />
-                    DatetimeFormats
-                  </b>
+                  <MdEventRepeat />
+                  <b>DatetimeFormats</b>
                   <span>{StringManager.UppercaseFirstLetterOfAllWords(event?.recurringFrequency)}</span>
                 </div>
               )}
+
+              <div className="multiline-blocks">
+                {(Manager.IsValid(event?.address) || Manager.IsValid(event?.phone) || Manager.IsValid(event?.websiteUrl)) && (
+                  <>
+                    <div className="blocks">
+                      {/*  Phone */}
+                      <DetailBlock
+                        valueToValidate={event?.phone}
+                        isPhone={true}
+                        text={StringManager.FormatPhone(event?.phone)}
+                        title={'Call'}
+                        topSpacerMargin={8}
+                        bottomSpacerMargin={8}
+                      />
+
+                      {/*  Website */}
+                      <DetailBlock
+                        valueToValidate={event?.websiteUrl}
+                        linkUrl={event?.websiteUrl}
+                        text={decodeURIComponent(event?.websiteUrl)}
+                        isLink={true}
+                        title={'Website/Link'}
+                      />
+
+                      {Manager.IsValid(event?.address) && (
+                        <>
+                          {/*  Location */}
+                          <DetailBlock
+                            topSpacerMargin={8}
+                            bottomSpacerMargin={8}
+                            valueToValidate={event?.address}
+                            isNavLink={true}
+                            text={event?.address}
+                            linkUrl={event?.address}
+                            title={'Navigation'}
+                          />
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
 
               {/* Map */}
               {!AppManager.IsDevMode() && Manager.IsValid(event?.address) && <Map locationString={event?.address} />}

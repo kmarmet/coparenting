@@ -56,7 +56,7 @@ export default function SwapRequests() {
 
   const formRef = useRef(null)
 
-  const ResetForm = async (showAlert = false) => {
+  const ResetForm = (showAlert = false) => {
     Manager.ResetForm('swap-request-wrapper')
     setTimeout(() => {
       setState({...state, refreshKey: Manager.GetUid()})
@@ -70,14 +70,12 @@ export default function SwapRequests() {
     // Map Dropdown to Database
     updatedRequest.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
 
-    // Fill -> overwrite
-
     const cleanedRequest = ObjectManager.CleanObject(updatedRequest)
     const requestId = DB.GetTableIndexById(swapRequests, activeRequest?.id)
     await DB.ReplaceEntireRecord(`${DB.tables.swapRequests}/${currentUser?.key}/${requestId}`, cleanedRequest)
     setActiveRequest(updatedRequest)
     setShowDetails(false)
-    await ResetForm(true)
+    ResetForm(true)
   }
 
   const SelectDecision = async (decision) => {
@@ -112,13 +110,12 @@ export default function SwapRequests() {
 
   const DeleteRequest = async (action = 'deleted') => {
     if (action === 'deleted') {
-      AlertManager.confirmAlert('Are you sure you would like to Delete this request?', 'I\'m Sure', true, async () => {
+      AlertManager.confirmAlert('Are you sure you would like to Delete this request?', "I'm Sure", true, async () => {
         await DB.deleteById(`${DB.tables.swapRequests}/${activeRequest?.owner?.key}`, activeRequest?.id)
         setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: 'Swap Request Deleted'})
         setShowDetails(false)
       })
-    }
-    else {
+    } else {
       if (activeRequest?.owner?.key === currentUser?.key) {
         const recordIndex = DB.GetTableIndexById(swapRequests, activeRequest?.id)
         await DB.Delete(`${DB.tables.swapRequests}/${activeRequest?.owner?.key}/${recordIndex}`)
@@ -142,10 +139,6 @@ export default function SwapRequests() {
   }, [activeRequest])
 
   useEffect(() => {
-    setView('details')
-  }, [])
-
-  useEffect(() => {
     if (Manager.IsValid(currentUser)) {
       setTimeout(() => {
         DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInUp, 85)
@@ -161,10 +154,8 @@ export default function SwapRequests() {
       const currentMonthAndYear = moment().format('MM/YYYY')
       if (monthAndYear === currentMonthAndYear) {
         setRequestTimeRemaining('None - Due Today')
-      }
-      else {
+      } else {
         setRequestTimeRemaining(timeRemaining)
-
       }
     }
   }, [showDetails])
@@ -189,9 +180,15 @@ export default function SwapRequests() {
         }}
         extraButtons={[
           <>
-            {view?.label === 'Edit' &&
-              <Button text={'Update Request'} theme={ButtonThemes.green} classes={'card-button pl-20 pr-20'} data-request-id={activeRequest?.id} onClick={Update} />
-            }
+            {view?.label === 'Edit' && (
+              <Button
+                text={'Update Request'}
+                theme={ButtonThemes.green}
+                classes={'card-button pl-20 pr-20'}
+                data-request-id={activeRequest?.id}
+                onClick={Update}
+              />
+            )}
             {activeRequest?.owner?.key !== currentUser?.key && (
               <Button
                 text={'Decline Request'}
@@ -206,15 +203,14 @@ export default function SwapRequests() {
                       if (e.value.length === 0) {
                         AlertManager.throwError('Reason for declining is required')
                         return false
-                      }
-                      else {
+                      } else {
                         SelectDecision(Decisions.declined).then(ResetForm)
                         formRef.current?.declineReason(e.value)
                       }
                     },
                     true,
                     true,
-                    'textarea',
+                    'textarea'
                   )
                 }}
               />
@@ -337,7 +333,6 @@ export default function SwapRequests() {
               defaultValue={activeRequest?.reason}
               onDateOrTimeSelection={(day) => formRef.current.reason(day)}
             />
-
           </>
         )}
       </Form>
@@ -357,7 +352,6 @@ export default function SwapRequests() {
               swapRequests?.map((request, index) => {
                 return (
                   <div onClick={() => SetCurrentRequest(request)} key={index} className="row">
-
                     {/* CONTENT */}
                     <div id="content" className={`${request?.reason?.length > 20 ? 'long-text' : ''}`}>
                       {/* MULTIPLE */}
@@ -367,9 +361,7 @@ export default function SwapRequests() {
                             {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)} to{' '}
                             {moment(request?.endDate).format(DatetimeFormats.readableMonthAndDay)}
                           </p>
-                          <span className={`${request?.status} status`} id="request-status">
-                            {StringManager.UppercaseFirstLetterOfAllWords(request?.status)}
-                          </span>
+                          <span className={`${request?.status} request-status`}>{StringManager.UppercaseFirstLetterOfAllWords(request?.status)}</span>
                         </div>
                       )}
                       {/* SINGLE */}
@@ -377,7 +369,7 @@ export default function SwapRequests() {
                         <>
                           <p id="title" className="row-title">
                             {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)}
-                            <span className={`${request?.status} status`} id="request-status">
+                            <span className={`${request?.status} request-status`}>
                               {StringManager.UppercaseFirstLetterOfAllWords(request?.status)}
                             </span>
                           </p>
@@ -392,9 +384,7 @@ export default function SwapRequests() {
                           <p id="title" className="row-title">
                             {moment(request?.startDate).format(DatetimeFormats.readableMonthAndDay)}
                           </p>
-                          <span className={`${request?.status} status`} id="request-status">
-                              {StringManager.UppercaseFirstLetterOfAllWords(request?.status)}
-                            </span>
+                          <span className={`${request?.status} request-status`}>{StringManager.UppercaseFirstLetterOfAllWords(request?.status)}</span>
                         </>
                       )}
                       {request?.duration === SwapDurations.intra && (

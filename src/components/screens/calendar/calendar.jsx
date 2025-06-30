@@ -63,6 +63,8 @@ export default function EventCalendar() {
       (x) => moment(x.startDate).format(DatetimeFormats.dateForDb) === moment(dateToUse).format(DatetimeFormats.dateForDb)
     )
     const allDayEvents = DatasetManager.CombineArrays(eventsWithoutTime, holidaysToLoop)
+    const visitationEvents = allDayEvents.filter((x) => x?.fromVisitationSchedule === true)
+    const extendedAllDayEvents = DatasetManager.CombineArrays(visitationEvents, allDayEvents)
     const eventsWithTimeFirst = DatasetManager.CombineArrays(eventsWithTime, allDayEvents)
     const sortedEvents = DatasetManager.SortByTime(eventsWithTimeFirst, 'asc')
 
@@ -73,7 +75,7 @@ export default function EventCalendar() {
     setEventsOfActiveDay(DatasetManager.GetValidArray(_eventsOfDay))
 
     // ADD DAY INDICATORS
-    const combined = DatasetManager.CombineArrays(sortedEvents, holidaysToLoop)
+    const combined = DatasetManager.GetValidArray(DatasetManager.CombineArrays(sortedEvents, holidaysToLoop), true)
     await AddDayIndicators(combined)
   }
 

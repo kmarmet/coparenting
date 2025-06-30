@@ -35,7 +35,11 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
         event?.title?.toLowerCase()?.includes('pay') ||
         event?.title?.toLowerCase()?.includes('paid') ||
         event?.title?.toLowerCase()?.includes('salary') ||
-        event?.title?.toLowerCase()?.includes('expense')
+        event?.title?.toLowerCase()?.includes('expense') ||
+        event?.title?.toLowerCase()?.includes('refund') ||
+        event?.title?.toLowerCase()?.includes('payment ') ||
+        event?.title?.toLowerCase()?.includes('purchase') ||
+        event?.title?.toLowerCase()?.includes('budget')
       ) {
         dotObjects.push({
           className: 'financial-dot',
@@ -71,7 +75,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
     }
     setTimeout(() => {
       setState({...state, dateToEdit: clickedEvent.startDate})
-    }, 300)
+    }, 900)
     setEventToEdit(clickedEvent)
   }
 
@@ -115,50 +119,42 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
                 data-from-date={startDate}
                 className={`row ${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className}
                 `}>
-                <div className="text flex space-between">
+                <div className="text flex">
                   {/* EVENT NAME */}
-                  <div className="flex space-between" id="title-wrapper">
-                    <p className="title flex" id="title" data-event-id={event?.id}>
-                      <span className={`${dotObject.className} event-type-dot`}></span>
-                      {isBirthdayEvent && `${StringManager.FormatTitle(event?.title)} 🎂`}
-                      {!isBirthdayEvent && StringManager.FormatTitle(event?.title)}
-                    </p>
-                  </div>
+                  <p className="flex row-title" data-event-id={event?.id}>
+                    <span className={`${dotObject.className} event-type-dot`}></span>
+                    {isBirthdayEvent && `${StringManager.FormatTitle(event?.title)} 🎂`}
+                    {!isBirthdayEvent && StringManager.FormatTitle(event?.title)}
+                  </p>
 
                   {/* DATE WRAPPER */}
-                  <div id="subtitle" className="flex space-between calendar">
+                  <div className="date-wrapper">
                     <div id="date-container">
                       {/* FROM DATE */}
                       {Manager.IsValid(startDate, true) && (
-                        <span className="start-date" id="subtitle">
-                          {moment(startDate).format(DatetimeFormats.readableMonthAndDay)}
-                        </span>
+                        <span className="start-date row-subtitle">{moment(startDate).format(DatetimeFormats.readableMonthAndDay)}</span>
                       )}
 
                       {/* TO WORD */}
                       {Manager.IsValid(event?.endDate, true) && event?.endDate !== startDate && (
-                        <span className="end-date" id="subtitle">
-                          &nbsp;to&nbsp;
-                        </span>
+                        <span className="end-date row-subtitle">&nbsp;to&nbsp;</span>
                       )}
 
                       {/* TO DATE */}
                       {Manager.IsValid(event?.endDate, true) && event?.endDate !== startDate && (
-                        <span id="subtitle">{moment(event?.endDate).format(DatetimeFormats.readableMonthAndDay)}</span>
+                        <span className="row-subtitle">{moment(event?.endDate).format(DatetimeFormats.readableMonthAndDay)}</span>
                       )}
 
                       {/* START/END TIMES */}
                       {Manager.IsValid(event?.endTime) && (
-                        <span id="subtitle" className="from-time">
+                        <span className="row-subtitle from-time">
                           &nbsp;({event?.startTime} to {event?.endTime})
                         </span>
                       )}
 
                       {/* START TIME ONLY */}
                       {Manager.IsValid(event?.startTime) && !Manager.IsValid(event?.endTime) && (
-                        <span id="subtitle" className="from-time">
-                          &nbsp;({event?.startTime})
-                        </span>
+                        <span className="row-subtitle from-time">&nbsp;({event?.startTime})</span>
                       )}
                     </div>
                   </div>
@@ -166,12 +162,12 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
                 {/* ICONS */}
                 {HasRowIcons(event) && (
                   <div id="icon-row">
-                    {Manager.IsValid(event?.reminderTimes) && <BiSolidBellRing />}
-                    {Manager.IsValid(event?.notes) && <FaNoteSticky />}
+                    {Manager.IsValid(event?.reminderTimes) && <BiSolidBellRing className={'reminders-icon'} />}
+                    {Manager.IsValid(event?.notes) && <FaNoteSticky className="notes-icon" />}
                     {Manager.IsValid(event?.websiteUrl) && <PiLinkBold className="website-icon" />}
-                    {Manager.IsValid(event?.phone) && <MdLocalPhone />}
+                    {Manager.IsValid(event?.phone) && <MdLocalPhone className="phone-icon" />}
                     {Manager.IsValid(event?.address) && <MdAssistantNavigation className="address-icon" />}
-                    {Manager.IsValid(event?.children) && <FaChildren />}
+                    {Manager.IsValid(event?.children) && <FaChildren className="children-icon" />}
                     {event?.isRecurring && <MdEventRepeat />}
                   </div>
                 )}

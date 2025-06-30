@@ -1,84 +1,16 @@
 @import '../mixins';
 
 #transfer-requests-container {
-  #all-transfer-requests-container {
-    #row {
-      .request {
-        #title {
-          &.row-title {
-            font-weight: $fwRegular;
-            color: black;
-            opacity: 1;
-          }
-        }
-      }
-    }
-    .request {
-      &.active {
-        margin-top: 0;
-        transition: all 0.3s ease-in;
-        opacity: 1;
-      }
+  .row {
+    @include row;
+    .content {
+      width: 100%;
 
-      #request-buttons {
-        display: flex;
-        width: 100%;
-        justify-content: center;
-        gap: 30px;
-        margin-top: 20px;
-
-        button {
-          background: transparent;
-          text-transform: uppercase;
-          font-weight: $fwMedium;
-          color: $lightDarkGrey;
-          font-size: 14px;
-          line-height: 1;
-          margin: 0;
-          padding: 0;
-
-          &.red {
-            color: $red;
-          }
-          &.blue {
-            color: $main;
-          }
-          &.green {
-            color: $green;
-            display: flex;
-            align-items: center;
-
-            svg {
-              font-size: 18px;
-              margin-left: 5px;
-              position: relative;
-              top: -2px;
-            }
-          }
-        }
-      }
       .details {
         position: relative;
         align-items: center;
         overflow: hidden;
         padding: 10px 0;
-
-        .button-group {
-          display: flex;
-
-          button {
-            &.submit {
-              margin-right: 10px;
-              min-width: 0;
-              width: 50%;
-            }
-
-            &.close {
-              min-width: 0;
-              width: 50%;
-            }
-          }
-        }
 
         .reason {
           font-weight: 300;
@@ -98,35 +30,6 @@
           display: flex;
           justify-content: space-between;
           flex-wrap: wrap;
-        }
-      }
-    }
-  }
-
-  #request-form {
-    margin-top: 50px;
-
-    .rs-picker {
-      margin: 0;
-    }
-
-    .form {
-      @include form;
-
-      button {
-        padding: 8px 10px;
-        margin: 20px auto 0 auto;
-        display: block;
-        width: 50%;
-
-        &.rs-picker-clean {
-          display: none;
-        }
-
-        span {
-          position: relative;
-          top: 3px;
-          margin-left: 5px;
         }
       }
     }

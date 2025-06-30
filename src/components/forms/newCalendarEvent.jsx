@@ -169,7 +169,7 @@ export default function NewCalendarEvent() {
             cleaned,
             'cloned',
             moment(clonedDates[0]).format(DatetimeFormats.dateForDb),
-            moment(clonedDates[clonedDates.length - 1]).format(DatetimeFormats.dateForDb),
+            moment(clonedDates[clonedDates.length - 1]).format(DatetimeFormats.dateForDb)
           )
           await CalendarManager.addMultipleCalEvents(currentUser, dates)
         }
@@ -192,7 +192,7 @@ export default function NewCalendarEvent() {
             currentUser,
             `New Event 📅`,
             `${cleaned.title} on ${moment(cleaned.startDate).format(DatetimeFormats.readableMonthAndDay)}`,
-            ActivityCategory.calendar,
+            ActivityCategory.calendar
           )
         }
         //#endregion SINGLE DATE
@@ -218,7 +218,7 @@ export default function NewCalendarEvent() {
     ])
   }
 
-  const SetDefaultDropdownOptions = async () => {
+  const SetDefaultDropdownOptions = () => {
     setSelectedChildrenOptions(DropdownManager.GetSelected.Children([], children))
     setSelectedReminderOptions(DropdownManager.GetSelected.Reminders([]))
     setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
@@ -228,7 +228,7 @@ export default function NewCalendarEvent() {
 
   useEffect(() => {
     if (Manager.IsValid(children) && Manager.IsValid(users)) {
-      SetDefaultDropdownOptions().then((r) => r)
+      SetDefaultDropdownOptions()
     }
   }, [children, coParents])
 
@@ -457,6 +457,7 @@ export default function NewCalendarEvent() {
             inputType={InputTypes.url}
             onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
           />
+
           {/* ADDRESS */}
           <AddressInput
             wrapperClasses={Manager.IsValid(formRef.current.address, true) ? 'show-label' : ''}

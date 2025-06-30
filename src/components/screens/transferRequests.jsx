@@ -2,15 +2,11 @@
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {setKey} from 'react-geocode'
-import {PiCarProfileDuotone} from 'react-icons/pi'
-import NoDataFallbackText from '../.../..//shared/noDataFallbackText'
-import Form from '../.../../shared/form'
-import Map from '../.../../shared/map.jsx'
+import {MdPersonPinCircle} from 'react-icons/md'
 import ActivityCategory from '../../constants/activityCategory'
 import ButtonThemes from '../../constants/buttonThemes'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
-import ModelNames from '../../constants/modelNames'
 import globalState from '../../context.js'
 import DB from '../../database/DB'
 import useCoParents from '../../hooks/useCoParents'
@@ -22,11 +18,16 @@ import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager.js'
+import TransferChangeRequest from '../../models/new/transferChangeRequest'
 import NavBar from '../navBar'
 import AddressInput from '../shared/addressInput'
 import CardButton from '../shared/cardButton'
 import DetailBlock from '../shared/detailBlock'
+import Form from '../shared/form'
+import InputField from '../shared/inputField'
 import Label from '../shared/label.jsx'
+import Map from '../shared/map.jsx'
+import NoDataFallbackText from '../shared/noDataFallbackText'
 import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer.jsx'
 import ToggleButton from '../shared/toggleButton'
@@ -41,53 +42,41 @@ const Decisions = {
 export default function TransferRequests() {
   const {state, setState} = useContext(globalState)
   const {theme} = state
-  // const [existingRequests, setExistingRequests] = useState([])
   const [declineReason, setDeclineReason] = useState('')
   const [showNewRequestCard, setShowNewRequestCard] = useState(false)
   const [activeRequest, setActiveRequest] = useState(null)
   const [showDetails, setShowDetails] = useState(false)
-  const [view, setView] = useState('details')
-  const [requestTime, setRequestTime] = useState('')
-  const [requestLocation, setRequestLocation] = useState('')
-  const [requestDate, setRequestDate] = useState('')
-  const [requestedResponseDate, setResponseDueDate] = useState('')
+  const [view, setView] = useState({label: 'Details', value: 'Details'})
   const [sendWithAddress, setSendWithAddress] = useState(false)
-  const [requestReason, setRequestReason] = useState('')
   const [requestTimeRemaining, setRequestTimeRemaining] = useState(false)
+
+  // Hooks
   const {transferRequests} = useTransferRequests()
   const {currentUser} = useCurrentUser()
   const {coParents} = useCoParents()
 
-  const ResetForm = async (successMessage = '') => {
+  // Refs
+  const formRef = React.useRef({...activeRequest, ...new TransferChangeRequest()})
+
+  const ResetForm = (successMessage = '') => {
     Manager.ResetForm('edit-event-form')
-    setRequestTime('')
-    setRequestLocation('')
-    setRequestDate('')
-    setResponseDueDate('')
     setShowDetails(false)
-    setView('details')
+    setView({label: 'Details', value: 'Details'})
     setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
   }
 
   const Update = async () => {
-    // Fill -> overwrite
-    let updatedRequest = {...activeRequest}
-    updatedRequest.time = requestTime
-    updatedRequest.address = requestLocation
-    updatedRequest.directionsLink = Manager.GetDirectionsLink(requestLocation)
-    updatedRequest.date = requestDate
-    updatedRequest.declineReason = declineReason
-    updatedRequest.requestedResponseDate = requestedResponseDate
-    updatedRequest.requestReason = requestReason
-
-    if (Manager.IsValid(requestedResponseDate)) {
-      updatedRequest.requestedResponseDate = moment(requestedResponseDate).format(DatetimeFormats.dateForDb)
+    let updatedRequest = ObjectManager.merge(activeRequest, formRef.current, 'deep')
+    console.log('udpatedRequest', updatedRequest)
+    const cleaned = ObjectManager.CleanObject(updatedRequest)
+    if (cleaned?.owner?.key === currentUser?.key) {
+      const index = DB.GetTableIndexById(transferRequests, cleaned?.id)
+      if (parseInt(index) === -1) return false
+      await DB.ReplaceEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser?.key}/${index}`, cleaned)
     }
-    const cleanedRequest = ObjectManager.GetModelValidatedObject(updatedRequest, ModelNames.transferChangeRequest)
-    await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, cleanedRequest, activeRequest.id)
     setActiveRequest(updatedRequest)
     setShowDetails(false)
-    await ResetForm('Transfer Request Updated')
+    ResetForm('Transfer Request Updated')
   }
 
   const DeleteRequest = async (action = 'deleted') => {
@@ -107,19 +96,19 @@ export default function TransferRequests() {
     if (decision === Decisions.declined) {
       activeRequest.status = 'declined'
       activeRequest.declineReason = declineReason
-      await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.ownerKey}`, activeRequest, activeRequest.id)
+      await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.owner?.key}`, activeRequest, activeRequest.id)
       const message = UpdateManager.templates.transferRequestRejection(activeRequest, recipientName)
-      await UpdateManager.SendUpdate('Transfer Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.transferRequest)
+      await UpdateManager.SendUpdate('Transfer Request Decision', message, activeRequest?.owner?.key, currentUser, ActivityCategory.transferRequest)
       setShowDetails(false)
     }
 
     // Approved
     if (decision === Decisions.approved) {
       activeRequest.status = 'approved'
-      await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.ownerKey}`, activeRequest, activeRequest.id)
+      await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.owner?.key}`, activeRequest, activeRequest.id)
       const message = UpdateManager.templates.transferRequestApproval(activeRequest, recipientName)
       setShowDetails(false)
-      await UpdateManager.SendUpdate('Transfer Request Decision', message, activeRequest?.ownerKey, currentUser, ActivityCategory.transferRequest)
+      await UpdateManager.SendUpdate('Transfer Request Decision', message, activeRequest?.owner?.key, currentUser, ActivityCategory.transferRequest)
     }
 
     setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: `Decision Sent to ${recipientName}`})
@@ -133,9 +122,14 @@ export default function TransferRequests() {
     if (!sendWithAddress) {
       notificationMessage = `${StringManager.GetFirstWord(StringManager.UppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
     }
-    const recipient = coParents?.find((x) => x.key === activeRequest?.recipient?.key)
 
-    await UpdateManager.SendUpdate('Transfer Destination Arrival', notificationMessage, recipient?.key, currentUser, ActivityCategory.expenses)
+    await UpdateManager.SendUpdate(
+      'Transfer Destination Arrival',
+      notificationMessage,
+      formRef.current?.recipient?.key,
+      currentUser,
+      ActivityCategory.expenses
+    )
     setState({...state, successAlertMessage: 'Arrival Notification Sent'})
   }
 
@@ -153,13 +147,11 @@ export default function TransferRequests() {
 
   useEffect(() => {
     GetCurrentUserAddress().then((r) => r)
-    // eslint-disable-next-line no-undef
     setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY)
   }, [])
 
   useEffect(() => {
     if (showDetails) {
-      DomManager.setDefaultView()
       setRequestTimeRemaining(moment(moment(activeRequest?.requestedResponseDate).startOf('day')).fromNow().toString())
     }
   }, [showDetails])
@@ -180,44 +172,49 @@ export default function TransferRequests() {
         submitText={'Approve'}
         onDelete={() => DeleteRequest('deleted')}
         title={'Request Details'}
-        hasDelete={activeRequest?.ownerKey === currentUser?.key && view === 'edit'}
-        hasSubmitButton={activeRequest?.ownerKey !== currentUser?.key}
+        hasDelete={activeRequest?.owner?.key === currentUser?.key && view?.label === 'Edit'}
+        hasSubmitButton={activeRequest?.owner?.key !== currentUser?.key}
         onSubmit={() => SelectDecision(Decisions.approved)}
-        wrapperClass="transfer-change at-top"
-        viewDropdown={<ViewDropdown dropdownPlaceholder="Details" views={['Details', 'Edit']} onSelect={(e) => setView(e)} />}
+        wrapperClass="transfer-change"
+        viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={(e) => setView(e)} />}
         thirdButtonText="Decline"
         className="transfer-change"
         extraButtons={[
-          <CardButton buttonTheme={ButtonThemes.green} key={Manager.GetUid()} onClick={Update} text={'Update'} />,
-          <CardButton
-            onClick={() => {
-              AlertManager.inputAlert(
-                'Reason for Declining Request',
-                'Please enter the reason for declining this request',
-                (e) => {
-                  if (e.value.length === 0) {
-                    AlertManager.throwError('Reason for declining is required')
-                    return false
-                  } else {
-                    SelectDecision(Decisions.declined).then(ResetForm)
-                    setDeclineReason(e.value)
-                  }
-                },
-                true,
-                true,
-                'textarea'
-              )
-            }}
-            text="Decline"
-            buttonTheme={ButtonThemes.red}
-            key={Manager.GetUid()}
-          />,
+          <>
+            {activeRequest?.owner?.key !== currentUser?.key && view?.label === 'Edit' && (
+              <CardButton
+                onClick={() => {
+                  AlertManager.inputAlert(
+                    'Reason for Declining Request',
+                    'Please enter the reason for declining this request',
+                    (e) => {
+                      if (e.value.length === 0) {
+                        AlertManager.throwError('Reason for declining is required')
+                        return false
+                      } else {
+                        SelectDecision(Decisions.declined).then(ResetForm)
+                        setDeclineReason(e.value)
+                      }
+                    },
+                    true,
+                    true,
+                    'textarea'
+                  )
+                }}
+                text="Decline"
+                buttonTheme={ButtonThemes.red}
+                key={Manager.GetUid()}
+              />
+            )}
+            ,
+            <CardButton buttonTheme={ButtonThemes.green} key={Manager.GetUid()} onClick={Update} text={'Update'} />
+          </>,
         ]}
         hasThirdButton={true}
         onClose={() => ResetForm()}
         showCard={showDetails}>
-        <div className={` details content ${activeRequest?.requestReason?.length > 20 ? 'long-text' : ''}`}>
-          {view?.label?.ToLowerCase() === 'details' && (
+        <div className={`details content ${activeRequest?.requestReason?.length > 20 ? 'long-text' : ''}`}>
+          {view?.label === 'Details' && (
             <>
               {/* BLOCKS */}
               <div className="blocks">
@@ -258,7 +255,7 @@ export default function TransferRequests() {
                 />
 
                 {/* FROM/TO */}
-                <DetailBlock title={'From'} valueToValidate={'From'} text={GetFromOrToName(activeRequest?.ownerKey)} />
+                <DetailBlock title={'From'} valueToValidate={'From'} text={GetFromOrToName(activeRequest?.owner?.key)} />
                 <DetailBlock title={'To'} valueToValidate={'To'} text={GetFromOrToName(activeRequest?.recipient?.key)} />
 
                 {/* REASON */}
@@ -268,8 +265,10 @@ export default function TransferRequests() {
                   isFullWidth={true}
                   title={'Reason for Request'}
                 />
+              </div>
 
-                {/*  Location */}
+              <div className="multiline-blocks">
+                {/* Location */}
                 <DetailBlock
                   isNavLink={true}
                   title={'Go'}
@@ -279,28 +278,34 @@ export default function TransferRequests() {
                 />
 
                 {/*  CHECK IN */}
-                <DetailBlock title={'Check In'} valueToValidate={'Check In'} isCustom={true}>
-                  <div className="card-icon-button" onClick={CheckIn}>
-                    {/*<MdPersonPinCircle />*/}
-                    <span className="location-pin-animation"></span>
-                  </div>
-                  <Spacer height={2} />
-                </DetailBlock>
-                <Spacer height={2} />
+                {activeRequest?.address && (
+                  <DetailBlock title={'Check In'} valueToValidate={'Check In'} isCustom={true}>
+                    <div className="card-icon-button" onClick={CheckIn}>
+                      <MdPersonPinCircle />
+                      <span className="location-pin-animation"></span>
+                    </div>
+                    <Spacer height={2} />
+                  </DetailBlock>
+                )}
               </div>
+              <Spacer height={2} />
 
               {/*  SEND WITH ADDRESS */}
-              <div className="flex send-with-address-toggle">
-                <Label text={'Include Address in Notification'} classes="toggle " />
-                <ToggleButton onCheck={() => setSendWithAddress(!sendWithAddress)} toggleState={sendWithAddress} />
-              </div>
-
-              {/* MAP */}
-              <Map locationString={activeRequest?.address} />
+              {Manager.IsValid(activeRequest?.address) && (
+                <>
+                  <div className="flex send-with-address-toggle">
+                    <Label text={'Include Address in Notification'} classes="toggle " />
+                    <ToggleButton onCheck={() => setSendWithAddress(!sendWithAddress)} toggleState={sendWithAddress} />
+                  </div>
+                  <Spacer height={3} />
+                  {/* MAP */}
+                  {Manager.IsValid(activeRequest?.address, true) && <Map locationString={activeRequest?.address} />}
+                </>
+              )}
             </>
           )}
 
-          {view?.label?.ToLowerCase() === 'edit' && (
+          {view?.label === 'Edit' && (
             <>
               {/* DATE */}
               <InputField
@@ -308,7 +313,7 @@ export default function TransferRequests() {
                 inputType={InputTypes.date}
                 labelText={'Date'}
                 uidClass="transfer-request-date"
-                onDateOrTimeSelection={(e) => setRequestDate(moment(e).format(DatetimeFormats.dateForDb))}
+                onDateOrTimeSelection={(e) => (formRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb))}
               />
 
               {/* TIME */}
@@ -317,26 +322,30 @@ export default function TransferRequests() {
                 inputType={InputTypes.time}
                 uidClass="transfer-request-time"
                 labelText={'Transfer Time'}
-                onDateOrTimeSelection={(e) => setRequestTime(moment(e).format(DatetimeFormats.timeForDb))}
+                onDateOrTimeSelection={(e) => (formRef.current.time = moment(e).format(DatetimeFormats.timeForDb))}
               />
 
               {/*  NEW LOCATION*/}
-              <AddressInput placeholder={'Address'} defaultValue={activeRequest?.address} onChange={(address) => setRequestLocation(address)} />
+              <AddressInput
+                placeholder={'Address'}
+                defaultValue={activeRequest?.address}
+                onChange={(address) => (formRef.current.address = address)}
+              />
 
               {/* RESPONSE DUE DATE */}
               <InputField
                 defaultValue={activeRequest?.requestedResponseDate}
-                onDateOrTimeSelection={(e) => setResponseDueDate(moment(e).format(DatetimeFormats.dateForDb))}
+                onDateOrTimeSelection={(e) => (formRef.current.requestedResponseDate = moment(e).format(DatetimeFormats.dateForDb))}
                 inputType={InputTypes.date}
                 uidClass="transfer-request-response-date"
                 labelText={'Requested Response Date'}
               />
 
               {/* REASON */}
-              {activeRequest?.ownerKey !== currentUser?.key && (
+              {activeRequest?.owner?.key !== currentUser?.key && (
                 <InputField
                   defaultValue={activeRequest?.requestReason}
-                  onChange={(e) => setRequestReason(e)}
+                  onChange={(e) => (formRef.current.reason = e)}
                   inputType={InputTypes.textarea}
                   placeholder={'Reason for Request'}
                 />
@@ -353,11 +362,12 @@ export default function TransferRequests() {
           title={'Transfer Change Requests'}
           screenDescription="A proposal to modify the time and/or location for the child exchange on a designated day"
         />
+
         <Spacer height={10} />
         <div className="screen-content">
           {/* LOOP REQUESTS */}
           {!showNewRequestCard && (
-            <div id="all-transfer-requests-container">
+            <div>
               {Manager.IsValid(transferRequests) &&
                 transferRequests?.map((request, index) => {
                   return (
@@ -365,25 +375,21 @@ export default function TransferRequests() {
                       key={index}
                       className="flex row"
                       onClick={() => {
+                        console.log(request)
                         setActiveRequest(request)
                         setShowDetails(true)
                       }}>
-                      <div id="primary-icon-wrapper">
-                        <PiCarProfileDuotone id={'primary-row-icon'} />
-                      </div>
-                      <div data-request-id={request.id} className="request " id="content">
+                      <div data-request-id={request.id} className="content">
                         {/* DATE */}
-                        <p id="title" className="flex date row-title">
+                        <p className="row-title">
                           {moment(request.startDate).format(DatetimeFormats.readableMonthAndDay)}
-                          <span className={`${request.status} status`} id="request-status">
-                            {StringManager.UppercaseFirstLetterOfAllWords(request.status)}
-                          </span>
+                          <span className={`${request.status} request-status`}>{StringManager.UppercaseFirstLetterOfAllWords(request.status)}</span>
                         </p>
                         {request?.recipient?.key === currentUser?.key && (
-                          <p id="subtitle">from {coparents.find((x) => x.key === request.ownerKey)?.name}</p>
+                          <p className="row-subtitle">from {coParents.find((x) => x.key === request.owner?.key)?.name}</p>
                         )}
                         {request?.recipient?.key !== currentUser?.key && (
-                          <p id="subtitle">
+                          <p className="row-subtitle">
                             to&nbsp;
                             {StringManager.GetFirstNameOnly(coParents?.find((x) => x?.userKey === request?.recipient?.key)?.name)}
                           </p>

@@ -1,105 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
 
-    <!-- Google tag for Google Analytics (gtag.js) -->
+  <!-- Google tag for Google Analytics (gtag.js) -->
 
-    <!---->
+  <!---->
 
-    <!--    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CS1JMXY1DN"></script>-->
+  <!--    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CS1JMXY1DN"></script>-->
 
-    <!--    <script>-->
+  <!--    <script>-->
 
-    <!--      try {-->
+  <!--      try {-->
 
-    <!--        window.dataLayer = window.dataLayer || []-->
+  <!--        window.dataLayer = window.dataLayer || []-->
 
-    <!--        function gtag() {-->
+  <!--        function gtag() {-->
 
-    <!--          dataLayer.push(arguments)-->
+  <!--          dataLayer.push(arguments)-->
 
-    <!--        }-->
+  <!--        }-->
 
-    <!--        gtag('js', new Date())-->
+  <!--        gtag('js', new Date())-->
 
-    <!--        gtag('config', 'G-CS1JMXY1DN')-->
+  <!--        gtag('config', 'G-CS1JMXY1DN')-->
 
-    <!--      } catch (error) {-->
+  <!--      } catch (error) {-->
 
-    <!--        console.log(`Error: ${error} | File: Index.html `)-->
+  <!--        console.log(`Error: ${error} | File: Index.html `)-->
 
-    <!--      }-->
+  <!--      }-->
 
-    <!--    </script> -->
+  <!--    </script> -->
 
-    <!-- META TAGS -->
-    <meta charset="utf-8">
-    <meta name="description" content="Cultivate a harmonious co-parenting environment with our curated tools and resources.">
-    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1 viewport-fit=cover">
-    <meta name="theme-color" content="#eef0f4">
-    <title>Peaceful coParenting</title>
+  <!-- META TAGS -->
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Cultivate a harmonious co-parenting environment with our curated tools and resources.">
+  <meta name="viewport"
+        content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1 viewport-fit=cover">
+  <meta name="theme-color" content="#eef0f4">
+  <title>Peaceful coParenting</title>
 
-    <!-- MANIFEST -->
-    <link rel="manifest" href="./manifest.json">
+  <!-- MANIFEST -->
+  <link rel="manifest" href="./manifest.json">
 
-    <!-- FAVICON -->
-    <link rel="icon" href="./favicon.ico">
-    <meta name="msapplication-TileColor" content="#eef0f4">
+  <!-- FAVICON -->
+  <link rel="icon" href="./favicon.ico">
+  <meta name="msapplication-TileColor" content="#eef0f4">
 
-    <!-- APPLE DEFAULTS -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-touch-fullscreen" content="yes">
-    <meta name="apple-mobile-web-app-title" content="Peaceful coParenting">
-    <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <!-- APPLE DEFAULTS -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Peaceful coParenting">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 
-    <!-- FONTS -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&amp;display=swap" rel="stylesheet">
+  <!-- FONTS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&amp;display=swap"
+        rel="stylesheet">
 
-    <!-- CLOUD_FARE reCAPTCHA -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" defer=""></script>
+  <!-- CLOUD_FARE reCAPTCHA -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" defer=""></script>
 
-    <!-- Animate.css --->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css">
+  <!-- Animate.css --->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css">
 
-    <!-- FIREBASE -->
-    <script defer="" src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
-    <script defer="" src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js"></script>
+  <!-- FIREBASE -->
+  <script defer="" src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
+  <script defer="" src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js"></script>
 
-    <!-- CLIPBOARD JS -->
-    <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
+  <!-- CLIPBOARD JS -->
+  <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
 
-    <!-- STYLES BUNDLE -->
-    <link rel="stylesheet" href="../src/styles/bundle.scss">
+  <!-- STYLES BUNDLE -->
+  <link rel="stylesheet" href="../src/styles/bundle.scss">
 
-    <!--#region SPLASH SCREENS -->
-    <link rel="apple-touch-startup-image" href="./apple-splash-2048-2732.jpg" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1668-2388.jpg" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1536-2048.jpg" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1640-2360.jpg" media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1668-2224.jpg" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1620-2160.jpg" media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1488-2266.jpg" media="(device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1320-2868.jpg" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1206-2622.jpg" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1290-2796.jpg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1179-2556.jpg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1170-2532.jpg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1284-2778.jpg" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1125-2436.jpg" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1242-2688.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-828-1792.jpg" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-1242-2208.jpg" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-750-1334.jpg" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="./apple-splash-640-1136.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <!--#endregion SPLASH SCREENS -->
-  </head>
-  <body id="external-overrides">
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <script type="module" src="../src/index.js"></script>
-  </body>
+  <!--#region SPLASH SCREENS -->
+  <link rel="apple-touch-startup-image" href="./apple-splash-2048-2732.jpg"
+        media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1668-2388.jpg"
+        media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1536-2048.jpg"
+        media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1640-2360.jpg"
+        media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1668-2224.jpg"
+        media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1620-2160.jpg"
+        media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1488-2266.jpg"
+        media="(device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1320-2868.jpg"
+        media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1206-2622.jpg"
+        media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1290-2796.jpg"
+        media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1179-2556.jpg"
+        media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1170-2532.jpg"
+        media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1284-2778.jpg"
+        media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1125-2436.jpg"
+        media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1242-2688.jpg"
+        media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-828-1792.jpg"
+        media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-1242-2208.jpg"
+        media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-750-1334.jpg"
+        media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="./apple-splash-640-1136.jpg"
+        media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <!--#endregion SPLASH SCREENS -->
+</head>
+<body id="external-overrides">
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="root"></div>
+<script type="module" src="../src/index.js"></script>
+</body>
 </html>

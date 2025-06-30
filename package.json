@@ -9,6 +9,7 @@
     "@emailjs/browser": "4.3.3",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "11.13.0",
+    "@googlemaps/js-api-loader": "^1.16.10",
     "@logto/react": "^3.0.16",
     "@mui/material": "6.1.0",
     "@mui/x-date-pickers": "^7.16.0",

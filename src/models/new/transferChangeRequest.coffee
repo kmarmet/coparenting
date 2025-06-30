@@ -10,19 +10,25 @@ class TransferChangeRequest
     @startDate = options?.startDate ? ''
     @endDate =  options?.endDate ? ''
     @time =  options?.time ? ''
-    @ownerKey = options?.ownerKey ? ''
     @address = options?.address ? ''
     @directionsLink = Manager.GetDirectionsLink(options?.address) ? ''
     @shareWith = options?.shareWith ? []
     @requestReason =  options?.requestReason ? ''
     @declineReason =  options?.declineReason ? ''
-    @recipientKey =  options?.recipientKey ? ''
+    @requestedResponseDate = options?.requestedResponseDate ? ''
+    @preferredTransferAddress = options?.preferredTransferAddress ? ''
+
+    # RECIPIENT
     @recipient = {
         name: options?.recipient?.name '',
         key: options?.recipient?.key ''
     }
-    @requestedResponseDate = options?.requestedResponseDate ? ''
-    @preferredTransferAddress = options?.preferredTransferAddress ? ''
+
+    # OWNER
+    @owner = {
+        name: options?.owner?.name '',
+        key: options?.owner?.key ''
+    }
 
 
 export default TransferChangeRequest

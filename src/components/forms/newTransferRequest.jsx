@@ -1,6 +1,6 @@
 // Path: src\components\forms\newTransferRequest.jsx
 import moment from 'moment'
-import React, {useContext, useRef, useState} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import ActivityCategory from '../../constants/activityCategory'
 import creationForms from '../../constants/creationForms'
 import DatetimeFormats from '../../constants/datetimeFormats'
@@ -8,32 +8,45 @@ import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
 import DB from '../../database/DB'
 import DB_UserScoped from '../../database/db_userScoped'
+import useChildren from '../../hooks/useChildren'
 import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useTransferRequests from '../../hooks/useTransferRequests'
+import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
-import DomManager from '../../managers/domManager'
+import DropdownManager from '../../managers/dropdownManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager.js'
 import TransferChangeRequest from '../../models/new/transferChangeRequest.js'
 import AddressInput from '../shared/addressInput'
-import CheckboxGroup from '../shared/checkboxGroup'
 import Form from '../shared/form'
 import InputField from '../shared/inputField'
 import Label from '../shared/label'
-import ShareWithDropdown from '../shared/shareWithDropdown'
+import SelectDropdown from '../shared/selectDropdown'
 import Spacer from '../shared/spacer'
 import ToggleButton from '../shared/toggleButton'
 
 export default function NewTransferChangeRequest() {
   const {state, setState} = useContext(globalState)
   const {theme, creationFormToShow} = state
+
+  // State
   const [requestRecipientKey, setRequestRecipientKey] = useState('')
+
+  // Hooks
   const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {coParents, coParentsAreLoading} = useCoParents()
   const {transferRequests, transferRequestsIsLoading} = useTransferRequests()
-  const formRef = useRef(new TransferChangeRequest())
+  const {children, childrenAreLoading} = useChildren()
+  const {users, usersAreLoading} = useUsers()
+
+  // Dropdown State
+  const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
+  const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
+
+  // Form ref
+  const formRef = useRef({...new TransferChangeRequest()})
 
   const ResetForm = async (showSuccessAlert = false) => {
     Manager.ResetForm('transfer-request-wrapper')
@@ -58,7 +71,7 @@ export default function NewTransferChangeRequest() {
       )
       return false
     }
-    if (!Manager.IsValid(requestRecipientKey)) {
+    if (!Manager.IsValid(formRef.current.recipient)) {
       AlertManager.throwError('Please choose who to Send the request to')
       return false
     }
@@ -78,20 +91,17 @@ export default function NewTransferChangeRequest() {
     }
 
     //#endregion VALIDATION
-    const recipient = coParents.find((x) => x.key === requestRecipientKey)
 
-    if (Manager.IsValid(recipient)) {
-      formRef.current.recipient.key = recipient?.key
-      formRef.current.recipient.name = recipient?.name
-    }
-
-    formRef.current.ownerKey = currentUser?.key
     formRef.current.directionsLink = Manager.GetDirectionsLink(formRef.current.address)
+    formRef.current.owner = {
+      key: currentUser?.key,
+      name: currentUser?.name,
+    }
 
     // Update address
     if (Manager.IsValid(formRef.current.address, true)) {
-      const coParent = currentUser?.coParents.filter((x) => x.key === requestRecipientKey)[0]
-      const key = DB.GetTableIndexById(coParent, coParent?.id)
+      const coParent = coParents.filter((x) => x?.userKey === formRef?.current?.recipient?.key)[0]
+      const key = DB.GetTableIndexById(coParents, coParent?.id)
       await DB_UserScoped.updateUserRecord(currentUser?.key, `coparents/${key}/preferredTransferAddress`, formRef.current.address)
     }
 
@@ -110,18 +120,16 @@ export default function NewTransferChangeRequest() {
     await ResetForm(true)
   }
 
-  const HandleShareWithSelection = (e) => {
-    formRef.current.shareWith = DomManager.HandleShareWithSelection(e, currentUser, formRef.current.shareWith, formRef)
+  const SetDefaultDropdownOptions = () => {
+    setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
+    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith([], coParents, true))
   }
 
-  const HandleRequestRecipient = (e) => {
-    const coparentKey = e.getAttribute('data-key')
-    if (e.classList.contains('active')) {
-      setRequestRecipientKey(coparentKey)
-    } else {
-      setRequestRecipientKey('')
+  useEffect(() => {
+    if (Manager.IsValid(coParents) && Manager.IsValid(users)) {
+      SetDefaultDropdownOptions()
     }
-  }
+  }, [coParents, users])
 
   return (
     <Form
@@ -172,6 +180,7 @@ export default function NewTransferChangeRequest() {
             <InputField inputType={InputTypes.textarea} placeholder={'Reason'} onChange={(e) => (formRef.current.reason = e.target.value)} />
 
             <Spacer height={8} />
+
             {/*  SET AS PREFERRED LOCATION */}
             <div className="flex">
               <Label text={'Set as Preferred Location'} classes="toggle" />
@@ -184,20 +193,26 @@ export default function NewTransferChangeRequest() {
             <Spacer height={8} />
 
             {/* SEND REQUEST TO */}
-            <CheckboxGroup
-              elClass="sending-to"
-              parentLabel={'Who is the request being sent to?'}
-              checkboxArray={DomManager.BuildCheckboxGroup({
-                currentUser,
-                predefinedType: 'coparents',
-              })}
-              onCheck={HandleRequestRecipient}
-              required={true}
+            <SelectDropdown
+              options={DropdownManager.GetDefault.CoParents(coParents)}
+              placeholder={'Select Request Recipient'}
+              onSelect={(e) => {
+                formRef.current.recipient = {
+                  name: e.label,
+                  key: e.value,
+                }
+              }}
             />
 
             <Spacer height={8} />
 
-            <ShareWithDropdown onCheck={HandleShareWithSelection} required={true} />
+            {/* SHARE WITH */}
+            <SelectDropdown
+              options={defaultShareWithOptions}
+              selectMultiple={true}
+              placeholder={'Select Contacts to Share With'}
+              onSelect={setSelectedShareWithOptions}
+            />
           </div>
         </div>
       </div>

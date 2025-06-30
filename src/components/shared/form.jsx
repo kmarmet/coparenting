@@ -6,7 +6,6 @@ import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import CardButton from './cardButton'
-import Spacer from './spacer'
 import StringAsHtmlElement from './stringAsHtmlElement'
 
 export default function Form({
@@ -37,18 +36,6 @@ export default function Form({
 
   useEffect(() => {
     let activeForm = document.querySelector(`.${wrapperClass}.form-wrapper.active`)
-    // Focus on the first input
-    if (showCard) {
-      if (Manager.IsValid(activeForm)) {
-        const allWrappers = activeForm.querySelectorAll('.input-field')
-        if (Manager.IsValid(allWrappers)) {
-          const firstWrapper = allWrappers[0]
-          if (Manager.IsValid(firstWrapper)) {
-            // firstWrapper.querySelector('input').focus()
-          }
-        }
-      }
-    }
 
     // Check if creationFormToShow is valid -> find the form wrapper
     if (Manager.IsValid(creationFormToShow, true)) {
@@ -82,9 +69,10 @@ export default function Form({
       }
     }
   }, [showCard])
+
   return (
-    <div key={refreshKey} className={`form-wrapper${showCard ? ` active` : ''} ${wrapperClass}`}>
-      <div style={DomManager.AnimateDelayStyle(1, 0.002)} className={`form-card${showCard ? ` active` : ''}`}>
+    <div className={`form-wrapper${showCard ? ` active` : ''} ${wrapperClass}`}>
+      <div className={`form-card${showCard ? ` active` : ''}`}>
         <div className="content-wrapper">
           {Manager.IsValid(title) && (
             <div className="header">
@@ -98,7 +86,6 @@ export default function Form({
 
           {viewDropdown}
           {Manager.IsValid(viewDropdown) && <hr />}
-          {!Manager.IsValid(viewDropdown) && <Spacer height={10} />}
           {children}
         </div>
       </div>
