@@ -106,8 +106,8 @@
       span,
       svg {
         margin-left: auto;
-        fill: $accent;
-        color: $accent;
+        fill: $purple;
+        color: $purple;
         text-align: center;
       }
 
@@ -118,7 +118,7 @@
 
     .rs-dropdown-toggle-caret {
       right: 25px;
-      color: $accent;
+      color: $purple;
       font-weight: bolder;
     }
 
@@ -238,7 +238,7 @@
             margin: 0;
             font-size: 25px;
             margin-right: 10px;
-            color: $accent;
+            color: $purple;
 
             &:nth-child(2) {
               margin-left: 20px;

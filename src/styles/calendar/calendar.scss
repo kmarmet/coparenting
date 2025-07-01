@@ -30,7 +30,7 @@
 
       .coparent-visitation-dot,
       .coparent-event-dot {
-        background-color: $coParentPurple;
+        background-color: $purple;
       }
 
       .holiday-event-dot {
@@ -118,7 +118,7 @@
       p {
         opacity: 1 !important;
         &.coparent {
-          color: $coParentPurple;
+          color: $purple;
         }
 
         &.financial {
@@ -146,7 +146,7 @@
         }
 
         &.coparent {
-          background: $coParentPurple;
+          background: $purple;
           top: -5px;
         }
 
@@ -359,7 +359,7 @@
                   @include centerHoriz;
                   height: 20px;
                   border-radius: 50px !important;
-                  @include mainColorsGradient;
+                  background: $blendDark !important;
                 }
               }
 
@@ -473,7 +473,7 @@
             -ms-transform: scale(0.9);
             -o-transform: scale(0.9);
             transform: scale(0.9);
-            color: $accent;
+            color: $purple;
           }
         }
       }

@@ -16,7 +16,7 @@ export default UpdateManager =
   templates:
 # Template for event tomorrow reminder
     eventIsTomorrowReminder: (event) ->
-      return "#{event.title} is tomorrow #{if Manager.IsValid(event.fromTime) then '@ ' + event.fromTime else ''}"
+      return "#{event.title} is tomorrow #{if Manager.IsValid(event.startTime) then '@ ' + event.startTime else ''}"
 
 # Template for event in an hour reminder
     eventIsInAnHourReminder: (event) ->
@@ -84,20 +84,20 @@ export default UpdateManager =
 
           fetch("https://api.onesignal.com/apps/#{UpdateManager.appId}/subscriptions/#{subId}/user/identity")
             .then (identity) ->
-              userIdentity = await identity.json()
-              currentUpdates = await DB.getTable("#{DB.tables.updateSubscribers}")
-              newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
+            userIdentity = await identity.json()
+            currentUpdates = await DB.getTable("#{DB.tables.updateSubscribers}")
+            newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
 
-              # If user already exists -> replace record
-              if Manager.IsValid(existingSubscriber)
-                existingSubscriber = currentUpdates.find((x) => x?.email == UpdateManager?.currentUser?.email)
-                existingSubscriber.subscriptionId = subId;
-                existingSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
-                index = DB.GetTableIndexById(currentUpdates, existingSubscriber?.id)
-                await DB.updateEntireRecord("#{DB.tables.updateSubscribers}/#{index}", existingSubscriber)
-  # Else create new record
-              else
-                await DB.Add("#{DB.tables.updateSubscribers}", newSubscriber)
+            # If user already exists -> replace record
+            if Manager.IsValid(existingSubscriber)
+              existingSubscriber = currentUpdates.find((x) => x?.email == UpdateManager?.currentUser?.email)
+              existingSubscriber.subscriptionId = subId;
+              existingSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
+              index = DB.GetTableIndexById(currentUpdates, existingSubscriber?.id)
+              await DB.updateEntireRecord("#{DB.tables.updateSubscribers}/#{index}", existingSubscriber)
+# Else create new record
+            else
+              await DB.Add("#{DB.tables.updateSubscribers}", newSubscriber)
         , 500
 
     catch error

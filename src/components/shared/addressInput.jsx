@@ -34,11 +34,13 @@ const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
     })
     loader.load().then(() => {
       if (!inputRef.current) return
-
-      autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
-        fields: ['name', 'formatted_address'],
-        types: [addressType],
-      })
+      if (!inputRef.current.autocompleteInitialized) {
+        inputRef.current.autocompleteInitialized = true
+        autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
+          fields: ['name', 'formatted_address'],
+          types: [addressType],
+        })
+      }
 
       listenerRef.current = autocompleteRef.current.addListener('place_changed', () => {
         const place = autocompleteRef.current.getPlace()
@@ -59,7 +61,7 @@ const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
         autocompleteRef.current = null
       }
     })
-  }, [onChange, addressType])
+  }, [])
 
   return (
     <div className={'google-autocomplete-wrapper'}>

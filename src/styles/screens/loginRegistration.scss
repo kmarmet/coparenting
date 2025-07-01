@@ -15,7 +15,7 @@
         font-weight: $fwBold;
         font-size: 24px;
         text-align: center;
-        color: $accent;
+        color: $purple;
       }
 
       .label-wrapper {
@@ -343,7 +343,7 @@
     .eye-icon {
       position: relative;
       margin-left: 10px;
-      color: $secondaryAccent;
+      color: $blend;
       @include hover;
     }
 

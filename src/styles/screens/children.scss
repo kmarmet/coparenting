@@ -72,7 +72,7 @@
               height: 100%;
               opacity: 1;
               svg {
-                color: $accent;
+                color: $purple;
                 transform: scale(1.2);
                 opacity: 1;
               }
@@ -190,7 +190,7 @@
     }
 
     .info-text {
-      background-color: $accent;
+      background-color: $purple;
       padding: 10px;
       border-radius: $borderRadius;
       font-weight: 400;
@@ -278,7 +278,7 @@
           font-size: 25px;
           margin-right: 20px;
           opacity: 0.8;
-          color: $accent;
+          color: $purple;
         }
       }
     }

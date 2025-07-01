@@ -1075,7 +1075,7 @@
 
       &:focus {
         border-radius: $borderRadius;
-        border-top: 2px solid $accent;
+        border-top: 2px solid $purple;
 
         &::placeholder {
           opacity: 0;
@@ -1692,7 +1692,7 @@
 
     // Colors
     .accent {
-      color: $accent;
+      color: $purple;
     }
 
     .blue {
@@ -2073,7 +2073,7 @@
       svg {
         margin-left: auto;
         align-self: flex-end;
-        color: $accent;
+        color: $purple;
         font-size: 22px;
         max-height: 20px;
         display: flex;

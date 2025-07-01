@@ -72,13 +72,13 @@
           border: 0;
           background: $translucentLightest;
           &.active {
-            background: $accent;
+            background: $purple;
           }
         }
       }
       #coparent-info {
         #coparent-name-primary {
-          color: $accent;
+          color: $purple;
           font-weight: $fwMediumBold;
         }
       }
@@ -908,7 +908,7 @@
             }
           }
           #child-name-primary {
-            color: $accent;
+            color: $purple;
           }
         }
         #child-wrapper {
@@ -918,7 +918,7 @@
             }
             &.active {
               .child-name {
-                color: $accent;
+                color: $purple;
               }
             }
           }
@@ -936,7 +936,7 @@
         .child-name {
           color: $darkText;
           &.active {
-            color: $accent;
+            color: $purple;
           }
         }
         .profile-pic-container {
@@ -1158,8 +1158,8 @@
                   }
                   &#view-all-holidays-item {
                     background: transparent;
-                    color: $accent;
-                    border: 1px solid $accent;
+                    color: $purple;
+                    border: 1px solid $purple;
                   }
                 }
               }
@@ -1406,7 +1406,7 @@
                   color: $lightBorderColor !important;
 
                   &.Mui-selected {
-                    background: $accent !important;
+                    background: $purple !important;
                   }
                 }
               }
