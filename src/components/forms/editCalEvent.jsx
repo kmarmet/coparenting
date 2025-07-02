@@ -420,7 +420,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               {/* DATE */}
               {!eventIsDateRange && (
                 <InputField
-                  labelText={'Date'}
+                  placeholder={'Date'}
                   required={true}
                   inputType={InputTypes.date}
                   onDateOrTimeSelection={(date) => (formRef.current.startDate = moment(date).format(DatetimeFormats.dateForDb))}
@@ -434,7 +434,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   {/* START TIME */}
                   <InputField
                     wrapperClasses="start-time"
-                    labelText={'Start Time'}
+                    placeholder={'Start Time'}
                     uidClass="event-start-time"
                     required={false}
                     inputType={InputTypes.time}
@@ -446,7 +446,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   <InputField
                     uidClass="event-end-time"
                     wrapperClasses="end-time"
-                    labelText={'End Time'}
+                    placeholder={'End Time'}
                     required={false}
                     defaultValue={event?.endTime}
                     inputType={InputTypes.time}

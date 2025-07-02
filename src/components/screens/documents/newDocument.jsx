@@ -1,7 +1,6 @@
 // Path: src\components\screens\documents\newDocument.jsx
 import {getStorage, ref, uploadString} from 'firebase/storage'
-import React, {useContext, useState} from 'react'
-import CheckboxGroup from '../../../components/shared/checkboxGroup'
+import React, {useContext, useEffect, useState} from 'react'
 import Form from '../../../components/shared/form'
 import ActivityCategory from '../../../constants/activityCategory'
 import CreationForms from '../../../constants/creationForms'
@@ -10,13 +9,17 @@ import ModelNames from '../../../constants/modelNames'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import Storage from '../../../database/storage'
+import useChildren from '../../../hooks/useChildren'
+import useCoParents from '../../../hooks/useCoParents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useDocuments from '../../../hooks/useDocuments'
+import useUsers from '../../../hooks/useUsers'
 import AlertManager from '../../../managers/alertManager'
 import DatasetManager from '../../../managers/datasetManager'
 import DocumentConversionManager from '../../../managers/documentConversionManager.js'
 import DocumentsManager from '../../../managers/documentsManager'
 import DomManager from '../../../managers/domManager'
+import DropdownManager from '../../../managers/dropdownManager'
 import ImageManager from '../../../managers/imageManager'
 import LogManager from '../../../managers/logManager'
 import Manager from '../../../managers/manager.js'
@@ -24,8 +27,9 @@ import ObjectManager from '../../../managers/objectManager'
 import StringManager from '../../../managers/stringManager'
 import UpdateManager from '../../../managers/updateManager'
 import Doc from '../../../models/new/doc'
+import FormDivider from '../../shared/formDivider'
 import InputField from '../../shared/inputField'
-import ShareWithDropdown from '../../shared/shareWithDropdown'
+import SelectDropdown from '../../shared/selectDropdown'
 import Spacer from '../../shared/spacer'
 import UploadButton from '../../shared/uploadButton'
 
@@ -36,9 +40,18 @@ export default function NewDocument() {
   const [docType, setDocType] = useState(null)
   const [docName, setDocName] = useState('')
   const [doc, setDoc] = useState()
-  const {currentUser} = useCurrentUser()
-  const {documents} = useDocuments()
 
+  // HOOKS
+  const {documents} = useDocuments()
+  const {currentUser} = useCurrentUser()
+  const {users} = useUsers()
+  const {coParents} = useCoParents()
+  const {children, childrenDropdownOptions} = useChildren()
+
+  // Dropdown State
+  const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
+  const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
+  const [selectedDocType, setSelectedDocType] = useState([])
   const ResetForm = (successMessage = '') => {
     Manager.ResetForm('upload-doc-wrapper')
     setShareWith([])
@@ -98,7 +111,7 @@ export default function NewDocument() {
           imageUrl = await Storage.GetFileUrl(Storage.directories.documents, currentUser?.key, docNameToUse)
         }
         const compressedDoc = await ImageManager.compressImage(doc)
-        let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
+        let firebaseStorageFileName = StringManager.FormatTitle(docNameToUse, true)
         // Upload to Firebase Storage
         imageUrl = await Storage.uploadByPath(`${Storage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`, compressedDoc)
         const imageName = Storage.GetImageNameFromUrl(imageUrl)
@@ -130,7 +143,7 @@ export default function NewDocument() {
     //#region DOCUMENT CONVERSION
     if (docType === 'document') {
       await Storage.uploadByPath(`${Storage.directories.documents}/${currentUser.key}/${docNameToUse}`, doc)
-      let firebaseStorageFileName = StringManager.formatFileName(docNameToUse)
+      let firebaseStorageFileName = StringManager.FormatTitle(docNameToUse, true)
       docText = await DocumentConversionManager.DocToHtml(docNameToUse, currentUser?.key)
       await UploadDocToFirebaseStorage(docText, firebaseStorageFileName)
     }
@@ -147,7 +160,7 @@ export default function NewDocument() {
     newDocument.ownerKey = currentUser?.key
     newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
     newDocument.type = docType
-    newDocument.name = StringManager.formatFileName(docNameToUse)
+    newDocument.name = StringManager.FormatTitle(docNameToUse)
 
     if (Manager.IsValid(newDocument.docText, true)) {
       const cleanedDoc = ObjectManager.GetModelValidatedObject(newDocument, ModelNames.doc)
@@ -167,7 +180,7 @@ export default function NewDocument() {
     }
     //#endregion ADD TO DB / SEND NOTIFICATION
 
-    await Storage.deleteFile(`${Storage.directories.documents}/${currentUser?.key}/${StringManager.formatFileName(docNameToUse)}`)
+    await Storage.deleteFile(`${Storage.directories.documents}/${currentUser?.key}/${StringManager.FormatTitle(docNameToUse)}`)
 
     ResetForm('Document Uploaded!')
   }
@@ -187,11 +200,6 @@ export default function NewDocument() {
       })
   }
 
-  const HandleShareWithSelection = (e) => {
-    const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
-    setShareWith(updated)
-  }
-
   const HandleCheckboxSelection = (e) => {
     DomManager.HandleCheckboxSelection(
       e,
@@ -202,7 +210,16 @@ export default function NewDocument() {
       false
     )
   }
+  const SetDefaultDropdownOptions = () => {
+    setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
+    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
+  }
 
+  useEffect(() => {
+    if (Manager.IsValid(children) || Manager.IsValid(users)) {
+      SetDefaultDropdownOptions()
+    }
+  }, [children, coParents])
   return (
     <Form
       className="upload-document-card"
@@ -213,20 +230,38 @@ export default function NewDocument() {
       title={'Upload Document'}
       onClose={() => ResetForm()}>
       <div className="upload-doc-wrapper">
-        <Spacer height={5} />
         {/* PAGE CONTAINER */}
         <div id="upload-documents-container" className={`${theme}`}>
-          {/* FORM */}
-          <div className="form">
-            <InputField placeholder={'Document Name'} inputType={InputTypes.text} onChange={(e) => setDocName(e.target.value)} />
-            <CheckboxGroup
-              parentLabel={'Document Type'}
-              required={true}
-              checkboxArray={DomManager.BuildCheckboxGroup({currentUser, customLabelArray: ['Document', 'Image']})}
-              onCheck={HandleCheckboxSelection}
-            />
-            <ShareWithDropdown required={false} onCheck={HandleShareWithSelection} containerClass={'share-with-coparents'} />
-          </div>
+          <FormDivider text={'Optional'} />
+
+          <Spacer height={3} />
+
+          {/* SHARE WITH */}
+          <SelectDropdown
+            options={defaultShareWithOptions}
+            selectMultiple={true}
+            placeholder={'Select Contacts to Share With'}
+            onSelect={setSelectedShareWithOptions}
+          />
+
+          <Spacer height={3} />
+
+          <InputField placeholder={'Document Name'} inputType={InputTypes.text} onChange={(e) => setDocName(e.target.value)} />
+
+          <FormDivider text={'Required'} />
+
+          {/* DOCUMENT TYPE */}
+          <SelectDropdown
+            options={[
+              {label: 'Document', value: 'document'},
+              {label: 'Image', value: 'image'},
+            ]}
+            placeholder={'Select Document Type'}
+            onSelect={setSelectedDocType}
+          />
+
+          <Spacer height={3} />
+
           {/* UPLOAD BUTTONS */}
           <UploadButton
             containerClass={`${theme} new-document-card`}

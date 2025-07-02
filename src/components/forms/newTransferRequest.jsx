@@ -21,6 +21,7 @@ import UpdateManager from '../../managers/updateManager.js'
 import TransferChangeRequest from '../../models/new/transferChangeRequest.js'
 import AddressInput from '../shared/addressInput'
 import Form from '../shared/form'
+import FormDivider from '../shared/formDivider'
 import InputField from '../shared/inputField'
 import Label from '../shared/label'
 import SelectDropdown from '../shared/selectDropdown'
@@ -48,7 +49,7 @@ export default function NewTransferChangeRequest() {
   // Form ref
   const formRef = useRef({...new TransferChangeRequest()})
 
-  const ResetForm = async (showSuccessAlert = false) => {
+  const ResetForm = (showSuccessAlert = false) => {
     Manager.ResetForm('transfer-request-wrapper')
     setRequestRecipientKey('')
     setState({
@@ -117,7 +118,7 @@ export default function NewTransferChangeRequest() {
       ActivityCategory.transferRequest
     )
 
-    await ResetForm(true)
+    ResetForm(true)
   }
 
   const SetDefaultDropdownOptions = () => {
@@ -135,45 +136,70 @@ export default function NewTransferChangeRequest() {
     <Form
       onSubmit={Submit}
       submitText={'Send'}
-      wrapperClass="new-transfer-request at-top"
+      wrapperClass="new-transfer-request"
       title={'Request Transfer Change '}
       showCard={creationFormToShow === creationForms.transferRequest}
       onClose={() => ResetForm()}>
       <div className="transfer-request-wrapper">
-        <div id="transfer-change-container" className={`${theme}`}>
+        <div className={`${theme} transfer-change-container" `}>
           <div className="transfer-change">
+            <FormDivider text={'Required'} />
             {/* DAY */}
             <InputField
               inputType={InputTypes.date}
               uidClass="transfer-request-date"
-              labelText={'Day'}
+              placeholder={'Day'}
               required={true}
               onDateOrTimeSelection={(e) => (formRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb))}
             />
 
+            <FormDivider text={'Required - Time OR Location'} />
             {/* TIME */}
             <InputField
               inputType={InputTypes.time}
-              labelText={'New Time'}
+              placeholder={'New Time'}
               uidClass="transfer-request-time"
               onDateOrTimeSelection={(e) => (formRef.current.time = moment(e).format(DatetimeFormats.timeForDb))}
             />
+            {/*  NEW LOCATION*/}
+            <AddressInput
+              placeholder={'Address'}
+              onChange={(address) => {
+                formRef.current.address = address
+              }}
+            />
 
+            <Spacer height={3} />
+            {/* SEND REQUEST TO */}
+            <SelectDropdown
+              options={DropdownManager.GetDefault.CoParents(coParents)}
+              placeholder={'Select Request Recipient'}
+              onSelect={(e) => {
+                formRef.current.recipient = {
+                  name: e.label,
+                  key: e.value,
+                }
+              }}
+            />
+
+            <Spacer height={3} />
+
+            <FormDivider text={'Optional'} />
+            {/* SHARE WITH */}
+            <SelectDropdown
+              options={defaultShareWithOptions}
+              selectMultiple={true}
+              placeholder={'Select Contacts to Share With'}
+              onSelect={setSelectedShareWithOptions}
+            />
+            <Spacer height={3} />
             {/* RESPONSE DUE DATE */}
             <InputField
               inputType={InputTypes.date}
               uidClass="transfer-request-response-date"
-              labelText={'Requested Response Date'}
+              placeholder={'Requested Response Date'}
               required={true}
               onDateOrTimeSelection={(e) => (formRef.current.requestedResponseDate = moment(e).format(DatetimeFormats.dateForDb))}
-            />
-
-            {/*  NEW LOCATION*/}
-            <AddressInput
-              labelText={'Address'}
-              onChange={(address) => {
-                formRef.current.address = address
-              }}
             />
 
             {/* REASON */}
@@ -191,28 +217,6 @@ export default function NewTransferChangeRequest() {
             </div>
 
             <Spacer height={8} />
-
-            {/* SEND REQUEST TO */}
-            <SelectDropdown
-              options={DropdownManager.GetDefault.CoParents(coParents)}
-              placeholder={'Select Request Recipient'}
-              onSelect={(e) => {
-                formRef.current.recipient = {
-                  name: e.label,
-                  key: e.value,
-                }
-              }}
-            />
-
-            <Spacer height={8} />
-
-            {/* SHARE WITH */}
-            <SelectDropdown
-              options={defaultShareWithOptions}
-              selectMultiple={true}
-              placeholder={'Select Contacts to Share With'}
-              onSelect={setSelectedShareWithOptions}
-            />
           </div>
         </div>
       </div>

@@ -60,6 +60,7 @@ export default function DocsList() {
                           onClick={(e) => {
                             if (!Manager.Contains(e.target.classList, 'delete')) {
                               setSelectedDoc(doc)
+
                               setState({...state, docToView: doc, currentScreen: ScreenNames.docViewer})
                             }
                           }}>

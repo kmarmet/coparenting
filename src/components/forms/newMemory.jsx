@@ -25,6 +25,7 @@ import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
 import Memory from '../../models/new/memory'
 import Form from '../shared/form'
+import FormDivider from '../shared/formDivider'
 import InputField from '../shared/inputField'
 import MyConfetti from '../shared/myConfetti'
 import SelectDropdown from '../shared/selectDropdown'
@@ -194,6 +195,19 @@ export default function NewMemory() {
       onClose={() => ResetForm()}
       showCard={creationFormToShow === creationForms.memories}>
       <div className="new-memory-wrapper">
+        <FormDivider text={'Required'} />
+        {/* SHARE WITH */}
+        <SelectDropdown
+          required={true}
+          options={defaultShareWithOptions}
+          selectMultiple={true}
+          value={selectedShareWithOptions}
+          placeholder={'Select Contacts to Share With'}
+          onSelect={setSelectedShareWithOptions}
+        />
+
+        <FormDivider text={'Optional'} />
+
         {/* TITLE */}
         <InputField
           inputType={InputTypes.text}
@@ -202,31 +216,21 @@ export default function NewMemory() {
             formRef.current.title = e.target.value
           }}
         />
-
+        <Spacer height={3} />
         {/* DATE */}
         <InputField
           uidClass="memory-capture-date-uid"
-          labelText={'Capture Date'}
+          placeholder={'Capture Date'}
           inputType={InputTypes.date}
           onDateOrTimeSelection={(e) => {
             formRef.current.captureDate = moment(e).format(DatetimeFormats.dateForDb)
           }}
         />
-
+        <Spacer height={3} />
         {/* NOTES */}
         <InputField onChange={(e) => (formRef.current.notes = e.target.value)} inputType={InputTypes.textarea} placeholder={'Notes'} />
         <div id="new-memory-form-container" className={`${theme}`}>
-          {/* SHARE WITH */}
-          <SelectDropdown
-            required={true}
-            options={defaultShareWithOptions}
-            selectMultiple={true}
-            value={selectedShareWithOptions}
-            placeholder={'Select Contacts to Share With'}
-            onSelect={setSelectedShareWithOptions}
-          />
-
-          <Spacer height={8} />
+          <Spacer height={3} />
           {/* UPLOAD BUTTON */}
           <UploadButton
             containerClass={`${theme} new-memory-card`}

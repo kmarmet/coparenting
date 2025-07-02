@@ -54,6 +54,8 @@ export default function NewCalendarEvent() {
   const [eventIsRecurring, setEventIsRecurring] = useState(false)
   const [eventIsDateRange, setEventIsDateRange] = useState(false)
   const [eventIsCloned, setEventIsCloned] = useState(false)
+
+  // HOOKS
   const {currentUser} = useCurrentUser()
   const {users} = useUsers()
   const {coParents} = useCoParents()
@@ -71,10 +73,11 @@ export default function NewCalendarEvent() {
   const [selectedChildrenOptions, setSelectedChildrenOptions] = useState([])
   const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
   const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
+
   // REF
   const formRef = useRef({...new CalendarEvent({startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)})})
 
-  const ResetForm = async (showSuccessAlert = false) => {
+  const ResetForm = (showSuccessAlert = false) => {
     setEventLength(EventLengths.single)
     setEventIsDateRange(false)
     setEventIsRecurring(false)
@@ -197,7 +200,7 @@ export default function NewCalendarEvent() {
           )
         }
         //#endregion SINGLE DATE
-        await ResetForm(true)
+        ResetForm(true)
       }
     } catch (error) {
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
@@ -223,7 +226,7 @@ export default function NewCalendarEvent() {
     setSelectedChildrenOptions(DropdownManager.GetSelected.Children([], children))
     setSelectedReminderOptions(DropdownManager.GetSelected.Reminders([]))
     setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
-    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children || [], coParents))
+    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
     setView({label: 'Single Day', value: 'Single Day'})
   }
 
@@ -327,13 +330,13 @@ export default function NewCalendarEvent() {
             <div className={'flex gap'}>
               {/* EVENT WITH TIME */}
               <InputField
-                labelText={'Start Time'}
+                placeholder={'Start Time'}
                 uidClass="event-start-time time"
                 inputType={InputTypes.time}
                 onDateOrTimeSelection={(e) => (formRef.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}
               />
               <InputField
-                labelText={'End Time'}
+                placeholder={'End Time'}
                 uidClass="event-end-time time"
                 inputType={InputTypes.time}
                 onDateOrTimeSelection={(e) => (formRef.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}

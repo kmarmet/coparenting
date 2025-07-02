@@ -22,6 +22,7 @@ import useCurrentUser from '../hooks/useCurrentUser'
 import useFeedback from '../hooks/useFeedback'
 import DomManager from '../managers/domManager'
 import Manager from '../managers/manager'
+import FeedbackEmotionsTracker from '../models/feedbackEmotionsTracker'
 
 export default function FullMenu() {
   const {state, setState} = useContext(globalState)
@@ -62,9 +63,19 @@ export default function FullMenu() {
   }
 
   const UpdateFeedbackCounter = async (feedbackType) => {
-    const updatedFeedback = {...feedback}
-    updatedFeedback[`${feedbackType}Count`] = feedback[`${feedbackType}Count`] + 1
-    await DB.updateByPath(`${DB.tables.feedbackEmotionsTracker}/${currentUser?.key}`, updatedFeedback)
+    if (Manager.IsValid(feedback)) {
+      const updatedFeedback = {...feedback}
+      updatedFeedback[feedbackType] = feedback[feedbackType] + 1
+      await DB.ReplaceEntireRecord(`${DB.tables.feedbackEmotionsTracker}/${currentUser?.key}`, updatedFeedback)
+    } else {
+      const newFeedback = new FeedbackEmotionsTracker()
+      newFeedback[feedbackType] = 1
+      newFeedback.owner = {
+        key: currentUser?.key,
+        name: currentUser?.name,
+      }
+      await DB.ReplaceEntireRecord(`${DB.tables.feedbackEmotionsTracker}/${currentUser?.key}`, newFeedback)
+    }
   }
 
   useEffect(() => {
@@ -405,19 +416,19 @@ export default function FullMenu() {
                   <div id="icon-and-label-wrapper">
                     <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.unhappy)}>
                       <span className="icon unhappy">☹️</span>
-                      <span className="count">{feedback?.unhappyCount ?? 0}</span>
+                      <span className="count">{feedback?.unhappy ?? 0}</span>
                     </p>
                     <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.neutral)}>
                       <span className="icon neutral">😐</span>
-                      <span className="count">{feedback?.neutralCount ?? 0}</span>
+                      <span className="count">{feedback?.neutral ?? 0}</span>
                     </p>
                     <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.peaceful)}>
                       <span className="icon peaceful">😁</span>
-                      <span className="count">{feedback?.peacefulCount ?? 0}</span>
+                      <span className="count">{feedback?.peaceful ?? 0}</span>
                     </p>
                     <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.love)}>
                       <span className="icon love">❤️‍🔥</span>
-                      <span className="count">{feedback?.loveCount ?? 0} </span>
+                      <span className="count">{feedback?.love ?? 0} </span>
                     </p>
                   </div>
                 </div>

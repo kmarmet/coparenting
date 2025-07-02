@@ -311,7 +311,7 @@ export default function TransferRequests() {
               <InputField
                 defaultValue={moment(activeRequest?.startDate)}
                 inputType={InputTypes.date}
-                labelText={'Date'}
+                placeholder={'Date'}
                 uidClass="transfer-request-date"
                 onDateOrTimeSelection={(e) => (formRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb))}
               />
@@ -321,7 +321,7 @@ export default function TransferRequests() {
                 defaultValue={activeRequest?.time}
                 inputType={InputTypes.time}
                 uidClass="transfer-request-time"
-                labelText={'Transfer Time'}
+                placeholder={'Transfer Time'}
                 onDateOrTimeSelection={(e) => (formRef.current.time = moment(e).format(DatetimeFormats.timeForDb))}
               />
 
@@ -338,7 +338,7 @@ export default function TransferRequests() {
                 onDateOrTimeSelection={(e) => (formRef.current.requestedResponseDate = moment(e).format(DatetimeFormats.dateForDb))}
                 inputType={InputTypes.date}
                 uidClass="transfer-request-response-date"
-                labelText={'Requested Response Date'}
+                placeholder={'Requested Response Date'}
               />
 
               {/* REASON */}

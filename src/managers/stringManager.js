@@ -122,9 +122,6 @@ StringManager = {
     console.log(decompressed);
     return decompressed;
   },
-  formatFileName: function(fileName) {
-    return fileName.replaceAll(' ', '-').replaceAll('(', '').replaceAll(')', '');
-  },
   SpaceBetweenWords: function(input) {
     return input.toString().replace(/([a-z])([A-Z])/g, '$1 $2');
   },

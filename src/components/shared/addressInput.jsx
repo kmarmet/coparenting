@@ -3,7 +3,6 @@ import React, {useContext, useEffect, useRef, useState} from 'react'
 import {FaMapLocationDot} from 'react-icons/fa6'
 import globalState from '../../context'
 import SelectDropdown from './selectDropdown'
-import Spacer from './spacer'
 
 const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
   const {state} = useContext(globalState)
@@ -64,25 +63,22 @@ const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
 
   return (
     <div className={'google-autocomplete-wrapper'}>
+      <div className="input-wrapper">
+        <FaMapLocationDot className={'input-icon maps'} />
+        <input ref={inputRef} type={'text'} defaultValue={defaultValue} className="google-autocomplete-input" placeholder="Address" />
+        {/*<span className={'clear-input-button'} onClick={ClearInput}>*/}
+        {/*  CLEAR*/}
+        {/*</span>*/}
+      </div>
+
       <SelectDropdown
-        placeholder={'Address Type'}
+        placeholder={'Type'}
         options={[
           {value: 'address', label: 'Address'},
           {value: 'point_of_interest', label: 'Point of Interest'},
         ]}
         onSelect={(e) => setAddressType(e?.value)}
       />
-
-      <Spacer height={3} />
-      <div className="input-wrapper">
-        <FaMapLocationDot className={'input-icon maps'} />
-        <input ref={inputRef} type={'text'} defaultValue={defaultValue} className="google-autocomplete-input" placeholder="Address" />
-        <span className={'clear-input-button'} onClick={ClearInput}>
-          CLEAR
-        </span>
-      </div>
-
-      <Spacer height={3} />
     </div>
   )
 }

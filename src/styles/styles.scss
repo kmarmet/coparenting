@@ -169,18 +169,18 @@
 /*#region  GOOGLE MAPS */
 .google-autocomplete-wrapper {
   display: flex;
-  flex-wrap: wrap;
   width: 100%;
-
+  gap: 0 5px;
   .input-wrapper {
     height: 50px;
-    width: 100%;
+    width: 75%;
     display: flex;
     position: relative;
     background: $inputBackground;
     border-radius: $borderRadius;
     align-items: center;
     justify-content: space-between;
+    max-width: calc(70% - 25px);
     input {
       margin-left: 40px;
       background: transparent;
@@ -190,9 +190,34 @@
       font-size: 12px !important;
       margin-top: 3px;
       color: $transWhite !important;
-      margin-right: 10px !important;
       position: relative;
       z-index: $maxZIndex;
+    }
+
+    .google-autocomplete-input {
+      position: relative;
+      border: 0;
+      outline: 0;
+      border-radius: 0;
+      caret-color: white;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      font-weight: $fwLight;
+      color: white;
+      z-index: 9;
+      overscroll-behavior: none;
+      overflow: auto;
+      height: 100%;
+      padding: 0;
+
+      &::placeholder {
+        font-style: italic;
+        color: $transWhite;
+        font-size: 15px;
+        font-weight: $fwLight;
+        text-transform: capitalize;
+      }
     }
 
     svg {
@@ -206,32 +231,6 @@
     }
   }
 
-  .google-autocomplete-input {
-    position: relative;
-    background: $inputBackground;
-    border: 0;
-    outline: 0;
-    border-radius: 0;
-    caret-color: white;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    font-weight: $fwLight;
-    color: white;
-    z-index: 9;
-    overscroll-behavior: none;
-    overflow: auto;
-    height: 100%;
-    padding: 0;
-
-    &::placeholder {
-      font-style: italic;
-      color: $transWhite;
-      font-size: 15px;
-      font-weight: $fwLight;
-      text-transform: capitalize;
-    }
-  }
   .select-dropdown {
     width: 100% !important;
   }

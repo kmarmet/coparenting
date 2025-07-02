@@ -22,7 +22,6 @@ const useFeedback = () => {
     const listener = onValue(
       dataRef,
       async (snapshot) => {
-        // console.log(snapshot.val())
         if (Manager.IsValid(snapshot.val())) {
           setFeedback(snapshot.val())
         } else {

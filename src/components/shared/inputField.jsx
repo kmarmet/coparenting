@@ -3,7 +3,7 @@ import {MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDa
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {DebounceInput} from 'react-debounce-input'
-import {MdEmail, MdNotes} from 'react-icons/md'
+import {MdEmail, MdNotes, MdOutlineDateRange, MdOutlineTitle} from 'react-icons/md'
 import {PiArrowBendLeftUpFill, PiLinkSimpleHorizontalBold} from 'react-icons/pi'
 import {RiPhoneFill} from 'react-icons/ri'
 import {WiTime4} from 'react-icons/wi'
@@ -59,6 +59,17 @@ function InputField({
         {/* DATE */}
         {inputType === InputTypes.date && (
           <MobileDatePicker
+            slotProps={{
+              actionBar: {actions: ['clear', 'accept']},
+              textField: {
+                label: (
+                  <span>
+                    <MdOutlineDateRange fontSize="small" />
+                    {placeholder}
+                  </span>
+                ),
+              },
+            }}
             showDaysOutsideCurrentMonth={true}
             label={labelText ? labelText : placeholder}
             onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
@@ -105,7 +116,7 @@ function InputField({
                   label: (
                     <span>
                       <WiTime4 fontSize="small" />
-                      {labelText}
+                      {placeholder}
                     </span>
                   ),
                 },
@@ -113,7 +124,7 @@ function InputField({
               name={inputName}
               views={timeViews}
               value={Manager.IsValid(defaultValue) ? moment(defaultValue, DatetimeFormats.timeForDb) : null}
-              label={labelText}
+              label={placeholder}
               minutesStep={5}
               onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
               key={refreshKey}
@@ -125,16 +136,19 @@ function InputField({
 
         {/* TEXT */}
         {inputType === InputTypes.text && (
-          <DebounceInput
-            value={Manager.IsValid(defaultValue) ? defaultValue : ''}
-            placeholder={placeholder}
-            className={`${inputClasses}`}
-            onChange={onChange}
-            name={inputName}
-            debounceTimeout={0}
-            // debounceTimeout={customDebounceDelay !== 1000 ? customDebounceDelay : 1000}
-            key={refreshKey}
-          />
+          <>
+            <MdOutlineTitle className={'input-icon text'} />
+            <DebounceInput
+              value={Manager.IsValid(defaultValue) ? defaultValue : ''}
+              placeholder={placeholder}
+              className={`${inputClasses} with-icon`}
+              onChange={onChange}
+              name={inputName}
+              debounceTimeout={0}
+              // debounceTimeout={customDebounceDelay !== 1000 ? customDebounceDelay : 1000}
+              key={refreshKey}
+            />
+          </>
         )}
 
         {/* NUMBER */}

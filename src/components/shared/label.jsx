@@ -6,7 +6,6 @@ export default function Label({labelId = '', classes = '', children, text, requi
       <label className={`${isBold ? 'bold' : ''}`} id={labelId}>
         {icon ? icon : ''}
         {text}
-        {required && <span className="asterisk">*</span>}
       </label>
       {children}
     </div>

@@ -30,6 +30,7 @@ import UpdateManager from '../../managers/updateManager'
 import CalendarMapper from '../../mappers/calMapper'
 import Expense from '../../models/new/expense.js'
 import Button from '../shared/button'
+import FormDivider from '../shared/formDivider'
 import InputField from '../shared/inputField'
 import Label from '../shared/label'
 import ShareWithDropdown from '../shared/shareWithDropdown'
@@ -53,7 +54,7 @@ export default function NewExpenseForm() {
   // Ref
   const formRef = useRef({...new Expense()})
 
-  const ResetForm = async (showAlert) => {
+  const ResetForm = (showAlert) => {
     Manager.ResetForm('expenses-wrapper')
     setRecurringFrequency('')
     setRepeatingEndDate('')
@@ -85,13 +86,6 @@ export default function NewExpenseForm() {
     if (formRef.current.amount <= 0) {
       AlertManager.throwError('Please add an expense amount')
       return false
-    }
-
-    if (validAccounts > 0) {
-      if (!Manager.IsValid(formRef.current.shareWith)) {
-        AlertManager.throwError('Please choose who you would like to share this expense with')
-        return false
-      }
     }
     //#endregion VALIDATION
 
@@ -134,7 +128,6 @@ export default function NewExpenseForm() {
 
     const cleanObject = ObjectManager.CleanObject(newExpense)
     cleanObject.category = categorySelection
-    console.log(cleanObject)
 
     // Add to DB
     await DB.Add(`${DB.tables.expenses}/${currentUser?.key}`, expenses, cleanObject).finally(async () => {
@@ -154,8 +147,7 @@ export default function NewExpenseForm() {
         )
       }
 
-      // Go back to expense screen
-      await ResetForm(true)
+      ResetForm(true)
     })
   }
 
@@ -310,16 +302,9 @@ export default function NewExpenseForm() {
               }}
             />
           </div>
-          {/* CATEGORY */}
-          <SelectDropdown
-            options={DropdownManager.GetDefault.ExpenseCategories()}
-            value={DropdownManager.GetSelected.ExpenseCategory(categorySelection)}
-            onSelect={(e) => setCategorySelection(e.value)}
-            placeholder={'Select a Category'}
-            required={true}
-            show={true}
-          />
-          <Spacer height={5} />
+
+          <FormDivider text={'Required'} />
+
           {/* EXPENSE NAME */}
           <InputField
             onChange={(e) => (formRef.current.name = e.target.value)}
@@ -327,16 +312,9 @@ export default function NewExpenseForm() {
             placeholder={'Expense Title'}
             required={true}
           />
-          {/* DUE DATE */}
-          <InputField
-            inputType={InputTypes.date}
-            uidClass="new-expense-date"
-            placeholder={'Due Date'}
-            onDateOrTimeSelection={(date) => (formRef.current.dueDate = moment(date).format(DatetimeFormats.dateForDb))}
-          />
-          {/* NOTES */}
-          <InputField onChange={(e) => (formRef.current.notes = e.target.value)} inputType={'textarea'} placeholder={'Notes'} />
-          <hr />
+
+          <Spacer height={3} />
+
           {/* PAYER */}
           {Manager.IsValid(coParents) && (
             <SelectDropdown
@@ -354,14 +332,39 @@ export default function NewExpenseForm() {
               }}
             />
           )}
-          <Spacer height={5} />
+
+          <Spacer height={3} />
+
+          {/* CATEGORY */}
+          <SelectDropdown
+            options={DropdownManager.GetDefault.ExpenseCategories()}
+            value={DropdownManager.GetSelected.ExpenseCategory(categorySelection)}
+            onSelect={(e) => setCategorySelection(e.value)}
+            placeholder={'Select a Category'}
+            required={true}
+            show={true}
+          />
+          <Spacer height={3} />
+
+          {/* DUE DATE */}
+          <InputField
+            inputType={InputTypes.date}
+            uidClass="new-expense-date"
+            placeholder={'Due Date'}
+            onDateOrTimeSelection={(date) => (formRef.current.dueDate = moment(date).format(DatetimeFormats.dateForDb))}
+          />
+          {/* NOTES */}
+          <InputField onChange={(e) => (formRef.current.notes = e.target.value)} inputType={'textarea'} placeholder={'Notes'} />
+          <FormDivider text={'Optional'} />
+
+          <Spacer height={3} />
           {/* SHARE WITH */}
           <ShareWithDropdown
             onCheck={HandleShareWithSelection}
             placeholder={'Select Contacts to Share With'}
             containerClass={'share-with-coParents'}
           />
-          <Spacer height={5} />
+          <Spacer height={3} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.IsValid(children) && (

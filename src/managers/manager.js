@@ -14,9 +14,7 @@ const Manager = {
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
       // log error
     }),
-  ConditionalIntervalWithTimeout: (condition, startTime, successCallback = () => {
-  }, failureCallback = () => {
-  }, timeoutSeconds = 5) => {
+  ConditionalIntervalWithTimeout: (condition, startTime, successCallback = () => {}, failureCallback = () => {}, timeoutSeconds = 5) => {
     let int = setInterval(() => {
       const endTime = Date.now()
       const elapsedTimeMs = endTime - startTime
@@ -108,7 +106,7 @@ const Manager = {
     }
   },
   GetUid: () => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       const r = (Math.random() * 16) | 0,
         v = c == 'x' ? r : (r & 0x3) | 0x8
       return v.toString(16)
@@ -117,8 +115,7 @@ const Manager = {
   Contains: (variable, stringToCheckFor) => {
     if (Manager.IsValid(variable) && Manager.IsValid(stringToCheckFor)) {
       return _.includes(variable, stringToCheckFor)
-    }
-    else {
+    } else {
       return false
     }
   },
@@ -137,7 +134,7 @@ const Manager = {
       if (input) {
         input.setAttribute('readonly', 'readonly') // Force keyboard to hide on input field.
         input.setAttribute('disabled', 'true') // Force keyboard to hide on textarea field.
-        setTimeout(function() {
+        setTimeout(function () {
           input.blur() //actually close the keyboard
           // Remove readonly attribute after keyboard is hidden.
           input.removeAttribute('readonly')
@@ -151,7 +148,7 @@ const Manager = {
   },
   IsValid: (variable, checkStringLength = false) => {
     // Check variable -> do not check for empty string
-    if (_.isEmpty(variable) && checkStringLength === false) {
+    if (_.isEmpty(variable) && checkStringLength === false && variable !== null) {
       if (_.isEmpty(variable)) {
         return false
       }
@@ -195,8 +192,7 @@ const Manager = {
       navigator.platform.indexOf('iPad') != -1
     ) {
       directionsLink = `https://maps.apple.com/?daddr=${encodeURIComponent(address)}`
-    }
-    else {
+    } else {
       directionsLink = `https://www.google.com/maps?daddr=${encodeURIComponent(address)}`
     }
 

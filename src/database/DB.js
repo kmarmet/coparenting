@@ -130,6 +130,14 @@ const DB = {
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
     }
   },
+  AddToObject: async (path, object, property, value) => {
+    const dbRef = ref(getDatabase())
+    try {
+      await update(child(dbRef, path), {[property]: value})
+    } catch (error) {
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
+    }
+  },
   Delete: async (recordPath) => {
     const dbRef = ref(getDatabase())
     try {

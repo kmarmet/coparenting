@@ -110,8 +110,6 @@ StringManager = {
     console.log(decompressed)
     return decompressed
 
-  formatFileName: (fileName) ->
-    fileName.replaceAll(' ', '-').replaceAll('(', '').replaceAll(')', '')
 
   SpaceBetweenWords: (input) ->
     return input.toString().replace(/([a-z])([A-Z])/g, '$1 $2')

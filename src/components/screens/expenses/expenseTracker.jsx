@@ -554,7 +554,7 @@ export default function ExpenseTracker() {
                 <SelectDropdown
                   wrapperClasses={'sorting-accordion white-bg'}
                   value={sortMethod}
-                  labelText={'Sort by'}
+                  placeholder={'Sort by'}
                   options={DropdownManager.GetDefault.ExpenseSortByTypes()}
                   onSelect={HandleSortBySelection}></SelectDropdown>
               </div>

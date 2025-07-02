@@ -20,7 +20,7 @@ export default function SelectDropdown({
     <Select
       required={required}
       components={animatedComponents}
-      placeholder={`${placeholder}${required ? ' (required)' : ''}`}
+      placeholder={placeholder}
       isSearchable={false}
       isClearable={false}
       captureMenuScroll={false}
