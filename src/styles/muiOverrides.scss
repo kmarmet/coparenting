@@ -1,6 +1,6 @@
 @import './palette';
-@import 'variables';
-@import 'mixins';
+@import './variables';
+@import './mixins';
 
 #external-overrides {
   .checkbox {
@@ -594,7 +594,37 @@
     padding: 0 !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    display: block !important;
+    display: flex !important;
+
+    * {
+      height: 50px !important;
+    }
+
+    label {
+      align-items: flex-start !important;
+      justify-content: flex-start !important;
+      display: flex !important;
+      width: 100% !important;
+
+      span {
+        line-height: 1 !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        display: flex !important;
+        white-space: nowrap !important;
+        height: auto !important;
+        font-style: italic !important;
+        color: $transWhite !important;
+        font-size: 15px !important;
+        width: 100% !important;
+        font-weight: $fwLight !important;
+        text-transform: capitalize !important;
+      }
+      svg {
+        margin-right: 8px !important;
+        @include square(22px);
+      }
+    }
 
     &.MuiFormControl-fullWidth {
       height: 40px !important;
@@ -602,10 +632,6 @@
         max-width: 100% !important;
         width: 100% !important;
       }
-    }
-
-    * {
-      height: 50px !important;
     }
 
     svg {
@@ -623,7 +649,6 @@
       border-radius: $borderRadius !important;
       width: 100% !important;
       height: 50px !important;
-      //display: block !important;
       max-width: calc(100% - 20px);
       margin: 0 auto !important;
 

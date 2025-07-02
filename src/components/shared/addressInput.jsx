@@ -18,7 +18,6 @@ const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
   const listenerRef = useRef(null)
 
   const ClearInput = () => {
-    console.log('true')
     const input = document.querySelector('.google-autocomplete-input')
     if (!input) return
     inputRef.current.value = ''
@@ -65,15 +64,6 @@ const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
 
   return (
     <div className={'google-autocomplete-wrapper'}>
-      <div className="input-wrapper">
-        <FaMapLocationDot className={'input-icon maps'} />
-        <input ref={inputRef} type={'text'} defaultValue={defaultValue} className="google-autocomplete-input" placeholder="Address" />
-        <span className={'clear-input-button'} onClick={ClearInput}>
-          Clear
-        </span>
-      </div>
-      <Spacer height={3} />
-
       <SelectDropdown
         placeholder={'Address Type'}
         options={[
@@ -82,6 +72,16 @@ const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
         ]}
         onSelect={(e) => setAddressType(e?.value)}
       />
+
+      <Spacer height={3} />
+      <div className="input-wrapper">
+        <FaMapLocationDot className={'input-icon maps'} />
+        <input ref={inputRef} type={'text'} defaultValue={defaultValue} className="google-autocomplete-input" placeholder="Address" />
+        <span className={'clear-input-button'} onClick={ClearInput}>
+          CLEAR
+        </span>
+      </div>
+
       <Spacer height={3} />
     </div>
   )

@@ -504,15 +504,7 @@
 }
 
 @mixin mainColorsGradient {
-  background-image: linear-gradient(
-    180deg,
-    hsl(233deg 100% 62%) 20%,
-    hsl(239deg 100% 61%) 48%,
-    hsl(241deg 100% 62%) 66%,
-    hsl(243deg 100% 62%) 75%,
-    hsl(245deg 100% 63%) 81%,
-    hsl(246deg 100% 65%) 94%
-  );
+  background: linear-gradient(180deg, $blendPurple 50%, $gradientPurple 100%);
 }
 
 @mixin fadeEdges {
@@ -889,6 +881,7 @@
     font-size: 22px;
   }
 }
+
 @mixin hr {
   height: 1px;
   background-color: #fbfeff;
@@ -900,6 +893,36 @@
     height: 2px;
     background-image: radial-gradient(farthest-side at center top, #ffffff 0%, rgba(255, 255, 255, 0) 100%);
     opacity: 0.4;
+  }
+}
+
+@mixin formRequirementDivider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px auto;
+  width: 90%;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid $barelyVisibleWhite;
+  }
+
+  &:not(:empty)::before {
+    margin-right: 10px;
+  }
+
+  &:not(:empty)::after {
+    margin-left: 10px;
+  }
+
+  span {
+    color: $darkerTransWhite;
+    font-weight: $fwLight;
+    font-style: italic;
+    font-size: 14px;
   }
 }
 

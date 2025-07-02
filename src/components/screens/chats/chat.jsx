@@ -114,8 +114,6 @@ const Chat = ({show, hide, recipient}) => {
       key: recipient?.key,
     }
 
-    console.log(chatMessage.recipient)
-
     chatMessage.message = messageText
 
     // Existing chat

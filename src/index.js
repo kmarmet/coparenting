@@ -11,11 +11,11 @@ import AlertManager from './managers/alertManager'
 import AppManager from './managers/appManager'
 
 // CACHING
-const CACHE_NAME = 'pwa-cache-v1'
+const CACHE_NAME = 'pwa-cache-v2'
 const FILES_TO_CACHE = ['/', '/index.html', '/src/index.js', '/src/App.js', '/src/styles/bundle.css']
 
 if ('serviceWorker' in navigator) {
-  function isReachable(url) {
+  function IsReachable(url) {
     return fetch(url, {method: 'HEAD', mode: 'no-cors'})
       .then(function (resp) {
         return resp && (resp.ok || resp.type === 'opaque')
@@ -25,13 +25,13 @@ if ('serviceWorker' in navigator) {
       })
   }
 
-  function getServerUrl() {
+  function GetServerUrl() {
     return document.getElementById('serverUrl').value || window.location.origin
   }
 
-  function handleConnection() {
+  function HandleConnection() {
     if (navigator.onLine) {
-      isReachable(getServerUrl()).then(function (online) {
+      IsReachable(GetServerUrl()).then(function (online) {
         if (online) {
           // handle online status
           console.log('online')
@@ -47,7 +47,7 @@ if ('serviceWorker' in navigator) {
   }
 
   // Check connection
-  window.addEventListener('offline', handleConnection)
+  window.addEventListener('offline', HandleConnection)
 
   // Get public url
   const publicUrl = window.location.hostname.indexOf('localhost') > -1 ? 'http://localhost:1234' : process.env.REACT_APP_PUBLIC_URL
@@ -63,6 +63,7 @@ if ('serviceWorker' in navigator) {
             if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
               console.log('[SW] Update available!')
               // show custom reload prompt or auto-reload
+              AlertManager.successAlert('App Updated!')
               newSW.postMessage({action: 'skipWaiting'})
             }
           }

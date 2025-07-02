@@ -66,7 +66,8 @@ export default function EventCalendar() {
     const visitationEvents = allDayEvents.filter((x) => x?.fromVisitationSchedule === true)
     const extendedAllDayEvents = DatasetManager.CombineArrays(visitationEvents, allDayEvents)
     const eventsWithTimeFirst = DatasetManager.CombineArrays(eventsWithTime, allDayEvents)
-    const sortedEvents = DatasetManager.SortByTime(eventsWithTimeFirst, 'asc')
+    const allEvents = DatasetManager.CombineArrays(extendedAllDayEvents, eventsWithTimeFirst)
+    const sortedEvents = DatasetManager.SortByTime(allEvents, 'asc')
 
     // Set events of day
     _eventsOfDay = sortedEvents?.filter((x) => x.startDate === moment(dateToUse).format(DatetimeFormats.dateForDb))
@@ -359,14 +360,14 @@ export default function EventCalendar() {
 
   useEffect(() => {
     if (Manager.IsValid(appUpdates) && Manager.IsValid(currentUser)) {
-      UpdateOrRefreshIfNecessary().then((r) => r)
+      // UpdateOrRefreshIfNecessary().then((r) => r)
     }
   }, [appUpdates, currentUser])
 
   // ON PAGE LOAD
   useEffect(() => {
-    setState({...state, isLoading: false})
     setTimeout(() => {
+      setState({...state, isLoading: false})
       AddMonthText()
     }, 500)
   }, [])

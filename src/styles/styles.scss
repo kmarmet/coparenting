@@ -187,7 +187,8 @@
     }
 
     .clear-input-button {
-      font-size: 14px !important;
+      font-size: 12px !important;
+      margin-top: 3px;
       color: $transWhite !important;
       margin-right: 10px !important;
       position: relative;
@@ -330,7 +331,7 @@
     }
 
     [class*='-placeholder'] {
-      color: white !important;
+      color: $mediumGrey !important;
       font-size: 16px !important;
       font-weight: $fwRegular !important;
     }
@@ -637,6 +638,11 @@
     #loading-screen-wrapper {
       @include loadingScreen;
     }
+
+    .form-divider {
+      @include formRequirementDivider;
+    }
+
     .row {
       @include row;
     }

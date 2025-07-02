@@ -88,12 +88,7 @@ export default UpdateManager =
               newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
               existingSubscriber = currentSubscribers?.find (x) -> x?.email == UpdateManager?.currentUser?.email
 
-#              if existingSubscriber != null and existingSubscriber != undefined
-#                existingSubscriber.subscriptionId = subId
-#                existingSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
-#                index = DB.GetTableIndexById(currentSubscribers, existingSubscriber?.id)
-#                await DB.ReplaceEntireRecord("#{DB.tables.updateSubscribers}/#{index}", existingSubscriber)
-#              else
+              # If subscriber does not exist, add
               if not existingSubscriber
                 await DB.Add("#{DB.tables.updateSubscribers}", newSubscriber)
         , 500
@@ -118,7 +113,7 @@ export default UpdateManager =
   SendUpdate: (title, message, recipientKey, currentUser = null, category = '') ->
     allSubs = await DB.getTable("#{DB.tables.updateSubscribers}")
     subIdRecord = allSubs.find (sub) -> sub.key == recipientKey
-
+    console.log(subIdRecord)
     #    If user is not subscribed, do not send notification
     if !subIdRecord
       return false

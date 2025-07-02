@@ -85,7 +85,6 @@ export default function Form({
           )}
 
           {viewDropdown}
-          {Manager.IsValid(viewDropdown) && <hr />}
           {children}
         </div>
       </div>

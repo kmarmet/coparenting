@@ -99,12 +99,7 @@ export default UpdateManager = {
               var ref4;
               return (x != null ? x.email : void 0) === (UpdateManager != null ? (ref4 = UpdateManager.currentUser) != null ? ref4.email : void 0 : void 0);
             }) : void 0;
-            //              if existingSubscriber != null and existingSubscriber != undefined
-            //                existingSubscriber.subscriptionId = subId
-            //                existingSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
-            //                index = DB.GetTableIndexById(currentSubscribers, existingSubscriber?.id)
-            //                await DB.ReplaceEntireRecord("#{DB.tables.updateSubscribers}/#{index}", existingSubscriber)
-            //              else
+            // If subscriber does not exist, add
             if (!existingSubscriber) {
               return (await DB.Add(`${DB.tables.updateSubscribers}`, newSubscriber));
             }
@@ -138,6 +133,7 @@ export default UpdateManager = {
     subIdRecord = allSubs.find(function(sub) {
       return sub.key === recipientKey;
     });
+    console.log(subIdRecord);
     if (!subIdRecord) {
       return false;
     }

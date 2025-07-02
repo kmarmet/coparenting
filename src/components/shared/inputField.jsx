@@ -6,6 +6,7 @@ import {DebounceInput} from 'react-debounce-input'
 import {MdEmail, MdNotes} from 'react-icons/md'
 import {PiArrowBendLeftUpFill, PiLinkSimpleHorizontalBold} from 'react-icons/pi'
 import {RiPhoneFill} from 'react-icons/ri'
+import {WiTime4} from 'react-icons/wi'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context.js'
@@ -14,26 +15,24 @@ import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 
 function InputField({
-                      wrapperClasses = '',
-                      labelText = '',
-                      inputType = InputTypes.text,
-                      required,
-                      onChange,
-                      defaultValue = null,
-                      inputClasses = '',
-                      onKeyUp = (e) => {
-                      },
-                      onDateOrTimeSelection = (e) => {
-                      },
-                      timeViews = ['hours', 'minutes'],
-                      dateViews = ['month', 'day'],
-                      placeholder = '',
-                      dateFormat = DatetimeFormats.readableMonthAndDay,
-                      inputName = '',
-                      isCurrency = false,
-                      customDebounceDelay = 1000,
-                      errorMessage = '',
-                    }) {
+  wrapperClasses = '',
+  labelText = '',
+  inputType = InputTypes.text,
+  required,
+  onChange,
+  defaultValue = null,
+  inputClasses = '',
+  onKeyUp = (e) => {},
+  onDateOrTimeSelection = (e) => {},
+  timeViews = ['hours', 'minutes'],
+  dateViews = ['month', 'day'],
+  placeholder = '',
+  dateFormat = DatetimeFormats.readableMonthAndDay,
+  inputName = '',
+  isCurrency = false,
+  customDebounceDelay = 1000,
+  errorMessage = '',
+}) {
   const {state, setState} = useContext(globalState)
   const {refreshKey, theme} = state
   const {currentUser} = useCurrentUser()
@@ -101,8 +100,14 @@ function InputField({
           <>
             <MobileTimePicker
               slotProps={{
-                actionBar: {
-                  actions: ['clear', 'accept'],
+                actionBar: {actions: ['clear', 'accept']},
+                textField: {
+                  label: (
+                    <span>
+                      <WiTime4 fontSize="small" />
+                      {labelText}
+                    </span>
+                  ),
                 },
               }}
               name={inputName}
@@ -122,7 +127,7 @@ function InputField({
         {inputType === InputTypes.text && (
           <DebounceInput
             value={Manager.IsValid(defaultValue) ? defaultValue : ''}
-            placeholder={`${placeholder}${required ? ' (required)' : ''}`}
+            placeholder={placeholder}
             className={`${inputClasses}`}
             onChange={onChange}
             name={inputName}
@@ -160,7 +165,7 @@ function InputField({
               name={inputName}
               maxLength={16}
               className={`${inputClasses} with-icon`}
-              placeholder={`${placeholder}${required ? ' (required)' : ''}`}
+              placeholder={placeholder}
               key={refreshKey}
               pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
               defaultValue={defaultValue}
@@ -181,7 +186,7 @@ function InputField({
             <input
               type="url"
               id="url"
-              placeholder={`${placeholder}${required ? ' (required)' : ''}`}
+              placeholder={placeholder}
               onChange={(e) => {
                 onChange(e)
               }}
@@ -200,7 +205,7 @@ function InputField({
             <input
               type="email"
               id="email"
-              placeholder={`${placeholder}${required ? ' (required)' : ''}`}
+              placeholder={placeholder}
               onChange={onChange}
               name={inputName}
               className={`${inputClasses} with-icon`}
@@ -215,7 +220,7 @@ function InputField({
           <input
             type="password"
             id="password"
-            placeholder={`${placeholder}${required ? ' (required)' : ''}`}
+            placeholder={placeholder}
             onChange={onChange}
             className={inputClasses}
             defaultValue={defaultValue}
@@ -229,7 +234,7 @@ function InputField({
             <MdNotes className={'input-icon notes'} />
             <textarea
               id="textarea"
-              placeholder={`${placeholder}${required ? ' (required)' : ''}`}
+              placeholder={placeholder}
               onChange={(e) => {
                 onChange(e)
               }}
@@ -245,7 +250,7 @@ function InputField({
         {/* CHAT */}
         {inputType === InputTypes.chat && (
           <textarea
-            placeholder={`${placeholder}${required ? ' (required)' : ''}`}
+            placeholder={placeholder}
             onChange={(e) => {
               onChange(e)
             }}

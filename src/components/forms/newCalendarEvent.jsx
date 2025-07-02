@@ -33,6 +33,7 @@ import AddressInput from '../shared/addressInput'
 import Button from '../shared/button'
 import CheckboxGroup from '../shared/checkboxGroup'
 import Form from '../shared/form'
+import FormDivider from '../shared/formDivider'
 import InputField from '../shared/inputField'
 import Label from '../shared/label'
 import MyConfetti from '../shared/myConfetti.js'
@@ -277,6 +278,7 @@ export default function NewCalendarEvent() {
           />
         }>
         <div id="calendar-event-form-container" className={`${theme}`}>
+          <FormDivider text={'Required'} />
           {/* EVENT NAME */}
           <InputField
             inputClasses="event-title-input"
@@ -319,8 +321,10 @@ export default function NewCalendarEvent() {
               }}
             />
           )}
+
+          <FormDivider text={'Optional'} />
           {view?.label === 'Single Day' && (
-            <>
+            <div className={'flex gap'}>
               {/* EVENT WITH TIME */}
               <InputField
                 labelText={'Start Time'}
@@ -334,11 +338,8 @@ export default function NewCalendarEvent() {
                 inputType={InputTypes.time}
                 onDateOrTimeSelection={(e) => (formRef.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}
               />
-            </>
+            </div>
           )}
-
-          <hr />
-
           {/* SHARE WITH */}
           <SelectDropdown
             options={defaultShareWithOptions}
@@ -347,7 +348,7 @@ export default function NewCalendarEvent() {
             onSelect={setSelectedShareWithOptions}
           />
 
-          <Spacer height={2} />
+          <Spacer height={3} />
 
           {/* REMINDER */}
           {view?.label === 'Single Day' && (
@@ -361,7 +362,7 @@ export default function NewCalendarEvent() {
             />
           )}
 
-          <Spacer height={2} />
+          <Spacer height={3} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.IsValid(children) && (
@@ -373,7 +374,35 @@ export default function NewCalendarEvent() {
             />
           )}
 
-          <Spacer height={8} />
+          {/* ADDRESS */}
+          <AddressInput
+            wrapperClasses={Manager.IsValid(formRef.current.address, true) ? 'show-label' : ''}
+            placeholder={'Location'}
+            required={false}
+            onChange={(address) => (formRef.current.address = address)}
+          />
+
+          {/* URL/WEBSITE */}
+          <InputField
+            placeholder={'Website/Link'}
+            required={false}
+            inputType={InputTypes.url}
+            onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
+          />
+
+          {/* PHONE */}
+          <InputField
+            inputType={InputTypes.phone}
+            placeholder="Phone"
+            onChange={(e) => (formRef.current.phone = StringManager.FormatPhone(e.target.value))}
+          />
+          {/* NOTES */}
+          <InputField
+            placeholder={'Notes'}
+            required={false}
+            inputType={InputTypes.textarea}
+            onChange={(e) => (formRef.current.notes = e.target.value)}
+          />
 
           {/* IS VISITATION? */}
           <div>
@@ -447,37 +476,6 @@ export default function NewCalendarEvent() {
               )}
             </>
           )}
-
-          <Spacer height={10} />
-
-          {/* URL/WEBSITE */}
-          <InputField
-            placeholder={'Website/Link'}
-            required={false}
-            inputType={InputTypes.url}
-            onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
-          />
-
-          {/* ADDRESS */}
-          <AddressInput
-            wrapperClasses={Manager.IsValid(formRef.current.address, true) ? 'show-label' : ''}
-            placeholder={'Location'}
-            required={false}
-            onChange={(address) => (formRef.current.address = address)}
-          />
-          {/* PHONE */}
-          <InputField
-            inputType={InputTypes.phone}
-            placeholder="Phone"
-            onChange={(e) => (formRef.current.phone = StringManager.FormatPhone(e.target.value))}
-          />
-          {/* NOTES */}
-          <InputField
-            placeholder={'Notes'}
-            required={false}
-            inputType={InputTypes.textarea}
-            onChange={(e) => (formRef.current.notes = e.target.value)}
-          />
         </div>
       </Form>
     </>
