@@ -133,7 +133,7 @@ const Chat = ({show, hide, recipient}) => {
     if (!chat?.isPausedFor?.includes(recipient?.key)) {
       UpdateManager.SendUpdate(
         'New Message 🗯️',
-        `You have an unread message from ${StringManager.GetFirstNameOnly(currentUser.name)}`,
+        `${StringManager.GetFirstNameOnly(currentUser.name)} Messaged You`,
         recipient?.key,
         currentUser,
         ActivityCategory.chats

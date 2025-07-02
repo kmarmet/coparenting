@@ -129,7 +129,7 @@ export default AppManager =
       navigator.clearAppBadge()
 
   IsDevMode: ->
-    location.hostname == 'localhost'
+    return window.location.hostname == 'localhost'
 
   GetAccountType: (currentUser) ->
     if Manager.IsValid(currentUser)

@@ -14,6 +14,7 @@ StateObj =
   loadingText: 'Preparing your pathway to peace...'
   menuIsOpen: false
   messageToUser: null
+  oneSignalInitialized: false
   dateToEdit: moment().format(DateFormats.dateForDb)
   modalIsOpen: false
   notificationCount: 0,

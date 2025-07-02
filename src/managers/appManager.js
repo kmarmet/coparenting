@@ -154,7 +154,7 @@ export default AppManager = {
     }
   },
   IsDevMode: function() {
-    return location.hostname === 'localhost';
+    return window.location.hostname === 'localhost';
   },
   GetAccountType: function(currentUser) {
     if (Manager.IsValid(currentUser)) {

@@ -10,7 +10,25 @@ import Spacer from './components/shared/spacer'
 import AlertManager from './managers/alertManager'
 import AppManager from './managers/appManager'
 
+// CACHING
+const CACHE_NAME = 'pwa-cache-v1'
+const FILES_TO_CACHE = ['/', '/index.html', '/src/index.js', '/src/App.js', '/src/styles/bundle.css']
+
 if ('serviceWorker' in navigator) {
+  function isReachable(url) {
+    return fetch(url, {method: 'HEAD', mode: 'no-cors'})
+      .then(function (resp) {
+        return resp && (resp.ok || resp.type === 'opaque')
+      })
+      .catch(function (err) {
+        console.warn('[conn test failure]:', err)
+      })
+  }
+
+  function getServerUrl() {
+    return document.getElementById('serverUrl').value || window.location.origin
+  }
+
   function handleConnection() {
     if (navigator.onLine) {
       isReachable(getServerUrl()).then(function (online) {
@@ -27,85 +45,81 @@ if ('serviceWorker' in navigator) {
       AlertManager.throwError('No Internet', 'Please find an area with a stronger network connection and reopen the app.')
     }
   }
+
+  // Check connection
   window.addEventListener('offline', handleConnection)
-  // eslint-disable-next-line no-undef
+
+  // Get public url
   const publicUrl = window.location.hostname.indexOf('localhost') > -1 ? 'http://localhost:1234' : process.env.REACT_APP_PUBLIC_URL
-  // console.Log(`${publicUrl}/OneSignalSDKWorker.js`)
+
+  // Register the service worker
   if (!AppManager.IsDevMode()) {
     navigator.serviceWorker
       .register(`${publicUrl}/OneSignalSDKWorker.js`)
       .then((registration) => {
-        // console.Log(registration);
+        registration.onupdatefound = () => {
+          const newSW = registration.installing
+          newSW.onstatechange = () => {
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('[SW] Update available!')
+              // show custom reload prompt or auto-reload
+              newSW.postMessage({action: 'skipWaiting'})
+            }
+          }
+        }
 
         console.log('[SW] service Worker is registered at', registration.scope)
       })
       .catch((err) => {
         console.error('[SW] service Worker registration failed:', err)
       })
-  }
-
-  // Update content
-  navigator.serviceWorker.ready.then((registration) => {
-    registration.update().then(() => {
-      // console.Log('PWA Updated')
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload()
     })
-  })
-  function isReachable(url) {
-    /**
-     * Note: fetch() still "succeeds" for 404s on subdirectories,
-     * which is ok when only testing for domain reachability.
-     *
-     * Example:
-     *   https://google.com/noexist does not throw
-     *   https://noexist.com/noexist does throw
-     */
-    return fetch(url, {method: 'HEAD', mode: 'no-cors'})
-      .then(function (resp) {
-        return resp && (resp.ok || resp.type === 'opaque')
-      })
-      .catch(function (err) {
-        console.warn('[conn test failure]:', err)
-      })
   }
 
-  function getServerUrl() {
-    return document.getElementById('serverUrl').value || window.location.origin
-  }
-  // eslint-disable-next-line no-restricted-globals
+  // Install
   self.addEventListener('install', (event) => {
-    // eslint-disable-next-line no-restricted-globals
+    console.log('[SW] Install')
+    event.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.addAll(FILES_TO_CACHE)
+      })
+    )
     self.skipWaiting()
   })
 
+  // Activate
+  self.addEventListener('activate', (event) => {
+    console.log('[SW] Activate')
+    event.waitUntil(
+      caches.keys().then((keyList) =>
+        Promise.all(
+          keyList.map((key) => {
+            if (key !== CACHE_NAME) return caches.delete(key)
+          })
+        )
+      )
+    )
+    self.clients.claim()
+  })
+
+  // Fetch: Serve from cache, fallback to network
   self.addEventListener('fetch', (event) => {
-    event.respondWith(fetch(event.request))
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        return cachedResponse || fetch(event.request)
+      })
+    )
   })
 
-  // Listen for the appinstalled event (is app installed?)
-  window.addEventListener('appinstalled', () => {
-    // If visible, hide the install promotion
-    // Log install to analytics
-    console.log('INSTALL: Success')
+  // Message
+  self.addEventListener('message', (event) => {
+    console.log('[SW] message')
+    if (event.data?.action === 'skipWaiting') {
+      self.skipWaiting()
+    }
   })
-
-  if (window.matchMedia('(display-mode: standalone)').matches) {
-    // do things here
-    // set a variable to be used when calling something
-    // e.g. call Google Analytics to track standalone use
-    console.log('installed')
-  }
-
-  // function forceSWupdate() {
-  //   navigator.serviceWorker.getRegistrations().then(function (registrations) {
-  //     for (let registration of registrations) {
-  //       console.Log(registration)
-  //       registration.update().then((r) => {
-  //         console.Log('App Updated')
-  //       })
-  //     }
-  //   })
-  // }
-  // forceSWupdate()
 }
 const logout = () => {
   localStorage.removeItem('rememberKey')

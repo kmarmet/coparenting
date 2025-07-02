@@ -61,10 +61,9 @@ export default UpdateManager =
       UpdateManager.currentUser = currentUser
       window.OneSignalDeferred = window.OneSignalDeferred or []
       OneSignalDeferred.push ->
-        OneSignal.init
-          appId: UpdateManager.appId
-          .then () ->
+        OneSignal.init(appId: UpdateManager.appId).then ->
           OneSignal.User.PushSubscription.addEventListener 'change', UpdateManager.eventListener
+
     catch error
       LogManager.Log("Error: #{error} | Code File:  | Function:  ")
 
@@ -73,10 +72,10 @@ export default UpdateManager =
     subId = event?.current?.id
 
     try
-      if userSubscribed && subId
+      if userSubscribed and subId
         newSubscriber = new UpdateSubscriber()
 
-        setTimeout  ->
+        setTimeout ->
           newSubscriber.email = UpdateManager?.currentUser?.email
           newSubscriber.key = UpdateManager?.currentUser?.key
           newSubscriber.id = Manager.GetUid()
@@ -84,24 +83,24 @@ export default UpdateManager =
 
           fetch("https://api.onesignal.com/apps/#{UpdateManager.appId}/subscriptions/#{subId}/user/identity")
             .then (identity) ->
-            userIdentity = await identity.json()
-            currentUpdates = await DB.getTable("#{DB.tables.updateSubscribers}")
-            newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
+              userIdentity = await identity.json()
+              currentSubscribers = await DB.getTable("#{DB.tables.updateSubscribers}")
+              newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
+              existingSubscriber = currentSubscribers?.find (x) -> x?.email == UpdateManager?.currentUser?.email
 
-            # If user already exists -> replace record
-            if Manager.IsValid(existingSubscriber)
-              existingSubscriber = currentUpdates.find((x) => x?.email == UpdateManager?.currentUser?.email)
-              existingSubscriber.subscriptionId = subId;
-              existingSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
-              index = DB.GetTableIndexById(currentUpdates, existingSubscriber?.id)
-              await DB.updateEntireRecord("#{DB.tables.updateSubscribers}/#{index}", existingSubscriber)
-# Else create new record
-            else
-              await DB.Add("#{DB.tables.updateSubscribers}", newSubscriber)
+#              if existingSubscriber != null and existingSubscriber != undefined
+#                existingSubscriber.subscriptionId = subId
+#                existingSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
+#                index = DB.GetTableIndexById(currentSubscribers, existingSubscriber?.id)
+#                await DB.ReplaceEntireRecord("#{DB.tables.updateSubscribers}/#{index}", existingSubscriber)
+#              else
+              if not existingSubscriber
+                await DB.Add("#{DB.tables.updateSubscribers}", newSubscriber)
         , 500
 
     catch error
       LogManager.Log("Error: #{error} | Code File:  | Function:  ")
+
 
   getUserSubId: (currentUserPhoneOrEmail, phoneOrEmail = "email") ->
     existingRecord = await DB.find(DB.tables.updateSubscribers, [phoneOrEmail, currentUserPhoneOrEmail], true)
