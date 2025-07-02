@@ -7,6 +7,8 @@ import UpdateManager from "../managers/updateManager";
 
 import LogManager from "../managers/logManager";
 
+import moment from "moment-timezone";
+
 Apis = {
   Sapler: {
     GetToneOrSentiment: function(toneOrSentiment, message) {
@@ -20,13 +22,13 @@ Apis = {
           body: JSON.stringify({
             key: '7E3IFZEMEKYEHVIMJHENF9ETHHTKARA4',
             text: message
+          }).then(function(response) {
+            if (Manager.IsValid(response)) {
+              return response;
+            } else {
+              return reject("Unable to parse Apis response");
+            }
           })
-        }).then(function(response) {
-          if (Manager.IsValid(response)) {
-            return response;
-          } else {
-            return reject("Unable to parse Apis response");
-          }
         }).then(function(result) {
           return resolve(result.json());
         }).catch(function(error) {
@@ -156,6 +158,21 @@ Apis = {
           });
         }
       });
+    }
+  },
+  Dates: {
+    GetHolidays: async function() {
+      return (await new Promise(async function(resolve, reject) {
+        var error, response, result;
+        try {
+          response = (await fetch("https://date.nager.at/api/v3/PublicHolidays/2019/US"));
+          result = (await response.json());
+          return resolve(result);
+        } catch (error1) {
+          error = error1;
+          return LogManager.Log(`Error: ${error} | Code File: Apis | Function: Dates.GetHolidays`);
+        }
+      }));
     }
   }
 };

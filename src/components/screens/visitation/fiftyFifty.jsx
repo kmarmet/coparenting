@@ -122,7 +122,6 @@ export default function FiftyFifty({hide, showCard}) {
             <Spacer height={5} />
             <p>
               Example <br /> If you have your children (in August) Wednesday-Friday and then Monday-Wednesday during the following week:
-              <Spacer height={5} />
               <span>You would choose: 8/14-8/16 for the first period and 8/19-8/21 for the second period.</span>
             </p>
           </AccordionDetails>

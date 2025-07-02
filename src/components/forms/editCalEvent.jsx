@@ -22,6 +22,7 @@ import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
+import CalendarEvent from '../../models/new/calendarEvent'
 import AddressInput from '../shared/addressInput'
 import DetailBlock from '../shared/detailBlock'
 import Form from '../shared/form'
@@ -64,7 +65,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
 
   // REF
-  const formRef = useRef(null)
+  const formRef = useRef({...new CalendarEvent()})
 
   const ResetForm = async (alertMessage = '') => {
     Manager.ResetForm('edit-event-form')
@@ -386,7 +387,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             isNavLink={true}
                             text={event?.address}
                             linkUrl={event?.address}
-                            title={'Navigation'}
+                            title={'Go'}
                           />
                         </>
                       )}

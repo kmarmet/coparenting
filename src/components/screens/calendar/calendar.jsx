@@ -352,6 +352,7 @@ export default function EventCalendar() {
           legendButton.classList.toggle('active')
         })
       }
+
       SetHolidaysState().then((r) => r)
     }
   }, [currentScreen, currentUserIsLoading])
@@ -364,6 +365,7 @@ export default function EventCalendar() {
 
   // ON PAGE LOAD
   useEffect(() => {
+    setState({...state, isLoading: false})
     setTimeout(() => {
       AddMonthText()
     }, 500)
@@ -471,7 +473,9 @@ export default function EventCalendar() {
               eventsOfActiveDay={eventsOfActiveDay}
               setEventToEdit={(ev) => {
                 setEventToEdit(ev)
-                setShowEditCard(true)
+                setTimeout(() => {
+                  setShowEditCard(true)
+                }, 200)
               }}
             />
           )}

@@ -8,6 +8,10 @@ AppImages = {
     onboarding: 'onboarding'
   },
   misc: {
+    loadingGif: {
+      name: 'loading',
+      url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fmisc%2Floading.gif?alt=media&token=3573a188-1492-4093-984a-cd6344b46eb9"
+    },
     brokenImagePlaceholder: 'broken-image-placeholder',
     safari: {
       name: 'safari',

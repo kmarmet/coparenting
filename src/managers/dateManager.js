@@ -1,10 +1,11 @@
 import moment from 'moment-timezone'
+import Apis from '../api/apis'
 import DatetimeFormats from '../constants/datetimeFormats'
 import DB from '../database/DB'
-import DatasetManager from '../managers/datasetManager.coffee'
 import Manager from '../managers/manager'
 import CalendarEvent from '../models/new/calendarEvent'
 import CalendarManager from './calendarManager.js'
+import DatasetManager from './datasetManager'
 import StringManager from './stringManager'
 
 const DateManager = {
@@ -196,50 +197,50 @@ const DateManager = {
     }
     return weeklyEvents
   },
-  getHolidays: async () =>
+  GetEasterDate: (year) => {
+    const f = Math.floor,
+      G = year % 19,
+      C = f(year / 100),
+      H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30,
+      I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11)),
+      J = (year + f(year / 4) + I + 2 - C + f(C / 4)) % 7,
+      L = I - J,
+      month = 3 + f((L + 40) / 44),
+      day = L + 28 - 31 * f(month / 4)
+    return moment({year, month: month - 1, day}).format('YYYY-MM-DD')
+  },
+  GetNthSunday(year, month, n) {
+    let date = moment({year, month, day: 1})
+    let count = 0
+    while (count < n) {
+      if (date.day() === 0) count++
+      if (count < n) date.add(1, 'day')
+    }
+    return date.format('YYYY-MM-DD')
+  },
+  GetHolidays: async () =>
     new Promise(async (resolve) => {
-      await fetch(`https://date.nager.at/api/v3/publicholidays/${moment().year()}/US`)
-        .then((response) => response.json())
-        .then((holidayArray) => {
-          let holidays = []
-          let unique = DatasetManager.getUniqueByPropValue(holidayArray, 'name')
-          unique = unique.map((obj) => {
-            if (obj.name === 'Juneteenth National Independence Day') {
-              obj.name = 'Juneteenth'
-              return obj
-            }
-            return obj
-          })
+      const holidayArray = await Apis.Dates.GetHolidays()
+      const currentYear = moment().year()
 
-          holidays = unique
+      let holidays = DatasetManager.getUniqueByPropValue(holidayArray, 'name').map(({name, ...rest}) => ({
+        name: name === 'Juneteenth National Independence Day' ? 'Juneteenth' : name,
+        ...rest,
+      }))
 
-          holidays.push({
-            name: 'Christmas Eve',
-            date: `${moment().year()}-12-24`,
-          })
-          holidays.push({
-            name: "New Year's Eve",
-            date: `${moment().year()}-12-31`,
-          })
-          holidays.push({
-            name: 'Halloween',
-            date: `${moment().year()}-10-31`,
-          })
-          holidays.push({
-            name: 'Easter',
-            date: `${moment().year()}-04-20`,
-          })
-          holidays.push({
-            name: "Father's Day",
-            date: `${moment().year()}-06-15`,
-          })
-          holidays.push({
-            name: "Mother's Day",
-            date: `${moment().year()}-05-11`,
-          })
+      const additionalHolidays = [
+        {name: 'Christmas Eve', date: `${currentYear}-12-24`},
+        {name: "New Year's Eve", date: `${currentYear}-12-31`},
+        {name: 'Halloween', date: `${currentYear}-10-31`},
+        {name: 'Easter', date: DateManager.GetEasterDate(currentYear)},
+        {name: "Mother's Day", date: DateManager.GetNthSunday(currentYear, 4, 2)}, // May = 4
+        {name: "Father's Day", date: DateManager.GetNthSunday(currentYear, 5, 3)}, // June = 5
+      ]
 
-          resolve(holidays)
-        })
+      holidays.push(...additionalHolidays)
+
+      resolve(holidays)
+      console.log(holidays)
     }),
   getDuration: (timeInterval, start, end) => {
     if (timeInterval === 'days') {
@@ -260,7 +261,7 @@ const DateManager = {
   },
   setHolidays: async () => {
     await DateManager.deleteAllHolidays()
-    const holidays = await DateManager.getHolidays()
+    const holidays = await DateManager.GetHolidays()
     let holidayEvents = []
     const switchCheck = (title, holidayName) => {
       console.log(title, holidayName)

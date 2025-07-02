@@ -72,39 +72,39 @@ CalendarMapper =
   holidayNameToDate: (name) ->
     switch true
       when name == "New Year's Day"
-        '01/01'
+        return '01/01'
       when name == "Martin Luther King Day"
-        '01/15'
+        return '01/15'
       when name == "Good Friday"
-        '05/29'
+        return '05/29'
       when name == 'Easter'
-        '04/20'
+        return '04/20'
       when name == 'Juneteenth'
-        '06/19'
+        return '06/19'
       when name == "Father's Day"
-        '06/15'
+        return '06/15'
       when name == "Mother's Day"
-        '05/11'
+        return '05/11'
       when name == 'Memorial Day'
-        '05/27'
+        return '05/27'
       when name == 'Independence Day'
-        '07/04'
+        return '07/04'
       when name == 'Labor Day'
-        '09/02'
+        return '09/02'
       when name == 'Columbus Day'
-        '10/14'
+        return '10/14'
       when name == 'Halloween'
-        '10/31'
+        return '10/31'
       when name == 'Christmas Day'
-        '12/25'
+        return '12/25'
       when name == 'Christmas Eve'
-        '12/24'
+        return '12/24'
       when name == "New Year's Eve"
-        '12/31'
+        return '12/31'
       when name == "Veteran's Day"
-        '11/11'
+        return '11/11'
       when name == "Thanksgiving Day"
-        '11/28'
+        return '11/28'
       else
         null
   holidayDateToName: (date) ->

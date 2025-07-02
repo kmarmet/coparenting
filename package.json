@@ -102,6 +102,8 @@
     "watch-coffee": "coffee --watch --compile src",
     "buildWithNewImages": "npm run deleteBuild && parcel build public/index.html && npm run deleteAllButNewImages && compress-cra",
     "buildWithNewJpg": "npm run deleteBuild && npm run removeParcelCache && parcel build public/index.html && npm run deleteAllButJpg && compress-cra",
+    "buildWithNewGif": "npm run deleteBuild && npm run removeParcelCache && parcel build public/index.html && npm run deleteAllButGif && compress-cra",
+    "deleteAllButGif": "cd dist && del /S /F *.jpg && del /S /F *.webmanifest && del /S /F *.ico && del /S /F *.png && del /S /F *.ttf && del /S /F *.woff && del /S /F *.woff2 && del /S /F *.svg",
     "buildWithSvgAndJpg": "npm run deleteBuild && npm run removeParcelCache && parcel build public/index.html && npm run deleteAllButSvgAndJpg && compress-cra",
     "buildWithSvgAndPng": "npm run deleteBuild && npm run removeParcelCache && parcel build public/index.html && npm run deleteAllButSvgAndPng && compress-cra",
     "buildWithJpgAndPng": "npm run deleteBuild && npm run removeParcelCache && parcel build public/index.html && npm run deleteAllButJpgAndPng && compress-cra",

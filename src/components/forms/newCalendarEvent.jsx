@@ -222,12 +222,13 @@ export default function NewCalendarEvent() {
     setSelectedChildrenOptions(DropdownManager.GetSelected.Children([], children))
     setSelectedReminderOptions(DropdownManager.GetSelected.Reminders([]))
     setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
-    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
+    console.log(DropdownManager.GetDefault.ShareWith([], coParents))
+    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children || [], coParents))
     setView({label: 'Single Day', value: 'Single Day'})
   }
 
   useEffect(() => {
-    if (Manager.IsValid(children) && Manager.IsValid(users)) {
+    if (Manager.IsValid(children) || Manager.IsValid(users)) {
       SetDefaultDropdownOptions()
     }
   }, [children, coParents])
@@ -442,7 +443,7 @@ export default function NewCalendarEvent() {
                     dynamicInputs.map((input, index) => {
                       return <div key={index}>{input}</div>
                     })}
-                  <Button text="Add Date" theme={ButtonThemes.grey} classes="add-date-button center block" onClick={AppendDynamicInput} />
+                  <Button text="Add Date" theme={ButtonThemes.grey} classes="add-date-button center display-block" onClick={AppendDynamicInput} />
                 </>
               )}
             </>

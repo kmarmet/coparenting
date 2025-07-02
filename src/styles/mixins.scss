@@ -849,6 +849,46 @@
 /*#endregion  POSITIONING*/
 
 /*#region  COMPONENTS*/
+@mixin loadingScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+
+  background-image: linear-gradient(
+    180deg,
+    hsl(233deg 100% 62%) 20%,
+    hsl(239deg 100% 61%) 48%,
+    hsl(241deg 100% 62%) 66%,
+    hsl(243deg 100% 62%) 75%,
+    hsl(245deg 100% 63%) 81%,
+    hsl(246deg 100% 65%) 94%
+  );
+
+  &.active {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+
+  img {
+    @include square(150px);
+  }
+
+  p {
+    text-align: center;
+    color: white;
+    font-size: 22px;
+  }
+}
 @mixin hr {
   height: 1px;
   background-color: #fbfeff;
@@ -3086,7 +3126,7 @@
   &.active {
     opacity: 1;
     pointer-events: auto;
-    transition: all 0.7s ease;
+    transition: all 0.4s ease;
   }
 
   // Edit/Details/Single Day .etc

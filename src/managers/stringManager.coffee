@@ -46,7 +46,7 @@ StringManager = {
       names = fullName.split(" ")
       firstName = names[0]
       lastNameInitial = if names?.length > 1 then names?[names?.length - 1]?[0] else ""
-      return "#{firstName} #{lastNameInitial}"
+      return "#{firstName} #{StringManager.UppercaseFirstLetterOfAllWords(lastNameInitial)}"
     else
       return fullName
 
@@ -219,6 +219,10 @@ StringManager = {
     if uppercase
       title = StringManager.UppercaseFirstLetterOfAllWords(title)
 
+    title = StringManager.removeSpecialChars(title)
+    title = StringManager.RemoveLeadingAndTrailingSpaces(title)
+    title = StringManager.FixCamelCaseSentence(title)
+
     title = title.toString()
       .replaceAll(" To ", " to ")
       .replaceAll(" A ", " a ")
@@ -245,11 +249,6 @@ StringManager = {
       .replaceAll(" Per ", " per ")
       .replaceAll(" Up ", " up ")
       .replaceAll(" Via ", " via ")
-
-    title = StringManager.removeSpecialChars(title)
-    title = StringManager.RemoveLeadingAndTrailingSpaces(title)
-    title = StringManager.FixCamelCaseSentence(title)
-
 
     return title
 

@@ -75,7 +75,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
     }
     setTimeout(() => {
       setState({...state, dateToEdit: clickedEvent.startDate})
-    }, 900)
+    }, 300)
     setEventToEdit(clickedEvent)
   }
 

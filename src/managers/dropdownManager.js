@@ -222,36 +222,24 @@ DropdownManager = {
         value: "timeOfEvent"
       }
     ],
-    ShareWith: function(children, coParents, coParentsOnly = false) {
-      var childAccounts, merged, options;
-      options = [];
-      // CoParents Only
-      if (Manager.IsValid(coParents) && coParentsOnly) {
-        coParents = coParents.filter(function(x) {
-          return x != null ? x.userKey : void 0;
-        });
-        options = coParents.map(function(x) {
-          return {
-            label: x != null ? x.name : void 0,
-            value: (x != null ? x.userKey : void 0) || (x != null ? x.key : void 0)
-          };
-        });
-      } else {
-        // Children and CoParents
-        if (Manager.IsValid(children) && Manager.IsValid(coParents)) {
-          childAccounts = children.filter(function(x) {
-            return x != null ? x.userKey : void 0;
-          });
-          merged = DatasetManager.CombineArrays(childAccounts, coParents);
-          options = merged.map(function(x) {
-            var ref;
-            return {
-              label: (x != null ? (ref = x.general) != null ? ref.name : void 0 : void 0) || (x != null ? x.name : void 0),
-              value: (x != null ? x.userKey : void 0) || (x != null ? x.key : void 0)
-            };
-          });
-        }
+    ShareWith: function(children, coParents) {
+      var childAccounts, merged, options, ref;
+      if (!(Manager.IsValid(children) || Manager.IsValid(coParents))) {
+        return [];
       }
+      options = [];
+      childAccounts = (ref = children || []) != null ? ref.filter(function(x) {
+        return x != null ? x.userKey : void 0;
+      }) : void 0;
+      coParents = coParents || [];
+      merged = DatasetManager.CombineArrays(childAccounts, coParents);
+      options = merged.map(function(x) {
+        var ref1, ref2, ref3;
+        return {
+          label: (ref1 = StringManager.GetFirstNameOnly(x != null ? (ref2 = x.general) != null ? ref2.name : void 0 : void 0)) != null ? ref1 : StringManager.GetFirstNameAndLastInitial(x != null ? x.name : void 0),
+          value: (ref3 = x != null ? x.userKey : void 0) != null ? ref3 : x != null ? x.key : void 0
+        };
+      });
       return options;
     },
     CoParents: function(users) {

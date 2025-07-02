@@ -1,6 +1,7 @@
 import Manager from "../managers/manager"
 import UpdateManager from "../managers/updateManager"
 import LogManager from "../managers/logManager"
+import moment from "moment-timezone"
 
 Apis =
   Sapler:
@@ -14,11 +15,11 @@ Apis =
           body: JSON.stringify
             key: '7E3IFZEMEKYEHVIMJHENF9ETHHTKARA4'
             text: message
-        .then (response) ->
-          if Manager.IsValid(response)
-            return response
-          else
-            reject "Unable to parse Apis response"
+          .then (response) ->
+            if Manager.IsValid(response)
+              return response
+            else
+              reject "Unable to parse Apis response"
         .then (result) -> resolve result.json()
         .catch (error) -> reject error
 
@@ -124,10 +125,20 @@ Apis =
         # Do not send notification in dev
         if !window.location.href.includes("localhost")
           fetch "https://api.onesignal.com/notifications", requestOptions
-          .then (response) -> response.text()
-          .then (result) ->
-            console.log("Sent to #{subId}")
-          .catch (error) ->
-            LogManager.Log("Error: #{error} | Code File: Apis | Function: OneSignal.SendUpdate")
+            .then (response) -> response.text()
+            .then (result) ->
+              console.log("Sent to #{subId}")
+            .catch (error) ->
+              LogManager.Log("Error: #{error} | Code File: Apis | Function: OneSignal.SendUpdate")
+
+  Dates:
+    GetHolidays: () ->
+      return await new Promise (resolve, reject) ->
+        try
+          response = await fetch "https://date.nager.at/api/v3/PublicHolidays/2019/US"
+          result = await response.json()
+          resolve result
+        catch error
+          LogManager.Log("Error: #{error} | Code File: Apis | Function: Dates.GetHolidays")
 
 export default Apis

@@ -4,15 +4,14 @@ import SelectDropdown from './selectDropdown'
 import Spacer from './spacer'
 
 export default function ViewDropdown({
-                                       selectedView,
-                                       views = ViewTypes.DetailsEdit.All,
-                                       dropdownPlaceholder = '',
-                                       onSelect = (e) => {
-                                       },
-                                       wrapperClasses = '',
-                                       show = false,
-                                       hasSpacer = false,
-                                     }) {
+  selectedView,
+  views = ViewTypes.DetailsEdit.All,
+  dropdownPlaceholder = '',
+  onSelect = (e) => {},
+  wrapperClasses = '',
+  show = false,
+  hasSpacer = false,
+}) {
   useEffect(() => {
     onSelect(selectedView)
   }, [selectedView])

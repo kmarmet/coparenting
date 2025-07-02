@@ -184,7 +184,7 @@ const VisitationManager = {
     return dateArray
   },
   getVisitationHolidays: async () => {
-    let holidays = await DateManager.getHolidays()
+    let holidays = await DateManager.GetHolidays()
     let visitationHolidays = []
     let visitationRelatedHolidays = [
       "New Year's Day",

@@ -136,20 +136,17 @@ DropdownManager =
       ]
 
 
-    ShareWith: (children, coParents, coParentsOnly = false) ->
+    ShareWith: (children, coParents) ->
+      return [] unless Manager.IsValid(children) or Manager.IsValid(coParents)
       options = []
+      childAccounts = (children or [])?.filter (x) -> x?.userKey
+      coParents = coParents or []
 
-      # CoParents Only
-      if Manager.IsValid(coParents) and coParentsOnly
-        coParents = coParents.filter (x) -> x?.userKey
-        options = coParents.map (x) -> {label: x?.name, value: x?.userKey or x?.key}
+      merged = DatasetManager.CombineArrays(childAccounts, coParents)
 
-      # Children and CoParents
-      else
-        if Manager.IsValid(children) and Manager.IsValid(coParents)
-          childAccounts = children.filter (x) -> x?.userKey
-          merged = DatasetManager.CombineArrays(childAccounts, coParents)
-          options = merged.map (x) -> {label: x?.general?.name or x?.name, value: x?.userKey or x?.key}
+      options = merged.map (x) ->
+        label: StringManager.GetFirstNameOnly(x?.general?.name) ? StringManager.GetFirstNameAndLastInitial(x?.name)
+        value: x?.userKey ? x?.key
 
       return options
 

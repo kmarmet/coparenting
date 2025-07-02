@@ -1,18 +1,22 @@
 // Path: src\components\screens\visitation.jsx
-import CustomWeekends from '../screens/visitation/customWeekends'
-import EveryOtherWeekend from '../screens/visitation/everyOtherWeekend'
-import FiftyFifty from '../screens/visitation/fiftyFifty'
-import CheckboxGroup from '../shared/checkboxGroup'
-import MyConfetti from '../shared/myConfetti'
-import Note from '../shared/note'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
+import moment from 'moment'
+import React, {useContext, useEffect, useState} from 'react'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import ModelNames from '../../constants/modelNames'
 import ScheduleTypes from '../../constants/scheduleTypes'
+import ScreenNames from '../../constants/screenNames'
+import globalState from '../../context'
 import DB from '../../database/DB'
 import DB_UserScoped from '../../database/db_userScoped'
+import useCalendarEvents from '../../hooks/useCalendarEvents'
+import useCurrentUser from '../../hooks/useCurrentUser'
 import AlertManager from '../../managers/alertManager'
 import DatasetManager from '../../managers/datasetManager'
 import DateManager from '../../managers/dateManager.js'
+import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
@@ -20,20 +24,17 @@ import VisitationManager from '../../managers/visitationManager'
 import CalendarMapper from '../../mappers/calMapper'
 import VisitationMapper from '../../mappers/visitationMapper'
 import CalendarEvent from '../../models/new/calendarEvent'
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import moment from 'moment'
-import React, {useContext, useEffect, useState} from 'react'
-import ScreenNames from '../../constants/screenNames'
-import globalState from '../../context'
-import useCalendarEvents from '../../hooks/useCalendarEvents'
-import useCurrentUser from '../../hooks/useCurrentUser'
-import DomManager from '../../managers/domManager'
 import NavBar from '../navBar'
+import CustomWeekends from '../screens/visitation/customWeekends'
+import EveryOtherWeekend from '../screens/visitation/everyOtherWeekend'
+import FiftyFifty from '../screens/visitation/fiftyFifty'
 import AccordionTitle from '../shared/accordionTitle'
 import AddressInput from '../shared/addressInput'
+import CheckboxGroup from '../shared/checkboxGroup'
+import MyConfetti from '../shared/myConfetti'
+import Note from '../shared/note'
 import ScreenHeader from '../shared/screenHeader'
+import SelectDropdown from '../shared/selectDropdown'
 import Spacer from '../shared/spacer'
 
 export default function Visitation() {
@@ -194,7 +195,7 @@ export default function Visitation() {
   }
 
   const SetAllStates = async () => {
-    const apiHolidays = await DateManager.getHolidays()
+    const apiHolidays = await DateManager.GetHolidays()
 
     // Minus Truman Day
     setHolidaysFromApi(apiHolidays.filter((x) => x.date !== `${moment().year()}-05-08`))
@@ -371,16 +372,19 @@ export default function Visitation() {
                     <Spacer height={5} />
                     {/* SCHEDULE SELECTION */}
                     <div className="section visitation-schedule">
-                      <CheckboxGroup
-                        onCheck={HandleScheduleTypeSelection}
-                        skipNameFormatting={true}
-                        checkboxArray={DomManager.BuildCheckboxGroup({
-                          currentUser,
-                          labelType: 'visitation',
-                        })}
+                      <SelectDropdown
+                        wrapperClasses={'white-bg'}
+                        placeholder={'Select a Schedule Type'}
+                        options={[
+                          {label: '50/50', value: 'fiftyFifty'},
+                          {label: 'Custom Weekends', value: 'customWeekends'},
+                          {label: 'Every Other Weekend', value: 'everyOtherWeekend'},
+                          {label: 'Every Weekend', value: 'everyWeekend'},
+                          {label: 'Every other Weekend', value: 'everyOtherWeekend'},
+                        ]}
                       />
                     </div>
-
+                    <Spacer height={3} />
                     {/* DEFAULT TRANSFER LOCATION */}
                     <AddressInput
                       defaultValue={currentUser?.visitation?.transferAddress}
@@ -394,7 +398,7 @@ export default function Visitation() {
                         )
                       }}
                     />
-                    <Spacer height={5} />
+                    {/*<Spacer height={5} />*/}
                   </AccordionDetails>
                 </Accordion>
               </div>

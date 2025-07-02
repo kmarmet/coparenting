@@ -56,7 +56,7 @@ StringManager = {
       names = fullName.split(" ");
       firstName = names[0];
       lastNameInitial = (names != null ? names.length : void 0) > 1 ? names != null ? (ref = names[(names != null ? names.length : void 0) - 1]) != null ? ref[0] : void 0 : void 0 : "";
-      return `${firstName} ${lastNameInitial}`;
+      return `${firstName} ${StringManager.UppercaseFirstLetterOfAllWords(lastNameInitial)}`;
     } else {
       return fullName;
     }
@@ -241,10 +241,10 @@ StringManager = {
     if (uppercase) {
       title = StringManager.UppercaseFirstLetterOfAllWords(title);
     }
-    title = title.toString().replaceAll(" To ", " to ").replaceAll(" A ", " a ").replaceAll(" An ", " an ").replaceAll(" Or ", " or ").replaceAll(" Vs ", " vs ").replaceAll(" With ", " with ").replaceAll(" At ", " at ").replaceAll(" About ", " about ").replaceAll(" From ", " from ").replaceAll(" The ", " the ").replaceAll(" For ", " for ").replaceAll(" Thru ", " thru ").replaceAll(" Has ", " has ").replaceAll(" And ", " and ").replaceAll(" Is ", " is ").replaceAll(" Not ", " not ").replaceAll(" Off ", " off ").replaceAll(" But ", " but ").replaceAll(" By ", " by ").replaceAll(" In ", " in ").replaceAll(" Of ", " of ").replaceAll(" On ", " on ").replaceAll(" Per ", " per ").replaceAll(" Up ", " up ").replaceAll(" Via ", " via ");
     title = StringManager.removeSpecialChars(title);
     title = StringManager.RemoveLeadingAndTrailingSpaces(title);
     title = StringManager.FixCamelCaseSentence(title);
+    title = title.toString().replaceAll(" To ", " to ").replaceAll(" A ", " a ").replaceAll(" An ", " an ").replaceAll(" Or ", " or ").replaceAll(" Vs ", " vs ").replaceAll(" With ", " with ").replaceAll(" At ", " at ").replaceAll(" About ", " about ").replaceAll(" From ", " from ").replaceAll(" The ", " the ").replaceAll(" For ", " for ").replaceAll(" Thru ", " thru ").replaceAll(" Has ", " has ").replaceAll(" And ", " and ").replaceAll(" Is ", " is ").replaceAll(" Not ", " not ").replaceAll(" Off ", " off ").replaceAll(" But ", " but ").replaceAll(" By ", " by ").replaceAll(" In ", " in ").replaceAll(" Of ", " of ").replaceAll(" On ", " on ").replaceAll(" Per ", " per ").replaceAll(" Up ", " up ").replaceAll(" Via ", " via ");
     return title;
   }
 };

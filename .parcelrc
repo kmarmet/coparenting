@@ -11,8 +11,10 @@
     "*.jpg": [],
     "*.jpeg": [],
     "*.png": [],
-    "*.gif": [],
     "*.svg": [],
-    "*.webmanifest": ["@parcel/transformer-raw"]
+    "*.webmanifest": ["@parcel/transformer-raw"],
+    "*.{png,jpg,jpeg,gif,svg}": [
+          "@parcel/transformer-image"
+        ]
   }
 }

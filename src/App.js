@@ -47,6 +47,7 @@ import Visitation from './components/screens/visitation.jsx'
 import BrandBar from './components/shared/brandBar'
 import CreationMenu from './components/shared/creationMenu'
 import DesktopLeftSidebar from './components/shared/desktopLeftSidebar'
+import LoadingScreen from './components/shared/loadingScreen'
 import SuccessAlert from './components/shared/successAlert'
 import CreationForms from './constants/creationForms'
 import DatetimeFormats from './constants/datetimeFormats'
@@ -191,7 +192,6 @@ export default function App() {
               currentUser: currentUserFromDb,
               currentScreen: screenToNavigateTo,
               userIsLoggedIn: true,
-              isLoading: false,
               currentAppVersion: appVersion,
               loadingText: '',
               theme: currentUserFromDb?.settings?.theme,
@@ -238,6 +238,9 @@ export default function App() {
         <globalState.Provider value={stateToUpdate}>
           {/* SUCCESS ALERT */}
           <SuccessAlert />
+
+          {/* LOADING SCREEN */}
+          <LoadingScreen />
 
           {/* FULL MENU */}
           <FullMenu />
