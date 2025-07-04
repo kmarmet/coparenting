@@ -23,7 +23,6 @@ DropdownManager =
     if not Manager.IsValid(activeFormCard)
       return
 
-
     formContainer = activeFormCard.querySelector '.content-wrapper .form-container'
     closeDropdownButton = activeFormCard?.querySelector '.close-dropdown-button'
 

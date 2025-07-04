@@ -274,7 +274,7 @@
     left: 50% !important;
     animation: dropdownFadeInUp 0.8s cubic-bezier(0.41, 0.52, 0.24, 0.82) forwards !important;
     display: flex !important;
-    border: 1px solid $barelyVisibleWhite !important;
+    border: 1px solid white !important;
     align-items: center !important;
     justify-content: center !important;
     @include betterFrost;
@@ -409,11 +409,15 @@
         position: relative !important;
         border-radius: 50px !important;
         min-width: max-content !important;
-        width: calc(100% / 3 - 10px) !important;
-        font-size: 15px !important;
-        padding: 8px 12px !important;
+        width: calc(100% / 3 - 30px) !important;
+        font-size: 14px !important;
+        padding: 8px 20px !important;
         font-weight: $fwMedium !important;
         text-align: center !important;
+      }
+
+      div {
+        color: white;
       }
     }
   }

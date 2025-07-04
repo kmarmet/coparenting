@@ -58,7 +58,6 @@ const CreationMenu = () => {
             style={DomManager.AnimateDelayStyle(1)}
             className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
             onClick={() => {
-              console.log('clicked')
               setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.calendar, dateToEdit: dateToEdit})
             }}>
             <div className="content">

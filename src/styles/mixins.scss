@@ -3144,10 +3144,16 @@
   }
 }
 
-@mixin betterFrost {
-  background: rgba(255, 255, 255, 0.08) !important;
-  box-shadow: rgb(38, 57, 77) 0 40px 30px -10px;
+@mixin betterFrost($hasBorder: true) {
+  box-shadow: $boxShadow_bottom_only_bigger;
   backdrop-filter: blur(8px) !important;
+  background-color: rgba(17, 25, 40, 0.2) !important;
+
+  @if ($hasBorder) {
+    border: 1px solid $barelyVisibleWhite;
+  } @else {
+    border: none;
+  }
 }
 
 @mixin form {
@@ -3182,18 +3188,20 @@
   .close-dropdown-button {
     position: fixed !important;
     bottom: 110px;
-    z-index: $maxZIndex !important;
+    z-index: 100000 !important;
     color: white !important;
     border-radius: $buttonBorderRadius !important;
-    width: 94vw !important;
+    width: calc(100vw - 20px) !important;
     font-size: 18px !important;
     text-align: center !important;
     opacity: 0;
+    left: 10px;
     pointer-events: none;
     transition: all 0.4s cubic-bezier(0.41, 0.52, 0.24, 0.82);
     transform: translateY(50px);
     border: 1px solid $barelyVisibleWhite;
     @include betterFrost;
+    background-color: rgba(17, 25, 40, 0.08) !important;
 
     &.active {
       transform: translateY(0);
@@ -3244,7 +3252,6 @@
     pointer-events: none;
     padding: 0 10px;
     width: 100%;
-    max-height: calc(100vh - 80px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3634,10 +3641,11 @@
     width: 100%;
     z-index: $maxZIndex;
     height: 80px;
-    background: transparent;
-    backdrop-filter: blur(10px);
+    @include betterFrost;
+    border: none;
+    border-top: 1px solid $barelyVisibleWhite;
     box-shadow: $boxShadow_top_only_short;
-    border-top: 1px solid $translucentLightest;
+    background-color: rgba(17, 25, 40, 0.05) !important;
 
     .card-button {
       color: white;
@@ -3716,13 +3724,13 @@
         }
       }
       &:nth-child(3) {
-        border-right: 1px solid $translucentLightest;
+        border-right: 1px solid $barelyVisibleWhite;
       }
       &:nth-child(2) {
-        border-right: 1px solid $translucentLightest;
+        border-right: 1px solid $barelyVisibleWhite;
       }
       &:nth-child(1) {
-        border-right: 1px solid $translucentLightest;
+        border-right: 1px solid $barelyVisibleWhite;
       }
     }
   }

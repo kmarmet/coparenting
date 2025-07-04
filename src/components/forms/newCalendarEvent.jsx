@@ -105,7 +105,6 @@ export default function NewCalendarEvent() {
   }
 
   const Submit = async () => {
-    console.log('submit')
     try {
       //#region FILL NEW EVENT
       if (isVisitation) {

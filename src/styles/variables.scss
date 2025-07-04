@@ -21,7 +21,6 @@ $lesserMaxZIndex: 9;
 // Input
 $inputBackground: rgba(255, 255, 255, 0.08);
 
-
 // Font Weights
 $fwThinnest: 200;
 $fwLight: 300;
@@ -55,6 +54,7 @@ $boxShadow_surround_small:
   rgba(14, 30, 37, 0.32) 0 2px 16px 0;
 $boxShadow_bottom_only_short: #1e2939 0 8px 10px;
 $boxShadow_bottom_only: rgb(38, 57, 77) 0 20px 30px -10px;
+$boxShadow_bottom_only_bigger: rgb(38, 57, 77) 0 40px 30px -10px;
 $boxShadow_surround: rgba(0, 0, 0, 0.35) 0 5px 15px;
 $boxShadow_surround_big:
   rgba(0, 0, 0, 0.35) 0 54px 55px,

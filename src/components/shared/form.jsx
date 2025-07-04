@@ -7,6 +7,7 @@ import DomManager from '../../managers/domManager'
 import DropdownManager from '../../managers/dropdownManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
+import Button from './button'
 import CardButton from './cardButton'
 import StringAsHtmlElement from './stringAsHtmlElement'
 
@@ -31,6 +32,8 @@ export default function Form({
   const {state, setState} = useContext(globalState)
   const {theme, creationFormToShow} = state
   const [refreshKey, setRefreshKey] = useState(Manager.GetUid())
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
 
   const ScrollToTop = () => {
     const header = document.querySelector('.form-title')
@@ -42,9 +45,11 @@ export default function Form({
     '[class*="q5-menu"]',
     (e) => {
       DropdownManager.ToggleHiddenOnInputs('hide')
+      setDropdownOpen(true)
     },
     () => {
       DropdownManager.ToggleHiddenOnInputs('show')
+      setDropdownOpen(false)
     }
   )
 
@@ -86,6 +91,11 @@ export default function Form({
 
   return (
     <div key={refreshKey} className={`form-wrapper${showCard ? ` active` : ''} ${wrapperClass}`}>
+      <Button
+        text={'Close Options'}
+        classes={`${dropdownOpen ? 'active close-dropdown-button' : 'close-dropdown-button'}`}
+        onClick={() => DropdownManager.ToggleHiddenOnInputs('hide')}
+      />
       <div className={`form-card${showCard ? ` active` : ''}`}>
         <div className="content-wrapper">
           {Manager.IsValid(title) && (
@@ -109,7 +119,10 @@ export default function Form({
             text={submitText}
             classes="card-button"
             onClick={() => {
-              onSubmit()
+              if (submitted === false) {
+                onSubmit()
+                setSubmitted(true)
+              }
             }}
           />
         )}
@@ -128,6 +141,7 @@ export default function Form({
           classes="card-button"
           onClick={() => {
             onClose()
+            setSubmitted(false)
             DropdownManager.ToggleHiddenOnInputs('remove')
             setRefreshKey(Manager.GetUid())
           }}

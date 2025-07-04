@@ -11,7 +11,7 @@ import AlertManager from './managers/alertManager'
 import AppManager from './managers/appManager'
 
 // CACHING
-const CACHE_KEY = 'v1.0.3'
+const CACHE_KEY = 'v1.0.4'
 const FILES_TO_CACHE = ['/', '/index.html', '/src/index.js', '/src/App.js', '/src/styles/bundle.css']
 
 if ('serviceWorker' in navigator) {
@@ -89,7 +89,7 @@ if ('serviceWorker' in navigator) {
   self.addEventListener('install', (event) => {
     console.log('[SW] Install')
     event.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => {
+      caches.open(CACHE_KEY).then((cache) => {
         return cache.addAll(FILES_TO_CACHE)
       })
     )
@@ -103,7 +103,7 @@ if ('serviceWorker' in navigator) {
       caches.keys().then((keyList) =>
         Promise.all(
           keyList.map((key) => {
-            if (key !== CACHE_NAME) return caches.delete(key)
+            if (key !== CACHE_KEY) return caches.delete(key)
           })
         )
       )
