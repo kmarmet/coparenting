@@ -38,15 +38,15 @@ export default function Form({
   }
 
   // Detect when dropdown is opened
-  useDetectElement('[class*="q5-menu"]', (e) => {
-    const activeFormCard = document.querySelector(`.form-card.active`)
-    const closeDropdownButton = activeFormCard.querySelector('.close-dropdown-button')
-
-    if (Manager.IsValid(closeDropdownButton)) {
-      DropdownManager.ToggleHiddenOnInputs('add')
-      closeDropdownButton.classList.add('active')
+  useDetectElement(
+    '[class*="q5-menu"]',
+    (e) => {
+      DropdownManager.ToggleHiddenOnInputs('hide')
+    },
+    () => {
+      DropdownManager.ToggleHiddenOnInputs('show')
     }
-  })
+  )
 
   useEffect(() => {
     let activeForm = document.querySelector(`.${wrapperClass}.form-wrapper.active`)

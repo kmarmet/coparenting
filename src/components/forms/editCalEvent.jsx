@@ -14,7 +14,6 @@ import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
-import AppManager from '../../managers/appManager'
 import CalendarManager from '../../managers/calendarManager.js'
 import DropdownManager from '../../managers/dropdownManager'
 import LogManager from '../../managers/logManager'
@@ -24,7 +23,6 @@ import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
 import CalendarEvent from '../../models/new/calendarEvent'
 import AddressInput from '../shared/addressInput'
-import Button from '../shared/button'
 import DetailBlock from '../shared/detailBlock'
 import Form from '../shared/form'
 import FormDivider from '../shared/formDivider'
@@ -39,7 +37,7 @@ import ViewDropdown from '../shared/viewDropdown'
 
 export default function EditCalEvent({event, showCard, hideCard}) {
   const {state, setState} = useContext(globalState)
-  const {theme, refreshKey, dateToEdit} = state
+  const {theme, dateToEdit} = state
 
   // Hooks
   const {currentUser} = useCurrentUser()
@@ -121,6 +119,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       updatedEvent.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
       updatedEvent.reminderTimes = DropdownManager.MappedForDatabase.RemindersFromArray(selectedReminderOptions)
       updatedEvent.shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
+      updatedEvent.address = formRef.current.address
 
       // Set Owner
       updatedEvent.owner = {
@@ -183,6 +182,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         // Update Single Event
         else {
           if (cleaned?.owner?.key === currentUser?.key) {
+            console.log(cleaned?.id)
             const index = DB.GetTableIndexById(calendarEvents, cleaned?.id)
             if (parseInt(index) === -1) return false
             await DB.ReplaceEntireRecord(`${dbPath}/${index}`, cleaned)
@@ -275,25 +275,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         showCard={showCard}
         deleteButtonText="Delete"
         wrapperClass={`edit-calendar-event at-top${event?.owner?.key === currentUser?.key ? ' owner' : ' non-owner'}`}
-        viewDropdown={
-          <ViewDropdown
-            dropdownPlaceholder="Details"
-            selectedView={view}
-            onSelect={(view) => {
-              console.log('treee')
-              console.log(view)
-              setView(view)
-            }}
-          />
-        }>
-        <Button
-          text={'Close Dropdown'}
-          classes={'close-dropdown-button'}
-          onClick={(e) => {
-            e.target.classList.remove('active')
-            DropdownManager.ToggleHiddenOnInputs('remove')
-          }}
-        />
+        viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={(view) => setView(view)} />}>
         <div id="edit-cal-event-container" className={`${theme} edit-event-form form-container`}>
           <div className={'content-wrapper'}>
             {/* DETAILS */}
@@ -407,7 +389,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               </div>
 
               {/* Map */}
-              {!AppManager.IsDevMode() && Manager.IsValid(event?.address) && <Map locationString={event?.address} />}
+              {Manager.IsValid(event?.address) && <Map locationString={event?.address} />}
             </div>
 
             {/* EDIT */}
@@ -518,11 +500,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
               <Spacer height={3} />
 
               {/* ADDRESS */}
-              <AddressInput
-                defaultValue={event?.address}
-                placeholder={'Location'}
-                onChange={(address) => (formRef.current.address = Manager.GetDirectionsLink(address))}
-              />
+              <AddressInput defaultValue={event?.address} placeholder={'Location'} onChange={(address) => (formRef.current.address = address)} />
 
               <Spacer height={3} />
 

@@ -32,14 +32,24 @@ DropdownManager = {
     }
     return readableTimes;
   },
-  ToggleHiddenOnInputs: function(addOrRemove = 'add') {
-    var formContainer;
-    formContainer = document.querySelector('.active.form-card .content-wrapper .form-container');
-    console.log(formContainer);
+  ToggleHiddenOnInputs: function(hideOrShow = 'hide') {
+    var activeFormCard, closeDropdownButton, formContainer;
+    activeFormCard = document.querySelector('.active.form-card');
+    if (!Manager.IsValid(activeFormCard)) {
+      return;
+    }
+    formContainer = activeFormCard.querySelector('.content-wrapper .form-container');
+    closeDropdownButton = activeFormCard != null ? activeFormCard.querySelector('.close-dropdown-button') : void 0;
     if (Manager.IsValid(formContainer)) {
-      if (addOrRemove === 'add') {
-        return formContainer.classList.add('hidden');
+      if (hideOrShow === 'hide') {
+        formContainer.classList.add('hidden');
+        if (Manager.IsValid(closeDropdownButton)) {
+          return closeDropdownButton.classList.add('active');
+        }
       } else {
+        if (Manager.IsValid(closeDropdownButton)) {
+          closeDropdownButton.classList.remove('active');
+        }
         return formContainer.classList.remove('hidden');
       }
     }

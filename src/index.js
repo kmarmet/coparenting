@@ -11,7 +11,7 @@ import AlertManager from './managers/alertManager'
 import AppManager from './managers/appManager'
 
 // CACHING
-const CACHE_NAME = 'pwa-cache-v2'
+const CACHE_KEY = 'v1.0.3'
 const FILES_TO_CACHE = ['/', '/index.html', '/src/index.js', '/src/App.js', '/src/styles/bundle.css']
 
 if ('serviceWorker' in navigator) {
@@ -54,16 +54,22 @@ if ('serviceWorker' in navigator) {
 
   // Register the service worker
   if (!AppManager.IsDevMode()) {
+    const previousCacheKey = localStorage.getItem('sw-cache-key')
     navigator.serviceWorker
       .register(`${publicUrl}/OneSignalSDKWorker.js`)
       .then((registration) => {
         registration.onupdatefound = () => {
           const newSW = registration.installing
           newSW.onstatechange = () => {
-            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller && previousCacheKey !== CACHE_KEY) {
               console.log('[SW] Update available!')
               // show custom reload prompt or auto-reload
               AlertManager.successAlert('App Updated!')
+              localStorage.setItem('sw-cache-key', CACHE_KEY)
+
+              setTimeout(() => {
+                window.location.reload()
+              }, 600)
               newSW.postMessage({action: 'skipWaiting'})
             }
           }

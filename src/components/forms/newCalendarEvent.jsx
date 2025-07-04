@@ -105,6 +105,7 @@ export default function NewCalendarEvent() {
   }
 
   const Submit = async () => {
+    console.log('submit')
     try {
       //#region FILL NEW EVENT
       if (isVisitation) {
@@ -125,7 +126,6 @@ export default function NewCalendarEvent() {
       formRef.current.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
       formRef.current.reminderTimes = DropdownManager.MappedForDatabase.RemindersFromArray(selectedReminderOptions)
       formRef.current.shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
-      // return false
 
       //#endregion FILL NEW EVENT
       const cleaned = ObjectManager.CleanObject(formRef.current)
@@ -195,8 +195,6 @@ export default function NewCalendarEvent() {
         if (eventIsDateRange && !eventIsRecurring && !eventIsCloned) {
           console.log(DateManager.GetDateRangeDates(cleaned.startDate, cleaned.endDate))
         }
-
-        return false
 
         //#region SINGLE DATE
         if (!eventIsRecurring && !eventIsDateRange && !eventIsCloned) {
@@ -309,7 +307,7 @@ export default function NewCalendarEvent() {
             required={true}
             onChange={async (e) => {
               const inputValue = e.target.value
-              formRef.current.title = StringManager.FormatEventTitle(inputValue)
+              formRef.current.title = StringManager.FormatTitle(inputValue, true)
             }}
           />
 

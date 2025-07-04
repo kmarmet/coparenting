@@ -267,16 +267,17 @@
     position: fixed !important;
     z-index: $maxZIndex !important;
     border-radius: $buttonBorderRadius !important;
-    width: 94vw !important;
+    width: max-content !important;
+    height: max-content !important;
     padding: 15px 5px !important;
-    background: transparent !important;
-    box-shadow: rgba(0, 0, 0, 0.56) 0 0 15px 20px;
+    max-width: 90vw !important;
     left: 50% !important;
     animation: dropdownFadeInUp 0.8s cubic-bezier(0.41, 0.52, 0.24, 0.82) forwards !important;
-    backdrop-filter: blur(8px) !important;
     display: flex !important;
+    border: 1px solid $barelyVisibleWhite !important;
     align-items: center !important;
     justify-content: center !important;
+    @include betterFrost;
   }
 
   // Wrapper

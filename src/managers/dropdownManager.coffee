@@ -17,14 +17,26 @@ DropdownManager =
           readableTimes.push(CalMapper.GetShortenedReadableReminderTime(time))
     return readableTimes
 
-  ToggleHiddenOnInputs: (addOrRemove = 'add') ->
-    formContainer = document.querySelector '.active.form-card .content-wrapper .form-container'
-    console.log(formContainer)
+  ToggleHiddenOnInputs: (hideOrShow = 'hide') ->
+    activeFormCard = document.querySelector '.active.form-card'
+
+    if not Manager.IsValid(activeFormCard)
+      return
+
+
+    formContainer = activeFormCard.querySelector '.content-wrapper .form-container'
+    closeDropdownButton = activeFormCard?.querySelector '.close-dropdown-button'
 
     if Manager.IsValid(formContainer)
-      if addOrRemove is 'add'
+      if hideOrShow is 'hide'
         formContainer.classList.add('hidden')
+
+        if Manager.IsValid(closeDropdownButton)
+          closeDropdownButton.classList.add('active')
       else
+        if Manager.IsValid(closeDropdownButton)
+          closeDropdownButton.classList.remove('active')
+
         formContainer.classList.remove('hidden')
 
 # MAPPERS
