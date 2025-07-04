@@ -12,13 +12,11 @@ export default function SelectDropdown({
   onSelect = (e) => {},
   placeholder = '',
   options = [],
-  required = false,
 }) {
   const [defaultValue, setDefaultValue] = useState(value)
 
   return (
     <Select
-      required={required}
       components={animatedComponents}
       placeholder={placeholder}
       isSearchable={false}
@@ -29,11 +27,10 @@ export default function SelectDropdown({
       className={`${wrapperClasses} select-dropdown`}
       uidClass={uidClass}
       isMulti={selectMultiple}
-      menuShouldScrollIntoView={true}
+      menuShouldScrollIntoView={false}
       value={defaultValue !== value ? value : defaultValue}
       onChange={onSelect}
       options={options}
-      onMenuOpen={(e) => {}}
     />
   )
 }

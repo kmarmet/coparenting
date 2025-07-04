@@ -100,12 +100,15 @@
           }
 
           .child-image {
-            transform: scale(1.2);
+            transform: scale(1.1);
             position: relative;
             top: -10px;
+            border: 0;
+            @include shadow;
+            box-shadow: $boxShadow_bottom_only_short;
 
             &.no-image {
-              background-color: $blendPurple;
+              background-color: $blend;
 
               svg {
                 color: white;

@@ -9,6 +9,7 @@ import CalendarMapper from "../mappers/calMapper"
 import DatasetManager from "./datasetManager"
 import CalendarEvent from "../models/new/calendarEvent"
 import * as Sentry from '@sentry/react'
+import ObjectManager from "./objectManager"
 
 export default CalendarManager =
   addMultipleCalEvents: (currentUser, newEvents, isRangeClonedOrRecurring = false) ->
@@ -33,13 +34,13 @@ export default CalendarManager =
     datesToPush = []
     datesToIterate = []
 
-  # DATE RANGE / CLONED
+    # DATE RANGE / CLONED
     if arrayType == "range" || arrayType == "cloned"
       datesToIterate = DateManager.GetDateRangeDates(startDate, endDate)
 
     console.log("datesToIterate", datesToIterate)
 
-  # REPEATING
+    # REPEATING
     if arrayType == "recurring"
       datesToIterate = CalendarMapper.recurringEvents(
         eventObject.recurringInterval,
@@ -69,7 +70,7 @@ export default CalendarManager =
       dateObject.websiteUrl = eventObject.websiteUrl
       dateObject.isRecurring = eventObject.isRecurring
       dateObject.isDateRange = eventObject.isDateRange
-#      dateObject.isCloned = Manager.isValid(clonedDates)
+      #      dateObject.isCloned = Manager.isValid(clonedDates)
 
       # Times
       if Manager.IsValid(eventObject.startTime)
@@ -80,7 +81,7 @@ export default CalendarManager =
 
       dateObject.reminderTimes = eventObject.GetReminderTimes
       dateObject.recurrenceInterval = eventObject.recurringInterval
-      datesToPush.push dateObject
+      datesToPush.push ObjectManager.CleanObject(dateObject)
 
     return datesToPush
 
@@ -95,7 +96,7 @@ export default CalendarManager =
 
   addCalendarEvent: (currentUser, newEvent) ->
     dbRef = ref(getDatabase())
-    currentEvents =  await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}")
+    currentEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}")
     currentEvents = currentEvents.filter (n) -> n
 
     toAdd = []
@@ -108,7 +109,7 @@ export default CalendarManager =
     catch error
       LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
 
-  UpdateEvent:  (currentUserKey, updateIndex,updatedEvent) ->
+  UpdateEvent: (currentUserKey, updateIndex, updatedEvent) ->
     dbRef = getDatabase()
 
     try

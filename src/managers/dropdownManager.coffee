@@ -17,6 +17,16 @@ DropdownManager =
           readableTimes.push(CalMapper.GetShortenedReadableReminderTime(time))
     return readableTimes
 
+  ToggleHiddenOnInputs: (addOrRemove = 'add') ->
+    formContainer = document.querySelector '.active.form-card .content-wrapper .form-container'
+    console.log(formContainer)
+
+    if Manager.IsValid(formContainer)
+      if addOrRemove is 'add'
+        formContainer.classList.add('hidden')
+      else
+        formContainer.classList.remove('hidden')
+
 # MAPPERS
   MappedForDatabase:
     RemindersFromArray: (times) ->

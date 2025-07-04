@@ -30,6 +30,8 @@ import NewCoParentForm from './newCoParentForm'
 export default function CoParents() {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
+
+  // Hooks
   const {currentUser} = useCurrentUser()
   const {coParents} = useCoParents()
 
@@ -256,11 +258,9 @@ export default function CoParents() {
               {Manager.IsValid(activeCoParent) &&
                 Object.entries(activeCoParent).map((propArray, index) => {
                   let infoLabel = propArray[0]
-                  infoLabel = StringManager.UppercaseFirstLetterOfAllWords(infoLabel)
                   infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
                   infoLabel = StringManager.FormatTitle(infoLabel, true)
                   const value = propArray[1]
-                  console.log(value)
 
                   const inputsToSkip = ['address', 'key', 'id', 'user key']
 
@@ -268,13 +268,16 @@ export default function CoParents() {
                     <div key={index} className="info-row">
                       {/* ADDRESS */}
                       {infoLabel.toLowerCase().includes('address') && (
-                        <AddressInput
-                          key={activeCoParent?.id}
-                          wrapperClasses={'address-input blue-background'}
-                          defaultValue={value}
-                          placeholder="Home Address"
-                          onChange={(address) => Update('address', address)}
-                        />
+                        <>
+                          <AddressInput
+                            key={activeCoParent?.id}
+                            wrapperClasses={'address-input blue-background'}
+                            defaultValue={value}
+                            placeholder="Home Address"
+                            onChange={(address) => Update('address', address)}
+                          />
+                          <Spacer height={3} />
+                        </>
                       )}
 
                       {/* TEXT INPUT */}
@@ -294,6 +297,7 @@ export default function CoParents() {
                             />
                             <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
                           </div>
+                          <Spacer height={3} />
                         </>
                       )}
                     </div>

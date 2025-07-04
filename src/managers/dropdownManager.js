@@ -32,6 +32,18 @@ DropdownManager = {
     }
     return readableTimes;
   },
+  ToggleHiddenOnInputs: function(addOrRemove = 'add') {
+    var formContainer;
+    formContainer = document.querySelector('.active.form-card .content-wrapper .form-container');
+    console.log(formContainer);
+    if (Manager.IsValid(formContainer)) {
+      if (addOrRemove === 'add') {
+        return formContainer.classList.add('hidden');
+      } else {
+        return formContainer.classList.remove('hidden');
+      }
+    }
+  },
   // MAPPERS
   MappedForDatabase: {
     RemindersFromArray: function(times) {

@@ -154,6 +154,7 @@ export default function NewTransferChangeRequest() {
             />
 
             <FormDivider text={'Required - Time OR Location'} />
+
             {/* TIME */}
             <InputField
               inputType={InputTypes.time}
@@ -161,6 +162,9 @@ export default function NewTransferChangeRequest() {
               uidClass="transfer-request-time"
               onDateOrTimeSelection={(e) => (formRef.current.time = moment(e).format(DatetimeFormats.timeForDb))}
             />
+
+            <Spacer height={3} />
+
             {/*  NEW LOCATION*/}
             <AddressInput
               placeholder={'Address'}
@@ -185,6 +189,7 @@ export default function NewTransferChangeRequest() {
             <Spacer height={3} />
 
             <FormDivider text={'Optional'} />
+
             {/* SHARE WITH */}
             <SelectDropdown
               options={defaultShareWithOptions}
@@ -192,7 +197,9 @@ export default function NewTransferChangeRequest() {
               placeholder={'Select Contacts to Share With'}
               onSelect={setSelectedShareWithOptions}
             />
+
             <Spacer height={3} />
+
             {/* RESPONSE DUE DATE */}
             <InputField
               inputType={InputTypes.date}
@@ -201,6 +208,8 @@ export default function NewTransferChangeRequest() {
               required={true}
               onDateOrTimeSelection={(e) => (formRef.current.requestedResponseDate = moment(e).format(DatetimeFormats.dateForDb))}
             />
+
+            <Spacer height={3} />
 
             {/* REASON */}
             <InputField inputType={InputTypes.textarea} placeholder={'Reason'} onChange={(e) => (formRef.current.reason = e.target.value)} />

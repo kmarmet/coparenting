@@ -1,10 +1,8 @@
 // Path: src\components\screens\childInfo\addOrUpdateTransferChecklists.jsx
-import DB from '../../../database/DB'
-import Manager from '../../../managers/manager'
-import Checklist from '../../../models/new/checklist.js'
 import React, {useContext, useEffect, useState} from 'react'
 import {CgMathPlus} from 'react-icons/cg'
 import globalState from '../../../context'
+import DB from '../../../database/DB'
 import DB_UserScoped from '../../../database/db_userScoped'
 import useActiveChild from '../../../hooks/useActiveChild'
 import useChildren from '../../../hooks/useChildren'
@@ -12,11 +10,13 @@ import useCurrentUser from '../../../hooks/useCurrentUser'
 import AlertManager from '../../../managers/alertManager'
 import DatasetManager from '../../../managers/datasetManager'
 import DomManager from '../../../managers/domManager'
+import Manager from '../../../managers/manager'
+import Checklist from '../../../models/new/checklist.js'
 import Form from '../../shared/form'
 import MyConfetti from '../../shared/myConfetti'
 import Spacer from '../../shared/spacer'
 
-export default function AddOrUpdateTransferChecklists({showCard, hideCard, activeChildId}) {
+export default function ManageTransferChecklists({showCard, hideCard, activeChildId}) {
   const {state, setState} = useContext(globalState)
   const {refreshKey} = state
   const [checkboxTextList, setCheckboxTextList] = useState([])

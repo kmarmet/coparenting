@@ -27,9 +27,9 @@ import NoDataFallbackText from '../../shared/noDataFallbackText'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
-import AddOrUpdateTransferChecklists from './addOrUpdateTransferChecklists'
 import Checklist from './checklist'
 import Checklists from './checklists'
+import ManageTransferChecklists from './manageTransferChecklists'
 
 export default function Children() {
   const {state, setState} = useContext(globalState)
@@ -96,11 +96,7 @@ export default function Children() {
           <CustomChildInfo showCard={showInfoCard} activeChild={activeChild} hideCard={() => setShowInfoCard(false)} />
 
           {/* NEW CHECKLIST */}
-          <AddOrUpdateTransferChecklists
-            activeChildId={activeChild?.id}
-            showCard={showNewChecklistCard}
-            hideCard={() => setShowNewChecklistCard(false)}
-          />
+          <ManageTransferChecklists activeChildId={activeChild?.id} showCard={showNewChecklistCard} hideCard={() => setShowNewChecklistCard(false)} />
 
           {/* VIEW CHECKLISTS */}
           <Checklists showCard={showChecklistsCard} hideCard={() => setShowChecklistsCard(false)} activeChild={activeChild} />
@@ -144,7 +140,7 @@ export default function Children() {
               }}>
               <div className="content">
                 <p>
-                  Add your Own Info<span className="subtitle">Include personalized details about your child</span>
+                  Add Your Own Info<span className="subtitle">Include personalized details about your child</span>
                 </p>
                 <div className="svg-wrapper">
                   <FaWandMagicSparkles className={'magic'} />
@@ -169,10 +165,7 @@ export default function Children() {
                 />
                 <p>
                   Manage Profile Picture
-                  <span className="subtitle">
-                    Add a profile picture of {StringManager.GetFirstNameOnly(activeChild?.general?.name)}. Or replace it if a picture has already been
-                    uploaded
-                  </span>
+                  <span className="subtitle">Add or update a profile picture of {StringManager.GetFirstNameOnly(activeChild?.general?.name)}</span>
                 </p>
                 <div className="svg-wrapper">
                   <PiCameraRotateFill className={'profile-pic'} />
@@ -208,10 +201,8 @@ export default function Children() {
               }}>
               <div className="content">
                 <p>
-                  Unlink {activeChild?.general?.name} from Your Profile
-                  <span className="subtitle">
-                    Remove sharing permissions for {activeChild?.general?.name} along with the information stored about them
-                  </span>
+                  Remove {activeChild?.general?.name} as a Contact
+                  <span className="subtitle">Remove sharing permissions for {activeChild?.general?.name} along with their stored information</span>
                 </p>
                 <div className="svg-wrapper add-child">
                   <IoPersonRemove className={'remove-child'} />

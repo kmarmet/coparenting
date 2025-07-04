@@ -18,6 +18,7 @@ import Child from '../../../models/child/child'
 import CalendarEvent from '../../../models/new/calendarEvent'
 import AddressInput from '../../shared/addressInput'
 import Form from '../../shared/form'
+import FormDivider from '../../shared/formDivider'
 import InputField from '../../shared/inputField'
 import Label from '../../shared/label'
 import Spacer from '../../shared/spacer'
@@ -35,7 +36,7 @@ const NewChildForm = ({hideCard, showCard}) => {
 
   const newChild = useRef({...new Child()})
 
-  const ResetForm = async (successMessage = '') => {
+  const ResetForm = (successMessage = '') => {
     Manager.ResetForm('new-child-wrapper')
     hideCard()
     setChildHasAccount(false)
@@ -100,7 +101,7 @@ const NewChildForm = ({hideCard, showCard}) => {
     // Add child to DB
     await DB_UserScoped.AddChildToParentProfile(currentUser, newChild)
 
-    await ResetForm(`${StringManager.GetFirstNameOnly(StringManager.FormatTitle(name, true))} Added to Your Profile`)
+    ResetForm(`${StringManager.GetFirstNameOnly(StringManager.FormatTitle(name, true))} Added to Your Profile`)
   }
 
   return (
@@ -113,8 +114,8 @@ const NewChildForm = ({hideCard, showCard}) => {
       showCard={showCard}
       onClose={() => ResetForm()}>
       <div id="new-child-container" className={`${theme}`}>
-        <Spacer height={5} />
         <div className="new-child-form">
+          <FormDivider text={'Required'} />
           {/* NAME */}
           <InputField
             placeholder={'Name'}
@@ -123,6 +124,8 @@ const NewChildForm = ({hideCard, showCard}) => {
             onChange={(e) => (newChild.current.general.name = StringManager.FormatTitle(e.target.value, true))}
           />
 
+          <FormDivider text={'Optional'} />
+
           {/* EMAIL */}
           <InputField
             placeholder={'Email Address'}
@@ -130,6 +133,7 @@ const NewChildForm = ({hideCard, showCard}) => {
             inputType={InputTypes.email}
             onChange={(e) => (newChild.current.general.email = e.target.value)}
           />
+          <Spacer height={3} />
 
           {/* DATE OF BIRTH */}
           <InputField
@@ -140,8 +144,11 @@ const NewChildForm = ({hideCard, showCard}) => {
             onDateOrTimeSelection={(e) => (newChild.current.general.dateOfBirth = moment(e).format(DatetimeFormats.monthDayYear))}
           />
 
+          <Spacer height={3} />
+
           {/* ADDRESS */}
           <AddressInput placeholder={'Home Address'} onChange={(address) => (newChild.current.general.address = address)} />
+          <Spacer height={3} />
 
           {/* PHONE NUMBER */}
           <InputField
@@ -151,15 +158,17 @@ const NewChildForm = ({hideCard, showCard}) => {
             onChange={(e) => (newChild.current.general.phone = e.target.value)}
           />
 
+          <Spacer height={3} />
+
           {/* SHOULD LINK CHILD TOGGLE */}
           <div className="flex">
-            <Label text={'Child has an Account with Us'} />
+            <Label text={'Child Has an Account'} classes={'always-show'} />
             <ToggleButton onCheck={() => setChildHasAccount(true)} onUncheck={() => setChildHasAccount(false)} />
           </div>
 
-          <Spacer height={5} />
+          <Spacer height={3} />
 
-          <Label classes="standalone-label-wrapper" text={'Photo'} />
+          <Label classes="standalone-label-wrapper always-show" text={'Photo'} />
           {/* UPLOAD BUTTON */}
           <UploadButton
             onClose={hideCard}

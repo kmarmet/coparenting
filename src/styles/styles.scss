@@ -173,14 +173,15 @@
   gap: 0 5px;
   .input-wrapper {
     height: 50px;
-    width: 75%;
     display: flex;
     position: relative;
     background: $inputBackground;
     border-radius: $borderRadius;
     align-items: center;
     justify-content: space-between;
-    max-width: calc(70% - 25px);
+    overflow: auto;
+
+    // Address input
     input {
       margin-left: 40px;
       background: transparent;
@@ -232,7 +233,7 @@
   }
 
   .select-dropdown {
-    width: 100% !important;
+    width: 40% !important;
   }
 }
 .pac-container {
@@ -257,35 +258,35 @@
 }
 /*#endregion  GOOGLE MAPS */
 
-/*#region  REACT-SELECT */
-[class*='css-'] {
-  // Dropdown Menu
-  &[class*='-menu'] {
-    z-index: $maxZIndex !important;
-    position: relative;
-    display: block;
-    border-radius: 0 !important;
-    top: 10px !important;
-    padding-bottom: 15px !important;
-    width: calc(100vw - 50px) !important;
-    margin: 0 auto !important;
-    transition: all 0.4s ease-in-out !important;
-    background: transparent !important;
-    box-shadow: none !important;
+/*#region  REACT SELECT */
 
-    [class*='-option'] {
-      text-align: center !important;
-      padding: 15px !important;
-    }
+.select-dropdown {
+  // Dropdown Menu
+  [class*='-menu'] {
+    @include deadCenter;
+    position: fixed !important;
+    z-index: $maxZIndex !important;
+    border-radius: $buttonBorderRadius !important;
+    width: 94vw !important;
+    padding: 15px 5px !important;
+    background: transparent !important;
+    box-shadow: rgba(0, 0, 0, 0.56) 0 0 15px 20px;
+    left: 50% !important;
+    animation: dropdownFadeInUp 0.8s cubic-bezier(0.41, 0.52, 0.24, 0.82) forwards !important;
+    backdrop-filter: blur(8px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   // Wrapper
-  &[class*='-control'] {
+  [class*='-control'] {
     background: $inputBackground !important;
     border-radius: $borderRadius !important;
     border: 0 !important;
     box-shadow: none !important;
     min-height: 50px !important;
+
     [class*='css-'] {
       color: white !important;
       font-size: 14px !important;
@@ -321,6 +322,10 @@
 
     [class*='-indicatorContainer'] {
       color: white !important;
+
+      svg {
+        color: $darkGrey !important;
+      }
     }
 
     [class*='-singleValue'] {
@@ -380,20 +385,39 @@
       }
     }
 
-    [class*='-option'] {
-      background: $inputBackground !important;
-      border-radius: $borderRadius !important;
-      width: 94% !important;
-      margin: 0 auto 8px auto !important;
-      color: white !important;
-    }
-
     [id*='listbox'] {
       max-height: unset !important;
+      display: flex !important;
+      gap: 15px !important;
+      flex-wrap: wrap !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 10px !important;
+      z-index: $maxZIndex !important;
+      pointer-events: all !important;
+      height: max-content !important;
+      position: relative !important;
+      margin: auto 0 !important;
+      align-self: center !important;
+
+      [class*='-option'] {
+        background: $subtleWhite !important;
+        color: $blend !important;
+        z-index: $maxZIndex !important;
+        pointer-events: all !important;
+        position: relative !important;
+        border-radius: 50px !important;
+        min-width: max-content !important;
+        width: calc(100% / 3 - 10px) !important;
+        font-size: 15px !important;
+        padding: 8px 12px !important;
+        font-weight: $fwMedium !important;
+        text-align: center !important;
+      }
     }
   }
 }
-/*#endregion  REACT-SELECT */
+/*#endregion  REACT SELECT */
 
 /*#region  PASSWORD VALIDATION */
 .password-validation {

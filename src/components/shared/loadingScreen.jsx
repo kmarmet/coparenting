@@ -11,7 +11,7 @@ export default function LoadingScreen() {
   return (
     <div id={'loading-screen-wrapper'} className={isLoading ? 'active' : 'hidden'}>
       <img src={AppImages.misc.loadingGif.url} alt="Loading..." />
-      <p>{loadingText ? loadingText : 'Preparing Your <br /> Pathway to Peace...'}</p>
+      <p>{loadingText ? loadingText : 'Preparing Your Pathway to Peace...'}</p>
     </div>
   )
 }

@@ -21,6 +21,7 @@ import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
 import CalendarManager from '../../managers/calendarManager'
 import DatasetManager from '../../managers/datasetManager'
+import DateManager from '../../managers/dateManager'
 import DomManager from '../../managers/domManager'
 import DropdownManager from '../../managers/dropdownManager'
 import LogManager from '../../managers/logManager'
@@ -62,7 +63,6 @@ export default function NewCalendarEvent() {
   const {children, childrenDropdownOptions} = useChildren()
 
   // COMPONENT STATE
-  const [refresh, setRefresh] = useState('aeryhg')
   const [showCloneInput, setShowCloneInput] = useState(false)
   const [isVisitation, setIsVisitation] = useState(false)
   const [dynamicInputs, setDynamicInputs] = useState([])
@@ -73,6 +73,12 @@ export default function NewCalendarEvent() {
   const [selectedChildrenOptions, setSelectedChildrenOptions] = useState([])
   const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
   const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
+  const [recurringIntervals, setRecurringIntervals] = useState([
+    {label: 'Daily', value: 'Daily'},
+    {label: 'Weekly', value: 'Weekly'},
+    {label: 'Biweekly', value: 'Biweekly'},
+    {label: 'Monthly', value: 'Monthly'},
+  ])
 
   // REF
   const formRef = useRef({...new CalendarEvent({startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)})})
@@ -90,13 +96,12 @@ export default function NewCalendarEvent() {
     setSelectedShareWithOptions([])
     setDefaultShareWithOptions([])
     setTimeout(() => {
-      setRefresh(Manager.GetUid())
-    }, 500)
-    setState({
-      ...state,
-      creationFormToShow: '',
-      successAlertMessage: showSuccessAlert ? 'Event Created' : null,
-    })
+      setState({
+        ...state,
+        creationFormToShow: '',
+        successAlertMessage: showSuccessAlert ? 'Event Created' : null,
+      })
+    }, 10)
   }
 
   const Submit = async () => {
@@ -163,6 +168,7 @@ export default function NewCalendarEvent() {
         // Date Range
         if (eventIsDateRange) {
           const dates = CalendarManager.BuildArrayOfEvents(currentUser, cleaned, 'range', cleaned.startDate, cleaned.endDate)
+          console.log(dates)
           await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
         }
 
@@ -185,6 +191,12 @@ export default function NewCalendarEvent() {
         }
 
         //#endregion MULTIPLE DATES
+
+        if (eventIsDateRange && !eventIsRecurring && !eventIsCloned) {
+          console.log(DateManager.GetDateRangeDates(cleaned.startDate, cleaned.endDate))
+        }
+
+        return false
 
         //#region SINGLE DATE
         if (!eventIsRecurring && !eventIsDateRange && !eventIsCloned) {
@@ -256,7 +268,6 @@ export default function NewCalendarEvent() {
     <>
       {/* FORM WRAPPER */}
       <Form
-        key={refresh}
         submitText={`Create`}
         className={`${theme} new-event-form new-calendar-event`}
         onClose={() => ResetForm()}
@@ -280,7 +291,15 @@ export default function NewCalendarEvent() {
             }}
           />
         }>
-        <div id="calendar-event-form-container" className={`${theme}`}>
+        <Button
+          text={'Close Dropdown'}
+          classes={'close-dropdown-button'}
+          onClick={(e) => {
+            e.target.classList.remove('active')
+            DropdownManager.ToggleHiddenOnInputs('remove')
+          }}
+        />
+        <div id="calendar-event-form-container" className={`${theme} form-container`}>
           <FormDivider text={'Required'} />
           {/* EVENT NAME */}
           <InputField
@@ -293,6 +312,8 @@ export default function NewCalendarEvent() {
               formRef.current.title = StringManager.FormatEventTitle(inputValue)
             }}
           />
+
+          <Spacer height={3} />
 
           {/* START DATE */}
           {view?.label === 'Single Day' && (
@@ -307,6 +328,8 @@ export default function NewCalendarEvent() {
               }}
             />
           )}
+
+          <Spacer height={3} />
 
           {/* DATE RANGE */}
           {view?.label === 'Multiple Days' && (
@@ -325,6 +348,8 @@ export default function NewCalendarEvent() {
             />
           )}
 
+          <Spacer height={3} />
+
           <FormDivider text={'Optional'} />
           {view?.label === 'Single Day' && (
             <div className={'flex gap'}>
@@ -335,6 +360,7 @@ export default function NewCalendarEvent() {
                 inputType={InputTypes.time}
                 onDateOrTimeSelection={(e) => (formRef.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}
               />
+
               <InputField
                 placeholder={'End Time'}
                 uidClass="event-end-time time"
@@ -343,6 +369,9 @@ export default function NewCalendarEvent() {
               />
             </div>
           )}
+
+          <Spacer height={3} />
+
           {/* SHARE WITH */}
           <SelectDropdown
             options={defaultShareWithOptions}
@@ -377,6 +406,8 @@ export default function NewCalendarEvent() {
             />
           )}
 
+          <Spacer height={3} />
+
           {/* ADDRESS */}
           <AddressInput
             wrapperClasses={Manager.IsValid(formRef.current.address, true) ? 'show-label' : ''}
@@ -384,6 +415,8 @@ export default function NewCalendarEvent() {
             required={false}
             onChange={(address) => (formRef.current.address = address)}
           />
+
+          <Spacer height={3} />
 
           {/* URL/WEBSITE */}
           <InputField
@@ -393,12 +426,17 @@ export default function NewCalendarEvent() {
             onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
           />
 
+          <Spacer height={3} />
+
           {/* PHONE */}
           <InputField
             inputType={InputTypes.phone}
             placeholder="Phone"
             onChange={(e) => (formRef.current.phone = StringManager.FormatPhone(e.target.value))}
           />
+
+          <Spacer height={3} />
+
           {/* NOTES */}
           <InputField
             placeholder={'Notes'}
@@ -406,7 +444,7 @@ export default function NewCalendarEvent() {
             inputType={InputTypes.textarea}
             onChange={(e) => (formRef.current.notes = e.target.value)}
           />
-
+          <Spacer height={5} />
           {/* IS VISITATION? */}
           <div>
             <div className="flex">
@@ -414,6 +452,8 @@ export default function NewCalendarEvent() {
               <ToggleButton isDefaultChecked={false} onCheck={() => setIsVisitation(true)} onUncheck={() => setIsVisitation(false)} />
             </div>
           </div>
+
+          <SelectDropdown selectMultiple={true} placeholder={'Select Interval'} options={recurringIntervals} onSelect={setRecurringIntervals} />
 
           {/* RECURRING */}
           {view?.label === 'Single Day' && (

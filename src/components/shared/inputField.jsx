@@ -3,7 +3,8 @@ import {MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDa
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {DebounceInput} from 'react-debounce-input'
-import {MdEmail, MdNotes, MdOutlineDateRange, MdOutlineTitle} from 'react-icons/md'
+import {BsCalendar2WeekFill} from 'react-icons/bs'
+import {MdEmail, MdNotes, MdOutlineTitle} from 'react-icons/md'
 import {PiArrowBendLeftUpFill, PiLinkSimpleHorizontalBold} from 'react-icons/pi'
 import {RiPhoneFill} from 'react-icons/ri'
 import {WiTime4} from 'react-icons/wi'
@@ -64,7 +65,7 @@ function InputField({
               textField: {
                 label: (
                   <span>
-                    <MdOutlineDateRange fontSize="small" />
+                    <BsCalendar2WeekFill fontSize="small" />
                     {placeholder}
                   </span>
                 ),

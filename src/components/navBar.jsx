@@ -43,13 +43,15 @@ export default function NavBar({children, navbarClass}) {
 
   return (
     <>
-      <div id="navbar" className={`${theme} ${currentUser?.accountType} ${navbarClass} ${menuIsOpen ? 'hide' : ''}`}>
+      <div
+        id="navbar"
+        className={`${theme} ${DomManager.Animate.FadeInUp(true, '.menu-item')} ${currentUser?.accountType} ${navbarClass} ${menuIsOpen ? 'hide' : ''}`}>
         <div id="menu-items" className="flex">
           {/* CALENDAR */}
           <div
             style={DomManager.AnimateDelayStyle(1, 0.02)}
             onClick={() => ChangeCurrentScreen(ScreenNames.calendar)}
-            className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
+            className={`${currentScreen === ScreenNames.calendar ? 'active menu-item' : 'menu-item'} `}>
             <div id="calendar-and-month">
               <BsCalendar className={'calendar'} />
               <span>{moment().format('D')}</span>
@@ -63,7 +65,7 @@ export default function NavBar({children, navbarClass}) {
               style={DomManager.AnimateDelayStyle(1, 0.03)}
               id="chat-menu-item"
               onClick={() => ChangeCurrentScreen(ScreenNames.chats)}
-              className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
+              className={`${currentScreen === ScreenNames.chats ? 'active menu-item' : 'menu-item'}`}>
               <IoChatbubblesOutline className={'chats'} />
               <p>Chats</p>
             </div>
@@ -72,7 +74,7 @@ export default function NavBar({children, navbarClass}) {
           {/* MENU BUTTON */}
           <div
             style={DomManager.AnimateDelayStyle(1, 0.04)}
-            className={`menu-button menu-item  ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}
+            className={`menu-button menu-item `}
             onClick={() => setState({...state, showOverlay: true, menuIsOpen: true})}>
             <div id="svg-wrapper">
               <HiOutlineMenu className={'menu'} />
@@ -85,7 +87,7 @@ export default function NavBar({children, navbarClass}) {
               style={DomManager.AnimateDelayStyle(1, 0.05)}
               id="memories-menu-item"
               onClick={() => ChangeCurrentScreen(ScreenNames.memories)}
-              className={`${currentScreen === ScreenNames.memories ? 'active menu-item' : 'menu-item'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
+              className={`${currentScreen === ScreenNames.memories ? 'active menu-item' : 'menu-item'}`}>
               <IoMdImages />
               <p>Memories</p>
             </div>
@@ -96,7 +98,7 @@ export default function NavBar({children, navbarClass}) {
             <div
               style={DomManager.AnimateDelayStyle(1, 0.06)}
               onClick={() => ChangeCurrentScreen(ScreenNames.updates)}
-              className={`${Manager.IsValid(updates) ? 'unread' : ''} ${currentScreen === ScreenNames.updates ? 'active menu-item updates' : 'menu-item updates'} ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
+              className={`${Manager.IsValid(updates) ? 'unread' : ''} ${currentScreen === ScreenNames.updates ? 'active menu-item updates' : 'menu-item updates'}`}>
               <PiNotificationFill className={'updates'} />
               <p>
                 Updates

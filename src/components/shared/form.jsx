@@ -1,8 +1,10 @@
 // Path: src\components\shared\form.jsx
-import React, {cloneElement, useContext, useEffect} from 'react'
+import React, {cloneElement, useContext, useEffect, useState} from 'react'
 import ButtonThemes from '../../constants/buttonThemes'
 import globalState from '../../context'
+import useDetectElement from '../../hooks/useDetectElement'
 import DomManager from '../../managers/domManager'
+import DropdownManager from '../../managers/dropdownManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import CardButton from './cardButton'
@@ -27,12 +29,24 @@ export default function Form({
   extraButtons = [],
 }) {
   const {state, setState} = useContext(globalState)
-  const {theme, refreshKey, creationFormToShow} = state
+  const {theme, creationFormToShow} = state
+  const [refreshKey, setRefreshKey] = useState(Manager.GetUid())
 
   const ScrollToTop = () => {
     const header = document.querySelector('.form-title')
     header.scrollIntoView({behavior: 'smooth', block: 'end'})
   }
+
+  // Detect when dropdown is opened
+  useDetectElement('[class*="q5-menu"]', (e) => {
+    const activeFormCard = document.querySelector(`.form-card.active`)
+    const closeDropdownButton = activeFormCard.querySelector('.close-dropdown-button')
+
+    if (Manager.IsValid(closeDropdownButton)) {
+      DropdownManager.ToggleHiddenOnInputs('add')
+      closeDropdownButton.classList.add('active')
+    }
+  })
 
   useEffect(() => {
     let activeForm = document.querySelector(`.${wrapperClass}.form-wrapper.active`)
@@ -71,7 +85,7 @@ export default function Form({
   }, [showCard])
 
   return (
-    <div className={`form-wrapper${showCard ? ` active` : ''} ${wrapperClass}`}>
+    <div key={refreshKey} className={`form-wrapper${showCard ? ` active` : ''} ${wrapperClass}`}>
       <div className={`form-card${showCard ? ` active` : ''}`}>
         <div className="content-wrapper">
           {Manager.IsValid(title) && (
@@ -108,7 +122,16 @@ export default function Form({
             return cloneElement(button, {key: index})
           })}
 
-        <CardButton text={cancelButtonText} buttonTheme={ButtonThemes.white} classes="card-button" onClick={onClose} />
+        <CardButton
+          text={cancelButtonText}
+          buttonTheme={ButtonThemes.white}
+          classes="card-button"
+          onClick={() => {
+            onClose()
+            DropdownManager.ToggleHiddenOnInputs('remove')
+            setRefreshKey(Manager.GetUid())
+          }}
+        />
       </div>
     </div>
   )

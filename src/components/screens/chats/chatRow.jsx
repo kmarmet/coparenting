@@ -90,7 +90,11 @@ export default function ChatRow({index, onClick, chat}) {
       }
       // More than 1 day ago
       else {
-        setLastMessageTimestamp(moment(timestamp, DatetimeFormats.timestamp).format('ddd (Do)'))
+        if (moment().format('MM') !== moment(timestamp, DatetimeFormats.timestamp).format('MM')) {
+          setLastMessageTimestamp(moment(timestamp, DatetimeFormats.timestamp).format('ddd (MMMM Do)'))
+        } else {
+          setLastMessageTimestamp(moment(timestamp, DatetimeFormats.timestamp).format('ddd (Do)'))
+        }
       }
     } else {
       setLastMessageTimestamp(moment(timestamp, DatetimeFormats.timestamp).format('h:mma'))

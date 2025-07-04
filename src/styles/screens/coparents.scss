@@ -9,7 +9,6 @@
   #parent-container {
     display: flex;
     width: 100%;
-    overflow: auto;
     background-color: transparent;
     border-radius: 0;
     border: 0;
@@ -23,12 +22,12 @@
       align-items: center;
       justify-content: center;
       padding: 8px;
-      @include hover;
       height: 80px;
       width: 80px;
       border-radius: 100%;
-      opacity: 0.5;
       background: white;
+      transition: all 0.8s ease;
+      @include hover;
 
       * {
         user-select: none;
@@ -58,11 +57,11 @@
 
       // ACTIVE
       &.active {
-        transition: all 0.3s ease-in;
-        background: white;
+        background: $blend;
         opacity: 1;
+        transition: all 0.2s ease;
         * {
-          transition: all 0.2s ease-in;
+          transition: all 0.2s ease;
           color: $primaryText;
         }
 
@@ -73,7 +72,7 @@
         .co-parent-name,
         .parent-name {
           opacity: 1;
-          color: $blend;
+          color: white;
           font-size: 16px;
           font-weight: $fwBold;
         }
@@ -94,9 +93,9 @@
   #co-parent-info,
   #parent-info {
     margin-top: 20px;
-    @include mainColorsGradient;
     padding: 15px;
     border-radius: $bigBorderRadius;
+    background: $main;
     @include shadow;
 
     #parent-name-primary,
@@ -118,25 +117,13 @@
       padding-top: 3px;
     }
 
-    .form {
-      button {
-        width: 60%;
-
-        &.default {
-          svg {
-            font-size: 14px;
-          }
-        }
-      }
-    }
-
     .flex {
       &.input {
         display: flex;
         justify-content: space-between;
         width: 100%;
         align-items: center;
-        gap: 15px;
+        gap: 5px;
       }
     }
   }

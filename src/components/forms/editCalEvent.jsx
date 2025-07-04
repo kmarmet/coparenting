@@ -24,8 +24,10 @@ import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
 import CalendarEvent from '../../models/new/calendarEvent'
 import AddressInput from '../shared/addressInput'
+import Button from '../shared/button'
 import DetailBlock from '../shared/detailBlock'
 import Form from '../shared/form'
+import FormDivider from '../shared/formDivider'
 import InputField from '../shared/inputField'
 import Label from '../shared/label'
 import Map from '../shared/map'
@@ -68,22 +70,21 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const formRef = useRef({...new CalendarEvent()})
 
   const ResetForm = async (alertMessage = '') => {
-    Manager.ResetForm('edit-event-form')
-    setEventIsDateRange(false)
-    setClonedDates([])
-    setIsVisitation(false)
-    setEventIsRecurring(false)
-    setEventIsCloned(false)
-    setView({label: 'Details', value: 'Details'})
     setTimeout(() => {
-      // setState({...state, refreshKey: Manager.GetUid()})
-    }, 500)
-    setState({
-      ...state,
-      successAlertMessage: alertMessage,
-      dateToEdit: moment().format(DatetimeFormats.dateForDb),
-    })
-    hideCard()
+      Manager.ResetForm('edit-event-form')
+      setEventIsDateRange(false)
+      setClonedDates([])
+      setIsVisitation(false)
+      setEventIsRecurring(false)
+      setEventIsCloned(false)
+      setView({label: 'Details', value: 'Details'})
+      setState({
+        ...state,
+        successAlertMessage: alertMessage,
+        dateToEdit: moment().format(DatetimeFormats.dateForDb),
+      })
+      hideCard()
+    }, 10)
   }
 
   const EditNonOwnerEvent = async (_formRef) => {
@@ -253,7 +254,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   return (
     <>
       <Form
-        key={event?.id}
         onDelete={() => {
           AlertManager.confirmAlert(
             SetLocalConfirmMessage(),
@@ -267,7 +267,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
           )
         }}
         hasDelete={currentUser?.key === event?.owner?.key}
-        formRef={formRef}
         onSubmit={Submit}
         submitText={'Update'}
         hasSubmitButton={view?.label === 'Edit'}
@@ -281,14 +280,25 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             dropdownPlaceholder="Details"
             selectedView={view}
             onSelect={(view) => {
+              console.log('treee')
+              console.log(view)
               setView(view)
             }}
           />
         }>
-        <div id="edit-cal-event-container" className={`${theme} edit-event-form'`}>
+        <Button
+          text={'Close Dropdown'}
+          classes={'close-dropdown-button'}
+          onClick={(e) => {
+            e.target.classList.remove('active')
+            DropdownManager.ToggleHiddenOnInputs('remove')
+          }}
+        />
+        <div id="edit-cal-event-container" className={`${theme} edit-event-form form-container`}>
           <div className={'content-wrapper'}>
             {/* DETAILS */}
             <div className={`view-wrapper${view?.label === 'Details' ? ' details active' : ' details'}`}>
+              <Spacer height={15} />
               <div className="blocks">
                 {/*  Date */}
                 <DetailBlock
@@ -402,6 +412,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
             {/* EDIT */}
             <div className={`view-wrapper${view?.label === 'Edit' ? ' edit active' : ''}`}>
+              <FormDivider text={'Required'} />
               {/* EVENT NAME */}
               <InputField
                 inputType={InputTypes.text}
@@ -417,6 +428,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 }}
               />
 
+              <Spacer height={3} />
+
               {/* DATE */}
               {!eventIsDateRange && (
                 <InputField
@@ -428,9 +441,11 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 />
               )}
 
+              <FormDivider text={'Optional'} />
+
               {/* EVENT START/END TIME */}
               {!eventIsDateRange && (
-                <>
+                <div className={'flex gap'}>
                   {/* START TIME */}
                   <InputField
                     wrapperClasses="start-time"
@@ -452,10 +467,10 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                     inputType={InputTypes.time}
                     onDateOrTimeSelection={(e) => (formRef.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}
                   />
-                </>
+                </div>
               )}
 
-              <hr />
+              <Spacer height={3} />
 
               {/* SHARE WITH */}
               <SelectDropdown
@@ -466,7 +481,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 onSelect={setSelectedShareWithOptions}
               />
 
-              <Spacer height={2} />
+              <Spacer height={3} />
 
               {/* REMINDERS */}
               <SelectDropdown
@@ -476,7 +491,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 placeholder={'Select Reminders'}
                 onSelect={setSelectedReminderOptions}
               />
-              <Spacer height={2} />
+
+              <Spacer height={3} />
 
               {/* INCLUDING WHICH CHILDREN */}
               <SelectDropdown
@@ -487,7 +503,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 selectMultiple={true}
               />
 
-              <hr />
+              <Spacer height={3} />
 
               {/* URL/WEBSITE */}
               <InputField
@@ -499,12 +515,16 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
               />
 
+              <Spacer height={3} />
+
               {/* ADDRESS */}
               <AddressInput
                 defaultValue={event?.address}
                 placeholder={'Location'}
                 onChange={(address) => (formRef.current.address = Manager.GetDirectionsLink(address))}
               />
+
+              <Spacer height={3} />
 
               {/* PHONE */}
               <InputField
@@ -515,6 +535,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 onChange={(e) => (formRef.current.phone = StringManager.FormatPhone(e.target.value))}
               />
 
+              <Spacer height={3} />
+
               {/* NOTES */}
               <InputField
                 defaultValue={event?.notes}
@@ -524,6 +546,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 inputType={InputTypes.textarea}
                 onChange={(e) => (formRef.current.notes = e.target.value)}
               />
+
+              <Spacer height={3} />
 
               {/* IS VISITATION? */}
               <div className="flex visitation-toggle">

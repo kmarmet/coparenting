@@ -30,6 +30,8 @@ import CalendarEvent from "../models/new/calendarEvent";
 
 import * as Sentry from '@sentry/react';
 
+import ObjectManager from "./objectManager";
+
 export default CalendarManager = {
   addMultipleCalEvents: async function(currentUser, newEvents, isRangeClonedOrRecurring = false) {
     var currentEvents, dbRef, error, event, i, len, multipleDatesId, toAdd;
@@ -100,7 +102,7 @@ export default CalendarManager = {
       }
       dateObject.reminderTimes = eventObject.GetReminderTimes;
       dateObject.recurrenceInterval = eventObject.recurringInterval;
-      datesToPush.push(dateObject);
+      datesToPush.push(ObjectManager.CleanObject(dateObject));
     }
     return datesToPush;
   },
