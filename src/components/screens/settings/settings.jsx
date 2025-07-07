@@ -1,6 +1,7 @@
 // Path: src\components\screens\settings\settings.jsx
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
+import ButtonThemes from '../../../constants/buttonThemes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context'
@@ -9,49 +10,46 @@ import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import DateManager from '../../../managers/dateManager'
 import DomManager from '../../../managers/domManager'
-import StringManager from '../../../managers/stringManager'
 import UpdateManager from '../../../managers/updateManager.js'
 import NavBar from '../../navBar'
-import CheckboxGroup from '../../shared/checkboxGroup'
+import Button from '../../shared/button'
 import InputField from '../../shared/inputField'
 import Label from '../../shared/label'
 import ScreenHeader from '../../shared/screenHeader'
+import SelectDropdown from '../../shared/selectDropdown'
 import Spacer from '../../shared/spacer'
 import ToggleButton from '../../shared/toggleButton'
 
 export default function Settings() {
   const {state, setState} = useContext(globalState)
-  const {authUser} = state
+  const {theme} = state
   const {currentUser} = useCurrentUser()
   const [morningSummaryHour, setMorningSummaryHour] = useState(currentUser?.dailySummaries?.morningReminderSummaryHour)
   const [eveningSummaryHour, setEveningSummaryHour] = useState(currentUser?.dailySummaries?.eveningReminderSummaryHour)
-  const [notificationsToggled, setNotificationsToggled] = useState(0)
+  const [notificationsToggled, setNotificationsToggled] = useState(false)
   const [showSummaryUpdateButton, setShowSummaryUpdateButton] = useState(false)
 
-  const submitCalendarSettings = async () => {
+  const SubmitCalendarSettings = async () => {
     if (DateManager.DateIsValid(morningSummaryHour)) {
-      await DB_UserScoped.updateUserRecord(
-        currentUser?.key,
-        'dailySummaries/morningReminderSummaryHour',
+      await DB.updateByPath(
+        `${DB.tables.users}/${currentUser?.key}/dailySummaries/morningReminderSummaryHour`,
         moment(morningSummaryHour).format(DatetimeFormats.summaryHour)
       )
     }
     if (DateManager.DateIsValid(eveningSummaryHour)) {
-      await DB_UserScoped.updateUserRecord(
-        currentUser?.key,
-        'dailySummaries/eveningReminderSummaryHour',
+      await DB.updateByPath(
+        `${DB.tables.users}/${currentUser?.key}/dailySummaries/eveningReminderSummaryHour`,
         moment(eveningSummaryHour).format(DatetimeFormats.summaryHour)
       )
     }
     setState({...state, successAlertMessage: 'Summary Times Updated'})
   }
 
-  const toggleNotifications = async () => {
+  const ToggleNotifications = async () => {
     setNotificationsToggled(!notificationsToggled)
-    const subscriber = await DB.find(DB.tables.Updatesubscribers, ['key', currentUser.key], true)
+    const subscriber = await DB.find(DB.tables.updateSubscribers, ['key', currentUser.key], true)
     const {subscriptionId} = subscriber
-    await DB_UserScoped.updateUserRecord(currentUser?.key, 'settings/notificationsEnabled', !currentUser?.settings?.notificationsEnabled)
-
+    await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/settings/notificationsEnabled`, !currentUser?.settings?.notificationsEnabled)
     if (notificationsToggled === true) {
       await UpdateManager.enableNotifications(subscriptionId)
     } else {
@@ -59,14 +57,8 @@ export default function Settings() {
     }
   }
 
-  const ChangeTheme = async () => {
-    const newTheme = currentUser?.settings?.theme === 'light' ? 'dark' : 'light'
-    if (newTheme === 'dark') {
-      document.querySelector("[data-key='Light']").classList.remove('active')
-    } else {
-      document.querySelector("[data-key='Dark']").classList.remove('active')
-    }
-    await DB_UserScoped.updateUserRecord(currentUser?.key, `settings/theme`, newTheme)
+  const ChangeTheme = async (theme) => {
+    await DB_UserScoped.updateUserRecord(currentUser?.key, `settings/theme`, theme.toLowerCase())
     window.location.reload()
   }
 
@@ -96,44 +88,52 @@ export default function Settings() {
             <p className="screen-intro-text">
               The summaries for the current and following day will be provided during the morning and evening summary hours.
             </p>
+
             <Spacer height={8} />
+
+            <Label text={'Morning Summary Time'} classes={`settings-section-title always-show ${theme}`} />
+
             {/* MORNING SUMMARY */}
             <InputField
-              defaultValue={moment(currentUser?.dailySummaries?.morningReminderSummaryHour, 'h:mma')}
+              wrapperClasses={'white'}
               placeholder={'Morning Hour'}
+              defaultValue={moment(morningSummaryHour, 'h:mma')}
               timeViews={['hours']}
               inputType={InputTypes.time}
               onDateOrTimeSelection={(e) => setMorningSummaryHour(e)}
             />
+
+            <Spacer height={3} />
+
             {/* EVENING SUMMARY */}
+            <Label text={'Evening Summary Time'} classes={`settings-section-title always-show ${theme}`} />
             <InputField
-              defaultValue={moment(currentUser?.dailySummaries?.eveningReminderSummaryHour, 'h:mma')}
+              wrapperClasses={'white'}
+              defaultValue={moment(eveningSummaryHour, 'h:mma')}
               placeholder={'Evening Hour'}
               timeViews={['hours']}
               inputType={InputTypes.time}
-              onChange={(e) => setEveningSummaryHour(e.target.value)}
               onDateOrTimeSelection={(e) => setEveningSummaryHour(e)}
             />
           </div>
+
+          <Spacer height={10} />
+
           {currentUser && showSummaryUpdateButton && (
-            <div className="mt-15">
-              <button onClick={submitCalendarSettings} className="button default submit green center mb-10">
-                Update Summary Times
-              </button>
-            </div>
+            <Button text={'Update Summary Times'} classes={'center block'} onClick={SubmitCalendarSettings} theme={ButtonThemes.green} />
           )}
 
           <Spacer height={10} />
 
           {/*  NOTIFICATIONS */}
-          <Label text={'Notifications'} classes="settings-section-title" />
+          <Label text={'Notifications'} classes={`settings-section-title always-show ${theme}`} />
           <div style={DomManager.AnimateDelayStyle(1)} className={`section ${DomManager.Animate.FadeInUp(currentUser?.settings, '.section')}`}>
             <div className="flex">
-              <Label text={'Enabled'} />
+              <Label text={'Enabled'} classes={`settings-section-title always-show ${theme}`} />
               <ToggleButton
                 isDefaultChecked={currentUser?.settings?.notificationsEnabled}
-                onCheck={toggleNotifications}
-                onUncheck={toggleNotifications}
+                onCheck={ToggleNotifications}
+                onUncheck={ToggleNotifications}
               />
             </div>
           </div>
@@ -141,18 +141,19 @@ export default function Settings() {
           <Spacer height={10} />
 
           {/* THEME */}
-          <Label text={'Theme'} classes="settings-section-title" />
           <div style={DomManager.AnimateDelayStyle(1)} className={`section ${DomManager.Animate.FadeInUp(currentUser?.settings?.theme, '.section')}`}>
-            <CheckboxGroup
-              checkboxArray={DomManager.BuildCheckboxGroup({
-                currentUser,
-                customLabelArray: ['Light', 'Dark'],
-                defaultLabels: [StringManager.UppercaseFirstLetterOfAllWords(currentUser?.settings?.theme)],
-              })}
-              isDefaultChecked={currentUser?.settings?.theme === 'dark'}
-              elClass={`${currentUser?.settings?.theme} `}
-              skipNameFormatting={true}
-              onCheck={ChangeTheme}
+            <SelectDropdown
+              placeholder={`Change Theme`}
+              wrapperClasses={'white-bg'}
+              options={[
+                {label: 'Light', value: 'light'},
+                {label: 'Dark', value: 'dark'},
+                {label: 'Gradient', value: 'gradient'},
+              ]}
+              onSelect={async (theme) => {
+                await ChangeTheme(theme.label)
+              }}
+              defaultValue={[{label: currentUser?.settings?.theme, value: currentUser?.settings?.theme}]}
             />
           </div>
         </div>

@@ -2002,7 +2002,7 @@
       }
     }
 
-    &.black {
+    &.light {
       label {
         color: $labelText;
       }
@@ -2122,6 +2122,7 @@
     color: $primaryText;
 
     input {
+      color: $primaryText !important;
       &::placeholder {
         color: $darkerGrey;
       }
