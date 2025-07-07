@@ -67,9 +67,9 @@ const NewChildForm = ({hideCard, showCard}) => {
     // Link to existing account
     if (Manager.IsValid(existingChildRecord) || childHasAccount || !ObjectManager.isEmpty(existingChildRecord)) {
       newChild.userKey = existingChildRecord.key
-      await DB_UserScoped.addSharedDataUser(currentUser, existingChildRecord.key)
+      await DB_UserScoped.AddSharedDataUser(currentUser, existingChildRecord.key)
     } else {
-      await DB_UserScoped.addSharedDataUser(currentUser, newChild.userKey)
+      await DB_UserScoped.AddSharedDataUser(currentUser, newChild.userKey)
     }
 
     // Add profile pic

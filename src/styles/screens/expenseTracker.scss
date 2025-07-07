@@ -155,13 +155,12 @@
 
       button {
         border-radius: $buttonBorderRadius;
-        //        width: calc(100% / 4);
-        color: white;
+        color: $mediumTransWhite;
         padding: 20px 20px;
         height: unset;
         text-align: center;
         font-size: 18px;
-        @include frostBackground;
+        background: $inputBackground;
         &.pressed {
           border-radius: $borderRadius;
           transform: scale(1.1);

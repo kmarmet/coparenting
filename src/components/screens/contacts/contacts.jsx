@@ -96,7 +96,7 @@ const Contacts = () => {
 
           if (Manager.IsValid(toRemove)) {
             const coParentIndex = DB.GetTableIndexById(coParents, activeContact?.id)
-            await DB_UserScoped.DeleteCoparent(currentUser, coParentIndex, toRemove?.userKey)
+            await DB_UserScoped.DeleteCoParent(currentUser, coParentIndex, toRemove?.userKey)
           }
         }
 

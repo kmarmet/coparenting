@@ -1,8 +1,4 @@
 // Path: src\components\forms\newCalendarEvent.jsx
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import {MobileDatePicker} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {BsCalendarCheck} from 'react-icons/bs'
@@ -22,7 +18,6 @@ import AlertManager from '../../managers/alertManager'
 import CalendarManager from '../../managers/calendarManager'
 import DatasetManager from '../../managers/datasetManager'
 import DateManager from '../../managers/dateManager'
-import DomManager from '../../managers/domManager'
 import DropdownManager from '../../managers/dropdownManager'
 import LogManager from '../../managers/logManager'
 import Manager from '../../managers/manager'
@@ -32,7 +27,6 @@ import UpdateManager from '../../managers/updateManager'
 import CalendarEvent from '../../models/new/calendarEvent'
 import AddressInput from '../shared/addressInput'
 import Button from '../shared/button'
-import CheckboxGroup from '../shared/checkboxGroup'
 import Form from '../shared/form'
 import FormDivider from '../shared/formDivider'
 import InputField from '../shared/inputField'
@@ -450,40 +444,27 @@ export default function NewCalendarEvent() {
             </div>
           </div>
 
-          <SelectDropdown selectMultiple={true} placeholder={'Select Interval'} options={recurringIntervals} onSelect={setRecurringIntervals} />
-
           {/* RECURRING */}
           {view?.label === 'Single Day' && (
-            <div id="repeating-container">
-              <Accordion id={'checkboxes'} expanded={eventIsRecurring}>
-                <AccordionSummary>
-                  <div className="flex">
-                    <Label text={'Recurring'} classes="toggle lowercase white" />
-                    <ToggleButton onCheck={() => setEventIsRecurring(true)} onUncheck={() => setEventIsRecurring(false)} />
-                  </div>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Spacer height={2} />
-                  <CheckboxGroup
-                    elClass={`${theme}`}
-                    // onCheck={HandleRepeatingSelection}
-                    checkboxArray={DomManager.BuildCheckboxGroup({
-                      currentUser,
-                      labelType: 'recurring-intervals',
-                    })}
-                  />
+            <>
+              {eventIsRecurring && (
+                <>
+                  <Spacer height={5} />
 
-                  {Manager.IsValid(recurringFrequency) && (
-                    <InputField inputType={'date'} placeholder={'Date to End Recurring Events'} required={true}>
-                      <MobileDatePicker
-                        className={`${theme}`}
-                        onChange={(e) => (formRef.current.endDate = moment(e).format(DatetimeFormats.dateForDb))}
-                      />
-                    </InputField>
-                  )}
-                </AccordionDetails>
-              </Accordion>
-            </div>
+                  <SelectDropdown
+                    selectMultiple={true}
+                    placeholder={'Select Interval'}
+                    options={recurringIntervals}
+                    onSelect={setRecurringIntervals}
+                  />
+                  <Spacer height={5} />
+                </>
+              )}
+              <div className="flex">
+                <Label text={'Recurring'} classes="toggle lowercase white" />
+                <ToggleButton onCheck={() => setEventIsRecurring(true)} onUncheck={() => setEventIsRecurring(false)} />
+              </div>
+            </>
           )}
 
           {/* DUPLICATE */}

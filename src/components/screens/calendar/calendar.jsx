@@ -474,9 +474,7 @@ export default function EventCalendar() {
               eventsOfActiveDay={eventsOfActiveDay}
               setEventToEdit={(ev) => {
                 setEventToEdit(ev)
-                setTimeout(() => {
-                  setShowEditCard(true)
-                }, 200)
+                setShowEditCard(true)
               }}
             />
           )}

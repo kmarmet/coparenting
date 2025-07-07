@@ -383,12 +383,16 @@ const DB_UserScoped = {
       }
     }
   },
-  addSharedDataUser: async (currentUser, newKey) => {
+  AddSharedDataUser: async (currentUser, newKey) => {
     const dbRef = ref(getDatabase())
-    const existingKeys = DatasetManager.getUniqueArray(currentUser?.sharedDataUsers, true) ?? []
-    if (!existingKeys.includes(newKey)) {
-      const toAdd = DatasetManager.getUniqueArray([...existingKeys, newKey].filter((x) => x).flat())
-      await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/sharedDataUsers`), toAdd)
+    const existingKeys = DatasetManager.GetValidArray(currentUser?.sharedDataUsers, true)
+    if (Manager.IsValid(existingKeys)) {
+      if (!existingKeys.includes(newKey)) {
+        const toAdd = DatasetManager.getUniqueArray([...existingKeys, newKey].filter((x) => x).flat())
+        await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/sharedDataUsers`), toAdd)
+      }
+    } else {
+      await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/sharedDataUsers`), [newKey])
     }
   },
   UpdateCoparent: async (currentUserKey, coparentIndex, prop, value) => {
@@ -474,10 +478,10 @@ const DB_UserScoped = {
     let removalKey = await DB.getNestedSnapshotKey(`${DB.tables.users}/${currentUser?.key}/parents/`, parent, 'userKey')
     await remove(child(dbRef, `${DB.tables.users}/${currentUser?.key}/parents/${removalKey}/${StringManager.formatDbProp(prop)}`))
   },
-  DeleteCoparent: async (currentUser, coparentIndex, coparentUserKey) => {
+  DeleteCoParent: async (currentUser, coparentIndex, coparentUserKey) => {
     try {
       const dbRef = ref(getDatabase())
-      // console.log(`${DB.tables.users}/${currentUser?.key}/coparents/${coparentIndex}`)
+      console.log(`${DB.tables.users}/${currentUser?.key}/coparents/${coparentIndex}`)
       await DB_UserScoped.DeleteSharedDataUserKey(currentUser, coparentUserKey)
       await remove(child(dbRef, `${DB.tables.users}/${currentUser?.key}/coparents/${coparentIndex}`))
     } catch (error) {

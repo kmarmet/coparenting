@@ -27,7 +27,7 @@ const CreationMenu = () => {
     swipeDuration: 300,
     preventScrollOnSwipe: true,
     onSwipedDown: () => {
-      setState({...state, showCreationMenu: false})
+      setState({...state, showCreationMenu: false, showOverlay: false})
     },
   })
 
@@ -58,7 +58,7 @@ const CreationMenu = () => {
             style={DomManager.AnimateDelayStyle(1)}
             className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
             onClick={() => {
-              setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.calendar, dateToEdit: dateToEdit})
+              setState({...state, showCreationMenu: false, showOverlay: false, creationFormToShow: CreationForms.calendar, dateToEdit: dateToEdit})
             }}>
             <div className="content">
               <p className="calendar">Calendar Event</p>
@@ -75,7 +75,7 @@ const CreationMenu = () => {
                 style={DomManager.AnimateDelayStyle(2)}
                 className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
                 onClick={() => {
-                  setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.expense})
+                  setState({...state, showCreationMenu: false, showOverlay: false, creationFormToShow: CreationForms.expense})
                 }}>
                 <div className="content">
                   <p className="expense">Expense</p>
@@ -90,7 +90,7 @@ const CreationMenu = () => {
                 style={DomManager.AnimateDelayStyle(2.2)}
                 className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
                 onClick={() => {
-                  setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.transferRequest})
+                  setState({...state, showCreationMenu: false, showOverlay: false, creationFormToShow: CreationForms.transferRequest})
                 }}>
                 <div className="content">
                   <p className="transfer">Transfer Change Request</p>
@@ -105,7 +105,7 @@ const CreationMenu = () => {
                 style={DomManager.AnimateDelayStyle(2.4)}
                 className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
                 onClick={() => {
-                  setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.swapRequest})
+                  setState({...state, showCreationMenu: false, showOverlay: false, creationFormToShow: CreationForms.swapRequest})
                 }}>
                 <div className="content">
                   <p className="swap">Swap Request</p>
@@ -122,7 +122,7 @@ const CreationMenu = () => {
             style={DomManager.AnimateDelayStyle(2.6)}
             className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
             onClick={() => {
-              setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.memories})
+              setState({...state, showCreationMenu: false, showOverlay: false, creationFormToShow: CreationForms.memories})
             }}>
             <div className="content">
               <p className="memory-icon">Memory</p>
@@ -140,7 +140,13 @@ const CreationMenu = () => {
                   style={DomManager.AnimateDelayStyle(2.8)}
                   className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
                   onClick={() => {
-                    setState({...state, showCreationMenu: false, currentScreen: ScreenNames.chats, creationFormToShow: CreationForms.chat})
+                    setState({
+                      ...state,
+                      showCreationMenu: false,
+                      showOverlay: false,
+                      currentScreen: ScreenNames.chats,
+                      creationFormToShow: CreationForms.chat,
+                    })
                   }}>
                   <div className="content">
                     <p className="chat">Chat</p>
@@ -156,7 +162,7 @@ const CreationMenu = () => {
                 style={DomManager.AnimateDelayStyle(3)}
                 className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
                 onClick={() => {
-                  setState({...state, showCreationMenu: false, creationFormToShow: CreationForms.documents})
+                  setState({...state, showCreationMenu: false, showOverlay: false, creationFormToShow: CreationForms.documents})
                 }}>
                 <div className="content">
                   <p className="document">Document Upload</p>
@@ -169,7 +175,7 @@ const CreationMenu = () => {
           )}
           <div
             style={DomManager.AnimateDelayStyle(3.5)}
-            onClick={() => setState({...state, showCreationMenu: false})}
+            onClick={() => setState({...state, showOverlay: false, showCreationMenu: false})}
             className={`action-item close ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}>
             <div className="content">
               <p className="close">Close</p>

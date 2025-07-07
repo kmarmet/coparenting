@@ -86,6 +86,9 @@ export default function AdminDashboard() {
     SmsManager.GetRemainingBalance().then((balance) => {
       setTextBalance(balance)
     })
+    setTimeout(() => {
+      setState({...state, successAlertMessage: 'Hello World'})
+    }, 500)
   }, [])
 
   const UpdateAppVersion = async () => {

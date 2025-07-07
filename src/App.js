@@ -44,10 +44,12 @@ import TransferRequests from './components/screens/transferRequests.jsx'
 import Updates from './components/screens/updates'
 import Vault from './components/screens/vault.jsx'
 import Visitation from './components/screens/visitation.jsx'
+import AppUpdateOverlay from './components/shared/appUpdateOverlay'
 import BrandBar from './components/shared/brandBar'
 import CreationMenu from './components/shared/creationMenu'
 import DesktopLeftSidebar from './components/shared/desktopLeftSidebar'
 import LoadingScreen from './components/shared/loadingScreen'
+import Overlay from './components/shared/overlay'
 import SuccessAlert from './components/shared/successAlert'
 import CreationForms from './constants/creationForms'
 import DatetimeFormats from './constants/datetimeFormats'
@@ -236,6 +238,9 @@ export default function App() {
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <div className={`App ${theme}`} id="app-container">
         <globalState.Provider value={stateToUpdate}>
+          {/* APP UPDATE OVERLAY */}
+          <AppUpdateOverlay />
+
           {/* SUCCESS ALERT */}
           <SuccessAlert />
 
@@ -259,6 +264,8 @@ export default function App() {
             showCard={creationFormToShow === CreationForms.coparent}
             hideCard={() => setState({...state, creationFormToShow: '', refreshKey: Manager.GetUid()})}
           />
+
+          <Overlay />
 
           {/* BRAND BAR */}
           {!screensToHideBrandbar.includes(currentScreen) && <BrandBar />}

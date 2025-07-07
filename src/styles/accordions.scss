@@ -31,7 +31,6 @@
         .MuiAccordionDetails-root {
         }
         .MuiCollapse-entered {
-          overflow: hidden !important;
           .MuiAccordionDetails-root {
           }
         }
@@ -88,6 +87,8 @@
       }
 
       .address-input {
+        //padding-left: 40px !important;
+
         .css-13cymwt-control {
           background: white !important;
         }

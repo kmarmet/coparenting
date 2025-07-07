@@ -17,6 +17,8 @@ import ExpenseSortByTypes from "../constants/expenseSortByTypes";
 
 import DB_UserScoped from "../database/db_userScoped";
 
+import Apis from "../api/apis";
+
 DropdownManager = {
   // HELPERS
   GetReadableReminderTimes: function(reminderTimes) {
@@ -189,6 +191,21 @@ DropdownManager = {
   },
   // GET DEFAULT
   GetDefault: {
+    Holidays: async function() {
+      var apiHolidays, holiday, i, len, options;
+      apiHolidays = (await Apis.Dates.GetHolidays());
+      options = [];
+      if (Manager.IsValid(apiHolidays)) {
+        for (i = 0, len = apiHolidays.length; i < len; i++) {
+          holiday = apiHolidays[i];
+          options.push({
+            label: holiday != null ? holiday.name : void 0,
+            value: holiday != null ? holiday.date : void 0
+          });
+        }
+      }
+      return options;
+    },
     ExpenseCategories: function() {
       var category, i, len, options, ref;
       options = [];

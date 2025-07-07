@@ -1,7 +1,6 @@
 // Path: src\components\forms\newExpenseForm.jsx
 import moment from 'moment'
-import React, {useContext, useRef, useState} from 'react'
-import CheckboxGroup from '../../components/shared/checkboxGroup'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import Form from '../../components/shared/form'
 import SelectDropdown from '../../components/shared/selectDropdown'
 import Spacer from '../../components/shared/spacer.jsx'
@@ -18,9 +17,9 @@ import useChildren from '../../hooks/useChildren'
 import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useExpenses from '../../hooks/useExpenses'
+import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
 import DateManager from '../../managers/dateManager'
-import DomManager from '../../managers/domManager'
 import DropdownManager from '../../managers/dropdownManager'
 import ImageManager from '../../managers/imageManager'
 import Manager from '../../managers/manager'
@@ -33,23 +32,38 @@ import Button from '../shared/button'
 import FormDivider from '../shared/formDivider'
 import InputField from '../shared/inputField'
 import Label from '../shared/label'
-import ShareWithDropdown from '../shared/shareWithDropdown'
 import ToggleButton from '../shared/toggleButton'
 import UploadButton from '../shared/uploadButton'
 
 export default function NewExpenseForm() {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey, authUser, creationFormToShow} = state
-  const [recurringFrequency, setRecurringFrequency] = useState('')
-  const [repeatingEndDate, setRepeatingEndDate] = useState('')
-  const [isRecurring, setIsRecurring] = useState(false)
+
+  // HOOKS
   const {currentUser} = useCurrentUser()
   const {children, childrenDropdownOptions} = useChildren()
   const {coParents} = useCoParents()
+  const {users} = useUsers()
+
+  // STATE
+  const [recurringFrequency, setRecurringFrequency] = useState('')
+  const [repeatingEndDate, setRepeatingEndDate] = useState('')
+  const [isRecurring, setIsRecurring] = useState(false)
+  const [categorySelection, setCategorySelection] = useState()
+
+  // HOOKS
   const {expenses} = useExpenses()
 
-  // Selections
-  const [categorySelection, setCategorySelection] = useState()
+  // DROPDOWN STATE
+  const [selectedChildrenOptions, setSelectedChildrenOptions] = useState([])
+  const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
+  const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
+  const [recurringIntervals, setRecurringIntervals] = useState([
+    {label: 'Daily', value: 'Daily'},
+    {label: 'Weekly', value: 'Weekly'},
+    {label: 'Biweekly', value: 'Biweekly'},
+    {label: 'Monthly', value: 'Monthly'},
+  ])
 
   // Ref
   const formRef = useRef({...new Expense()})
@@ -58,11 +72,13 @@ export default function NewExpenseForm() {
     Manager.ResetForm('expenses-wrapper')
     setRecurringFrequency('')
     setRepeatingEndDate('')
-    setState({
-      ...state,
-      creationFormToShow: '',
-      successAlertMessage: showAlert ? `${StringManager.FormatTitle(formRef.current.name)} Added` : null,
-    })
+    setTimeout(() => {
+      setState({
+        ...state,
+        creationFormToShow: '',
+        successAlertMessage: showAlert ? `${StringManager.FormatTitle(formRef.current.name)} Added` : null,
+      })
+    }, 10)
   }
 
   const SubmitNewExpense = async () => {
@@ -90,26 +106,28 @@ export default function NewExpenseForm() {
     //#endregion VALIDATION
 
     const newExpense = {...formRef.current}
-    newExpense.name = StringManager.FormatTitle(formRef.current.name)
-    newExpense.dueDate = DateManager.GetValidDate(formRef.current.dueDate)
-    newExpense.paidStatus = 'unpaid'
-    newExpense.imageName = formRef?.current?.image?.name ?? ''
-    newExpense.recurringFrequency = recurringFrequency
-    newExpense.isRecurring = isRecurring
-    newExpense.category = categorySelection?.value
-    newExpense.owner = {
+    // Mappers
+    formRef.current.shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
+    formRef.current.name = StringManager.FormatTitle(formRef.current.name)
+    formRef.current.dueDate = DateManager.GetValidDate(formRef.current.dueDate)
+    formRef.current.paidStatus = 'unpaid'
+    formRef.current.imageName = formRef?.current?.image?.name ?? ''
+    formRef.current.recurringFrequency = recurringFrequency
+    formRef.current.isRecurring = isRecurring
+    formRef.current.category = categorySelection?.value
+    formRef.current.owner = {
       key: currentUser?.key,
       name: currentUser?.name,
     }
-    newExpense.recipient = {
+    formRef.current.recipient = {
       key: currentUser?.key,
       name: currentUser?.name,
     }
 
     // If expense has image
     if (formRef.current.image) {
-      newExpense.imageName = formRef.current.image.name
-      newExpense.image = await ImageManager.compressImage(formRef.current.image)
+      formRef.current.imageName = formRef.current.image.name
+      formRef.current.image = await ImageManager.compressImage(formRef.current.image)
     }
 
     const activeRepeatIntervals = document.querySelectorAll('.repeat-interval .box.active')
@@ -122,7 +140,7 @@ export default function NewExpenseForm() {
     // IMAGE UPLOAD
     if (Manager.IsValid(formRef?.current?.image?.name)) {
       await Storage.upload(Storage.directories.expenseImages, currentUser?.key, formRef.current.image, formRef.current.image.name).then((url) => {
-        newExpense.imageUrl = url
+        formRef.current.imageUrl = url
       })
     }
 
@@ -158,62 +176,25 @@ export default function NewExpenseForm() {
     if (Manager.IsValid(datesToRepeat)) {
       datesToRepeat.forEach((date) => {
         let newExpense = new Expense({...formRef.current})
-        newExpense.owner = {
+        formRef.current.owner = {
           key: currentUser?.key,
           name: StringManager.GetFirstNameOnly(currentUser?.name),
           phone: currentUser?.phone,
         }
-        newExpense.recipient = {
+        formRef.current.recipient = {
           key: currentUser?.key,
           name: StringManager.GetFirstNameOnly(currentUser?.name),
         }
-        newExpense.imageName = ''
-        newExpense.dueDate = Manager.IsValid(date) ? moment(date).format(DatetimeFormats.dateForDb) : ''
-        newExpense.creationDate = DateManager.GetCurrentJavascriptDate()
-        newExpense.paidStatus = 'unpaid'
-        newExpense.isRecurring = true
+        formRef.current.imageName = ''
+        formRef.current.dueDate = Manager.IsValid(date) ? moment(date).format(DatetimeFormats.dateForDb) : ''
+        formRef.current.creationDate = DateManager.GetCurrentJavascriptDate()
+        formRef.current.paidStatus = 'unpaid'
+        formRef.current.isRecurring = true
         const cleaned = ObjectManager.CleanObject(newExpense)
         expensesToPush.push(cleaned)
       })
       await DB_UserScoped.addMultipleExpenses(currentUser, expensesToPush)
     }
-  }
-
-  const HandleChildSelection = (e) => (formRef.current.children = e.map((x) => x.label))
-
-  const HandleShareWithSelection = (e) => (formRef.current.shareWith = e.map((x) => x.value))
-
-  const HandleRecurringSelection = async (e) => {
-    const repeatingWrapper = document.getElementById('repeating-container')
-    const checkboxWrappers = repeatingWrapper.querySelectorAll('#checkbox-wrapper, .label-wrapper')
-    checkboxWrappers.forEach((wrapper) => {
-      wrapper.classList.remove('active')
-    })
-    DomManager.HandleCheckboxSelection(
-      e,
-      (e) => {
-        let selection = ''
-        if (e.toLowerCase().indexOf('week') > -1) {
-          selection = 'weekly'
-        }
-        if (e.toLowerCase().indexOf('bi') > -1) {
-          selection = 'biweekly'
-        }
-        if (e.toLowerCase().indexOf('daily') > -1) {
-          selection = 'daily'
-        }
-        if (e.toLowerCase().indexOf('monthly') > -1) {
-          selection = 'monthly'
-        }
-        setRecurringFrequency(selection)
-      },
-      (e) => {
-        if (recurringFrequency.toLowerCase() === e.toLowerCase()) {
-          setRecurringFrequency(null)
-        }
-      },
-      false
-    )
   }
 
   const OnDefaultAmountPress = (e) => {
@@ -228,7 +209,11 @@ export default function NewExpenseForm() {
     amountInput.value = total
   }
 
-  const HandleCategorySelection = (category) => (formRef.current.category = category.label)
+  useEffect(() => {
+    if (Manager.IsValid(children) || Manager.IsValid(coParents) || Manager.IsValid(users)) {
+      setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
+    }
+  }, [children, coParents, users])
 
   return (
     <Form
@@ -321,10 +306,6 @@ export default function NewExpenseForm() {
               options={DropdownManager.GetDefault.CoParents(coParents)}
               placeholder={'Select Expense Payer'}
               onSelect={(e) => {
-                console.log({
-                  name: e.label,
-                  key: e.value,
-                })
                 formRef.current.payer = {
                   name: e.label,
                   key: e.value,
@@ -344,6 +325,7 @@ export default function NewExpenseForm() {
             required={true}
             show={true}
           />
+
           <Spacer height={3} />
 
           {/* DUE DATE */}
@@ -353,43 +335,42 @@ export default function NewExpenseForm() {
             placeholder={'Due Date'}
             onDateOrTimeSelection={(date) => (formRef.current.dueDate = moment(date).format(DatetimeFormats.dateForDb))}
           />
-          {/* NOTES */}
-          <InputField onChange={(e) => (formRef.current.notes = e.target.value)} inputType={'textarea'} placeholder={'Notes'} />
-          <FormDivider text={'Optional'} />
 
           <Spacer height={3} />
+          {/* NOTES */}
+          <InputField onChange={(e) => (formRef.current.notes = e.target.value)} inputType={'textarea'} placeholder={'Notes'} />
+
+          <FormDivider text={'Optional'} />
+
           {/* SHARE WITH */}
-          <ShareWithDropdown
-            onCheck={HandleShareWithSelection}
+          <SelectDropdown
+            options={defaultShareWithOptions}
+            selectMultiple={true}
             placeholder={'Select Contacts to Share With'}
-            containerClass={'share-with-coParents'}
+            onSelect={setSelectedShareWithOptions}
           />
+
           <Spacer height={3} />
 
           {/* INCLUDING WHICH CHILDREN */}
           {Manager.IsValid(children) && (
             <SelectDropdown
-              options={DropdownManager.GetDefault.CoParents(children)}
+              options={childrenDropdownOptions}
               placeholder={'Select Children to Include'}
-              onSelect={HandleChildSelection}
-              isMultiple={true}
+              onSelect={setSelectedChildrenOptions}
+              selectMultiple={true}
             />
           )}
+          <Spacer height={3} />
+
+          <SelectDropdown selectMultiple={true} placeholder={'Select Interval'} options={recurringIntervals} onSelect={setRecurringIntervals} />
+
           <Spacer height={8} />
           {/* RECURRING? */}
           <div className="flex">
             <Label text={'Recurring'} classes="always-show" />
             <ToggleButton onCheck={() => setIsRecurring(true)} onUncheck={() => setIsRecurring(false)} />
           </div>
-          {isRecurring && (
-            <CheckboxGroup
-              onCheck={HandleRecurringSelection}
-              checkboxArray={DomManager.BuildCheckboxGroup({
-                currentUser,
-                labelType: 'recurring-intervals',
-              })}
-            />
-          )}
         </div>
       </div>
     </Form>

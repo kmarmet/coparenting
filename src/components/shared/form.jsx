@@ -2,12 +2,9 @@
 import React, {cloneElement, useContext, useEffect, useState} from 'react'
 import ButtonThemes from '../../constants/buttonThemes'
 import globalState from '../../context'
-import useDetectElement from '../../hooks/useDetectElement'
 import DomManager from '../../managers/domManager'
-import DropdownManager from '../../managers/dropdownManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
-import Button from './button'
 import CardButton from './cardButton'
 import StringAsHtmlElement from './stringAsHtmlElement'
 
@@ -32,7 +29,6 @@ export default function Form({
   const {state, setState} = useContext(globalState)
   const {theme, creationFormToShow} = state
   const [refreshKey, setRefreshKey] = useState(Manager.GetUid())
-  const [dropdownOpen, setDropdownOpen] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
   const ScrollToTop = () => {
@@ -40,22 +36,8 @@ export default function Form({
     header.scrollIntoView({behavior: 'smooth', block: 'end'})
   }
 
-  // Detect when dropdown is opened
-  useDetectElement(
-    '[class*="q5-menu"]',
-    (e) => {
-      DropdownManager.ToggleHiddenOnInputs('hide')
-      setDropdownOpen(true)
-    },
-    () => {
-      DropdownManager.ToggleHiddenOnInputs('show')
-      setDropdownOpen(false)
-    }
-  )
-
   useEffect(() => {
     let activeForm = document.querySelector(`.${wrapperClass}.form-wrapper.active`)
-
     // Check if creationFormToShow is valid -> find the form wrapper
     if (Manager.IsValid(creationFormToShow, true)) {
       activeForm = document.querySelector(`.${creationFormToShow}.form-wrapper`)
@@ -89,15 +71,25 @@ export default function Form({
     }
   }, [showCard])
 
+  // Remove map branding
+  useEffect(() => {
+    let activeForm = document.querySelector(`.form-card.active`)
+
+    if (Manager.IsValid(activeForm)) {
+      const mapDivs = activeForm.querySelectorAll('div')
+      const matchingDivs = Array.from(mapDivs).filter(
+        (div) => div.style.position === 'absolute' && div.style.display === 'inline-flex' && div.style.bottom === '0px'
+      )
+      matchingDivs.forEach((div) => {
+        div.style.display = 'none'
+      })
+    }
+  }, [showCard])
+
   return (
     <div key={refreshKey} className={`form-wrapper${showCard ? ` active` : ''} ${wrapperClass}`}>
-      <Button
-        text={'Close Options'}
-        classes={`${dropdownOpen ? 'active close-dropdown-button' : 'close-dropdown-button'}`}
-        onClick={() => DropdownManager.ToggleHiddenOnInputs('hide')}
-      />
-      <div className={`form-card${showCard ? ` active` : ''}`}>
-        <div className="content-wrapper">
+      <div className={`form-card${showCard ? ' active' : ''}`}>
+        <div className={`content-wrapper`}>
           {Manager.IsValid(title) && (
             <div className="header">
               <p className={'form-title'} onClick={(e) => DomManager.ToggleActive(e.currentTarget)}>
@@ -112,6 +104,8 @@ export default function Form({
           {children}
         </div>
       </div>
+
+      {/* CARD BUTTONS */}
       <div className={`flex card-buttons`}>
         {hasSubmitButton && (
           <CardButton
@@ -123,10 +117,14 @@ export default function Form({
                 onSubmit()
                 setSubmitted(true)
               }
+              setTimeout(() => {
+                setSubmitted(false)
+              }, 500)
             }}
           />
         )}
 
+        {/* DELETE BUTTON */}
         {hasDelete && <CardButton text={deleteButtonText} buttonTheme={ButtonThemes.red} classes="card-button" onClick={onDelete} />}
 
         {/* EXTRA BUTTONS */}
@@ -135,6 +133,7 @@ export default function Form({
             return cloneElement(button, {key: index})
           })}
 
+        {/* CANCEL/CLOSE BUTTON */}
         <CardButton
           text={cancelButtonText}
           buttonTheme={ButtonThemes.white}
@@ -142,8 +141,8 @@ export default function Form({
           onClick={() => {
             onClose()
             setSubmitted(false)
-            DropdownManager.ToggleHiddenOnInputs('remove')
             setRefreshKey(Manager.GetUid())
+            setState({...state, showOverlay: false})
           }}
         />
       </div>

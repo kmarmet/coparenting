@@ -183,6 +183,7 @@ export default function Vault() {
             onSelect={(e) => setRecordType(e.label)}
           />
           <Spacer height={3} />
+
           {/* PAYERS */}
           {recordType === 'Expenses' && (
             <SelectDropdown

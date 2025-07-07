@@ -21,6 +21,9 @@ AlertManager = {
       title: title,
       text: text,
       icon: 'error',
+      customClass: {
+        container: 'sweet-alert-frost'
+      },
       showClass: {
         popup: `animate__animated
 animate__fadeInUp
@@ -55,7 +58,7 @@ animate__faster`
       }
     });
   },
-  confirmAlert: function(title, confirmButtonText = "I'm Sure", showDenyButton = true, onConfirm, onDeny, theme = 'light') {
+  confirmAlert: function(title, confirmButtonText = "I'm Sure", showDenyButton = true, onConfirm = () => {}, onDeny = () => {}, theme = 'light') {
     return Swal.fire({
       showClass: {
         popup: `animate__animated
@@ -69,6 +72,7 @@ animate__faster`
       },
       title: title,
       grow: true,
+      html: 'TEst',
       showDenyButton: showDenyButton,
       showCancelButton: false,
       confirmButtonText: confirmButtonText,
@@ -76,8 +80,7 @@ animate__faster`
       background: "#fff3cd !important",
       confirmButtonColor: '#00b389 !important',
       customClass: {
-        container: `${theme} confirm-alert`,
-        popup: "KEVIN"
+        container: 'sweet-alert-frost'
       }
     }).then(function(result) {
       if (result.isConfirmed) {
@@ -108,6 +111,9 @@ animate__faster`
       title: title,
       text: subtitle,
       icon: icon,
+      customClass: {
+        container: 'sweet-alert-frost'
+      },
       showDenyButton: false,
       showCancelButton: false,
       confirmButtonText: "Okay",
@@ -131,6 +137,9 @@ animate__faster`
       confirmButtonText: "Confirm",
       allowOutsideClick: allowOutsideClick,
       customClass: bg,
+      customClass: {
+        container: 'sweet-alert-frost'
+      },
       showClass: {
         popup: `animate__animated
 animate__fadeInUp
@@ -168,23 +177,26 @@ animate__faster`
       denyButtonText: config.denyButtonText,
       cancelButtonText: config.cancelButtonText,
       confirmButtonColor: '#00b389 !important',
-      allowOutsideClick: false
-    }).then(function(result) {
-      if (result.isConfirmed) {
-        if (config.onConfirm) {
-          config.onConfirm(result);
+      customClass: {
+        container: 'sweet-alert-frost'
+      },
+      allowOutsideClick: false.then(function(result) {
+        if (result.isConfirmed) {
+          if (config.onConfirm) {
+            config.onConfirm(result);
+          }
         }
-      }
-      if (result.isDismissed) {
-        if (config.onCancel) {
-          config.onCancel(result);
+        if (result.isDismissed) {
+          if (config.onCancel) {
+            config.onCancel(result);
+          }
         }
-      }
-      if (result.isDenied) {
-        if (config.onDeny) {
-          return config.onDeny(result);
+        if (result.isDenied) {
+          if (config.onDeny) {
+            return config.onDeny(result);
+          }
         }
-      }
+      })
     });
   }
 };

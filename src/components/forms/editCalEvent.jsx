@@ -114,7 +114,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   const Submit = async () => {
     try {
       let updatedEvent = ObjectManager.merge(event, formRef.current, 'deep')
-
+      console.log(event)
       // Map Dropdown to Database
       updatedEvent.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
       updatedEvent.reminderTimes = DropdownManager.MappedForDatabase.RemindersFromArray(selectedReminderOptions)

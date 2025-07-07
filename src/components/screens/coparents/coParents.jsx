@@ -61,19 +61,22 @@ export default function CoParents() {
   }
 
   const DeleteCoParent = async () => {
-    const coparentIndex = DB.GetTableIndexByUserKey(coParents, activeCoParent?.userKey)
-
-    if (!Manager.IsValid(coparentIndex)) {
+    const coParentIndex = DB.GetTableIndexByUserKey(coParents, activeCoParent?.userKey)
+    if (!Manager.IsValid(coParentIndex)) {
       return
     }
-    await DB_UserScoped.DeleteCoparent(currentUser?.key, coparentIndex)
+    await DB_UserScoped.DeleteCoParent(currentUser, coParentIndex, activeCoParent?.userKey)
     await DB_UserScoped.DeleteSharedDataUserKey(currentUser, activeCoParent?.userKey)
+    setState({
+      ...state,
+      successAlertMessage: `${StringManager.GetFirstNameAndLastInitial(activeCoParent?.name)} Has Been Removed as a Contact`,
+      showScreenActions: false,
+    })
   }
 
   const HandleCoParentChange = (coParent) => {
     setActiveCoParent(coParent)
     setShowCustomInfoCard(false)
-    setState({...state, refreshKey: Manager.GetUid()})
   }
 
   useEffect(() => {
@@ -114,15 +117,15 @@ export default function CoParents() {
             setState({...state, showScreenActions: false})
           }}>
           <div className="content">
-            <div className="svg-wrapper">
-              <IoPersonAdd className={'add-co-parent fs-22'} />
-            </div>
             <p>
               Add a Co-Parent
               <span className="subtitle">
                 Store information and provide sharing permissions for a co-parent who that has not been added to your profile yet
               </span>
             </p>
+            <div className="svg-wrapper">
+              <IoPersonAdd className={'add-co-parent fs-22'} />
+            </div>
           </div>
         </div>
 
@@ -137,13 +140,13 @@ export default function CoParents() {
                 setShowCustomInfoCard(true)
               }}>
               <div className="content">
-                <div className="svg-wrapper">
-                  <FaWandMagicSparkles className={'magic'} />
-                </div>
                 <p>
                   Add your Own Info
                   <span className="subtitle">Include personalized details about {StringManager.GetFirstNameOnly(activeCoParent?.name)}</span>
                 </p>
+                <div className="svg-wrapper">
+                  <FaWandMagicSparkles className={'magic'} />
+                </div>
               </div>
             </div>
 
@@ -153,7 +156,7 @@ export default function CoParents() {
               onClick={() => {
                 setState({...state, showScreenActions: false})
                 AlertManager.confirmAlert(
-                  `Are you sure you would like to unlink ${StringManager.GetFirstNameOnly(activeCoParent?.name)} from your profile?`,
+                  `Are you sure you would like to remove ${StringManager.GetFirstNameOnly(activeCoParent?.name)} as a contact?`,
                   "I'm Sure",
                   true,
                   async () => {
@@ -162,16 +165,15 @@ export default function CoParents() {
                 )
               }}>
               <div className="content">
-                <div className="svg-wrapper">
-                  <IoPersonRemove className={'remove-user'} />
-                </div>
-
                 <p>
-                  Unlink {StringManager.GetFirstNameOnly(activeCoParent?.name)} from Your Profile
+                  Remove {StringManager.GetFirstNameOnly(activeCoParent?.name)} as a Contact
                   <span className="subtitle">
                     Remove sharing permissions for {StringManager.GetFirstNameOnly(activeCoParent?.name)} along with the information stored about them
                   </span>
                 </p>
+                <div className="svg-wrapper">
+                  <IoPersonRemove className={'remove-user'} />
+                </div>
               </div>
             </div>
           </>
@@ -184,13 +186,13 @@ export default function CoParents() {
             setState({...state, showScreenActions: false})
           }}>
           <div className="content">
-            <div className="svg-wrapper invite-co-parent">
-              <BsFillSendFill className={'paper-airplane'} />
-            </div>
             <p>
               Invite Another Co-Parent
               <span className="subtitle">Send invitation to a co-parent you would like to share essential information with</span>
             </p>
+            <div className="svg-wrapper invite-co-parent">
+              <BsFillSendFill className={'paper-airplane'} />
+            </div>
           </div>
         </div>
       </ScreenActionsMenu>
@@ -239,12 +241,13 @@ export default function CoParents() {
               {Manager.IsValid(coParents) &&
                 coParents?.map((coParent, index) => {
                   const coParentKey = activeCoParent?.userKey
+                  const coParentInitial = StringManager.GetFirstNameAndLastInitial(StringManager.UppercaseFirstLetterOfAllWords(coParent?.name)?.[0])
                   return (
                     <div
                       onClick={() => HandleCoParentChange(coParent)}
                       className={coParentKey && coParentKey === coParent?.userKey ? 'active co-parent' : 'co-parent'}
                       key={index}>
-                      <span className="co-parent-name">{StringManager.GetFirstNameAndLastInitial(coParent?.name)?.[0]}</span>
+                      <span className="co-parent-name">{coParentInitial}</span>
                     </div>
                   )
                 })}

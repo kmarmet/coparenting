@@ -98,83 +98,81 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
   }, [eventsOfActiveDay])
 
   return (
-    <>
-      <div className="events">
-        {Manager.IsValid(eventsOfActiveDay) &&
-          DatasetManager.getUniqueByPropValue(eventsOfActiveDay, 'title').map((event, index) => {
-            let startDate = event?.startDate
-            if (event?.isDateRange) {
-              startDate = event?.staticStartDate
-            }
-            let dotObjects = GetRowDotColor(event?.startDate)
-            const dotObject = dotObjects?.find((x) => x.id === event?.id)
-            const isBirthdayEvent = event?.title?.toLowerCase()?.includes('birthday') || event?.title?.toLowerCase()?.includes('bday')
+    <div className="events">
+      {Manager.IsValid(eventsOfActiveDay) &&
+        DatasetManager.getUniqueByPropValue(eventsOfActiveDay, 'title').map((event, index) => {
+          let startDate = event?.startDate
+          if (event?.isDateRange) {
+            startDate = event?.staticStartDate
+          }
+          let dotObjects = GetRowDotColor(event?.startDate)
+          const dotObject = dotObjects?.find((x) => x.id === event?.id)
+          const isBirthdayEvent = event?.title?.toLowerCase()?.includes('birthday') || event?.title?.toLowerCase()?.includes('bday')
 
-            return (
-              <div
-                onClick={() => HandleEventRowClick(event).then((r) => r)}
-                key={index}
-                style={{touchAction: 'pan-y'}}
-                data-event-id={event?.id}
-                data-from-date={startDate}
-                className={`row ${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className}
+          return (
+            <div
+              onClick={() => HandleEventRowClick(event).then((r) => r)}
+              key={index}
+              style={{touchAction: 'pan-y'}}
+              data-event-id={event?.id}
+              data-from-date={startDate}
+              className={`row ${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className}
                 `}>
-                <div className="text flex">
-                  {/* EVENT NAME */}
-                  <p className="flex row-title" data-event-id={event?.id}>
-                    <span className={`${dotObject.className} event-type-dot`}></span>
-                    {isBirthdayEvent && `${StringManager.FormatTitle(event?.title)} 🎂`}
-                    {!isBirthdayEvent && StringManager.FormatTitle(event?.title)}
-                  </p>
+              <div className="text flex">
+                {/* EVENT NAME */}
+                <p className="flex row-title" data-event-id={event?.id}>
+                  <span className={`${dotObject.className} event-type-dot`}></span>
+                  {isBirthdayEvent && `${StringManager.FormatTitle(event?.title)} 🎂`}
+                  {!isBirthdayEvent && StringManager.FormatTitle(event?.title)}
+                </p>
 
-                  {/* DATE WRAPPER */}
-                  <div className="date-wrapper">
-                    <div id="date-container">
-                      {/* FROM DATE */}
-                      {Manager.IsValid(startDate, true) && (
-                        <span className="start-date row-subtitle">{moment(startDate).format(DatetimeFormats.readableMonthAndDay)}</span>
-                      )}
+                {/* DATE WRAPPER */}
+                <div className="date-wrapper">
+                  <div id="date-container">
+                    {/* FROM DATE */}
+                    {Manager.IsValid(startDate, true) && (
+                      <span className="start-date row-subtitle">{moment(startDate).format(DatetimeFormats.readableMonthAndDay)}</span>
+                    )}
 
-                      {/* TO WORD */}
-                      {Manager.IsValid(event?.endDate, true) && event?.endDate !== startDate && (
-                        <span className="end-date row-subtitle">&nbsp;to&nbsp;</span>
-                      )}
+                    {/* TO WORD */}
+                    {Manager.IsValid(event?.endDate, true) && event?.endDate !== startDate && (
+                      <span className="end-date row-subtitle">&nbsp;to&nbsp;</span>
+                    )}
 
-                      {/* TO DATE */}
-                      {Manager.IsValid(event?.endDate, true) && event?.endDate !== startDate && (
-                        <span className="row-subtitle">{moment(event?.endDate).format(DatetimeFormats.readableMonthAndDay)}</span>
-                      )}
+                    {/* TO DATE */}
+                    {Manager.IsValid(event?.endDate, true) && event?.endDate !== startDate && (
+                      <span className="row-subtitle">{moment(event?.endDate).format(DatetimeFormats.readableMonthAndDay)}</span>
+                    )}
 
-                      {/* START/END TIMES */}
-                      {Manager.IsValid(event?.endTime) && (
-                        <span className="row-subtitle from-time">
-                          &nbsp;({event?.startTime} to {event?.endTime})
-                        </span>
-                      )}
+                    {/* START/END TIMES */}
+                    {Manager.IsValid(event?.endTime) && (
+                      <span className="row-subtitle from-time">
+                        &nbsp;({event?.startTime} to {event?.endTime})
+                      </span>
+                    )}
 
-                      {/* START TIME ONLY */}
-                      {Manager.IsValid(event?.startTime) && !Manager.IsValid(event?.endTime) && (
-                        <span className="row-subtitle from-time">&nbsp;({event?.startTime})</span>
-                      )}
-                    </div>
+                    {/* START TIME ONLY */}
+                    {Manager.IsValid(event?.startTime) && !Manager.IsValid(event?.endTime) && (
+                      <span className="row-subtitle from-time">&nbsp;({event?.startTime})</span>
+                    )}
                   </div>
                 </div>
-                {/* ICONS */}
-                {HasRowIcons(event) && (
-                  <div id="icon-row">
-                    {Manager.IsValid(event?.reminderTimes) && <BiSolidBellRing className={'reminders-icon'} />}
-                    {Manager.IsValid(event?.notes) && <FaNoteSticky className="notes-icon" />}
-                    {Manager.IsValid(event?.websiteUrl) && <PiLinkBold className="website-icon" />}
-                    {Manager.IsValid(event?.phone) && <MdLocalPhone className="phone-icon" />}
-                    {Manager.IsValid(event?.address) && <MdAssistantNavigation className="address-icon" />}
-                    {Manager.IsValid(event?.children) && <FaChildren className="children-icon" />}
-                    {event?.isRecurring && <MdEventRepeat />}
-                  </div>
-                )}
               </div>
-            )
-          })}
-      </div>
-    </>
+              {/* ICONS */}
+              {HasRowIcons(event) && (
+                <div id="icon-row">
+                  {Manager.IsValid(event?.reminderTimes) && <BiSolidBellRing className={'reminders-icon'} />}
+                  {Manager.IsValid(event?.notes) && <FaNoteSticky className="notes-icon" />}
+                  {Manager.IsValid(event?.websiteUrl) && <PiLinkBold className="website-icon" />}
+                  {Manager.IsValid(event?.phone) && <MdLocalPhone className="phone-icon" />}
+                  {Manager.IsValid(event?.address) && <MdAssistantNavigation className="address-icon" />}
+                  {Manager.IsValid(event?.children) && <FaChildren className="children-icon" />}
+                  {event?.isRecurring && <MdEventRepeat />}
+                </div>
+              )}
+            </div>
+          )
+        })}
+    </div>
   )
 }

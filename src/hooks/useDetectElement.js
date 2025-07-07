@@ -7,7 +7,7 @@ function useDetectElement(selector, onDomEnter = () => {}, onDomExit = () => {})
       if (el) {
         onDomEnter(el)
         // Stop when element is found -> would need a parameter passed in
-        // observer.disconnect()
+        observer.disconnect()
       } else {
         onDomExit(el)
       }

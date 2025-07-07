@@ -25,7 +25,7 @@ const ScreenActionsMenu = ({children, centeredActionItem, title = 'Parent'}) => 
       <div {...handlers} className={`screen-actions-card`}>
         <div className="swipe-bar"></div>
         <Spacer height={3} />
-        <div className={centeredActionItem ? 'centered action-items' : 'action-items'}>
+        <div className={`${centeredActionItem ? 'centered action-items' : 'action-items'}${showScreenActions ? ' active' : ''}`}>
           <p className="screen-actions-menu-title">{title}</p>
           <Spacer height={10} />
           {children}

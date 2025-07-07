@@ -2,21 +2,21 @@
 import React, {useContext, useState} from 'react'
 import validator from 'validator'
 import InputTypes from '../../../constants/inputTypes'
-import ModelNames from '../../../constants/modelNames'
 import globalState from '../../../context'
 import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
 import AlertManager from '../../../managers/alertManager'
-import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
 import ObjectManager from '../../../managers/objectManager'
 import StringManager from '../../../managers/stringManager'
+import CoParent from '../../../models/users/coParent'
 import AddressInput from '../../shared/addressInput'
-import CheckboxGroup from '../../shared/checkboxGroup'
 import Form from '../../shared/form'
+import FormDivider from '../../shared/formDivider'
 import InputField from '../../shared/inputField'
 import Label from '../../shared/label'
+import SelectDropdown from '../../shared/selectDropdown'
 import Spacer from '../../shared/spacer'
 import ToggleButton from '../../shared/toggleButton'
 
@@ -27,133 +27,124 @@ const NewCoParentForm = ({showCard, hideCard}) => {
   const {users} = useUsers()
 
   // State
-  const [name, setName] = useState('')
-  const [address, setAddress] = useState('')
-  const [email, setEmail] = useState('')
-  const [parentType, setParentType] = useState('')
   const [coParentHasAccount, setCoParentHasAccount] = useState(false)
 
-  const ResetForm = async (successMessage = '') => {
-    Manager.ResetForm('new-coparent-wrapper')
-    setName('')
-    setAddress('')
-    setEmail('')
-    setParentType('')
+  // Ref
+  const formRef = React.useRef({...new CoParent()})
+
+  const ResetForm = (successMessage) => {
+    Manager.ResetForm('new-coParent-wrapper')
     setCoParentHasAccount(false)
-    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
+    setTimeout(() => {
+      setState({...state, refreshKey: Manager.GetUid()})
+    }, 100)
+    if (Manager.IsValid(successMessage, true)) {
+      setState({...state, successAlertMessage: successMessage})
+    }
     hideCard()
   }
 
   const Submit = async () => {
-    if (!validator.isEmail(email) && coParentHasAccount) {
+    formRef.current.userKey = Manager.GetUid()
+    if (!validator.isEmail(formRef.current.email) && coParentHasAccount) {
       AlertManager.throwError('Email address is not valid')
       return false
     }
-    const errorString = Manager.GetInvalidInputsErrorString([
-      {
-        label: 'Name',
-        value: name,
-      },
-      {
-        label: 'Parent Type',
-        value: parentType,
-      },
-    ])
-
-    if (Manager.IsValid(errorString, true)) {
-      AlertManager.throwError(errorString)
+    if (!Manager.IsValid(formRef.current.name, true)) {
+      AlertManager.throwError('Please enter a name')
+      return false
+    }
+    if (!Manager.IsValid(formRef.current.parentType, true)) {
+      AlertManager.throwError('Please select a parent type')
       return false
     }
 
-    if (coParentHasAccount && !Manager.IsValid(email)) {
-      AlertManager.throwError('If the coparent has an account with us, their email is required')
+    if (coParentHasAccount && !Manager.IsValid(formRef.current.email)) {
+      AlertManager.throwError('If the co-parent has an account with us, their email is required')
       return false
     }
 
-    const existingCoparentRecord = users.find((x) => x?.email === email)
-    let newCoparent = new CoParent()
-    newCoparent.id = Manager.GetUid()
-    newCoparent.address = address
-    newCoparent.name = StringManager.UppercaseFirstLetterOfAllWords(name.trim())
-    newCoparent.parentType = parentType
-    newCoparent.email = email
-    newCoparent.userKey = Manager.GetUid()
-    newCoparent.phone = existingCoparentRecord?.phone
+    const existingCoParentRecord = users.find((x) => x?.email === formRef.current.email)
 
     // Link to existing account
-    if (Manager.IsValid(existingCoparentRecord)) {
-      newCoparent.userKey = existingCoparentRecord.key
-      await DB_UserScoped.addSharedDataUser(currentUser, existingCoparentRecord.key)
+    if (Manager.IsValid(existingCoParentRecord) && coParentHasAccount) {
+      formRef.current.userKey = existingCoParentRecord.key
+      await DB_UserScoped.AddSharedDataUser(currentUser, existingCoParentRecord.key)
+    } else {
+      const cleanCoParent = ObjectManager.CleanObject(formRef.current)
+      await DB_UserScoped.addCoparent(currentUser, cleanCoParent)
+      await DB_UserScoped.AddSharedDataUser(currentUser, formRef.current.userKey)
     }
 
-    // Create new account
-    else {
-      await DB_UserScoped.addSharedDataUser(currentUser, newCoparent.userKey)
-    }
-
-    const cleanCoparent = ObjectManager.GetModelValidatedObject(newCoparent, ModelNames.coparent)
-    try {
-      await DB_UserScoped.addCoparent(currentUser, cleanCoparent)
-    } catch (error) {
-      console.log(error)
-      // LogManager.Log(error.message, LogManager.LogTypes.error)
-    }
-    await ResetForm(`${StringManager.GetFirstNameOnly(name)} Added!`)
-  }
-
-  const HandleCoParentType = (e) => {
-    const type = e.dataset['key']
-    DomManager.HandleCheckboxSelection(
-      e,
-      () => {
-        setParentType(type)
-      },
-      () => {
-        setParentType('')
-      }
-    )
+    ResetForm(`${StringManager.GetFirstNameOnly(formRef.current.name)} Added!`)
   }
 
   return (
     <Form
       onSubmit={Submit}
-      submitText={name.length > 0 ? `Add ${StringManager.UppercaseFirstLetterOfAllWords(name)}` : 'Add'}
-      title={`Add ${Manager.IsValid(name, true) ? StringManager.UppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} Contact`}
-      wrapperClass="new-coparent-card"
+      submitText={'Create'}
+      title={`Create Co-Parent Contact`}
+      wrapperClass="new-coParent-card"
       showCard={showCard}
       onClose={() => ResetForm()}>
       <div className="new-coparent-wrapper">
-        <Spacer height={5} />
         <div id="new-coparent-container" className={`${theme}`}>
           <div className="new-coparent-form">
-            <InputField inputType={InputTypes.text} required={true} placeholder={'Name'} onChange={(e) => setName(e.target.value)} />
-            <InputField
-              inputType={InputTypes.email}
-              inputValueType="email"
-              required={coParentHasAccount}
-              placeholder={'Email Address'}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <AddressInput placeholder={'Home Address'} onChange={(address) => setAddress(address)} />
+            <FormDivider text={'Required'} />
 
-            <div className="flex">
-              <Label text={'Co-Parent has an Account with Us'} />
-              <ToggleButton onCheck={() => setCoParentHasAccount(true)} onUncheck={() => setCoParentHasAccount(false)} />
-            </div>
+            {/* NAME */}
+            <InputField inputType={InputTypes.text} required={true} placeholder={'Name'} onChange={(e) => (formRef.current.name = e.target.value)} />
 
-            <Spacer height={5} />
+            <Spacer height={3} />
 
             {/* PARENT TYPE */}
-            <CheckboxGroup
-              parentLabel={'Parent Type'}
-              className="coparent-type"
-              skipNameFormatting={true}
-              checkboxArray={DomManager.BuildCheckboxGroup({
-                currentUser,
-                customLabelArray: ['Biological', 'Step-Parent', 'Guardian', 'Other'],
-              })}
-              onCheck={HandleCoParentType}
+            <SelectDropdown
+              placeholder={'Select Parent Type'}
+              options={[
+                {label: 'Biological', value: 'Biological'},
+                {label: 'Step-Parent', value: 'Step-Parent'},
+                {label: 'Guardian', value: 'Guardian'},
+                {label: 'Other', value: 'Other'},
+              ]}
+              onSelect={(e) => {
+                formRef.current.parentType = e.label
+              }}
             />
+
+            <FormDivider text={'Optional'} />
+
+            <div className="flex gap">
+              {/* EMAIL ADDRESS */}
+              <InputField
+                inputType={InputTypes.email}
+                inputValueType="email"
+                required={coParentHasAccount}
+                placeholder={'Email Address'}
+                onChange={(e) => (formRef.current.email = e.target.value)}
+              />
+
+              {/* PHONE */}
+              <InputField
+                inputType={InputTypes.phone}
+                inputValueType="phone"
+                required={coParentHasAccount}
+                placeholder={'Phone Number'}
+                onChange={(e) => (formRef.current.phone = e.target.value)}
+              />
+            </div>
+
+            <Spacer height={3} />
+
+            {/* ADDRESS */}
+            <AddressInput placeholder={'Home Address'} onChange={(address) => (formRef.current.address = address)} />
+
+            <Spacer height={8} />
+
+            {/* CO-PARENT HAS AN ACCOUNT WITH US? */}
+            <div className="flex">
+              <Label text={'Co-Parent has an Account with Us'} classes={'always-show'} />
+              <ToggleButton onCheck={() => setCoParentHasAccount(true)} onUncheck={() => setCoParentHasAccount(false)} />
+            </div>
           </div>
         </div>
       </div>

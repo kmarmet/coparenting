@@ -1,5 +1,6 @@
 import React, {useContext, useEffect} from 'react'
 import {IoClose} from 'react-icons/io5'
+import Swal from 'sweetalert2'
 import globalState from '../../context'
 import Manager from '../../managers/manager'
 
@@ -7,33 +8,42 @@ const SuccessAlert = () => {
   const {state, setState} = useContext(globalState)
   const {successAlertMessage, authUser, currentScreen} = state
 
-  const Dismiss = () => {
-    const successAlertWrapper = document.querySelector('#success-alert-wrapper')
-
-    if (Manager.IsValid(successAlertWrapper)) {
-      successAlertWrapper.classList.remove('animate__fadeInDown')
-      successAlertWrapper.classList.remove('animate__fadeInUp')
-      successAlertWrapper.classList.add('animate__fadeOutUp')
-      setState({...state, successAlertMessage: null})
-    }
-  }
-
   useEffect(() => {
-    const successAlertWrapper = document.getElementById('success-alert-wrapper')
-    if (Manager.IsValid(successAlertMessage, true)) {
-      successAlertWrapper.classList.add('active')
-      setTimeout(() => {
-        setTimeout(() => {
-          setState({...state, successAlertMessage: null})
-          successAlertWrapper.classList.remove('active')
-          Dismiss()
-        }, 500)
-      }, 1500)
-    }
+    if (!Manager.IsValid(successAlertMessage, true)) return
+    let timerInterval
+    Swal.fire({
+      title: successAlertMessage,
+      // html: successAlertMessage,
+      position: 'top',
+      timer: 2000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      background: '#2ac08a',
+      backdrop: false,
+      padding: 0,
+      allowOutsideClick: true,
+      allowEscapeKey: false,
+      allowEnterKey: false,
+      customClass: {
+        container: 'sweet-alert-frost',
+      },
+      color: '#fff',
+      didOpen: () => {},
+      willClose: () => {
+        clearInterval(timerInterval)
+      },
+    }).then((result) => {
+      /* Read more about handling dismissals below */
+      if (result.dismiss === Swal.DismissReason.timer) {
+      }
+    })
+    setTimeout(() => {
+      setState({...state, successAlertMessage: ''})
+    }, 2000)
   }, [successAlertMessage])
 
   return (
-    <div id="success-alert-wrapper" onClick={Dismiss} className={`success-alert`}>
+    <div id="success-alert-wrapper" className={`success-alert`}>
       <p className="success-alert-text">{successAlertMessage}</p>
       <IoClose className={'alert-close-icon'} />
     </div>

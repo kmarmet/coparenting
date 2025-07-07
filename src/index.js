@@ -11,7 +11,7 @@ import AlertManager from './managers/alertManager'
 import AppManager from './managers/appManager'
 
 // CACHING
-const CACHE_KEY = 'v1.0.4'
+const CACHE_KEY = 'v1.0.8'
 const FILES_TO_CACHE = ['/', '/index.html', '/src/index.js', '/src/App.js', '/src/styles/bundle.css']
 
 if ('serviceWorker' in navigator) {
@@ -63,13 +63,14 @@ if ('serviceWorker' in navigator) {
           newSW.onstatechange = () => {
             if (newSW.state === 'installed' && navigator.serviceWorker.controller && previousCacheKey !== CACHE_KEY) {
               console.log('[SW] Update available!')
-              // show custom reload prompt or auto-reload
-              AlertManager.successAlert('App Updated!')
               localStorage.setItem('sw-cache-key', CACHE_KEY)
+              const appUpdateOverlay = document.getElementById('app-update-overlay')
+              appUpdateOverlay.classList.add('show')
 
               setTimeout(() => {
                 window.location.reload()
-              }, 600)
+              }, 1200)
+
               newSW.postMessage({action: 'skipWaiting'})
             }
           }
@@ -161,7 +162,7 @@ root.render(
   <ErrorBoundary
     fallback={
       <div className="active error-boundary" id="error-screen">
-        <p id="screen-title-wrapper">
+        <p id="error-screen-title">
           Oops! Something went wrong <FaSadTear />
         </p>
         <Spacer height={5} />

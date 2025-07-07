@@ -65,7 +65,7 @@ function InputField({
               textField: {
                 label: (
                   <span>
-                    <BsCalendar2WeekFill fontSize="small" />
+                    <BsCalendar2WeekFill className={'input-icon date'} fontSize="small" />
                     {placeholder}
                   </span>
                 ),

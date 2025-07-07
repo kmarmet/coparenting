@@ -605,10 +605,12 @@
     }
 
     label {
-      align-items: flex-start !important;
+      align-items: center !important;
       justify-content: flex-start !important;
       display: flex !important;
       width: 100% !important;
+      position: relative !important;
+      top: -3px !important;
 
       span {
         line-height: 1 !important;
@@ -621,12 +623,21 @@
         color: $transWhite !important;
         font-size: 15px !important;
         width: 100% !important;
+        margin-left: 30px !important;
         font-weight: $fwLight !important;
         text-transform: capitalize !important;
-      }
-      svg {
-        margin-right: 8px !important;
-        @include square(22px);
+
+        svg {
+          margin-right: 8px !important;
+          top: 50% !important;
+          transform: translateY(-50%) scale(0.85) !important;
+          position: absolute !important;
+          color: $transWhite !important;
+          left: 0 !important;
+          width: max-content !important;
+          height: max-content !important;
+          font-size: 22px !important;
+        }
       }
     }
 

@@ -79,11 +79,11 @@ const NewParentForm = ({showCard, hideCard}) => {
       newParent.userKey = existingParent?.key
       newParent.phone = existingParent?.phone
       newParent.email = existingParent?.email
-      await DB_UserScoped.addSharedDataUser(currentUser, existingParent.key)
+      await DB_UserScoped.AddSharedDataUser(currentUser, existingParent.key)
     }
     // Create new parent
     else {
-      await DB_UserScoped.addSharedDataUser(currentUser, newParent.userKey)
+      await DB_UserScoped.AddSharedDataUser(currentUser, newParent.userKey)
     }
 
     const cleanParent = ObjectManager.GetModelValidatedObject(newParent, ModelNames.parent)

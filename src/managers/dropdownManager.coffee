@@ -6,6 +6,7 @@ import DatasetManager from "./datasetManager"
 import ExpenseCategories from "../constants/expenseCategories"
 import ExpenseSortByTypes from "../constants/expenseSortByTypes"
 import DB_UserScoped from "../database/db_userScoped"
+import Apis from "../api/apis"
 
 DropdownManager =
 # HELPERS
@@ -128,6 +129,18 @@ DropdownManager =
 
 # GET DEFAULT
   GetDefault:
+    Holidays: () ->
+      apiHolidays = await Apis.Dates.GetHolidays()
+      options = []
+
+      if Manager.IsValid(apiHolidays)
+        for holiday in apiHolidays
+          options.push
+            label: holiday?.name
+            value: holiday?.date
+
+      return options
+
     ExpenseCategories: () ->
       options = []
       for category in Object.keys(ExpenseCategories)
@@ -155,7 +168,6 @@ DropdownManager =
         {label: "1 Hour Before", value: "hour"}
         {label: "At Event Time", value: "timeOfEvent"}
       ]
-
 
     ShareWith: (children, coParents) ->
       return [] unless Manager.IsValid(children) or Manager.IsValid(coParents)
