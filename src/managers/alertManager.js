@@ -136,7 +136,6 @@ animate__faster`
       showCancelButton: showCancelButton,
       confirmButtonText: "Confirm",
       allowOutsideClick: allowOutsideClick,
-      customClass: bg,
       customClass: {
         container: 'sweet-alert-frost'
       },

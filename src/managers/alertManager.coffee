@@ -127,7 +127,6 @@ AlertManager = {
       showCancelButton: showCancelButton
       confirmButtonText: "Confirm"
       allowOutsideClick: allowOutsideClick
-      customClass: bg
       customClass:
         container: 'sweet-alert-frost',
       showClass:
