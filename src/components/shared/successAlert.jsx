@@ -14,18 +14,34 @@ const SuccessAlert = () => {
     Swal.fire({
       title: successAlertMessage,
       // html: successAlertMessage,
-      position: 'top',
+      showClass: {
+        popup: `
+          animate__animated
+          animate__fadeInDown
+          animate__faster
+        `,
+      },
+      hideClass: {
+        popup: `
+          animate__animated
+          animate__fadeOutUp
+          animate__faster
+        `,
+      },
+      position: 'top-start',
       timer: 2000,
       timerProgressBar: true,
       showConfirmButton: false,
       background: '#2ac08a',
       backdrop: false,
       padding: 0,
+      borderRadius: '8px',
       allowOutsideClick: true,
       allowEscapeKey: false,
       allowEnterKey: false,
       customClass: {
         container: 'sweet-alert-frost',
+        popup: 'sweet-alert-popup',
       },
       color: '#fff',
       didOpen: () => {},

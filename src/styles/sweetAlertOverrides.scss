@@ -93,6 +93,7 @@ div {
   flex-wrap: wrap;
   gap: 12px;
   justify-content: center;
+  margin-top: 50px !important;
   @include bestShadow;
 
   &.swal2-icon-error {

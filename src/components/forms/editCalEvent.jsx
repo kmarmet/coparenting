@@ -113,8 +113,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
   // SUBMIT
   const Submit = async () => {
     try {
-      let updatedEvent = ObjectManager.merge(event, formRef.current, 'deep')
-      console.log(event)
+      let updatedEvent = ObjectManager.merge(formRef.current, event, 'deep')
+
       // Map Dropdown to Database
       updatedEvent.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
       updatedEvent.reminderTimes = DropdownManager.MappedForDatabase.RemindersFromArray(selectedReminderOptions)
@@ -133,12 +133,12 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       }
 
       if (Manager.IsValid(updatedEvent)) {
-        if (!Manager.IsValid(updatedEvent?.title)) {
+        if (!Manager.IsValid(formRef.current?.title)) {
           AlertManager.throwError('Event name is required')
           return false
         }
 
-        if (!Manager.IsValid(updatedEvent?.startDate)) {
+        if (!Manager.IsValid(formRef.current.startDate)) {
           AlertManager.throwError('Please select a date for this event')
           return false
         }

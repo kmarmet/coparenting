@@ -1324,7 +1324,11 @@
     /*#region  CLASSES */
     .sweet-alert-frost {
       backdrop-filter: blur(20px) !important;
-      background-color: rgba(0, 0, 0, 0.3);
+      background-color: rgba(0, 0, 0, 0.1) !important;
+    }
+    .sweet-alert-popup {
+      margin-top: 200px !important;
+      transform: translateY(200px) !important;
     }
     .spacer {
       height: 1px;

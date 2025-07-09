@@ -3,6 +3,11 @@
 @import '../mixins';
 #external-overrides {
   #admin-dashboard-wrapper {
+    #header {
+      height: 300px;
+      width: 100vw;
+    }
+
     .buttons {
       display: flex;
       align-items: center;

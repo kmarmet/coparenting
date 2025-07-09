@@ -52,7 +52,7 @@ SecurityManager =
               sharedItems.push(item)
 
     sharedItems = _.flattenDeep(sharedItems)
-    DatasetManager.GetValidArray(sharedItems)
+    return DatasetManager.GetValidArray(sharedItems)
 
   getCalendarEvents: (currentUser) ->
     users = await DB.getTable(DB.tables.users)

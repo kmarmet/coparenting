@@ -9,14 +9,14 @@ import EditCalEvent from '../../../components/forms/editCalEvent'
 import NavBar from '../../../components/navBar.jsx'
 import Form from '../../../components/shared/form'
 import DatetimeFormats from '../../../constants/datetimeFormats'
+import FinancialKeywords from '../../../constants/financialKeywords'
 import InputTypes from '../../../constants/inputTypes'
 import globalState from '../../../context.js'
 import DB from '../../../database/DB.js'
-import useAppUpdates from '../../../hooks/useAppUpdates'
 import useCalendarEvents from '../../../hooks/useCalendarEvents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import useEventsOfDay from '../../../hooks/useEventsOfDay'
 import AlertManager from '../../../managers/alertManager'
-import AppManager from '../../../managers/appManager'
 import DatasetManager from '../../../managers/datasetManager'
 import DateManager from '../../../managers/dateManager'
 import DomManager from '../../../managers/domManager'
@@ -28,57 +28,24 @@ import DesktopLegend from './desktopLegend.jsx'
 
 export default function EventCalendar() {
   const {state, setState} = useContext(globalState)
-  const {theme, currentScreen, refreshKey} = state
-  const [eventsOfActiveDay, setEventsOfActiveDay] = useState([])
+  const {theme, currentScreen, refreshKey, isLoading} = state
+
+  // STATE
   const [searchResults, setSearchResults] = useState([])
-  const [holidays, setHolidays] = useState([])
-  const [selectedDate, setSelectedDate] = useState()
+  const [selectedDate, setSelectedDate] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [eventToEdit, setEventToEdit] = useState(null)
+
+  // CARD STATE
   const [showEditCard, setShowEditCard] = useState(false)
   const [showHolidaysCard, setShowHolidaysCard] = useState(false)
   const [showSearchCard, setShowSearchCard] = useState(false)
   const [showHolidays, setShowHolidays] = useState(false)
-  const [currentMonth, setCurrentMonth] = useState(null)
+
+  // HOOKS
   const {currentUser, currentUserIsLoading} = useCurrentUser()
   const {calendarEvents, eventsAreLoading} = useCalendarEvents()
-  const {appUpdates} = useAppUpdates()
-
-  // GET EVENTS
-
-  const GetEvents = async (activeDay) => {
-    let _eventsOfDay = []
-    let dateToUse = activeDay
-
-    if (!Manager.IsValid(currentMonth)) {
-      setCurrentMonth(moment(activeDay).format('MMMM'))
-    }
-
-    if (!activeDay) {
-      dateToUse = selectedDate
-    }
-    const eventsWithoutTime = calendarEvents.filter((x) => !Manager.IsValid(x?.startTime))
-    const eventsWithTime = calendarEvents.filter((x) => Manager.IsValid(x?.startTime))
-    const holidaysToLoop = holidays.filter(
-      (x) => moment(x.startDate).format(DatetimeFormats.dateForDb) === moment(dateToUse).format(DatetimeFormats.dateForDb)
-    )
-    const allDayEvents = DatasetManager.CombineArrays(eventsWithoutTime, holidaysToLoop)
-    const visitationEvents = allDayEvents.filter((x) => x?.fromVisitationSchedule === true)
-    const extendedAllDayEvents = DatasetManager.CombineArrays(visitationEvents, allDayEvents)
-    const eventsWithTimeFirst = DatasetManager.CombineArrays(eventsWithTime, allDayEvents)
-    const allEvents = DatasetManager.CombineArrays(extendedAllDayEvents, eventsWithTimeFirst)
-    const sortedEvents = DatasetManager.SortByTime(allEvents, 'asc')
-
-    // Set events of day
-    _eventsOfDay = sortedEvents?.filter((x) => x.startDate === moment(dateToUse).format(DatetimeFormats.dateForDb))
-
-    // Set Holidays
-    setEventsOfActiveDay(DatasetManager.GetValidArray(_eventsOfDay))
-
-    // ADD DAY INDICATORS
-    const combined = DatasetManager.GetValidArray(DatasetManager.CombineArrays(sortedEvents, holidaysToLoop), true)
-    await AddDayIndicators(combined)
-  }
+  const {eventsOfDay} = useEventsOfDay(selectedDate)
 
   const AddMonthText = (updatedMonth = moment().format('MMMM')) => {
     const leftArrow = document.querySelector('.MuiPickersArrowSwitcher-previousIconButton')
@@ -96,110 +63,73 @@ export default function EventCalendar() {
   }
 
   const AddDayIndicators = async (events) => {
-    const emojiHolidays = await DB.getTable(DB.tables.holidayEvents)
+    const holidayEvents = await DB.getTable(DB.tables.holidayEvents)
 
-    // Remove existing icons/dots before adding them again
-    document.querySelectorAll('.dot-wrapper').forEach((wrapper) => wrapper.remove())
-    document.querySelectorAll('.payday-emoji').forEach((emoji) => emoji.remove())
-    document.querySelectorAll('.holiday-emoji').forEach((emoji) => emoji.remove())
+    // Clear existing indicators
+    document.querySelectorAll('.dot-wrapper, .payday-emoji, .holiday-emoji').forEach((el) => el.remove())
 
-    // Iterate static calendar day elements
     const dayElements = document.querySelectorAll('.MuiPickersDay-root')
 
-    // Iterate day elements
-    for (const dayElement of dayElements) {
-      const dayAsMs = dayElement.dataset.timestamp
-      let formattedDay = moment(DateManager.msToDate(dayAsMs)).format(DatetimeFormats.dateForDb)
-      let daysEventsObject = GetEventsFromDate(formattedDay, events)
-      const {dotClasses, payEvents} = daysEventsObject
-      const dayEvent = events.find((x) => moment(x?.startDate).format(DatetimeFormats.dateForDb) === formattedDay)
+    const holidayEmojiMap = {
+      '01/01': '🥳',
+      '04/20': '🐇',
+      '05/11': '👩‍👧‍👦',
+      '05/26': '🎖️',
+      '06/15': '👨‍👧‍👦',
+      '06/19': '✨',
+      '07/04': '🎇',
+      '10/31': '🎃',
+      '11/28': '🦃',
+      '12/24': '🎄',
+      '12/25': '🎄',
+      '12/31': '🥳',
+    }
 
-      // APPEND INVISIBLE DOTS AND SKIP DAY WITHOUT EVENT
-      if (!Manager.IsValid(daysEventsObject.dayEvents) || !Manager.IsValid(daysEventsObject.dayEvent) || dayEvent === undefined) {
-        const dotWrapper = document.createElement('span')
-        dotWrapper.classList.add('dot-wrapper')
+    for (const dayElement of dayElements) {
+      const dayMs = dayElement.dataset.timestamp
+      const formattedDay = moment(DateManager.msToDate(dayMs)).format(DatetimeFormats.dateForDb)
+      const dayEvent = calendarEvents.find((event) => moment(event?.startDate).format(DatetimeFormats.dateForDb) === formattedDay)
+      const dayEvents = calendarEvents.filter((e) => e?.startDate === formattedDay)
+      const {dotClasses, payEvents} = GetEventDotClasses(dayEvent, dayEvents, holidayEvents)
+      const dotWrapper = document.createElement('span')
+      dotWrapper.classList.add('dot-wrapper')
+
+      if (!Manager.IsValid(calendarEvents) || !Manager.IsValid(dayEvent)) {
         dayElement.append(dotWrapper)
         continue
       }
 
-      // APPEND DOTS/EMOJIS
-      const dotWrapper = document.createElement('span')
-      dotWrapper.classList.add('dot-wrapper')
+      // 🔹 Holiday Emoji
+      const matchingHoliday = holidayEvents.find((h) => h?.startDate === dayEvent?.startDate && Manager.IsValid(h))
+      if (matchingHoliday) {
+        const emoji = document.createElement('span')
+        emoji.classList.add('holiday-emoji')
 
-      //#region HOLIDAYS
-      for (let holiday of emojiHolidays) {
-        // Add holiday emoji
-        if (Manager.IsValid(holiday) && holiday?.startDate === dayEvent?.startDate) {
-          const holidayEmoji = document.createElement('span')
-          holidayEmoji.classList.add('holiday-emoji')
-          switch (true) {
-            case moment(holiday.startDate).format('MM/DD') === '01/01':
-              holidayEmoji.innerText = '🥳'
-              break
-            case moment(holiday.startDate).format('MM/DD') === '04/20':
-              holidayEmoji.innerText = '🐇'
-              break
-            case moment(holiday.startDate).format('MM/DD') === '05/26':
-              holidayEmoji.innerText = '🎖️'
-              break
-            case moment(holiday.startDate).format('MM/DD') === '05/11':
-              holidayEmoji.innerText = '👩‍👧‍👦'
-              break
-            case moment(holiday.startDate).format('MM/DD') === '06/15':
-              holidayEmoji.innerText = '👨‍👧‍👦'
-              break
-            case moment(holiday.startDate).format('MM/DD') === '06/19':
-              holidayEmoji.innerText = ' ✨'
-              break
-            case moment(holiday.startDate).format('MM/DD') === '07/04':
-              holidayEmoji.innerText = '🎇'
-              break
-            case moment(holiday.startDate).format('MM/DD') === '10/31':
-              holidayEmoji.innerText = '🎃'
-              break
-            case moment(holiday.startDate).format('MM/DD') === '11/28':
-              holidayEmoji.innerText = '🦃'
-              break
-            case moment(holiday.startDate).format('MM/DD') === '12/24':
-              holidayEmoji.innerText = '🎄'
-              break
-            case moment(holiday.startDate).format('MM/DD') === '12/25':
-              holidayEmoji.innerText = '🎄'
-              break
-            case moment(holiday.startDate).format('MM/DD') === '12/31':
-              holidayEmoji.innerText = '🥳'
-              break
-            default:
-              holidayEmoji.innerText = '✨'
-          }
-          dayElement.append(holidayEmoji)
-        }
-      }
-      //#endregion HOLIDAYS
-
-      // ADD DOTS
-      for (let dotClass of dotClasses) {
-        const dotToAppend = document.createElement('span')
-        dotToAppend.classList.add(dotClass, 'dot')
-        dotWrapper.append(dotToAppend)
+        const dateKey = moment(matchingHoliday.startDate).format('MM/DD')
+        emoji.innerText = holidayEmojiMap[dateKey] || '✨'
+        dayElement.append(emoji)
       }
 
-      // PAYDAY ICON
-      let isPayday = payEvents.includes(dayEvent.startDate)
+      // 🔹 Event Dots
+      dotClasses.forEach((cls) => {
+        const dot = document.createElement('span')
+        dot.classList.add(cls, 'dot')
+        dotWrapper.append(dot)
+      })
 
-      if (isPayday) {
-        const dotToAppend = document.createElement('span')
-        dotToAppend.classList.add('payday-dot', 'dot')
-        dotWrapper.append(dotToAppend)
+      // 🔹 Payday Dot
+      if (payEvents.includes(dayEvent.startDate)) {
+        const paydayDot = document.createElement('span')
+        paydayDot.classList.add('payday-dot', 'dot')
+        dotWrapper.append(paydayDot)
       }
-      // APPEND DOT WRAPPER
+
       dayElement.append(dotWrapper)
     }
   }
 
   const ShowAllHolidays = async () => {
     setShowHolidaysCard(!showHolidaysCard)
-    setEventsOfActiveDay(DatasetManager.getUniqueArray(holidays, true))
     setShowHolidays(true)
   }
 
@@ -215,7 +145,6 @@ export default function EventCalendar() {
     userVisitationHolidays.forEach((holiday) => {
       holiday.title += ` (${holiday.holidayName})`
     })
-    setEventsOfActiveDay(userVisitationHolidays)
     setShowHolidaysCard(!showHolidaysCard)
     setShowHolidays(true)
   }
@@ -224,55 +153,46 @@ export default function EventCalendar() {
     setShowHolidaysCard(false)
     setSearchQuery('')
     setShowSearchCard(false)
-    GetEvents(moment().format(DatetimeFormats.dateForDb).toString()).then((r) => r)
     setState({...state, refreshKey: Manager.GetUid()})
   }
 
-  const SetHolidaysState = async () => {
-    let holidaysState = await DB.getTable(DB.tables.holidayEvents)
-    holidaysState = DatasetManager.sortByProperty(holidaysState, 'startDate', 'asc') ?? []
-    setHolidays(holidaysState)
-  }
-
-  const GetEventsFromDate = (dayDate, events) => {
-    const arr = [...events, ...holidays]
-    const dayEvent = arr.find((x) => x.startDate === dayDate)
-    const dayEvents = arr.filter((x) => x.startDate === dayDate)
-    let payEvents = []
+  const GetEventDotClasses = (dayEvent, dayEvents, holidayEvents) => {
+    const payEvents = []
     let dotClasses = []
-    for (let event of dayEvents) {
-      if (Manager.IsValid(event)) {
-        const isPayEvent =
-          event?.title.toLowerCase().includes('pay') ||
-          event?.title.toLowerCase().includes('paid') ||
-          event?.title.toLowerCase().includes('salary') ||
-          event?.title.toLowerCase().includes('expense')
-        const isCurrentUserDot = event?.owner?.key === currentUser?.key
-        if (isPayEvent) {
-          payEvents.push(event.startDate)
-        }
-        if (event?.isHoliday && !event.fromVisitationSchedule && !Manager.IsValid(event.owner?.key)) {
-          dotClasses.push('holiday-event-dot')
-        }
-        if (!event?.isHoliday && isCurrentUserDot && !isPayEvent) {
-          dotClasses.push('current-user-event-dot')
-        }
-        if (!event?.isHoliday && !isCurrentUserDot && !isPayEvent) {
-          dotClasses.push('coparent-event-dot')
+    const dayEventsOfAllTypes = DatasetManager.CombineArrays(dayEvents, holidayEvents)
+    const holidayDates = holidayEvents?.map((holiday) => moment(holiday?.startDate).format(DatetimeFormats.dateForDb))
+
+    for (const event of dayEventsOfAllTypes) {
+      if (!Manager.IsValid(event) || !Manager.IsValid(event?.startDate)) continue
+
+      if (event?.startDate === dayEvent?.startDate) {
+        const title = event.title?.toLowerCase() || ''
+        const isPayEvent = FinancialKeywords.some((keyword) => title.includes(keyword))
+        const currentUserEvent = event.owner?.key === currentUser?.key
+        const coParentOrChildEvent = !Manager.IsValid(event.owner) || event.owner?.key !== currentUser?.key
+        const isHoliday = event?.isHoliday || holidayDates.includes(event?.startDate)
+
+        if (isPayEvent) payEvents.push(event.startDate)
+
+        switch (true) {
+          case isHoliday:
+            dotClasses.push('holiday-event-dot')
+            break
+          case currentUserEvent && !isHoliday && !coParentOrChildEvent:
+            dotClasses.push('current-user-event-dot')
+            break
+          case coParentOrChildEvent && !isHoliday && !currentUserEvent:
+            dotClasses.push('coParent-event-dot')
+            break
         }
       }
     }
-    dotClasses = DatasetManager.getUniqueArray(dotClasses, true)
+
+    dotClasses = DatasetManager.GetValidArray(dotClasses, true)
     return {
-      dayEvent,
-      dayEvents,
       dotClasses,
       payEvents,
     }
-  }
-
-  const SetInitialActivities = async () => {
-    // AppManager.SetAppBadge(appUpdates?.length)
   }
 
   // SEARCH
@@ -287,34 +207,10 @@ export default function EventCalendar() {
       return false
     } else {
       setSearchResults(searchResults)
-      setEventsOfActiveDay(searchResults)
       setShowSearchCard(false)
       setState({...state, refreshKey: Manager.GetUid(), isLoading: false})
     }
   }
-
-  const UpdateOrRefreshIfNecessary = async () => {
-    let latestVersionNumber = appUpdates[appUpdates.length - 1]?.currentVersion
-
-    const shouldRefresh = await AppManager.UpdateOrRefreshIfNecessary(currentUser, latestVersionNumber).then()
-    if (shouldRefresh) {
-      setState({...state, successAlertMessage: 'Updating App...'})
-      setTimeout(() => {
-        setState({...state, successAlertMessage: ''})
-        window.location.reload()
-      }, 2500)
-    }
-  }
-
-  useEffect(() => {
-    GetEvents().then((r) => r)
-  }, [calendarEvents])
-
-  useEffect(() => {
-    if (Manager.IsValid(currentUser)) {
-      SetInitialActivities().then((r) => r)
-    }
-  }, [currentUser])
 
   // SHOW HOLIDAYS
   useEffect(() => {
@@ -329,6 +225,7 @@ export default function EventCalendar() {
     }
   }, [showHolidays])
 
+  // APPEND HOLIDAYS/SEARCH CAL BUTTONS
   useEffect(() => {
     // Append Holidays/Search Cal Buttons
     if (!currentUserIsLoading) {
@@ -353,16 +250,8 @@ export default function EventCalendar() {
           legendButton.classList.toggle('active')
         })
       }
-
-      SetHolidaysState().then((r) => r)
     }
   }, [currentScreen, currentUserIsLoading])
-
-  useEffect(() => {
-    if (Manager.IsValid(appUpdates) && Manager.IsValid(currentUser)) {
-      // UpdateOrRefreshIfNecessary().then((r) => r)
-    }
-  }, [appUpdates, currentUser])
 
   // ON PAGE LOAD
   useEffect(() => {
@@ -371,6 +260,19 @@ export default function EventCalendar() {
       AddMonthText()
     }, 500)
   }, [])
+
+  useEffect(() => {
+    if (Manager.IsValid(eventsOfDay)) {
+      setSelectedDate(moment().format(DatetimeFormats.dateForDb))
+      setTimeout(() => {
+        AddDayIndicators().then((r) => r)
+      }, 300)
+    }
+  }, [eventsOfDay])
+
+  if (isLoading) {
+    return <div>Loading...</div> // Replace with spinner if needed
+  }
 
   return (
     <>
@@ -424,20 +326,16 @@ export default function EventCalendar() {
         <div id="static-calendar" className={`${theme}`}>
           <StaticDatePicker
             showDaysOutsideCurrentMonth={true}
-            views={['month', 'day']}
             minDate={moment(`${moment().year()}-01-01`)}
             maxDate={moment(`${moment().year()}-12-31`)}
             onMonthChange={async (month) => {
-              setCurrentMonth(moment(month).format('MMMM'))
-              await GetEvents(moment(month).format(DatetimeFormats.dateForDb))
+              AddDayIndicators().then((r) => r)
               AddMonthText(moment(month).format('MMMM'))
             }}
             onChange={async (day) => {
-              DomManager.Animate.RemoveAnimationClasses('.event-row', 'animate__fadeInRight')
               setTimeout(async () => {
-                setSelectedDate(moment(day).format('YYYY-MM-DD'))
+                setSelectedDate(moment(day).format(DatetimeFormats.dateForDb))
                 setState({...state, dateToEdit: moment(day).format(DatetimeFormats.dateForDb)})
-                await GetEvents(day).then((r) => r)
               }, 100)
             }}
             slotProps={{
@@ -447,6 +345,7 @@ export default function EventCalendar() {
             }}
           />
         </div>
+
         {/* LEGEND */}
         <CalendarLegend />
 
@@ -471,7 +370,7 @@ export default function EventCalendar() {
           {/* MAP/LOOP EVENTS */}
           {!eventsAreLoading && (
             <CalendarEvents
-              eventsOfActiveDay={eventsOfActiveDay}
+              selectedDate={selectedDate}
               setEventToEdit={(ev) => {
                 setEventToEdit(ev)
                 setShowEditCard(true)
@@ -485,7 +384,6 @@ export default function EventCalendar() {
           <button
             className="button bottom-right default smaller"
             onClick={async () => {
-              await GetEvents(moment().format(DatetimeFormats.dateForDb).toString())
               setShowHolidays(false)
             }}>
             Hide Holidays
@@ -495,7 +393,6 @@ export default function EventCalendar() {
           <button
             className="button default bottom-right with-border smaller"
             onClick={async () => {
-              await GetEvents(moment().format(DatetimeFormats.dateForDb).toString())
               setSearchResults([])
               setSearchQuery('')
             }}>
@@ -520,7 +417,6 @@ export default function EventCalendar() {
             <p
               className="item"
               onClick={async () => {
-                await GetEvents(moment().format(DatetimeFormats.dateForDb).toString())
                 setShowHolidays(false)
               }}>
               <PiCalendarXDuotone /> Hide Holidays
@@ -543,13 +439,9 @@ export default function EventCalendar() {
                 if (Manager.IsValid(calendarEvents)) {
                   results = calendarEvents.filter((x) => x?.title?.toLowerCase().indexOf(inputValue.toLowerCase()) > -1)
                 }
-                if (results.length > 0) {
-                  setEventsOfActiveDay(results)
-                }
               } else {
                 if (inputValue.length === 0) {
                   setShowSearchCard(false)
-                  await GetEvents(moment().format(DatetimeFormats.dateForDb).toString())
                   e.target.value = ''
                   setSearchQuery('')
                 }

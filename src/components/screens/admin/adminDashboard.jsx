@@ -22,7 +22,6 @@ import StringManager from '../../../managers/stringManager'
 import AppUpdate from '../../../models/appUpdate'
 import NavBar from '../../navBar'
 import InputField from '../../shared/inputField'
-import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 
 export default function AdminDashboard() {
@@ -117,9 +116,7 @@ export default function AdminDashboard() {
 
   return (
     <div id="admin-dashboard-wrapper" className="page-container">
-      <ScreenHeader wrapperClass="dashboard">
-        <img src="https://i.redd.it/16o63vp3mpg91.jpg" alt="" />{' '}
-      </ScreenHeader>
+      <div id="header" style={{backgroundImage: 'url(https://i.redd.it/16o63vp3mpg91.jpg)', backgroundSize: 'cover'}}></div>
       <Spacer height={10} />
 
       {/* TOOLBOXES */}

@@ -53,7 +53,7 @@ ObjectManager = {
   UpdateAndReturnObject: (obj, path, value) ->
     try
       updated = _.set(obj, path, value)
-      return ObjectManager.GetValidObject(updated)
+      return ObjectManager.CleanObject(updated)
     catch e
       LogManager.Log(e.message, LogManager.LogTypes.error, e.stack)
 
@@ -68,46 +68,27 @@ ObjectManager = {
     return undefined
 
   CleanObject: (obj) ->
+    # If the object is an array, clean each element
     if Array.isArray(obj)
       if !Manager.IsValid(obj)
         return
+
       return obj
         .map(ObjectManager.CleanObject)
         .filter (item) -> item isnt undefined
-    else if obj isnt null and typeof obj is 'object'
+
+    # If the object is an object, clean each property
+    else if obj isnt null and obj isnt undefined and typeof obj is 'object'
       return Object.entries(obj).reduce (acc, [key, value]) ->
         cleaned = ObjectManager.CleanObject(value)
         if cleaned isnt undefined
           acc[key] = cleaned
         acc
       , {}
-    else if obj isnt undefined and obj isnt null and obj isnt ""
+
+    # Otherwise, return the object
+    else
       return obj
-    # Return undefined to signal deletion
-    return undefined
-
-
-  GetValidObject: (obj) ->
-    if Array.isArray(obj)
-      return obj
-        .map(ObjectManager.GetValidObject)
-        .filter (item) ->
-    else if typeof obj is 'object' and obj isnt null
-      return Object.entries(obj)
-        .reduce (acc, [key, value]) ->
-
-          cleanedValue = ObjectManager.GetValidObject(value)
-
-          isValidValue = cleanedValue isnt undefined and cleanedValue isnt null and
-            not (typeof cleanedValue is 'object' and not Array.isArray(cleanedValue) and Object.keys(cleanedValue).length is 0)
-
-          if isValidValue
-            acc[key] = cleanedValue
-
-          return acc
-      , {}
-
-    return obj
 
   RemoveUnusedProperties: (obj, modelKeys) ->
     console.log(obj, modelKeys);

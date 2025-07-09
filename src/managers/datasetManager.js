@@ -110,7 +110,7 @@ DatasetManager = {
       }
     }
     if (isUnique) {
-      returnArray = DatasetManager.getUniqueArray(returnArray);
+      returnArray = DatasetManager.getUniqueArray(returnArray, true);
     }
     if (isFlattened) {
       returnArray = returnArray.flat();

@@ -8,18 +8,20 @@ import {PiLinkBold} from 'react-icons/pi'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import globalState from '../../../context.js'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import useEventsOfDay from '../../../hooks/useEventsOfDay'
 import DatasetManager from '../../../managers/datasetManager.coffee'
 import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 
-export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (event) => {}}) {
+export default function CalendarEvents({selectedDate, setEventToEdit = (event) => {}}) {
   const {state, setState} = useContext(globalState)
   const {theme, refreshKey} = state
   const {currentUser} = useCurrentUser()
+  const {eventsOfDay} = useEventsOfDay(selectedDate)
 
   const GetRowDotColor = (dayDate) => {
-    const arr = [...eventsOfActiveDay]
+    const arr = [...eventsOfDay]
     const dayEvents = arr.filter((x) => x.startDate === dayDate)
     let dotObjects = []
     for (let event of dayEvents) {
@@ -56,7 +58,7 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
       }
       if (!isCurrentUserDot) {
         dotObjects.push({
-          className: 'coparent-event-dot',
+          className: 'coParent-event-dot',
           id: event?.id,
           date: event?.startDate,
         })
@@ -92,15 +94,15 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
   }
 
   useEffect(() => {
-    if (Manager.IsValid(eventsOfActiveDay)) {
+    if (Manager.IsValid(eventsOfDay) && Manager.IsValid(selectedDate)) {
       DomManager.ToggleAnimation('add', 'event-row', DomManager.AnimateClasses.names.fadeInUp, 120)
     }
-  }, [eventsOfActiveDay])
+  }, [eventsOfDay])
 
   return (
     <div className="events">
-      {Manager.IsValid(eventsOfActiveDay) &&
-        DatasetManager.getUniqueByPropValue(eventsOfActiveDay, 'title').map((event, index) => {
+      {Manager.IsValid(eventsOfDay) &&
+        DatasetManager.getUniqueByPropValue(eventsOfDay, 'title').map((event, index) => {
           let startDate = event?.startDate
           if (event?.isDateRange) {
             startDate = event?.staticStartDate
@@ -113,7 +115,6 @@ export default function CalendarEvents({eventsOfActiveDay, setEventToEdit = (eve
             <div
               onClick={() => HandleEventRowClick(event).then((r) => r)}
               key={index}
-              style={{touchAction: 'pan-y'}}
               data-event-id={event?.id}
               data-from-date={startDate}
               className={`row ${event?.fromVisitationSchedule ? 'event-row visitation flex' : 'event-row flex'} ${dotObject.className}

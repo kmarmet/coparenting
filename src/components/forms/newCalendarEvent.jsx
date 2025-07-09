@@ -132,13 +132,13 @@ export default function NewCalendarEvent() {
           }
         }
 
-        const errorString = Manager.GetInvalidInputsErrorString([
-          {name: 'Event Name', value: formRef.current.title},
-          {name: 'Date', value: formRef.current.startDate},
-        ])
+        if (!Manager.IsValid(formRef.current.title, true)) {
+          AlertManager.throwError('Event Name is Required')
+          return false
+        }
 
-        if (Manager.IsValid(errorString)) {
-          AlertManager.throwError(errorString)
+        if (!Manager.IsValid(formRef.current.startDate, true)) {
+          AlertManager.throwError('Event Date is Required')
           return false
         }
 

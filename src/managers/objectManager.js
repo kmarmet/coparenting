@@ -82,7 +82,7 @@ ObjectManager = {
     var e, updated;
     try {
       updated = _.set(obj, path, value);
-      return ObjectManager.GetValidObject(updated);
+      return ObjectManager.CleanObject(updated);
     } catch (error) {
       e = error;
       return LogManager.Log(e.message, LogManager.LogTypes.error, e.stack);
@@ -104,6 +104,7 @@ ObjectManager = {
     return void 0;
   },
   CleanObject: function(obj) {
+    // If the object is an array, clean each element
     if (Array.isArray(obj)) {
       if (!Manager.IsValid(obj)) {
         return;
@@ -111,7 +112,8 @@ ObjectManager = {
       return obj.map(ObjectManager.CleanObject).filter(function(item) {
         return item !== void 0;
       });
-    } else if (obj !== null && typeof obj === 'object') {
+    // If the object is an object, clean each property
+    } else if (obj !== null && obj !== void 0 && typeof obj === 'object') {
       return Object.entries(obj).reduce(function(acc, [key, value]) {
         var cleaned;
         cleaned = ObjectManager.CleanObject(value);
@@ -120,27 +122,10 @@ ObjectManager = {
         }
         return acc;
       }, {});
-    } else if (obj !== void 0 && obj !== null && obj !== "") {
+    } else {
+      // Otherwise, return the object
       return obj;
     }
-    // Return undefined to signal deletion
-    return void 0;
-  },
-  GetValidObject: function(obj) {
-    if (Array.isArray(obj)) {
-      return obj.map(ObjectManager.GetValidObject).filter(function(item) {});
-    } else if (typeof obj === 'object' && obj !== null) {
-      return Object.entries(obj).reduce(function(acc, [key, value]) {
-        var cleanedValue, isValidValue;
-        cleanedValue = ObjectManager.GetValidObject(value);
-        isValidValue = cleanedValue !== void 0 && cleanedValue !== null && !(typeof cleanedValue === 'object' && !Array.isArray(cleanedValue) && Object.keys(cleanedValue).length === 0);
-        if (isValidValue) {
-          acc[key] = cleanedValue;
-        }
-        return acc;
-      }, {});
-    }
-    return obj;
   },
   RemoveUnusedProperties: function(obj, modelKeys) {
     var i, key, len;
