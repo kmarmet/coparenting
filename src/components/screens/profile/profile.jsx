@@ -23,6 +23,7 @@ import NavBar from '../../navBar'
 import AddressInput from '../../shared/addressInput'
 import Form from '../../shared/form'
 import InputField from '../../shared/inputField'
+import Screen from '../../shared/screen'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 
@@ -149,7 +150,7 @@ export default function Profile() {
             }
 
             // Delete from OneSignal
-            const subscriber = await DB.find(DB.tables.Updatesubscribers, ['key', currentUser.key], true)
+            const subscriber = await DB.find(DB.tables.updateSubscribers, ['key', currentUser.key], true)
 
             if (subscriber) {
               await UpdateManager.deleteUser(subscriber?.oneSignalId, subscriber?.subscriptionId)
@@ -203,7 +204,7 @@ export default function Profile() {
   }, [currentUser])
 
   return (
-    <>
+    <Screen activeScreen={ScreenNames.profile}>
       {/* UPDATE CARD */}
       <Form
         onSubmit={async () => {
@@ -298,6 +299,6 @@ export default function Profile() {
         </div>
       </div>
       {!showUpdateCard && !showLoginForm && <NavBar navbarClass={'profile no-Add-new-button'}></NavBar>}
-    </>
+    </Screen>
   )
 }

@@ -5,6 +5,7 @@ import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import {PiCameraRotateFill, PiListChecksFill} from 'react-icons/pi'
+import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
 import DB_UserScoped from '../../../database/db_userScoped'
@@ -24,6 +25,7 @@ import NewChildForm from '../../screens/children/newChildForm'
 import Schooling from '../../screens/children/schooling'
 import CustomChildInfo from '../../shared/customChildInfo'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
+import Screen from '../../shared/screen'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
@@ -89,7 +91,7 @@ export default function Children() {
   }, [children])
 
   return (
-    <>
+    <Screen activeScreen={ScreenNames.children} loadingByDefault={true} stopLoadingBool={Manager.IsValid(children) && Manager.IsValid(activeChild)}>
       {Manager.IsValid(activeChild) && (
         <>
           {/* CUSTOM INFO FORM */}
@@ -285,6 +287,6 @@ export default function Children() {
           text={'Currently, no children have been added. To share events with your children or to store their information, please Add them here.'}
         />
       )}
-    </>
+    </Screen>
   )
 }

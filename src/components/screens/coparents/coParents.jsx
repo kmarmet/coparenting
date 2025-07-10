@@ -6,6 +6,7 @@ import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
 import InputTypes from '../../../constants/inputTypes'
+import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
 import DB_UserScoped from '../../../database/db_userScoped'
@@ -21,6 +22,7 @@ import AddressInput from '../../shared/addressInput'
 import Form from '../../shared/form'
 import InputField from '../../shared/inputField'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
+import Screen from '../../shared/screen'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
@@ -40,7 +42,6 @@ export default function CoParents() {
   const [showNewCoParentFormCard, setShowNewCoParentFormCard] = useState(false)
   const [activeCoParent, setActiveCoParent] = useState(coParents?.[0])
   const [showInvitationForm, setShowInvitationForm] = useState(false)
-
   const invite = useRef({name: '', email: ''})
 
   const DeleteProp = async (prop) => {
@@ -95,7 +96,10 @@ export default function CoParents() {
   }, [coParents])
 
   return (
-    <>
+    <Screen
+      activeScreen={ScreenNames.coparents}
+      loadingByDefault={true}
+      stopLoadingBool={Manager.IsValid(coParents) && Manager.IsValid(activeCoParent)}>
       {/* CUSTOM INFO FORM */}
       <CustomCoparentInfo
         hideCard={() => setShowCustomInfoCard(false)}
@@ -323,6 +327,6 @@ export default function CoParents() {
           <p>More</p>
         </div>
       </NavBar>
-    </>
+    </Screen>
   )
 }

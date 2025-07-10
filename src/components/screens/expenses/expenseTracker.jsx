@@ -14,6 +14,7 @@ import DatetimeFormats from '../../../constants/datetimeFormats.js'
 import ExpenseCategories from '../../../constants/expenseCategories'
 import ExpenseSortByTypes from '../../../constants/expenseSortByTypes'
 import InputTypes from '../../../constants/inputTypes'
+import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
 import DB from '../../../database/DB.js'
 import useChildren from '../../../hooks/useChildren'
@@ -39,6 +40,7 @@ import Label from '../../shared/label.jsx'
 import LazyImage from '../../shared/lazyImage'
 import MyConfetti from '../../shared/myConfetti.js'
 import NoDataFallbackText from '../../shared/noDataFallbackText.jsx'
+import Screen from '../../shared/screen'
 import ScreenHeader from '../../shared/screenHeader'
 import SelectDropdown from '../../shared/selectDropdown.jsx'
 import Slideshow from '../../shared/slideshow'
@@ -64,6 +66,8 @@ const ExpenseIcons = {
 export default function ExpenseTracker() {
   const {state, setState} = useContext(globalState)
   const {theme} = state
+
+  // STATE
   const [showPaymentOptionsCard, setShowPaymentOptionsCard] = useState(false)
   const [showNewExpenseCard, setShowNewExpenseCard] = useState(false)
   const [activeExpense, setActiveExpense] = useState(null)
@@ -76,10 +80,12 @@ export default function ExpenseTracker() {
   const [expenseDateType, setExpenseDateType] = useState('all')
   const [showFilters, setShowFilters] = useState(false)
   const [sortedExpenses, setSortedExpenses] = useState([])
-  const {expenses} = useExpenses()
-  const {children} = useChildren()
-  const {currentUser} = useCurrentUser()
   const [showSlideshow, setShowSlideshow] = useState(false)
+
+  // HOOKS
+  const {expenses, expensesAreLoading} = useExpenses()
+  const {children, childrenAreLoading} = useChildren()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
 
   const formRef = useRef(null)
 
@@ -248,7 +254,10 @@ export default function ExpenseTracker() {
   }, [expenses])
 
   return (
-    <>
+    <Screen
+      stopLoadingBool={!currentUserIsLoading && !expensesAreLoading && !childrenAreLoading}
+      activeScreen={ScreenNames.expenseTracker}
+      loadingByDefault={true}>
       {/* NEW EXPENSE FORM */}
       <NewExpenseForm showCard={showNewExpenseCard} hideCard={() => setShowNewExpenseCard(false)} />
 
@@ -647,6 +656,6 @@ export default function ExpenseTracker() {
       </div>
       <NavBar navbarClass={'expenses'} />
       {expenses?.length === 0 && <NoDataFallbackText text={'There are currently no expenses'} />}
-    </>
+    </Screen>
   )
 }

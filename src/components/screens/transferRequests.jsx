@@ -7,6 +7,7 @@ import ActivityCategory from '../../constants/activityCategory'
 import ButtonThemes from '../../constants/buttonThemes'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
+import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context.js'
 import DB from '../../database/DB'
 import useCoParents from '../../hooks/useCoParents'
@@ -28,6 +29,7 @@ import InputField from '../shared/inputField'
 import Label from '../shared/label.jsx'
 import Map from '../shared/map.jsx'
 import NoDataFallbackText from '../shared/noDataFallbackText'
+import Screen from '../shared/screen'
 import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer.jsx'
 import ToggleButton from '../shared/toggleButton'
@@ -51,9 +53,9 @@ export default function TransferRequests() {
   const [requestTimeRemaining, setRequestTimeRemaining] = useState(false)
 
   // Hooks
-  const {transferRequests} = useTransferRequests()
-  const {currentUser} = useCurrentUser()
-  const {coParents} = useCoParents()
+  const {transferRequests, transferRequestsAreLoading} = useTransferRequests()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {coParents, coParentsAreLoading} = useCoParents()
 
   // Refs
   const formRef = React.useRef({...activeRequest, ...new TransferChangeRequest()})
@@ -166,7 +168,10 @@ export default function TransferRequests() {
   }, [currentUser, view])
 
   return (
-    <>
+    <Screen
+      activeScreen={ScreenNames.transferRequests}
+      loadingByDefault={true}
+      stopLoadingBool={!currentUserIsLoading && !coParentsAreLoading && !transferRequestsAreLoading}>
       {/* DETAILS CARD */}
       <Form
         submitText={'Approve'}
@@ -403,6 +408,6 @@ export default function TransferRequests() {
         </div>
         <NavBar />
       </div>
-    </>
+    </Screen>
   )
 }

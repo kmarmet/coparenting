@@ -1,19 +1,21 @@
 // Path: src\components\screens\help.jsx
 import React, {useContext, useEffect, useState} from 'react'
 import {MdEmail, MdFiberNew, MdThumbsUpDown} from 'react-icons/md'
+import {PiVideoFill} from 'react-icons/pi'
 import InputTypes from '../../constants/inputTypes'
+import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import AlertManager from '../../managers/alertManager'
 import DomManager from '../../managers/domManager'
 import EmailManager from '../../managers/emailManager'
 import Manager from '../../managers/manager'
+import StringManager from '../../managers/stringManager'
 import NavBar from '../navBar'
 import Form from '../shared/form'
 import InputField from '../shared/inputField'
+import Screen from '../shared/screen'
 import ScreenHeader from '../shared/screenHeader'
-import {PiVideoFill} from 'react-icons/pi'
-import StringManager from '../../managers/stringManager'
 
 export default function Help() {
   const {state, setState} = useContext(globalState)
@@ -86,7 +88,7 @@ export default function Help() {
   }, [])
 
   return (
-    <>
+    <Screen activeScreen={ScreenNames.help}>
       {/* FEATURE REQUEST */}
       <Form
         onSubmit={SubmitFeatureRequest}
@@ -184,6 +186,6 @@ export default function Help() {
         </div>
       </div>
       {!showFeatureRequestCard && !showFeedbackCard && !showSupportCard && <NavBar navbarClass={'no-Add-new-button'}></NavBar>}
-    </>
+    </Screen>
   )
 }

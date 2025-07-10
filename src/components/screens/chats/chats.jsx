@@ -17,6 +17,7 @@ import NavBar from '../../navBar'
 import Form from '../../shared/form'
 import InputField from '../../shared/inputField'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
+import Screen from '../../shared/screen'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
@@ -35,7 +36,7 @@ const Chats = () => {
   const {coParents} = useCoParents()
 
   return (
-    <>
+    <Screen activeScreen={ScreenNames.chats}>
       {/* INVITATION FORM */}
       <Form
         submitText={'Send Invitation'}
@@ -64,6 +65,7 @@ const Chats = () => {
         />
       </Form>
 
+      {/* NEW CHAT FORM */}
       <NewChat
         onClick={(coParent) => {
           setShowChat(true)
@@ -142,7 +144,7 @@ const Chats = () => {
           </>
         )}
       </div>
-    </>
+    </Screen>
   )
 }
 

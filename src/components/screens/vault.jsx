@@ -20,6 +20,7 @@ import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager.coffee'
 import VaultManager from '../../managers/vaultManager'
 import NavBar from '../navBar'
+import Screen from '../shared/screen'
 import ScreenHeader from '../shared/screenHeader'
 import SelectDropdown from '../shared/selectDropdown'
 import Spacer from '../shared/spacer'
@@ -37,11 +38,11 @@ export default function Vault() {
   const [selectedChatId, setSelectedChatId] = useState()
 
   // Hooks
-  const {coParents} = useCoParents()
-  const {expenses} = useExpenses()
-  const {currentUser} = useCurrentUser()
-  const {chats} = useChats()
-  const {chatMessages} = useChatMessages(selectedChatId)
+  const {coParents, coParentsAreLoading} = useCoParents()
+  const {expenses, expensesAreLoading} = useExpenses()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {chats, chatsAreLoading} = useChats()
+  const {chatMessages, chatMessagesAreLoading} = useChatMessages(selectedChatId)
 
   const GetExpenses = async () => {
     let payers = []
@@ -109,31 +110,6 @@ export default function Vault() {
     }
   }
 
-  const HandlePayerSelection = (e) => {
-    DomManager.HandleCheckboxSelection(
-      e,
-      async (e) => {
-        let filteredExpenses = []
-        if (e === 'Me') {
-          filteredExpenses = expenses?.filter((x) => x.payer?.key === currentUser?.key)
-        } else {
-          const coParent = coParents?.find((x) => x.name.includes(e))
-          filteredExpenses = expenses?.filter((x) => x.payer?.key === coParent?.userKey)
-        }
-
-        if (Manager.IsValid(filteredExpenses)) {
-          setSortedExpenses(filteredExpenses)
-        } else {
-          setSortedExpenses([])
-        }
-      },
-      async () => {
-        setSortedExpenses(expenses)
-      },
-      false
-    )
-  }
-
   const ExportExpenses = () => VaultManager.createCSV(expenses, 'Peaceful_coParenting_Exported_Expenses', 'expenses')
 
   const ExportChat = () => VaultManager.createCSV(chatMessages, 'Peaceful_coParenting_Exported_Chat', 'chat')
@@ -142,9 +118,9 @@ export default function Vault() {
     let activeChats = []
     if (Manager.IsValid(chats)) {
       for (const chat of chats) {
-        let coparent = chat.members.find((x) => x.key !== currentUser?.key)
+        let coParent = chat.members.find((x) => x.key !== currentUser?.key)
         activeChats.push({
-          name: StringManager.GetFirstNameOnly(coparent?.name),
+          name: StringManager.GetFirstNameOnly(coParent?.name),
           id: chat.id,
         })
       }
@@ -161,7 +137,7 @@ export default function Vault() {
   }, [expenses, coParents])
 
   return (
-    <>
+    <Screen stopLoadingBool={!currentUserIsLoading && !coParentsAreLoading} activeScreen={ScreenNames.vault} loadingByDefault={true}>
       <div id="records-wrapper" className={`${theme} page-container`}>
         <ScreenHeader
           title={'The Vault'}
@@ -276,6 +252,6 @@ export default function Vault() {
         </div>
       </div>
       <NavBar navbarClass={'activity no-Add-new-button'}></NavBar>
-    </>
+    </Screen>
   )
 }

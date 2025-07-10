@@ -26,6 +26,7 @@ import Form from '../../shared/form'
 import InputField from '../../shared/inputField'
 import Label from '../../shared/label'
 import Map from '../../shared/map'
+import Screen from '../../shared/screen'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
@@ -39,11 +40,11 @@ const Contacts = () => {
   const {theme, refreshKey} = state
 
   // HOOKS
-  const {currentUser} = useCurrentUser()
-  const {children} = useChildren()
-  const {coParents} = useCoParents()
-  const {parents} = useParents()
-  const {users} = useUsers()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {children, childrenAreLoading} = useChildren()
+  const {coParents, coParentsAreLoading} = useCoParents()
+  const {parents, parentsAreLoading} = useParents()
+  const {users, usersAreLoading} = useUsers()
 
   // STATE
   const [activeContact, setActiveContact] = useState()
@@ -175,7 +176,10 @@ const Contacts = () => {
   }, [showNewCoparentCard, showNewParentCard, showNewChildCard])
 
   return (
-    <>
+    <Screen
+      loadingByDefault={true}
+      activeScreen={ScreenNames.contacts}
+      stopLoadingBool={!currentUserIsLoading && !childrenAreLoading && !parentsAreLoading && !coParentsAreLoading && !usersAreLoading}>
       {/* NEW */}
       <NewCoParentForm showCard={showNewCoparentCard} hideCard={() => setShowNewCoparentCard(false)} />
       <NewChildForm showCard={showNewChildCard} hideCard={() => setShowNewChildCard(false)} />
@@ -572,7 +576,7 @@ const Contacts = () => {
           <p>More</p>
         </div>
       </NavBar>
-    </>
+    </Screen>
   )
 }
 

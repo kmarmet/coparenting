@@ -14,7 +14,7 @@ AppImages = {
     },
     loadingGif: {
       name: 'loading',
-      url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fmisc%2Floading.gif?alt=media&token=3573a188-1492-4093-984a-cd6344b46eb9"
+      url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fmisc%2Floading.gif?alt=media&token=33a4b3d3-f2d5-4e09-a2a9-a607f3a02505"
     },
     brokenImagePlaceholder: 'broken-image-placeholder',
     safari: {

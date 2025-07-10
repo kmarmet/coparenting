@@ -11,7 +11,7 @@ import AlertManager from './managers/alertManager'
 import AppManager from './managers/appManager'
 
 // CACHING
-const CACHE_KEY = 'v1.0.9'
+const CACHE_KEY = 'v1.0.11'
 const FILES_TO_CACHE = ['/', '/index.html', '/src/index.js', '/src/App.js', '/src/styles/bundle.css']
 
 if ('serviceWorker' in navigator) {

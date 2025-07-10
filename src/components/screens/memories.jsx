@@ -16,6 +16,7 @@ import StringManager from '../../managers/stringManager'
 import NavBar from '../navBar'
 import AccordionTitle from '../shared/accordionTitle'
 import NoDataFallbackText from '../shared/noDataFallbackText'
+import Screen from '../shared/screen'
 import ScreenHeader from '../shared/screenHeader'
 import Slideshow from '../shared/slideshow'
 import Spacer from '../shared/spacer'
@@ -23,11 +24,16 @@ import Spacer from '../shared/spacer'
 export default function Memories() {
   const {state, setState} = useContext(globalState)
   const {theme} = state
-  const {currentUser, currentUserIsLoading} = useCurrentUser()
-  const {memories, memoriesAreLoading} = useMemories()
+
+  // State
   const [showDisclaimer, setShowDisclaimer] = useState(false)
   const [showSlideshow, setShowSlideshow] = useState(false)
   const [activeImgIndex, setActiveImgIndex] = useState(0)
+
+  // Hooks
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {memories, memoriesAreLoading} = useMemories()
+
   const DeleteMemory = async (firebaseImagePath, record) => {
     const imageName = Storage.GetImageNameFromUrl(firebaseImagePath)
 
@@ -61,10 +67,10 @@ export default function Memories() {
       const memoryElements = document.querySelectorAll('.memory-wrapper')
       DomManager.AddActiveClassWithDelay(memoryElements, 1)
     }
-  }, [memories])
+  }, [memories, memoriesAreLoading])
 
   return (
-    <>
+    <Screen activeScreen={ScreenNames.memories} loadingByDefault={true} stopLoadingBool={!currentUserIsLoading && !memoriesAreLoading}>
       {/* SLIDESHOW */}
       <Slideshow show={showSlideshow} hide={() => setShowSlideshow(false)} images={memories} activeIndex={activeImgIndex} />
 
@@ -130,6 +136,6 @@ export default function Memories() {
         </div>
       </div>
       <NavBar navbarClass={'memories'} />
-    </>
+    </Screen>
   )
 }

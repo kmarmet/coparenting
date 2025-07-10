@@ -5,6 +5,7 @@ import ActivityCategory from '../../constants/activityCategory'
 import ButtonThemes from '../../constants/buttonThemes'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
+import ScreenNames from '../../constants/screenNames'
 import SwapDurations from '../../constants/swapDurations.js'
 import globalState from '../../context.js'
 import DB from '../../database/DB'
@@ -25,6 +26,7 @@ import Form from '../shared/form'
 import InputField from '../shared/inputField'
 import MultilineDetailBlock from '../shared/multilineDetailBlock'
 import NoDataFallbackText from '../shared/noDataFallbackText'
+import Screen from '../shared/screen'
 import ScreenHeader from '../shared/screenHeader'
 import SelectDropdown from '../shared/selectDropdown'
 import Spacer from '../shared/spacer'
@@ -50,9 +52,9 @@ export default function SwapRequests() {
   const [selectedChildrenOptions, setSelectedChildrenOptions] = useState(activeRequest?.children)
 
   // Hooks
-  const {currentUser} = useCurrentUser()
-  const {swapRequests} = useSwapRequests()
-  const {children, childrenDropdownOptions} = useChildren()
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+  const {swapRequests, swapRequestsAreLoading} = useSwapRequests()
+  const {children, childrenAreLoading} = useChildren()
 
   const formRef = useRef(null)
 
@@ -161,7 +163,10 @@ export default function SwapRequests() {
   }, [showDetails])
 
   return (
-    <>
+    <Screen
+      activeScreen={ScreenNames.swapRequests}
+      loadingByDefault={true}
+      stopLoadingBool={!currentUserIsLoading && !swapRequestsAreLoading && !childrenAreLoading}>
       {/* DETAILS CARD */}
       <Form
         onDelete={DeleteRequest}
@@ -400,6 +405,6 @@ export default function SwapRequests() {
         </div>
       </div>
       <NavBar />
-    </>
+    </Screen>
   )
 }

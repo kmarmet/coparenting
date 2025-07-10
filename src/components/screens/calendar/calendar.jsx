@@ -11,6 +11,7 @@ import Form from '../../../components/shared/form'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import FinancialKeywords from '../../../constants/financialKeywords'
 import InputTypes from '../../../constants/inputTypes'
+import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
 import DB from '../../../database/DB.js'
 import useCalendarEvents from '../../../hooks/useCalendarEvents'
@@ -22,6 +23,7 @@ import DateManager from '../../../managers/dateManager'
 import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
 import InputField from '../../shared/inputField'
+import Screen from '../../shared/screen'
 import CalendarEvents from './calendarEvents.jsx'
 import CalendarLegend from './calendarLegend.jsx'
 import DesktopLegend from './desktopLegend.jsx'
@@ -35,6 +37,7 @@ export default function EventCalendar() {
   const [selectedDate, setSelectedDate] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [eventToEdit, setEventToEdit] = useState(null)
+  const [contentIsLoaded, setContentIsLoaded] = useState(false)
 
   // CARD STATE
   const [showEditCard, setShowEditCard] = useState(false)
@@ -62,7 +65,7 @@ export default function EventCalendar() {
     }
   }
 
-  const AddDayIndicators = async (events) => {
+  const AddDayIndicators = async () => {
     const holidayEvents = await DB.getTable(DB.tables.holidayEvents)
 
     // Clear existing indicators
@@ -126,6 +129,7 @@ export default function EventCalendar() {
 
       dayElement.append(dotWrapper)
     }
+    setContentIsLoaded(true)
   }
 
   const ShowAllHolidays = async () => {
@@ -227,7 +231,6 @@ export default function EventCalendar() {
 
   // APPEND HOLIDAYS/SEARCH CAL BUTTONS
   useEffect(() => {
-    // Append Holidays/Search Cal Buttons
     if (!currentUserIsLoading) {
       const staticCalendar = document.querySelector('.MuiDialogActions-root')
       const holidaysButton = document.getElementById('holidays-button')
@@ -255,12 +258,10 @@ export default function EventCalendar() {
 
   // ON PAGE LOAD
   useEffect(() => {
-    setTimeout(() => {
-      setState({...state, isLoading: false})
-      AddMonthText()
-    }, 500)
+    AddMonthText()
   }, [])
 
+  // ADD DAY INDICATORS
   useEffect(() => {
     if (Manager.IsValid(eventsOfDay)) {
       setSelectedDate(moment().format(DatetimeFormats.dateForDb))
@@ -270,12 +271,8 @@ export default function EventCalendar() {
     }
   }, [eventsOfDay])
 
-  if (isLoading) {
-    return <div>Loading...</div> // Replace with spinner if needed
-  }
-
   return (
-    <>
+    <Screen loadingByDefault={true} stopLoadingBool={contentIsLoaded} activeScreen={ScreenNames.calendar}>
       {/* CARDS */}
       <>
         {/* HOLIDAYS CARD */}
@@ -318,6 +315,7 @@ export default function EventCalendar() {
         {/* EDIT EVENT */}
         <EditCalEvent showCard={showEditCard} hideCard={() => setShowEditCard(false)} event={eventToEdit} />
       </>
+
       {/* PAGE CONTAINER */}
       <div id="calendar-container" className={`page-container calendar ${theme}`}>
         {/*<Spacer height={32.5} />*/}
@@ -453,6 +451,6 @@ export default function EventCalendar() {
 
       {/* NAV BARS */}
       <NavBar />
-    </>
+    </Screen>
   )
 }

@@ -238,7 +238,7 @@ const DB = {
       const dbRef = getDatabase()
       // console.log('updatedRow', updatedRow)
       //updatedRow = ObjectManager.GetValidObject(updatedRow)
-      console.log('DB', updatedRow)
+      console.log('DB -> ReplaceEntireRecord', updatedRow)
       await set(ref(dbRef, path), updatedRow)
         .then()
         .catch((error) => {

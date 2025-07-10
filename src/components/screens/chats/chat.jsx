@@ -436,7 +436,7 @@ const Chat = ({show, hide, recipient}) => {
                     sender = StringManager.GetFirstNameOnly(bookmark.sender?.name)
                   }
                   return (
-                    <div {...bind()} key={index} className={'message-wrapper bookmark-message'}>
+                    <div {...bind()} key={bookmark?.id} className={'message-wrapper bookmark-message'}>
                       {/* LONG-PRESS MENU */}
                       {showLongPressMenu && (
                         <div className="long-press-menu">

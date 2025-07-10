@@ -13,6 +13,7 @@ import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 import NavBar from '../../navBar'
 import NoDataFallbackText from '../../shared/noDataFallbackText'
+import Screen from '../../shared/screen'
 import ScreenHeader from '../../shared/screenHeader'
 
 export default function DocsList() {
@@ -36,7 +37,7 @@ export default function DocsList() {
   }, [])
 
   return (
-    <>
+    <Screen activeScreen={ScreenNames.docsList} loadingByDefault={true} stopLoadingBool={Manager.IsValid(documents)}>
       <div id="doc-selection-container" className={`${theme} page-container`}>
         <ScreenHeader
           title={'Documents'}
@@ -83,6 +84,6 @@ export default function DocsList() {
       </div>
       {documents.length === 0 && <NoDataFallbackText text={'There are currently no documents'} />}
       <NavBar navbarClass={'documents'} />
-    </>
+    </Screen>
   )
 }

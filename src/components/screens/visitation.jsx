@@ -35,6 +35,7 @@ import AccordionTitle from '../shared/accordionTitle'
 import AddressInput from '../shared/addressInput'
 import MyConfetti from '../shared/myConfetti'
 import Note from '../shared/note'
+import Screen from '../shared/screen'
 import ScreenHeader from '../shared/screenHeader'
 import SelectDropdown from '../shared/selectDropdown'
 import Spacer from '../shared/spacer'
@@ -54,7 +55,7 @@ export default function Visitation() {
   const [showDeleteButton, setShowDeleteButton] = useState(false)
   const [showVisitationSection, setShowVisitationSection] = useState(false)
   const [showHolidaysSection, setShowHolidaysSection] = useState(false)
-
+  const [contentIsReady, setContentIsReady] = useState(false)
   // HOOKS
   const {currentUser} = useCurrentUser()
   const {calendarEvents} = useCalendarEvents()
@@ -206,6 +207,7 @@ export default function Visitation() {
   }
 
   const SetAllStates = async () => {
+    await GetCurrentVisitationSchedule().then((r) => r)
     // Minus Truman Day
     await GetVisitationHolidays(currentUser).then((holidaysObject) => {
       const {holidays, userHolidays} = holidaysObject
@@ -217,6 +219,8 @@ export default function Visitation() {
         SetDefaultHolidayCheckboxes(holidays)
       }, 300)
     })
+
+    setContentIsReady(true)
   }
 
   const GetCurrentVisitationSchedule = async () => {
@@ -291,13 +295,12 @@ export default function Visitation() {
 
   useEffect(() => {
     if (Manager.IsValid(currentUser) && Manager.IsValid(calendarEvents)) {
-      GetCurrentVisitationSchedule().then((r) => r)
       SetAllStates().then((r) => r)
     }
   }, [currentUser, calendarEvents])
 
   return (
-    <>
+    <Screen activeScreen={ScreenNames.visitation} loadingByDefault={true} stopLoadingBool={contentIsReady}>
       {/* SCHEDULE CARDS */}
       <>
         <FiftyFifty
@@ -445,6 +448,6 @@ export default function Visitation() {
         </div>
       </div>
       {!showEveryOtherWeekendCard && !showCustomWeekendsCard && !showFiftyFiftyCard && <NavBar navbarClass={'visitation no-Add-new-button'}></NavBar>}
-    </>
+    </Screen>
   )
 }

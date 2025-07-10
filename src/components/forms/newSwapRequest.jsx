@@ -167,10 +167,6 @@ export default function NewSwapRequest() {
     }
   }, [children, users])
 
-  useEffect(() => {
-    console.log(view?.label, view?.value)
-  }, [view])
-
   return (
     <Form
       key={refreshKey}

@@ -182,7 +182,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         // Update Single Event
         else {
           if (cleaned?.owner?.key === currentUser?.key) {
-            console.log(cleaned?.id)
             const index = DB.GetTableIndexById(calendarEvents, cleaned?.id)
             if (parseInt(index) === -1) return false
             await DB.ReplaceEntireRecord(`${dbPath}/${index}`, cleaned)

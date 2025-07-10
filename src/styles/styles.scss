@@ -148,33 +148,6 @@
   @include loadingSkeleton;
 }
 
-// LOADING ANIMATION
-.loading-animation {
-  width: 20px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: #5e64ff;
-  box-shadow: 0 0 0 0 $blend;
-  animation: loadingAnimation 1.2s infinite linear;
-  position: relative;
-  transform: scale(1.3);
-
-  &::after,
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: 0 0 0 0 $blend;
-    animation: inherit;
-    animation-delay: -0.5s;
-  }
-
-  &::after {
-    animation-delay: -1s;
-  }
-}
-
 /*#region  GOOGLE MAPS/AUTOCOMPLETE */
 .gm-style-mtc {
   button {
@@ -1322,14 +1295,20 @@
     /*#endregion  ID's */
 
     /*#region  CLASSES */
+    .screen {
+      @include screen;
+    }
+
     .sweet-alert-frost {
       backdrop-filter: blur(20px) !important;
       background-color: rgba(0, 0, 0, 0.1) !important;
     }
+
     .sweet-alert-popup {
       margin-top: 200px !important;
       transform: translateY(200px) !important;
     }
+
     .spacer {
       height: 1px;
       width: 100%;

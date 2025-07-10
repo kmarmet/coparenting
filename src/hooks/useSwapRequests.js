@@ -11,7 +11,7 @@ const useSwapRequests = () => {
   const {state, setState} = useContext(globalState)
   const {currentUser} = useCurrentUser()
   const [swapRequests, setSwapRequests] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [swapRequestsAreLoading, setSwapRequestsAreLoading] = useState(true)
   const [error, setError] = useState(null)
   const path = `${DB.tables.swapRequests}/${currentUser?.key}`
   const queryKey = ['realtime', path]
@@ -30,16 +30,15 @@ const useSwapRequests = () => {
         if (Manager.IsValid(formattedRequests) || Manager.IsValid(formattedShared)) {
           const combined = DatasetManager.CombineArrays(formattedRequests, formattedShared)
           setSwapRequests(DatasetManager.GetValidArray(combined))
-        }
-        else {
+        } else {
           setSwapRequests([])
         }
-        setIsLoading(false)
+        setSwapRequestsAreLoading(false)
       },
       (err) => {
         setError(err)
-        setIsLoading(false)
-      },
+        setSwapRequestsAreLoading(false)
+      }
     )
 
     return () => {
@@ -49,7 +48,7 @@ const useSwapRequests = () => {
 
   return {
     swapRequests,
-    isLoading,
+    swapRequestsAreLoading,
     error,
     queryKey,
   }

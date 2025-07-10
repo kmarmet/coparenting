@@ -11,7 +11,7 @@ const useTransferRequests = () => {
   const {state, setState} = useContext(globalState)
   const {currentUser} = useCurrentUser()
   const [transferRequests, setTransferRequests] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [transferRequestsAreLoading, setTransferRequestsAreLoading] = useState(true)
   const [error, setError] = useState(null)
   const path = `${DB.tables.transferChangeRequests}/${currentUser?.key}`
   const queryKey = ['realtime', path]
@@ -32,11 +32,11 @@ const useTransferRequests = () => {
         } else {
           setTransferRequests([])
         }
-        setIsLoading(false)
+        setTransferRequestsAreLoading(false)
       },
       (err) => {
         setError(err)
-        setIsLoading(false)
+        setTransferRequestsAreLoading(false)
       }
     )
 
@@ -47,7 +47,7 @@ const useTransferRequests = () => {
 
   return {
     transferRequests,
-    isLoading,
+    transferRequestsAreLoading,
     error,
     queryKey,
   }

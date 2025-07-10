@@ -4,6 +4,7 @@ import React, {useContext, useEffect, useState} from 'react'
 import ButtonThemes from '../../../constants/buttonThemes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
+import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
 import DB_UserScoped from '../../../database/db_userScoped'
@@ -15,6 +16,7 @@ import NavBar from '../../navBar'
 import Button from '../../shared/button'
 import InputField from '../../shared/inputField'
 import Label from '../../shared/label'
+import Screen from '../../shared/screen'
 import ScreenHeader from '../../shared/screenHeader'
 import SelectDropdown from '../../shared/selectDropdown'
 import Spacer from '../../shared/spacer'
@@ -23,7 +25,11 @@ import ToggleButton from '../../shared/toggleButton'
 export default function Settings() {
   const {state, setState} = useContext(globalState)
   const {theme} = state
-  const {currentUser} = useCurrentUser()
+
+  // HOOKS
+  const {currentUser, currentUserIsLoading} = useCurrentUser()
+
+  // STATE
   const [morningSummaryHour, setMorningSummaryHour] = useState(currentUser?.dailySummaries?.morningReminderSummaryHour)
   const [eveningSummaryHour, setEveningSummaryHour] = useState(currentUser?.dailySummaries?.eveningReminderSummaryHour)
   const [notificationsToggled, setNotificationsToggled] = useState(false)
@@ -75,7 +81,7 @@ export default function Settings() {
   }, [morningSummaryHour, eveningSummaryHour])
 
   return (
-    <>
+    <Screen activeScreen={ScreenNames.settings} loadingByDefault={true} stopLoadingBool={!currentUserIsLoading}>
       <div id="settings-container" className={`${currentUser?.settings?.theme} page-container `}>
         <ScreenHeader title={'Settings'} />
         <Spacer height={10} />
@@ -159,6 +165,6 @@ export default function Settings() {
         </div>
       </div>
       <NavBar navbarClass={'settings no-Add-new-button'}></NavBar>
-    </>
+    </Screen>
   )
 }

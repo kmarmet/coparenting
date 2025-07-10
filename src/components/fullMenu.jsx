@@ -36,7 +36,7 @@ export default function FullMenu() {
     swipeDuration: 300,
     preventScrollOnSwipe: true,
     onSwipedDown: () => {
-      setState({...state, menuIsOpen: false})
+      setState({...state, menuIsOpen: false, showOverlay: false})
     },
   })
 

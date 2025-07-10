@@ -4,20 +4,37 @@
 @import './palette';
 
 // PAGE CONTAINER
-@mixin pageContainer {
-  max-width: 100vw;
-  transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
-  background: $lightBg;
+@mixin screen {
+  position: relative;
   height: 100vh;
+  inset: 0;
+  max-height: calc(100vh - 125px);
+  z-index: $middleZIndex;
+  max-width: 100vw;
+  background: $lightBg;
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  z-index: $middleZIndex;
   overscroll-behavior: none;
   padding: 0 0 25vh 0;
-  position: relative;
   top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 
+  .screen-children-wrapper {
+    opacity: 0;
+    width: 100%;
+    transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
+
+    &.active {
+      opacity: 1;
+      transition: all 2s cubic-bezier(0.17, 0.67, 0.21, 0.95);
+    }
+  }
+
+  // CONTENT
   .screen-content {
     padding: 0 15px 200px 15px;
     position: relative;
@@ -28,17 +45,18 @@
     }
   }
 
+  // HEADER
   .screen-header {
     width: 100%;
     padding: 55px 15px 25px 15px;
     z-index: 99999;
-    @include screenHeaderGradient;
     position: relative;
     min-height: 20vh;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
+    @include screenHeaderGradient;
 
     img {
       height: 100%;
@@ -87,7 +105,7 @@
           font-size: 17px;
           line-height: 1.4;
           width: 100%;
-          text-align: justify;
+          text-align: center;
           color: $lighterTransWhite;
           font-weight: $fwLight;
         }
@@ -99,7 +117,11 @@
       width: 100%;
     }
   }
-
+}
+@mixin pageContainer {
+  height: 100%;
+  display: block;
+  flex: 1;
   &.active {
     transition: all 0.5s ease-in-out;
 
@@ -130,10 +152,6 @@
 
   &.login {
     max-height: 100vh;
-  }
-
-  &.child-info {
-    //    padding-bottom: 100px;
   }
 }
 
@@ -787,37 +805,59 @@
 /*#endregion  POSITIONING*/
 
 /*#region  COMPONENTS*/
+
 @mixin loadingScreen {
   position: fixed;
-  top: 0;
-  left: 0;
   width: 100vw;
   height: 100vh;
+  inset: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: $maxZIndex;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: all 0.5s ease;
   opacity: 0;
+  backdrop-filter: blur(6px);
 
-  @include mainColorsGradient;
+  .animation {
+    width: fit-content;
+    font-size: 40px;
+    font-family: system-ui, sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #0000;
+    -webkit-text-stroke: 1px $purple;
+    --l: #0000 45%, #5769ff 0 55%, #0000 0;
+    --g: 0/300% 100% no-repeat text;
+    background:
+      linear-gradient(-60deg, var(--l)) var(--g),
+      linear-gradient(60deg, var(--l)) var(--g);
+    animation: l7 3.5s linear infinite;
+    &::before {
+      content: 'Loading';
+    }
+    @keyframes l7 {
+      0% {
+        background-position: 100%, 0;
+      }
+      50% {
+        background-position: 0, 0;
+      }
+      to {
+        background-position: 0, 100%;
+      }
+    }
+  }
 
   &.active {
     opacity: 1;
-    transition: opacity 0.3s ease;
+    transition: all 0.5s ease;
   }
 
   img {
-    @include square(110px);
-  }
-
-  p {
-    text-align: center;
-    color: white;
-    font-size: 22px;
-    max-width: 85%;
+    @include square(70px);
   }
 }
 

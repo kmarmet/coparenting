@@ -11,7 +11,6 @@ const LazyImage = ({imgName, alt, classes = '', onClick = () => {}}) => {
     const imgObj = FlattenObjects(AppImages, '', {})
     if (Manager.IsValid(imgName, true)) {
       if (Manager.IsValid(imgObj) && Manager.IsValid(imgObj, true)) {
-        console.log(imgObj[imgName])
         setSrc(imgObj[imgName])
       }
     }

@@ -14,6 +14,7 @@ import Manager from '../../managers/manager'
 import NavBar from '../navBar'
 import Button from '../shared/button'
 import LazyImage from '../shared/lazyImage'
+import Screen from '../shared/screen'
 import ScreenHeader from '../shared/screenHeader'
 import Slideshow from '../shared/slideshow'
 import Spacer from '../shared/spacer'
@@ -28,7 +29,7 @@ export default function InstallApp() {
   }, [])
 
   return (
-    <>
+    <Screen activeScreen={ScreenNames.installApp}>
       {/*  DESKTOP INSTALLATION SLIDESHOW */}
       <Slideshow
         activeIndex={0}
@@ -45,7 +46,6 @@ export default function InstallApp() {
         ]}
       />
 
-
       <div className="page-container install-app">
         <div id="install-app-wrapper">
           <ScreenHeader
@@ -53,7 +53,6 @@ export default function InstallApp() {
             screenDescription="Quickly install - no App Store or Play Store necessary!"
           />
           <Spacer height={10} />
-
 
           <div className="screen-content">
             {Manager.IsValid(operatingSystem) && (
@@ -172,12 +171,17 @@ export default function InstallApp() {
             </div>
             <Spacer height={10} />
             {!Manager.IsValid(authUser) && (
-              <Button text={'Back to Login'} theme={ButtonThemes.blend} classes="back-to-login-button center" onClick={() => setState({...state, currentScreen: ScreenNames.login})} />
+              <Button
+                text={'Back to Login'}
+                theme={ButtonThemes.blend}
+                classes="back-to-login-button center"
+                onClick={() => setState({...state, currentScreen: ScreenNames.login})}
+              />
             )}
             {Manager.IsValid(authUser) && <NavBar navbarClass={'child-info no-Add-new-button'} />}
           </div>
         </div>
       </div>
-    </>
+    </Screen>
   )
 }

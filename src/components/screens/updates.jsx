@@ -20,6 +20,7 @@ import StringManager from '../../managers/stringManager'
 import NavBar from '../navBar'
 import AccordionTitle from '../shared/accordionTitle'
 import NoDataFallbackText from '../shared/noDataFallbackText'
+import Screen from '../shared/screen'
 import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer'
 
@@ -125,7 +126,7 @@ export default function Updates() {
   }, [updates])
 
   return (
-    <>
+    <Screen activeScreen={ScreenNames.updates}>
       <div id="activity-wrapper" className={`${theme} page-container`}>
         <ScreenHeader
           screenName={ScreenNames.updates}
@@ -195,6 +196,6 @@ export default function Updates() {
         {updates?.length === 0 && <NoDataFallbackText text={'no updates awaiting your attention'} />}
       </div>
       <NavBar navbarClass={'activity no-Add-new-button'}></NavBar>
-    </>
+    </Screen>
   )
 }
