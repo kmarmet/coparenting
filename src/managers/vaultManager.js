@@ -5,13 +5,12 @@ import StringManager from "./stringManager";
 
 export default ArchiveManager = {
   createCSV: function(data, filename, exportType) {
-    var blob, csvRows, formattedData, formattedHeaders, header, headers, i, j, k, key, l, len, len1, len2, len3, link, obj, ref, values;
+    var blob, csvRows, formattedHeaders, header, headers, i, j, k, key, l, len, len1, len2, len3, link, obj, ref, ref1, ref2, values;
     // Convert data to CSV format
     csvRows = [];
     formattedHeaders = [];
     headers = Object.keys(data[0]);
-    console.log(data);
-    formattedData = [];
+    console.log(headers);
     for (i = 0, len = data.length; i < len; i++) {
       obj = data[i];
       for (j = 0, len1 = obj.length; j < len1; j++) {
@@ -37,6 +36,14 @@ export default ArchiveManager = {
       if (exportType === "expenses") {
         if (obj != null) {
           obj.payer = obj != null ? (ref = obj.payer) != null ? ref.name : void 0 : void 0;
+        }
+      }
+      if (exportType === "chat") {
+        if (obj != null) {
+          obj.recipient = obj != null ? (ref1 = obj.recipient) != null ? ref1.name : void 0 : void 0;
+        }
+        if (obj != null) {
+          obj.sender = obj != null ? (ref2 = obj.sender) != null ? ref2.name : void 0 : void 0;
         }
       }
       values = headers.map(function(header) {

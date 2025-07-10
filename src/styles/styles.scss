@@ -374,14 +374,11 @@
                 }
             }
 
-            [class*='-menu'] {
-                //background: transparent !important;
-            }
-
             [class*='-option'] {
                 color: $darkGrey !important;
                 border-radius: $borderRadius !important;
                 border: 1px solid $lightBorderColor !important;
+                border: 1px dashed red !important;
             }
         }
 
@@ -447,6 +444,109 @@
 }
 /*#endregion  PASSWORD VALIDATION */
 
+// App Update Overlay
+#app-update-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: $maxZIndex;
+    transition: all 0.3s ease;
+    pointer-events: all;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @include starryBackground;
+
+    &.show {
+        animation: fadeIn 0.8s cubic-bezier(0.41, 0.52, 0.24, 0.82) forwards !important;
+        opacity: 1;
+    }
+
+    .card-buttons {
+        align-items: center;
+        @include cardButtons;
+        border-top: 0;
+
+        .card-button {
+            background: rgba(255, 255, 255, 0.84);
+            width: max-content;
+            border-radius: 50px;
+            padding: 12px 20px 10px 20px;
+            margin: 0 auto;
+            color: rgba(24, 24, 24, 0.37);
+            color: #5549ff;
+            @include sparkleButton;
+            box-shadow: 0 0 30px 12px rgba(239, 239, 239, 0.64);
+            @include fontType;
+            font-weight: $fwBold;
+            line-height: 1;
+            border: 0;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+                margin-left: 8px;
+                color: #5549ff;
+            }
+        }
+    }
+
+    .animation {
+        margin-top: 100px;
+        width: fit-content;
+        font-size: 40px;
+        font-family: system-ui, sans-serif;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #0000;
+        -webkit-text-stroke: 1px white;
+        --l: #0000 45%, rgba(229, 231, 235, 0.57) 0 55%, #0000 0;
+        --g: 0/300% 100% no-repeat text;
+        background:
+            linear-gradient(-60deg, var(--l)) var(--g),
+            linear-gradient(60deg, var(--l)) var(--g);
+        animation: l7 3.5s linear infinite;
+        text-align: center;
+        padding: 0 20px;
+        &::before {
+            content: 'update available';
+        }
+        @keyframes l7 {
+            0% {
+                background-position: 100%, 0;
+            }
+            50% {
+                background-position: 0, 0;
+            }
+            to {
+                background-position: 0, 100%;
+            }
+        }
+    }
+
+    .content {
+        align-self: center;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 50vh;
+        gap: 15px;
+        flex-wrap: wrap;
+
+        img {
+            &.takeoff-gif {
+                height: max-content;
+                @include square(150px);
+            }
+        }
+    }
+}
+
+// Overlay
 #overlay {
     position: fixed;
     inset: 0;
@@ -1079,106 +1179,6 @@
                     max-height: unset;
                     overflow: hidden;
                     height: unset;
-                }
-            }
-        }
-
-        // App Update Overlay
-        #app-update-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: $maxZIndex;
-            opacity: 0;
-            transition: all 0.3s ease;
-            pointer-events: all;
-            height: 100vh;
-            width: 100vw;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            @include starryBackground;
-
-            &.show {
-                animation: fadeIn 0.8s cubic-bezier(0.41, 0.52, 0.24, 0.82) forwards !important;
-                opacity: 1;
-            }
-
-            &.hidden {
-                pointer-events: none;
-                opacity: 0;
-            }
-
-            .card-buttons {
-                align-items: center;
-                @include cardButtons;
-                border-top: 0;
-
-                .card-button {
-                    background: rgba(255, 255, 255, 0.84);
-                    width: max-content;
-                    border-radius: 50px;
-                    padding: 10px 20px;
-                    margin: 0 auto;
-                    color: rgba(24, 24, 24, 0.37);
-                    color: #5549ff;
-                    font-weight: $fwBold;
-                    @include sparkleButton;
-                    box-shadow: 0 0 15px 10px #532db9;
-
-                    svg {
-                        color: #5549ff;
-                    }
-                }
-            }
-
-            .animation {
-                margin-top: 100px;
-                width: fit-content;
-                font-size: 40px;
-                font-family: system-ui, sans-serif;
-                font-weight: bold;
-                text-transform: uppercase;
-                color: #0000;
-                -webkit-text-stroke: 1px white;
-                --l: #0000 45%, rgba(229, 231, 235, 0.57) 0 55%, #0000 0;
-                --g: 0/300% 100% no-repeat text;
-                background:
-                    linear-gradient(-60deg, var(--l)) var(--g),
-                    linear-gradient(60deg, var(--l)) var(--g);
-                animation: l7 3.5s linear infinite;
-                text-align: center;
-                padding: 0 20px;
-                &::before {
-                    content: 'update available';
-                }
-                @keyframes l7 {
-                    0% {
-                        background-position: 100%, 0;
-                    }
-                    50% {
-                        background-position: 0, 0;
-                    }
-                    to {
-                        background-position: 0, 100%;
-                    }
-                }
-            }
-
-            .content {
-                align-self: center;
-                width: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                height: 50vh;
-                gap: 15px;
-                flex-wrap: wrap;
-
-                img {
-                    &.takeoff-gif {
-                        height: max-content;
-                        @include square(150px);
-                    }
                 }
             }
         }

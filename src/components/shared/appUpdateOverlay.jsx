@@ -1,25 +1,25 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import {HiMiniRocketLaunch} from 'react-icons/hi2'
 import AppImages from '../../constants/appImages'
 import ButtonThemes from '../../constants/buttonThemes'
+import useDetectElement from '../../hooks/useDetectElement'
 import Manager from '../../managers/manager'
 import CardButton from './cardButton'
 import LazyImage from './lazyImage'
 
 const AppUpdateOverlay = () => {
     const appUpdateOverlay = document.getElementById('app-update-overlay')
-    const loadingScreen = document.getElementById('loading-screen-wrapper')
 
-    useEffect(() => {
-        if (Manager.IsValid(appUpdateOverlay) && appUpdateOverlay.classList.contains('show') && Manager.IsValid(loadingScreen)) {
-            if (Manager.IsValid(loadingScreen)) {
-                loadingScreen.classList.add('hidden')
-            }
+    // Disable Loading Screen when app update overlay is open
+    useDetectElement('.loading-screen', (e) => {
+        const loadingScreenWrapper = e
+        if (Manager.IsValid(appUpdateOverlay) && appUpdateOverlay.classList.contains('show') && Manager.IsValid(loadingScreenWrapper)) {
+            loadingScreenWrapper.remove()
         }
-    }, [appUpdateOverlay])
+    })
 
     return (
-        <div id={'app-update-overlay'} className="hidden">
+        <div id={'app-update-overlay'}>
             <div id="stars"></div>
             <div id="stars2"></div>
             <div id="stars3"></div>
@@ -35,7 +35,7 @@ const AppUpdateOverlay = () => {
                     button.classList.add('animate')
                     setTimeout(() => {
                         window.location.reload()
-                    }, 800)
+                    }, 1000)
                 }}>
                 <CardButton buttonTheme={ButtonThemes.lightPurple} text={'Launch Update'} icon={<HiMiniRocketLaunch />}></CardButton>
             </div>

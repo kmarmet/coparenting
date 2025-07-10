@@ -6,7 +6,7 @@ export default function LoadingScreen() {
     const {isLoading} = state
 
     return (
-        <div id={'loading-screen-wrapper'} className={isLoading ? 'active' : 'hidden'}>
+        <div id={'loading-screen-wrapper'} className={`${isLoading ? 'active' : 'hidden'} loading-screen`}>
             <div className="animation"></div>
         </div>
     )

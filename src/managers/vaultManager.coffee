@@ -7,9 +7,8 @@ export default ArchiveManager = {
     formattedHeaders = []
     headers = Object.keys(data[0])
 
-    console.log(data);
+    console.log(headers);
 
-    formattedData  = []
     for obj in data
       for key in obj
         obj[key] = StringManager.SpaceBetweenWords(key)
@@ -23,14 +22,17 @@ export default ArchiveManager = {
       header = StringManager.UppercaseFirstLetterOfAllWords(header)
       formattedHeaders.push(header)
 
+
     # Add headers
-
     csvRows.push(formattedHeaders.join(','))
-
 
     for obj in data
       if exportType == "expenses"
         obj?.payer = obj?.payer?.name
+
+      if exportType == "chat"
+        obj?.recipient = obj?.recipient?.name
+        obj?.sender = obj?.sender?.name
 
       values = headers.map (header) -> obj[header]
       csvRows.push(values.join(','))

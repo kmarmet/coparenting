@@ -237,9 +237,6 @@ export default function App() {
         <LocalizationProvider dateAdapter={AdapterMoment}>
             <div className={`App ${theme}`} id="app-container">
                 <globalState.Provider value={stateToUpdate}>
-                    {/* APP UPDATE OVERLAY */}
-                    <AppUpdateOverlay />
-
                     {/* SUCCESS ALERT */}
                     <SuccessAlert />
 
@@ -305,6 +302,7 @@ export default function App() {
                         {currentScreen === ScreenNames.newCoparent && <NewCoParentForm />}
 
                         {/* STANDARD */}
+                        {currentScreen === ScreenNames.appUpdate && <AppUpdateOverlay />}
                         {currentScreen === ScreenNames.installApp && <InstallApp />}
                         {currentScreen === ScreenNames.landing && !isLoading && <Landing />}
                         {currentScreen === ScreenNames.updates && <Updates />}

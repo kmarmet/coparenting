@@ -376,6 +376,10 @@
                             &[aria-colindex='1'] {
                                 color: $mediumGreyDarker !important;
 
+                                .dot-wrapper {
+                                    opacity: 0.5 !important;
+                                }
+
                                 &.Mui-selected,
                                 &.MuiPickersDay-today {
                                     opacity: 1 !important;
