@@ -1,5 +1,6 @@
 ScreenNames = {
   adminDashboard: 'adminDashboard'
+  appUpdate: 'appUpdate'
   vault: "vault"
   calendar: 'calendar'
   chat: 'chat'
