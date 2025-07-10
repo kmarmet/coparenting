@@ -72,7 +72,7 @@ AlertManager = {
             """
       title: title
       grow: true
-      html: 'TEst'
+#      html: 'TEst'
       showDenyButton: showDenyButton
       showCancelButton: false
       confirmButtonText: confirmButtonText

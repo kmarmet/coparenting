@@ -4,7 +4,7 @@ $lightSecondaryAccent: rgba(108, 115, 200, 0.2);
 $lightMain: rgba(76, 111, 255, 0.2);
 $lightBlend: rgba(87, 105, 255, 0.2);
 $main: #405aff;
-$blendPurple: #715eff;
+$blendPurple: #7260ff;
 $blendDark: #4952ff;
 $blend: #5769ff;
 $linkColor: #4255ff;
@@ -55,6 +55,7 @@ $holidayOrange: #ffc511;
 
 /*#region PURPLES */
 $purple: #6f42ff;
+$lightPurple: #9d81ff;
 $gradientPurple: #623ae2;
 $darkPurple: #5b39cb;
 /*#endregion PURPLES */
@@ -104,8 +105,8 @@ $darkBlueMedium: #4c6fff;
 $darkMainBlue: $darkBlueMedium;
 $darkBlueLight: cornflowerblue;
 $darkSmallShadow:
-  0 3px 6px rgba(0, 0, 0, 0.16),
-  0 3px 6px rgba(0, 0, 0, 0.23);
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
 $darkBorderColor: rgba(59, 59, 59, 0.26);
 /*#endregion DARK THEME*/
 

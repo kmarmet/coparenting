@@ -4,37 +4,37 @@
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 /*
     2. Remove default margin
   */
 * {
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
-  //  scrollbar-width: auto;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    //  scrollbar-width: auto;
 }
 
 /* width */
 ::-webkit-scrollbar {
-  display: none !important;
+    display: none !important;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  display: none !important;
+    display: none !important;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  display: none !important;
-  border-radius: 15px;
+    display: none !important;
+    border-radius: 15px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  display: none !important;
+    display: none !important;
 }
 
 /*
@@ -44,52 +44,52 @@
   */
 
 html {
-  background-color: $lightBg !important;
-  overflow: hidden;
-  p:not(#doc-text p) {
-    -webkit-tap-highlight-color: transparent;
-  }
+    background-color: white !important;
+    overflow: hidden;
+    p:not(#doc-text p) {
+        -webkit-tap-highlight-color: transparent;
+    }
 }
 
 #root {
-  overflow: hidden !important;
+    overflow: hidden !important;
 }
 
 // BODY
 body {
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  overflow: hidden !important;
-  background-color: white !important;
-  //  height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
-  //  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  //  min-height: calc(100% + env(safe-area-inset-top));
-  //  max-height: 100vh;
-  height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden !important;
+    background-color: white !important;
+    //  height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
+    //  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    //  min-height: calc(100% + env(safe-area-inset-top));
+    //  max-height: 100vh;
+    height: 100vh;
 
-  &.dark {
-    background-color: $darkBg !important;
-  }
+    &.dark {
+        background-color: $darkBg !important;
+    }
 
-  /* width */
-  &::-webkit-scrollbar {
-    display: none !important;
-  }
+    /* width */
+    &::-webkit-scrollbar {
+        display: none !important;
+    }
 
-  /* Track */
-  &::-webkit-scrollbar-track {
-    display: none !important;
-  }
+    /* Track */
+    &::-webkit-scrollbar-track {
+        display: none !important;
+    }
 
-  /* Handle */
-  &::-webkit-scrollbar-thumb {
-    display: none !important;
-  }
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+        display: none !important;
+    }
 
-  /* Handle on hover */
-  &::-webkit-scrollbar-thumb:hover {
-    display: none !important;
-  }
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+        display: none !important;
+    }
 }
 
 /*
@@ -99,8 +99,8 @@ img,
 picture,
 video,
 canvas {
-  display: block;
-  max-width: 100%;
+    display: block;
+    max-width: 100%;
 }
 
 /*
@@ -110,7 +110,7 @@ input,
 button,
 textarea,
 select {
-  font: inherit;
+    font: inherit;
 }
 
 /*
@@ -118,5 +118,5 @@ select {
   */
 #root,
 #__next {
-  isolation: isolate;
+    isolation: isolate;
 }

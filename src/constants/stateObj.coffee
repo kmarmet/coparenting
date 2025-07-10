@@ -11,7 +11,6 @@ StateObj =
   currentUser: {}
   docToView: ''
   isLoading: true
-  loadingText: 'Preparing your pathway to peace...'
   menuIsOpen: false
   messageToUser: null
   oneSignalInitialized: false
@@ -43,7 +42,6 @@ StateObj =
   setDocToView: (doc) ->
   setEventToEdit: (event) ->
   setIsLoading: (bool) ->
-  setLoadingText: (text) ->
   setMenuIsOpen: (isOpen) ->
   setMessageToUser: (user) ->
   setModalIsOpen: (bool) ->

@@ -2,13 +2,36 @@
 @import './animations';
 @import 'variables';
 @import './palette';
+@function multiple-box-shadow($n) {
+    $value: #{random(2000)}px #{random(2000)}px #fff;
 
-// PAGE CONTAINER
+    @for $i from 2 through $n {
+        $value:
+            #{$value},
+            #{random(2000)}px #{random(2000)}px #fff;
+    }
+
+    @return $value;
+}
+
+@keyframes animStar {
+    from {
+        transform: translateY(0px);
+    }
+    to {
+        transform: translateY(-2000px);
+    }
+}
+
+$shadows-small: multiple-box-shadow(700);
+$shadows-medium: multiple-box-shadow(200);
+$shadows-big: multiple-box-shadow(100);
+
+// SCREEN
 @mixin screen {
     position: relative;
     height: 100vh;
     inset: 0;
-    max-height: calc(100vh - 125px);
     z-index: $middleZIndex;
     max-width: 100vw;
     background: $lightBg;
@@ -16,14 +39,16 @@
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: none;
-    padding: 0 0 25vh 0;
     top: 0;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
 
-    .screen-children-wrapper {
+    .screen-content-wrapper {
+        height: 100vh;
+        align-self: stretch;
+        flex: 1;
         opacity: 0;
         width: 100%;
         transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
@@ -32,16 +57,18 @@
             opacity: 1;
             transition: all 2s cubic-bezier(0.17, 0.67, 0.21, 0.95);
         }
-    }
 
-    // CONTENT
-    .screen-content {
-        padding: 0 15px 200px 15px;
-        position: relative;
-        z-index: $middleZIndex;
+        // CONTENT
+        .screen-content {
+            max-height: 99vh;
+            padding: 0 15px 200px 15px;
+            height: 100%;
+            width: 100%;
+            position: relative;
 
-        &.bottom-padding-only {
-            padding: 0 0 200px 0;
+            &.bottom-padding-only {
+                padding: 0 0 200px 0;
+            }
         }
     }
 
@@ -117,42 +144,49 @@
             width: 100%;
         }
     }
-}
-@mixin pageContainer {
-    height: 100%;
-    display: block;
-    flex: 1;
-    &.active {
-        transition: all 0.5s ease-in-out;
 
-        &.conversation {
-            padding-bottom: 0;
-            background-color: white;
+    // PAGE CONTAINER -> TODO: REMOVE AND USE SCREEN-CONTENT
+    .page-container {
+        height: 100%;
+        display: block;
+        flex: 1;
+        position: relative;
+        z-index: 0;
+        &.active {
+            transition: all 0.5s ease-in-out;
+
+            &.conversation {
+                padding-bottom: 0;
+                background-color: white;
+                overflow: hidden;
+            }
+        }
+
+        &.home {
+            position: relative;
+            padding-top: 0;
+        }
+
+        &.documents {
+            padding-bottom: 300px;
+        }
+
+        &.disable-scroll {
             overflow: hidden;
         }
-    }
 
-    &.home {
-        position: relative;
-        padding-top: 0;
-    }
+        &.calendar {
+            padding-left: 0;
+            padding-right: 0;
+        }
 
-    &.documents {
-        padding-bottom: 300px;
+        &.login {
+            max-height: 100vh;
+        }
     }
+}
 
-    &.disable-scroll {
-        overflow: hidden;
-    }
-
-    &.calendar {
-        padding-left: 0;
-        padding-right: 0;
-    }
-
-    &.login {
-        max-height: 100vh;
-    }
+@mixin pageContainer {
 }
 
 // SCREEN TITLE
@@ -276,8 +310,8 @@
     line-height: 1.4;
     font-optical-sizing: auto;
     font-style: normal;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: 0;
+    font-family: 'SF Pro Display', sans-serif;
+    letter-spacing: 0.4px;
 }
 
 /*#region  BUTTONS*/
@@ -411,6 +445,64 @@
 /*#endregion  SIZING */
 
 /*#region  EFFECTS*/
+@mixin starryBackground {
+    background: radial-gradient(ellipse at bottom, $gradientPurple -100%, #5549ff 100%);
+
+    #stars {
+        width: 1px;
+        height: 1px;
+        background: transparent;
+        box-shadow: $shadows-small;
+        animation: animStar 50s linear infinite;
+
+        &::after {
+            content: ' ';
+            position: absolute;
+            top: 2000px;
+            width: 1px;
+            height: 1px;
+            background: transparent;
+            box-shadow: $shadows-small;
+        }
+    }
+
+    #stars2 {
+        width: 2px;
+        height: 2px;
+        background: transparent;
+        box-shadow: $shadows-medium;
+        animation: animStar 100s linear infinite;
+
+        &::after {
+            content: ' ';
+            position: absolute;
+            top: 2000px;
+            width: 2px;
+            height: 2px;
+            background: transparent;
+            box-shadow: $shadows-medium;
+        }
+    }
+
+    #stars3 {
+        width: 3px;
+        height: 3px;
+        background: transparent;
+        box-shadow: $shadows-big;
+        animation: animStar 150s linear infinite;
+
+        &::after {
+            content: ' ';
+            position: absolute;
+            top: 2000px;
+            width: 3px;
+            height: 3px;
+            background: transparent;
+            box-shadow: $shadows-big;
+        }
+    }
+}
+
 @mixin loadingSkeleton {
     $color-base: $greyBorderColor;
     $color-highlight: lighten($color-base, 20%);
@@ -545,7 +637,7 @@
 
 @mixin sparkleOnClickButton {
     position: relative;
-    transition: all 0.7s linear;
+    transition: all 0.7s ease;
 
     &:active {
         right: 0;
@@ -562,20 +654,19 @@
     &:before {
         position: absolute;
         content: '';
-        display: block;
         width: 140%;
         height: 100%;
         left: -20%;
         z-index: -1000;
         transition: all ease-in-out 0.5s;
         background-repeat: no-repeat;
-        //    display: none;
+        display: none;
         top: -75%;
-        background-image: radial-gradient(circle, $main 20%, transparent 20%), radial-gradient(circle, transparent 20%, $main 20%, transparent 30%),
-            radial-gradient(circle, $main 20%, transparent 20%), radial-gradient(circle, $main 20%, transparent 20%),
-            radial-gradient(circle, transparent 10%, $main 15%, transparent 20%), radial-gradient(circle, $main 20%, transparent 20%),
-            radial-gradient(circle, $main 20%, transparent 20%), radial-gradient(circle, $main 20%, transparent 20%),
-            radial-gradient(circle, $main 20%, transparent 20%);
+        background-image: radial-gradient(circle, $orange 20%, transparent 20%),
+            radial-gradient(circle, transparent 20%, $orange 20%, transparent 30%), radial-gradient(circle, $orange 20%, transparent 20%),
+            radial-gradient(circle, $orange 20%, transparent 20%), radial-gradient(circle, transparent 10%, $orange 15%, transparent 20%),
+            radial-gradient(circle, $orange 20%, transparent 20%), radial-gradient(circle, $orange 20%, transparent 20%),
+            radial-gradient(circle, $orange 20%, transparent 20%), radial-gradient(circle, $orange 20%, transparent 20%);
         background-size:
             10% 10%,
             20% 20%,
@@ -591,19 +682,18 @@
     &:after {
         position: absolute;
         content: '';
-        display: block;
         width: 140%;
         height: 100%;
         left: -20%;
         z-index: -1000;
         transition: all ease-in-out 0.5s;
         background-repeat: no-repeat;
-        //    display: none;
+        display: none;
         bottom: -75%;
-        background-image: radial-gradient(circle, $main 20%, transparent 20%), radial-gradient(circle, $main 20%, transparent 20%),
-            radial-gradient(circle, transparent 10%, $main 15%, transparent 20%), radial-gradient(circle, $main 20%, transparent 20%),
-            radial-gradient(circle, $main 20%, transparent 20%), radial-gradient(circle, $main 20%, transparent 20%),
-            radial-gradient(circle, $main 20%, transparent 20%);
+        background-image: radial-gradient(circle, $holidayOrange 20%, transparent 20%), radial-gradient(circle, $holidayOrange 20%, transparent 20%),
+            radial-gradient(circle, transparent 10%, $holidayOrange 15%, transparent 20%),
+            radial-gradient(circle, $holidayOrange 20%, transparent 20%), radial-gradient(circle, $holidayOrange 20%, transparent 20%),
+            radial-gradient(circle, $holidayOrange 20%, transparent 20%), radial-gradient(circle, $holidayOrange 20%, transparent 20%);
         background-size:
             15% 15%,
             20% 20%,
@@ -821,10 +911,16 @@
     opacity: 0;
     backdrop-filter: blur(6px);
 
+    &.active {
+        opacity: 1;
+        pointer-events: all;
+        transition: all 0.5s ease;
+    }
+
     .animation {
         width: fit-content;
         font-size: 40px;
-        font-family: system-ui, sans-serif;
+        font-family: 'SF Pro Display', sans-serif;
         font-weight: bold;
         text-transform: uppercase;
         color: #0000;
@@ -849,11 +945,6 @@
                 background-position: 0, 100%;
             }
         }
-    }
-
-    &.active {
-        opacity: 1;
-        transition: all 0.5s ease;
     }
 
     img {
@@ -935,7 +1026,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 10px;
+    border-radius: 50px;
     padding: 12px;
     margin: 0 auto;
     height: max-content;
@@ -1245,6 +1336,7 @@
         backdrop-filter: blur(8px);
         inset: 0;
         height: 100vh;
+        padding-top: 40px;
 
         .action-items {
             padding-bottom: 100px;
@@ -1256,6 +1348,7 @@
             width: 100vw;
             border-radius: 30px 30px 0 0;
             overflow: auto;
+            box-shadow: $boxShadow_top_only;
             @include mainColorsGradient;
 
             &.active {
@@ -1453,6 +1546,7 @@
         position: fixed;
         bottom: 0;
         left: 0;
+        padding-top: 40px;
 
         .action-items {
             padding-bottom: 100px;
@@ -1464,6 +1558,7 @@
             width: 100vw;
             border-radius: 30px 30px 0 0;
             overflow: auto;
+            box-shadow: $boxShadow_top_only;
             @include mainColorsGradient;
 
             &.active {
@@ -3134,7 +3229,7 @@
     opacity: 0;
     pointer-events: none;
     transition: all 0.7s ease;
-    z-index: $lesserMaxZIndex;
+    z-index: 9;
     @include mainColorsGradient;
 
     &.active {
@@ -3601,105 +3696,7 @@
 
     // CARD BUTTONS
     .card-buttons {
-        display: flex;
-        left: 0;
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        z-index: $maxZIndex;
-        height: 80px;
-        @include betterFrost;
-        border: none;
-        border-top: 1px solid $almostInvisibleWhite;
-        border-radius: 0;
-        background-color: transparent;
-
-        &.place-behind {
-            z-index: 9;
-        }
-
-        .card-button {
-            color: white;
-            z-index: 10000;
-            position: relative;
-            -ms-transform: none;
-            transform: none;
-            box-shadow: none;
-            padding: 0;
-            bottom: 0;
-            justify-self: center;
-            line-height: 1;
-            font-weight: $fwMedium;
-            font-size: 14px;
-            background-color: transparent;
-            text-align: center;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0;
-            width: 100%;
-            height: 60%;
-
-            svg {
-                color: white;
-                opacity: 1;
-                display: flex;
-                justify-content: center;
-                align-self: center;
-                line-height: 1;
-            }
-
-            &.submit,
-            &.green {
-                color: $mediumGreen;
-            }
-
-            &.yellow {
-                color: $brightYellow;
-            }
-
-            &.delete,
-            &.delete-button,
-            &.red {
-                border: 0;
-                color: $flatRed;
-                font-weight: $fwBold;
-                svg {
-                    color: white;
-                }
-
-                &.with-bg {
-                    background: $red;
-                    color: white;
-                    border: unset;
-                }
-            }
-
-            &.close,
-            &.cancel,
-            &.white {
-                color: white;
-                svg {
-                    color: $darkerGrey;
-
-                    &.attachment-icon {
-                        color: white;
-                    }
-                }
-
-                &.close {
-                    svg {
-                        transform: scale(1.2);
-                    }
-                }
-            }
-            border-right: 1px solid $almostInvisibleWhite;
-
-            &:last-child {
-                border-right: 0;
-            }
-        }
+        @include cardButtons;
     }
 
     // BUTTONS
@@ -4493,6 +4490,117 @@
 
 /*#endregion  COMPONENTS*/
 
+@mixin cardButtons {
+    // CARD BUTTONS
+    display: flex;
+    left: 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: $maxZIndex;
+    height: 80px;
+    @include betterFrost;
+    border: none;
+    border-top: 1px solid $almostInvisibleWhite;
+    border-radius: 0;
+    background-color: transparent;
+
+    &.place-behind {
+        z-index: 9;
+    }
+
+    .card-button {
+        color: white;
+        z-index: 10000;
+        position: relative;
+        -ms-transform: none;
+        transform: none;
+        box-shadow: none;
+        padding: 0;
+        bottom: 0;
+        justify-self: center;
+        line-height: 1;
+        font-weight: $fwMedium;
+        font-size: 14px;
+        background-color: transparent;
+        text-align: center;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0;
+        width: 100%;
+        height: 60%;
+
+        svg {
+            color: white;
+            opacity: 1;
+            display: flex;
+            justify-content: center;
+            align-self: center;
+            line-height: 1;
+        }
+
+        &.purple {
+            color: $gradientPurple;
+        }
+
+        &.light-purple {
+            color: $lightPurple;
+        }
+
+        &.submit,
+        &.green {
+            color: $mediumGreen;
+        }
+
+        &.yellow {
+            color: $brightYellow;
+        }
+
+        &.delete,
+        &.delete-button,
+        &.red {
+            border: 0;
+            color: $flatRed;
+            font-weight: $fwBold;
+            svg {
+                color: white;
+            }
+
+            &.with-bg {
+                background: $red;
+                color: white;
+                border: unset;
+            }
+        }
+
+        &.close,
+        &.cancel,
+        &.white {
+            color: white;
+            svg {
+                color: $darkerGrey;
+
+                &.attachment-icon {
+                    color: white;
+                }
+            }
+
+            &.close {
+                svg {
+                    transform: scale(1.2);
+                }
+            }
+        }
+        border-right: 1px solid $almostInvisibleWhite;
+
+        &:last-child {
+            border-right: 0;
+        }
+    }
+}
+
 /*#region  MENU*/
 @mixin sideNavbar {
     height: 100%;
@@ -4684,7 +4792,6 @@
         transition: all 0.5s ease;
         height: calc(100vh - 10vh);
         max-height: calc(100vh - 5vh);
-
         @include mainColorsGradient;
     }
 
@@ -4945,7 +5052,7 @@
     transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
     bottom: -1px;
     opacity: 1;
-    z-index: $middleZIndex;
+    z-index: 8;
     left: 0;
     padding-bottom: 5vh;
     background-color: $lightBg;

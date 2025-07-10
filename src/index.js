@@ -9,9 +9,10 @@ import ErrorBoundary from './components/errorBoundary'
 import Spacer from './components/shared/spacer'
 import AlertManager from './managers/alertManager'
 import AppManager from './managers/appManager'
+import Manager from './managers/manager'
 
 // CACHING
-const CACHE_KEY = 'v1.0.11'
+const CACHE_KEY = 'v1.0.15'
 const FILES_TO_CACHE = ['/', '/index.html', '/src/index.js', '/src/App.js', '/src/styles/bundle.css']
 
 if ('serviceWorker' in navigator) {
@@ -61,13 +62,21 @@ if ('serviceWorker' in navigator) {
                 registration.onupdatefound = () => {
                     const newSW = registration.installing
                     newSW.onstatechange = () => {
+                        // UPDATE AVAILABLE
                         if (newSW.state === 'installed' && navigator.serviceWorker.controller && previousCacheKey !== CACHE_KEY) {
+                            const loadingScreen = document.getElementById('loading-screen-wrapper')
+
+                            if (Manager.IsValid(loadingScreen)) {
+                                loadingScreen.classList.add('hidden')
+                            }
                             console.log('[SW] Update available!')
                             localStorage.setItem('sw-cache-key', CACHE_KEY)
                             const appUpdateOverlay = document.getElementById('app-update-overlay')
                             appUpdateOverlay.classList.add('show')
-
                             newSW.postMessage({action: 'skipWaiting'})
+                        } else {
+                            const appUpdateOverlay = document.getElementById('app-update-overlay')
+                            appUpdateOverlay.classList.add('hidden')
                         }
                     }
                 }

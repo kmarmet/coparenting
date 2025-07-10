@@ -8,6 +8,7 @@ ButtonThemes =
   grey: "grey"
   accent: "accent"
   purple: "purple"
+  lightPurple: "lightPurple"
   translucent:  "translucent"
 
 export default ButtonThemes

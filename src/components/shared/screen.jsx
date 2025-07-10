@@ -12,14 +12,10 @@ const Screen = ({activeScreen = '', stopLoadingBool, classes = '', children, loa
     }, [loadingByDefault, stopLoadingBool])
 
     useEffect(() => {
-        const appWrapper = document.getElementById('app-content-with-sidebar')
-        if (!appWrapper.classList.contains('updating')) {
-            setState((prev) => ({
-                ...prev,
-                isLoading: false,
-            }))
-        } else {
-        }
+        setState((prev) => ({
+            ...prev,
+            isLoading,
+        }))
 
         // Add a timeout to prevent the loading screen from showing for too long
         setTimeout(() => {
@@ -34,7 +30,7 @@ const Screen = ({activeScreen = '', stopLoadingBool, classes = '', children, loa
 
     return (
         <div className={`screen${Manager.IsValid(classes, true) ? ` ${classes}` : ''}`}>
-            <div className={`screen-children-wrapper${currentScreen === activeScreen || stopLoadingBool ? ' active' : ''}`}>{children}</div>
+            <div className={`screen-content-wrapper${currentScreen === activeScreen || stopLoadingBool ? ' active' : ''}`}>{children}</div>
         </div>
     )
 }
