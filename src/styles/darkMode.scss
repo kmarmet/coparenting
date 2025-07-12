@@ -1,1567 +1,1567 @@
-@import 'variables';
-@import 'mixins';
-@import './palette';
+@use 'utils/palette';
+@use 'utils/variables';
+@use 'utils/mixins';
 
 #external-overrides {
-  #memories-container {
-    &.dark {
-      .MuiAccordionDetails-root {
-        background: $bootstrapYellow;
-        border: 0;
-        * {
-          color: $bootstrapYellowBg !important;
-        }
-      }
-    }
-  }
-  #swap-requests {
-    &.dark {
-      .row {
-        #title {
-          color: $darkText;
-        }
-      }
-    }
-  }
-  #chat-wrapper {
-    &.dark {
-      #default-messages,
-      #messages,
-      #bookmark-messages {
-        background: $darkBg;
-
-        .message-wrapper {
-          .message {
-            &.to {
-              background: #1a1a1a;
-              color: $darkText;
-              &::after {
-                background: radial-gradient(30px at top left, black 99%, #1a1a1a 102%);
-              }
-            }
-          }
-        }
-      }
-      #emotion-and-input-field {
-        #tone-wrapper {
-          &.green {
-            background: $darkGreen;
-            * {
-              color: white;
-            }
-          }
-          &.red {
-            background: $bootstrapRed;
-            * {
-              color: white;
-            }
-          }
-        }
-        .message-input-field {
-          .message-input {
-            color: $darkText;
-          }
-        }
-      }
-    }
-  }
-  #coparents-container {
-    &.dark {
-      #coparent-container {
-        .coparent {
-          border: 0;
-          background: $translucentLightest;
-          &.active {
-            background: $purple;
-          }
-        }
-      }
-      #coparent-info {
-        #coparent-name-primary {
-          color: $purple;
-          font-weight: $fwMediumBold;
-        }
-      }
-    }
-  }
-  #activity-wrapper {
-    &.dark {
-      #activity-cards {
-        #row-wrapper {
-          .activity-row {
-            .text {
-              color: $darkText;
-            }
-            #date {
-              color: $translucentLightest;
-              opacity: 0.6;
-            }
-          }
-        }
-      }
-    }
-  }
-  #child-info-container {
-    &.dark {
-      #child-wrapper {
-        .child {
-          .child-image {
-            &.no-image {
-              background: $translucentLightest;
-              border: 0;
-            }
-          }
-        }
-      }
-    }
-  }
-  // APP CONTAINER
-  #app-container {
-    &.dark {
-      background: $darkBg;
-
-      * {
-        user-select: none;
-      }
-
-      p {
-        &.screen-intro-text {
-          color: $darkText;
-        }
-      }
-      a {
-        color: $main;
-      }
-      button {
-        &.default {
-          &.green {
-            background: transparent;
-            color: $secondaryGreen;
-            border: 1px solid $darkGreen;
-          }
-        }
-      }
-
-      .bottom-menu-wrapper {
-        .bottom-menu-title {
-          background: transparent;
-        }
-        .action-items {
-          background: $darkGreyLight;
-
-          #close-icon-wrapper {
-            .close-button {
-              background: $translucentLightest;
-              border: 0;
-            }
-          }
-
-          .action-item {
-            .content {
-              .svg-wrapper {
-                background: $translucentLightest;
-              }
-            }
-          }
-        }
-      }
-
-      #full-menu {
-        background: $darkGreyLight;
-
-        #close-icon-wrapper {
-          #close-icon {
-            background: $translucentLightest;
-            border: 0;
-          }
-        }
-      }
-
-      #screen-overlay {
-        background-color: unset;
-      }
-
-      .views-wrapper {
-        .view {
-          background: $darkGreyLight;
-          color: $darkText;
-        }
-      }
-
-      .toggle-button-wrapper {
-        .layer {
-          background: $translucentLightest;
-        }
-        #toggle-button {
-          .knobs {
-            span {
-              &::after {
-                background: #cccccc;
-              }
-            }
-            &::before {
-              color: $darkGrey;
-            }
-          }
-        }
-      }
-
-      #instructions-wrapper {
-        .instructions {
-          color: $darkGreyText;
-        }
-      }
-
-      #medium-title {
-        color: $darkText;
-      }
-
-      #doc-text {
-        color: $darkText;
-
-        .header {
-          background: $darkGreyLight;
-          &::after {
-            color: $red;
-            background: transparent;
-          }
-        }
-      }
-
-      #install-app-wrapper {
-        .os-container {
-          .emphasize {
-            background: $main;
-            color: white;
-
-            &.more-padding {
-              background: $darkGrey;
-            }
-          }
-        }
-        .accordion-header {
-          &.desktop {
-            background: $darkGrey;
-          }
-        }
-      }
-
-      .chats-desktop-sidebar {
-        &.chats-desktop-sidebar {
-          background: $darkBg;
-          border: 1px solid $darkBorderColor;
-        }
-      }
-
-      #navbar {
-        box-shadow: none;
-
-        #menu-items {
-          box-shadow: none;
-          background: $darkBg;
-        }
-      }
-
-      #chat-wrapper {
-        background: $darkBg;
-        border: 1px solid $darkBorderColor;
-
-        @media screen and (max-width: 800px) {
-          border: 0;
-        }
-
-        #user-info {
-          svg {
-            color: $main;
-          }
-          #user-name {
-            color: $main;
-          }
-        }
-        .top-buttons {
-          border: 0;
-          svg {
-            color: $main;
-          }
-        }
-
-        .form {
-          #send-button {
-            background: $darkGreen;
-          }
-          #message-input-container {
-            #input-and-send-button {
-              .message-input {
+    #memories-container {
+        &.dark {
+            .MuiAccordionDetails-root {
+                background: palette.$bootstrapYellow;
                 border: 0;
-                border-radius: 0;
-                border-bottom: 1px solid $darkBorderColor;
-                color: $darkText;
-
-                &::placeholder {
-                  color: $darkGreyText;
+                * {
+                    color: palette.$bootstrapYellowBg !important;
                 }
-              }
             }
-          }
         }
-
-        #default-messages,
-        #bookmark-messages {
-          background: $darkBg;
-
-          .timestamp {
-            opacity: 1;
-            color: $darkGreyText;
-          }
-
-          .message-fade-wrapper {
-            svg {
-              opacity: 1;
-              color: $darkIconGrey;
-
-              &.active {
-                color: $darkGreen;
-              }
+    }
+    #swap-requests {
+        &.dark {
+            .row {
+                #title {
+                    color: palette.$darkText;
+                }
             }
-          }
         }
-      }
+    }
+    #chat-wrapper {
+        &.dark {
+            #default-messages,
+            #messages,
+            #bookmark-messages {
+                background: palette.$darkBg;
 
-      #account-container {
-        .sections {
-          .section {
-            border-bottom: 1px solid $darkBorderColor;
-            border-top: 0;
-          }
-        }
-      }
-
-      .actions {
-        .action-items {
-          .action-item {
-            background: $darkGrey;
-            border: 0;
-            span {
-              color: $darkText;
+                .message-wrapper {
+                    .message {
+                        &.to {
+                            background: #1a1a1a;
+                            color: palette.$darkText;
+                            &::after {
+                                background: radial-gradient(30px at top left, black 99%, #1a1a1a 102%);
+                            }
+                        }
+                    }
+                }
             }
-            .svg-wrapper {
-              svg {
-                background: transparent;
-                color: $darkGreen;
-              }
+            #emotion-and-input-field {
+                #tone-wrapper {
+                    &.green {
+                        background: palette.$darkGreen;
+                        * {
+                            color: white;
+                        }
+                    }
+                    &.red {
+                        background: palette.$bootstrapRed;
+                        * {
+                            color: white;
+                        }
+                    }
+                }
+                .message-input-field {
+                    .message-input {
+                        color: palette.$darkText;
+                    }
+                }
             }
-          }
         }
-      }
-
-      #memories-container {
-        #below-image {
-          p {
-            color: $main;
-          }
-        }
-        .light-gallery {
-          .memory-image {
-            border: 0;
-          }
-        }
-      }
-
-      #upload-inputs {
-        #upload-input {
-          background: transparent;
-          color: $darkText;
-          opacity: 0.9;
-        }
-      }
-
-      .row {
-        &.chats {
-          border: 0;
-        }
-
-        .row-title {
-          color: $darkText;
-        }
-
-        #subtitle {
-          color: $darkText;
-        }
-
-        .status {
-          font-weight: $fwRegular;
-          &.pending {
-            background: $yellow;
-            color: black;
-            border: 1px solid black;
-          }
-          &.unpaid {
-            background: $red;
-            color: black;
-          }
-          &.paid {
-            background: $darkGreen;
-            color: black;
-          }
-        }
-      }
-
-      #navbar {
-        @media screen and (min-width: 800px) {
-          display: none;
-        }
-      }
-
-      .views-wrapper {
-        .view {
-          &.active {
-            &:after {
-              border-bottom: 1px solid $darkIconGrey;
+    }
+    #coparents-container {
+        &.dark {
+            #coparent-container {
+                .coparent {
+                    border: 0;
+                    background: palette.$translucentLightest;
+                    &.active {
+                        background: palette.$purple;
+                    }
+                }
             }
-          }
+            #coparent-info {
+                #coparent-name-primary {
+                    color: palette.$purple;
+                    font-weight: variables.$fwMediumBold;
+                }
+            }
         }
-      }
-
-      .checkbox-wrapper {
-        @include hover;
-        .checkbox-dot {
-          border: 1px solid $darkBorderColor;
-          opacity: 1;
+    }
+    #activity-wrapper {
+        &.dark {
+            #activity-cards {
+                #row-wrapper {
+                    .activity-row {
+                        .text {
+                            color: palette.$darkText;
+                        }
+                        #date {
+                            color: palette.$translucentLightest;
+                            opacity: 0.6;
+                        }
+                    }
+                }
+            }
         }
-
-        &.active {
-          background: $bootstrapGreen;
-
-          p {
-            color: white;
-          }
+    }
+    #child-info-container {
+        &.dark {
+            #child-wrapper {
+                .child {
+                    .child-image {
+                        &.no-image {
+                            background: palette.$translucentLightest;
+                            border: 0;
+                        }
+                    }
+                }
+            }
         }
+    }
+    // APP CONTAINER
+    #app-container {
+        &.dark {
+            background: palette.$darkBg;
 
-        label {
-          @include hover;
-        }
-      }
-
-      // PAGE CONTAINER
-      .page-container {
-        background: $darkBg;
-        border: unset;
-      }
-
-      .page-container:not(.home):not(.login) {
-        border: 1px solid $darkBorderColor;
-
-        @media screen and (max-width: 800px) {
-          border: 0;
-        }
-      }
-
-      // SCREEN TITLE
-      .screen-title {
-        color: $main;
-        opacity: 1;
-        font-weight: $fwMediumBold;
-      }
-
-      #screen-title-wrapper {
-        svg {
-          color: $darkGreen;
-
-          @include hover;
-        }
-      }
-
-      #app-content-wrapper {
-        background: $darkBg;
-      }
-
-      #calendar-sidebar {
-        background: $darkBg;
-        border: 1px solid $darkBorderColor;
-
-        #desktop-legend-wrapper {
-          #legend-row {
             * {
-              opacity: 0.9;
-              color: $darkText;
+                user-select: none;
             }
-            svg {
-              color: #fff;
-              opacity: 0.7;
-            }
-          }
-        }
-      }
 
-      hr {
-        border-color: $darkBorderColor;
-        background-color: $darkBorderColor;
-      }
-
-      #disclaimer {
-        p {
-          color: $darkText;
-        }
-      }
-
-      #large-title {
-        color: $darkText;
-      }
-
-      #share-with-checkbox-group {
-        svg {
-          color: $gold;
-        }
-      }
-
-      // LIGHT GALLERY
-      .light-gallery {
-        .memory {
-          border: unset;
-          background: unset;
-          padding: 0;
-
-          .memory-image {
-            .close-x {
-              background-color: unset;
-              color: $red;
-            }
-          }
-        }
-      }
-
-      // EXPENSE WRAPPER
-      #expense-tracker {
-        .MuiCollapse-root {
-          background: $darkBorderColor;
-        }
-        .MuiPaper-elevation {
-          .MuiAccordionSummary-gutters {
-            &.MuiAccordionSummary-root {
-              #actions-button {
-                background: $darkBorderColor;
-                color: $darkText;
-
-                svg {
-                  color: $darkText;
+            p {
+                &.screen-intro-text {
+                    color: palette.$darkText;
                 }
-              }
             }
-          }
-        }
-        .payment-options-link {
-          color: $main;
-        }
-        .expense {
-          #name-wrapper {
-            .name {
-              color: $darkText;
+            a {
+                color: palette.$main;
             }
-          }
-        }
-      }
-
-      // CONTACT US
-      #help-container {
-        .section {
-          padding-bottom: 10px;
-        }
-      }
-
-      // CHATS
-      #chats-container {
-        #row {
-          border: unset;
-
-          .thread-actions {
-            margin-top: 10px;
-
-            #archive-wrapper,
-            #mute-wrapper {
-              @include hover;
+            button {
+                &.default {
+                    &.green {
+                        background: transparent;
+                        color: palette.$secondaryGreen;
+                        border: 1px solid palette.$darkGreen;
+                    }
+                }
             }
 
-            span {
-              color: $darkText;
-              padding-top: 5px;
-              opacity: 0.7;
-            }
-          }
-        }
-        .thread-item {
-          #close-thread-actions-icon {
-            color: $darkText;
-            opacity: 0.7;
-            @include hover;
-          }
+            .bottom-menu-wrapper {
+                .bottom-menu-title {
+                    background: transparent;
+                }
+                .action-items {
+                    background: palette.$darkGreyLight;
 
-          #user-initial-wrapper {
-            svg {
-              color: $darkIconGrey;
-            }
-          }
+                    #close-icon-wrapper {
+                        .close-button {
+                            background: palette.$translucentLightest;
+                            border: 0;
+                        }
+                    }
 
-          #edit-icon {
-            color: $darkText;
-            opacity: 0.85;
-            @include hover;
-          }
-
-          .coparent-name {
-            color: $darkText;
-            opacity: 0.9;
-
-            .last-message {
-              color: $darkText;
-            }
-          }
-        }
-      }
-      #message-thread-container {
-        .top-buttons {
-          background-color: $darkBg;
-          padding: 10px;
-          border: unset;
-        }
-
-        #right-side {
-          svg {
-            color: $darkText;
-            opacity: 0.85;
-          }
-        }
-
-        .form {
-          background: transparent;
-
-          .message-input {
-            background: transparent;
-            border-bottom: 1px solid $main;
-            color: $darkText;
-
-            &:focus {
-              background: $darkBg;
+                    .action-item {
+                        .content {
+                            .svg-wrapper {
+                                background: palette.$translucentLightest;
+                            }
+                        }
+                    }
+                }
             }
 
-            &:after {
-              color: $darkText;
-            }
-          }
+            #full-menu {
+                background: palette.$darkGreyLight;
 
-          #send-button {
-            background: $main;
-          }
-        }
-
-        #default-messages,
-        #bookmark-messages {
-          background: $darkBg;
-
-          .timestamp {
-            opacity: 0.6;
-            font-style: italic;
-          }
-
-          .message {
-            &.from {
-              background: $darkBorderColor;
-              &:after {
-                display: none;
-              }
-              color: $darkText;
+                #close-icon-wrapper {
+                    #close-icon {
+                        background: palette.$translucentLightest;
+                        border: 0;
+                    }
+                }
             }
 
-            &.to {
-              background: $main;
-              &:after {
-                display: none;
-              }
-              color: $darkText;
+            #screen-overlay {
+                background-color: unset;
             }
-          }
-        }
-      }
 
-      // BRAND BAR
-      #brand-bar {
-        border: unset;
-        background: $darkBg;
-        #content {
-          #right {
-            background: $darkBorderColor;
-
-            p {
-              line-height: 1;
+            .views-wrapper {
+                .view {
+                    background: palette.$darkGreyLight;
+                    color: palette.$darkText;
+                }
             }
-          }
-        }
-      }
 
-      // SIDEBAR
-      #side-navbar {
-        .menu-item {
-          opacity: 1;
-
-          &:hover {
-            p {
-              font-weight: $fwRegular;
-              opacity: 1;
+            .toggle-button-wrapper {
+                .layer {
+                    background: palette.$translucentLightest;
+                }
+                #toggle-button {
+                    .knobs {
+                        span {
+                            &::after {
+                                background: #cccccc;
+                            }
+                        }
+                        &::before {
+                            color: palette.$darkGrey;
+                        }
+                    }
+                }
             }
-          }
-        }
-        #top,
-        #bottom {
-          background: $darkBg;
-          border: unset;
-          border: 1px solid $darkBorderColor;
-          svg {
-            opacity: 0.7;
-            color: $darkText;
-          }
 
-          .menu-item {
-            &.active {
-              svg {
+            #no-data-text-wrapper {
+                .instructions {
+                    color: palette.$darkGreyText;
+                }
+            }
+
+            #medium-title {
+                color: palette.$darkText;
+            }
+
+            #doc-text {
+                color: palette.$darkText;
+
+                .header {
+                    background: palette.$darkGreyLight;
+                    &::after {
+                        color: palette.$red;
+                        background: transparent;
+                    }
+                }
+            }
+
+            #install-app-wrapper {
+                .os-container {
+                    .emphasize {
+                        background: palette.$main;
+                        color: white;
+
+                        &.more-padding {
+                            background: palette.$darkGrey;
+                        }
+                    }
+                }
+                .accordion-header {
+                    &.desktop {
+                        background: palette.$darkGrey;
+                    }
+                }
+            }
+
+            .chats-desktop-sidebar {
+                &.chats-desktop-sidebar {
+                    background: palette.$darkBg;
+                    border: 1px solid palette.$darkBorderColor;
+                }
+            }
+
+            #navbar {
+                box-shadow: none;
+
+                #menu-items {
+                    box-shadow: none;
+                    background: palette.$darkBg;
+                }
+            }
+
+            #chat-wrapper {
+                background: palette.$darkBg;
+                border: 1px solid palette.$darkBorderColor;
+
+                @media screen and (max-width: 800px) {
+                    border: 0;
+                }
+
+                #user-info {
+                    svg {
+                        color: palette.$main;
+                    }
+                    #user-name {
+                        color: palette.$main;
+                    }
+                }
+                .top-buttons {
+                    border: 0;
+                    svg {
+                        color: palette.$main;
+                    }
+                }
+
+                .form {
+                    #send-button {
+                        background: palette.$darkGreen;
+                    }
+                    #message-input-container {
+                        #input-and-send-button {
+                            .message-input {
+                                border: 0;
+                                border-radius: 0;
+                                border-bottom: 1px solid palette.$darkBorderColor;
+                                color: palette.$darkText;
+
+                                &::placeholder {
+                                    color: palette.$darkGreyText;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                #default-messages,
+                #bookmark-messages {
+                    background: palette.$darkBg;
+
+                    .timestamp {
+                        opacity: 1;
+                        color: palette.$darkGreyText;
+                    }
+
+                    .message-fade-wrapper {
+                        svg {
+                            opacity: 1;
+                            color: palette.$darkIconGrey;
+
+                            &.active {
+                                color: palette.$darkGreen;
+                            }
+                        }
+                    }
+                }
+            }
+
+            #account-container {
+                .sections {
+                    .section {
+                        border-bottom: 1px solid palette.$darkBorderColor;
+                        border-top: 0;
+                    }
+                }
+            }
+
+            .actions {
+                .action-items {
+                    .action-item {
+                        background: palette.$darkGrey;
+                        border: 0;
+                        span {
+                            color: palette.$darkText;
+                        }
+                        .svg-wrapper {
+                            svg {
+                                background: transparent;
+                                color: palette.$darkGreen;
+                            }
+                        }
+                    }
+                }
+            }
+
+            #memories-container {
+                #below-image {
+                    p {
+                        color: palette.$main;
+                    }
+                }
+                .light-gallery {
+                    .memory-image {
+                        border: 0;
+                    }
+                }
+            }
+
+            #upload-inputs {
+                #upload-input {
+                    background: transparent;
+                    color: palette.$darkText;
+                    opacity: 0.9;
+                }
+            }
+
+            .row {
+                &.chats {
+                    border: 0;
+                }
+
+                .row-title {
+                    color: palette.$darkText;
+                }
+
+                #subtitle {
+                    color: palette.$darkText;
+                }
+
+                .status {
+                    font-weight: variables.$fwRegular;
+                    &.pending {
+                        background: palette.$yellow;
+                        color: black;
+                        border: 1px solid black;
+                    }
+                    &.unpaid {
+                        background: palette.$red;
+                        color: black;
+                    }
+                    &.paid {
+                        background: palette.$darkGreen;
+                        color: black;
+                    }
+                }
+            }
+
+            #navbar {
+                @media screen and (min-width: 800px) {
+                    display: none;
+                }
+            }
+
+            .views-wrapper {
+                .view {
+                    &.active {
+                        &:after {
+                            border-bottom: 1px solid palette.$darkIconGrey;
+                        }
+                    }
+                }
+            }
+
+            .checkbox-wrapper {
+                @include mixins.hover;
+                .checkbox-dot {
+                    border: 1px solid palette.$darkBorderColor;
+                    opacity: 1;
+                }
+
+                &.active {
+                    background: palette.$bootstrapGreen;
+
+                    p {
+                        color: white;
+                    }
+                }
+
+                label {
+                    @include mixins.hover;
+                }
+            }
+
+            // PAGE CONTAINER
+            .page-container {
+                background: palette.$darkBg;
+                border: unset;
+            }
+
+            .page-container:not(.home):not(.login) {
+                border: 1px solid palette.$darkBorderColor;
+
+                @media screen and (max-width: 800px) {
+                    border: 0;
+                }
+            }
+
+            // SCREEN TITLE
+            .screen-title {
+                color: palette.$main;
                 opacity: 1;
-                color: $main;
-              }
-            }
-          }
-        }
-      }
-
-      // NAVBAR
-      #navbar {
-        @media screen and (max-width: 600px) {
-          background: $darkBg;
-        }
-        #svg-wrapper {
-          border: 0;
-        }
-
-        #menu-items {
-          .menu-item {
-            color: $darkIconGrey;
-            &.active:not(#add-new-button) {
-              color: $main;
-            }
-          }
-        }
-      }
-
-      // STANDARD CHECKBOXES
-      #checkbox-group {
-        #checkboxes {
-          &#checkboxes {
-            .label-wrapper {
-              label {
-                color: $darkText;
-              }
-            }
-          }
-        }
-        #checkbox-container {
-          &.flex {
-            span {
-              color: $darkText;
-              opacity: 0.9;
+                font-weight: variables.$fwMediumBold;
             }
 
-            .box {
-              border: 2px solid $darkBorderColor;
-              #inner-circle {
-                border: unset;
-              }
-              &.active {
-                border: unset;
-                #inner-circle {
-                  background: $main;
-                  border: unset;
+            #screen-title-wrapper {
+                svg {
+                    color: palette.$darkGreen;
+
+                    @include mixins.hover;
                 }
-              }
-            }
-          }
-        }
-      }
-
-      // SHARE WITH CHECKBOXES [
-      #share-with-checkbox-group {
-        #checkboxes {
-          &#checkboxes {
-            .label-wrapper {
-              label {
-                color: $darkText;
-              }
-            }
-          }
-        }
-        #share-with-checkbox-container {
-          &.flex {
-            span {
-              color: $darkText;
-              opacity: 0.9;
             }
 
-            .box {
-              border: 2px solid $darkBorderColor;
-              #inner-circle {
-                border: unset;
-              }
-              &.active {
-                border: unset;
-                #inner-circle {
-                  background: $main;
-                  border: unset;
+            #app-content-wrapper {
+                background: palette.$darkBg;
+            }
+
+            #calendar-sidebar {
+                background: palette.$darkBg;
+                border: 1px solid palette.$darkBorderColor;
+
+                #desktop-legend-wrapper {
+                    #legend-row {
+                        * {
+                            opacity: 0.9;
+                            color: palette.$darkText;
+                        }
+                        svg {
+                            color: #fff;
+                            opacity: 0.7;
+                        }
+                    }
                 }
-              }
             }
-          }
-        }
-      }
 
-      // LABEL WRAPPER
-      .label-wrapper {
-        background: transparent;
-        label {
-          color: $darkText;
-          background: transparent;
-
-          .asterisk {
-            background: transparent;
-          }
-        }
-      }
-
-      // INPUT WRAPPER
-      .input-field {
-        background: $translucentLightest;
-
-        * {
-          background: unset;
-        }
-        // LABEL WRAPPER
-        .label-wrapper {
-          background: transparent;
-          label {
-            color: $darkText;
-            background: transparent;
-
-            .asterisk {
-              background: transparent;
+            hr {
+                border-color: palette.$darkBorderColor;
+                background-color: palette.$darkBorderColor;
             }
-          }
-        }
-        input,
-        textarea {
-          background: transparent;
-          border: 0;
-          color: $darkText;
-          opacity: 0.9;
 
-          &:focus {
-            outline: none;
-            border: unset;
-            background: transparent;
-            border-radius: 0;
-          }
-
-          &::placeholder {
-            color: $darkText;
-            opacity: 0.6;
-          }
-        }
-
-        &.active {
-          textarea {
-            top: 28px;
-          }
-          input,
-          textarea {
-            width: 100%;
-
-            &:focus {
-              //              padding: 8px;
-            }
-            &::placeholder {
-              opacity: 0;
-            }
-          }
-        }
-
-        &.date {
-          .floating-label {
-            background: transparent;
-
-            span {
-              opacity: 1;
-            }
-          }
-        }
-      }
-
-      // CHILD INFO
-      #child-info-container {
-        #child-info {
-          .MuiPaper-root {
-            &.MuiAccordion-root {
-              background: transparent !important;
-            }
-          }
-          #child-name-primary {
-            color: $purple;
-          }
-        }
-        #child-wrapper {
-          .child {
-            .child-name {
-              color: $darkText;
-            }
-            &.active {
-              .child-name {
-                color: $purple;
-              }
-            }
-          }
-        }
-        #image-and-actions-wrapper {
-          .profile-pic-container {
-            border: 0;
-          }
-        }
-        .MuiAccordionSummary-root {
-          #toggle-button {
-            color: $darkText;
-          }
-        }
-        .child-name {
-          color: $darkText;
-          &.active {
-            color: $purple;
-          }
-        }
-        .profile-pic-container {
-          &.no-image {
-            background: unset;
-          }
-        }
-        &.active {
-          .profile-pic-container {
-            border: unset;
-          }
-        }
-      }
-
-      // COPARENTS
-      #coparent-container {
-        .coparent {
-          .coparent-name,
-          .coparent-type {
-            color: $darkText;
-          }
-        }
-      }
-
-      // BOTTOM CARD
-      .form-wrapper {
-        .buttons {
-          #cancel-button {
-            background: transparent;
-            color: $darkText;
-            border: 1px solid $darkText;
-            @include blurredBg;
-          }
-          .card-button {
-            @include blurredBg;
-            &.submit {
-              background: transparent;
-              border: 1px solid $darkGreen;
-              color: $darkGreen;
-            }
-            &.warning {
-              border: 1px solid $darkYellow;
-              background: transparent;
-              color: $darkYellow;
-            }
-          }
-        }
-        &.new-expense-card {
-          #add-expense-form {
-            #amount-input-field {
-              .input-field {
-                .input-field {
-                  input {
-                    border-bottom: 1px solid $translucentLightest;
-                  }
+            #disclaimer {
+                p {
+                    color: palette.$darkText;
                 }
-              }
             }
-            #default-expense-amounts {
-              button {
-                background: $translucentLightest;
-                border: 0;
-                color: $darkText;
-              }
-            }
-          }
-        }
-        #relative-wrapper {
-          #content {
-            .details {
-              hr {
-                &.top,
-                &.bottom {
-                  background-color: $darkBorderColor;
-                }
-              }
-            }
-          }
-        }
-        #form-content {
-          background: transparent;
-          #form {
-            background: $darkGreyLight;
 
             #large-title {
-              color: $main;
-              font-weight: $fwMedium;
+                color: palette.$darkText;
             }
 
-            #form-title-and-text {
-              background-color: $darkGreyLight;
+            #share-with-checkbox-group {
+                svg {
+                    color: palette.$gold;
+                }
             }
 
-            #relative-wrapper {
-              #content {
-                .details {
-                  .blocks {
-                    .block {
-                      a {
-                        &.nav-link {
-                          background: $translucentLightest;
-                          border: 0;
+            // LIGHT GALLERY
+            .light-gallery {
+                .memory {
+                    border: unset;
+                    background: unset;
+                    padding: 0;
+
+                    .memory-image {
+                        .close-x {
+                            background-color: unset;
+                            color: palette.$red;
                         }
-                      }
                     }
-                  }
-                  a {
-                    &.nav-detail {
-                      color: $main;
-                      opacity: 1;
-                      svg {
-                        color: $main;
-                      }
-
-                      &:visited {
-                        color: $main;
-                      }
-                    }
-                  }
-                  .flex {
-                    border-bottom: 1px solid $darkBorderColor;
-                    a {
-                      color: $main;
-                      opacity: 1;
-                    }
-                  }
                 }
-              }
             }
 
-            p:not(.checkbox-text) {
-              color: $darkText;
+            // EXPENSE WRAPPER
+            #expense-tracker {
+                .MuiCollapse-root {
+                    background: palette.$darkBorderColor;
+                }
+                .MuiPaper-elevation {
+                    .MuiAccordionSummary-gutters {
+                        &.MuiAccordionSummary-root {
+                            #actions-button {
+                                background: palette.$darkBorderColor;
+                                color: palette.$darkText;
 
-              &.view {
-                color: $darkGreyText;
+                                svg {
+                                    color: palette.$darkText;
+                                }
+                            }
+                        }
+                    }
+                }
+                .payment-options-link {
+                    color: palette.$main;
+                }
+                .expense {
+                    #name-wrapper {
+                        .name {
+                            color: palette.$darkText;
+                        }
+                    }
+                }
+            }
+
+            // CONTACT US
+            #help-container {
+                .section {
+                    padding-bottom: 10px;
+                }
+            }
+
+            // CHATS
+            #chats-container {
+                #row {
+                    border: unset;
+
+                    .thread-actions {
+                        margin-top: 10px;
+
+                        #archive-wrapper,
+                        #mute-wrapper {
+                            @include mixins.hover;
+                        }
+
+                        span {
+                            color: palette.$darkText;
+                            padding-top: 5px;
+                            opacity: 0.7;
+                        }
+                    }
+                }
+                .thread-item {
+                    #close-thread-actions-icon {
+                        color: palette.$darkText;
+                        opacity: 0.7;
+                        @include mixins.hover;
+                    }
+
+                    #user-initial-wrapper {
+                        svg {
+                            color: palette.$darkIconGrey;
+                        }
+                    }
+
+                    #edit-icon {
+                        color: palette.$darkText;
+                        opacity: 0.85;
+                        @include mixins.hover;
+                    }
+
+                    .coparent-name {
+                        color: palette.$darkText;
+                        opacity: 0.9;
+
+                        .last-message {
+                            color: palette.$darkText;
+                        }
+                    }
+                }
+            }
+            #message-thread-container {
+                .top-buttons {
+                    background-color: palette.$darkBg;
+                    padding: 10px;
+                    border: unset;
+                }
+
+                #right-side {
+                    svg {
+                        color: palette.$darkText;
+                        opacity: 0.85;
+                    }
+                }
+
+                .form {
+                    background: transparent;
+
+                    .message-input {
+                        background: transparent;
+                        border-bottom: 1px solid palette.$main;
+                        color: palette.$darkText;
+
+                        &:focus {
+                            background: palette.$darkBg;
+                        }
+
+                        &:after {
+                            color: palette.$darkText;
+                        }
+                    }
+
+                    #send-button {
+                        background: palette.$main;
+                    }
+                }
+
+                #default-messages,
+                #bookmark-messages {
+                    background: palette.$darkBg;
+
+                    .timestamp {
+                        opacity: 0.6;
+                        font-style: italic;
+                    }
+
+                    .message {
+                        &.from {
+                            background: palette.$darkBorderColor;
+                            &:after {
+                                display: none;
+                            }
+                            color: palette.$darkText;
+                        }
+
+                        &.to {
+                            background: palette.$main;
+                            &:after {
+                                display: none;
+                            }
+                            color: palette.$darkText;
+                        }
+                    }
+                }
+            }
+
+            // BRAND BAR
+            #brand-bar {
+                border: unset;
+                background: palette.$darkBg;
+                #content {
+                    #right {
+                        background: palette.$darkBorderColor;
+
+                        p {
+                            line-height: 1;
+                        }
+                    }
+                }
+            }
+
+            // SIDEBAR
+            #side-navbar {
+                .menu-item {
+                    opacity: 1;
+
+                    &:hover {
+                        p {
+                            font-weight: variables.$fwRegular;
+                            opacity: 1;
+                        }
+                    }
+                }
+                #top,
+                #bottom {
+                    background: palette.$darkBg;
+                    border: unset;
+                    border: 1px solid palette.$darkBorderColor;
+                    svg {
+                        opacity: 0.7;
+                        color: palette.$darkText;
+                    }
+
+                    .menu-item {
+                        &.active {
+                            svg {
+                                opacity: 1;
+                                color: palette.$main;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // NAVBAR
+            #navbar {
+                @media screen and (max-width: 600px) {
+                    background: palette.$darkBg;
+                }
+                #svg-wrapper {
+                    border: 0;
+                }
+
+                #menu-items {
+                    .menu-item {
+                        color: palette.$darkIconGrey;
+                        &.active:not(#add-new-button) {
+                            color: palette.$main;
+                        }
+                    }
+                }
+            }
+
+            // STANDARD CHECKBOXES
+            #checkbox-group {
+                #checkboxes {
+                    &#checkboxes {
+                        .label-wrapper {
+                            label {
+                                color: palette.$darkText;
+                            }
+                        }
+                    }
+                }
+                #checkbox-container {
+                    &.flex {
+                        span {
+                            color: palette.$darkText;
+                            opacity: 0.9;
+                        }
+
+                        .box {
+                            border: 2px solid palette.$darkBorderColor;
+                            #inner-circle {
+                                border: unset;
+                            }
+                            &.active {
+                                border: unset;
+                                #inner-circle {
+                                    background: palette.$main;
+                                    border: unset;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // SHARE WITH CHECKBOXES [
+            #share-with-checkbox-group {
+                #checkboxes {
+                    &#checkboxes {
+                        .label-wrapper {
+                            label {
+                                color: palette.$darkText;
+                            }
+                        }
+                    }
+                }
+                #share-with-checkbox-container {
+                    &.flex {
+                        span {
+                            color: palette.$darkText;
+                            opacity: 0.9;
+                        }
+
+                        .box {
+                            border: 2px solid palette.$darkBorderColor;
+                            #inner-circle {
+                                border: unset;
+                            }
+                            &.active {
+                                border: unset;
+                                #inner-circle {
+                                    background: palette.$main;
+                                    border: unset;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // LABEL WRAPPER
+            .label-wrapper {
+                background: transparent;
+                label {
+                    color: palette.$darkText;
+                    background: transparent;
+
+                    .asterisk {
+                        background: transparent;
+                    }
+                }
+            }
+
+            // INPUT WRAPPER
+            .input-field {
+                background: palette.$translucentLightest;
+
+                * {
+                    background: unset;
+                }
+                // LABEL WRAPPER
+                .label-wrapper {
+                    background: transparent;
+                    label {
+                        color: palette.$darkText;
+                        background: transparent;
+
+                        .asterisk {
+                            background: transparent;
+                        }
+                    }
+                }
+                input,
+                textarea {
+                    background: transparent;
+                    border: 0;
+                    color: palette.$darkText;
+                    opacity: 0.9;
+
+                    &:focus {
+                        outline: none;
+                        border: unset;
+                        background: transparent;
+                        border-radius: 0;
+                    }
+
+                    &::placeholder {
+                        color: palette.$darkText;
+                        opacity: 0.6;
+                    }
+                }
 
                 &.active {
-                  color: $darkText;
+                    textarea {
+                        top: 28px;
+                    }
+                    input,
+                    textarea {
+                        width: 100%;
+
+                        &:focus {
+                            //              padding: 8px;
+                        }
+                        &::placeholder {
+                            opacity: 0;
+                        }
+                    }
                 }
-              }
+
+                &.date {
+                    .floating-label {
+                        background: transparent;
+
+                        span {
+                            opacity: 1;
+                        }
+                    }
+                }
             }
 
-            &.custom-child-info-wrapper {
-              #info-type {
-                background: $darkBorderColor;
-
-                .item {
-                  color: $darkText;
-                  opacity: 0.65;
-
-                  &.active {
-                    opacity: 1;
-                  }
+            // CHILD INFO
+            #child-info-container {
+                #child-info {
+                    .MuiPaper-root {
+                        &.MuiAccordion-root {
+                            background: transparent !important;
+                        }
+                    }
+                    #child-name-primary {
+                        color: palette.$purple;
+                    }
                 }
-              }
+                #child-wrapper {
+                    .child {
+                        .child-name {
+                            color: palette.$darkText;
+                        }
+                        &.active {
+                            .child-name {
+                                color: palette.$purple;
+                            }
+                        }
+                    }
+                }
+                #image-and-actions-wrapper {
+                    .profile-pic-container {
+                        border: 0;
+                    }
+                }
+                .MuiAccordionSummary-root {
+                    #toggle-button {
+                        color: palette.$darkText;
+                    }
+                }
+                .child-name {
+                    color: palette.$darkText;
+                    &.active {
+                        color: palette.$purple;
+                    }
+                }
+                .profile-pic-container {
+                    &.no-image {
+                        background: unset;
+                    }
+                }
+                &.active {
+                    .profile-pic-container {
+                        border: unset;
+                    }
+                }
             }
 
-            &.payment-options-card {
-              #relative-wrapper {
-                a {
-                  color: $main;
+            // COPARENTS
+            #coparent-container {
+                .coparent {
+                    .coparent-name,
+                    .coparent-type {
+                        color: palette.$darkText;
+                    }
                 }
-              }
             }
 
-            &.expense-tracker {
-              #relative-wrapper {
+            // BOTTOM CARD
+            .form-wrapper {
                 .buttons {
-                  .card-button {
-                    &.submit {
-                      svg {
-                        color: $darkText;
-                      }
+                    #cancel-button {
+                        background: transparent;
+                        color: palette.$darkText;
+                        border: 1px solid palette.$darkText;
+                        @include mixins.blurredBg;
                     }
-                  }
+                    .card-button {
+                        @include mixins.blurredBg;
+                        &.submit {
+                            background: transparent;
+                            border: 1px solid palette.$darkGreen;
+                            color: palette.$darkGreen;
+                        }
+                        &.warning {
+                            border: 1px solid palette.$darkYellow;
+                            background: transparent;
+                            color: palette.$darkYellow;
+                        }
+                    }
                 }
-              }
-              #title {
-                color: $main;
-                opacity: 1;
-              }
+                &.new-expense-card {
+                    #add-expense-form {
+                        #amount-input-field {
+                            .input-field {
+                                .input-field {
+                                    input {
+                                        border-bottom: 1px solid palette.$translucentLightest;
+                                    }
+                                }
+                            }
+                        }
+                        #default-expense-amounts {
+                            button {
+                                background: palette.$translucentLightest;
+                                border: 0;
+                                color: palette.$darkText;
+                            }
+                        }
+                    }
+                }
+                #relative-wrapper {
+                    #content {
+                        .details {
+                            hr {
+                                &.top,
+                                &.bottom {
+                                    background-color: palette.$darkBorderColor;
+                                }
+                            }
+                        }
+                    }
+                }
+                #form-content {
+                    background: transparent;
+                    #form {
+                        background: palette.$darkGreyLight;
+
+                        #large-title {
+                            color: palette.$main;
+                            font-weight: variables.$fwMedium;
+                        }
+
+                        #form-title-and-text {
+                            background-color: palette.$darkGreyLight;
+                        }
+
+                        #relative-wrapper {
+                            #content {
+                                .details {
+                                    .blocks {
+                                        .block {
+                                            a {
+                                                &.nav-link {
+                                                    background: palette.$translucentLightest;
+                                                    border: 0;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    a {
+                                        &.nav-detail {
+                                            color: palette.$main;
+                                            opacity: 1;
+                                            svg {
+                                                color: palette.$main;
+                                            }
+
+                                            &:visited {
+                                                color: palette.$main;
+                                            }
+                                        }
+                                    }
+                                    .flex {
+                                        border-bottom: 1px solid palette.$darkBorderColor;
+                                        a {
+                                            color: palette.$main;
+                                            opacity: 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        p:not(.checkbox-text) {
+                            color: palette.$darkText;
+
+                            &.view {
+                                color: palette.$darkGreyText;
+
+                                &.active {
+                                    color: palette.$darkText;
+                                }
+                            }
+                        }
+
+                        &.custom-child-info-wrapper {
+                            #info-type {
+                                background: palette.$darkBorderColor;
+
+                                .item {
+                                    color: palette.$darkText;
+                                    opacity: 0.65;
+
+                                    &.active {
+                                        opacity: 1;
+                                    }
+                                }
+                            }
+                        }
+
+                        &.payment-options-card {
+                            #relative-wrapper {
+                                a {
+                                    color: palette.$main;
+                                }
+                            }
+                        }
+
+                        &.expense-tracker {
+                            #relative-wrapper {
+                                .buttons {
+                                    .card-button {
+                                        &.submit {
+                                            svg {
+                                                color: palette.$darkText;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            #title {
+                                color: palette.$main;
+                                opacity: 1;
+                            }
+                        }
+
+                        &.new-expense-card {
+                            #add-expense-form {
+                                #default-expense-amounts {
+                                    button {
+                                        background: palette.$darkBorderColor;
+                                        color: palette.$darkText;
+                                    }
+                                }
+                            }
+                        }
+
+                        // ACTION PILLS
+                        .action-pills {
+                            .duration-option {
+                                p,
+                                svg {
+                                    color: palette.$darkText;
+                                }
+                                &.active {
+                                    p,
+                                    svg {
+                                        color: palette.$main;
+                                        opacity: 1;
+                                    }
+                                }
+                            }
+                        }
+
+                        #relative-wrapper {
+                            #holiday-card-buttons {
+                                button {
+                                    &#view-visitation-holidays-item {
+                                        background: transparent;
+                                        color: palette.$darkGreen;
+                                        border: 1px solid palette.$darkGreen;
+                                    }
+                                    &#view-all-holidays-item {
+                                        background: transparent;
+                                        color: palette.$purple;
+                                        border: 1px solid palette.$purple;
+                                    }
+                                }
+                            }
+                            #title-wrapper {
+                                background: palette.$darkBg;
+                                .close-icon {
+                                    background: palette.$darkBorderColor;
+                                    color: palette.$darkText;
+                                }
+                            }
+                        }
+
+                        #title {
+                            color: palette.$darkPurple;
+                        }
+
+                        .buttons {
+                            background: palette.$darkBg;
+                            #blur {
+                                filter: blur(5px);
+                                background: palette.$darkBg;
+                                width: 100vw;
+                                padding-top: 15px;
+                                bottom: 10px;
+                            }
+
+                            .close-x {
+                                opacity: 1;
+                            }
+                            button {
+                                &.card-button {
+                                    background: palette.$main;
+                                    color: white;
+                                    svg {
+                                        color: white;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-            &.new-expense-card {
-              #add-expense-form {
-                #default-expense-amounts {
-                  button {
-                    background: $darkBorderColor;
-                    color: $darkText;
-                  }
+            // ROW
+            #row {
+                border-bottom: 1px solid palette.$darkBorderColor;
+                #subtitle {
+                    color: palette.$darkText;
                 }
-              }
             }
 
-            // ACTION PILLS
-            .action-pills {
-              .duration-option {
+            // CALENDAR
+            #calendar-container {
+                border: 1px solid palette.$darkBorderColor;
+
+                #calendar-legend {
+                    &#calendar-legend {
+                        &.open {
+                            background: palette.$darkGrey !important;
+                            border: 0 !important;
+
+                            .MuiButtonBase-root {
+                                svg {
+                                    color: palette.$red !important;
+                                    opacity: 1 !important;
+                                }
+                            }
+
+                            p {
+                                &.currentUser {
+                                    color: #2ecc71;
+                                }
+                                &.coparent {
+                                    color: #8f7afa;
+                                }
+                                &.standard {
+                                    color: #f88379;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @media screen and (max-width: 800px) {
+                    border: 0;
+                }
+                .events {
+                    background: palette.$darkBg;
+                    .event-row {
+                        .text {
+                            * {
+                                font-weight: variables.$fwRegular;
+                            }
+                            #icon-row {
+                                svg {
+                                    color: palette.$darkIconGrey;
+                                    opacity: 1;
+                                }
+                            }
+                            #title-wrapper {
+                                .title {
+                                    color: palette.$darkText;
+                                    font-weight: variables.$fwLight;
+                                }
+                                .reminders {
+                                    svg {
+                                        opacity: 0.7;
+                                        color: palette.$darkText;
+                                    }
+                                    .reminder-times {
+                                        span {
+                                            color: palette.$darkText;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        p,
+                        b,
+                        span:not(.event-type-dot) {
+                            color: palette.$darkGreyText;
+
+                            &.start-date,
+                            &#times,
+                            &.reminder-times {
+                                color: palette.$darkGreyText;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // MUI OVERRIDES
+    #chats-container {
+        &.dark {
+            .MuiAccordionDetails-root {
+                background: palette.$bootstrapGreen !important;
+
                 p,
-                svg {
-                  color: $darkText;
-                }
-                &.active {
-                  p,
-                  svg {
-                    color: $main;
-                    opacity: 1;
-                  }
-                }
-              }
-            }
-
-            #relative-wrapper {
-              #holiday-card-buttons {
                 button {
-                  &#view-visitation-holidays-item {
-                    background: transparent;
-                    color: $darkGreen;
-                    border: 1px solid $darkGreen;
-                  }
-                  &#view-all-holidays-item {
-                    background: transparent;
-                    color: $purple;
-                    border: 1px solid $purple;
-                  }
+                    color: palette.$bootstrapGreenBg !important;
                 }
-              }
-              #title-wrapper {
-                background: $darkBg;
-                .close-icon {
-                  background: $darkBorderColor;
-                  color: $darkText;
+
+                button {
+                    border: 1px solid palette.$bootstrapGreenBg !important;
                 }
-              }
             }
-
-            #title {
-              color: $darkPurple;
-            }
-
-            .buttons {
-              background: $darkBg;
-              #blur {
-                filter: blur(5px);
-                background: $darkBg;
-                width: 100vw;
-                padding-top: 15px;
-                bottom: 10px;
-              }
-
-              .close-x {
-                opacity: 1;
-              }
-              button {
-                &.card-button {
-                  background: $main;
-                  color: white;
-                  svg {
-                    color: white;
-                  }
-                }
-              }
-            }
-          }
         }
-      }
+    }
+    .MuiPaper-root {
+        &.dark {
+            &.MuiAccordion-root {
+                background: palette.$translucentLightest !important;
+                border: 0 !important;
 
-      // ROW
-      #row {
-        border-bottom: 1px solid $darkBorderColor;
-        #subtitle {
-          color: $darkText;
-        }
-      }
-
-      // CALENDAR
-      #calendar-container {
-        border: 1px solid $darkBorderColor;
-
-        #calendar-legend {
-          &#calendar-legend {
-            &.open {
-              background: $darkGrey !important;
-              border: 0 !important;
-
-              .MuiButtonBase-root {
-                svg {
-                  color: $red !important;
-                  opacity: 1 !important;
-                }
-              }
-
-              p {
-                &.currentUser {
-                  color: #2ecc71;
-                }
-                &.coparent {
-                  color: #8f7afa;
-                }
-                &.standard {
-                  color: #f88379;
-                }
-              }
-            }
-          }
-        }
-
-        @media screen and (max-width: 800px) {
-          border: 0;
-        }
-        .events {
-          background: $darkBg;
-          .event-row {
-            .text {
-              * {
-                font-weight: $fwRegular;
-              }
-              #icon-row {
-                svg {
-                  color: $darkIconGrey;
-                  opacity: 1;
-                }
-              }
-              #title-wrapper {
-                .title {
-                  color: $darkText;
-                  font-weight: $fwLight;
-                }
-                .reminders {
-                  svg {
-                    opacity: 0.7;
-                    color: $darkText;
-                  }
-                  .reminder-times {
-                    span {
-                      color: $darkText;
+                .MuiAccordion-heading {
+                    .MuiAccordionSummary-root {
+                        .MuiAccordionSummary-content {
+                            button {
+                                background: transparent !important;
+                            }
+                        }
                     }
-                  }
                 }
-              }
-            }
-            p,
-            b,
-            span:not(.event-type-dot) {
-              color: $darkGreyText;
 
-              &.start-date,
-              &#times,
-              &.reminder-times {
-                color: $darkGreyText;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  // MUI OVERRIDES
-  #chats-container {
-    &.dark {
-      .MuiAccordionDetails-root {
-        background: $bootstrapGreen !important;
-
-        p,
-        button {
-          color: $bootstrapGreenBg !important;
-        }
-
-        button {
-          border: 1px solid $bootstrapGreenBg !important;
-        }
-      }
-    }
-  }
-  .MuiPaper-root {
-    &.dark {
-      &.MuiAccordion-root {
-        background: $translucentLightest !important;
-        border: 0 !important;
-
-        .MuiAccordion-heading {
-          .MuiAccordionSummary-root {
-            .MuiAccordionSummary-content {
-              button {
-                background: transparent !important;
-              }
-            }
-          }
-        }
-
-        &.child-info {
-          .MuiAccordion-heading {
-            .MuiButtonBase-root {
-              .MuiAccordionSummary-content {
-                background: transparent !important;
-              }
-            }
-          }
-        }
-
-        .MuiAccordion-heading {
-          .MuiAccordionSummary-root {
-            button {
-              background: #171717 !important;
-            }
-          }
-        }
-      }
-    }
-  }
-  .MuiDialog-root {
-    &.dark {
-      .MuiPaper-root:not(.MuiAccordion-root) {
-        background: transparent;
-        .MuiClockNumber-root {
-          color: $darkText !important;
-        }
-        .MuiTimeClock-root {
-          .MuiClock-clock {
-            background: $translucentLightest !important;
-            border: 0 !important;
-          }
-        }
-
-        .MuiTimePickerToolbar-ampmSelection {
-          span {
-            color: $darkestGrey !important;
-
-            &.Mui-selected {
-              color: $main !important;
-            }
-          }
-        }
-
-        .MuiTimePickerToolbar-hourMinuteLabel {
-          button {
-            border: 1px solid $darkBorderColor !important;
-          }
-          span {
-            color: $darkText !important;
-          }
-        }
-
-        .MuiPickersLayout-root {
-          background: $darkGreyLight !important;
-        }
-        .MuiDialogActions-root {
-          .MuiButton-root {
-            &.MuiButton-text {
-              background: $darkGrey !important;
-              border: 0 !important;
-              color: $lightBlack !important;
-
-              &:nth-child(2) {
-                background: $green !important;
-                color: white !important;
-              }
-            }
-          }
-        }
-        .MuiDialogContent-root {
-          .MuiDateCalendar-root {
-            .MuiDateCalendar-viewTransitionContainer {
-              .MuiMonthCalendar-root {
-                background: $darkestGrey !important;
-
-                .MuiPickersMonth-monthButton {
-                  color: $lightBorderColor !important;
-
-                  &.Mui-selected {
-                    background: $purple !important;
-                  }
+                &.child-info {
+                    .MuiAccordion-heading {
+                        .MuiButtonBase-root {
+                            .MuiAccordionSummary-content {
+                                background: transparent !important;
+                            }
+                        }
+                    }
                 }
-              }
-            }
-            .MuiDayCalendar-weekDayLabel {
-              color: $darkText !important;
-            }
-            .MuiPickersDay-root {
-              color: white !important;
-            }
-          }
-        }
-        background: unset;
-      }
-      .MuiAccordion-root {
-        .MuiAccordion-heading {
-          .MuiButtonBase-root {
-            .MuiAccordionSummary-content {
-              color: $darkText;
-            }
-          }
-        }
-      }
-    }
-  }
-  .MuiFormControl-root {
-    &.dark {
-      background: transparent !important;
-      * {
-        background: transparent !important;
-      }
-      .MuiOutlinedInput-notchedOutline {
-      }
-      .MuiFormLabel-root {
-        background: transparent !important;
-      }
-      legend {
-        background: transparent !important;
-        border: 0 !important;
-      }
 
-      .MuiInputBase-root {
-        background: transparent !important;
-        svg {
-          color: $darkText !important;
+                .MuiAccordion-heading {
+                    .MuiAccordionSummary-root {
+                        button {
+                            background: #171717 !important;
+                        }
+                    }
+                }
+            }
         }
-        fieldset {
-          background: transparent !important;
-        }
-        .MuiOutlinedInput-input {
-          color: $darkText !important;
-          border-radius: 0 !important;
-        }
-      }
     }
-  }
+    .MuiDialog-root {
+        &.dark {
+            .MuiPaper-root:not(.MuiAccordion-root) {
+                background: transparent;
+                .MuiClockNumber-root {
+                    color: palette.$darkText !important;
+                }
+                .MuiTimeClock-root {
+                    .MuiClock-clock {
+                        background: palette.$translucentLightest !important;
+                        border: 0 !important;
+                    }
+                }
 
-  #calendar-container {
-    #static-calendar {
-      &.dark {
-        #legend-wrapper {
-          &#legend-wrapper {
-            border-bottom: 1px solid $main;
-          }
+                .MuiTimePickerToolbar-ampmSelection {
+                    span {
+                        color: palette.$darkestGrey !important;
+
+                        &.Mui-selected {
+                            color: palette.$main !important;
+                        }
+                    }
+                }
+
+                .MuiTimePickerToolbar-hourMinuteLabel {
+                    button {
+                        border: 1px solid palette.$darkBorderColor !important;
+                    }
+                    span {
+                        color: palette.$darkText !important;
+                    }
+                }
+
+                .MuiPickersLayout-root {
+                    background: palette.$darkGreyLight !important;
+                }
+                .MuiDialogActions-root {
+                    .MuiButton-root {
+                        &.MuiButton-text {
+                            background: palette.$darkGrey !important;
+                            border: 0 !important;
+                            color: palette.$lightBlack !important;
+
+                            &:nth-child(2) {
+                                background: palette.$green !important;
+                                color: white !important;
+                            }
+                        }
+                    }
+                }
+                .MuiDialogContent-root {
+                    .MuiDateCalendar-root {
+                        .MuiDateCalendar-viewTransitionContainer {
+                            .MuiMonthCalendar-root {
+                                background: palette.$darkestGrey !important;
+
+                                .MuiPickersMonth-monthButton {
+                                    color: palette.$lightBorderColor !important;
+
+                                    &.Mui-selected {
+                                        background: palette.$purple !important;
+                                    }
+                                }
+                            }
+                        }
+                        .MuiDayCalendar-weekDayLabel {
+                            color: palette.$darkText !important;
+                        }
+                        .MuiPickersDay-root {
+                            color: white !important;
+                        }
+                    }
+                }
+                background: unset;
+            }
+            .MuiAccordion-root {
+                .MuiAccordion-heading {
+                    .MuiButtonBase-root {
+                        .MuiAccordionSummary-content {
+                            color: palette.$darkText;
+                        }
+                    }
+                }
+            }
         }
-        .MuiPickersMonth-monthButton {
-          color: $darkText;
-        }
-        .MuiDialogActions-root {
-          p,
-          button {
+    }
+    .MuiFormControl-root {
+        &.dark {
             background: transparent !important;
-            color: $main !important;
-            border-color: $main !important;
-          }
+            * {
+                background: transparent !important;
+            }
+            .MuiOutlinedInput-notchedOutline {
+            }
+            .MuiFormLabel-root {
+                background: transparent !important;
+            }
+            legend {
+                background: transparent !important;
+                border: 0 !important;
+            }
+
+            .MuiInputBase-root {
+                background: transparent !important;
+                svg {
+                    color: palette.$darkText !important;
+                }
+                fieldset {
+                    background: transparent !important;
+                }
+                .MuiOutlinedInput-input {
+                    color: palette.$darkText !important;
+                    border-radius: 0 !important;
+                }
+            }
         }
-        .MuiPickersLayout-root {
-          background: $darkBg !important;
-
-          .MuiDateCalendar-root {
-            [role='row'] {
-              .MuiPickersDay-root {
-                color: $darkText !important;
-              }
-            }
-          }
-
-          .MuiPickersCalendarHeader-label {
-            color: $darkText !important;
-          }
-          svg {
-            color: $darkText !important;
-          }
-
-          .MuiDateCalendar-root {
-            .MuiDayCalendar-weekDayLabel {
-              color: $darkText !important;
-            }
-            .MuiPickersDay-root {
-              color: $darkText !important;
-
-              &:hover {
-                background: $darkBorderColor !important;
-              }
-
-              &.Mui-selected {
-                background: unset !important;
-              }
-            }
-          }
-        }
-      }
     }
-  }
 
-  #records-wrapper {
-    &.dark {
-      #record-row {
-        table {
-          thead {
-            background: transparent;
-            th {
-              background: transparent;
-              color: $darkText;
-              line-height: 1.2;
-            }
-          }
-          td {
-            color: $darkGreyText;
-          }
-        }
-        .title {
-          font-weight: $fwRegular;
-          background: $darkGreyLight;
-          border: 0;
-        }
-        &.expenses {
-          background: $darkGrey;
-          border: 0;
-        }
-      }
-    }
-  }
+    #calendar-container {
+        #static-calendar {
+            &.dark {
+                #legend-wrapper {
+                    &#legend-wrapper {
+                        border-bottom: 1px solid palette.$main;
+                    }
+                }
+                .MuiPickersMonth-monthButton {
+                    color: palette.$darkText;
+                }
+                .MuiDialogActions-root {
+                    p,
+                    button {
+                        background: transparent !important;
+                        color: palette.$main !important;
+                        border-color: palette.$main !important;
+                    }
+                }
+                .MuiPickersLayout-root {
+                    background: palette.$darkBg !important;
 
-  #activity-wrapper {
-    &.dark {
-      #activity-cards {
-        #row-wrapper {
-          .activity-row {
-            #date {
-              color: $darkText;
+                    .MuiDateCalendar-root {
+                        [role='row'] {
+                            .MuiPickersDay-root {
+                                color: palette.$darkText !important;
+                            }
+                        }
+                    }
+
+                    .MuiPickersCalendarHeader-label {
+                        color: palette.$darkText !important;
+                    }
+                    svg {
+                        color: palette.$darkText !important;
+                    }
+
+                    .MuiDateCalendar-root {
+                        .MuiDayCalendar-weekDayLabel {
+                            color: palette.$darkText !important;
+                        }
+                        .MuiPickersDay-root {
+                            color: palette.$darkText !important;
+
+                            &:hover {
+                                background: palette.$darkBorderColor !important;
+                            }
+
+                            &.Mui-selected {
+                                background: unset !important;
+                            }
+                        }
+                    }
+                }
             }
-          }
         }
-      }
     }
-  }
+
+    #records-wrapper {
+        &.dark {
+            #record-row {
+                table {
+                    thead {
+                        background: transparent;
+                        th {
+                            background: transparent;
+                            color: palette.$darkText;
+                            line-height: 1.2;
+                        }
+                    }
+                    td {
+                        color: palette.$darkGreyText;
+                    }
+                }
+                .title {
+                    font-weight: variables.$fwRegular;
+                    background: palette.$darkGreyLight;
+                    border: 0;
+                }
+                &.expenses {
+                    background: palette.$darkGrey;
+                    border: 0;
+                }
+            }
+        }
+    }
+
+    #activity-wrapper {
+        &.dark {
+            #activity-cards {
+                #row-wrapper {
+                    .activity-row {
+                        #date {
+                            color: palette.$darkText;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

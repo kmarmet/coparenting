@@ -1,0 +1,264 @@
+@use '../utils/mixins';
+@use '../utils/variables';
+@use '../utils/_palette';
+
+#external-overrides {
+    #app-container {
+        #slideshow-wrapper {
+            overflow: auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            opacity: 0;
+            bottom: 0;
+            pointer-events: none;
+            position: relative;
+            z-index: 9999999;
+            transition: all 0.5s ease;
+
+            &.active {
+                position: relative;
+                opacity: 1;
+                transition: all 0.5s ease-in;
+                pointer-events: auto;
+
+                #slideshow-overlay {
+                    opacity: 1;
+                    transition: all 0.5s ease;
+                    #images-wrapper {
+                        transition: all 0.5s ease;
+                        overflow: auto;
+                        opacity: 1;
+
+                        img {
+                            display: block;
+                            border-radius: variables.$bigBorderRadius;
+                            transition: all 0.4s ease-out;
+                            max-height: 60vh;
+                            margin-top: 15px;
+                            mask-image: linear-gradient(to bottom, black 88%, transparent 100%);
+                            &.active {
+                                max-width: 90vw;
+                                height: auto;
+                                opacity: 1;
+                                transition: all 0.4s ease-in;
+                            }
+                        }
+                    }
+                }
+            }
+
+            #slideshow-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                bottom: 0;
+                right: 0;
+                opacity: 0;
+                transition: all 0.5s ease;
+                background-color: rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(5px);
+
+                .count {
+                    color: white;
+                    position: fixed;
+                    bottom: 100px;
+                    width: 100%;
+                    text-align: center;
+                    font-size: 20px;
+                    font-weight: variables.$fwLight;
+                }
+
+                .navigation {
+                    z-index: 999999999999;
+                    align-items: center;
+                    justify-content: space-between;
+                    font-size: 16px;
+                    font-weight: variables.$fwBold;
+                    color: white;
+                    width: 100vw;
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr 1fr;
+                    height: 80px;
+                    border-top: 1px inset palette.$translucentLightest;
+                    background-color: transparent;
+
+                    &.full-width {
+                        grid-template-columns: 1fr;
+                        button {
+                            border: 0;
+                        }
+                    }
+
+                    button {
+                        border-radius: 0;
+                        background-color: transparent;
+                        font-size: 16px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 100%;
+                        padding: 0;
+
+                        svg {
+                            height: 20px;
+                            width: 20px;
+                            justify-self: flex-start;
+                        }
+
+                        &:nth-child(1) {
+                            border-right: 1px solid palette.$translucentLightest;
+                            color: palette.$brightGreen;
+
+                            svg {
+                                position: relative;
+                                left: -10px;
+                            }
+                        }
+                        &:nth-child(2) {
+                            color: white;
+                        }
+                        &:nth-child(3) {
+                            border-right: 1px solid palette.$translucentLightest;
+                            color: palette.$brightGreen;
+                            svg {
+                                position: relative;
+                                right: -10px;
+                            }
+                        }
+                    }
+                    svg {
+                        color: white;
+                    }
+                }
+
+                #images-wrapper {
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.5s ease;
+                    background-size: cover;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    padding: 0;
+                    max-height: 100vh;
+                    opacity: 0;
+                    @include mixins.deadCenter;
+
+                    img {
+                        display: none !important;
+                    }
+                }
+
+                .content {
+                    max-height: 0;
+                    opacity: 0;
+                    max-width: 0;
+                    transition: all 0.4s ease-out;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-wrap: wrap;
+
+                    &.active {
+                        max-height: unset;
+                        max-width: unset;
+                        opacity: 1;
+                        transition: all 0.4s ease-in;
+
+                        .text {
+                            padding: 8px;
+                            display: flex;
+                        }
+                    }
+
+                    .text {
+                        backdrop-filter: blur(25px);
+                        background-color: rgba(0, 0, 0, 0.2);
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        width: 100%;
+                        align-items: center;
+                        justify-content: space-between;
+                        flex-wrap: wrap;
+                        mask-image: linear-gradient(to top, black 70%, transparent 100%);
+                        display: none;
+
+                        &.top {
+                            bottom: unset;
+                            top: 0;
+                        }
+
+                        &.regular {
+                            .title {
+                                font-size: 14px;
+                                padding-top: 5px;
+                            }
+                        }
+
+                        .title,
+                        .capture-date {
+                            margin: 0;
+                            font-size: 16px;
+                            width: max-content;
+                            text-align: left;
+                            border-radius: 0 0 variables.$borderRadius 0;
+                            font-weight: variables.$fwLight;
+                            color: white;
+                        }
+
+                        .title {
+                            font-weight: variables.$fwMediumBold;
+                            font-size: 18px;
+                        }
+
+                        .notes {
+                            font-size: 16px;
+                            font-weight: variables.$fwLight;
+                            line-height: 1.3;
+                            width: 100%;
+                            color: white;
+                            padding-top: 3px;
+                        }
+
+                        .capture-date {
+                            color: white;
+                            font-style: italic;
+                            text-align: center;
+                            right: 0;
+                            font-size: 14px;
+                            left: unset;
+                        }
+
+                        .shared-by {
+                            color: white;
+                            font-size: 35px;
+                            font-weight: variables.$fwMediumBold;
+                            width: 100%;
+                            text-align: center;
+                        }
+
+                        .shared-by {
+                            margin-top: 10px;
+                            color: palette.$darkGrey;
+                            text-align: center;
+                            font-size: 16px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

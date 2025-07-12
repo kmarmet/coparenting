@@ -1,39 +1,14 @@
-@import 'cssReset';
-@import 'mixins';
-@import 'variables';
-@import './muiOverrides';
-@import './sweetAlertOverrides';
-@import './styles';
-@import './animations.scss';
-@import './accordions';
-@import './screens/expenseTracker';
-@import './screens/swapRequests';
-@import './screens/transferRequests';
-@import './screens/profile';
-@import './screens/memories';
-@import './screens/chat';
-@import './screens/children';
-@import 'screens/profile';
-@import './screens/documents.scss';
-@import './screens/coparents';
-@import './screens/settings';
-@import './screens/visitation';
-@import './screens/loginRegistration';
-@import './screens/adminDashboard';
-@import './screens/visitation';
-@import './screens/vault';
-@import './screens/help';
-@import './screens/updates';
-@import './screens/landing';
-@import './calendar/calendarEvents';
-@import './calendar/calendar';
-@import './screens/contacts';
-@import './calendar/calendarSearch';
-@import './lightGalleryOverrides';
-@import './palette';
-@import './darkMode';
-@import './responsive';
-@import './responsive/phone';
-@import 'utilityClasses';
-@import './slideshow';
-@import './images';
+// Utilities
+@use 'utils/utils_base';
+
+@use 'screens/screens_base';
+
+// External Overrides
+@use 'overrides/overrides_base';
+
+//  Responsive Styles
+
+// Base Styles
+@use 'cssReset';
+@use 'darkMode';
+@use 'styles';

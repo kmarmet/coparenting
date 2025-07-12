@@ -1,0 +1,331 @@
+@use '../utils/mixins';
+@use '../utils/variables';
+@use '../utils/_palette';
+
+#swap-requests {
+    .close {
+        margin: 20px auto 10px auto;
+        display: block;
+        opacity: 0.8;
+        padding: 0;
+        height: 30px;
+        width: 100px;
+        min-width: 0;
+        font-size: 14px;
+    }
+
+    #swap-requests-container {
+        margin-top: 15px;
+
+        #content {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+
+            #title {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                line-height: 1;
+                font-weight: variables.$fwRegular;
+                color: variables.$primaryText;
+                #request-status {
+                    align-self: flex-start;
+                }
+            }
+
+            .sent-to,
+            .sent-from {
+                width: 100%;
+                display: block;
+                color: variables.$labelText;
+                font-weight: variables.$fwLight;
+                font-size: 14px;
+            }
+
+            .row {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .request {
+                width: 100%;
+                transition: all 0.3s ease-in-out;
+
+                @include mixins.row;
+
+                &.row {
+                    .status {
+                        align-self: flex-start;
+                    }
+                }
+
+                #title {
+                    max-width: 70%;
+                    line-height: 1.5;
+                }
+
+                .details {
+                    .content {
+                        position: relative;
+                        align-items: center;
+                        overflow: hidden;
+
+                        .top-details {
+                            width: 100%;
+                            .row {
+                                width: 100%;
+                                border-radius: variables.$borderRadius;
+                                justify-content: flex-start;
+                                flex-wrap: wrap;
+                            }
+                        }
+
+                        .reason {
+                            font-weight: 300;
+                            font-size: 14px;
+                        }
+
+                        .reason-text {
+                            -ms-word-break: break-all;
+                            word-break: break-all;
+
+                            &.wrap {
+                                width: 100%;
+                            }
+                        }
+
+                        .flex {
+                            display: flex;
+                            justify-content: space-between;
+                            flex-wrap: wrap;
+
+                            p {
+                                font-weight: 400;
+                                line-height: 1.2;
+                                opacity: 0.9;
+                                margin: 0;
+
+                                &.label {
+                                    opacity: 0.87;
+                                }
+
+                                &.subtext {
+                                    opacity: 0.6;
+                                }
+
+                                &.unpaid {
+                                    color: palette.$red;
+                                    opacity: 1;
+                                }
+
+                                &.request-date,
+                                &.amount {
+                                    font-weight: 500;
+                                }
+
+                                &.time {
+                                    span {
+                                        position: relative;
+                                        top: 2px;
+                                    }
+                                }
+                            }
+
+                            b {
+                                font-weight: 500;
+                                display: block;
+                            }
+                        }
+
+                        #reminder-button {
+                            margin: 10px 0;
+                            span {
+                                color: black;
+                            }
+                        }
+                    }
+                    #children {
+                        svg {
+                            font-size: 20px;
+                            margin-right: 8px;
+                            color: black;
+                            opacity: 0.4;
+                        }
+                        .divider {
+                            opacity: 0.5;
+                            padding: 0 5px;
+                        }
+                        p {
+                            font-size: 14px;
+                            color: palette.$darkGrey;
+                            margin-left: auto;
+                            display: flex;
+                            align-items: center;
+                            position: relative;
+                        }
+                    }
+                    #delete-button {
+                        font-size: 14px;
+                        margin-left: auto;
+                        display: block;
+                        color: palette.$red;
+                        margin-top: 15px;
+                        text-align: right;
+                        font-weight: variables.$fwMedium;
+                    }
+                    #request-buttons {
+                        width: 100%;
+                        justify-content: center;
+                        gap: 15px;
+
+                        button {
+                            background-color: transparent;
+                            padding: 0;
+
+                            &.red {
+                                color: palette.$red;
+                            }
+                            &.blue {
+                                color: palette.$main;
+                            }
+                            &.green {
+                                color: palette.$green;
+                                display: flex;
+                                align-items: center;
+
+                                svg {
+                                    font-size: 18px;
+                                    margin-left: 5px;
+                                    position: relative;
+                                    top: -2px;
+                                }
+                            }
+                        }
+                    }
+                    #request-form {
+                        margin-top: 50px;
+
+                        .rs-picker {
+                            margin: 0;
+                        }
+
+                        .form {
+                            @include mixins.form;
+
+                            button {
+                                padding: 8px 10px;
+                                margin: 20px auto 0 auto;
+                                display: block;
+                                width: 50%;
+
+                                &.rs-picker-clean {
+                                    display: none;
+                                }
+
+                                span {
+                                    position: relative;
+                                    top: 3px;
+                                    margin-left: 5px;
+                                }
+                            }
+                        }
+                    }
+
+                    .button-group {
+                        display: flex;
+
+                        button {
+                            &.submit {
+                                margin-right: 10px;
+                                min-width: 0;
+                                width: 50%;
+                            }
+
+                            &.close {
+                                min-width: 0;
+                                width: 50%;
+                            }
+                        }
+                    }
+                }
+
+                .details-toggle-arrow {
+                    &svg {
+                        display: none;
+                        opacity: 0.4;
+                        position: absolute;
+                        right: 10px;
+                        font-size: 24px;
+
+                        &.active {
+                            display: inherit;
+                        }
+                    }
+                }
+
+                * {
+                    line-height: 1;
+                }
+
+                a {
+                    display: none;
+                    align-items: center;
+                    margin-top: 5px;
+                    font-weight: 400;
+                    font-size: 14px;
+
+                    span {
+                        margin-right: 5px;
+                    }
+                }
+
+                .row,
+                #children {
+                    margin-bottom: 5px;
+                }
+
+                #request-date {
+                    line-height: 1;
+                    font-weight: variables.$fwMediumBold;
+                    width: auto;
+                    display: inline;
+
+                    span {
+                        font-size: 16px;
+                        display: block;
+                        line-height: 1.2;
+                        font-weight: 400;
+
+                        &:nth-child(2),
+                        &.time {
+                            font-size: 12px;
+                            opacity: 0.7;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// New Request
+#new-swap-request-container {
+    /*#region  DARK THEME*/
+    &.dark {
+        #rejection-reason-textarea {
+            background-color: palette.$darkBlue;
+        }
+        #duration-options {
+            &.swap-request {
+                .flex {
+                    p,
+                    span {
+                        color: white;
+                    }
+                }
+            }
+        }
+    }
+    /*#endregion  DARK THEME*/
+}

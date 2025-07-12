@@ -19,127 +19,127 @@ import ShareWithDropdown from '../../shared/shareWithDropdown'
 import Spacer from '../../shared/spacer'
 
 export default function CustomWeekends({hide, showCard}) {
-  const {state, setState} = useContext(globalState)
-  const {theme} = state
-  const [shareWith, setShareWith] = useState([])
-  const [fifthWeekendSelection, setFifthWeekendSelection] = useState('')
-  const [defaultSelectedWeekends, setDefaultSelectedWeekends] = useState([])
-  const {currentUser} = useCurrentUser()
+    const {state, setState} = useContext(globalState)
+    const {theme} = state
+    const [shareWith, setShareWith] = useState([])
+    const [fifthWeekendSelection, setFifthWeekendSelection] = useState('')
+    const [defaultSelectedWeekends, setDefaultSelectedWeekends] = useState([])
+    const {currentUser} = useCurrentUser()
 
-  const ResetForm = () => {
-    Manager.ResetForm('custom-weekends-schedule')
-    setShareWith([])
-    setState({...state, refreshKey: Manager.GetUid(), isLoading: false})
-    hide()
-  }
-
-  const HandleFifthWeekendSelection = (e) => {
-    DomManager.HandleCheckboxSelection(
-      e,
-      (e) => {
-        setFifthWeekendSelection(e)
-      },
-      () => {},
-      false
-    )
-  }
-
-  const HandleSpecificWeekendSelection = (e) => {
-    DomManager.HandleCheckboxSelection(
-      e,
-      (e) => {
-        if (defaultSelectedWeekends.length > 0) {
-          setDefaultSelectedWeekends((defaultSelectedWeekends) => [...defaultSelectedWeekends, e])
-        } else {
-          setDefaultSelectedWeekends([e])
-        }
-      },
-      () => {},
-      true
-    )
-  }
-
-  const AddSpecificWeekendsToCalendar = async () => {
-    if (!Manager.IsValid(defaultSelectedWeekends) || !Manager.IsValid(fifthWeekendSelection)) {
-      AlertManager.throwError('Please choose default weekends and a five-month weekend')
-      return false
+    const ResetForm = () => {
+        Manager.ResetForm('custom-weekends-schedule')
+        setShareWith([])
+        setState({...state, refreshKey: Manager.GetUid(), isLoading: false})
+        hide()
     }
 
-    // Set end date to the end of the year
-    const endDate = moment([moment().year()]).endOf('year').format('MM-DD-YYYY')
-    let weekends = VisitationManager.getSpecificWeekends(ScheduleTypes.variableWeekends, endDate, defaultSelectedWeekends, fifthWeekendSelection)
+    const HandleFifthWeekendSelection = (e) => {
+        DomManager.HandleCheckboxSelection(
+            e,
+            (e) => {
+                setFifthWeekendSelection(e)
+            },
+            () => {},
+            false
+        )
+    }
 
-    // Standard Dates
-    let events = []
-    weekends.flat().forEach((date) => {
-      const dateObject = new CalendarEvent()
-      // Required
-      dateObject.title = `${StringManager.GetFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
-      dateObject.startDate = moment(date).format(DatetimeFormats.dateForDb)
-      // Not Required
-      dateObject.ownerKey = currentUser?.key
-      dateObject.createdBy = currentUser?.name
-      dateObject.fromVisitationSchedule = true
-      dateObject.id = Manager.GetUid()
-      dateObject.visitationSchedule = ScheduleTypes.customWeekends
-      dateObject.shareWith = DatasetManager.getUniqueArray(shareWith, 'phone').flat()
+    const HandleSpecificWeekendSelection = (e) => {
+        DomManager.HandleCheckboxSelection(
+            e,
+            (e) => {
+                if (defaultSelectedWeekends.length > 0) {
+                    setDefaultSelectedWeekends((defaultSelectedWeekends) => [...defaultSelectedWeekends, e])
+                } else {
+                    setDefaultSelectedWeekends([e])
+                }
+            },
+            () => {},
+            true
+        )
+    }
 
-      if (events.length === 0) {
-        events = [dateObject]
-      } else {
-        events = [...events, dateObject]
-      }
-    })
+    const AddSpecificWeekendsToCalendar = async () => {
+        if (!Manager.IsValid(defaultSelectedWeekends) || !Manager.IsValid(fifthWeekendSelection)) {
+            AlertManager.throwError('Please choose default weekends and a five-month weekend')
+            return false
+        }
 
-    MyConfetti.fire()
-    await ResetForm()
-    events = DatasetManager.getUniqueArray(events, 'startDate')
+        // Set end date to the end of the year
+        const endDate = moment([moment().year()]).endOf('year').format('MM-DD-YYYY')
+        let weekends = VisitationManager.getSpecificWeekends(ScheduleTypes.variableWeekends, endDate, defaultSelectedWeekends, fifthWeekendSelection)
 
-    // Upload to DB
-    VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
-  }
+        // Standard Dates
+        let events = []
+        weekends.flat().forEach((date) => {
+            const dateObject = new CalendarEvent()
+            // Required
+            dateObject.title = `${StringManager.GetFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
+            dateObject.startDate = moment(date).format(DatetimeFormats.dateForDb)
+            // Not Required
+            dateObject.ownerKey = currentUser?.key
+            dateObject.createdBy = currentUser?.name
+            dateObject.fromVisitationSchedule = true
+            dateObject.id = Manager.GetUid()
+            dateObject.visitationSchedule = ScheduleTypes.customWeekends
+            dateObject.shareWith = DatasetManager.getUniqueArray(shareWith, 'phone').flat()
 
-  const HandleShareWithSelection = (e) => {
-    const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
-    setShareWith(updated)
-  }
+            if (events.length === 0) {
+                events = [dateObject]
+            } else {
+                events = [...events, dateObject]
+            }
+        })
 
-  return (
-    <Form
-      submitText={'Add Schedule'}
-      className={'long-title form'}
-      onSubmit={AddSpecificWeekendsToCalendar}
-      hasSubmitButton={Manager.IsValid(defaultSelectedWeekends)}
-      wrapperClass="custom-weekends-schedule"
-      title={'Custom Weekends Schedule'}
-      showCard={showCard}
-      onClose={() => ResetForm()}>
-      <hr className="mt-5" />
-      <CheckboxGroup
-        parentLabel={'Weekend YOU will have the child(ren)'}
-        onCheck={HandleSpecificWeekendSelection}
-        checkboxArray={DomManager.BuildCheckboxGroup({
-          currentUser,
-          customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend'],
-        })}
-      />
-      <Spacer height={5} />
-      <CheckboxGroup
-        parentLabel={'Month with 5 weekends - extra weekend'}
-        onCheck={HandleFifthWeekendSelection}
-        checkboxArray={DomManager.BuildCheckboxGroup({
-          currentUser,
-          customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend'],
-        })}
-      />
-      <Spacer height={5} />
-      <ShareWithDropdown
-        required={false}
-        onCheck={HandleShareWithSelection}
-        placeholder={'Select Contacts to Share With'}
-        containerClass={'share-with-coparents'}
-      />
-      <hr className="mt-5 mb-10" />
-    </Form>
-  )
+        MyConfetti.fire()
+        await ResetForm()
+        events = DatasetManager.getUniqueArray(events, 'startDate')
+
+        // Upload to DB
+        VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
+    }
+
+    const HandleShareWithSelection = (e) => {
+        const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
+        setShareWith(updated)
+    }
+
+    return (
+        <Form
+            submitText={'Add Schedule'}
+            className={'long-title form'}
+            onSubmit={AddSpecificWeekendsToCalendar}
+            hasSubmitButton={Manager.IsValid(defaultSelectedWeekends)}
+            wrapperClass="custom-weekends-schedule"
+            title={'Custom Weekends Schedule'}
+            showCard={showCard}
+            onClose={() => ResetForm()}>
+            <hr className="mt-5" />
+            <CheckboxGroup
+                parentLabel={'Weekend YOU will have the child(ren)'}
+                onCheck={HandleSpecificWeekendSelection}
+                checkboxArray={DomManager.BuildCheckboxGroup({
+                    currentUser,
+                    customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend'],
+                })}
+            />
+            <Spacer height={5} />
+            <CheckboxGroup
+                parentLabel={'Month with 5 weekends - extra weekend'}
+                onCheck={HandleFifthWeekendSelection}
+                checkboxArray={DomManager.BuildCheckboxGroup({
+                    currentUser,
+                    customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend'],
+                })}
+            />
+            <Spacer height={5} />
+            <ShareWithDropdown
+                required={false}
+                onCheck={HandleShareWithSelection}
+                placeholder={'Select Contacts to Share With'}
+                containerClass={'share-with-coparents'}
+            />
+            <hr className="mt-5 mb-10" />
+        </Form>
+    )
 }

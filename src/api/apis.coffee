@@ -1,7 +1,6 @@
 import Manager from "../managers/manager"
 import UpdateManager from "../managers/updateManager"
 import LogManager from "../managers/logManager"
-import moment from "moment-timezone"
 
 Apis =
   Sapler:

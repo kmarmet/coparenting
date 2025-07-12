@@ -28,7 +28,7 @@ import Form from '../shared/form'
 import InputField from '../shared/inputField'
 import Label from '../shared/label.jsx'
 import Map from '../shared/map.jsx'
-import NoDataFallbackText from '../shared/noDataFallbackText'
+
 import Screen from '../shared/screen'
 import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer.jsx'
@@ -36,378 +36,394 @@ import ToggleButton from '../shared/toggleButton'
 import ViewDropdown from '../shared/viewDropdown'
 
 const Decisions = {
-  approved: 'APPROVED',
-  declined: 'DECLINED',
-  delete: 'DELETE',
+    approved: 'APPROVED',
+    declined: 'DECLINED',
+    delete: 'DELETE',
 }
 
 export default function TransferRequests() {
-  const {state, setState} = useContext(globalState)
-  const {theme} = state
-  const [declineReason, setDeclineReason] = useState('')
-  const [showNewRequestCard, setShowNewRequestCard] = useState(false)
-  const [activeRequest, setActiveRequest] = useState(null)
-  const [showDetails, setShowDetails] = useState(false)
-  const [view, setView] = useState({label: 'Details', value: 'Details'})
-  const [sendWithAddress, setSendWithAddress] = useState(false)
-  const [requestTimeRemaining, setRequestTimeRemaining] = useState(false)
+    const {state, setState} = useContext(globalState)
+    const {theme} = state
+    const [declineReason, setDeclineReason] = useState('')
+    const [showNewRequestCard, setShowNewRequestCard] = useState(false)
+    const [activeRequest, setActiveRequest] = useState(null)
+    const [showDetails, setShowDetails] = useState(false)
+    const [view, setView] = useState({label: 'Details', value: 'Details'})
+    const [sendWithAddress, setSendWithAddress] = useState(false)
+    const [requestTimeRemaining, setRequestTimeRemaining] = useState(false)
 
-  // Hooks
-  const {transferRequests, transferRequestsAreLoading} = useTransferRequests()
-  const {currentUser, currentUserIsLoading} = useCurrentUser()
-  const {coParents, coParentsAreLoading} = useCoParents()
+    // Hooks
+    const {transferRequests, transferRequestsAreLoading} = useTransferRequests()
+    const {currentUser, currentUserIsLoading} = useCurrentUser()
+    const {coParents, coParentsAreLoading} = useCoParents()
 
-  // Refs
-  const formRef = React.useRef({...activeRequest, ...new TransferChangeRequest()})
+    // Refs
+    const formRef = React.useRef({...activeRequest, ...new TransferChangeRequest()})
 
-  const ResetForm = (successMessage = '') => {
-    Manager.ResetForm('edit-event-form')
-    setShowDetails(false)
-    setView({label: 'Details', value: 'Details'})
-    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
-  }
-
-  const Update = async () => {
-    let updatedRequest = ObjectManager.merge(activeRequest, formRef.current, 'deep')
-    console.log('udpatedRequest', updatedRequest)
-    const cleaned = ObjectManager.CleanObject(updatedRequest)
-    if (cleaned?.owner?.key === currentUser?.key) {
-      const index = DB.GetTableIndexById(transferRequests, cleaned?.id)
-      if (parseInt(index) === -1) return false
-      await DB.ReplaceEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser?.key}/${index}`, cleaned)
-    }
-    setActiveRequest(updatedRequest)
-    setShowDetails(false)
-    ResetForm('Transfer Request Updated')
-  }
-
-  const DeleteRequest = async (action = 'deleted') => {
-    if (action === 'deleted') {
-      AlertManager.confirmAlert('Are you sure you would like to Delete this request?', "I'm Sure", true, async () => {
-        await DB.deleteById(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, activeRequest?.id)
-        setState({...state, successAlertMessage: 'Transfer Change Request Deleted', refreshKey: Manager.GetUid()})
+    const ResetForm = (successMessage = '') => {
+        Manager.ResetForm('edit-event-form')
         setShowDetails(false)
-      })
-    }
-  }
-
-  const SelectDecision = async (decision) => {
-    const recipient = coParents?.find((x) => x.userKey === activeRequest?.recipient?.key)
-    const recipientName = recipient?.name
-    // Rejected
-    if (decision === Decisions.declined) {
-      activeRequest.status = 'declined'
-      activeRequest.declineReason = declineReason
-      await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.owner?.key}`, activeRequest, activeRequest.id)
-      const message = UpdateManager.templates.transferRequestRejection(activeRequest, recipientName)
-      await UpdateManager.SendUpdate('Transfer Request Decision', message, activeRequest?.owner?.key, currentUser, ActivityCategory.transferRequest)
-      setShowDetails(false)
+        setView({label: 'Details', value: 'Details'})
+        setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
     }
 
-    // Approved
-    if (decision === Decisions.approved) {
-      activeRequest.status = 'approved'
-      await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.owner?.key}`, activeRequest, activeRequest.id)
-      const message = UpdateManager.templates.transferRequestApproval(activeRequest, recipientName)
-      setShowDetails(false)
-      await UpdateManager.SendUpdate('Transfer Request Decision', message, activeRequest?.owner?.key, currentUser, ActivityCategory.transferRequest)
+    const Update = async () => {
+        let updatedRequest = ObjectManager.Merge(activeRequest, formRef.current, 'deep')
+        console.log('udpatedRequest', updatedRequest)
+        const cleaned = ObjectManager.CleanObject(updatedRequest)
+        if (cleaned?.owner?.key === currentUser?.key) {
+            const index = DB.GetTableIndexById(transferRequests, cleaned?.id)
+            if (parseInt(index) === -1) return false
+            await DB.ReplaceEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser?.key}/${index}`, cleaned)
+        }
+        setActiveRequest(updatedRequest)
+        setShowDetails(false)
+        ResetForm('Transfer Request Updated')
     }
 
-    setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: `Decision Sent to ${recipientName}`})
-  }
-
-  const CheckIn = async () => {
-    setShowDetails(false)
-    let notificationMessage = `${StringManager.GetFirstWord(StringManager.UppercaseFirstLetterOfAllWords(currentUser?.name))} at ${
-      activeRequest?.address
-    }`
-    if (!sendWithAddress) {
-      notificationMessage = `${StringManager.GetFirstWord(StringManager.UppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
+    const DeleteRequest = async (action = 'deleted') => {
+        if (action === 'deleted') {
+            AlertManager.confirmAlert('Are you sure you would like to Delete this request?', "I'm Sure", true, async () => {
+                await DB.deleteById(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, activeRequest?.id)
+                setState({...state, successAlertMessage: 'Transfer Change Request Deleted', refreshKey: Manager.GetUid()})
+                setShowDetails(false)
+            })
+        }
     }
 
-    await UpdateManager.SendUpdate(
-      'Transfer Destination Arrival',
-      notificationMessage,
-      formRef.current?.recipient?.key,
-      currentUser,
-      ActivityCategory.expenses
-    )
-    setState({...state, successAlertMessage: 'Arrival Notification Sent'})
-  }
+    const SelectDecision = async (decision) => {
+        const recipient = coParents?.find((x) => x.userKey === activeRequest?.recipient?.key)
+        const recipientName = recipient?.name
+        // Rejected
+        if (decision === Decisions.declined) {
+            activeRequest.status = 'declined'
+            activeRequest.declineReason = declineReason
+            await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.owner?.key}`, activeRequest, activeRequest.id)
+            const message = UpdateManager.templates.transferRequestRejection(activeRequest, recipientName)
+            await UpdateManager.SendUpdate(
+                'Transfer Request Decision',
+                message,
+                activeRequest?.owner?.key,
+                currentUser,
+                ActivityCategory.transferRequest
+            )
+            setShowDetails(false)
+        }
 
-  const GetFromOrToName = (key) => {
-    if (key === currentUser?.key) {
-      return 'Me'
-    } else {
-      return coParents?.find((c) => c.userKey === key)?.name
+        // Approved
+        if (decision === Decisions.approved) {
+            activeRequest.status = 'approved'
+            await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.owner?.key}`, activeRequest, activeRequest.id)
+            const message = UpdateManager.templates.transferRequestApproval(activeRequest, recipientName)
+            setShowDetails(false)
+            await UpdateManager.SendUpdate(
+                'Transfer Request Decision',
+                message,
+                activeRequest?.owner?.key,
+                currentUser,
+                ActivityCategory.transferRequest
+            )
+        }
+
+        setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: `Decision Sent to ${recipientName}`})
     }
-  }
 
-  const GetCurrentUserAddress = async () => {
-    // const address = await LocationManager.getAddress()
-  }
+    const CheckIn = async () => {
+        setShowDetails(false)
+        let notificationMessage = `${StringManager.GetFirstWord(StringManager.UppercaseFirstLetterOfAllWords(currentUser?.name))} at ${
+            activeRequest?.address
+        }`
+        if (!sendWithAddress) {
+            notificationMessage = `${StringManager.GetFirstWord(StringManager.UppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
+        }
 
-  useEffect(() => {
-    GetCurrentUserAddress().then((r) => r)
-    setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY)
-  }, [])
-
-  useEffect(() => {
-    if (showDetails) {
-      setRequestTimeRemaining(moment(moment(activeRequest?.requestedResponseDate).startOf('day')).fromNow().toString())
+        await UpdateManager.SendUpdate(
+            'Transfer Destination Arrival',
+            notificationMessage,
+            formRef.current?.recipient?.key,
+            currentUser,
+            ActivityCategory.expenses
+        )
+        setState({...state, successAlertMessage: 'Arrival Notification Sent'})
     }
-  }, [showDetails])
 
-  useEffect(() => {
-    if (Manager.IsValid(currentUser)) {
-      setTimeout(() => {
-        DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInUp, 85)
-        DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
-      }, 300)
+    const GetFromOrToName = (key) => {
+        if (key === currentUser?.key) {
+            return 'Me'
+        } else {
+            return coParents?.find((c) => c.userKey === key)?.name
+        }
     }
-  }, [currentUser, view])
 
-  return (
-    <Screen
-      activeScreen={ScreenNames.transferRequests}
-      loadingByDefault={true}
-      stopLoadingBool={!currentUserIsLoading && !coParentsAreLoading && !transferRequestsAreLoading}>
-      {/* DETAILS CARD */}
-      <Form
-        submitText={'Approve'}
-        onDelete={() => DeleteRequest('deleted')}
-        title={'Request Details'}
-        hasDelete={activeRequest?.owner?.key === currentUser?.key && view?.label === 'Edit'}
-        hasSubmitButton={activeRequest?.owner?.key !== currentUser?.key}
-        onSubmit={() => SelectDecision(Decisions.approved)}
-        wrapperClass="transfer-change"
-        viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={(e) => setView(e)} />}
-        thirdButtonText="Decline"
-        className="transfer-change"
-        extraButtons={[
-          <>
-            {activeRequest?.owner?.key !== currentUser?.key && view?.label === 'Edit' && (
-              <CardButton
-                onClick={() => {
-                  AlertManager.inputAlert(
-                    'Reason for Declining Request',
-                    'Please enter the reason for declining this request',
-                    (e) => {
-                      if (e.value.length === 0) {
-                        AlertManager.throwError('Reason for declining is required')
-                        return false
-                      } else {
-                        SelectDecision(Decisions.declined).then(ResetForm)
-                        setDeclineReason(e.value)
-                      }
-                    },
-                    true,
-                    true,
-                    'textarea'
-                  )
-                }}
-                text="Decline"
-                buttonTheme={ButtonThemes.red}
-                key={Manager.GetUid()}
-              />
-            )}
-            ,
-            <CardButton buttonTheme={ButtonThemes.green} key={Manager.GetUid()} onClick={Update} text={'Update'} />
-          </>,
-        ]}
-        hasThirdButton={true}
-        onClose={() => ResetForm()}
-        showCard={showDetails}>
-        <div className={`details content ${activeRequest?.requestReason?.length > 20 ? 'long-text' : ''}`}>
-          {view?.label === 'Details' && (
-            <>
-              {/* BLOCKS */}
-              <div className="blocks">
-                {/* Start Date */}
-                <DetailBlock
-                  text={moment(activeRequest?.startDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                  valueToValidate={activeRequest?.startDate}
-                  title={'Transfer Date'}
-                />
+    const GetCurrentUserAddress = async () => {
+        // const address = await LocationManager.getAddress()
+    }
 
-                {/*  End Date */}
-                <DetailBlock
-                  text={moment(activeRequest?.endDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                  valueToValidate={activeRequest?.endDate}
-                  title={'Return Date'}
-                />
+    useEffect(() => {
+        GetCurrentUserAddress().then((r) => r)
+        setKey(process.env.REACT_APP_GOOGLE_MAPS_API_KEY)
+    }, [])
 
-                {/*  Time */}
-                <DetailBlock
-                  text={moment(activeRequest?.time, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)}
-                  valueToValidate={activeRequest?.time}
-                  title={'Transfer Time'}
-                />
+    useEffect(() => {
+        if (showDetails) {
+            setRequestTimeRemaining(moment(moment(activeRequest?.requestedResponseDate).startOf('day')).fromNow().toString())
+        }
+    }, [showDetails])
 
-                {/*  Response Due Date */}
-                <DetailBlock
-                  valueToValidate={activeRequest?.requestedResponseDate}
-                  title={'Requested Response Date'}
-                  text={moment(activeRequest?.requestedResponseDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                />
+    useEffect(() => {
+        if (Manager.IsValid(currentUser)) {
+            setTimeout(() => {
+                DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInUp, 85)
+                DomManager.ToggleAnimation('add', 'block', DomManager.AnimateClasses.names.fadeInUp, 85)
+            }, 300)
+        }
+    }, [currentUser, view])
 
-                {/*  Time Remaining */}
-                <DetailBlock
-                  classes={requestTimeRemaining.toString().includes('ago') ? 'red' : 'green'}
-                  title={'Response Time Remaining'}
-                  text={`${requestTimeRemaining}`}
-                  valueToValidate={requestTimeRemaining}
-                />
-
-                {/* FROM/TO */}
-                <DetailBlock title={'From'} valueToValidate={'From'} text={GetFromOrToName(activeRequest?.owner?.key)} />
-                <DetailBlock title={'To'} valueToValidate={'To'} text={GetFromOrToName(activeRequest?.recipient?.key)} />
-
-                {/* REASON */}
-                <DetailBlock
-                  text={activeRequest?.requestReason}
-                  valueToValidate={activeRequest?.requestReason}
-                  isFullWidth={true}
-                  title={'Reason for Request'}
-                />
-              </div>
-
-              <div className="multiline-blocks">
-                {/* Location */}
-                <DetailBlock
-                  isNavLink={true}
-                  title={'Go'}
-                  text={activeRequest?.address}
-                  valueToValidate={activeRequest?.address}
-                  linkUrl={activeRequest?.address}
-                />
-
-                {/*  CHECK IN */}
-                {activeRequest?.address && (
-                  <DetailBlock title={'Check In'} valueToValidate={'Check In'} isCustom={true}>
-                    <div className="card-icon-button" onClick={CheckIn}>
-                      <MdPersonPinCircle />
-                      <span className="location-pin-animation"></span>
-                    </div>
-                    <Spacer height={2} />
-                  </DetailBlock>
-                )}
-              </div>
-              <Spacer height={2} />
-
-              {/*  SEND WITH ADDRESS */}
-              {Manager.IsValid(activeRequest?.address) && (
-                <>
-                  <div className="flex send-with-address-toggle">
-                    <Label text={'Include Address in Notification'} classes="toggle " />
-                    <ToggleButton onCheck={() => setSendWithAddress(!sendWithAddress)} toggleState={sendWithAddress} />
-                  </div>
-                  <Spacer height={3} />
-                  {/* MAP */}
-                  {Manager.IsValid(activeRequest?.address, true) && <Map locationString={activeRequest?.address} />}
-                </>
-              )}
-            </>
-          )}
-
-          {view?.label === 'Edit' && (
-            <>
-              {/* DATE */}
-              <InputField
-                defaultValue={moment(activeRequest?.startDate)}
-                inputType={InputTypes.date}
-                placeholder={'Date'}
-                uidClass="transfer-request-date"
-                onDateOrTimeSelection={(e) => (formRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb))}
-              />
-
-              {/* TIME */}
-              <InputField
-                defaultValue={activeRequest?.time}
-                inputType={InputTypes.time}
-                uidClass="transfer-request-time"
-                placeholder={'Transfer Time'}
-                onDateOrTimeSelection={(e) => (formRef.current.time = moment(e).format(DatetimeFormats.timeForDb))}
-              />
-
-              {/*  NEW LOCATION*/}
-              <AddressInput
-                placeholder={'Address'}
-                defaultValue={activeRequest?.address}
-                onChange={(address) => (formRef.current.address = address)}
-              />
-
-              {/* RESPONSE DUE DATE */}
-              <InputField
-                defaultValue={activeRequest?.requestedResponseDate}
-                onDateOrTimeSelection={(e) => (formRef.current.requestedResponseDate = moment(e).format(DatetimeFormats.dateForDb))}
-                inputType={InputTypes.date}
-                uidClass="transfer-request-response-date"
-                placeholder={'Requested Response Date'}
-              />
-
-              {/* REASON */}
-              {activeRequest?.owner?.key !== currentUser?.key && (
-                <InputField
-                  defaultValue={activeRequest?.requestReason}
-                  onChange={(e) => (formRef.current.reason = e)}
-                  inputType={InputTypes.textarea}
-                  placeholder={'Reason for Request'}
-                />
-              )}
-            </>
-          )}
-        </div>
-      </Form>
-
-      <div id="transfer-requests-container" className={`${theme} page-container`}>
-        {transferRequests?.length === 0 && <NoDataFallbackText text={'There are currently no requests'} />}
-
-        <ScreenHeader
-          title={'Transfer Change Requests'}
-          screenDescription="A proposal to modify the time and/or location for the child exchange on a designated day"
-        />
-
-        <Spacer height={10} />
-        <div className="screen-content">
-          {/* LOOP REQUESTS */}
-          {!showNewRequestCard && (
-            <div>
-              {Manager.IsValid(transferRequests) &&
-                transferRequests?.map((request, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className="flex row"
-                      onClick={() => {
-                        console.log(request)
-                        setActiveRequest(request)
-                        setShowDetails(true)
-                      }}>
-                      <div data-request-id={request.id} className="content">
-                        {/* DATE */}
-                        <p className="row-title">
-                          {moment(request.startDate).format(DatetimeFormats.readableMonthAndDay)}
-                          <span className={`${request.status} request-status`}>{StringManager.UppercaseFirstLetterOfAllWords(request.status)}</span>
-                        </p>
-                        {request?.recipient?.key === currentUser?.key && (
-                          <p className="row-subtitle">from {coParents.find((x) => x.key === request.owner?.key)?.name}</p>
+    return (
+        <Screen
+            activeScreen={ScreenNames.transferRequests}
+            loadingByDefault={true}
+            stopLoadingBool={!currentUserIsLoading && !coParentsAreLoading && !transferRequestsAreLoading}>
+            {/* DETAILS CARD */}
+            <Form
+                submitText={'Approve'}
+                onDelete={() => DeleteRequest('deleted')}
+                title={'Request Details'}
+                hasDelete={activeRequest?.owner?.key === currentUser?.key && view?.label === 'Edit'}
+                hasSubmitButton={activeRequest?.owner?.key !== currentUser?.key}
+                onSubmit={() => SelectDecision(Decisions.approved)}
+                wrapperClass="transfer-change"
+                viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={(e) => setView(e)} />}
+                thirdButtonText="Decline"
+                className="transfer-change"
+                extraButtons={[
+                    <>
+                        {activeRequest?.owner?.key !== currentUser?.key && view?.label === 'Edit' && (
+                            <CardButton
+                                onClick={() => {
+                                    AlertManager.inputAlert(
+                                        'Reason for Declining Request',
+                                        'Please enter the reason for declining this request',
+                                        (e) => {
+                                            if (e.value.length === 0) {
+                                                AlertManager.throwError('Reason for declining is required')
+                                                return false
+                                            } else {
+                                                SelectDecision(Decisions.declined).then(ResetForm)
+                                                setDeclineReason(e.value)
+                                            }
+                                        },
+                                        true,
+                                        true,
+                                        'textarea'
+                                    )
+                                }}
+                                text="Decline"
+                                buttonTheme={ButtonThemes.red}
+                                key={Manager.GetUid()}
+                            />
                         )}
-                        {request?.recipient?.key !== currentUser?.key && (
-                          <p className="row-subtitle">
-                            to&nbsp;
-                            {StringManager.GetFirstNameOnly(coParents?.find((x) => x?.userKey === request?.recipient?.key)?.name)}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
+                        ,
+                        <CardButton buttonTheme={ButtonThemes.green} key={Manager.GetUid()} onClick={Update} text={'Update'} />
+                    </>,
+                ]}
+                hasThirdButton={true}
+                onClose={() => ResetForm()}
+                showCard={showDetails}>
+                <div className={`details content ${activeRequest?.requestReason?.length > 20 ? 'long-text' : ''}`}>
+                    {view?.label === 'Details' && (
+                        <>
+                            {/* BLOCKS */}
+                            <div className="blocks">
+                                {/* Start Date */}
+                                <DetailBlock
+                                    text={moment(activeRequest?.startDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                                    valueToValidate={activeRequest?.startDate}
+                                    title={'Transfer Date'}
+                                />
+
+                                {/*  End Date */}
+                                <DetailBlock
+                                    text={moment(activeRequest?.endDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                                    valueToValidate={activeRequest?.endDate}
+                                    title={'Return Date'}
+                                />
+
+                                {/*  Time */}
+                                <DetailBlock
+                                    text={moment(activeRequest?.time, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)}
+                                    valueToValidate={activeRequest?.time}
+                                    title={'Transfer Time'}
+                                />
+
+                                {/*  Response Due Date */}
+                                <DetailBlock
+                                    valueToValidate={activeRequest?.requestedResponseDate}
+                                    title={'Requested Response Date'}
+                                    text={moment(activeRequest?.requestedResponseDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                                />
+
+                                {/*  Time Remaining */}
+                                <DetailBlock
+                                    classes={requestTimeRemaining.toString().includes('ago') ? 'red' : 'green'}
+                                    title={'Response Time Remaining'}
+                                    text={`${requestTimeRemaining}`}
+                                    valueToValidate={requestTimeRemaining}
+                                />
+
+                                {/* FROM/TO */}
+                                <DetailBlock title={'From'} valueToValidate={'From'} text={GetFromOrToName(activeRequest?.owner?.key)} />
+                                <DetailBlock title={'To'} valueToValidate={'To'} text={GetFromOrToName(activeRequest?.recipient?.key)} />
+
+                                {/* REASON */}
+                                <DetailBlock
+                                    text={activeRequest?.requestReason}
+                                    valueToValidate={activeRequest?.requestReason}
+                                    isFullWidth={true}
+                                    title={'Reason for Request'}
+                                />
+                            </div>
+
+                            <div className="multiline-blocks">
+                                {/* Location */}
+                                <DetailBlock
+                                    isNavLink={true}
+                                    title={'Go'}
+                                    text={activeRequest?.address}
+                                    valueToValidate={activeRequest?.address}
+                                    linkUrl={activeRequest?.address}
+                                />
+
+                                {/*  CHECK IN */}
+                                {activeRequest?.address && (
+                                    <DetailBlock title={'Check In'} valueToValidate={'Check In'} isCustom={true}>
+                                        <div className="card-icon-button" onClick={CheckIn}>
+                                            <MdPersonPinCircle />
+                                            <span className="location-pin-animation"></span>
+                                        </div>
+                                        <Spacer height={2} />
+                                    </DetailBlock>
+                                )}
+                            </div>
+                            <Spacer height={2} />
+
+                            {/*  SEND WITH ADDRESS */}
+                            {Manager.IsValid(activeRequest?.address) && (
+                                <>
+                                    <div className="flex send-with-address-toggle">
+                                        <Label text={'Include Address in Notification'} classes="toggle " />
+                                        <ToggleButton onCheck={() => setSendWithAddress(!sendWithAddress)} toggleState={sendWithAddress} />
+                                    </div>
+                                    <Spacer height={3} />
+                                    {/* MAP */}
+                                    {Manager.IsValid(activeRequest?.address, true) && <Map locationString={activeRequest?.address} />}
+                                </>
+                            )}
+                        </>
+                    )}
+
+                    {view?.label === 'Edit' && (
+                        <>
+                            {/* DATE */}
+                            <InputField
+                                defaultValue={moment(activeRequest?.startDate)}
+                                inputType={InputTypes.date}
+                                placeholder={'Date'}
+                                uidClass="transfer-request-date"
+                                onDateOrTimeSelection={(e) => (formRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb))}
+                            />
+
+                            {/* TIME */}
+                            <InputField
+                                defaultValue={activeRequest?.time}
+                                inputType={InputTypes.time}
+                                uidClass="transfer-request-time"
+                                placeholder={'Transfer Time'}
+                                onDateOrTimeSelection={(e) => (formRef.current.time = moment(e).format(DatetimeFormats.timeForDb))}
+                            />
+
+                            {/*  NEW LOCATION*/}
+                            <AddressInput
+                                placeholder={'Address'}
+                                defaultValue={activeRequest?.address}
+                                onChange={(address) => (formRef.current.address = address)}
+                            />
+
+                            {/* RESPONSE DUE DATE */}
+                            <InputField
+                                defaultValue={activeRequest?.requestedResponseDate}
+                                onDateOrTimeSelection={(e) => (formRef.current.requestedResponseDate = moment(e).format(DatetimeFormats.dateForDb))}
+                                inputType={InputTypes.date}
+                                uidClass="transfer-request-response-date"
+                                placeholder={'Requested Response Date'}
+                            />
+
+                            {/* REASON */}
+                            {activeRequest?.owner?.key !== currentUser?.key && (
+                                <InputField
+                                    defaultValue={activeRequest?.requestReason}
+                                    onChange={(e) => (formRef.current.reason = e)}
+                                    inputType={InputTypes.textarea}
+                                    placeholder={'Reason for Request'}
+                                />
+                            )}
+                        </>
+                    )}
+                </div>
+            </Form>
+
+            <div id="transfer-requests-container" className={`${theme} page-container`}>
+                {transferRequests?.length === 0 && <p className={'no-data-fallback-text'}>No Transfer Requests</p>}
+
+                <ScreenHeader
+                    title={'Transfer Change Requests'}
+                    screenDescription="A proposal to modify the time and/or location for the child exchange on a designated day"
+                />
+
+                <Spacer height={10} />
+                <div className="screen-content">
+                    {/* LOOP REQUESTS */}
+                    {!showNewRequestCard && (
+                        <div>
+                            {Manager.IsValid(transferRequests) &&
+                                transferRequests?.map((request, index) => {
+                                    return (
+                                        <div
+                                            key={index}
+                                            className="flex row"
+                                            onClick={() => {
+                                                console.log(request)
+                                                setActiveRequest(request)
+                                                setShowDetails(true)
+                                            }}>
+                                            <div data-request-id={request.id} className="content">
+                                                {/* DATE */}
+                                                <p className="row-title">
+                                                    {moment(request.startDate).format(DatetimeFormats.readableMonthAndDay)}
+                                                    <span className={`${request.status} request-status`}>
+                                                        {StringManager.UppercaseFirstLetterOfAllWords(request.status)}
+                                                    </span>
+                                                </p>
+                                                {request?.recipient?.key === currentUser?.key && (
+                                                    <p className="row-subtitle">from {coParents.find((x) => x.key === request.owner?.key)?.name}</p>
+                                                )}
+                                                {request?.recipient?.key !== currentUser?.key && (
+                                                    <p className="row-subtitle">
+                                                        to&nbsp;
+                                                        {StringManager.GetFirstNameOnly(
+                                                            coParents?.find((x) => x?.userKey === request?.recipient?.key)?.name
+                                                        )}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                        </div>
+                    )}
+                </div>
+                <NavBar />
             </div>
-          )}
-        </div>
-        <NavBar />
-      </div>
-    </Screen>
-  )
+        </Screen>
+    )
 }

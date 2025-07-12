@@ -1,0 +1,25 @@
+@use '../utils/_palette';
+@use '../utils/_variables';
+@use '../utils/mixins';
+
+#external-overrides {
+    #help-container {
+        .sections {
+            margin-top: 15px;
+            .section {
+                height: auto;
+                justify-content: flex-start;
+                font-size: 20px;
+                align-items: center;
+                display: flex;
+                margin-bottom: 15px;
+                opacity: 0;
+                svg {
+                    margin-right: 10px;
+                    transform: scale(0.9);
+                    color: palette.$main;
+                }
+            }
+        }
+    }
+}

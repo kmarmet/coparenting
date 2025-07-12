@@ -1,4 +1,4 @@
-import { setKey, fromAddress, fromLatLng, RequestType, geocode } from 'react-geocode'
+import {fromAddress, geocode, RequestType, setKey} from 'react-geocode'
 
 export default LocationManager = {
   getCoordsFromLocation: (location) ->

@@ -1,0 +1,74 @@
+@use '_palette';
+
+// Border Radius
+$borderRadius: 8px;
+$buttonBorderRadius: 10px;
+$bigBorderRadius: 15px;
+$cardBorderRadius: 20px;
+
+// Z-Index
+$negativeZIndex: -1;
+$lowestZIndex: 1;
+$lowerZIndex: 2;
+$lowZIndex: 3;
+$middleZIndex: 4;
+$highZIndex: 5;
+$higherZIndex: 6;
+$lesserMaxZIndex: 9;
+$maxZIndex: 10;
+
+// Input
+$inputBackground: rgba(255, 255, 255, 0.08);
+
+// Font Weights
+$fwThinnest: 100;
+$fwLight: 300;
+$fwRegular: 400;
+$fwMedium: 500;
+$fwMediumBold: 600;
+$fwBold: 700;
+$fwExtraBold: 800;
+
+// Box Shadows
+$boxShadow_basic: 0 0 12px -6px rgba(51, 51, 51, 1);
+$boxShadow_fade_bottom: rgba(0, 0, 0, 0.65) 0 -40px 36px -8px inset;
+$boxShadow_float: rgba(0, 0, 0, 0.96) 0 5px 60px 14px;
+$boxShadow_bottom_only_dark:
+    rgba(0, 0, 0, 0.15) 0 2px 1px,
+    rgba(0, 0, 0, 0.15) 0 4px 2px,
+    rgba(0, 0, 0, 0.15) 0 14px 14px,
+    rgba(0, 0, 0, 0.15) 0 16px 8px,
+    rgba(0, 0, 0, 0.15) 0 22px 16px;
+$boxShadow_bottom_only_extra_dark:
+    rgba(0, 0, 0, 0.25) 0 2px 1px,
+    rgba(0, 0, 0, 0.25) 0 4px 2px,
+    rgba(0, 0, 0, 0.25) 0 14px 14px,
+    rgba(0, 0, 0, 0.25) 0 16px 8px,
+    rgba(0, 0, 0, 0.25) 0 22px 16px;
+$boxShadow_top_only: 0px -18px 24px 5px rgba(0, 0, 0, 0.85);
+$boxShadow_top_only_2: 0 -10px 12px 2px rgba(0, 0, 0, 0.25);
+$boxShadow_top_only_short: 0 -2px 12px 2px rgba(0, 0, 0, 0.1);
+$boxShadow_surround_small:
+    rgba(14, 30, 37, 0.12) 0 2px 4px 0,
+    rgba(14, 30, 37, 0.32) 0 2px 16px 0;
+$boxShadow_bottom_only_short: #1e2939 0 8px 10px;
+$boxShadow_bottom_only: rgb(38, 57, 77) 0 20px 30px -10px;
+$boxShadow_bottom_only_bigger: rgb(38, 57, 77) 0 40px 30px -10px;
+$boxShadow_surround: rgba(0, 0, 0, 0.35) 0 5px 15px;
+$boxShadow_surround_big:
+    rgba(0, 0, 0, 0.35) 0 54px 55px,
+    rgba(0, 0, 0, 0.22) 0 -12px 30px,
+    rgba(0, 0, 0, 0.22) 0 4px 6px,
+    rgba(0, 0, 0, 0.27) 0 12px 13px,
+    rgba(0, 0, 0, 0.19) 0 -3px 5px;
+
+// TEXT COLORS
+$lightGreyText: #d4d4d4;
+$subtitleText: #99a1af;
+$whiteBgSubtitleTextLighter: #a9b2c0;
+$whiteBgSubtitleText: #99a1af;
+$formSubtitleText: #e5e7eb;
+$primaryText: #4a5565;
+$labelText: palette.$darkerGrey;
+$disabledText: #9e9e9e;
+$headerText: #4b5563;

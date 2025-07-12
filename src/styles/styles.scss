@@ -1,17 +1,23 @@
-@import 'mixins';
+@use 'utils/_mixins';
+@use 'utils/_variables';
+@use 'utils/_palette';
+@use 'utils/_animations';
 
 // ERROR BOUNDARY SCREEN
 #error-screen {
     height: 100vh;
     width: 100vw;
-    background-color: $grey;
+    background-color: palette.$grey;
     padding: 20px;
     overflow: scroll;
     max-height: 100vh;
-    @include mainColorsGradient;
+    @include mixins.mainColorsGradient;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
     * {
-        @include fontType;
+        @include mixins.fontType;
     }
 
     button {
@@ -22,7 +28,7 @@
         margin-bottom: 10px;
         background: white;
         padding: 15px;
-        border-radius: $borderRadius;
+        border-radius: variables.$borderRadius;
 
         p {
             &.heading {
@@ -72,7 +78,7 @@
 
     #error-screen-title {
         color: white;
-        font-weight: $fwMedium;
+        font-weight: variables.$fwMedium;
         font-size: 20px;
         margin-bottom: 10px;
     }
@@ -95,14 +101,14 @@
             font-weight: 500;
             margin-bottom: 10px;
             background-color: #2b3881;
-            border-radius: $buttonBorderRadius;
+            border-radius: variables.$buttonBorderRadius;
             padding: 10px 0;
             text-align: center;
             text-align-last: center;
         }
 
         span {
-            color: $linkColor;
+            color: palette.$linkColor;
         }
     }
 
@@ -110,7 +116,7 @@
         background-color: transparent;
 
         &.link {
-            color: $linkColor;
+            color: palette.$linkColor;
             text-decoration: underline;
             background-color: transparent;
             padding: 0;
@@ -125,7 +131,7 @@
     }
 
     .text {
-        @include deadCenter;
+        @include mixins.deadCenter;
 
         .title {
             font-size: 25px;
@@ -145,13 +151,13 @@
 
 // LOADING ANIMATION
 .skeleton {
-    @include loadingSkeleton;
+    @include mixins.loadingSkeleton;
 }
 
 /*#region  GOOGLE MAPS/AUTOCOMPLETE */
 .gm-style-mtc {
     button {
-        border-radius: $borderRadius !important;
+        border-radius: variables.$borderRadius !important;
         background: #323232 !important;
         color: white !important;
         &:first-child {
@@ -161,7 +167,7 @@
 }
 .gm-control-active,
 .gm-svpc {
-    border-radius: $borderRadius !important;
+    border-radius: variables.$borderRadius !important;
     background: #323232 !important;
     color: white !important;
 
@@ -178,8 +184,8 @@
         height: 50px;
         display: flex;
         position: relative;
-        background: $inputBackground;
-        border-radius: $borderRadius;
+        background: variables.$inputBackground;
+        border-radius: variables.$borderRadius;
         align-items: center;
         justify-content: space-between;
         overflow: auto;
@@ -194,9 +200,9 @@
         .clear-input-button {
             font-size: 12px !important;
             margin-top: 3px;
-            color: $transWhite !important;
+            color: palette.$transWhite !important;
             position: relative;
-            z-index: $maxZIndex;
+            z-index: variables.$maxZIndex;
         }
 
         .google-autocomplete-input {
@@ -208,7 +214,7 @@
             display: flex;
             justify-content: flex-start;
             align-items: center;
-            font-weight: $fwLight;
+            font-weight: variables.$fwLight;
             color: white;
             z-index: 9;
             overscroll-behavior: none;
@@ -218,18 +224,18 @@
 
             &::placeholder {
                 font-style: italic;
-                color: $transWhite;
+                color: palette.$transWhite;
                 font-size: 15px;
-                font-weight: $fwLight;
+                font-weight: variables.$fwLight;
                 text-transform: capitalize;
             }
         }
 
         svg {
-            @include centerVert;
-            @include square(20px);
+            @include mixins.centerVert;
+            @include mixins.square(20px);
             position: absolute;
-            color: $transWhite;
+            color: palette.$transWhite;
             left: 10px;
             font-size: 22px;
             margin-left: 0;
@@ -244,8 +250,8 @@
     width: calc(100vw - 30px) !important;
     margin: 0 auto !important;
     z-index: 9999 !important;
-    border-radius: $buttonBorderRadius !important;
-    box-shadow: $boxShadow_bottom_only !important;
+    border-radius: variables.$buttonBorderRadius !important;
+    box-shadow: variables.$boxShadow_bottom_only !important;
 
     &::after {
         display: none !important;
@@ -256,7 +262,7 @@
 
         .pac-icon {
             &.pac-icon-marker {
-                color: $blend !important;
+                color: palette.$blend !important;
             }
         }
     }
@@ -267,8 +273,8 @@
 .select-dropdown {
     // Dropdown Button/Input
     [class*='-control'] {
-        background: $inputBackground !important;
-        border-radius: $borderRadius !important;
+        background: variables.$inputBackground !important;
+        border-radius: variables.$borderRadius !important;
         border: 0 !important;
         box-shadow: none !important;
         min-height: 50px !important;
@@ -285,7 +291,7 @@
 
         // Chips
         [class*='-multiValue'] {
-            background: $barelyVisibleWhite !important;
+            background: palette.$barelyVisibleWhite !important;
             border-radius: 50px !important;
             padding: 0 5px !important;
             border: 0 !important;
@@ -317,28 +323,28 @@
         [class*='-singleValue'] {
             color: white !important;
             font-size: 16px !important;
-            font-weight: $fwRegular !important;
+            font-weight: variables.$fwRegular !important;
         }
 
         [class*='-placeholder'] {
-            color: $mediumGrey !important;
+            color: palette.$mediumGrey !important;
             font-size: 16px !important;
-            font-weight: $fwRegular !important;
+            font-weight: variables.$fwRegular !important;
         }
     }
 
     &[class*='-container']:not(.MuiDialog-container) {
-        border-radius: $borderRadius !important;
+        border-radius: variables.$borderRadius !important;
         border: 0 !important;
         max-width: calc(100vw - 20px) !important;
 
         &.white,
         &.white-bg {
             background: white !important;
-            border: 1px solid $lightBorderColor !important;
+            border: 1px solid palette.$lightBorderColor !important;
             [class*='-placeholder'],
             [class*='-singleValue'] {
-                color: $darkerGrey !important;
+                color: palette.$darkerGrey !important;
             }
         }
 
@@ -351,7 +357,7 @@
             [class*='-control'] {
                 // Chips
                 [class*='css-'] {
-                    color: $darkerGrey !important;
+                    color: palette.$darkerGrey !important;
 
                     font-size: 14px !important;
                     &:first-child {
@@ -362,23 +368,22 @@
                 }
 
                 [class*='-multiValue'] {
-                    border: 1px solid $lightBorderColor !important;
+                    border: 1px solid palette.$lightBorderColor !important;
                 }
 
                 [class*='-Svg'] {
-                    color: $iconGrey !important;
+                    color: palette.$iconGrey !important;
                 }
 
                 [class*='-singleValue'] {
-                    color: $darkerGrey !important;
+                    color: palette.$darkerGrey !important;
                 }
             }
 
             [class*='-option'] {
-                color: $darkGrey !important;
-                border-radius: $borderRadius !important;
-                border: 1px solid $lightBorderColor !important;
-                border: 1px dashed red !important;
+                color: palette.$darkGrey !important;
+                border-radius: variables.$borderRadius !important;
+                border: 1px solid palette.$lightBorderColor !important;
             }
         }
 
@@ -389,7 +394,7 @@
             align-items: center !important;
             justify-content: center !important;
             padding: 10px !important;
-            z-index: $maxZIndex !important;
+            z-index: variables.$maxZIndex !important;
             pointer-events: all !important;
             height: max-content !important;
             position: relative !important;
@@ -399,16 +404,16 @@
             background: transparent !important;
             [class*='-option'] {
                 background: white !important;
-                z-index: $maxZIndex !important;
+                z-index: variables.$maxZIndex !important;
                 pointer-events: all !important;
                 min-width: max-content !important;
                 width: calc(100% / 4) !important;
                 border-radius: 50px !important;
-                border: 1px solid $lightBorderColor !important;
+                border: 1px solid palette.$lightBorderColor !important;
                 font-size: 14px !important;
-                font-weight: $fwRegular !important;
+                font-weight: variables.$fwRegular !important;
                 text-align: center !important;
-                color: $primaryText !important;
+                color: variables.$primaryText !important;
             }
 
             div {
@@ -430,13 +435,13 @@
     li {
         &.valid {
             span {
-                color: $brightGreen !important;
+                color: palette.$brightGreen !important;
                 opacity: 1 !important;
             }
         }
         &.invalid {
             span {
-                color: $red !important;
+                color: palette.$red !important;
                 opacity: 1 !important;
             }
         }
@@ -448,7 +453,7 @@
 #app-update-overlay {
     position: fixed;
     inset: 0;
-    z-index: $maxZIndex;
+    z-index: variables.$maxZIndex;
     transition: all 0.3s ease;
     pointer-events: all;
     height: 100vh;
@@ -456,7 +461,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    @include starryBackground;
+    @include mixins.starryBackground;
 
     &.show {
         animation: fadeIn 0.8s cubic-bezier(0.41, 0.52, 0.24, 0.82) forwards !important;
@@ -465,7 +470,7 @@
 
     .card-buttons {
         align-items: center;
-        @include cardButtons;
+        @include mixins.cardButtons;
         border-top: 0;
 
         .card-button {
@@ -476,10 +481,10 @@
             margin: 0 auto;
             color: rgba(24, 24, 24, 0.37);
             color: #5549ff;
-            @include sparkleButton;
+            @include mixins.sparkleButton;
             box-shadow: 0 0 30px 12px rgba(239, 239, 239, 0.64);
-            @include fontType;
-            font-weight: $fwBold;
+            @include mixins.fontType;
+            font-weight: variables.$fwBold;
             line-height: 1;
             border: 0;
             white-space: nowrap;
@@ -540,7 +545,7 @@
         img {
             &.takeoff-gif {
                 height: max-content;
-                @include square(150px);
+                @include mixins.square(150px);
             }
         }
     }
@@ -552,7 +557,7 @@
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(8px);
-    z-index: $lesserMaxZIndex;
+    z-index: variables.$lesserMaxZIndex;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -566,12 +571,12 @@
         opacity: 1;
 
         &.with-card {
-            //z-index: $lesserMaxZIndex;
+            //z-index: variables.$lesserMaxZIndex;
         }
     }
 }
 
-// External Overrides
+// Main App Styles  (External Overrides)
 #external-overrides {
     // APP CONTAINER
     #app-container {
@@ -599,7 +604,7 @@
 
         /*#region ELEMENT DEFAULTS */
         * {
-            @include fontType;
+            @include mixins.fontType;
         }
 
         p,
@@ -615,7 +620,7 @@
         #changelog-wrapper {
             height: 100vh;
             width: 100vw;
-            @include mainColorsGradient;
+            @include mixins.mainColorsGradient;
             padding: 20px;
 
             .content {
@@ -645,13 +650,13 @@
                         h2 {
                             color: white;
                             font-size: 25px;
-                            font-weight: $fwLight;
+                            font-weight: variables.$fwLight;
                             text-align: left;
                         }
                         h3 {
                             display: flex;
                             align-items: center;
-                            font-weight: $fwLight;
+                            font-weight: variables.$fwLight;
                             gap: 10px;
                             font-size: 20px;
                             margin: 15px 0;
@@ -659,10 +664,10 @@
 
                             svg {
                                 &.star {
-                                    color: $yellow;
+                                    color: palette.$yellow;
                                 }
                                 &.bug {
-                                    color: $red;
+                                    color: palette.$red;
                                 }
                             }
                         }
@@ -672,7 +677,7 @@
         }
 
         table {
-            @include table;
+            @include mixins.table;
         }
 
         // Datepicker
@@ -694,7 +699,7 @@
                     padding-right: 0 !important;
                     opacity: 1 !important;
                     color: white;
-                    font-weight: $fwLight !important;
+                    font-weight: variables.$fwLight !important;
                     line-height: 1 !important;
                     white-space: nowrap !important;
                 }
@@ -702,9 +707,9 @@
         }
 
         a {
-            color: $main;
+            color: palette.$main;
             text-decoration: none;
-            border-bottom: 1px solid $main;
+            border-bottom: 1px solid palette.$main;
             line-height: 1;
         }
 
@@ -719,7 +724,7 @@
             margin: 20px auto;
 
             &.faded {
-                @include hr;
+                @include mixins.hr;
                 margin: 0;
                 background: transparent;
                 border-color: transparent;
@@ -727,7 +732,7 @@
 
             &.documents {
                 margin: 10px 0 25px 0;
-                border-color: $lightGrey;
+                border-color: palette.$lightGrey;
                 opacity: 0.3;
                 color: transparent;
                 background-color: transparent;
@@ -760,15 +765,15 @@
             color: inherit;
 
             &.link {
-                color: $linkColor;
+                color: palette.$linkColor;
             }
         }
 
         p {
-            color: $primaryText;
+            color: variables.$primaryText;
 
             &.screen-intro-text {
-                color: $darkestGrey;
+                color: palette.$darkestGrey;
             }
         }
 
@@ -777,23 +782,23 @@
         }
 
         b {
-            font-weight: $fwBold;
-            color: $primaryText;
+            font-weight: variables.$fwBold;
+            color: variables.$primaryText;
         }
 
         /*#endregion ELEMENT DEFAULTS*/
 
         /*#region MIXINS */
         #loading-screen-wrapper {
-            @include loadingScreen;
+            @include mixins.loadingScreen;
         }
 
         .form-divider {
-            @include formRequirementDivider;
+            @include mixins.formRequirementDivider;
         }
 
         .row {
-            @include row;
+            @include mixins.row;
         }
 
         .flex-start {
@@ -807,19 +812,19 @@
         }
 
         #numpad-wrapper {
-            @include numpad;
+            @include mixins.numpad;
         }
 
         .label-wrapper {
-            @include labelWrapper;
+            @include mixins.labelWrapper;
         }
 
         #upload-inputs {
-            @include uploadInputs;
+            @include mixins.uploadInputs;
         }
 
         .checkbox-group {
-            @include checkboxGroup;
+            @include mixins.checkboxGroup;
 
             &.holiday-checkboxes-wrapper {
                 #checkboxes {
@@ -849,11 +854,11 @@
 
         #alert-container,
         .page-container {
-            @include pageContainer;
+            @include mixins.pageContainer;
         }
 
         .form {
-            @include form;
+            @include mixins.form;
         }
 
         .requirement-text {
@@ -863,7 +868,7 @@
         }
 
         .close-x {
-            color: $transWhite;
+            color: palette.$transWhite;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -880,12 +885,12 @@
         }
 
         .screen-title {
-            @include screenTitle;
+            @include mixins.screenTitle;
         }
 
         button,
         .button {
-            @include defaultButton;
+            @include mixins.defaultButton;
         }
 
         /*#endregion MIXINS */
@@ -894,7 +899,7 @@
         // USER DETAILS SCREEN
         #user-details {
             .smiley-icon {
-                color: $main;
+                color: palette.$main;
                 font-size: 22px;
                 margin-left: 10px;
             }
@@ -922,9 +927,6 @@
 
                 .blocks {
                     margin: 0;
-                    .block {
-                        width: calc(100% / 4);
-                    }
                 }
             }
 
@@ -939,17 +941,21 @@
                 flex-direction: column;
                 min-width: 100px;
 
+                &.multiline {
+                    min-width: 200px;
+                }
+
                 &.full-width {
                     width: 100%;
                     p {
                         max-width: 100%;
                         line-height: 1.3;
-                        font-weight: $fwLight;
+                        font-weight: variables.$fwLight;
                         font-size: 16px;
                         &.block-text {
                             max-width: 100%;
                             line-height: 1.3;
-                            font-weight: $fwRegular;
+                            font-weight: variables.$fwRegular;
                             text-align: center;
                             font-size: 16px;
                             width: 100%;
@@ -998,12 +1004,12 @@
 
                 &.green {
                     .block-text {
-                        color: $green;
+                        color: palette.$green;
                     }
                 }
 
                 .invite-button {
-                    @include cardIconButton;
+                    @include mixins.cardIconButton;
                     padding: 0;
                     svg {
                         transform: scale(1.3);
@@ -1023,7 +1029,7 @@
                     &.email,
                     &.phone,
                     &.website {
-                        @include cardIconButton;
+                        @include mixins.cardIconButton;
                     }
                 }
 
@@ -1031,7 +1037,7 @@
                 a {
                     &.block-text {
                         font-size: 18px;
-                        font-weight: $fwMediumBold;
+                        font-weight: variables.$fwMediumBold;
                         line-height: 1.3;
                         color: white;
                         text-align: center;
@@ -1042,12 +1048,12 @@
 
                         &.list {
                             color: white;
-                            font-weight: $fwMediumBold;
+                            font-weight: variables.$fwMediumBold;
                             overflow: hidden;
                             line-height: 1.3;
 
                             &.ellipsis {
-                                @include ellipsis;
+                                @include mixins.ellipsis;
                             }
 
                             &.active {
@@ -1058,8 +1064,8 @@
                     }
                     &.block-title {
                         font-size: 13px;
-                        font-weight: $fwLight;
-                        color: $mediumTransWhite;
+                        font-weight: variables.$fwLight;
+                        color: palette.$mediumTransWhite;
                         margin-top: auto;
                         line-height: 1.3;
                         width: 100%;
@@ -1069,7 +1075,7 @@
                         justify-content: center;
 
                         svg {
-                            @include square(15px);
+                            @include mixins.square(15px);
                             margin: 0 0 0 5px;
                             padding: 0;
                         }
@@ -1081,14 +1087,11 @@
 
         /*#region  ID's */
         #app-content-with-sidebar {
-            margin: 0 15px;
-            max-width: calc(100vw - 30px);
             position: fixed;
-            gap: 25px;
             transition: all 0.5s ease-in-out;
             height: 100vh;
             top: 0;
-            z-index: $lowerZIndex;
+            z-index: variables.$lowerZIndex;
             overscroll-behavior: none;
 
             @media screen and (min-width: 800px) {
@@ -1113,17 +1116,6 @@
 
             &.fullscreen {
                 max-width: 100vw;
-            }
-
-            &.logged-in {
-                display: grid;
-                justify-content: center;
-                grid-template-columns: 1fr 4fr;
-                align-items: flex-start;
-
-                &.three-columns {
-                    grid-template-columns: 1fr 3fr 1fr;
-                }
             }
 
             @media screen and (min-width: 1000px) {
@@ -1188,7 +1180,7 @@
         }
 
         #install-app-wrapper {
-            @include installApp;
+            @include mixins.installApp;
         }
 
         #lazy-loaded-img-placeholder {
@@ -1196,19 +1188,19 @@
         }
 
         #brand-bar {
-            @include brandBar;
+            @include mixins.brandBar;
         }
 
         #success-alert-wrapper {
-            @include successAlert;
+            @include mixins.successAlert;
         }
 
         #navbar {
-            @include navBar;
+            @include mixins.navBar;
         }
 
         #confirm-container {
-            @include popupContainers;
+            @include mixins.popupContainers;
         }
 
         #large-title {
@@ -1216,7 +1208,7 @@
             width: 100%;
             font-size: 25px;
             opacity: 1;
-            font-weight: $fwRegular;
+            font-weight: variables.$fwRegular;
             line-height: 1.2;
         }
 
@@ -1224,13 +1216,13 @@
             color: black;
             font-size: 20px;
             opacity: 0.75;
-            font-weight: $fwMediumBold;
+            font-weight: variables.$fwMediumBold;
             line-height: 1.2;
             width: auto;
             display: inline-block;
 
             &.blue {
-                color: $main;
+                color: palette.$main;
             }
         }
 
@@ -1247,14 +1239,14 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background-color: $purple;
+                background-color: palette.$purple;
                 color: white;
                 opacity: 1;
                 height: 40px;
                 width: 40px;
 
                 &.dark {
-                    background-color: $purple;
+                    background-color: palette.$purple;
                     color: white;
                 }
 
@@ -1293,39 +1285,6 @@
             }
         }
 
-        #instructions-wrapper {
-            top: 30vh;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            @include deadCenter;
-
-            .instructions {
-                font-style: italic;
-                font-weight: $fwLight;
-                line-height: 1.5;
-                font-size: 15px;
-                max-width: 90%;
-                text-align: center;
-                display: flex;
-                color: $darkerGrey;
-                align-items: center;
-                justify-content: center;
-                align-self: stretch;
-                text-transform: lowercase;
-
-                &.gallery {
-                    margin-top: 0;
-                    text-align: center;
-                }
-
-                svg {
-                    color: $main;
-                }
-            }
-        }
-
         #disclaimer {
             width: 90vw;
             display: block;
@@ -1334,21 +1293,52 @@
             bottom: 95px;
             z-index: 999;
             margin: 0 auto;
-            @include centerHoriz;
+            @include mixins.centerHoriz;
 
             p {
-                color: $lightGreyText;
+                color: variables.$lightGreyText;
                 font-size: 14px;
                 text-align: center;
-                font-weight: $fwMedium;
+                font-weight: variables.$fwMedium;
             }
         }
         /*#endregion  ID's */
 
         /*#region  CLASSES */
+        .no-data-fallback-text {
+            font-style: italic;
+            font-weight: variables.$fwLight;
+            line-height: 1.5;
+            font-size: 15px;
+            max-width: 90%;
+            text-align: center;
+            display: flex;
+            color: palette.$mediumGreyDarkest;
+            align-items: center;
+            justify-content: center;
+            align-self: stretch;
+            text-transform: capitalize;
+
+            &.gallery {
+                margin-top: 0;
+                text-align: center;
+            }
+
+            svg {
+                color: palette.$main;
+            }
+        }
+
+        .form-container {
+            //opacity: 0;
+
+            &.active {
+                opacity: 1;
+            }
+        }
 
         .screen {
-            @include screen;
+            @include mixins.screen;
         }
 
         .sweet-alert-frost {
@@ -1368,14 +1358,14 @@
         }
 
         .attachment-button {
-            //background: $inputBackground;
-            //@include square(45px);
+            //background: palette.$inputBackground;
+            //@include mixins.square(45px);
             //padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             svg {
-                @include square(20px);
+                @include mixins.square(20px);
                 margin: 0;
                 color: white;
                 //transform: scale(1.5);
@@ -1383,10 +1373,10 @@
         }
 
         .gradient {
-            @include mainColorsGradient;
+            @include mixins.mainColorsGradient;
 
             &.padding {
-                border-radius: $bigBorderRadius;
+                border-radius: variables.$bigBorderRadius;
                 padding: 12px;
 
                 .data-row {
@@ -1398,9 +1388,9 @@
         }
 
         .input-field-error {
-            color: $red;
+            color: palette.$red;
             font-size: 14px;
-            font-weight: $fwMediumBold;
+            font-weight: variables.$fwMediumBold;
             text-transform: lowercase;
             position: relative;
             top: -5px;
@@ -1410,7 +1400,7 @@
             justify-content: flex-start;
 
             svg {
-                color: $transWhite;
+                color: palette.$transWhite;
                 transform: scale(0.6);
                 position: relative;
                 top: -2px;
@@ -1424,11 +1414,11 @@
         .notification-badge {
             position: absolute;
             border-radius: 100%;
-            background: $flatRed;
+            background: palette.$flatRed;
             opacity: 0;
             transition: all 0.3s ease-in-out;
 
-            @include square(10px);
+            @include mixins.square(10px);
 
             &.active {
                 opacity: 1;
@@ -1464,24 +1454,24 @@
         }
 
         .subtitle-text {
-            color: $darkGrey;
+            color: palette.$darkGrey;
         }
 
         .creation-menu-wrapper,
         .screen-actions-menu-wrapper {
             position: fixed;
-            @include cardWrapper;
+            @include mixins.cardWrapper;
         }
 
         .card-icon-button {
-            @include cardIconButton;
+            @include mixins.cardIconButton;
         }
 
         .toggle-button-wrapper {
             * {
                 text-align: right;
             }
-            @include toggle;
+            @include mixins.toggle;
         }
 
         .string-as-html {
@@ -1497,11 +1487,11 @@
             outline: 0;
             font-weight: 400;
             transition: all 0.2s ease-in-out;
-            border: 1px solid $lightBorderColor;
-            border-radius: $borderRadius;
+            border: 1px solid palette.$lightBorderColor;
+            border-radius: variables.$borderRadius;
             height: 40px;
             max-height: unset;
-            caret-color: $main;
+            caret-color: palette.$main;
             padding: 0 8px;
 
             &::placeholder {
@@ -1511,15 +1501,15 @@
             }
 
             &[type='date'] {
-                border: 1px solid $lightBorderColor;
+                border: 1px solid palette.$lightBorderColor;
                 padding: 10px 8px;
-                border-radius: $borderRadius;
+                border-radius: variables.$borderRadius;
                 height: auto;
             }
 
             &:focus {
-                border-radius: $borderRadius;
-                border-top: 2px solid $purple;
+                border-radius: variables.$borderRadius;
+                border-top: 2px solid palette.$purple;
 
                 &::placeholder {
                     opacity: 0;
@@ -1528,11 +1518,11 @@
         }
 
         .checkbox-wrapper {
-            @include checkboxWrapper;
+            @include mixins.checkboxWrapper;
         }
 
         .views-wrapper {
-            @include viewsWrapper;
+            @include mixins.viewsWrapper;
         }
 
         .fade-in-right {
@@ -1541,7 +1531,7 @@
 
         #side-navbar,
         .chats-desktop-sidebar {
-            @include sideNavbar;
+            @include mixins.sideNavbar;
         }
 
         .rs-input-group-addon {
@@ -1553,11 +1543,11 @@
         }
 
         .form-wrapper {
-            @include form;
+            @include mixins.form;
         }
 
         .input-field {
-            @include inputField;
+            @include mixins.inputField;
             height: 50px;
             overflow: unset;
             .label-wrapper {
@@ -1638,7 +1628,7 @@
         }
 
         .dead-center {
-            @include deadCenter;
+            @include mixins.deadCenter;
         }
 
         .align-center {
@@ -1655,10 +1645,10 @@
         }
 
         .label {
-            font-weight: $fwRegular;
+            font-weight: variables.$fwRegular;
             margin: 0;
             line-height: 1.3;
-            color: $labelText;
+            color: variables.$labelText;
             font-size: 14px;
             text-transform: uppercase;
 
@@ -1676,7 +1666,7 @@
         }
 
         .asterisk {
-            color: $red;
+            color: palette.$red;
             font-weight: bold;
         }
 
@@ -1722,13 +1712,13 @@
         }
 
         .update-popup {
-            @include deadCenter;
+            @include mixins.deadCenter;
             z-index: 100000000000;
-            background-color: $green;
+            background-color: palette.$green;
             width: 95vw;
-            border-radius: $borderRadius;
+            border-radius: variables.$borderRadius;
             padding: 20px;
-            @include bestShadow;
+            @include mixins.bestShadow;
 
             .title {
                 font-size: 30px;
@@ -1762,11 +1752,11 @@
                 transform: translate(-50%, -50%);
                 width: 100px;
                 background-color: white;
-                color: $green;
+                color: palette.$green;
                 font-weight: 500;
-                border-radius: $borderRadius;
+                border-radius: variables.$borderRadius;
                 padding: 8px 0;
-                @include bestShadow;
+                @include mixins.bestShadow;
             }
         }
 
@@ -1788,11 +1778,11 @@
         }
 
         .sparkle {
-            @include sparkleButton;
+            @include mixins.sparkleButton;
         }
 
         .sparkle-on-click-button {
-            @include sparkleOnClickButton;
+            @include mixins.sparkleOnClickButton;
         }
 
         .caption {
@@ -1820,17 +1810,17 @@
         }
 
         .bold {
-            font-weight: $fwBold;
+            font-weight: variables.$fwBold;
 
             * {
-                font-weight: $fwBold;
+                font-weight: variables.$fwBold;
             }
         }
 
         .accordion-header {
             padding: 10px;
-            background-color: $darkBlue;
-            color: $grey;
+            background-color: palette.$darkBlue;
+            color: palette.$grey;
             display: flex;
             font-weight: 500;
             flex-wrap: wrap;
@@ -1838,7 +1828,7 @@
             svg {
                 margin-left: auto;
                 align-self: flex-end;
-                color: $purple;
+                color: palette.$purple;
                 font-size: 22px;
                 max-height: 20px;
                 display: flex;
@@ -1848,11 +1838,11 @@
                 justify-content: center;
             }
         }
-        /*#endregion  CLASSES */ /*#endregion  CLASS/ID DEFAULTS*/
+        /*#endregion  CLASSES */
     }
 
     // MENU
     #full-menu-wrapper {
-        @include fullMenu;
+        @include mixins.fullMenu;
     }
 }

@@ -6,47 +6,47 @@ import Manager from '../managers/manager'
 import useUsers from './useUsers'
 
 const useCurrentUser = () => {
-  const {state, setState} = useContext(globalState)
-  const {authUser, currentUser: dbCurrentUser} = state
-  const {users} = useUsers()
-  const [currentUser, setCurrentUser] = useState(dbCurrentUser)
-  const [currentUserIsLoading, setCurrentUserIsLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const dbUser = users?.find((u) => u?.email === authUser?.email)
-  const path = `${DB.tables.users}/${dbUser?.key}`
-  const queryKey = ['realtime', path]
+    const {state, setState} = useContext(globalState)
+    const {authUser, currentUser: dbCurrentUser} = state
+    const {users} = useUsers()
+    const [currentUser, setCurrentUser] = useState(dbCurrentUser)
+    const [currentUserIsLoading, setCurrentUserIsLoading] = useState(true)
+    const [error, setError] = useState(null)
+    const dbUser = users?.find((u) => u?.email === authUser?.email)
+    const path = `${DB.tables.users}/${dbUser?.key}`
+    const queryKey = ['realtime', path]
 
-  useEffect(() => {
-    const database = getDatabase()
-    const dataRef = ref(database, path)
+    useEffect(() => {
+        const database = getDatabase()
+        const dataRef = ref(database, path)
 
-    const listener = onValue(
-      dataRef,
-      (snapshot) => {
-        if (Manager.IsValid(snapshot.val())) {
-          setCurrentUser(snapshot.val())
-        } else {
-          setCurrentUser(null)
+        const listener = onValue(
+            dataRef,
+            (snapshot) => {
+                if (Manager.IsValid(snapshot.val())) {
+                    setCurrentUser(snapshot.val())
+                } else {
+                    setCurrentUser(null)
+                }
+                setCurrentUserIsLoading(false)
+            },
+            (err) => {
+                setError(err)
+                setCurrentUserIsLoading(false)
+            }
+        )
+
+        return () => {
+            off(dataRef, 'value', listener)
         }
-        setCurrentUserIsLoading(false)
-      },
-      (err) => {
-        setError(err)
-        setCurrentUserIsLoading(false)
-      }
-    )
+    }, [path, authUser, dbUser, users])
 
-    return () => {
-      off(dataRef, 'value', listener)
+    return {
+        currentUser,
+        currentUserIsLoading,
+        error,
+        queryKey,
     }
-  }, [path, authUser, dbUser, users])
-
-  return {
-    currentUser,
-    currentUserIsLoading,
-    error,
-    queryKey,
-  }
 }
 
 export default useCurrentUser

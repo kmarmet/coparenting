@@ -1,0 +1,134 @@
+@use '../utils/mixins';
+@use '../utils/variables';
+@use '../utils/_palette';
+
+#co-parents-container,
+#parents-container {
+    .animation-wrapper {
+        opacity: 0;
+    }
+    #co-parent-container,
+    #parent-container {
+        display: flex;
+        width: 100%;
+        background-color: transparent;
+        border-radius: 0;
+        border: 0;
+        margin: 15px 0 0 0;
+        gap: 15px;
+        flex-wrap: wrap;
+
+        .co-parent,
+        .parent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            padding: 8px;
+            height: 80px;
+            width: 80px;
+            border-radius: 100%;
+            background: white;
+            transition: all 0.8s ease;
+            @include mixins.hover;
+
+            * {
+                user-select: none;
+                outline: 0;
+            }
+
+            svg {
+                transform: scale(1.1);
+                color: palette.$darkerGrey;
+            }
+
+            .co-parent-type,
+            .parent-type {
+                padding-bottom: 5px;
+                color: palette.$darkerGrey;
+                font-size: 11px;
+            }
+
+            .co-parent-name,
+            .parent-name {
+                font-size: 15px;
+                font-weight: variables.$fwRegular;
+                border: 0;
+                color: palette.$darkGrey;
+                transform: scale(1.8);
+            }
+
+            // ACTIVE
+            &.active {
+                background: palette.$blend;
+                opacity: 1;
+                transition: all 0.2s ease;
+                * {
+                    transition: all 0.2s ease;
+                    color: variables.$primaryText;
+                }
+
+                svg {
+                    opacity: 1;
+                }
+
+                .co-parent-name,
+                .parent-name {
+                    opacity: 1;
+                    color: white;
+                    font-size: 16px;
+                    font-weight: variables.$fwBold;
+                }
+
+                .co-parent-type,
+                .parent-type {
+                    opacity: 0.7;
+                    font-size: 12px;
+                }
+                .child-name {
+                    font-weight: 500;
+                    opacity: 1;
+                }
+            }
+        }
+    }
+
+    #co-parent-info,
+    #parent-info {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: variables.$bigBorderRadius;
+        background: palette.$main;
+        @include mixins.shadow;
+
+        #parent-name-primary,
+        #co-parent-name-primary {
+            font-weight: variables.$fwMediumBold;
+            font-size: 22px;
+            line-height: 1;
+            color: white;
+            text-align: center;
+        }
+
+        #co-parent-type-primary,
+        #parent-type-primary {
+            font-size: 16px;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 15px;
+            color: palette.$transWhite;
+            padding-top: 3px;
+        }
+
+        .flex {
+            &.input {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+                align-items: center;
+                gap: 5px;
+            }
+        }
+    }
+}

@@ -1,6 +1,6 @@
 import Manager from "./manager"
 import DB from "../database/DB"
-import { child, getDatabase, ref, set } from 'firebase/database'
+import {child, getDatabase, ref, set} from 'firebase/database'
 import DatasetManager from "./datasetManager"
 import StringManager from "./stringManager"
 

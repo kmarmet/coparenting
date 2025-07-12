@@ -6,47 +6,47 @@ import Manager from '../managers/manager'
 import useCurrentUser from './useCurrentUser'
 
 const useDocuments = () => {
-  const [documentsAreLoading, setDocumentsAreLoading] = useState(true)
-  const [documents, setDocuments] = useState([])
-  const [error, setError] = useState(null)
-  const {currentUser} = useCurrentUser()
-  const path = `${DB.tables.documents}/${currentUser?.key}`
-  const queryKey = ['realtime', path]
+    const [documentsAreLoading, setDocumentsAreLoading] = useState(true)
+    const [documents, setDocuments] = useState([])
+    const [error, setError] = useState(null)
+    const {currentUser} = useCurrentUser()
+    const path = `${DB.tables.documents}/${currentUser?.key}`
+    const queryKey = ['realtime', path]
 
-  useEffect(() => {
-    const database = getDatabase()
-    const dataRef = ref(database, path)
+    useEffect(() => {
+        const database = getDatabase()
+        const dataRef = ref(database, path)
 
-    const listener = onValue(
-      dataRef,
-      (snapshot) => {
-        const data = snapshot.val()
+        const listener = onValue(
+            dataRef,
+            (snapshot) => {
+                const data = snapshot.val()
 
-        const formatted = DatasetManager.GetValidArray(data)
-        if (Manager.IsValid(currentUser) && Manager.IsValid(formatted)) {
-          setDocuments(formatted)
-          setDocumentsAreLoading(false)
-        } else {
-          setDocuments([])
+                const formatted = DatasetManager.GetValidArray(data)
+                if (Manager.IsValid(currentUser) && Manager.IsValid(formatted)) {
+                    setDocuments(formatted)
+                    setDocumentsAreLoading(false)
+                } else {
+                    setDocuments([])
+                }
+            },
+            (err) => {
+                setError(err)
+                setDocumentsAreLoading(false)
+            }
+        )
+
+        return () => {
+            off(dataRef, 'value', listener)
         }
-      },
-      (err) => {
-        setError(err)
-        setDocumentsAreLoading(false)
-      }
-    )
+    }, [path, currentUser])
 
-    return () => {
-      off(dataRef, 'value', listener)
+    return {
+        documents,
+        documentsAreLoading,
+        error,
+        queryKey,
     }
-  }, [path, currentUser])
-
-  return {
-    documents,
-    documentsAreLoading,
-    error,
-    queryKey,
-  }
 }
 
 export default useDocuments

@@ -165,7 +165,6 @@ export default function EventCalendar() {
         let dotClasses = []
         const dayEventsOfAllTypes = DatasetManager.CombineArrays(dayEvents, holidayEvents)
         const holidayDates = holidayEvents?.map((holiday) => moment(holiday?.startDate).format(DatetimeFormats.dateForDb))
-
         for (const event of dayEventsOfAllTypes) {
             if (!Manager.IsValid(event) || !Manager.IsValid(event?.startDate)) continue
 
@@ -263,12 +262,8 @@ export default function EventCalendar() {
 
     // ADD DAY INDICATORS
     useEffect(() => {
-        if (Manager.IsValid(eventsOfDay)) {
-            setSelectedDate(moment().format(DatetimeFormats.dateForDb))
-            setTimeout(() => {
-                AddDayIndicators().then((r) => r)
-            }, 300)
-        }
+        setSelectedDate(moment().format(DatetimeFormats.dateForDb))
+        AddDayIndicators().then((r) => r)
     }, [eventsOfDay])
 
     return (

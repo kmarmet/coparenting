@@ -5,44 +5,44 @@ import DatasetManager from '../managers/datasetManager'
 import Manager from '../managers/manager'
 
 const useUsers = () => {
-  const [users, setUsers] = useState(null)
-  const [usersAreLoading, setUsersAreLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const path = `${DB.tables.users}/`
+    const [users, setUsers] = useState(null)
+    const [usersAreLoading, setUsersAreLoading] = useState(true)
+    const [error, setError] = useState(null)
+    const path = `${DB.tables.users}/`
 
-  const queryKey = ['realtime', path]
+    const queryKey = ['realtime', path]
 
-  useEffect(() => {
-    const database = getDatabase()
-    const dataRef = ref(database, path)
+    useEffect(() => {
+        const database = getDatabase()
+        const dataRef = ref(database, path)
 
-    const listener = onValue(
-      dataRef,
-      (snapshot) => {
-        if (Manager.IsValid(snapshot.val())) {
-          setUsers(DatasetManager.GetValidArray(snapshot.val()))
-        } else {
-          setUsers([])
+        const listener = onValue(
+            dataRef,
+            (snapshot) => {
+                if (Manager.IsValid(snapshot.val())) {
+                    setUsers(DatasetManager.GetValidArray(snapshot.val()))
+                } else {
+                    setUsers([])
+                }
+                setUsersAreLoading(false)
+            },
+            (err) => {
+                setError(err)
+                setUsersAreLoading(false)
+            }
+        )
+
+        return () => {
+            off(dataRef, 'value', listener)
         }
-        setUsersAreLoading(false)
-      },
-      (err) => {
-        setError(err)
-        setUsersAreLoading(false)
-      }
-    )
+    }, [path])
 
-    return () => {
-      off(dataRef, 'value', listener)
+    return {
+        users,
+        usersAreLoading,
+        error,
+        queryKey,
     }
-  }, [path])
-
-  return {
-    users,
-    usersAreLoading,
-    error,
-    queryKey,
-  }
 }
 
 export default useUsers

@@ -1,0 +1,102 @@
+@use '../utils/mixins';
+@use '../utils/variables';
+@use '../utils/_palette';
+
+#transfer-requests-container {
+    .row {
+        @include mixins.row;
+        .content {
+            width: 100%;
+
+            .details {
+                position: relative;
+                align-items: center;
+                overflow: hidden;
+                padding: 10px 0;
+
+                .reason {
+                    font-weight: 300;
+                    font-size: 14px;
+                }
+
+                .reason-text {
+                    -ms-word-break: break-all;
+                    word-break: break-all;
+
+                    &.wrap {
+                        width: 100%;
+                    }
+                }
+
+                .flex {
+                    display: flex;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                }
+            }
+        }
+    }
+}
+
+// New Request
+#new-swap-request-container {
+    /*#region  DARK THEME*/
+    &.dark {
+        #duration-options {
+            &.swap-request {
+                .flex {
+                    p,
+                    span {
+                        color: white;
+                    }
+
+                    &.active {
+                        p,
+                        span {
+                            color: palette.$purple;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    /*#endregion  DARK THEME*/
+
+    #duration-options {
+        padding: 0;
+        height: 45px;
+        display: flex;
+        gap: 20px;
+
+        .flex {
+            margin: 0;
+            height: 100%;
+            opacity: 0.6;
+            align-items: center;
+            justify-content: center;
+
+            p,
+            span {
+                text-align: center;
+                font-weight: 200;
+                transition: all 0.3s ease-in-out;
+                transform: scale(0.9);
+            }
+
+            span {
+                margin-right: 5px;
+            }
+
+            &.active {
+                opacity: 1;
+
+                p,
+                span {
+                    opacity: 1;
+                    font-weight: bold;
+                    transform: scale(1.1);
+                }
+            }
+        }
+    }
+}

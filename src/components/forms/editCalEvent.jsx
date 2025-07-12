@@ -21,7 +21,6 @@ import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
-import CalendarEvent from '../../models/new/calendarEvent'
 import AddressInput from '../shared/addressInput'
 import DetailBlock from '../shared/detailBlock'
 import Form from '../shared/form'
@@ -65,7 +64,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
 
     // REF
-    const formRef = useRef({...new CalendarEvent()})
+    const formRef = useRef({...event})
 
     const ResetForm = (alertMessage = '') => {
         setTimeout(() => {
@@ -113,7 +112,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     // SUBMIT
     const Submit = async () => {
         try {
-            let updatedEvent = ObjectManager.merge(event, formRef.current, 'deep')
+            let updatedEvent = ObjectManager.Merge(event, formRef.current)
+
+            console.log(updatedEvent.id, event.id)
 
             // Map Dropdown to Database
             updatedEvent.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
@@ -135,17 +136,17 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             // Submission
             if (Manager.IsValid(updatedEvent)) {
                 //#region VALIDATION
-                if (!Manager.IsValid(formRef.current?.title)) {
+                if (!Manager.IsValid(updatedEvent?.title)) {
                     AlertManager.throwError('Event name is required')
                     return false
                 }
 
-                if (!Manager.IsValid(formRef.current.startDate)) {
+                if (!Manager.IsValid(updatedEvent.startDate)) {
                     AlertManager.throwError('Please select a date for this event')
                     return false
                 }
 
-                if (Manager.IsValid(formRef.current.reminderTimes) && !Manager.IsValid(formRef.current.startTime)) {
+                if (Manager.IsValid(updatedEvent.reminderTimes) && !Manager.IsValid(updatedEvent.startTime)) {
                     AlertManager.throwError('Please select a start time when using reminders')
                     return false
                 }
@@ -192,7 +193,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 //#region SINGLE EVENT
                 else {
                     if (cleaned?.owner?.key === currentUser?.key) {
-                        const index = DB.GetTableIndexById(calendarEvents, cleaned?.id)
+                        const index = DB.GetTableIndexById(calendarEvents, updatedEvent?.id)
+                        console.log(index)
                         if (parseInt(index) === -1) return false
                         await DB.ReplaceEntireRecord(`${dbPath}/${index}`, cleaned)
                     }
@@ -206,7 +208,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             updatedEvent?.shareWith,
                             currentUser,
                             'Event Updated',
-                            `${updatedEvent?.title} has been updated`,
+                            `📆 ${updatedEvent?.title} has been updated`,
                             ActivityCategory.calendar
                         )
                     }
@@ -260,6 +262,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
     useEffect(() => {
         if (Manager.IsValid(event)) {
+            console.log(true)
             const index = DB.GetTableIndexById(calendarEvents, event?.id)
             SetDropdownOptions().then((r) => r)
         }
@@ -285,11 +288,12 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 submitText={'Update'}
                 hasSubmitButton={view?.label === 'Edit'}
                 onClose={() => ResetForm()}
-                title={StringManager.FormatEventTitle(StringManager.UppercaseFirstLetterOfAllWords(event?.title))}
+                title={StringManager.FormatTitle(event?.title, true)}
                 showCard={showCard}
                 deleteButtonText="Delete"
                 wrapperClass={`edit-calendar-event at-top${event?.owner?.key === currentUser?.key ? ' owner' : ' non-owner'}`}
                 viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={(view) => setView(view)} />}>
+                {/*  CONTENT */}
                 <div id="edit-cal-event-container" className={`${theme} edit-event-form form-container`}>
                     <div className={'content-wrapper'}>
                         {/* DETAILS */}

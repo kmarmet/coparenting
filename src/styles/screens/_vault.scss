@@ -1,0 +1,90 @@
+@use '../utils/mixins';
+@use '../utils/variables';
+@use '../utils/_palette';
+@use '../utils/_animations';
+
+#external-overrides {
+    #records-wrapper {
+        .screen-content {
+            .export-text {
+                font-weight: variables.$fwLight;
+            }
+
+            // ROW
+            .record-row {
+                flex-wrap: wrap;
+                @include mixins.row;
+
+                * {
+                    line-height: 1;
+                }
+
+                .date {
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 14px;
+                    color: palette.$darkGrey;
+                    padding-top: 5px;
+                    width: 100%;
+
+                    span {
+                        font-size: 14px;
+                    }
+                }
+
+                .title {
+                    font-weight: variables.$fwRegular;
+                    width: 100%;
+                    text-align: center;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    color: variables.$primaryText;
+
+                    .amount {
+                        &.unpaid {
+                            color: palette.$redForLightBg;
+                        }
+
+                        &.paid {
+                            color: palette.$green;
+                        }
+                        font-size: 16px;
+                        font-weight: variables.$fwRegular;
+                    }
+                }
+            }
+
+            .payers {
+                padding: 0 0 5px 0;
+            }
+
+            // FILTER DROPDOWN
+            .sorting-dropdown {
+                background: palette.$blendPurple !important;
+                border-radius: variables.$borderRadius !important;
+                [role='combobox'] {
+                    padding: 10px;
+                    height: auto !important;
+                }
+            }
+
+            #export-button {
+                border-bottom: 1px solid palette.$green;
+                display: flex;
+                align-items: center;
+                color: palette.$green;
+                width: 90px;
+                padding-bottom: 3px;
+                justify-content: center;
+                margin: 15px auto 25px auto;
+
+                svg {
+                    color: palette.$green;
+                    font-size: 18px;
+                    margin-left: 8px;
+                }
+            }
+        }
+    }
+}

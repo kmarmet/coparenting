@@ -29,206 +29,210 @@ import Spacer from '../shared/spacer'
 import ToggleButton from '../shared/toggleButton'
 
 export default function NewTransferChangeRequest() {
-  const {state, setState} = useContext(globalState)
-  const {theme, creationFormToShow} = state
+    const {state, setState} = useContext(globalState)
+    const {theme, creationFormToShow} = state
 
-  // State
-  const [requestRecipientKey, setRequestRecipientKey] = useState('')
+    // State
+    const [requestRecipientKey, setRequestRecipientKey] = useState('')
 
-  // Hooks
-  const {currentUser, currentUserIsLoading} = useCurrentUser()
-  const {coParents, coParentsAreLoading} = useCoParents()
-  const {transferRequests, transferRequestsIsLoading} = useTransferRequests()
-  const {children, childrenAreLoading} = useChildren()
-  const {users, usersAreLoading} = useUsers()
+    // Hooks
+    const {currentUser, currentUserIsLoading} = useCurrentUser()
+    const {coParents, coParentsAreLoading} = useCoParents()
+    const {transferRequests, transferRequestsIsLoading} = useTransferRequests()
+    const {children, childrenAreLoading} = useChildren()
+    const {users, usersAreLoading} = useUsers()
 
-  // Dropdown State
-  const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
-  const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
+    // Dropdown State
+    const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
+    const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
 
-  // Form ref
-  const formRef = useRef({...new TransferChangeRequest()})
+    // Form ref
+    const formRef = useRef({...new TransferChangeRequest()})
 
-  const ResetForm = (showSuccessAlert = false) => {
-    Manager.ResetForm('transfer-request-wrapper')
-    setRequestRecipientKey('')
-    setState({
-      ...state,
-      creationFormToShow: '',
-      refreshKey: Manager.GetUid(),
-      isLoading: false,
-      successAlertMessage: showSuccessAlert ? 'Transfer Change Request Sent' : null,
-    })
-  }
-
-  const Submit = async () => {
-    const validAccounts = currentUser?.sharedDataUsers
-
-    //#region VALIDATION
-    if (validAccounts === 0) {
-      AlertManager.throwError(
-        'No co-parent to \n assign requests to',
-        'You have not added any co-parents. Or, it is also possible they have closed their profile.'
-      )
-      return false
-    }
-    if (!Manager.IsValid(formRef.current.recipient)) {
-      AlertManager.throwError('Please choose who to Send the request to')
-      return false
-    }
-    if (!Manager.IsValid(formRef.current.address) && !Manager.IsValid(formRef.current.time)) {
-      AlertManager.throwError('Please choose a new location or time')
-      return false
-    }
-    if (!Manager.IsValid(formRef.current.startDate)) {
-      AlertManager.throwError('Please choose the day of the requested transfer change')
-      return false
-    }
-    if (validAccounts > 0) {
-      if (!Manager.IsValid(formRef.current.shareWith)) {
-        AlertManager.throwError('Please choose who you would like to share this request with')
-        return false
-      }
+    const ResetForm = (showSuccessAlert = false) => {
+        Manager.ResetForm('transfer-request-wrapper')
+        setRequestRecipientKey('')
+        setState({
+            ...state,
+            creationFormToShow: '',
+            refreshKey: Manager.GetUid(),
+            isLoading: false,
+            successAlertMessage: showSuccessAlert ? 'Transfer Change Request Sent' : null,
+        })
     }
 
-    //#endregion VALIDATION
+    const Submit = async () => {
+        const validAccounts = currentUser?.sharedDataUsers
 
-    formRef.current.directionsLink = Manager.GetDirectionsLink(formRef.current.address)
-    formRef.current.owner = {
-      key: currentUser?.key,
-      name: currentUser?.name,
+        //#region VALIDATION
+        if (validAccounts === 0) {
+            AlertManager.throwError(
+                'No co-parent to \n assign requests to',
+                'You have not added any co-parents. Or, it is also possible they have closed their profile.'
+            )
+            return false
+        }
+        if (!Manager.IsValid(formRef.current.recipient)) {
+            AlertManager.throwError('Please choose who to Send the request to')
+            return false
+        }
+        if (!Manager.IsValid(formRef.current.address) && !Manager.IsValid(formRef.current.time)) {
+            AlertManager.throwError('Please choose a new location or time')
+            return false
+        }
+        if (!Manager.IsValid(formRef.current.startDate)) {
+            AlertManager.throwError('Please choose the day of the requested transfer change')
+            return false
+        }
+        if (validAccounts > 0) {
+            if (!Manager.IsValid(formRef.current.shareWith)) {
+                AlertManager.throwError('Please choose who you would like to share this request with')
+                return false
+            }
+        }
+
+        //#endregion VALIDATION
+
+        formRef.current.directionsLink = Manager.GetDirectionsLink(formRef.current.address)
+        formRef.current.owner = {
+            key: currentUser?.key,
+            name: currentUser?.name,
+        }
+
+        // Update address
+        if (Manager.IsValid(formRef.current.address, true)) {
+            const coParent = coParents.filter((x) => x?.userKey === formRef?.current?.recipient?.key)[0]
+            const key = DB.GetTableIndexById(coParents, coParent?.id)
+            await DB_UserScoped.updateUserRecord(currentUser?.key, `coparents/${key}/preferredTransferAddress`, formRef.current.address)
+        }
+
+        // // Add record
+        await DB.Add(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, transferRequests, formRef.current)
+
+        // Notify
+        await UpdateManager.SendUpdate(
+            `Transfer Change Request`,
+            `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
+            requestRecipientKey,
+            currentUser,
+            ActivityCategory.transferRequest
+        )
+
+        ResetForm(true)
     }
 
-    // Update address
-    if (Manager.IsValid(formRef.current.address, true)) {
-      const coParent = coParents.filter((x) => x?.userKey === formRef?.current?.recipient?.key)[0]
-      const key = DB.GetTableIndexById(coParents, coParent?.id)
-      await DB_UserScoped.updateUserRecord(currentUser?.key, `coparents/${key}/preferredTransferAddress`, formRef.current.address)
+    const SetDefaultDropdownOptions = () => {
+        setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
+        setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith([], coParents, true))
     }
 
-    // // Add record
-    await DB.Add(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, transferRequests, formRef.current)
+    useEffect(() => {
+        if (Manager.IsValid(coParents) && Manager.IsValid(users)) {
+            SetDefaultDropdownOptions()
+        }
+    }, [coParents, users])
 
-    // Notify
-    await UpdateManager.SendUpdate(
-      `Transfer Change Request`,
-      `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
-      requestRecipientKey,
-      currentUser,
-      ActivityCategory.transferRequest
-    )
+    return (
+        <Form
+            onSubmit={Submit}
+            submitText={'Send'}
+            wrapperClass="new-transfer-request"
+            title={'Request Transfer Change '}
+            showCard={creationFormToShow === creationForms.transferRequest}
+            onClose={() => ResetForm()}>
+            <div className="transfer-request-wrapper">
+                <div className={`${theme} transfer-change-container" `}>
+                    <div className="transfer-change">
+                        <FormDivider text={'Required'} />
+                        {/* DAY */}
+                        <InputField
+                            inputType={InputTypes.date}
+                            uidClass="transfer-request-date"
+                            placeholder={'Day'}
+                            required={true}
+                            onDateOrTimeSelection={(e) => (formRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb))}
+                        />
 
-    ResetForm(true)
-  }
+                        <FormDivider text={'Required - Time OR Location'} />
 
-  const SetDefaultDropdownOptions = () => {
-    setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
-    setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith([], coParents, true))
-  }
+                        {/* TIME */}
+                        <InputField
+                            inputType={InputTypes.time}
+                            placeholder={'New Time'}
+                            uidClass="transfer-request-time"
+                            onDateOrTimeSelection={(e) => (formRef.current.time = moment(e).format(DatetimeFormats.timeForDb))}
+                        />
 
-  useEffect(() => {
-    if (Manager.IsValid(coParents) && Manager.IsValid(users)) {
-      SetDefaultDropdownOptions()
-    }
-  }, [coParents, users])
+                        <Spacer height={3} />
 
-  return (
-    <Form
-      onSubmit={Submit}
-      submitText={'Send'}
-      wrapperClass="new-transfer-request"
-      title={'Request Transfer Change '}
-      showCard={creationFormToShow === creationForms.transferRequest}
-      onClose={() => ResetForm()}>
-      <div className="transfer-request-wrapper">
-        <div className={`${theme} transfer-change-container" `}>
-          <div className="transfer-change">
-            <FormDivider text={'Required'} />
-            {/* DAY */}
-            <InputField
-              inputType={InputTypes.date}
-              uidClass="transfer-request-date"
-              placeholder={'Day'}
-              required={true}
-              onDateOrTimeSelection={(e) => (formRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb))}
-            />
+                        {/*  NEW LOCATION*/}
+                        <AddressInput
+                            placeholder={'Address'}
+                            onChange={(address) => {
+                                formRef.current.address = address
+                            }}
+                        />
 
-            <FormDivider text={'Required - Time OR Location'} />
+                        <Spacer height={3} />
+                        {/* SEND REQUEST TO */}
+                        <SelectDropdown
+                            options={DropdownManager.GetDefault.CoParents(coParents)}
+                            placeholder={'Select Request Recipient'}
+                            onSelect={(e) => {
+                                formRef.current.recipient = {
+                                    name: e.label,
+                                    key: e.value,
+                                }
+                            }}
+                        />
 
-            {/* TIME */}
-            <InputField
-              inputType={InputTypes.time}
-              placeholder={'New Time'}
-              uidClass="transfer-request-time"
-              onDateOrTimeSelection={(e) => (formRef.current.time = moment(e).format(DatetimeFormats.timeForDb))}
-            />
+                        <Spacer height={3} />
 
-            <Spacer height={3} />
+                        <FormDivider text={'Optional'} />
 
-            {/*  NEW LOCATION*/}
-            <AddressInput
-              placeholder={'Address'}
-              onChange={(address) => {
-                formRef.current.address = address
-              }}
-            />
+                        {/* SHARE WITH */}
+                        <SelectDropdown
+                            options={defaultShareWithOptions}
+                            selectMultiple={true}
+                            placeholder={'Select Contacts to Share With'}
+                            onSelect={setSelectedShareWithOptions}
+                        />
 
-            <Spacer height={3} />
-            {/* SEND REQUEST TO */}
-            <SelectDropdown
-              options={DropdownManager.GetDefault.CoParents(coParents)}
-              placeholder={'Select Request Recipient'}
-              onSelect={(e) => {
-                formRef.current.recipient = {
-                  name: e.label,
-                  key: e.value,
-                }
-              }}
-            />
+                        <Spacer height={3} />
 
-            <Spacer height={3} />
+                        {/* RESPONSE DUE DATE */}
+                        <InputField
+                            inputType={InputTypes.date}
+                            uidClass="transfer-request-response-date"
+                            placeholder={'Requested Response Date'}
+                            required={true}
+                            onDateOrTimeSelection={(e) => (formRef.current.requestedResponseDate = moment(e).format(DatetimeFormats.dateForDb))}
+                        />
 
-            <FormDivider text={'Optional'} />
+                        <Spacer height={3} />
 
-            {/* SHARE WITH */}
-            <SelectDropdown
-              options={defaultShareWithOptions}
-              selectMultiple={true}
-              placeholder={'Select Contacts to Share With'}
-              onSelect={setSelectedShareWithOptions}
-            />
+                        {/* REASON */}
+                        <InputField
+                            inputType={InputTypes.textarea}
+                            placeholder={'Reason'}
+                            onChange={(e) => (formRef.current.reason = e.target.value)}
+                        />
 
-            <Spacer height={3} />
+                        <Spacer height={8} />
 
-            {/* RESPONSE DUE DATE */}
-            <InputField
-              inputType={InputTypes.date}
-              uidClass="transfer-request-response-date"
-              placeholder={'Requested Response Date'}
-              required={true}
-              onDateOrTimeSelection={(e) => (formRef.current.requestedResponseDate = moment(e).format(DatetimeFormats.dateForDb))}
-            />
+                        {/*  SET AS PREFERRED LOCATION */}
+                        <div className="flex">
+                            <Label text={'Set as Preferred Location'} classes="toggle" />
+                            <ToggleButton
+                                onCheck={() => (formRef.current.preferredTransferAddress = formRef.current.address)}
+                                onUncheck={() => (formRef.current.preferredTransferAddress = '')}
+                            />
+                        </div>
 
-            <Spacer height={3} />
-
-            {/* REASON */}
-            <InputField inputType={InputTypes.textarea} placeholder={'Reason'} onChange={(e) => (formRef.current.reason = e.target.value)} />
-
-            <Spacer height={8} />
-
-            {/*  SET AS PREFERRED LOCATION */}
-            <div className="flex">
-              <Label text={'Set as Preferred Location'} classes="toggle" />
-              <ToggleButton
-                onCheck={() => (formRef.current.preferredTransferAddress = formRef.current.address)}
-                onUncheck={() => (formRef.current.preferredTransferAddress = '')}
-              />
+                        <Spacer height={8} />
+                    </div>
+                </div>
             </div>
-
-            <Spacer height={8} />
-          </div>
-        </div>
-      </div>
-    </Form>
-  )
+        </Form>
+    )
 }

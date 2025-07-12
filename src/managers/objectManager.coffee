@@ -38,9 +38,9 @@ ObjectManager = {
         delete modelObject[prop]
 
     keys = Object.keys(modelObject)
-    updated = _.merge(modelObject, obj)
+    updated = _.Merge(modelObject, obj)
     afterUpdate  = _.set(updated, updatedPropOrPath, updatedValue)
-    updated = _.merge(afterUpdate, updated)
+    updated = _.Merge(afterUpdate, updated)
 
     for prop of updated
       if obj[prop] is undefined
@@ -183,14 +183,28 @@ ObjectManager = {
 
     return returnObject
 
-  merge: (objectWithValuesToKeep, objectWithValuesToAdd, deepOrShallow = 'shallow') ->
-    if deepOrShallow == 'shallow'
-      return _.assign(objectWithValuesToKeep, objectWithValuesToAdd)
-    else
-      return _.merge(objectWithValuesToKeep, objectWithValuesToAdd)
+  Merge: (srcObj,  updatedObj) ->
+    result = _.cloneDeep(srcObj)
 
-  isEmpty: (obj) ->
-    return _.isEmpty(obj)
-}
+    for key, newVal of updatedObj
+      oldVal = srcObj[key]
+
+      if _.isPlainObject(newVal) and _.isPlainObject(oldVal)
+        result[key] = ObjectManager.Merge(oldVal, newVal)
+
+      else if Array.isArray(newVal)
+        if newVal.length > 0 and not _.isEqual(oldVal, newVal)
+          result[key] = newVal
+
+      else if newVal? and newVal isnt '' and not _.isEqual(oldVal, newVal)
+        result[key] = newVal
+
+    return result
+
+  IsEmpty: (obj) ->
+      return _.isEmpty(obj)
+  }
+
+
 
 export default ObjectManager

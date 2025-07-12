@@ -1,0 +1,114 @@
+@use '../utils/mixins';
+@use '../utils/variables';
+@use '../utils/_palette';
+
+#external-overrides {
+    #chat-request-container {
+        .signature-pad {
+            width: 100%;
+            border-radius: variables.$borderRadius;
+        }
+
+        #canvas-wrapper {
+            width: calc(100vw - 30px);
+            height: 550px;
+
+            .conversation-canvas {
+                width: 100%;
+                border-radius: variables.$borderRadius;
+            }
+        }
+
+        #image-wrapper {
+            img {
+                filter: brightness(0);
+            }
+        }
+    }
+
+    #account-container {
+        #user-name {
+            font-size: 18px;
+            font-weight: variables.$fwBold;
+            padding-bottom: 8px;
+
+            svg {
+                font-size: 20px;
+                color: palette.$main;
+                position: relative;
+                top: 3px;
+                margin-right: 5px;
+            }
+        }
+
+        .sections {
+            .section {
+                @include mixins.row;
+                justify-content: flex-start;
+                font-size: 18px;
+                font-weight: variables.$fwRegular;
+                line-height: 1;
+                opacity: 0;
+
+                svg {
+                    color: palette.$main;
+                    margin-right: 8px;
+                    transform: scale(0.85);
+                }
+
+                span {
+                    font-size: 25px;
+                    margin-right: 20px;
+                    color: palette.$main;
+                }
+
+                &:first-child {
+                    border-top: 1px solid rgba(255, 255, 255, 0.1);
+                }
+
+                &.close-account {
+                    color: palette.$red;
+
+                    svg {
+                        color: palette.$red;
+                    }
+                }
+
+                &.notifications {
+                    flex-wrap: nowrap;
+                    justify-content: space-between;
+
+                    span {
+                        line-height: 1.2;
+                        justify-self: flex-start;
+                        margin-right: auto;
+                        margin-left: 0;
+
+                        &:nth-child(2) {
+                        }
+
+                        &.accent {
+                            margin-right: 20px;
+                        }
+                    }
+
+                    #checkbox-group {
+                        display: flex;
+                        flex-wrap: nowrap;
+                        margin-left: 10px;
+
+                        .flex {
+                            width: auto;
+
+                            &:last-child {
+                                margin: 0;
+                            }
+                        }
+                    }
+                }
+
+                @include mixins.hoverBlue();
+            }
+        }
+    }
+}

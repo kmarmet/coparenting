@@ -18,122 +18,126 @@ import AddressInput from '../../shared/addressInput'
 import InputField from '../../shared/inputField'
 
 function General({activeChild}) {
-  const {state, setState} = useContext(globalState)
-  const {theme, refreshKey} = state
-  const {currentUser} = useCurrentUser()
-  const {sharedChildInfo} = useSharedChildInfo()
-  const [generalValues, setGeneralValues] = useState(Manager.IsValid(activeChild?.general) ? Object.entries(activeChild?.general) : [])
-  const [showInputs, setShowInputs] = useState(false)
+    const {state, setState} = useContext(globalState)
+    const {theme, refreshKey} = state
+    const {currentUser} = useCurrentUser()
+    const {sharedChildInfo} = useSharedChildInfo()
+    const [generalValues, setGeneralValues] = useState(Manager.IsValid(activeChild?.general) ? Object.entries(activeChild?.general) : [])
+    const [showInputs, setShowInputs] = useState(false)
 
-  const DeleteProp = async (prop) => {
-    // Delete Shared
-    const sharedProps = sharedChildInfo?.map((x) => x?.prop)
-    if (Manager.IsValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
-      const scopedSharingObject = await DB.find(sharedChildInfo, ['prop', prop.toLowerCase()], false)
-      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharedChildInfo, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
-      await SetSelectedChildData()
-    } else {
-      const childIndex = DB.GetChildIndex(currentUser?.children, activeChild?.id)
-      await DB_UserScoped.DeleteChildInfoProp(currentUser?.key, childIndex, 'general', StringManager.formatDbProp(prop))
-      await SetSelectedChildData()
+    const DeleteProp = async (prop) => {
+        // Delete Shared
+        const sharedProps = sharedChildInfo?.map((x) => x?.prop)
+        if (Manager.IsValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
+            const scopedSharingObject = await DB.find(sharedChildInfo, ['prop', prop.toLowerCase()], false)
+            await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharedChildInfo, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
+            await SetSelectedChildData()
+        } else {
+            const childIndex = DB.GetChildIndex(currentUser?.children, activeChild?.id)
+            await DB_UserScoped.DeleteChildInfoProp(currentUser?.key, childIndex, 'general', StringManager.formatDbProp(prop))
+            await SetSelectedChildData()
+        }
     }
-  }
 
-  const SetSelectedChildData = async () => {
-    let sharedValues = []
-    if (Manager.IsValid(sharedChildInfo)) {
-      for (let obj of sharedChildInfo) {
-        sharedValues.push([obj.prop, obj.value, obj.sharedByName])
-      }
+    const SetSelectedChildData = async () => {
+        let sharedValues = []
+        if (Manager.IsValid(sharedChildInfo)) {
+            for (let obj of sharedChildInfo) {
+                sharedValues.push([obj.prop, obj.value, obj.sharedByName])
+            }
+        }
+        if (Manager.IsValid(activeChild?.general)) {
+            let values = Object.entries(activeChild?.general)
+
+            if (Manager.IsValid(sharedValues)) {
+                values = [...values, ...sharedValues]
+            }
+            const valuesArr = values.filter((x) => x[1]?.length === 0)?.map((x) => x[1])
+
+            if (valuesArr.length === values.length) {
+                setGeneralValues([])
+            } else {
+                setGeneralValues(values)
+            }
+        } else {
+            if (sharedValues.length > 0) {
+                setGeneralValues(sharedValues)
+            } else {
+                setGeneralValues([])
+            }
+        }
     }
-    if (Manager.IsValid(activeChild?.general)) {
-      let values = Object.entries(activeChild?.general)
 
-      if (Manager.IsValid(sharedValues)) {
-        values = [...values, ...sharedValues]
-      }
-      const valuesArr = values.filter((x) => x[1]?.length === 0)?.map((x) => x[1])
-
-      if (valuesArr.length === values.length) {
-        setGeneralValues([])
-      } else {
-        setGeneralValues(values)
-      }
-    } else {
-      if (sharedValues.length > 0) {
-        setGeneralValues(sharedValues)
-      } else {
-        setGeneralValues([])
-      }
+    const Update = async (prop, value) => {
+        await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, 'general', StringManager.formatDbProp(prop), value)
+        // setState({...state, successAlertMessage: `${StringManager.FormatTitle(prop, true)} has been updated`})
     }
-  }
 
-  const Update = async (prop, value) => {
-    await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, 'general', StringManager.formatDbProp(prop), value)
-    // setState({...state, successAlertMessage: `${StringManager.FormatTitle(prop, true)} has been updated`})
-  }
+    useEffect(() => {
+        SetSelectedChildData().then()
+    }, [activeChild, sharedChildInfo])
 
-  useEffect(() => {
-    SetSelectedChildData().then()
-  }, [activeChild, sharedChildInfo])
-
-  return (
-    <div className="info-section section general" key={refreshKey}>
-      {Manager.IsValid(currentUser) && Manager.IsValid(currentUser?.key) && Manager.IsValid(activeChild) && (
-        <Accordion className={`${theme} child-info`} expanded={showInputs}>
-          <AccordionSummary
-            onClick={() => setShowInputs(!showInputs)}
-            className={!Manager.IsValid(activeChild?.general) ? 'disabled header general' : 'header general'}>
-            <PiIdentificationCardFill className={'svg general'} />
-            <p id="toggle-button" className={showInputs ? 'active' : ''}>
-              General
-              {!Manager.IsValid(generalValues) ? '- no info' : ''}
-              {Manager.IsValid(generalValues) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
-            </p>
-          </AccordionSummary>
-          <AccordionDetails>
-            <div className="gradient padding">
-              {Manager.IsValid(generalValues) &&
-                generalValues.map((prop, index) => {
-                  let infoLabel = StringManager.SpaceBetweenWords(prop[0])
-                  const value = prop[1]
-                  return (
-                    <div
-                      key={index}
-                      className={`data-row ${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''} ${index === generalValues.length - 1 ? 'last' : ''}`}>
-                      {Manager.Contains(infoLabel.toLowerCase(), 'address') && (
-                        <AddressInput
-                          showAddressTypeSelector={false}
-                          labelText="Home Address"
-                          onChange={(address) => Update(infoLabel, address)}
-                          defaultValue={activeChild?.general?.address}
-                        />
-                      )}
-                      {!Manager.Contains(infoLabel.toLowerCase(), 'address') && (
-                        <>
-                          <InputField
-                            wrapperClasses={`${index === generalValues.length - 2 ? 'last' : ''}`}
-                            hasBottomSpacer={false}
-                            inputType={InputTypes.text}
-                            placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
-                            defaultValue={value}
-                            onChange={async (e) => {
-                              const inputValue = e.target.value
-                              await Update(infoLabel, inputValue)
-                            }}
-                          />
-                          {infoLabel.toLowerCase() !== 'name' && <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />}
-                        </>
-                      )}
-                    </div>
-                  )
-                })}
-            </div>
-          </AccordionDetails>
-        </Accordion>
-      )}
-    </div>
-  )
+    return (
+        <div className="info-section section general" key={refreshKey}>
+            {Manager.IsValid(currentUser) && Manager.IsValid(currentUser?.key) && Manager.IsValid(activeChild) && (
+                <Accordion className={`${theme} child-info`} expanded={showInputs}>
+                    <AccordionSummary
+                        onClick={() => setShowInputs(!showInputs)}
+                        className={!Manager.IsValid(activeChild?.general) ? 'disabled header general' : 'header general'}>
+                        <PiIdentificationCardFill className={'svg general'} />
+                        <p id="toggle-button" className={showInputs ? 'active' : ''}>
+                            General
+                            {!Manager.IsValid(generalValues) ? '- no info' : ''}
+                            {Manager.IsValid(generalValues) && (
+                                <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>
+                            )}
+                        </p>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <div className="gradient padding">
+                            {Manager.IsValid(generalValues) &&
+                                generalValues.map((prop, index) => {
+                                    let infoLabel = StringManager.SpaceBetweenWords(prop[0])
+                                    const value = prop[1]
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={`data-row ${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''} ${index === generalValues.length - 1 ? 'last' : ''}`}>
+                                            {Manager.Contains(infoLabel.toLowerCase(), 'address') && (
+                                                <AddressInput
+                                                    showAddressTypeSelector={false}
+                                                    labelText="Home Address"
+                                                    onChange={(address) => Update(infoLabel, address)}
+                                                    defaultValue={activeChild?.general?.address}
+                                                />
+                                            )}
+                                            {!Manager.Contains(infoLabel.toLowerCase(), 'address') && (
+                                                <>
+                                                    <InputField
+                                                        wrapperClasses={`${index === generalValues.length - 2 ? 'last' : ''}`}
+                                                        hasBottomSpacer={false}
+                                                        inputType={InputTypes.text}
+                                                        placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
+                                                        defaultValue={value}
+                                                        onChange={async (e) => {
+                                                            const inputValue = e.target.value
+                                                            await Update(infoLabel, inputValue)
+                                                        }}
+                                                    />
+                                                    {infoLabel.toLowerCase() !== 'name' && (
+                                                        <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+                                    )
+                                })}
+                        </div>
+                    </AccordionDetails>
+                </Accordion>
+            )}
+        </div>
+    )
 }
 
 export default General

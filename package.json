@@ -114,7 +114,7 @@
     "deleteAllButPng": "cd dist && del /S /F *.jpg && del /S /F *.ttf && del /S /F *.gif && del /S /F *.woff && del /S /F *.woff2 && del /S /F *.svg",
     "deleteAllButJpg": "cd dist  && del /S /F *.ico && del /S /F *.png && del /S /F *.ttf && del /S /F *.gif && del /S /F *.woff && del /S /F *.woff2 && del /S /F *.svg",
     "deleteAllButJpgAndPng": "cd dist && del /S /F *.ttf && del /S /F *.gif && del /S /F *.woff && del /S /F *.woff2 && del /S /F *.svg",
-    "deleteUnwantedFilesFromBuild": "cd dist && del /S /F *.jpg && del /S /F *.webmanifest && del /S /F *.ico && del /S /F *.png && del /S /F *.ttf && del /S /F *.gif && del /S /F *.woff && del /S /F *.woff2 && del /S /F *.svg",
+    "deleteUnwantedFilesFromBuild": "cd dist && del /S /F *.jpg && del /S /F *.webmanifest && del /S /F *.ico && del /S /F *.png && del /S /F *.ttf && del /S /F *.map && del /S /F *.gif && del /S /F *.woff && del /S /F *.woff2 && del /S /F *.svg",
     "buildHtml": "parcel build public/index.html",
     "deleteBuild": "del /S /F /Q dist && npm run removeParcelCache",
     "removeUnusedPackages": "rm -rf node_modules && npm install",

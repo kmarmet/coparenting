@@ -1,0 +1,827 @@
+@use '../utils/variables';
+@use '../utils/_palette';
+@use '../utils/mixins';
+
+#external-overrides {
+    /*#region  OUTSIDE APP CONTAINER */
+    @media screen and (min-width: 1600px) {
+        .full-menu {
+            #full-menu {
+                gap: 10px;
+                .menu-item {
+                    width: 23%;
+                    height: 150px;
+                }
+            }
+        }
+
+        #form {
+            #relative-wrapper {
+                .buttons {
+                    padding-bottom: 0;
+                }
+            }
+
+            &.full-menu {
+                .buttons {
+                    background-color: transparent !important;
+                }
+            }
+        }
+    }
+    @media screen and (min-width: 815px) {
+        #bottom-actions {
+            left: unset;
+            right: 120px;
+            #toc-button {
+                &#toc-button {
+                    width: 200px;
+                    bottom: -46px;
+                    left: unset;
+                    right: 0;
+                    transform: unset;
+                    @include hoverShadow;
+                    @include bestShadow;
+                }
+            }
+        }
+    }
+
+    /*#endregion OUTSIDE APP CONTAINER */
+
+    /*#region  > 800px CONTAINER*/
+    #app-container {
+        @media screen and (min-width: 800px) {
+            .actions {
+                .actions-button-wrapper {
+                    position: relative;
+                    top: -5px;
+                    svg {
+                        transform: scale(1);
+                        color: palette.$darkerGrey;
+                    }
+                }
+                &.active {
+                    max-height: 1000px;
+                    .children {
+                        width: 300px;
+                        position: relative;
+                        float: right;
+                        right: 0;
+                        top: 40px;
+                        z-index: $maxZIndex;
+                    }
+                }
+            }
+            #screen-title-wrapper {
+                svg {
+                    transform: scale(1.1);
+                    color: palette.$green;
+                    @include hover;
+
+                    &.actions-button {
+                        transform: scale(1);
+                        bottom: unset;
+                        right: unset;
+                        color: palette.$darkerGrey;
+                    }
+                }
+            }
+            .page-container:not(.home):not(.login) {
+                padding: 20px 20px 200px 20px;
+                max-height: calc(100vh - 110px);
+                border: 1px solid palette.$lightBorderColor;
+                border-radius: variables.$bigBorderRadius;
+
+                &.calendar {
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                }
+
+                &.documents {
+                    background: white;
+                    max-height: unset;
+                }
+            }
+            .page-container {
+                position: relative;
+                &.home {
+                    height: auto;
+                }
+            }
+
+            // DOCUMENTS
+            #documents-container {
+                #doc-text {
+                    max-width: 100%;
+                }
+            }
+
+            // APP CONTENT WITH SIDEBAR
+            #app-content-with-sidebar {
+                &.fullscreen {
+                    margin: 0;
+                    height: 100vh;
+                    background: white;
+                    width: 100vw;
+                }
+                #forgot-password-container {
+                    margin-top: 15px;
+                    max-width: 60vw;
+
+                    .button {
+                        width: 25%;
+                    }
+                }
+                #login-container {
+                    padding-top: 15px;
+
+                    .form-container {
+                        width: 55vw;
+                        margin: 0 auto;
+                    }
+
+                    #forgot-password-link {
+                        max-width: 180px;
+                        @media screen and (min-width: 650px) {
+                            @include hover;
+                        }
+                    }
+
+                    .buttons {
+                        justify-content: flex-start;
+
+                        button {
+                            width: 25%;
+                        }
+                    }
+                }
+            }
+
+            // INSTRUCTIONS WRAPPER
+            #no-data-text-wrapper {
+                //        width: 100%;
+                //        max-width: 100%;
+                //        height: 100%;
+                .instructions {
+                    text-align: center;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                    height: 100%;
+                    &.center {
+                        text-align: center;
+                        font-size: 14px;
+                        left: unset;
+                        right: unset;
+                        width: unset;
+                        top: unset;
+                        bottom: unset;
+                        transform: unset;
+                        position: relative;
+                    }
+                }
+            }
+
+            // MUI - STATIC CALENDAR
+            .MuiPaper-root {
+                max-width: 100%;
+            }
+            #static-calendar {
+                display: flex;
+                align-items: flex-start;
+                justify-content: center;
+                flex-wrap: wrap;
+
+                #calendar-month {
+                    width: 100%;
+                }
+
+                .MuiYearCalendar-root {
+                    background: palette.$grey;
+                }
+                .MuiPickersLayout-root {
+                    max-width: 50vw !important;
+                }
+                .MuiPickersLayout-contentWrapper {
+                    * {
+                        max-width: 50vw !important;
+                    }
+                }
+                .MuiPickersLayout-actionBar {
+                    display: none;
+                }
+            }
+            .MuiDateCalendar-root {
+                .MuiPickersDay-root,
+                .MuiDayCalendar-weekDayLabel {
+                    width: 80px !important;
+                    height: 50px !important;
+
+                    &.Mui-selected {
+                        width: 60px !important;
+                        height: 50px !important;
+                    }
+                }
+            }
+            .MuiDialogActions-root {
+                max-width: 50vw !important;
+            }
+
+            // CALENDAR
+            #calendar-container {
+                border: 1px solid palette.$lightBorderColor;
+                border-radius: variables.$bigBorderRadius;
+                .events {
+                    max-height: 20vh;
+                }
+            }
+            #calendar-sidebar {
+                background: white;
+                padding: 20px;
+                border-radius: variables.$bigBorderRadius;
+                border: 1px solid palette.$lightBorderColor;
+
+                @media screen and (max-width: 600px) {
+                    display: none;
+                }
+
+                #desktop-legend-wrapper {
+                    margin-bottom: 15px;
+
+                    #legend-row {
+                        transition: all 0.3s ease-in-out;
+
+                        &:hover {
+                            opacity: 1;
+                            color: palette.$main;
+                            padding-left: 15px;
+                            cursor: pointer;
+
+                            label {
+                                color: palette.$main;
+                                opacity: 1;
+                                cursor: pointer;
+
+                                span {
+                                    color: palette.$main;
+                                }
+                            }
+                        }
+                        svg {
+                            font-size: 20px;
+                            margin-right: 17px;
+                            opacity: 0.75;
+                        }
+
+                        label {
+                            span {
+                                font-weight: variables.$fwRegular;
+                                opacity: 0.75;
+                                color: black;
+                            }
+                        }
+                    }
+
+                    .flex {
+                        align-items: center;
+
+                        &.currentUser {
+                            margin-top: 5px;
+                        }
+                    }
+
+                    #legend-content {
+                        opacity: 0;
+                        transition: all 0.3s ease-in-out;
+                        transform: scale(0);
+                        max-height: 0;
+
+                        &.active {
+                            max-height: 500px;
+                            margin-top: 10px;
+                            opacity: 1;
+                            transform: scale(1);
+                        }
+
+                        p {
+                            font-size: 14px;
+                            margin-top: 0;
+                            opacity: 1;
+                            text-align: center;
+                            justify-content: center;
+                            &.currentUser {
+                                color: palette.$main;
+                            }
+                            &.coparent {
+                                color: palette.$purple;
+                            }
+                            &.standard {
+                                color: palette.$holidayOrange;
+                            }
+                            &.financial {
+                                color: palette.$green;
+                            }
+                        }
+                    }
+                }
+
+                input {
+                    &::placeholder {
+                        font-size: 12px;
+                        font-style: italic;
+                        opacity: 0.8;
+                    }
+                }
+
+                .item {
+                    margin-top: 0;
+                    margin-bottom: 15px;
+                    display: flex;
+                    align-items: center;
+                    transition: all 0.3s ease-in-out;
+
+                    &#holidays-button {
+                        svg {
+                            font-size: 20px;
+                            opacity: 0.75;
+                        }
+                    }
+
+                    &:hover {
+                        opacity: 1;
+                        color: palette.$main;
+                        padding-left: 15px;
+                        cursor: pointer;
+                    }
+                    * {
+                        line-height: 1;
+                    }
+
+                    &#new-event {
+                        color: palette.$green;
+                        font-weight: variables.$fwMedium;
+                        opacity: 1;
+                    }
+
+                    &:not(#new-event) {
+                        @media screen and (min-width: 650px) {
+                            &:hover {
+                                color: palette.$main;
+                            }
+                        }
+                    }
+
+                    svg {
+                        font-size: 22px;
+                        margin-right: 15px;
+                        opacity: 0.75;
+                    }
+                }
+            }
+
+            // SECTION
+            .section {
+                &.unique-features {
+                    .feature {
+                        @include hover;
+                    }
+                }
+            }
+
+            // BUTTONS
+            button {
+                &.button {
+                    &.default {
+                        @media screen and (min-width: 650px) {
+                            &.default {
+                                &:hover {
+                                    background-color: palette.$main;
+                                    color: white;
+                                    border: unset;
+                                }
+
+                                &.green {
+                                    &:hover {
+                                        background: palette.$green;
+                                        color: white;
+                                        border: unset;
+                                    }
+                                }
+
+                                &.red {
+                                    &:hover {
+                                        background: $red;
+                                        color: white;
+                                        border: unset;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // CHILD INFO
+            #child-info-container {
+                .button {
+                    &.default {
+                        &.center {
+                            min-width: 25%;
+                        }
+                    }
+                }
+            }
+
+            // MEMORIES
+            #memories-container {
+                .light-gallery {
+                    gap: 20px;
+                    display: grid !important;
+                    flex-wrap: nowrap;
+                    grid-template-columns: repeat(4, 1fr);
+
+                    .memory {
+                        background: unset;
+                        padding: unset;
+                        border: unset;
+
+                        #below-image {
+                            margin: 0;
+                            justify-content: center;
+                        }
+                    }
+
+                    .memory-image {
+                        @include hover;
+                        height: 150px;
+                        min-height: 0;
+                        border: 1px solid $grey;
+                        @media screen and (min-width: 650px) {
+                            &:hover {
+                                @include bestShadow;
+                                border: unset;
+                            }
+                        }
+
+                        .close-x {
+                            font-size: 22px;
+                            height: unset;
+                            width: unset;
+                            color: palette.$red;
+                            @media screen and (min-width: 650px) {
+                                &:hover {
+                                    @include bestShadow;
+                                    border: unset;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            #disclaimer {
+                max-width: 70%;
+                margin: 0 auto;
+
+                p {
+                    width: auto;
+                    font-size: 14px;
+                    opacity: 0.5;
+                    font-style: italic;
+                }
+            }
+
+            // SHARE WITH WRAPPER
+            .share-with-container {
+                width: 100%;
+                @media screen and (min-width: 800px) {
+                    display: flex;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+
+                    .MuiAccordionSummary-content,
+                    .MuiAccordion-heading {
+                        .react-toggle {
+                            position: relative;
+                            left: 10px;
+                        }
+                    }
+
+                    .flex:not(#checkbox-container) {
+                        justify-content: space-between;
+                        width: 100%;
+                        padding: 0;
+                        margin: 0;
+                        .react-toggle {
+                            justify-self: flex-end;
+                        }
+                    }
+                    #checkbox-group {
+                        width: 100%;
+                    }
+                }
+            }
+
+            // BOTTOM CARD
+            #form {
+                max-height: 65vh;
+                max-width: 50vw;
+                border-radius: variables.$bigBorderRadius;
+                left: unset;
+                bottom: unset;
+                top: unset;
+                width: 45vw;
+                grid-column: 1;
+                grid-row: 1;
+                place-self: center center;
+
+                &.animate__fadeInUp {
+                    bottom: unset;
+                }
+
+                .buttons {
+                    padding-bottom: 15px;
+
+                    .card-button {
+                        @include hover;
+                    }
+                }
+                #relative-wrapper {
+                    overflow-y: scroll;
+
+                    #title-wrapper {
+                        top: 0;
+                    }
+                }
+
+                &.active {
+                    min-height: unset;
+                    max-height: unset;
+                    height: 90vh;
+                }
+
+                &.view-holidays {
+                    max-height: 25vh;
+                    min-height: 0;
+                    button {
+                        transform: unset;
+                    }
+
+                    #relative-wrapper {
+                        #holiday-card-buttons {
+                            margin: 15px 0;
+                            @media screen and (min-width: 650px) {
+                                button {
+                                    &#view-all-holidays-item {
+                                        &:hover {
+                                            background: palette.$green;
+                                            color: white;
+                                        }
+                                    }
+
+                                    &#view-visitation-holidays-item {
+                                        &:hover {
+                                            background: palette.$main;
+                                            color: white;
+
+                                            &.blue {
+                                                color: white;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                @media screen and (min-width: 650px) {
+                    .close-icon {
+                        @include hover;
+                    }
+
+                    #duration-options {
+                        .duration-option {
+                            @include hover;
+                        }
+                    }
+                }
+            }
+
+            // CHATS
+            #chats-container {
+                .thread-item {
+                    @media screen and (min-width: 650px) {
+                        @include hover;
+                    }
+                    .coparent-name {
+                        .last-message {
+                            padding-left: 10px;
+                        }
+                    }
+                }
+            }
+            #chat-wrapper {
+                margin-right: auto;
+                border-radius: variables.$bigBorderRadius;
+                flex-direction: row;
+                margin-left: 15px;
+                display: block;
+                height: calc(100vh - 110px);
+                border: 1px solid palette.$lightBorderColor;
+
+                .form:not(.input-container) {
+                    &.message-input-field {
+                        bottom: 15px;
+                        position: absolute;
+                        border-left: none;
+                        border-right: none;
+                        border-bottom: none;
+                        border-left: none;
+                        border: 0;
+                        border-radius: 0;
+                        max-width: 50vw;
+                        padding-bottom: 0;
+                    }
+                }
+
+                #default-messages,
+                #bookmark-messages,
+                #messages {
+                    padding-top: 10px;
+                    width: 100%;
+                    max-width: 55vw;
+                    position: relative;
+                    top: 0;
+                    max-height: calc(100% - 120px);
+                    border: 0;
+
+                    .message {
+                        svg {
+                            @media screen and (min-width: 650px) {
+                                @include hover;
+                            }
+                        }
+                    }
+
+                    .message {
+                        min-width: 200px;
+                        max-width: 35%;
+
+                        svg {
+                            @media screen and (min-width: 650px) {
+                                @include hover;
+                            }
+                        }
+                    }
+                }
+
+                .conversation-sidebar-fade-wrapper {
+                    .sidebar-search-input {
+                        &::placeholder {
+                            font-size: 14px;
+                            font-style: italic;
+                            opacity: 0.6;
+                        }
+                    }
+                }
+
+                .top-buttons {
+                    position: unset;
+                    order: 1;
+                    height: 40vh;
+                    margin-left: 20px;
+                    width: 20vw;
+                    border-radius: variables.$bigBorderRadius;
+                    border: 1px solid palette.$lightBorderColor;
+                    padding: 15px;
+                    background-color: white;
+
+                    .input-field {
+                        padding: 0;
+                    }
+
+                    #user-name {
+                        color: palette.$main;
+                        font-weight: variables.$fwMediumBold;
+                        font-size: 20px;
+                        margin: 0 0 15px 0;
+                    }
+
+                    .item {
+                        display: flex;
+                        margin-bottom: 15px;
+                        align-items: center;
+
+                        &#find-messages,
+                        &#view-bookmarks {
+                            opacity: 0.75;
+                            svg {
+                                font-size: 22px;
+                                margin-right: 10px;
+                                opacity: 0.65;
+                            }
+                        }
+
+                        @media screen and (min-width: 650px) {
+                            &:hover {
+                                cursor: pointer;
+                                color: palette.$main;
+                            }
+                        }
+
+                        svg {
+                            font-size: 22px;
+                            margin-right: 20px;
+                            opacity: 0.85;
+                        }
+                    }
+                }
+
+                .form:not(.input-container) {
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    border-left: 1px solid $lightBorderColor;
+                    border-right: 1px solid $lightBorderColor;
+                    border-bottom: 1px solid $lightBorderColor;
+                    border-radius: 0 0 $bigBorderRadius $bigBorderRadius;
+                    //          position: fixed;
+
+                    .message-input {
+                        backdrop-filter: blur(20px);
+                    }
+
+                    #message-input-container {
+                        padding: 0;
+                        justify-content: center;
+                        width: 100%;
+                    }
+
+                    #send-button {
+                        right: unset;
+                        opacity: unset;
+                        width: 100px;
+                        color: white;
+                        margin-left: 20px;
+                    }
+                }
+            }
+
+            // Navbar
+            #navbar {
+                @media screen and (min-width: 800px) {
+                    width: auto;
+                    background: transparent;
+                    position: sticky;
+                    right: 10vw;
+                    margin: 0;
+                    padding: 0;
+                    top: 50%;
+                    bottom: 50%;
+                    display: none;
+
+                    #menu-items {
+                        background: transparent;
+                        width: auto;
+
+                        #svg-wrapper {
+                            @media screen and (min-width: 650px) {
+                                &:hover {
+                                    cursor: pointer;
+                                    transition: all 0.3s ease-in-out;
+                                    transform: scale(1.1);
+                                }
+                            }
+                        }
+
+                        .menu-item {
+                            &:not(.add) {
+                                display: none;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .page-container {
+            &:not(.home) {
+                align-self: stretch;
+                @media screen and (max-width: 600px) {
+                    //          height: 100vh;
+                }
+                @media (min-width: 768px), (max-width: 1024px) {
+                    //          width: 100vw;
+                    //          max-width: 100vw;
+                }
+                @media screen and (min-width: 1600px) {
+                    //          width: 50vw;
+                    //          max-width: 50vw;
+                }
+            }
+        }
+    }
+    /*#endregion  > 800px CONTAINER*/
+}

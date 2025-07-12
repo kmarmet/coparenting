@@ -1,5 +1,5 @@
 import DB from "../database/DB"
-import { getDatabase, ref, update } from 'firebase/database'
+import {getDatabase, ref, update} from 'firebase/database'
 import LogManager from "./logManager"
 import SecurityManager from "./securityManager"
 

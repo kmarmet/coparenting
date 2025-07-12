@@ -5,34 +5,34 @@ import DomManager from '../../managers/domManager'
 import Spacer from './spacer'
 
 const ScreenActionsMenu = ({children, centeredActionItem, title = 'Parent'}) => {
-  const {state, setState} = useContext(globalState)
-  const {theme, showScreenActions} = state
+    const {state, setState} = useContext(globalState)
+    const {theme, showScreenActions} = state
 
-  const handlers = useSwipeable({
-    swipeDuration: 300,
-    preventScrollOnSwipe: true,
-    onSwipedDown: () => {
-      setState({...state, showScreenActions: false})
-    },
-  })
+    const handlers = useSwipeable({
+        swipeDuration: 300,
+        preventScrollOnSwipe: true,
+        onSwipedDown: () => {
+            setState({...state, showScreenActions: false})
+        },
+    })
 
-  useEffect(() => {
-    DomManager.ToggleDisableScrollClass(showScreenActions ? 'disable-scroll' : '')
-  }, [showScreenActions])
+    useEffect(() => {
+        DomManager.ToggleDisableScrollClass(showScreenActions ? 'disable-scroll' : '')
+    }, [showScreenActions])
 
-  return (
-    <div className={`screen-actions-menu-wrapper${showScreenActions ? ' active' : ''}`}>
-      <div {...handlers} className={`screen-actions-card`}>
-        <div className="swipe-bar"></div>
-        <Spacer height={3} />
-        <div className={`${centeredActionItem ? 'centered action-items' : 'action-items'}${showScreenActions ? ' active' : ''}`}>
-          <p className="screen-actions-menu-title">{title}</p>
-          <Spacer height={10} />
-          {children}
+    return (
+        <div className={`screen-actions-menu-wrapper${showScreenActions ? ' active' : ''}`}>
+            <div {...handlers} className={`screen-actions-card`}>
+                <div className="swipe-bar"></div>
+                <Spacer height={3} />
+                <div className={`${centeredActionItem ? 'centered action-items' : 'action-items'}${showScreenActions ? ' active' : ''}`}>
+                    <p className="screen-actions-menu-title">{title}</p>
+                    <Spacer height={10} />
+                    {children}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  )
+    )
 }
 
 export default ScreenActionsMenu

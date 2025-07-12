@@ -16,125 +16,129 @@ const paypalLink = 'https://www.paypal.com/us/digital-wallet/send-receive-money'
 const cashappLink = 'https://cash.app/help/6485-getting-started-with-cash-app'
 
 export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
-  const {state, setState} = useContext(globalState)
-  const {theme} = state
+    const {state, setState} = useContext(globalState)
+    const {theme} = state
 
-  return (
-    <>
-      <Form
-        hasSubmitButton={false}
-        subtitle={`There are numerous straightforward and cost-free methods available for transferring money to a co-parent for expenses or other purposes. <br /><br /> Please review the options below to determine which one suits your needs best.`}
-        title={'Payment/Transfer Options'}
-        className="payment-options-card"
-        wrapperClass="payment-options-card at-top"
-        onClose={onClose}
-        showCard={showPaymentOptionsCard}>
-        {showPaymentOptionsCard && (
-          <div id="payment-options-card">
-            <div className="options">
-              {/* ZELLE */}
-              <div className="option zelle">
-                <div className="flex brand-name-wrapper zelle">
-                  <SiZelle className={'zelle-icon'} />
-                  <p className="brand-name accent">Zelle</p>
-                </div>
-                <div className="flex">
-                  <div className="text">
-                    <p className={`${theme} description payment-options`}>Safely send money to co-parent, no matter where they bank.</p>
-                    <a href={zelleLink} target="_blank" className="setup-instructions" rel="noreferrer">
-                      Learn More
-                    </a>
-                  </div>
-                </div>
-                <iframe
-                  width="560"
-                  height="315"
-                  src={zelleVideoLink}
-                  title="Zelle® | How it Works"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen></iframe>
-              </div>
+    return (
+        <>
+            <Form
+                hasSubmitButton={false}
+                subtitle={`There are numerous straightforward and cost-free methods available for transferring money to a co-parent for expenses or other purposes. <br /><br /> Please review the options below to determine which one suits your needs best.`}
+                title={'Payment/Transfer Options'}
+                className="payment-options-card"
+                wrapperClass="payment-options-card at-top"
+                onClose={onClose}
+                showCard={showPaymentOptionsCard}>
+                {showPaymentOptionsCard && (
+                    <div id="payment-options-card">
+                        <div className="options">
+                            {/* ZELLE */}
+                            <div className="option zelle">
+                                <div className="flex brand-name-wrapper zelle">
+                                    <SiZelle className={'zelle-icon'} />
+                                    <p className="brand-name accent">Zelle</p>
+                                </div>
+                                <div className="flex">
+                                    <div className="text">
+                                        <p className={`${theme} description payment-options`}>
+                                            Safely send money to co-parent, no matter where they bank.
+                                        </p>
+                                        <a href={zelleLink} target="_blank" className="setup-instructions" rel="noreferrer">
+                                            Learn More
+                                        </a>
+                                    </div>
+                                </div>
+                                <iframe
+                                    width="560"
+                                    height="315"
+                                    src={zelleVideoLink}
+                                    title="Zelle® | How it Works"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerPolicy="strict-origin-when-cross-origin"
+                                    allowFullScreen></iframe>
+                            </div>
 
-              <Spacer height={10} />
-              {/* VENMO */}
-              <div className="option venmo">
-                <div className="flex brand-name-wrapper venmo">
-                  <IoLogoVenmo className={'venmo-icon'} />
-                  <p className="brand-name">Venmo</p>
-                </div>
-                <div className="flex">
-                  <div className="text">
-                    <p className={`${theme} description payment-options`}>Fast, safe, social payments.</p>
-                    <a href={venmoLink} target="_blank" className="setup-instructions" rel="noreferrer">
-                      Learn More
-                    </a>
-                  </div>
-                </div>
-                <iframe
-                  src={venmoVideoLink}
-                  title="Paying or Requesting Payment From Multiple CoParents in a Single Transaction"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen></iframe>
-              </div>
+                            <Spacer height={10} />
+                            {/* VENMO */}
+                            <div className="option venmo">
+                                <div className="flex brand-name-wrapper venmo">
+                                    <IoLogoVenmo className={'venmo-icon'} />
+                                    <p className="brand-name">Venmo</p>
+                                </div>
+                                <div className="flex">
+                                    <div className="text">
+                                        <p className={`${theme} description payment-options`}>Fast, safe, social payments.</p>
+                                        <a href={venmoLink} target="_blank" className="setup-instructions" rel="noreferrer">
+                                            Learn More
+                                        </a>
+                                    </div>
+                                </div>
+                                <iframe
+                                    src={venmoVideoLink}
+                                    title="Paying or Requesting Payment From Multiple CoParents in a Single Transaction"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerPolicy="strict-origin-when-cross-origin"
+                                    allowFullScreen></iframe>
+                            </div>
 
-              <Spacer height={10} />
+                            <Spacer height={10} />
 
-              {/* APPLE PAY */}
-              <div className="option apple-cash">
-                <div className="flex brand-name-wrapper apple">
-                  <ImAppleinc className={'apple-icon'} />
-                  <p className="brand-name">Apple Cash</p>
-                </div>
-                <div className="flex ">
-                  <div className="text">
-                    <p className={`${theme} description payment-options`}>Use Apple Cash to send and receive money with people you know.</p>
-                    <a href={appleLink} target="_blank" className="setup-instructions" rel="noreferrer">
-                      Learn More
-                    </a>
-                  </div>
-                </div>
-              </div>
+                            {/* APPLE PAY */}
+                            <div className="option apple-cash">
+                                <div className="flex brand-name-wrapper apple">
+                                    <ImAppleinc className={'apple-icon'} />
+                                    <p className="brand-name">Apple Cash</p>
+                                </div>
+                                <div className="flex ">
+                                    <div className="text">
+                                        <p className={`${theme} description payment-options`}>
+                                            Use Apple Cash to send and receive money with people you know.
+                                        </p>
+                                        <a href={appleLink} target="_blank" className="setup-instructions" rel="noreferrer">
+                                            Learn More
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
 
-              <Spacer height={10} />
-              {/* PAYPAL */}
-              <div className="option paypal">
-                <div className="flex brand-name-wrapper paypal">
-                  <LiaCcPaypal className={'paypal-icon'} />
-                  <p className="brand-name">PayPal</p>
-                </div>
-                <div className="flex">
-                  <div className="text">
-                    <p className={`${theme} description payment-options`}>Send and request money, quickly and securely.</p>
-                    <a href={paypalLink} target="_blank" className="setup-instructions" rel="noreferrer">
-                      Learn More
-                    </a>
-                  </div>
-                </div>
-              </div>
+                            <Spacer height={10} />
+                            {/* PAYPAL */}
+                            <div className="option paypal">
+                                <div className="flex brand-name-wrapper paypal">
+                                    <LiaCcPaypal className={'paypal-icon'} />
+                                    <p className="brand-name">PayPal</p>
+                                </div>
+                                <div className="flex">
+                                    <div className="text">
+                                        <p className={`${theme} description payment-options`}>Send and request money, quickly and securely.</p>
+                                        <a href={paypalLink} target="_blank" className="setup-instructions" rel="noreferrer">
+                                            Learn More
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
 
-              <Spacer height={10} />
-              {/* CASHAPP */}
-              <div className="option cashapp">
-                <div className="flex brand-name-wrapper cashapp">
-                  <SiCashapp />
-                  <p className="brand-name">CashApp</p>
-                </div>
-                <div className="flex">
-                  <div className="text">
-                    <p className={`${theme} description payment-options`}>Pay anyone, instantly.</p>
-                    <a href={cashappLink} target="_blank" className="setup-instructions" rel="noreferrer">
-                      Learn More
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </Form>
-    </>
-  )
+                            <Spacer height={10} />
+                            {/* CASHAPP */}
+                            <div className="option cashapp">
+                                <div className="flex brand-name-wrapper cashapp">
+                                    <SiCashapp />
+                                    <p className="brand-name">CashApp</p>
+                                </div>
+                                <div className="flex">
+                                    <div className="text">
+                                        <p className={`${theme} description payment-options`}>Pay anyone, instantly.</p>
+                                        <a href={cashappLink} target="_blank" className="setup-instructions" rel="noreferrer">
+                                            Learn More
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </Form>
+        </>
+    )
 }

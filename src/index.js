@@ -12,7 +12,7 @@ import AlertManager from './managers/alertManager'
 import AppManager from './managers/appManager'
 
 // CACHING
-const CACHE_KEY = 'v1.0.15'
+const CACHE_KEY = 'v1.0.18'
 const FILES_TO_CACHE = ['/', '/index.html', '/src/index.js', '/src/App.js', '/src/styles/bundle.css']
 
 const logout = () => {
@@ -64,15 +64,12 @@ if ('serviceWorker' in navigator) {
     // Check connection
     window.addEventListener('offline', HandleConnection)
 
-    // Track update state
-    let isUpdateAvailable = false
-
     // Get public url
     const publicUrl = window.location.hostname.indexOf('localhost') > -1 ? 'http://localhost:1234' : process.env.REACT_APP_PUBLIC_URL
 
-    const renderRoot = () => {
+    const renderRoot = (updateIsAvailable = false) => {
         const root = createRoot(document.getElementById('root'))
-        if (!isUpdateAvailable) {
+        if (updateIsAvailable === false) {
             root.render(
                 <ErrorBoundary
                     fallback={
@@ -357,12 +354,7 @@ if ('serviceWorker' in navigator) {
     if (!AppManager.IsDevMode()) {
         const previousCacheKey = localStorage.getItem('sw-cache-key')
         navigator.serviceWorker
-            .register(`${publicUrl}/OneSignalSDKWorker.js`, {
-                onUpdate: () => {
-                    isUpdateAvailable = true
-                    renderRoot() // Re-render with update screen
-                },
-            })
+            .register(`${publicUrl}/OneSignalSDKWorker.js`)
             .then((registration) => {
                 registration.onupdatefound = () => {
                     const newSW = registration.installing
@@ -372,6 +364,9 @@ if ('serviceWorker' in navigator) {
                             console.log('Update available!')
                             localStorage.setItem('sw-cache-key', CACHE_KEY)
                             newSW.postMessage({action: 'skipWaiting'})
+                            renderRoot(true)
+                        } else {
+                            renderRoot(false)
                         }
                     }
                 }

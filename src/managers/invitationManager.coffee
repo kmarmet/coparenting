@@ -2,7 +2,7 @@ import DB from "../database/DB"
 import LogManager from "./logManager"
 import Manager from "./manager"
 import DatasetManager from "./datasetManager"
-import { child, getDatabase, ref, set } from 'firebase/database'
+import {child, getDatabase, ref, set} from 'firebase/database'
 
 export default InvitationManager =
   AddInvitation: (invitation, currentUserKey) ->

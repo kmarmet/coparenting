@@ -8,19 +8,19 @@ import StringManager from '../../managers/stringManager'
 import LazyImage from './lazyImage'
 
 export default function BrandBar() {
-  const {state, setState} = useContext(globalState)
-  const {theme, currentUser} = state
-  return (
-    <div id="brand-bar">
-      <div id="content">
-        <div id="left" onClick={() => setState({...state, currentScreen: ScreenNames.calendar})}>
-          <LazyImage classes={'logo'} imgName={AppImages.landing.logo.name} alt="Peaceful Co-Parenting" />
+    const {state, setState} = useContext(globalState)
+    const {theme, currentUser} = state
+    return (
+        <div id="brand-bar">
+            <div id="content">
+                <div id="left" onClick={() => setState({...state, currentScreen: ScreenNames.calendar})}>
+                    <LazyImage classes={'logo'} imgName={AppImages.landing.logo.name} alt="Peaceful Co-Parenting" />
+                </div>
+                <div id="right" onClick={() => setState({...state, currentScreen: ScreenNames.profile})}>
+                    <FaFaceSmile />
+                    <p id="name">{StringManager.GetFirstNameOnly(currentUser?.name)}</p>
+                </div>
+            </div>
         </div>
-        <div id="right" onClick={() => setState({...state, currentScreen: ScreenNames.profile})}>
-          <FaFaceSmile />
-          <p id="name">{StringManager.GetFirstNameOnly(currentUser?.name)}</p>
-        </div>
-      </div>
-    </div>
-  )
+    )
 }

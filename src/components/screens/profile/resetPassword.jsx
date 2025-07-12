@@ -13,44 +13,49 @@ import InputField from '../../shared/inputField'
 import Spacer from '../../shared/spacer'
 
 export default function ResetPassword() {
-  const {state, setState} = useContext(globalState)
-  const {theme, firebaseUser} = state
-  const app = initializeApp(firebaseConfig)
-  const auth = getAuth(app)
-  const email = useRef('')
+    const {state, setState} = useContext(globalState)
+    const {theme, firebaseUser} = state
+    const app = initializeApp(firebaseConfig)
+    const auth = getAuth(app)
+    const email = useRef('')
 
-  const SendResetLink = async () => {
-    if (!validator.isEmail(email.current)) {
-      AlertManager.throwError('Email is not valid')
-      return false
+    const SendResetLink = async () => {
+        if (!validator.isEmail(email.current)) {
+            AlertManager.throwError('Email is not valid')
+            return false
+        }
+        await sendPasswordResetEmail(auth, email.current)
+            .then(async () => {
+                AlertManager.successAlert('A reset link has been sent to your email')
+                setState({
+                    ...state,
+                    currentScreen: ScreenNames.login,
+                    userIsLoggedIn: true,
+                })
+            })
+            .catch(() => {
+                AlertManager.throwError('Profile not Found', 'We could not find an profile with the email provided')
+                return false
+            })
     }
-    await sendPasswordResetEmail(auth, email.current)
-      .then(async () => {
-        AlertManager.successAlert('A reset link has been sent to your email')
-        setState({
-          ...state,
-          currentScreen: ScreenNames.login,
-          userIsLoggedIn: true,
-        })
-      })
-      .catch(() => {
-        AlertManager.throwError('Profile not Found', 'We could not find an profile with the email provided')
-        return false
-      })
-  }
 
-  return (
-    <Form
-      onClose={() => setState({...state, currentScreen: ScreenNames.login})}
-      title={'Reset Password'}
-      submitText={'Send Reset Link'}
-      showCard={true}
-      onSubmit={SendResetLink}
-      wrapperClass="reset-password">
-      <Spacer height={10} />
-      <div className="screen-content">
-        <InputField placeholder={'Email Address'} required={true} inputType={InputTypes.email} onChange={(e) => (email.current = e.target.value)} />
-      </div>
-    </Form>
-  )
+    return (
+        <Form
+            onClose={() => setState({...state, currentScreen: ScreenNames.login})}
+            title={'Reset Password'}
+            submitText={'Send Reset Link'}
+            showCard={true}
+            onSubmit={SendResetLink}
+            wrapperClass="reset-password">
+            <Spacer height={10} />
+            <div className="screen-content">
+                <InputField
+                    placeholder={'Email Address'}
+                    required={true}
+                    inputType={InputTypes.email}
+                    onChange={(e) => (email.current = e.target.value)}
+                />
+            </div>
+        </Form>
+    )
 }

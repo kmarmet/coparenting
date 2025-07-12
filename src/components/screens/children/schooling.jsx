@@ -17,127 +17,129 @@ import StringManager from '../../../managers/stringManager'
 import InputField from '../../shared/inputField'
 
 export default function Schooling({activeChild}) {
-  const {state, setState} = useContext(globalState)
-  const {theme} = state
-  const [schoolingValues, setSchoolingValues] = useState([])
-  const [showInputs, setShowInputs] = useState(false)
-  const {currentUser} = useCurrentUser()
+    const {state, setState} = useContext(globalState)
+    const {theme} = state
+    const [schoolingValues, setSchoolingValues] = useState([])
+    const [showInputs, setShowInputs] = useState(false)
+    const {currentUser} = useCurrentUser()
 
-  const DeleteProp = async (prop) => {
-    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
+    const DeleteProp = async (prop) => {
+        const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
 
-    const existingPropCount = Object.keys(activeChild?.schooling).length
+        const existingPropCount = Object.keys(activeChild?.schooling).length
 
-    if (existingPropCount <= 1) {
-      const accordion = document.querySelector('.schooling.info-section')
-      if (accordion) {
-        accordion.querySelector('.MuiCollapse-root').remove()
-      }
-      setShowInputs(false)
+        if (existingPropCount <= 1) {
+            const accordion = document.querySelector('.schooling.info-section')
+            if (accordion) {
+                accordion.querySelector('.MuiCollapse-root').remove()
+            }
+            setShowInputs(false)
+        }
+
+        // Delete Shared
+        const sharedProps = sharing?.map((x) => x?.prop)
+        if (Manager.IsValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
+            const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
+            await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
+            await SetSelectedChild()
+        } else {
+            const childIndex = DB.GetChildIndex(currentUser?.children, activeChild?.id)
+            await DB_UserScoped.DeleteChildInfoProp(currentUser?.key, childIndex, 'schooling', StringManager.formatDbProp(prop))
+            await SetSelectedChild()
+        }
     }
 
-    // Delete Shared
-    const sharedProps = sharing?.map((x) => x?.prop)
-    if (Manager.IsValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
-      const scopedSharingObject = await DB.find(sharing, ['prop', prop.toLowerCase()], false)
-      await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharing, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
-      await SetSelectedChild()
-    } else {
-      const childIndex = DB.GetChildIndex(currentUser?.children, activeChild?.id)
-      await DB_UserScoped.DeleteChildInfoProp(currentUser?.key, childIndex, 'schooling', StringManager.formatDbProp(prop))
-      await SetSelectedChild()
-    }
-  }
-
-  const Update = async (prop, value) => {
-    await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, 'schooling', StringManager.formatDbProp(prop), value)
-    AlertManager.successAlert('Updated!')
-  }
-
-  const SetSelectedChild = async () => {
-    const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
-    let sharedValues = []
-    if (Manager.IsValid(sharing)) {
-      for (let obj of sharing) {
-        sharedValues.push([obj.prop, obj.value, obj.sharedByName])
-      }
+    const Update = async (prop, value) => {
+        await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, 'schooling', StringManager.formatDbProp(prop), value)
+        AlertManager.successAlert('Updated!')
     }
 
-    if (Manager.IsValid(activeChild?.schooling)) {
-      // Set info
-      let values = Object.entries(activeChild?.schooling)
+    const SetSelectedChild = async () => {
+        const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
+        let sharedValues = []
+        if (Manager.IsValid(sharing)) {
+            for (let obj of sharing) {
+                sharedValues.push([obj.prop, obj.value, obj.sharedByName])
+            }
+        }
 
-      if (Manager.IsValid(sharedValues)) {
-        values = [...values, ...sharedValues]
-      }
+        if (Manager.IsValid(activeChild?.schooling)) {
+            // Set info
+            let values = Object.entries(activeChild?.schooling)
 
-      const valuesArr = values.filter((x) => x[1].length === 0).map((x) => x[1])
-      if (values.length === valuesArr.length) {
-        setSchoolingValues([])
-      } else {
-        setSchoolingValues(values)
-      }
-    } else {
-      if (Manager.IsValid(sharedValues)) {
-        setSchoolingValues(sharedValues)
-      } else {
-        setSchoolingValues([])
-      }
+            if (Manager.IsValid(sharedValues)) {
+                values = [...values, ...sharedValues]
+            }
+
+            const valuesArr = values.filter((x) => x[1].length === 0).map((x) => x[1])
+            if (values.length === valuesArr.length) {
+                setSchoolingValues([])
+            } else {
+                setSchoolingValues(values)
+            }
+        } else {
+            if (Manager.IsValid(sharedValues)) {
+                setSchoolingValues(sharedValues)
+            } else {
+                setSchoolingValues([])
+            }
+        }
     }
-  }
 
-  useEffect(() => {
-    SetSelectedChild().then((x) => x)
-  }, [activeChild])
+    useEffect(() => {
+        SetSelectedChild().then((x) => x)
+    }, [activeChild])
 
-  return (
-    <div className="info-section section schooling">
-      <Accordion className={`${theme} child-info`} disabled={!Manager.IsValid(activeChild?.schooling)}>
-        <AccordionSummary
-          onClick={() => setShowInputs(!showInputs)}
-          className={!Manager.IsValid(schoolingValues) ? 'disabled header schooling' : 'header schooling'}>
-          <IoSchool className={'svg schooling'} />
-          <p id="toggle-button" className={showInputs ? 'active' : ''}>
-            Schooling
-            {!Manager.IsValid(schoolingValues) ? '- no info' : ''}
-            {Manager.IsValid(schoolingValues) && <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>}
-          </p>
-        </AccordionSummary>
-        <AccordionDetails>
-          <div className="gradient padding">
-            {Manager.IsValid(schoolingValues) &&
-              schoolingValues.map((prop, index) => {
-                let infoLabel = StringManager.UppercaseFirstLetterOfAllWords(StringManager.SpaceBetweenWords(prop[0]))
-                const value = prop.flat()[1]
-                return (
-                  <div key={index} className="data-row">
-                    {infoLabel.toLowerCase().includes('phone') && (
-                      <>
-                        <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
-                          {infoLabel}: {value}
-                        </a>
-                        <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
-                      </>
-                    )}
-                    {!infoLabel.toLowerCase().includes('phone') && (
-                      <>
-                        <InputField
-                          wrapperClasses={`${index === schoolingValues.length - 2 ? 'last' : ''}`}
-                          hasBottomSpacer={false}
-                          inputType={InputTypes.text}
-                          placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
-                          defaultValue={value}
-                          onChange={(e) => Update(infoLabel, e.target.value)}
-                        />
-                        <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
-                      </>
-                    )}
-                  </div>
-                )
-              })}
-          </div>
-        </AccordionDetails>
-      </Accordion>
-    </div>
-  )
+    return (
+        <div className="info-section section schooling">
+            <Accordion className={`${theme} child-info`} disabled={!Manager.IsValid(activeChild?.schooling)}>
+                <AccordionSummary
+                    onClick={() => setShowInputs(!showInputs)}
+                    className={!Manager.IsValid(schoolingValues) ? 'disabled header schooling' : 'header schooling'}>
+                    <IoSchool className={'svg schooling'} />
+                    <p id="toggle-button" className={showInputs ? 'active' : ''}>
+                        Schooling
+                        {!Manager.IsValid(schoolingValues) ? '- no info' : ''}
+                        {Manager.IsValid(schoolingValues) && (
+                            <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>
+                        )}
+                    </p>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <div className="gradient padding">
+                        {Manager.IsValid(schoolingValues) &&
+                            schoolingValues.map((prop, index) => {
+                                let infoLabel = StringManager.UppercaseFirstLetterOfAllWords(StringManager.SpaceBetweenWords(prop[0]))
+                                const value = prop.flat()[1]
+                                return (
+                                    <div key={index} className="data-row">
+                                        {infoLabel.toLowerCase().includes('phone') && (
+                                            <>
+                                                <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
+                                                    {infoLabel}: {value}
+                                                </a>
+                                                <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
+                                            </>
+                                        )}
+                                        {!infoLabel.toLowerCase().includes('phone') && (
+                                            <>
+                                                <InputField
+                                                    wrapperClasses={`${index === schoolingValues.length - 2 ? 'last' : ''}`}
+                                                    hasBottomSpacer={false}
+                                                    inputType={InputTypes.text}
+                                                    placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
+                                                    defaultValue={value}
+                                                    onChange={(e) => Update(infoLabel, e.target.value)}
+                                                />
+                                                <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
+                                            </>
+                                        )}
+                                    </div>
+                                )
+                            })}
+                    </div>
+                </AccordionDetails>
+            </Accordion>
+        </div>
+    )
 }

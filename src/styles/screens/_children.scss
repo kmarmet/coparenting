@@ -1,0 +1,492 @@
+@use '../utils/mixins';
+@use '../utils/variables';
+@use '../utils/_palette';
+
+#external-overrides {
+    #child-info-container {
+        #child-wrapper {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            width: 100%;
+            overflow: auto;
+            background-color: transparent;
+            border-radius: 0;
+            border: 0;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 20px 0;
+
+            .child {
+                justify-content: center;
+                position: relative;
+                display: flex;
+                flex-wrap: wrap;
+                * {
+                    opacity: 0.7;
+                    user-select: none;
+                    outline: 0;
+                }
+
+                @include mixins.hover;
+
+                .child-name {
+                    font-size: 15px;
+                    font-weight: variables.$fwRegular;
+                    border: 0;
+                    color: palette.$darkGrey;
+                    text-align: center;
+                    width: 100%;
+                    display: block;
+                    padding-top: 5px;
+                }
+
+                .child-image {
+                    background-size: cover;
+                    border-radius: 100%;
+                    position: relative;
+                    height: 80px;
+                    width: 80px;
+                    transition: all 0.3s ease-in;
+
+                    svg {
+                        color: palette.$darkGrey;
+                    }
+
+                    &.no-image {
+                        border: 1px solid palette.$lightBorderColor;
+                        background: palette.$grey;
+                        opacity: 1;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        transition: all 0.3s ease-in;
+                        span {
+                            font-size: 12px;
+                            color: palette.$darkerGrey;
+                            font-style: italic;
+                        }
+                        .after {
+                            background: transparent;
+                            width: 100%;
+                            right: unset;
+                            border: 0;
+                            bottom: unset;
+                            height: 100%;
+                            opacity: 1;
+                            svg {
+                                color: palette.$purple;
+                                transform: scale(1.2);
+                                opacity: 1;
+                            }
+                        }
+
+                        p {
+                            font-weight: 500;
+                        }
+                    }
+                }
+
+                p {
+                    color: white;
+                    font-size: 12px;
+                    text-align: center;
+                }
+
+                // ACTIVE
+                &.active {
+                    opacity: 1;
+
+                    * {
+                        transition: all 0.2s ease;
+                        opacity: 1;
+                    }
+
+                    .child-image {
+                        transform: scale(1.1);
+                        position: relative;
+                        top: -10px;
+                        border: 0;
+                        @include mixins.shadow;
+                        box-shadow: variables.$boxShadow_bottom_only_short;
+
+                        &.no-image {
+                            background-color: palette.$blend;
+
+                            svg {
+                                color: white;
+                            }
+                        }
+                    }
+
+                    .child-name {
+                        opacity: 1;
+                        font-size: 16px;
+                        font-weight: variables.$fwBold;
+                        color: variables.$primaryText;
+                    }
+                }
+            }
+        }
+        #remove-child-button {
+            background: palette.$bootstrapRedBg;
+            color: palette.$bootstrapRed;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .MuiAccordionDetails-root {
+            padding: 0 !important;
+        }
+        .MuiAccordionSummary-content {
+            #toggle-button {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                margin: 0 !important;
+                font-size: 22px !important;
+                color: variables.$primaryText;
+
+                svg {
+                    margin-left: auto;
+                }
+
+                .text-flex {
+                    display: flex;
+                    align-items: flex-start;
+                    flex-wrap: wrap;
+                    font-size: 22px !important;
+
+                    .from-or-to {
+                        width: 100%;
+                    }
+                }
+
+                .smaller-text {
+                    padding-left: 5px;
+                    margin-right: auto;
+                }
+
+                @media screen and (max-width: 400px) {
+                    font-size: 20px !important;
+                }
+            }
+        }
+
+        .info-icon {
+            font-size: 25px;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .child-pill {
+            text-align: center;
+            display: inline-block;
+            border-radius: variables.$cardBorderRadius;
+            padding: 3px 10px;
+            margin-bottom: 8px;
+            margin-right: 8px;
+            @include mixins.shadow;
+
+            &.active {
+            }
+        }
+
+        .info-text {
+            background-color: palette.$purple;
+            padding: 10px;
+            border-radius: variables.$borderRadius;
+            font-weight: 400;
+            @include mixins.shadow;
+            position: relative;
+
+            .close-info {
+                position: absolute;
+                right: 5px;
+                top: 10px;
+                font-size: 20px;
+                font-weight: bold;
+            }
+        }
+
+        &.active {
+            opacity: 1;
+
+            .profile-pic-container {
+                transform-origin: center;
+                border: 3px solid palette.$lightBorderColor;
+            }
+        }
+
+        .sections {
+            .section {
+                justify-content: flex-start;
+
+                &.notifications {
+                    flex-wrap: nowrap;
+                    justify-content: space-between;
+
+                    span {
+                        line-height: 1.2;
+                        justify-self: flex-start;
+                        margin-right: auto;
+                        margin-left: 0;
+
+                        &:nth-child(2) {
+                        }
+
+                        &.accent {
+                            margin-right: 20px;
+                        }
+                    }
+
+                    #checkbox-group {
+                        display: flex;
+                        flex-wrap: nowrap;
+                        margin-left: 10px;
+
+                        .flex {
+                            width: auto;
+
+                            &:last-child {
+                                margin: 0;
+                            }
+                        }
+                    }
+                }
+
+                &.theme {
+                    span {
+                        margin: 0;
+
+                        &:nth-child(2) {
+                            margin-left: 20px;
+                        }
+                    }
+
+                    div {
+                        margin-left: auto;
+
+                        span {
+                            font-size: 20px;
+                        }
+                    }
+                }
+
+                &:first-child {
+                    border-top: 1px solid rgba(255, 255, 255, 0.1);
+                }
+
+                span {
+                    font-size: 25px;
+                    margin-right: 20px;
+                    opacity: 0.8;
+                    color: palette.$purple;
+                }
+            }
+        }
+
+        #child-info {
+            overflow: hidden;
+
+            .upload-profile-pic-button {
+                margin: 0 auto 15px auto;
+                position: relative;
+                input {
+                    opacity: 1;
+                    z-index: 9999;
+                    position: absolute;
+                    margin-right: 0;
+                    height: 50px;
+                }
+            }
+
+            .MuiCollapse-root {
+                &.MuiCollapse-entered {
+                }
+            }
+            .rs-panel-body {
+                padding: 0 10px;
+            }
+
+            .data-row {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                justify-content: space-between;
+                max-width: 100%;
+                margin-bottom: 0;
+
+                &.last {
+                    margin-bottom: 0;
+                }
+
+                &.invalid {
+                    display: none;
+                }
+
+                .input-field {
+                    width: 100%;
+                }
+                #spacer {
+                    display: none;
+                }
+            }
+
+            .button-group {
+                flex-wrap: wrap;
+                border-radius: variables.$borderRadius;
+
+                &.stack {
+                    label {
+                    }
+
+                    button,
+                    label {
+                        height: 40px;
+                        width: 60% !important;
+                        font-size: 14px;
+                        border-radius: variables.$borderRadius;
+                        margin-bottom: 5px;
+                        line-height: 1;
+
+                        &:first-child {
+                            margin-right: 5px;
+                        }
+                    }
+                }
+            }
+
+            .info-section {
+                transition: max-height 0.3s ease-in-out;
+                max-width: calc(100vw - 30px);
+                overflow: hidden;
+
+                @media screen and (min-width: 1000px) {
+                    &:hover {
+                        margin-bottom: 10px;
+
+                        span {
+                            padding-left: 10px;
+                        }
+                    }
+                }
+
+                &.active {
+                    .header {
+                        border-bottom: 0;
+                        font-weight: bold;
+                    }
+                }
+
+                .checklist-item-row {
+                    border-bottom: 0;
+                    justify-content: space-between;
+                    margin-bottom: 5px;
+                    overflow: hidden;
+                    display: flex;
+                    align-items: center;
+
+                    svg {
+                        color: palette.$darkGrey;
+                    }
+
+                    .checklist-item {
+                        width: 100%;
+                        background: white;
+                        border: 1px solid palette.$greyBorderColor;
+                        padding: 12px;
+                        border-radius: variables.$buttonBorderRadius;
+                        display: flex;
+                        line-height: 1;
+                        white-space: nowrap;
+                        align-items: center;
+                        transition: all 0.3s ease-in-out;
+
+                        .checkmark {
+                            display: none;
+                        }
+
+                        &.active {
+                            background: palette.$green;
+                            transition: all 0.3s ease-in-out;
+                            color: white;
+                            padding: 10px;
+
+                            .checkmark {
+                                display: unset;
+                                color: white;
+                                font-size: 22px;
+                                margin-right: 8px;
+                            }
+                        }
+                    }
+                }
+            }
+
+            button {
+                width: auto;
+                margin: 0 auto;
+
+                span {
+                    margin-left: 10px;
+                }
+            }
+
+            .header {
+                display: flex;
+                justify-content: flex-start;
+                border: 0;
+                padding: 10px;
+                overflow: hidden;
+                height: 45px;
+                align-items: center;
+                margin-bottom: 0;
+
+                &.disabled {
+                    opacity: 0.5;
+                }
+
+                .plus-minus {
+                    font-size: 22px;
+                }
+
+                .svg {
+                    font-size: 30px;
+                    margin-left: 0;
+                    margin-right: 10px;
+                    width: 40px;
+
+                    &.from,
+                    &.to {
+                        font-size: 30px;
+                    }
+
+                    &.medical {
+                        font-size: 26px;
+                    }
+
+                    &.general {
+                        font-size: 32px;
+                    }
+
+                    &.behavior {
+                        font-size: 26px;
+                    }
+                }
+            }
+
+            p {
+                font-weight: 400;
+            }
+        }
+
+        .new-child-form {
+            .dob {
+                margin-bottom: 0;
+            }
+        }
+    }
+}

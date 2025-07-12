@@ -1,0 +1,94 @@
+@use '../utils/mixins';
+@use '../utils/variables';
+@use '../utils/_palette';
+
+#external-overrides {
+    #settings-container {
+        .settings-section-title {
+            &.label-wrapper {
+                label {
+                    font-weight: bold;
+                }
+            }
+        }
+        .rs-panel-body-collapse {
+            padding: 10px;
+            border-radius: 0 0 variables.$borderRadius variables.$borderRadius;
+            border-top: 0;
+        }
+
+        .label-wrapper {
+            #medium-title {
+                font-size: 18px;
+            }
+        }
+
+        .back-button {
+            font-weight: 400;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            color: palette.$linkColor;
+            justify-content: flex-start;
+            width: auto;
+            position: fixed;
+            left: -15px;
+            padding: 0 8px;
+            border-radius: variables.$borderRadius;
+            bottom: 90px;
+            font-size: 18px;
+            text-align: left;
+
+            span {
+                padding: 0;
+                width: 25px;
+                font-size: 45px;
+                margin-right: 5px;
+            }
+        }
+
+        .calendar-settings,
+        .shortcuts-settings {
+            .section {
+                width: 100%;
+                //        display: flex;
+
+                .input-container {
+                    width: 100%;
+                    align-items: center;
+                }
+            }
+
+            .rs-panel-group {
+                margin: 0 auto !important;
+                display: block;
+
+                &[data-region] {
+                    padding: 0;
+                }
+
+                .rs-panel-body,
+                .rs-panel-heading {
+                    padding: 0;
+                }
+
+                .rs-heading {
+                    margin: 0 auto;
+                    padding: 0;
+
+                    button {
+                        &:active,
+                        &:focus,
+                        &:focus-within {
+                        }
+                    }
+                }
+            }
+
+            .material-icons {
+                font-size: 25px;
+                color: palette.$purple;
+            }
+        }
+    }
+}

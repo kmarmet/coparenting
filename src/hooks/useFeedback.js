@@ -6,46 +6,46 @@ import Manager from '../managers/manager'
 import useCurrentUser from './useCurrentUser'
 
 const useFeedback = () => {
-  const {state, setState} = useContext(globalState)
-  const {authUser} = state
-  const [feedback, setFeedback] = useState(null)
-  const [feedbackIsLoading, setFeedbackIsLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const {currentUser} = useCurrentUser()
-  const path = `${DB.tables.feedbackEmotionsTracker}/${currentUser?.key}`
-  const queryKey = ['realtime', path]
+    const {state, setState} = useContext(globalState)
+    const {authUser} = state
+    const [feedback, setFeedback] = useState(null)
+    const [feedbackIsLoading, setFeedbackIsLoading] = useState(true)
+    const [error, setError] = useState(null)
+    const {currentUser} = useCurrentUser()
+    const path = `${DB.tables.feedbackEmotionsTracker}/${currentUser?.key}`
+    const queryKey = ['realtime', path]
 
-  useEffect(() => {
-    const database = getDatabase()
-    const dataRef = ref(database, path)
+    useEffect(() => {
+        const database = getDatabase()
+        const dataRef = ref(database, path)
 
-    const listener = onValue(
-      dataRef,
-      async (snapshot) => {
-        if (Manager.IsValid(snapshot.val())) {
-          setFeedback(snapshot.val())
-        } else {
-          setFeedback(null)
+        const listener = onValue(
+            dataRef,
+            async (snapshot) => {
+                if (Manager.IsValid(snapshot.val())) {
+                    setFeedback(snapshot.val())
+                } else {
+                    setFeedback(null)
+                }
+                setFeedbackIsLoading(false)
+            },
+            (err) => {
+                setError(err)
+                setFeedbackIsLoading(false)
+            }
+        )
+
+        return () => {
+            off(dataRef, 'value', listener)
         }
-        setFeedbackIsLoading(false)
-      },
-      (err) => {
-        setError(err)
-        setFeedbackIsLoading(false)
-      }
-    )
+    }, [path, currentUser])
 
-    return () => {
-      off(dataRef, 'value', listener)
+    return {
+        feedback,
+        feedbackIsLoading,
+        error,
+        queryKey,
     }
-  }, [path, currentUser])
-
-  return {
-    feedback,
-    feedbackIsLoading,
-    error,
-    queryKey,
-  }
 }
 
 export default useFeedback
