@@ -313,6 +313,7 @@ $shadows-big: multiple-box-shadow(100);
     font-style: normal;
     font-family: 'SF Pro Display', sans-serif;
     letter-spacing: 0.4px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /*#region  BUTTONS*/
@@ -4756,45 +4757,6 @@ $shadows-big: multiple-box-shadow(100);
         }
     }
 
-    #options {
-        display: flex;
-        width: 100%;
-        align-items: center;
-        justify-items: center;
-        background: variables.$inputBackground;
-        border-radius: variables.$borderRadius;
-        .option {
-            color: white;
-            opacity: 0.7;
-            white-space: nowrap;
-            transition: all 0.3s ease;
-            width: calc(100% / 3);
-            padding: 0 10px;
-            &.active {
-                background: white;
-                color: palette.$blend;
-                opacity: 1;
-                transition: all 0.3s ease;
-                font-size: 18px;
-                border-radius: variables.$borderRadius;
-                padding: 5px 10px;
-                font-weight: variables.$fwBold;
-                width: 100%;
-                text-align: center;
-
-                &:nth-child(1) {
-                    margin-right: 10px;
-                }
-                &:nth-child(2) {
-                    margin: 0 10px;
-                }
-                &:nth-child(3) {
-                    margin-left: 10px;
-                }
-            }
-        }
-    }
-
     #current-app-version {
         color: palette.$mediumTransWhite;
         opacity: 0.8;
@@ -4802,6 +4764,16 @@ $shadows-big: multiple-box-shadow(100);
         margin-top: 25px;
         border-bottom: 1px solid palette.$mediumTransWhite;
         width: min-content;
+    }
+
+    hr {
+        display: block;
+        height: 1px;
+        width: 100%;
+        border: none;
+        background-color: transparent;
+        border-top: 1px solid palette.$barelyVisibleWhite;
+        margin: 20px auto 25px auto;
     }
 
     .swipe-bar {
@@ -4824,45 +4796,62 @@ $shadows-big: multiple-box-shadow(100);
         transition: all 0.5s ease;
         height: calc(100vh - 10vh);
         max-height: calc(100vh - 5vh);
-        background: palette.$blendDark;
+
+        @include mainColorsGradient;
     }
 
     #menu-sections {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-height: 90vh;
         overflow: auto;
         overflow-x: hidden;
-        display: flex;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        width: 100%;
-        height: 100%;
-        margin-top: 25px;
+        padding-bottom: 100px;
 
         .section {
+            border-radius: 20px;
             background-color: transparent;
             opacity: 0;
-            position: relative;
-            display: none;
 
-            &.active,
-            &.always-show {
-                left: unset;
-                opacity: 1;
-                display: flex;
+            &.active {
+                .menu-title {
+                    opacity: 1;
+                    color: white;
+                    font-style: normal;
+                    font-weight: variables.$fwMedium;
+                }
+            }
+
+            .menu-title {
+                font-weight: variables.$fwLight;
+                font-size: 20px;
+                line-height: 1;
                 width: 100%;
+                text-align: left;
+                font-style: italic;
+                padding-left: 3px;
+                opacity: 0.8;
+                color: palette.$mediumTransWhite;
             }
 
             .menu-items {
-                transition: all 0.6s ease;
-                width: 100%;
+                gap: 5px 0;
+                display: flex;
+                grid-template-columns: repeat(2, 1fr);
+                transition: all 0.6s ease-out;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                padding-top: 5px;
+
                 .menu-item {
                     background-color: transparent;
+                    display: flex;
+                    text-align: center;
+                    align-items: center;
                     position: relative;
                     transition: all 0.3s ease-out;
-                    width: 100%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    margin-bottom: 15px;
+                    width: 50%;
 
                     &.children {
                         .content {
@@ -4876,20 +4865,20 @@ $shadows-big: multiple-box-shadow(100);
                         display: flex;
                         align-items: center;
                         text-align: center;
-                        justify-content: center;
+                        justify-content: flex-start;
+                        margin-left: auto;
+                        width: 75%;
 
                         p {
-                            color: white;
-                            line-height: 1;
-                            font-size: 22px;
-                            white-space: nowrap;
-                            font-weight: variables.$fwLight;
-                            opacity: 0.5;
-                            text-align: center;
+                            padding-left: 5px;
+                            color: palette.$mediumTransWhite;
                         }
-                        svg {
-                            opacity: 0.5;
-                        }
+                    }
+
+                    .svg-wrapper,
+                    p {
+                        opacity: 0.8;
+                        color: palette.$mediumTransWhite;
                     }
 
                     /*#region  SVG TRANSFORMS */
@@ -4940,11 +4929,19 @@ $shadows-big: multiple-box-shadow(100);
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        margin-right: 8px;
+                    }
 
-                        svg {
-                            color: white;
-                        }
+                    p {
+                        line-height: 1;
+                        font-size: 17px;
+                        white-space: nowrap;
+                        font-weight: variables.$fwLight;
+                        color: palette.$mediumTransWhite;
+                    }
+
+                    p,
+                    svg {
+                        opacity: 0.7;
                     }
 
                     &.visible {
@@ -4959,7 +4956,7 @@ $shadows-big: multiple-box-shadow(100);
                         p,
                         svg {
                             opacity: 1;
-                            font-weight: variables.$fwBold;
+                            font-weight: variables.$fwMedium;
                             color: white;
                         }
                     }
@@ -4969,7 +4966,6 @@ $shadows-big: multiple-box-shadow(100);
     }
 
     #feedback-wrapper {
-        margin-top: 25px;
         #feedback-title,
         #feedback-subtitle {
             color: white;
@@ -4978,7 +4974,7 @@ $shadows-big: multiple-box-shadow(100);
 
         #feedback-title {
             font-size: 18px;
-            color: palette.$holidayOrange;
+            color: palette.$mediumGreen;
         }
 
         #feedback-subtitle {

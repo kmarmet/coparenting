@@ -1,6 +1,6 @@
 // Path: src\components\fullMenu.jsx
 import {getAuth, signOut} from 'firebase/auth'
-import React, {useContext, useEffect, useRef, useState} from 'react'
+import React, {useContext, useEffect, useRef} from 'react'
 import {AiOutlineLogout} from 'react-icons/ai'
 import {BsHouses, BsImages} from 'react-icons/bs'
 import {GrInstallOption, GrUserAdmin} from 'react-icons/gr'
@@ -23,21 +23,12 @@ import useFeedback from '../hooks/useFeedback'
 import DomManager from '../managers/domManager'
 import Manager from '../managers/manager'
 import FeedbackEmotionsTracker from '../models/feedbackEmotionsTracker'
-import FormDivider from './shared/formDivider'
-import Spacer from './shared/spacer'
 
 export default function FullMenu() {
     const {state, setState} = useContext(globalState)
     const {currentScreen, menuIsOpen, currentAppVersion} = state
-
-    // STATE
-    const [activeSection, setActiveSection] = useState('sharing')
-
-    // HOOKS
     const {currentUser} = useCurrentUser()
     const {feedback} = useFeedback()
-
-    // DEPS
     const auth = getAuth()
     const scrollRef = useRef(null)
 
@@ -45,7 +36,7 @@ export default function FullMenu() {
         swipeDuration: 300,
         preventScrollOnSwipe: true,
         onSwipedDown: () => {
-            setState({...state, menuIsOpen: false, showOverlay: false})
+            setState({...state, menuIsOpen: false})
         },
     })
 
@@ -101,39 +92,67 @@ export default function FullMenu() {
         }
     }, [menuIsOpen])
 
+    // Set active section
+    useEffect(() => {
+        if (Manager.IsValid(currentScreen) && menuIsOpen) {
+            const sharingSection = document.querySelector('.section.sharing')
+            const coParentingSection = document.querySelector('.section.coparenting')
+            const informationDatabaseSection = document.querySelector('.section.info-storage')
+            const settingsAndSupportSection = document.querySelector('.section.profile-settings-support')
+
+            console.log(currentScreen)
+            if ([ScreenNames.calendar, ScreenNames.docsList, ScreenNames.memories, ScreenNames.updates].includes(currentScreen)) {
+                if (Manager.IsValid(sharingSection)) {
+                    sharingSection.classList.add('active')
+                }
+            } else if (
+                [ScreenNames.contacts, ScreenNames.coparents, ScreenNames.vault, ScreenNames.visitation, ScreenNames.children].includes(currentScreen)
+            ) {
+                if (Manager.IsValid(informationDatabaseSection)) {
+                    informationDatabaseSection.classList.add('active')
+                }
+            } else if (
+                [ScreenNames.transferRequests, ScreenNames.swapRequests, ScreenNames.chats, ScreenNames.expenseTracker].includes(currentScreen)
+            ) {
+                if (Manager.IsValid(coParentingSection)) {
+                    coParentingSection.classList.add('active')
+                }
+            } else if (
+                [
+                    ScreenNames.profile,
+                    ScreenNames.installApp,
+                    ScreenNames.settings,
+                    ScreenNames.help,
+                    ScreenNames.changelog,
+                    ScreenNames.feedback,
+                    ScreenNames.adminDashboard,
+                ].includes(currentScreen)
+            ) {
+                if (Manager.IsValid(settingsAndSupportSection)) {
+                    settingsAndSupportSection.classList.add('active')
+                }
+            }
+        }
+    }, [currentScreen, menuIsOpen])
+
     return (
         <div id="full-menu-wrapper" className={menuIsOpen ? 'active' : ''}>
             <div className="swipe-bar"></div>
             {Manager.IsValid(currentUser) && (
                 <div ref={scrollRef} id="full-menu-card" {...handlers}>
-                    {/* OPTIONS */}
-                    <div id="options">
-                        <p onClick={() => setActiveSection('sharing')} className={`${activeSection === 'sharing' ? 'active ' : ''}option`}>
-                            Sharing
-                        </p>
-                        <p onClick={() => setActiveSection('contact-info')} className={`${activeSection === 'contact-info' ? 'active ' : ''}option`}>
-                            Contact Info
-                        </p>
-                        <p onClick={() => setActiveSection('co-parenting')} className={`${activeSection === 'co-parenting' ? 'active ' : ''}option`}>
-                            Co-Parenting
-                        </p>
-                    </div>
-
-                    {/* MENU SECTIONS */}
                     <div id="menu-sections">
                         {/* SHARING */}
-                        <div className={`section sharing${activeSection === 'sharing' ? ' active' : ''} `}>
+                        <div style={DomManager.AnimateDelayStyle(1, 0.3)} className={`section sharing ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
+                            <p className="menu-title">Sharing</p>
                             <div className={`menu-items sharing`}>
                                 {/* CALENDAR */}
                                 <div
                                     className={`menu-item calendar ${currentScreen === ScreenNames.calendar ? 'active' : ''}`}
                                     onClick={(e) => ChangeCurrentScreen(ScreenNames.calendar, e)}>
-                                    <div className="content">
-                                        <div className="svg-wrapper">
-                                            <LuCalendarDays />
-                                        </div>
-                                        <p>Calendar</p>
+                                    <div className="svg-wrapper">
+                                        <LuCalendarDays />
                                     </div>
+                                    <p>Calendar</p>
                                 </div>
                                 {/* MEMORIES */}
                                 <div
@@ -152,12 +171,10 @@ export default function FullMenu() {
                                     <div
                                         className={`menu-item documents ${currentScreen === ScreenNames.docsList ? 'active' : ''}`}
                                         onClick={(e) => ChangeCurrentScreen(ScreenNames.docsList, e)}>
-                                        <div className="content">
-                                            <div className="svg-wrapper">
-                                                <PiFiles />
-                                            </div>
-                                            <p>Documents</p>
+                                        <div className="svg-wrapper">
+                                            <PiFiles />
                                         </div>
+                                        <p>Documents</p>
                                     </div>
                                 )}
 
@@ -179,31 +196,32 @@ export default function FullMenu() {
                             </div>
                         </div>
 
+                        <hr />
+
                         {/* INFORMATION DATABASE */}
-                        <div className={`section info-storage${activeSection === 'contact-info' ? ' active' : ''}  `}>
+                        <div
+                            className={`section info-storage  ${DomManager.Animate.FadeInUp(menuIsOpen)}`}
+                            style={DomManager.AnimateDelayStyle(1, 0.4)}>
+                            <p className={`menu-title info-storage`}>Information Database</p>
                             <div className={`menu-items info-storage`}>
                                 {/* CONTACTS */}
                                 <div
                                     className={`menu-item contacts ${currentScreen === ScreenNames.contacts ? 'active' : ''}`}
                                     onClick={(e) => ChangeCurrentScreen(ScreenNames.contacts, e)}>
-                                    <div className="content">
-                                        <div className="svg-wrapper">
-                                            <MdOutlineContacts />
-                                        </div>
-                                        <p>Contacts</p>
+                                    <div className="svg-wrapper">
+                                        <MdOutlineContacts />
                                     </div>
+                                    <p>Contacts</p>
                                 </div>
                                 {/* CHILD - PARENTS */}
                                 {currentUser?.accountType === 'child' && (
                                     <div
                                         className={`menu-item parents ${currentScreen === ScreenNames.parents ? 'active' : ''}`}
                                         onClick={(e) => ChangeCurrentScreen(ScreenNames.parents, e)}>
-                                        <div className="content">
-                                            <div className="svg-wrapper">
-                                                <RiParentLine />
-                                            </div>
-                                            <p>Parents</p>
+                                        <div className="svg-wrapper">
+                                            <RiParentLine />
                                         </div>
+                                        <p>Parents</p>
                                     </div>
                                 )}
 
@@ -226,44 +244,55 @@ export default function FullMenu() {
                                         <div
                                             className={`menu-item co-parents ${currentScreen === ScreenNames.coparents ? 'active' : ''}`}
                                             onClick={(e) => ChangeCurrentScreen(ScreenNames.coparents, e)}>
+                                            <div className="svg-wrapper">
+                                                <PiUsers />
+                                            </div>
+                                            <p>Co-Parents</p>
+                                        </div>
+
+                                        {/* VISITATION */}
+                                        <div
+                                            className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
+                                            onClick={(e) => ChangeCurrentScreen(ScreenNames.visitation, e)}>
                                             <div className="content">
                                                 <div className="svg-wrapper">
-                                                    <PiUsers />
+                                                    <BsHouses />
                                                 </div>
-                                                <p>Co-Parents</p>
+                                                <p>Visitation</p>
                                             </div>
                                         </div>
 
-                                        {/* VAULT */}
+                                        {/* ARCHIVES */}
                                         <div
                                             className={`menu-item archives ${currentScreen === ScreenNames.vault ? 'active' : ''}`}
                                             onClick={(e) => ChangeCurrentScreen(ScreenNames.vault, e)}>
-                                            <div className="content">
-                                                <div className="svg-wrapper">
-                                                    <PiVault />
-                                                </div>
-                                                <p>The Vault</p>
+                                            <div className="svg-wrapper">
+                                                <PiVault />
                                             </div>
+                                            <p>The Vault</p>
                                         </div>
                                     </>
                                 )}
                             </div>
                         </div>
 
+                        <hr />
+
                         {/* CO-PARENTING */}
                         {currentUser?.accountType === 'parent' && (
-                            <div className={`section coparenting${activeSection === 'co-parenting' ? ' active' : ''} `}>
+                            <div
+                                style={DomManager.AnimateDelayStyle(1, 0.5)}
+                                className={`section coparenting  ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
+                                <p className={`menu-title coparenting`}>Co-Parenting</p>
                                 <div className={`menu-items coparenting`}>
                                     {/* TRANSFER CHANGE */}
                                     <div
                                         className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
                                         onClick={(e) => ChangeCurrentScreen(ScreenNames.transferRequests, e)}>
-                                        <div className="content">
-                                            <div className="svg-wrapper">
-                                                <TbTransferIn />
-                                            </div>
-                                            <p>Transfer Requests</p>
+                                        <div className="svg-wrapper">
+                                            <TbTransferIn />
                                         </div>
+                                        <p>Transfer Requests</p>
                                     </div>
 
                                     {/* EXPENSES */}
@@ -282,12 +311,10 @@ export default function FullMenu() {
                                     <div
                                         className={`menu-item swap-request ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
                                         onClick={(e) => ChangeCurrentScreen(ScreenNames.swapRequests, e)}>
-                                        <div className="content">
-                                            <div className="svg-wrapper">
-                                                <PiSwap />
-                                            </div>
-                                            <p>Swap Requests</p>
+                                        <div className="svg-wrapper">
+                                            <PiSwap />
                                         </div>
+                                        <p>Swap Requests</p>
                                     </div>
 
                                     {/* CHATS */}
@@ -301,34 +328,26 @@ export default function FullMenu() {
                                             <p className="text">Chats</p>
                                         </div>
                                     </div>
-                                    {/* VISITATION */}
-                                    <div
-                                        className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
-                                        onClick={(e) => ChangeCurrentScreen(ScreenNames.visitation, e)}>
-                                        <div className="content">
-                                            <div className="svg-wrapper">
-                                                <BsHouses />
-                                            </div>
-                                            <p>Visitation</p>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         )}
-                        <FormDivider text={'The Rest'} />
+
+                        <hr />
+
                         {/* PROFILE SETTINGS & SUPPORT */}
-                        <div className={`section always-show`}>
+                        <div
+                            style={DomManager.AnimateDelayStyle(1, 0.6)}
+                            className={`section profile-settings-support  ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
+                            <p className="menu-title">Settings & Support</p>
                             <div className={`menu-items profile-settings-support`}>
                                 {/* PROFILE */}
                                 <div
                                     className={`menu-item profile ${currentScreen === ScreenNames.profile ? 'active' : ''}`}
                                     onClick={(e) => ChangeCurrentScreen(ScreenNames.profile, e)}>
-                                    <div className="content">
-                                        <div className="svg-wrapper">
-                                            <RiAccountPinCircleLine />
-                                        </div>
-                                        <p>My Profile</p>
+                                    <div className="svg-wrapper">
+                                        <RiAccountPinCircleLine />
                                     </div>
+                                    <p>My Profile</p>
                                 </div>
 
                                 {/* SETTINGS */}
@@ -348,12 +367,10 @@ export default function FullMenu() {
                                     <div
                                         className={`menu-item dashboard ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
                                         onClick={(e) => ChangeCurrentScreen(ScreenNames.adminDashboard, e)}>
-                                        <div className="content">
-                                            <div className="svg-wrapper">
-                                                <GrUserAdmin />
-                                            </div>
-                                            <p>Dashboard</p>
+                                        <div className="svg-wrapper">
+                                            <GrUserAdmin />
                                         </div>
+                                        <p>Dashboard</p>
                                     </div>
                                 )}
 
@@ -373,12 +390,10 @@ export default function FullMenu() {
                                 <div
                                     className={`menu-item install-app ${currentScreen === ScreenNames.installApp ? 'active' : ''}`}
                                     onClick={(e) => ChangeCurrentScreen(ScreenNames.installApp, e)}>
-                                    <div className="content">
-                                        <div className="svg-wrapper">
-                                            <GrInstallOption />
-                                        </div>
-                                        <p>Install</p>
+                                    <div className="svg-wrapper">
+                                        <GrInstallOption />
                                     </div>
+                                    <p>Install</p>
                                 </div>
 
                                 {/* LOGOUT BUTTON */}
@@ -391,35 +406,34 @@ export default function FullMenu() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* FEEDBACK WRAPPER */}
-                        <div id="feedback-wrapper">
-                            <p id="feedback-title">
-                                Your feedback matters! <br /> How’s your experience today?
-                            </p>
-                            <Spacer height={2} />
-                            <p id="feedback-subtitle">
-                                {DomManager.tapOrClick(true)} an emoji to convey how you feel at the moment. Feel free to do this as often as you
-                                wish; the figures show the overall feedback you've provided since you began using our app.
-                            </p>
-                            <div id="icon-and-label-wrapper">
-                                <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.unhappy)}>
-                                    <span className="icon unhappy">☹️</span>
-                                    <span className="count">{feedback?.unhappy ?? 0}</span>
+                            <hr />
+
+                            {/* FEEDBACK WRAPPER */}
+                            <div id="feedback-wrapper">
+                                <p id="feedback-title">How do you feel about the app today?</p>
+                                <p id="feedback-subtitle">
+                                    {DomManager.tapOrClick(true)} an emoji to convey how you feel at the moment. Feel free to do this as often as you
+                                    wish; the figures show the overall feedback you've provided since you began using our app.
                                 </p>
-                                <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.neutral)}>
-                                    <span className="icon neutral">😐</span>
-                                    <span className="count">{feedback?.neutral ?? 0}</span>
-                                </p>
-                                <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.peaceful)}>
-                                    <span className="icon peaceful">😁</span>
-                                    <span className="count">{feedback?.peaceful ?? 0}</span>
-                                </p>
-                                <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.love)}>
-                                    <span className="icon love">❤️‍🔥</span>
-                                    <span className="count">{feedback?.love ?? 0} </span>
-                                </p>
+                                <div id="icon-and-label-wrapper">
+                                    <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.unhappy)}>
+                                        <span className="icon unhappy">☹️</span>
+                                        <span className="count">{feedback?.unhappy ?? 0}</span>
+                                    </p>
+                                    <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.neutral)}>
+                                        <span className="icon neutral">😐</span>
+                                        <span className="count">{feedback?.neutral ?? 0}</span>
+                                    </p>
+                                    <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.peaceful)}>
+                                        <span className="icon peaceful">😁</span>
+                                        <span className="count">{feedback?.peaceful ?? 0}</span>
+                                    </p>
+                                    <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.love)}>
+                                        <span className="icon love">❤️‍🔥</span>
+                                        <span className="count">{feedback?.love ?? 0} </span>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                         <p id="current-app-version" onClick={(e) => ChangeCurrentScreen(ScreenNames.changelog, e)}>

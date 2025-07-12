@@ -379,50 +379,50 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             window.location.reload()
         })
-    }
+        // Install
+        self.addEventListener('install', (event) => {
+            console.log('[SW] Install')
+            event.waitUntil(
+                caches.open(CACHE_KEY).then((cache) => {
+                    return cache.addAll(FILES_TO_CACHE)
+                })
+            )
+            self.skipWaiting()
+        })
 
-    // Install
-    self.addEventListener('install', (event) => {
-        console.log('[SW] Install')
-        event.waitUntil(
-            caches.open(CACHE_KEY).then((cache) => {
-                return cache.addAll(FILES_TO_CACHE)
-            })
-        )
-        self.skipWaiting()
-    })
-
-    // Activate
-    self.addEventListener('activate', (event) => {
-        console.log('[SW] Activate')
-        event.waitUntil(
-            caches.keys().then((keyList) =>
-                Promise.all(
-                    keyList.map((key) => {
-                        if (key !== CACHE_KEY) return caches.delete(key)
-                    })
+        // Activate
+        self.addEventListener('activate', (event) => {
+            console.log('[SW] Activate')
+            event.waitUntil(
+                caches.keys().then((keyList) =>
+                    Promise.all(
+                        keyList.map((key) => {
+                            if (key !== CACHE_KEY) return caches.delete(key)
+                        })
+                    )
                 )
             )
-        )
-        self.clients.claim()
-    })
+            self.clients.claim()
+        })
 
-    // Fetch: Serve from cache, fallback to network
-    self.addEventListener('fetch', (event) => {
-        event.respondWith(
-            caches.match(event.request).then((cachedResponse) => {
-                return cachedResponse || fetch(event.request)
-            })
-        )
-    })
+        // Fetch: Serve from cache, fallback to network
+        self.addEventListener('fetch', (event) => {
+            event.respondWith(
+                caches.match(event.request).then((cachedResponse) => {
+                    return cachedResponse || fetch(event.request)
+                })
+            )
+        })
 
-    // Message
-    self.addEventListener('message', (event) => {
-        console.log('[SW] message')
-        if (event.data?.action === 'skipWaiting') {
-            self.skipWaiting()
-        }
-    })
+        // Message
+        self.addEventListener('message', (event) => {
+            console.log('[SW] message')
+            if (event.data?.action === 'skipWaiting') {
+                self.skipWaiting()
+            }
+        })
+    }
+
     renderRoot()
 }
 
