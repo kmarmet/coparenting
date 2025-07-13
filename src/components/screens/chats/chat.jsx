@@ -61,7 +61,9 @@ const Chat = ({show, hide, recipient}) => {
         const thisMessage = messagesToLoop.find((x) => x.id === messageId)
         if (Manager.IsValid(thisMessage?.message)) {
             setActiveMessage(thisMessage)
-            setShowLongPressMenu(true)
+            setTimeout(() => {
+                setShowLongPressMenu(true)
+            }, 500)
         }
     })
 

@@ -156,24 +156,33 @@
 
 /*#region  GOOGLE MAPS/AUTOCOMPLETE */
 .gm-style-mtc {
+    border-radius: variables.$borderRadius !important;
     button {
         border-radius: variables.$borderRadius !important;
-        background: palette.$main !important;
-        color: white !important;
+        background: palette.$mediumTransWhite !important;
+        color: palette.$blend !important;
         &:first-child {
             margin-right: 8px !important;
         }
     }
 }
+.gmnoprint {
+    button,
+    div {
+        border-radius: variables.$borderRadius !important;
+        font-size: 14px !important;
+    }
+}
 .gm-control-active,
 .gm-svpc {
     border-radius: variables.$borderRadius !important;
-    background: palette.$main !important;
-    color: white !important;
+    background: palette.$mediumTransWhite !important;
+    color: palette.$blend !important;
+    font-size: 14px !important;
 
     img {
-        color: white !important;
-        filter: brightness(100) !important;
+        color: palette.$blend !important;
+        //filter: brightness(100) !important;
     }
 }
 .google-autocomplete-wrapper {
@@ -253,7 +262,7 @@
     left: 15px !important;
     border-radius: variables.$mediumBorderRadius !important;
     box-shadow: variables.$boxShadow_bottom_only_bigger !important;
-    background: palette.$blendDark !important;
+    background: white !important;
     border: 1px solid palette.$barelyVisibleWhite !important;
     * {
         font-family: 'SF-Pro-Display-Regular', sans-serif !important;
@@ -266,11 +275,11 @@
     }
 
     span {
-        color: white !important;
+        color: palette.$primaryText !important;
 
         span,
         svg {
-            color: palette.$lighterPurple !important;
+            color: palette.$blend !important;
         }
     }
 
@@ -295,6 +304,7 @@
     [class*='-menu'] {
         z-index: 10 !important;
         position: relative !important;
+        border: 0 !important;
     }
     // Dropdown Button/Input
     [class*='-control'] {
@@ -410,7 +420,6 @@
             [class*='-option'] {
                 color: palette.$darkGrey !important;
                 border-radius: variables.$borderRadius !important;
-                border: 1px solid palette.$lightBorderColor !important;
             }
         }
 
@@ -929,14 +938,17 @@
             width: 100%;
 
             &.multiline-blocks {
-                width: calc(100vw - 20px);
-                margin: 15px auto;
-                display: flex;
+                margin: 20px auto;
                 gap: 0;
                 justify-content: center;
-
-                .blocks {
-                    margin: 0;
+                display: grid;
+                grid-template-columns: repeat(3, auto);
+                place-items: center;
+                flex-grow: 1;
+                .block {
+                    min-width: 200px;
+                    max-width: calc(100vw - 30px);
+                    width: 100%;
                 }
             }
 
@@ -950,10 +962,6 @@
                 display: flex;
                 flex-direction: column;
                 min-width: 100px;
-
-                &.multiline {
-                    min-width: 200px;
-                }
 
                 &.full-width {
                     width: 100%;

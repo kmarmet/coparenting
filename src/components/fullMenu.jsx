@@ -142,7 +142,6 @@ export default function FullMenu() {
             <div className="swipe-bar"></div>
             {Manager.IsValid(currentUser) && (
                 <div ref={scrollRef} id="full-menu-card" {...handlers}>
-                    <p id="menu-title">Menu</p>
                     <div id="menu-sections">
                         {/* SHARING */}
                         <div style={DomManager.AnimateDelayStyle(1, 0.3)} className={`section sharing ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
@@ -433,6 +432,13 @@ export default function FullMenu() {
                                 </div>
                             </div>
                         </div>
+                        <Spacer height={15} />
+                        <div id="action-wrapper">
+                            <p id="report-bug">Report Bug 🐞</p>
+                            <span className="seperator">|</span>
+                            <p id="request-feature">Request Feature 💡</p>
+                        </div>
+                        <Spacer height={5} />
                         <p id="current-app-version" onClick={(e) => ChangeCurrentScreen(ScreenNames.changelog, e)}>
                             v.{currentAppVersion}
                         </p>

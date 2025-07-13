@@ -27,15 +27,10 @@ export default function SelectDropdown({
     const customStyles = {
         control: (base, state) => ({
             ...base,
-            borderColor: state.isFocused ? '#2684FF' : 'transparent',
-            boxShadow: state.isFocused ? '0 0 0 1px #2684FF' : null,
-            '&:hover': {
-                borderColor: state.isFocused ? '#2684FF' : '#aaa',
-            },
+            border: '0',
             backgroundColor: 'rgba(255, 255, 255, 0.08)',
             transition: 'all 0.3s ease',
             borderRadius: '50px',
-            backdropFilter: 'blur(8px)',
             gap: '8px',
             zIndex: state.isFocused ? 10 : 1,
         }),
@@ -56,15 +51,14 @@ export default function SelectDropdown({
             ...base,
             zIndex: 10000,
             padding: '10px 0',
-            backdropFilter: 'blur(8px)',
             backgroundColor: 'transparent',
-            borderRadius: '8px',
             display: 'flex',
+            boxShadow: 'none',
+            border: '0',
             justifyContent: 'center',
             alignItems: 'center',
             gap: '8px',
             transition: 'all 0.3s ease',
-            boxShadow: '#1e2939 0 8px 10px',
         }),
     }
 

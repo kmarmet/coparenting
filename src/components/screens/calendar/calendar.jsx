@@ -266,6 +266,17 @@ export default function EventCalendar() {
         AddDayIndicators().then((r) => r)
     }, [eventsOfDay])
 
+    useEffect(() => {
+        const staticCalendar = document.getElementById('static-calendar')
+        if (showEditCard && staticCalendar) {
+            if (staticCalendar) {
+                staticCalendar.classList.add('hidden')
+            }
+        } else {
+            staticCalendar.classList.remove('hidden')
+        }
+    }, [showEditCard])
+
     return (
         <Screen loadingByDefault={true} stopLoadingBool={contentIsLoaded} activeScreen={ScreenNames.calendar}>
             {/* CARDS */}

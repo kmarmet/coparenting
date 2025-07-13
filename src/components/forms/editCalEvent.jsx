@@ -114,8 +114,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         try {
             let updatedEvent = ObjectManager.Merge(event, formRef.current)
 
-            console.log(updatedEvent.id, event.id)
-
             // Map Dropdown to Database
             updatedEvent.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
             updatedEvent.reminderTimes = DropdownManager.MappedForDatabase.RemindersFromArray(selectedReminderOptions)
@@ -194,7 +192,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 else {
                     if (cleaned?.owner?.key === currentUser?.key) {
                         const index = DB.GetTableIndexById(calendarEvents, updatedEvent?.id)
-                        console.log(index)
+                        console.log(`${dbPath}/${index}`)
                         if (parseInt(index) === -1) return false
                         await DB.ReplaceEntireRecord(`${dbPath}/${index}`, cleaned)
                     }
@@ -262,7 +260,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
     useEffect(() => {
         if (Manager.IsValid(event)) {
-            console.log(true)
             const index = DB.GetTableIndexById(calendarEvents, event?.id)
             SetDropdownOptions().then((r) => r)
         }
@@ -333,6 +330,13 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                 {/*  Created By */}
                                 <DetailBlock valueToValidate={event?.owner?.name} text={event?.owner?.name} title={'Creator'} />
 
+                                {/*  Notes */}
+                                {Manager.IsValid(event?.notes, true) && (
+                                    <DetailBlock valueToValidate={event?.notes} text={event?.notes} isFullWidth={true} title={'Notes'} />
+                                )}
+                            </div>
+
+                            <div className="multiline-blocks">
                                 {/*  Shared With */}
                                 <MultilineDetailBlock
                                     title={'Shared with'}
@@ -348,11 +352,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
                                 {/* Children */}
                                 <MultilineDetailBlock title={'Children'} array={event?.children} />
-
-                                {/*  Notes */}
-                                {Manager.IsValid(event?.notes, true) && (
-                                    <DetailBlock valueToValidate={event?.notes} text={event?.notes} isFullWidth={true} title={'Notes'} />
-                                )}
                             </div>
 
                             {/* Recurring Frequency */}

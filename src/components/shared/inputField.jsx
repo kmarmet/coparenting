@@ -154,13 +154,10 @@ function InputField({
                             value={Manager.IsValid(defaultValue) ? defaultValue : ''}
                             placeholder={placeholder}
                             className={`${inputClasses} with-icon`}
-                            onChange={() => {
-                                autoResize()
-                                onChange(e)
-                            }}
+                            onChange={onChange}
                             name={inputName}
-                            inputRef={textareaRef}
-                            debounceTimeout={Manager.IsValid(customDebounceDelay) ? customDebounceDelay : 0}
+                            debounceTimeout={0}
+                            // debounceTimeout={customDebounceDelay !== 1000 ? customDebounceDelay : 1000}
                             key={refreshKey}
                         />
                     </>

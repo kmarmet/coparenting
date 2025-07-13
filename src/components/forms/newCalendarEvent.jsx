@@ -447,6 +447,10 @@ export default function NewCalendarEvent() {
                     {/* RECURRING */}
                     {view?.label === 'Single Day' && (
                         <>
+                            <div className="flex">
+                                <Label text={'Recurring'} classes="toggle lowercase white" />
+                                <ToggleButton onCheck={() => setEventIsRecurring(true)} onUncheck={() => setEventIsRecurring(false)} />
+                            </div>
                             {eventIsRecurring && (
                                 <>
                                     <Spacer height={5} />
@@ -460,10 +464,6 @@ export default function NewCalendarEvent() {
                                     <Spacer height={5} />
                                 </>
                             )}
-                            <div className="flex">
-                                <Label text={'Recurring'} classes="toggle lowercase white" />
-                                <ToggleButton onCheck={() => setEventIsRecurring(true)} onUncheck={() => setEventIsRecurring(false)} />
-                            </div>
                         </>
                     )}
 
