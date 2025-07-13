@@ -37,7 +37,7 @@ export default function SelectDropdown({
         option: (base, state) => ({
             ...base,
             backgroundColor: 'transparent',
-            fontWeight: '500',
+            fontWeight: '700',
             width: 'calc(100% / 4)',
             padding: '8px 15px',
             margin: '0 5px',

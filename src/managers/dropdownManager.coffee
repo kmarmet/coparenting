@@ -163,9 +163,9 @@ DropdownManager =
 
     Reminders:
       [
-        {label: "5 Minutes Before", value: "fiveMinutes"}
-        {label: "30 Minutes Before", value: "halfHour"}
-        {label: "1 Hour Before", value: "hour"}
+        {label: "5 Minutes", value: "fiveMinutes"}
+        {label: "30 Minutes", value: "halfHour"}
+        {label: "1 Hour", value: "hour"}
         {label: "At Event Time", value: "timeOfEvent"}
       ]
 

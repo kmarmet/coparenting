@@ -73,7 +73,6 @@ div {
 }
 
 .swal2-popup {
-    border-radius: variables.$buttonBorderRadius;
     padding: 20px !important;
     margin: 0 !important;
     align-items: center !important;
@@ -84,12 +83,13 @@ div {
     justify-content: center;
     max-width: 90vw !important;
     box-shadow: variables.$boxShadow_float !important;
+    border-radius: clamp(0px, 50%, 24px) !important;
 
     &.swal2-icon-error {
         justify-content: center !important;
         border: 0 !important;
         background: #b12643;
-        border-radius: clamp(0px, 50%, 24px) !important;
+
         #swal2-title {
             font-size: 18px;
             color: white !important;

@@ -428,7 +428,7 @@
             display: flex !important;
             flex-wrap: wrap !important;
             align-items: center !important;
-            justify-content: flex-start !important;
+            justify-content: center !important;
             padding: 10px !important;
             z-index: variables.$maxZIndex !important;
             pointer-events: all !important;
@@ -438,18 +438,20 @@
             gap: 8px 0 !important;
             align-self: center !important;
             background: transparent !important;
+
             [class*='-option'] {
-                background: white !important;
+                box-shadow: variables.$boxShadow_basic !important;
+                background: palette.$inputBackground !important;
                 z-index: variables.$maxZIndex !important;
                 pointer-events: all !important;
-                min-width: max-content !important;
                 width: max-content !important;
                 border-radius: 50px !important;
-                border: 1px solid palette.$lightBorderColor !important;
+                border: 0 !important;
                 font-size: 14px !important;
-                font-weight: variables.$fwRegular !important;
+                min-width: 85px !important;
+                font-weight: 200 !important;
                 text-align: center !important;
-                color: palette.$primaryText !important;
+                color: white !important;
             }
 
             div {
@@ -506,8 +508,8 @@
 
     .card-buttons {
         align-items: center;
-        @include mixins.cardButtons;
         border-top: 0;
+        @include mixins.cardButtons;
 
         .card-button {
             background: rgba(255, 255, 255, 0.84);
@@ -517,9 +519,7 @@
             margin: 0 auto;
             color: rgba(24, 24, 24, 0.37);
             color: #5549ff;
-            @include mixins.sparkleButton;
             box-shadow: 0 0 30px 12px rgba(239, 239, 239, 0.64);
-            @include mixins.fontType;
             font-weight: variables.$fwBold;
             line-height: 1;
             border: 0;
@@ -527,6 +527,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            top: -20px;
+            @include mixins.sparkleButton;
+            @include mixins.fontType;
 
             svg {
                 margin-left: 8px;
@@ -1359,11 +1363,13 @@
             backdrop-filter: blur(20px) !important;
             border-radius: 50px !important;
             background-color: rgba(0, 0, 0, 0.1) !important;
+            padding: 0 !important;
         }
 
         .sweet-alert-popup {
             margin-top: 200px !important;
             border-radius: 50px !important;
+            padding: 0 !important;
             transform: translateY(200px) !important;
         }
 
@@ -1374,9 +1380,6 @@
         }
 
         .attachment-button {
-            //background: palette.$inputBackground;
-            //@include mixins.square(45px);
-            //padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;

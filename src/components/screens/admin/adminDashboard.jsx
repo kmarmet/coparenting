@@ -6,8 +6,10 @@ import React, {useContext, useEffect, useState} from 'react'
 import JSONPretty from 'react-json-pretty'
 import JSONPrettyMon from 'react-json-pretty/dist/monikai'
 import {useLongPress} from 'use-long-press'
+import ButtonThemes from '../../../constants/buttonThemes'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
+import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
 import useAppUpdates from '../../../hooks/useAppUpdates'
@@ -21,7 +23,9 @@ import SmsManager from '../../../managers/smsManager'
 import StringManager from '../../../managers/stringManager'
 import AppUpdate from '../../../models/appUpdate'
 import NavBar from '../../navBar'
+import Button from '../../shared/button'
 import InputField from '../../shared/inputField'
+import Screen from '../../shared/screen'
 import Spacer from '../../shared/spacer'
 
 export default function AdminDashboard() {
@@ -38,6 +42,7 @@ export default function AdminDashboard() {
     const [recordPropToCheck, setRecordPropToCheck] = useState('User Email')
     const [recordsAsJson, setRecordsAsJson] = useState(false)
     const [applicationVersion, setApplicationVersion] = useState(0)
+    const [negativeAppEmotions, setNegativeAppEmotions] = useState()
     const {currentUser} = useCurrentUser()
     const {users} = useUsers()
     const {calendarEvents} = useCalendarEvents()
@@ -75,6 +80,19 @@ export default function AdminDashboard() {
         setState({...state, successAlertMessage: 'Copied to clipboard'})
     }
 
+    const GetNegativeAppEmotions = async () => {
+        const emotions = await DB.getTable(`${DB.tables.feedbackEmotionsTracker}`)
+        const unhappy = emotions.filter((x) => x.unhappy > 0)
+        const unhappyCount = unhappy.reduce((total, current) => total + current.unhappy, 0)
+        const neutral = emotions.filter((x) => x.unhappy > 0)
+        const neutralCount = unhappy.reduce((total, current) => total + current.neutral, 0)
+        const obj = {
+            unhappy: unhappyCount,
+            neutral: neutralCount,
+        }
+        setNegativeAppEmotions(obj)
+    }
+
     useEffect(() => {
         if (tableName === 'users') {
             setRecordPropToCheck("User's Email Address")
@@ -82,6 +100,7 @@ export default function AdminDashboard() {
     }, [recordPropToCheck])
 
     useEffect(() => {
+        GetNegativeAppEmotions().then((r) => r)
         SmsManager.GetRemainingBalance().then((balance) => {
             setTextBalance(balance)
         })
@@ -119,21 +138,29 @@ export default function AdminDashboard() {
     }, [appUpdates])
 
     return (
-        <div id="admin-dashboard-wrapper" className="page-container">
+        <Screen activeScreen={ScreenNames.adminDashboard} classes={'dashboard'}>
             <div id="header" style={{backgroundImage: 'url(https://i.redd.it/16o63vp3mpg91.jpg)', backgroundSize: 'cover'}}></div>
             <Spacer height={10} />
 
             {/* TOOLBOXES */}
-            <div className="flex grid gap-10 screen-content dashboard">
+            <div className="screen-content">
                 {/* UPDATE */}
                 <div className="tool-box">
                     <p className="box-title">App Updates</p>
                     <p className="center-text">Current Version: {applicationVersion}</p>
                     <div className="buttons">
-                        <button className="button" onClick={UpdateAppVersion}>
-                            Update Version
-                        </button>
+                        <Button theme={ButtonThemes.green} text="Update Version" className="button" onClick={UpdateAppVersion} />
                     </div>
+                </div>
+
+                {/* GET EMOTIONS COUNT */}
+                <div className="tool-box">
+                    <p className="box-title">Get App Emotions</p>
+                    {Manager.IsValid(negativeAppEmotions) && (
+                        <p className={'center-text'}>
+                            Neutral: {negativeAppEmotions?.neutral} Unhappy: {negativeAppEmotions?.unhappy}
+                        </p>
+                    )}
                 </div>
 
                 {/* Get Database Record */}
@@ -167,20 +194,20 @@ export default function AdminDashboard() {
                         onChange={(e) => setGetRecordsSearchValue(e.target.value)}
                     />
                     <div className="buttons flex">
-                        <button className="button" onClick={CopyToClipboard}>
-                            Copy
-                        </button>
-                        <button className="button" onClick={AppendGetRecordsCode}>
-                            Execute
-                        </button>
-                        <button
+                        <Button className="button" onClick={CopyToClipboard} />
+                        Copy
+                        <Button className="button" onClick={AppendGetRecordsCode} />
+                        Execute
+                        <Button
+                            theme={ButtonThemes.red}
+                            text="Clear"
                             className="button"
                             onClick={() => {
                                 document.getElementById('code-block').innerHTML = ''
                                 setRecordsAsJson({})
-                            }}>
-                            Clear
-                        </button>
+                            }}
+                        />
+                        Clear
                     </div>
                     {/* CODE BLOCK */}
                     <JSONPretty theme={JSONPrettyMon} id="code-block" {...bind()} data={recordsAsJson}></JSONPretty>
@@ -196,12 +223,8 @@ export default function AdminDashboard() {
                 <div className="tool-box">
                     <p className="box-title">Delete Expired</p>
                     <div className="buttons flex gap-10">
-                        <button className="button" onClick={DeleteExpiredMemories}>
-                            Memories
-                        </button>
-                        <button className="button" onClick={DeletedExpiredCalEvents}>
-                            Events
-                        </button>
+                        <Button theme={ButtonThemes.red} text="Memories" className="button" onClick={DeleteExpiredMemories} />
+                        <Button theme={ButtonThemes.red} text="Events" className="button" onClick={DeletedExpiredCalEvents} />
                     </div>
                 </div>
 
@@ -209,14 +232,12 @@ export default function AdminDashboard() {
                 <div className="tool-box">
                     <p className="box-title">Set Holidays</p>
                     <div className="buttons flex">
-                        <button className="button" onClick={SetHolidays}>
-                            Add to Cal
-                        </button>
-                        <button onClick={() => DateManager.deleteAllHolidays()}>Delete All</button>
+                        <Button theme={ButtonThemes.green} text="Add to Calendar" className="button" onClick={SetHolidays} />
+                        <Button theme={ButtonThemes.red} className="button" text="Delete All" onClick={() => DateManager.deleteAllHolidays()} />
                     </div>
                 </div>
             </div>
-            <NavBar navbarClass={'visitation no-Add-new-button'}></NavBar>
-        </div>
+            <NavBar navbarClass={'visitation no-Add-new-button'} />
+        </Screen>
     )
 }

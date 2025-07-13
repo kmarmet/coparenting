@@ -110,17 +110,13 @@
                         }
                     }
 
-                    .date-wrapper {
-                        padding-left: 20px;
-                    }
-
                     // DATE CONTAINER
                     .date-wrapper {
                         width: 100%;
                         display: flex;
                         align-items: center;
-                        padding-left: 20px;
                         margin-bottom: 5px;
+                        padding-left: 20px;
 
                         * {
                             display: inline;
@@ -137,9 +133,10 @@
                             }
 
                             span {
-                                font-size: 13px;
                                 font-weight: variables.$fwMedium;
-                                color: palette.$whiteBgSubtitleText;
+                                color: black;
+                                opacity: 0.5;
+                                @include mixins.fontTypeLight(14px);
                             }
                         }
                     }

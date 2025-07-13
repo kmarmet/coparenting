@@ -1189,8 +1189,10 @@ $shadows-big: multiple-box-shadow(100);
 
         .creation-card,
         .screen-actions-card {
-            transform: translateY(0);
             max-height: unset;
+            .action-items {
+                transform: translateY(0);
+            }
         }
     }
 
@@ -1233,8 +1235,7 @@ $shadows-big: multiple-box-shadow(100);
 
     // Screen Actions Menu Card
     .screen-actions-card {
-        transform: translateY(100%);
-        transition: all 0.7s ease;
+        transition: all 0.5s ease;
         overflow: auto;
         position: fixed;
         bottom: 0;
@@ -1256,6 +1257,7 @@ $shadows-big: multiple-box-shadow(100);
             border-radius: 30px 30px 0 0;
             overflow: auto;
             box-shadow: variables.$boxShadow_top_only;
+            transform: translateY(100%);
             @include mainColorsGradient;
 
             &.active {
@@ -2832,7 +2834,7 @@ $shadows-big: multiple-box-shadow(100);
     opacity: 0;
     pointer-events: none;
     transition: all 0.7s ease;
-    z-index: 9;
+    z-index: 10;
     @include mainColorsGradient;
 
     &.active {

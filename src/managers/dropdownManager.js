@@ -251,15 +251,15 @@ DropdownManager = {
         },
         Reminders: [
             {
-                label: '5 Minutes Before',
+                label: '5 Minutes',
                 value: 'fiveMinutes',
             },
             {
-                label: '30 Minutes Before',
+                label: '30 Minutes',
                 value: 'halfHour',
             },
             {
-                label: '1 Hour Before',
+                label: '1 Hour',
                 value: 'hour',
             },
             {
