@@ -24,13 +24,13 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-
             padding: 8px;
             height: 80px;
             width: 80px;
             border-radius: 100%;
             background: white;
             transition: all 0.8s ease;
+            border: 1px solid palette.$lightBorderColor;
             @include mixins.hover;
 
             * {
@@ -61,12 +61,13 @@
 
             // ACTIVE
             &.active {
-                background: palette.$blend;
+                background: palette.$blendPurple;
                 opacity: 1;
                 transition: all 0.2s ease;
+                border: 0;
                 * {
                     transition: all 0.2s ease;
-                    color: variables.$primaryText;
+                    color: palette.$primaryText;
                 }
 
                 svg {

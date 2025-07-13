@@ -369,10 +369,10 @@ const Contacts = () => {
                                 setState({...state, showScreenActions: false})
                             }}>
                             <div className="content align-center">
+                                <p>Create Child Contact</p>
                                 <div className="svg-wrapper">
                                     <IoPersonAdd className={'checklist'} />
                                 </div>
-                                <p>Create Child Contact</p>
                             </div>
                         </div>
 
@@ -384,10 +384,10 @@ const Contacts = () => {
                                 setState({...state, showScreenActions: false})
                             }}>
                             <div className="content align-center">
+                                <p>Create Co-Parent Contact</p>
                                 <div className="svg-wrapper">
                                     <IoPersonAdd className={'checklist'} />
                                 </div>
-                                <p>Create Co-Parent Contact</p>
                             </div>
                         </div>
 
@@ -398,10 +398,10 @@ const Contacts = () => {
                                 setState({...state, currentScreen: ScreenNames.children, showScreenActions: false})
                             }}>
                             <div className="content align-center">
+                                <p>Manage Children</p>
                                 <div className="svg-wrapper">
                                     <IoPersonAdd className={'checklist'} />
                                 </div>
-                                <p>Manage Children</p>
                             </div>
                         </div>
 
@@ -412,10 +412,10 @@ const Contacts = () => {
                                 setState({...state, currentScreen: ScreenNames.coparents, showScreenActions: false})
                             }}>
                             <div className="content align-center">
+                                <p>Manage Co-Parents</p>
                                 <div className="svg-wrapper">
                                     <IoPersonAdd className={'checklist'} />
                                 </div>
-                                <p>Manage Co-Parents</p>
                             </div>
                         </div>
                     </>
@@ -431,23 +431,23 @@ const Contacts = () => {
                                 setState({...state, showScreenActions: false})
                             }}>
                             <div className="content align-center">
+                                <p>Create Parent Contact</p>
                                 <div className="svg-wrapper">
                                     <IoPersonAdd className={'checklist'} />
                                 </div>
-                                <p>Create Parent Contact</p>
                             </div>
                         </div>
-                        {/* MANAGE COPARENTS */}
+                        {/* MANAGE CO-PARENTS */}
                         <div
                             className="action-item"
                             onClick={() => {
                                 setState({...state, currentScreen: ScreenNames.parents, showScreenActions: false})
                             }}>
                             <div className="content align-center">
+                                <p>Manage Parents</p>
                                 <div className="svg-wrapper">
                                     <IoPersonAdd className={'checklist'} />
                                 </div>
-                                <p>Manage Parents</p>
                             </div>
                         </div>
                     </>

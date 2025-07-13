@@ -1,34 +1,51 @@
 // Path: src\components\screens\visitation\customWeekends.jsx
 import moment from 'moment'
-import React, {useContext, useState} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import ScheduleTypes from '../../../constants/scheduleTypes'
 import globalState from '../../../context'
+import useChildren from '../../../hooks/useChildren'
+import useCoParents from '../../../hooks/useCoParents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import useUsers from '../../../hooks/useUsers'
 import AlertManager from '../../../managers/alertManager'
 import DatasetManager from '../../../managers/datasetManager'
 import DomManager from '../../../managers/domManager'
+import DropdownManager from '../../../managers/dropdownManager'
 import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/new/calendarEvent'
-import CheckboxGroup from '../../shared/checkboxGroup'
 import Form from '../../shared/form'
+import FormDivider from '../../shared/formDivider'
 import MyConfetti from '../../shared/myConfetti'
-import ShareWithDropdown from '../../shared/shareWithDropdown'
+import SelectDropdown from '../../shared/selectDropdown'
 import Spacer from '../../shared/spacer'
 
 export default function CustomWeekends({hide, showCard}) {
     const {state, setState} = useContext(globalState)
     const {theme} = state
-    const [shareWith, setShareWith] = useState([])
+
+    // STATE
     const [fifthWeekendSelection, setFifthWeekendSelection] = useState('')
     const [defaultSelectedWeekends, setDefaultSelectedWeekends] = useState([])
+
+    // HOOKS
     const {currentUser} = useCurrentUser()
+    const {children, childrenAreLoading} = useChildren()
+    const {coParents, coParentsAreLoading} = useCoParents()
+    const {users} = useUsers()
+
+    // DROPDOWN STATE
+    const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
+    const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
+    const [selectedSpecificWeekends, setSelectedSpecificWeekends] = useState('')
+    const [selectedFifthWeekend, setSelectedFifthWeekend] = useState('')
+    // REF
+    const formRef = useRef(null)
 
     const ResetForm = () => {
         Manager.ResetForm('custom-weekends-schedule')
-        setShareWith([])
         setState({...state, refreshKey: Manager.GetUid(), isLoading: false})
         hide()
     }
@@ -82,7 +99,7 @@ export default function CustomWeekends({hide, showCard}) {
             dateObject.fromVisitationSchedule = true
             dateObject.id = Manager.GetUid()
             dateObject.visitationSchedule = ScheduleTypes.customWeekends
-            dateObject.shareWith = DatasetManager.getUniqueArray(shareWith, 'phone').flat()
+            dateObject.shareWith = DatasetManager.getUniqueArray(formRef.current.shareWith, 'phone').flat()
 
             if (events.length === 0) {
                 events = [dateObject]
@@ -99,45 +116,57 @@ export default function CustomWeekends({hide, showCard}) {
         VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
     }
 
-    const HandleShareWithSelection = (e) => {
-        const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
-        setShareWith(updated)
-    }
+    useEffect(() => {
+        if (Manager.IsValid(children) && Manager.IsValid(coParents) && Manager.IsValid(users)) {
+            setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
+            setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
+        }
+    }, [children, coParents, users])
 
     return (
         <Form
-            submitText={'Add Schedule'}
+            submitText={'Create Schedule'}
             className={'long-title form'}
             onSubmit={AddSpecificWeekendsToCalendar}
-            hasSubmitButton={Manager.IsValid(defaultSelectedWeekends)}
             wrapperClass="custom-weekends-schedule"
             title={'Custom Weekends Schedule'}
             showCard={showCard}
             onClose={() => ResetForm()}>
-            <hr className="mt-5" />
-            <CheckboxGroup
-                parentLabel={'Weekend YOU will have the child(ren)'}
-                onCheck={HandleSpecificWeekendSelection}
-                checkboxArray={DomManager.BuildCheckboxGroup({
-                    currentUser,
-                    customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend'],
-                })}
+            <FormDivider text={'All Fields are Required'} />
+
+            <SelectDropdown
+                selectMultiple={true}
+                placeholder={'Weekend YOU will have the child(ren)'}
+                options={[
+                    {label: '1st Weekend', value: '1st Weekend'},
+                    {label: '2nd Weekend', value: '2nd Weekend'},
+                    {label: '3rd Weekend', value: '3rd Weekend'},
+                    {label: '4th Weekend', value: '4th Weekend'},
+                ]}
+                onChange={setSelectedSpecificWeekends}
             />
-            <Spacer height={5} />
-            <CheckboxGroup
-                parentLabel={'Month with 5 weekends - extra weekend'}
-                onCheck={HandleFifthWeekendSelection}
-                checkboxArray={DomManager.BuildCheckboxGroup({
-                    currentUser,
-                    customLabelArray: ['1st Weekend', '2nd Weekend', '3rd Weekend', '4th Weekend', '5th Weekend'],
-                })}
+
+            <Spacer height={3} />
+
+            <SelectDropdown
+                placeholder={'Month with 5 weekends (extra weekend)'}
+                options={[
+                    {label: '1st Weekend', value: '1st Weekend'},
+                    {label: '2nd Weekend', value: '2nd Weekend'},
+                    {label: '3rd Weekend', value: '3rd Weekend'},
+                    {label: '4th Weekend', value: '4th Weekend'},
+                    {label: '5th Weekend', value: '5th Weekend'},
+                ]}
+                onChange={setFifthWeekendSelection}
             />
-            <Spacer height={5} />
-            <ShareWithDropdown
-                required={false}
-                onCheck={HandleShareWithSelection}
+
+            <Spacer height={3} />
+
+            <SelectDropdown
+                selectMultiple={true}
+                options={defaultShareWithOptions}
+                onSelect={setSelectedShareWithOptions}
                 placeholder={'Select Contacts to Share With'}
-                containerClass={'share-with-coparents'}
             />
             <hr className="mt-5 mb-10" />
         </Form>

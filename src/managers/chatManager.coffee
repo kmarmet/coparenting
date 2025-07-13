@@ -8,7 +8,7 @@ import LogManager from './logManager'
 import SecurityManager from './securityManager'
 import Chat from "../models/chat/chat"
 import DB_UserScoped from "../database/db_userScoped"
-import Sapler from "../api/apis"
+import Apis from "../api/apis"
 
 ChatManager =
   CreateAndInsertChat:  (sender,recipient) ->
@@ -55,8 +55,8 @@ ChatManager =
     return inactive
 
   GetToneAndSentiment: (message) ->
-    tone = await Sapler.GetToneOrSentiment('tone', message)
-    sentiment = await Sapler.GetToneOrSentiment('sentiment', message)
+    tone = await Apis.Sapler.GetToneOrSentiment('tone', message)
+    sentiment = await Apis.Sapler.GetToneOrSentiment('sentiment', message)
 
     if !Manager.IsValid(tone) or !Manager.IsValid(sentiment)
       return false

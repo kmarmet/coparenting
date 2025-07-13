@@ -269,6 +269,7 @@ export default function EventCalendar() {
     return (
         <Screen loadingByDefault={true} stopLoadingBool={contentIsLoaded} activeScreen={ScreenNames.calendar}>
             {/* CARDS */}
+
             <>
                 {/* HOLIDAYS CARD */}
                 <Form

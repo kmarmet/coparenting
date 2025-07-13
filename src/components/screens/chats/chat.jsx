@@ -3,14 +3,16 @@ import moment from 'moment-timezone'
 import React, {useContext, useEffect, useState} from 'react'
 import {BsBookmarkDashFill, BsBookmarkStarFill, BsFillBookmarksFill} from 'react-icons/bs'
 import {FaStar} from 'react-icons/fa'
+
 import {IoChevronBack, IoCopy, IoSend} from 'react-icons/io5'
 import {MdCancel, MdOutlineArrowOutward, MdOutlineSearchOff} from 'react-icons/md'
 import {PiBookmarksSimpleDuotone} from 'react-icons/pi'
 import {TbMessageCircleSearch} from 'react-icons/tb'
+import TextareaAutosize from 'react-textarea-autosize'
 import {useLongPress} from 'use-long-press'
-import ActivityCategory from '../../../constants/activityCategory'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
+import ActivityCategory from '../../../constants/updateCategory'
 import globalState from '../../../context.js'
 import useChatMessages from '../../../hooks/useChatMessages'
 import useChats from '../../../hooks/useChats'
@@ -176,9 +178,14 @@ const Chat = ({show, hide, recipient}) => {
         }, 100)
     }
 
-    const HandleMessageTyping = () => {
-        if (StringManager.GetWordCount(messageText) % 2 === 0 && messageText.indexOf(' ') > -1) {
-            SetTone(messageText).then((r) => r)
+    const HandleMessageTyping = async () => {
+        const messageInput = document.querySelector('.message-input')
+        const value = messageInput.value
+
+        if (value.indexOf(' ') > -1) {
+            setTimeout(async () => {
+                await SetTone(value)
+            }, 500)
         }
     }
 
@@ -242,19 +249,6 @@ const Chat = ({show, hide, recipient}) => {
             GetChat().then((r) => r)
         }
     }, [recipient])
-
-    // UNSET DYNAMIC INPUT HEIGHT
-    useEffect(() => {
-        if (messageText.length === 1 || messageText.length === 0) {
-            const input = document.querySelector('.message-input')
-            if (input) {
-                input.style.height = '40px'
-                DomManager.unsetHeight(input)
-                setToneObject(null)
-                HideKeyboard()
-            }
-        }
-    }, [messageText.length])
 
     // ON SEARCH RESULTS CHANGE
     useEffect(() => {
@@ -370,13 +364,12 @@ const Chat = ({show, hide, recipient}) => {
                                 </button>
                             </div>
                         )}
+
                         {/* TOP BAR */}
                         {!showSearchInput && DomManager.isMobile() && (
-                            <div className="top-buttons">
-                                <div className="flex" id="user-info">
-                                    <IoChevronBack className="back-arrow" onClick={hide} />
-                                    <p id="user-name">{StringManager.GetFirstNameOnly(recipient?.name)}</p>
-                                </div>
+                            <div id="header">
+                                <IoChevronBack className="back-arrow" onClick={hide} />
+                                <p id="user-name">{StringManager.GetFirstNameOnly(recipient?.name)}</p>
                                 <div id="right-side" className="flex">
                                     {inSearchMode ? (
                                         <MdOutlineSearchOff
@@ -574,33 +567,31 @@ const Chat = ({show, hide, recipient}) => {
                                         onFocus={(e) => e.target.classList.add('active')}
                                         onBlur={(e) => e.target.classList.remove('active')}>
                                         <div className={'flex'} id="message-input-container">
-                                            <InputField
+                                            <TextareaAutosize
+                                                className={`${messageText?.length > 0 ? toneObject?.color : ''} message-input`}
                                                 placeholder={'Message...'}
-                                                inputType={InputTypes.chat}
-                                                inputClasses="message-input"
-                                                hasBottomSpacer={false}
-                                                wrapperClasses="chat-input mb-0"
-                                                defaultValue={messageText}
+                                                onChange={async (e) => {
+                                                    if (e.target.value.length > 1) {
+                                                        await HandleMessageTyping(e)
+                                                        setMessageText(e.target.value)
+                                                    }
+                                                }}
                                                 onKeyUp={(e) => {
                                                     // Backspace
                                                     if (e.keyCode === 8) {
-                                                        DomManager.autoExpandingHeight(e)
-
                                                         if (e.target.value === '') {
                                                             setMessageText('')
+                                                            setToneObject(null)
                                                         }
-                                                    }
-                                                }}
-                                                onChange={(e) => {
-                                                    if (e.target.value.length > 1) {
-                                                        HandleMessageTyping(e)
-                                                        setMessageText(e.target.value)
-                                                        DomManager.autoExpandingHeight(e)
                                                     }
                                                 }}
                                             />
                                             {Manager.IsValid(recipient) && (
-                                                <IoSend className={toneObject?.color} onClick={SendMessage} id="send-button" />
+                                                <IoSend
+                                                    className={`${toneObject?.color ? toneObject?.color : ''}`}
+                                                    onClick={SendMessage}
+                                                    id="send-button"
+                                                />
                                             )}
                                         </div>
                                     </div>

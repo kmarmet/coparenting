@@ -12,23 +12,16 @@ Apis = {
             return new Promise(function (resolve, reject) {
                 return fetch(`https://api.sapling.ai/api/v1/${toneOrSentiment}`, {
                     method: 'POST',
-                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         key: '7E3IFZEMEKYEHVIMJHENF9ETHHTKARA4',
                         text: message,
-                    }).then(function (response) {
-                        if (Manager.IsValid(response)) {
-                            return response
-                        } else {
-                            return reject('Unable to parse Apis response')
-                        }
                     }),
                 })
-                    .then(function (result) {
-                        return resolve(result.json())
+                    .then(function (response) {
+                        return resolve(response.json())
                     })
                     .catch(function (error) {
                         return reject(error)

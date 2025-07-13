@@ -21,9 +21,9 @@ import SmsManager from '../../../managers/smsManager.js'
 import StringManager from '../../../managers/stringManager'
 import Child from '../../../models/child/child'
 import General from '../../../models/child/general'
-import CheckboxGroup from '../../shared/checkboxGroup'
 import Form from '../../shared/form'
 import InputField from '../../shared/inputField'
+import SelectDropdown from '../../shared/selectDropdown'
 import Spacer from '../../shared/spacer'
 
 const Steps = {
@@ -413,16 +413,13 @@ export default function Registration() {
                         <Spacer height={10} />
 
                         {/* ACCOUNT TYPE */}
-                        <CheckboxGroup
-                            onCheck={HandleAccountType}
-                            parentLabel="Profile Type (cannot be changed later)"
-                            checkboxArray={DomManager.BuildCheckboxGroup({
-                                customLabelArray: ['Parent', 'Child'],
-                                defaultLabels: ['Parent'],
-                            })}
-                            required={true}
-                            textOnly={true}
-                            dataKey={['Parent', 'Child']}
+                        <SelectDropdown
+                            onSelect={(e) => setAccountType(e)}
+                            placeholder={'Profile Type (cannot be changed later)'}
+                            options={[
+                                {label: 'Parent', value: 'Parent'},
+                                {label: 'Child', value: 'Child'},
+                            ]}
                         />
                     </>
                 )}

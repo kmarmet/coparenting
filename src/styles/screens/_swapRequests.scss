@@ -28,7 +28,7 @@
                 flex-wrap: wrap;
                 line-height: 1;
                 font-weight: variables.$fwRegular;
-                color: variables.$primaryText;
+                color: palette.$primaryText;
                 #request-status {
                     align-self: flex-start;
                 }
@@ -38,7 +38,7 @@
             .sent-from {
                 width: 100%;
                 display: block;
-                color: variables.$labelText;
+                color: palette.$labelText;
                 font-weight: variables.$fwLight;
                 font-size: 14px;
             }

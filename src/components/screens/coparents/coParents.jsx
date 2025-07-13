@@ -115,7 +115,7 @@ export default function CoParents() {
             <ScreenActionsMenu title="Manage Co-Parents">
                 {/* ADD CO-PARENT */}
                 <div
-                    className="action-item"
+                    className="action-item more-text"
                     onClick={() => {
                         setShowNewCoParentFormCard(true)
                         setState({...state, showScreenActions: false})
@@ -138,7 +138,7 @@ export default function CoParents() {
                     <>
                         {/*  ADD CUSTOM INFO */}
                         <div
-                            className="action-item"
+                            className="action-item more-text"
                             onClick={() => {
                                 setState({...state, showScreenActions: false})
                                 setShowCustomInfoCard(true)
@@ -158,7 +158,7 @@ export default function CoParents() {
 
                         {/*  REMOVE CO-PARENT */}
                         <div
-                            className="action-item"
+                            className="action-item more-text"
                             onClick={() => {
                                 setState({...state, showScreenActions: false})
                                 AlertManager.confirmAlert(
@@ -187,7 +187,7 @@ export default function CoParents() {
                 )}
 
                 <div
-                    className="action-item"
+                    className="action-item more-text"
                     onClick={() => {
                         setShowInvitationForm(true)
                         setState({...state, showScreenActions: false})

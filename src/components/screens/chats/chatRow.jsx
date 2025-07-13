@@ -136,8 +136,8 @@ export default function ChatRow({index, onClick, chat}) {
                     // if (e.target !== e.currentTarget) return false
                 }}
                 data-thread-id={chat?.id}
-                style={DomManager.AnimateDelayStyle(index)}
-                className={`chat-row chats-animation-row ${DomManager.Animate.FadeInUp(Manager.IsValid(chat?.id))}`}>
+                style={DomManager.AnimateDelayStyle(0)}
+                className={`chat-row chats-animation-row ${DomManager.Animate.FadeInUp(Manager.IsValid(chat?.id, true))}`}>
                 {/* CO-PARENT NAME, TIMESTAMP, AND LAST MESSAGE */}
                 <div className="row-text">
                     <div className={'row-text-content'}>

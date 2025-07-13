@@ -158,7 +158,7 @@
 .gm-style-mtc {
     button {
         border-radius: variables.$borderRadius !important;
-        background: #323232 !important;
+        background: palette.$main !important;
         color: white !important;
         &:first-child {
             margin-right: 8px !important;
@@ -168,7 +168,7 @@
 .gm-control-active,
 .gm-svpc {
     border-radius: variables.$borderRadius !important;
-    background: #323232 !important;
+    background: palette.$main !important;
     color: white !important;
 
     img {
@@ -184,15 +184,15 @@
         height: 50px;
         display: flex;
         position: relative;
-        background: variables.$inputBackground;
-        border-radius: variables.$borderRadius;
+        background: palette.$inputBackground;
+        border-radius: 50px;
         align-items: center;
         justify-content: space-between;
         overflow: auto;
 
         // Address input
         input {
-            margin-left: 40px;
+            margin-left: 50px;
             padding-left: 0 !important;
             background: transparent;
         }
@@ -232,13 +232,12 @@
         }
 
         svg {
-            @include mixins.centerVert;
-            @include mixins.square(20px);
             position: absolute;
             color: palette.$transWhite;
-            left: 10px;
-            font-size: 22px;
+            left: 20px;
             margin-left: 0;
+            @include mixins.centerVert;
+            @include mixins.square(20px);
         }
     }
 
@@ -250,8 +249,30 @@
     width: calc(100vw - 30px) !important;
     margin: 0 auto !important;
     z-index: 9999 !important;
-    border-radius: variables.$buttonBorderRadius !important;
-    box-shadow: variables.$boxShadow_bottom_only !important;
+    right: unset !important;
+    left: 15px !important;
+    border-radius: variables.$mediumBorderRadius !important;
+    box-shadow: variables.$boxShadow_bottom_only_bigger !important;
+    background: palette.$blendDark !important;
+    border: 1px solid palette.$barelyVisibleWhite !important;
+    * {
+        font-family: 'SF-Pro-Display-Regular', sans-serif !important;
+        letter-spacing: 1px !important;
+        border: 0 !important;
+    }
+
+    svg {
+        color: #8693cd !important;
+    }
+
+    span {
+        color: white !important;
+
+        span,
+        svg {
+            color: palette.$lighterPurple !important;
+        }
+    }
 
     &::after {
         display: none !important;
@@ -271,10 +292,15 @@
 
 /*#region  REACT SELECT */
 .select-dropdown {
+    [class*='-menu'] {
+        z-index: 10 !important;
+        position: relative !important;
+    }
     // Dropdown Button/Input
     [class*='-control'] {
-        background: variables.$inputBackground !important;
-        border-radius: variables.$borderRadius !important;
+        background: palette.$inputBackground !important;
+        border-radius: 50px !important;
+        padding: 0 10px !important;
         border: 0 !important;
         box-shadow: none !important;
         min-height: 50px !important;
@@ -337,6 +363,7 @@
         border-radius: variables.$borderRadius !important;
         border: 0 !important;
         max-width: calc(100vw - 20px) !important;
+        z-index: 9 !important;
 
         &.white,
         &.white-bg {
@@ -392,7 +419,7 @@
             display: flex !important;
             flex-wrap: wrap !important;
             align-items: center !important;
-            justify-content: center !important;
+            justify-content: flex-start !important;
             padding: 10px !important;
             z-index: variables.$maxZIndex !important;
             pointer-events: all !important;
@@ -407,13 +434,13 @@
                 z-index: variables.$maxZIndex !important;
                 pointer-events: all !important;
                 min-width: max-content !important;
-                width: calc(100% / 4) !important;
+                width: max-content !important;
                 border-radius: 50px !important;
                 border: 1px solid palette.$lightBorderColor !important;
                 font-size: 14px !important;
                 font-weight: variables.$fwRegular !important;
                 text-align: center !important;
-                color: variables.$primaryText !important;
+                color: palette.$primaryText !important;
             }
 
             div {
@@ -503,7 +530,7 @@
         margin-top: 100px;
         width: fit-content;
         font-size: 40px;
-        font-family: system-ui, sans-serif;
+        font-family: 'SF-Pro-Display', sans-serif !important;
         font-weight: bold;
         text-transform: uppercase;
         color: #0000;
@@ -555,7 +582,7 @@
 #overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(8px);
     z-index: variables.$lesserMaxZIndex;
     display: flex;
@@ -676,10 +703,6 @@
             }
         }
 
-        table {
-            @include mixins.table;
-        }
-
         // Datepicker
         fieldset {
             top: 50% !important;
@@ -770,7 +793,7 @@
         }
 
         p {
-            color: variables.$primaryText;
+            color: palette.$primaryText;
 
             &.screen-intro-text {
                 color: palette.$darkestGrey;
@@ -783,7 +806,7 @@
 
         b {
             font-weight: variables.$fwBold;
-            color: variables.$primaryText;
+            color: palette.$primaryText;
         }
 
         /*#endregion ELEMENT DEFAULTS*/
@@ -819,10 +842,6 @@
             @include mixins.labelWrapper;
         }
 
-        #upload-inputs {
-            @include mixins.uploadInputs;
-        }
-
         .checkbox-group {
             @include mixins.checkboxGroup;
 
@@ -852,11 +871,6 @@
             }
         }
 
-        #alert-container,
-        .page-container {
-            @include mixins.pageContainer;
-        }
-
         .form {
             @include mixins.form;
         }
@@ -882,10 +896,6 @@
             &.children {
                 transform: scale(1.3);
             }
-        }
-
-        .screen-title {
-            @include mixins.screenTitle;
         }
 
         button,
@@ -1199,10 +1209,6 @@
             @include mixins.navBar;
         }
 
-        #confirm-container {
-            @include mixins.popupContainers;
-        }
-
         #large-title {
             color: black;
             width: 100%;
@@ -1296,7 +1302,7 @@
             @include mixins.centerHoriz;
 
             p {
-                color: variables.$lightGreyText;
+                color: palette.$whiteBgSubtitleTextLighter;
                 font-size: 14px;
                 text-align: center;
                 font-weight: variables.$fwMedium;
@@ -1343,11 +1349,13 @@
 
         .sweet-alert-frost {
             backdrop-filter: blur(20px) !important;
+            border-radius: 50px !important;
             background-color: rgba(0, 0, 0, 0.1) !important;
         }
 
         .sweet-alert-popup {
             margin-top: 200px !important;
+            border-radius: 50px !important;
             transform: translateY(200px) !important;
         }
 
@@ -1648,7 +1656,7 @@
             font-weight: variables.$fwRegular;
             margin: 0;
             line-height: 1.3;
-            color: variables.$labelText;
+            color: palette.$labelText;
             font-size: 14px;
             text-transform: uppercase;
 
@@ -1779,10 +1787,6 @@
 
         .sparkle {
             @include mixins.sparkleButton;
-        }
-
-        .sparkle-on-click-button {
-            @include mixins.sparkleOnClickButton;
         }
 
         .caption {

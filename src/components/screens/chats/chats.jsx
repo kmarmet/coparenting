@@ -16,7 +16,6 @@ import NewChat from '../../forms/newChat'
 import NavBar from '../../navBar'
 import Form from '../../shared/form'
 import InputField from '../../shared/inputField'
-
 import Screen from '../../shared/screen'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
@@ -85,7 +84,7 @@ const Chats = () => {
             {/*  SCREEN ACTIONS */}
             <ScreenActionsMenu title="Manage Chats">
                 <div
-                    className="action-item"
+                    className="action-item more-text"
                     onClick={() => {
                         setShowInvitationCard(true)
                         setState({...state, showScreenActions: false})

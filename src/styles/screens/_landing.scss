@@ -231,7 +231,7 @@
                 padding-left: 15px;
                 li {
                     b {
-                        color: variables.$primaryText;
+                        color: palette.$primaryText;
                     }
                 }
             }
@@ -303,7 +303,7 @@
                             color: palette.$main;
                         }
                         p {
-                            color: variables.$primaryText;
+                            color: palette.$primaryText;
                         }
                         h2 {
                             font-size: 20px;
@@ -773,10 +773,11 @@
                             overflow: hidden;
                             position: relative;
                             background: palette.$grey;
-                            @include mixins.hoverShadow;
                             display: flex;
                             flex-direction: column;
                             justify-content: flex-start;
+                            @include mixins.hoverShadow;
+
                             @media screen and (max-width: 800px) {
                                 width: 100%;
                                 margin-bottom: 10px;
@@ -1030,7 +1031,7 @@
                                     }
 
                                     * {
-                                        color: variables.$primaryText;
+                                        color: palette.$primaryText;
                                     }
 
                                     b {

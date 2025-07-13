@@ -53,7 +53,7 @@
         .MuiAccordionDetails-root {
             margin-bottom: 15px;
             p {
-                color: variables.$primaryText;
+                color: palette.$primaryText;
                 line-height: 1.4;
             }
             #send-invite-button {
@@ -158,16 +158,16 @@
                             width: 100%;
 
                             .timestamp {
-                                font-size: 14px;
+                                font-size: 12px;
                                 font-weight: variables.$fwLight;
                                 margin-left: auto;
-                                color: variables.$whiteBgSubtitleTextLighter;
+                                color: palette.$whiteBgSubtitleTextLighter;
                             }
 
                             .coParent-name {
                                 display: flex;
                                 font-weight: variables.$fwMedium;
-                                color: variables.$primaryText;
+                                color: palette.$primaryText;
                                 font-size: 18px;
                                 justify-content: space-between;
                                 margin-right: auto;
@@ -180,9 +180,7 @@
                         }
 
                         .last-message {
-                            color: variables.$whiteBgSubtitleText;
-                            font-weight: variables.$fwLight;
-                            font-size: 15px;
+                            color: palette.$whiteBgSubtitleTextDarker;
                             display: -webkit-box;
                             -webkit-line-clamp: 2;
                             -webkit-box-orient: vertical;
@@ -195,6 +193,8 @@
                             width: 100%;
                             gap: 0 10px;
                             padding-top: 3px;
+                            font-weight: variables.$fwLight;
+                            @include mixins.fontTypeLight(15.5, $lineHeight: 1.3);
                         }
                     }
                 }
@@ -307,37 +307,32 @@
         }
     }
 
-    .top-buttons {
+    #header {
         z-index: 999;
         width: 100vw;
         padding: 50px 15px 15px 15px;
-        background: transparent;
-        position: relative;
-        @include mixins.mainColorsGradient;
+        background: rgba(255, 255, 255, 0.3);
+        position: fixed;
+        backdrop-filter: blur(10px);
+        align-items: center;
+        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 1fr 4fr 1fr;
 
         .back-arrow {
-            color: white;
-            transform: scale(1.3);
+            color: palette.$main;
+            position: relative;
+            left: -5px;
         }
 
-        #user-info {
-            justify-content: center;
-
-            svg {
-                color: white;
-                font-size: 25px;
-            }
-
-            #user-name {
-                color: white;
-                font-weight: 600;
-                font-size: 30px;
-                width: 100%;
-                line-height: 1;
-                white-space: nowrap;
-                margin-right: 15px;
-                text-align: center;
-            }
+        #user-name {
+            color: palette.$primaryText;
+            font-weight: 600;
+            font-size: 30px;
+            width: 100%;
+            line-height: 1;
+            white-space: nowrap;
+            text-align: center;
         }
 
         #right-side {
@@ -347,7 +342,11 @@
 
             svg {
                 font-size: 24px;
-                color: palette.$mediumTransWhite;
+                color: palette.$iconGrey;
+            }
+
+            #search-icon {
+                color: palette.$green;
             }
 
             #close-search-icon {
@@ -356,8 +355,8 @@
             }
 
             #chat-bookmark-icon {
+                color: palette.$blendPurple;
                 font-size: 22px;
-
                 &.active {
                     color: white;
                 }
@@ -399,7 +398,7 @@
         overflow: auto;
         background-color: palette.$lightBg;
         overflow-x: hidden;
-        padding: 15px 15px 125px 15px;
+        padding: 105px 15px 125px 15px;
         position: relative;
         overscroll-behavior: none;
 
@@ -417,8 +416,9 @@
             width: 100%;
             display: block;
             margin-bottom: 15px;
-            color: palette.$darkGrey;
+            color: palette.$whiteBgSubtitleTextLighter;
             font-size: 12px;
+            letter-spacing: 0.5px;
             padding-top: 5px;
 
             svg {
@@ -495,10 +495,12 @@
                     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
                     line-height: 1.3;
                     font-weight: variables.$fwRegular;
+                    letter-spacing: 1px;
+                    @include mixins.fontTypeLight($lineHeight: 1.3);
 
                     &.from {
                         z-index: 100;
-                        background-color: palette.$blendPurple;
+                        background-color: palette.$main;
                         color: white;
                         display: flex;
                         justify-content: space-between;
@@ -515,7 +517,7 @@
                     &.to {
                         background-color: #f3f4f6;
                         margin-left: auto;
-                        color: variables.$headerText;
+                        color: palette.$primaryText;
                         float: right;
 
                         &.message {
@@ -592,7 +594,7 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto;
-            border-radius: variables.$borderRadius;
+            border-radius: variables.$buttonBorderRadius;
             position: relative;
             opacity: 0;
 
@@ -650,8 +652,8 @@
                 font-size: 10px;
                 color: white;
                 position: absolute;
-                top: 8px;
-                left: 8px;
+                top: 10px;
+                left: 15px;
                 font-weight: variables.$fwRegular;
             }
 
@@ -674,12 +676,6 @@
             justify-content: space-between;
             padding: 0 20px 65px 20px;
 
-            &.active {
-                #message-input-container {
-                    border: 1px solid palette.$mediumGreyDarker;
-                }
-            }
-
             .input-field {
                 &.chat-input {
                     &.active {
@@ -692,7 +688,7 @@
                 width: 100vw;
                 border-radius: variables.$borderRadius;
                 background: white;
-                padding-right: 15px;
+                padding-right: 5px;
                 display: flex;
                 align-items: center !important;
 
@@ -700,7 +696,7 @@
                     color: palette.$green;
                     font-weight: variables.$fwMediumBold;
                     text-align: center;
-                    margin-left: 10px;
+                    margin-left: 20px;
                     @include mixins.square(26px);
 
                     &.red {
@@ -709,31 +705,40 @@
                 }
 
                 .message-input {
-                    color: variables.$primaryText;
+                    color: palette.$primaryText;
                     outline: none;
-                    line-height: 1.3;
                     width: 100%;
-                    overflow: auto;
                     min-height: 50px;
-                    padding-top: 7px;
                     border: 1px solid palette.$lightBorderColor;
-                    border-radius: variables.$borderRadius;
-                    caret-color: variables.$primaryText;
+                    caret-color: palette.$primaryText;
+                    padding: clamp(12px, 2.5vw, 20px) clamp(16px, 4vw, 32px);
+                    border-radius: clamp(0px, 50%, 24px);
 
                     &:focus,
                     &.active {
                         box-shadow: none;
-                        border: 1px solid palette.$blendPurple;
+                        border: 1px solid palette.$lightBorderColor;
                     }
 
                     &::placeholder {
                         color: palette.$darkGrey;
                         font-size: 14px;
                         font-style: normal;
-                        padding-top: 8px;
                         white-space: nowrap;
                         padding-left: 5px;
+                        position: relative;
+                        top: 2px;
                         opacity: 1;
+                    }
+
+                    &.red {
+                        border: 1px solid palette.$red;
+                    }
+                    &.green {
+                        border: 1px solid palette.$green;
+                    }
+                    &.yellow {
+                        border: 1px solid palette.$yellow;
                     }
                 }
             }

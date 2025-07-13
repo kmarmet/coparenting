@@ -6,9 +6,10 @@ import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {IoMdCheckmarkCircleOutline} from 'react-icons/io'
 import {MdClearAll} from 'react-icons/md'
-import ActivityCategory from '../../constants/activityCategory'
+import ButtonThemes from '../../constants/buttonThemes'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import ScreenNames from '../../constants/screenNames'
+import ActivityCategory from '../../constants/updateCategory'
 import globalState from '../../context'
 import DB from '../../database/DB'
 import useCurrentUser from '../../hooks/useCurrentUser'
@@ -19,7 +20,7 @@ import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import NavBar from '../navBar'
 import AccordionTitle from '../shared/accordionTitle'
-
+import Button from '../shared/button'
 import Screen from '../shared/screen'
 import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer'
@@ -119,7 +120,7 @@ export default function Updates() {
     useEffect(() => {
         if (Manager.IsValid(updates)) {
             setTimeout(() => {
-                DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInRight)
+                DomManager.ToggleAnimation('add', 'row', DomManager.AnimateClasses.names.fadeInUp)
             }, 300)
             SetAppBadge().then()
         }
@@ -166,9 +167,14 @@ export default function Updates() {
 
                     {/* CLEAR ALL BUTTON */}
                     {updates?.length > 0 && (
-                        <button className="button default bottom-right" onClick={ClearAll}>
-                            Clear All <MdClearAll className={'ml-5 fs-25'} />
-                        </button>
+                        <Button
+                            icon={<MdClearAll className={'ml-5 fs-25'} />}
+                            text={'Clear All'}
+                            theme={ButtonThemes.green}
+                            classes="bottom-right clear-all"
+                            onClick={ClearAll}>
+                            Clear All
+                        </Button>
                     )}
 
                     {/* LOOP ACTIVITIES */}
@@ -201,7 +207,7 @@ export default function Updates() {
                             })}
                     </div>
                 </div>
-                {updates?.length === 0 && <_paletteFallbackText text={'no updates awaiting your attention'} />}
+                {updates?.length === 0 && <p className={'no-data-fallback-text'}>No Updates</p>}
             </div>
             <NavBar navbarClass={'activity no-Add-new-button'}></NavBar>
         </Screen>

@@ -1,13 +1,14 @@
 // Path: src\components\shared\inputField.jsx
 import {MobileDatePicker, MobileDateRangePicker, MobileTimePicker, SingleInputDateRangeField} from '@mui/x-date-pickers-pro'
 import moment from 'moment'
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import {DebounceInput} from 'react-debounce-input'
 import {BsCalendar2WeekFill} from 'react-icons/bs'
 import {MdEmail, MdNotes, MdOutlineTitle} from 'react-icons/md'
 import {PiArrowBendLeftUpFill, PiLinkSimpleHorizontalBold} from 'react-icons/pi'
 import {RiPhoneFill} from 'react-icons/ri'
 import {WiTime4} from 'react-icons/wi'
+import TextareaAutosize from 'react-textarea-autosize'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context.js'
@@ -31,13 +32,23 @@ function InputField({
     dateFormat = DatetimeFormats.readableMonthAndDay,
     inputName = '',
     isCurrency = false,
-    customDebounceDelay = 1000,
+    customDebounceDelay = null,
     errorMessage = '',
 }) {
     const {state, setState} = useContext(globalState)
     const {refreshKey, theme} = state
     const {currentUser} = useCurrentUser()
     const [error, setError] = useState('')
+
+    const textareaRef = useRef(null)
+
+    const autoResize = () => {
+        const el = textareaRef.current
+        if (el) {
+            el.style.height = 'auto'
+            el.style.height = `${el.scrollHeight + 30}px`
+        }
+    }
 
     useEffect(() => {
         DomManager.AddThemeToDatePickers(currentUser)
@@ -143,10 +154,13 @@ function InputField({
                             value={Manager.IsValid(defaultValue) ? defaultValue : ''}
                             placeholder={placeholder}
                             className={`${inputClasses} with-icon`}
-                            onChange={onChange}
+                            onChange={() => {
+                                autoResize()
+                                onChange(e)
+                            }}
                             name={inputName}
-                            debounceTimeout={0}
-                            // debounceTimeout={customDebounceDelay !== 1000 ? customDebounceDelay : 1000}
+                            inputRef={textareaRef}
+                            debounceTimeout={Manager.IsValid(customDebounceDelay) ? customDebounceDelay : 0}
                             key={refreshKey}
                         />
                     </>
@@ -264,16 +278,14 @@ function InputField({
 
                 {/* CHAT */}
                 {inputType === InputTypes.chat && (
-                    <textarea
+                    <TextareaAutosize
+                        className={inputClasses}
                         placeholder={placeholder}
                         onChange={(e) => {
                             onChange(e)
+                            autoResize()
                         }}
                         onKeyUp={onKeyUp}
-                        className={`${inputClasses}`}
-                        name={'Chat Text'}
-                        defaultValue={defaultValue}
-                        key={refreshKey}
                     />
                 )}
             </div>

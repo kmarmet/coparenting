@@ -336,9 +336,9 @@
             height: 50px;
             background: white;
             border-radius: variables.$buttonBorderRadius;
+            box-shadow: variables.$boxShadow_bottom_only;
             @include mixins.hover;
             @include mixins.shadow;
-            box-shadow: variables.$boxShadow_bottom_only;
         }
 
         .eye-icon {
@@ -416,7 +416,7 @@
             .input-field {
                 input {
                     background: white;
-                    color: variables.$primaryText;
+                    color: palette.$primaryText;
                 }
                 svg {
                     z-index: 99;

@@ -8,18 +8,13 @@ Apis =
       new Promise (resolve, reject) ->
         fetch "https://api.sapling.ai/api/v1/#{toneOrSentiment}",
           method: 'POST'
-          mode: 'no-cors'
           headers:
             'Content-Type': 'application/json'
           body: JSON.stringify
             key: '7E3IFZEMEKYEHVIMJHENF9ETHHTKARA4'
             text: message
-          .then (response) ->
-            if Manager.IsValid(response)
-              return response
-            else
-              reject "Unable to parse Apis response"
-        .then (result) -> resolve result.json()
+        .then (response) ->
+            resolve(response.json())
         .catch (error) -> reject error
 
   IPify:

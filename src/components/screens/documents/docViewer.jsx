@@ -348,7 +348,7 @@ export default function DocViewer() {
     }
 
     const AddUserHeaderToDatabase = async () => {
-        const text = DomManager.getSelectionText()
+        const text = DomManager.GetSelectionText()
 
         let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
         const alreadyExists = Manager.IsValid(userHeaders.find((x) => x.headerText.includes(text)))
@@ -367,7 +367,7 @@ export default function DocViewer() {
                         await OnLoad()
                     },
                     () => {
-                        DomManager.clearTextSelection()
+                        DomManager.ClearTextSelection()
                     }
                 )
             }

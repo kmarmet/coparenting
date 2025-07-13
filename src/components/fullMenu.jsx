@@ -23,6 +23,8 @@ import useFeedback from '../hooks/useFeedback'
 import DomManager from '../managers/domManager'
 import Manager from '../managers/manager'
 import FeedbackEmotionsTracker from '../models/feedbackEmotionsTracker'
+import FormDivider from './shared/formDivider'
+import Spacer from './shared/spacer'
 
 export default function FullMenu() {
     const {state, setState} = useContext(globalState)
@@ -36,7 +38,7 @@ export default function FullMenu() {
         swipeDuration: 300,
         preventScrollOnSwipe: true,
         onSwipedDown: () => {
-            setState({...state, menuIsOpen: false})
+            setState({...state, menuIsOpen: false, showOverlay: false})
         },
     })
 
@@ -140,10 +142,11 @@ export default function FullMenu() {
             <div className="swipe-bar"></div>
             {Manager.IsValid(currentUser) && (
                 <div ref={scrollRef} id="full-menu-card" {...handlers}>
+                    <p id="menu-title">Menu</p>
                     <div id="menu-sections">
                         {/* SHARING */}
                         <div style={DomManager.AnimateDelayStyle(1, 0.3)} className={`section sharing ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
-                            <p className="menu-title">Sharing</p>
+                            <FormDivider text={'Sharing'} />
                             <div className={`menu-items sharing`}>
                                 {/* CALENDAR */}
                                 <div
@@ -196,13 +199,11 @@ export default function FullMenu() {
                             </div>
                         </div>
 
-                        <hr />
-
                         {/* INFORMATION DATABASE */}
                         <div
                             className={`section info-storage  ${DomManager.Animate.FadeInUp(menuIsOpen)}`}
                             style={DomManager.AnimateDelayStyle(1, 0.4)}>
-                            <p className={`menu-title info-storage`}>Information Database</p>
+                            <FormDivider text={'Information Database'} />
                             <div className={`menu-items info-storage`}>
                                 {/* CONTACTS */}
                                 <div
@@ -276,14 +277,12 @@ export default function FullMenu() {
                             </div>
                         </div>
 
-                        <hr />
-
                         {/* CO-PARENTING */}
                         {currentUser?.accountType === 'parent' && (
                             <div
                                 style={DomManager.AnimateDelayStyle(1, 0.5)}
                                 className={`section coparenting  ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
-                                <p className={`menu-title coparenting`}>Co-Parenting</p>
+                                <FormDivider text={'Co-Parenting'} />
                                 <div className={`menu-items coparenting`}>
                                     {/* TRANSFER CHANGE */}
                                     <div
@@ -332,13 +331,11 @@ export default function FullMenu() {
                             </div>
                         )}
 
-                        <hr />
-
                         {/* PROFILE SETTINGS & SUPPORT */}
                         <div
                             style={DomManager.AnimateDelayStyle(1, 0.6)}
                             className={`section profile-settings-support  ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
-                            <p className="menu-title">Settings & Support</p>
+                            <FormDivider text={'Profile'} />
                             <div className={`menu-items profile-settings-support`}>
                                 {/* PROFILE */}
                                 <div
@@ -347,7 +344,7 @@ export default function FullMenu() {
                                     <div className="svg-wrapper">
                                         <RiAccountPinCircleLine />
                                     </div>
-                                    <p>My Profile</p>
+                                    <p>Profile</p>
                                 </div>
 
                                 {/* SETTINGS */}
@@ -407,7 +404,7 @@ export default function FullMenu() {
                                 </div>
                             </div>
 
-                            <hr />
+                            <Spacer height={20} />
 
                             {/* FEEDBACK WRAPPER */}
                             <div id="feedback-wrapper">

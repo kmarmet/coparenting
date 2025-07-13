@@ -226,14 +226,14 @@
                     line-height: 1 !important;
                     text-align: center !important;
                     position: relative;
-                    font-weight: variables.$fwMediumBold !important;
+                    font-weight: variables.$fwMedium !important;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     padding-bottom: 3px;
                     background: transparent;
-                    color: palette.$darkerGrey !important;
-                    border-bottom: 1px solid palette.$darkGrey !important;
+                    color: palette.$darkGrey !important;
+                    border-bottom: 1px solid palette.$mediumGreyDarker !important;
                     border-radius: 0;
                 }
 
@@ -246,8 +246,8 @@
                     border: 0 !important;
                     height: auto;
                     padding-bottom: 3px !important;
-                    color: palette.$darkestGrey !important;
-                    border-bottom: 1px solid palette.$darkGrey !important;
+                    color: palette.$darkGrey !important;
+                    border-bottom: 1px solid palette.$mediumGreyDarker !important;
                     border-radius: 0 !important;
                 }
             }
@@ -310,7 +310,7 @@
 
                         // DAY
                         .MuiPickersDay-root {
-                            color: variables.$primaryText !important;
+                            color: palette.$primaryText !important;
                             flex-wrap: wrap;
                             justify-content: center;
                             align-items: center;

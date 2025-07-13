@@ -1,12 +1,12 @@
 // Path: src\components\screens\swapRequests?.jsx
 import moment from 'moment'
 import React, {useContext, useEffect, useRef, useState} from 'react'
-import ActivityCategory from '../../constants/activityCategory'
 import ButtonThemes from '../../constants/buttonThemes'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
 import ScreenNames from '../../constants/screenNames'
 import SwapDurations from '../../constants/swapDurations.js'
+import ActivityCategory from '../../constants/updateCategory'
 import globalState from '../../context.js'
 import DB from '../../database/DB'
 import useChildren from '../../hooks/useChildren'

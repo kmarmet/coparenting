@@ -61,7 +61,7 @@
                             &.no-category {
                                 font-weight: variables.$fwRegular;
                                 font-size: 16px;
-                                color: variables.$primaryText;
+                                color: palette.$primaryText;
                                 padding: 0;
                             }
                         }
@@ -161,7 +161,7 @@
                 height: unset;
                 text-align: center;
                 font-size: 18px;
-                background: variables.$inputBackground;
+                background: palette.$inputBackground;
                 &.pressed {
                     border-radius: variables.$borderRadius;
                     transform: scale(1.1);

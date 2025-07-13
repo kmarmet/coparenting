@@ -436,7 +436,7 @@
 
                         .MuiPickersMonth-monthButton {
                             font-weight: variables.$fwMedium !important;
-                            color: variables.$primaryText !important;
+                            color: palette.$primaryText !important;
 
                             &.Mui-selected {
                                 background: palette.$lightMain !important;
@@ -459,7 +459,7 @@
                     flex-wrap: wrap;
                     align-items: center;
                     justify-content: center;
-                    color: variables.$primaryText;
+                    color: palette.$primaryText;
                     border-radius: variables.$borderRadius !important;
                     font-size: 16px !important;
 
@@ -660,7 +660,7 @@
         .MuiInputBase-root {
             border: 0;
             padding-right: 0;
-            background: variables.$inputBackground !important;
+            background: palette.$inputBackground !important;
             border-radius: variables.$borderRadius !important;
             width: 100% !important;
             height: 50px !important;
@@ -704,7 +704,7 @@
             font-weight: variables.$fwLight !important;
             text-transform: capitalize;
             position: relative;
-            left: -15px;
+            left: -10px;
 
             // Small label when input has value
             &.MuiFormLabel-filled {
@@ -712,7 +712,7 @@
             }
 
             &.active {
-                color: variables.$primaryText !important;
+                color: palette.$primaryText !important;
             }
         }
         .MuiSvgIcon-root {

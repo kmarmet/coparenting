@@ -8,16 +8,16 @@ import DB_UserScoped from '../../../database/db_userScoped'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import useUsers from '../../../hooks/useUsers'
 import AlertManager from '../../../managers/alertManager'
-import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
 import ObjectManager from '../../../managers/objectManager'
 import StringManager from '../../../managers/stringManager'
 import Parent from '../../../models/users/parent'
 import AddressInput from '../../shared/addressInput'
-import CheckboxGroup from '../../shared/checkboxGroup'
 import Form from '../../shared/form'
+import FormDivider from '../../shared/formDivider'
 import InputField from '../../shared/inputField'
 import Label from '../../shared/label'
+import SelectDropdown from '../../shared/selectDropdown'
 import Spacer from '../../shared/spacer'
 import ToggleButton from '../../shared/toggleButton'
 
@@ -96,20 +96,6 @@ const NewParentForm = ({showCard, hideCard}) => {
         await ResetForm(`${StringManager.GetFirstNameOnly(name)} Added!`)
     }
 
-    const HandleParentType = (e) => {
-        const type = e.dataset['key']
-        DomManager.HandleCheckboxSelection(
-            e,
-            () => {
-                console.log(type)
-                setParentType(type)
-            },
-            () => {
-                setParentType('')
-            }
-        )
-    }
-
     return (
         <Form
             onSubmit={Submit}
@@ -122,7 +108,12 @@ const NewParentForm = ({showCard, hideCard}) => {
                 <Spacer height={5} />
                 <div id="new-parent-container" className={`${theme}`}>
                     <div className="new-parent-form">
+                        <FormDivider text={'Required'} />
+
                         <InputField inputType={InputTypes.text} required={true} placeholder={'Name'} onChange={(e) => setName(e.target.value)} />
+
+                        <FormDivider text={'Optional'} />
+
                         <InputField
                             inputType={InputTypes.email}
                             inputValueType="email"
@@ -145,15 +136,16 @@ const NewParentForm = ({showCard, hideCard}) => {
                         <Spacer height={5} />
 
                         {/* PARENT TYPE */}
-                        <CheckboxGroup
-                            parentLabel={'Parent Type'}
-                            className="parent-type"
-                            skipNameFormatting={true}
-                            checkboxArray={DomManager.BuildCheckboxGroup({
-                                currentUser,
-                                customLabelArray: ['Biological', 'Step-Parent', 'Guardian', 'Foster', 'Adoptive'],
-                            })}
-                            onCheck={HandleParentType}
+                        <SelectDropdown
+                            onSelect={(e) => setParentType(e.label)}
+                            placeholder={'Parent Type'}
+                            options={[
+                                {label: 'Biological', value: 'Biological'},
+                                {label: 'Step-Parent', value: 'Step-Parent'},
+                                {label: 'Guardian', value: 'Guardian'},
+                                {label: 'Foster', value: 'Foster'},
+                                {label: 'Adoptive', value: 'Adoptive'},
+                            ]}
                         />
                     </div>
                 </div>

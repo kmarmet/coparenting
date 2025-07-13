@@ -202,10 +202,10 @@
             margin-top: 15px;
 
             .row {
-                @include mixins.row;
-                @include mixins.hover;
                 opacity: 0;
                 margin-bottom: 8px;
+                @include mixins.row;
+                @include mixins.hover;
 
                 .doc-type {
                     width: 100%;
@@ -282,7 +282,6 @@
                         padding: 12px 10px;
                         border: 1px solid palette.$greyBorderColor;
                         @include mixins.ellipsis;
-                        @include mixins.hoverBlue;
 
                         svg {
                             color: palette.$blend;

@@ -7,35 +7,13 @@
         .events {
             border-radius: 25px 25px 0 0;
 
-            #no-events-text {
-                margin: 0 auto;
-                width: 100%;
-                text-align: center;
-                font-size: 14px;
-                font-style: italic;
-                font-weight: variables.$fwLight;
-                line-height: 1.5;
-                display: flex;
-                color: palette.$darkerGrey;
-                align-items: center;
-                justify-content: center;
-                align-self: stretch;
-                text-transform: lowercase;
-            }
-
-            .material-icons-round {
-                color: palette.$main;
-                font-size: 18px;
-                margin-right: 8px;
-            }
-
             .event-row {
                 @include mixins.row;
                 margin-bottom: 20px;
                 border: 0;
                 align-items: flex-start;
 
-                #icon-row {
+                .icon-row {
                     align-items: flex-start;
                     gap: 5px;
                     display: flex;
@@ -43,14 +21,14 @@
                     position: relative;
                     top: 1px;
                     svg {
-                        color: palette.$iconGrey;
+                        color: palette.$mediumGreyDarkest;
                         padding: 0;
                         margin: 0;
-                        @include mixins.square(18px);
+                        @include mixins.square(16px);
 
                         &.children-icon,
                         &.phone-icon {
-                            @include mixins.square(20px);
+                            @include mixins.square(18px);
                         }
                     }
                 }
@@ -95,7 +73,7 @@
                         opacity: 1;
                         font-style: normal;
                         font-weight: variables.$fwRegular;
-                        color: variables.$headerText;
+                        color: palette.$primaryText;
                         max-width: 90%;
                         justify-content: flex-start;
 
@@ -137,7 +115,7 @@
                     }
 
                     // DATE CONTAINER
-                    #date-container-and-edit-button {
+                    .date-wrapper {
                         width: 100%;
                         display: flex;
                         align-items: center;
@@ -148,7 +126,7 @@
                             display: inline;
                         }
 
-                        #date-container {
+                        .date-container {
                             align-items: center;
                             display: block;
                             position: relative;
@@ -161,6 +139,7 @@
                             span {
                                 font-size: 13px;
                                 font-weight: variables.$fwMedium;
+                                color: palette.$whiteBgSubtitleText;
                             }
                         }
                     }

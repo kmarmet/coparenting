@@ -84,8 +84,8 @@ div {
 }
 
 .swal2-popup {
-    border-radius: variables.$bigBorderRadius;
-    padding: 20px !important;
+    border-radius: variables.$buttonBorderRadius;
+    padding: 10px 20px !important;
     margin: 0 !important;
     align-items: center !important;
     animation-duration: 0.8s !important;
@@ -94,6 +94,7 @@ div {
     gap: 12px;
     justify-content: center;
     margin-top: 50px !important;
+    box-shadow: rgba(0, 0, 0, 0.56) 0 22px 30px 14px !important;
     @include mixins.bestShadow;
 
     &.swal2-icon-error {

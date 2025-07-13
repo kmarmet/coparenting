@@ -64,7 +64,10 @@ export default function Memories() {
     useEffect(() => {
         if (Manager.IsValid(memories)) {
             const memoryElements = document.querySelectorAll('.memory-wrapper')
-            DomManager.AddActiveClassWithDelay(memoryElements, 1)
+
+            if (Manager.IsValid(memoryElements)) {
+                DomManager.AddActiveClassWithDelay(memoryElements, 1)
+            }
         }
     }, [memories, memoriesAreLoading])
 
@@ -96,7 +99,7 @@ export default function Memories() {
                     </Accordion>
 
                     {/* NO DATA FALLBACK TEXT */}
-                    {memories && memories?.length === 0 && <p className={'no-data-fallback-text'}>At the moment, there are no memories to view </p>}
+                    {memories && memories?.length === 0 && <p className={'no-data-fallback-text'}>No Memories</p>}
 
                     {/*/!* GALLERY *!/*/}
                     {Manager.IsValid(memories) &&
@@ -113,11 +116,13 @@ export default function Memories() {
                                         {Manager.IsValid(imgObj?.title, true) && (
                                             <p className="memory-title">{StringManager.FormatTitle(imgObj?.title, true)}</p>
                                         )}
-                                        <div
-                                            style={{backgroundImage: `url(${imgObj?.url})`}}
-                                            className="memory-image"
-                                            onClick={() => setShowSlideshow(true)}
-                                            data-src={imgObj?.url}></div>
+                                        {Manager.IsValid(imgObj?.url, true) && (
+                                            <div
+                                                style={{backgroundImage: `url(${imgObj?.url})`}}
+                                                className="memory-image"
+                                                onClick={() => setShowSlideshow(true)}
+                                                data-src={imgObj?.url}></div>
+                                        )}
                                     </div>
                                     <Spacer height={3} />
                                     {/* BELOW IMAGE */}

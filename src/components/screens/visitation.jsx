@@ -68,6 +68,7 @@ export default function Visitation() {
     const [defaultHolidayOptions, setDefaultHolidayOptions] = useState([])
     const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
     const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
+    const [selectedScheduleOptions, setSelectedScheduleOptions] = useState([])
 
     // Holiday
     const [userHolidays, setUserHolidays] = useState([])
@@ -208,7 +209,6 @@ export default function Visitation() {
 
     const SetAllStates = async () => {
         await GetCurrentVisitationSchedule().then((r) => r)
-        // Minus Truman Day
         await GetVisitationHolidays(currentUser).then((holidaysObject) => {
             const {holidays, userHolidays} = holidaysObject
             const userHolidaysList = DatasetManager.GetValidArray(CalendarMapper.eventsToHolidays(userHolidays))
@@ -373,7 +373,7 @@ export default function Visitation() {
                             <div className="note-container">
                                 <Note
                                     message={
-                                        'When you establish a visitation schedule, it will be displayed on the calendar for you and anyone you permit to access it.'
+                                        'When you establish a visitation schedule, it will be displayed on the calendar for you and anyone you permit to view it.'
                                     }
                                 />
                             </div>
@@ -406,6 +406,9 @@ export default function Visitation() {
                                                     {label: 'Every Weekend', value: 'everyWeekend'},
                                                     {label: 'Every other Weekend', value: 'everyOtherWeekend'},
                                                 ]}
+                                                onSelect={(e) => {
+                                                    setScheduleType(VisitationMapper.formattedScheduleTypes(e))
+                                                }}
                                             />
                                         </div>
                                         <Spacer height={3} />

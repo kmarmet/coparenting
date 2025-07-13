@@ -140,7 +140,6 @@ export default function Map({locationString}) {
                 onLoad={onLoad}
                 onUnmount={onUnmount}
                 options={{
-                    styles: darkModeStyle,
                     disableDefaultUI: false,
                     fullscreenControl: true,
                     zoomControl: true,

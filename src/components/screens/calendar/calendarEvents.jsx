@@ -133,7 +133,7 @@ export default function CalendarEvents({selectedDate, setEventToEdit = (event) =
 
                                 {/* DATE WRAPPER */}
                                 <div className="date-wrapper">
-                                    <div id="date-container">
+                                    <div className="date-container">
                                         {/* FROM DATE */}
                                         {Manager.IsValid(startDate, true) && (
                                             <span className="start-date row-subtitle">
@@ -167,7 +167,7 @@ export default function CalendarEvents({selectedDate, setEventToEdit = (event) =
                             </div>
                             {/* ICONS */}
                             {HasRowIcons(event) && (
-                                <div id="icon-row">
+                                <div className="icon-row">
                                     {Manager.IsValid(event?.reminderTimes) && <BiSolidBellRing className={'reminders-icon'} />}
                                     {Manager.IsValid(event?.notes) && <FaNoteSticky className="notes-icon" />}
                                     {Manager.IsValid(event?.websiteUrl) && <PiLinkBold className="website-icon" />}

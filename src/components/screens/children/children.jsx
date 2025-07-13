@@ -114,11 +114,11 @@ export default function Children() {
             <NewChildForm showCard={showNewChildForm} hideCard={() => setShowNewChildForm(false)} />
 
             {/* SCREEN ACTIONS */}
-            <ScreenActionsMenu title="Manage Children">
+            <ScreenActionsMenu title="Manage Children" wrapperClasses={'less-border-radius'}>
                 {/* ADD CHILD */}
                 <div
                     style={DomManager.AnimateDelayStyle(0)}
-                    className={`action-item ${DomManager.Animate.FadeInUp(showScreenActions)}`}
+                    className={`action-item more-text ${DomManager.Animate.FadeInUp(showScreenActions)}`}
                     onClick={() => {
                         setShowNewChildForm(true)
                         setState({...state, showScreenActions: false})
@@ -140,7 +140,7 @@ export default function Children() {
                         {/* CUSTOM INFO */}
                         <div
                             style={DomManager.AnimateDelayStyle(1.5)}
-                            className={`action-item ${DomManager.Animate.FadeInUp(showScreenActions)}`}
+                            className={`action-item more-text ${DomManager.Animate.FadeInUp(showScreenActions)}`}
                             onClick={() => {
                                 setShowInfoCard(true)
                                 setState({...state, showScreenActions: false})
@@ -158,7 +158,7 @@ export default function Children() {
                         {/* PROFILE PIC */}
                         <div
                             style={DomManager.AnimateDelayStyle(2)}
-                            className={`action-item ${DomManager.Animate.FadeInUp(showScreenActions)}`}
+                            className={`action-item more-text ${DomManager.Animate.FadeInUp(showScreenActions)}`}
                             onClick={() => setState({...state, showScreenActions: false})}>
                             <div className="content">
                                 <input
@@ -185,7 +185,7 @@ export default function Children() {
                         {/* EDIT/ADD CHECKLIST */}
                         <div
                             style={DomManager.AnimateDelayStyle(2.5)}
-                            className={`action-item ${DomManager.Animate.FadeInUp(showScreenActions)}`}
+                            className={`action-item more-text ${DomManager.Animate.FadeInUp(showScreenActions)}`}
                             onClick={() => {
                                 setShowNewChecklistCard(true)
                                 setState({...state, showScreenActions: false})
@@ -204,7 +204,7 @@ export default function Children() {
                         {/*  UNLINK CHILD */}
                         <div
                             style={DomManager.AnimateDelayStyle(3)}
-                            className={`action-item ${DomManager.Animate.FadeInUp(showScreenActions)}`}
+                            className={`action-item more-text ${DomManager.Animate.FadeInUp(showScreenActions)}`}
                             onClick={async () => {
                                 await DeleteChild()
                                 setState({...state, showScreenActions: false})

@@ -1,10 +1,9 @@
-"use client";
-
 import Manager from "./manager"
 import DatasetManager from "./datasetManager"
 import DB_UserScoped from "../database/db_userScoped"
 import CalMapper from "../mappers/calMapper"
 import DateManager from "./dateManager"
+
 
 DomManager =
   AnimateDelayStyle: (index, delay = .2) ->
@@ -412,23 +411,19 @@ DomManager =
       callback()
     , delay
 
-  getSelectionText: ->
-    text = ""
-    if window.getSelection?
-      text = window.getSelection().toString()
-    else if document.selection? and document.selection.type != "Control"
-      text = document.selection.createRange().text
-    return text
+  GetSelectionText: ->
+      text: string = ""
+      if window.getSelection?
+        text = window.getSelection().toString()
+      return text
 
-  clearTextSelection: ->
-    if window.getSelection
-      if window.getSelection().empty
-        window.getSelection().empty()
-      else if window.getSelection().removeAllRanges
-        window.getSelection().removeAllRanges()
-    else if document.selection
-      document.selection.empty()
-
-
+  ClearTextSelection: ->
+      if window.getSelection
+        if window.getSelection().empty
+          window.getSelection() = ""
+        else if window.getSelection().removeAllRanges
+          window.getSelection().removeAllRanges()
+      else if window.getSelection.toString()
+        window.getSelection() = ""
 
 export default DomManager

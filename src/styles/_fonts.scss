@@ -1,0 +1,326 @@
+// LIGHT
+@font-face {
+    font-family: 'SF-Pro-Display-Light';
+    src: url('../fonts/SF-Pro-Display-Light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+// MEDIUM
+@font-face {
+    font-family: 'SF-Pro-Display-Medium';
+    src: url('../fonts/SF-Pro-Display-Medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+// REGULAR
+@font-face {
+    font-family: 'SF-Pro-Display-Regular';
+    src: url('../fonts/SF-Pro-Display-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+/*#region  ITALIC */
+@font-face {
+    font-family: 'SF-Pro-Italic';
+    src: url('../fonts/SF-Pro-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-BlackItalic';
+    src: url('../fonts/SF-Pro-Display-BlackItalic.otf') format('opentype');
+    font-weight: 900;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-BoldItalic';
+    src: url('../fonts/SF-Pro-Display-BoldItalic.otf') format('opentype');
+    font-weight: 700;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-HeavyItalic';
+    src: url('../fonts/SF-Pro-Display-HeavyItalic.otf') format('opentype');
+    font-weight: 800;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-LightItalic';
+    src: url('../fonts/SF-Pro-Display-LightItalic.otf') format('opentype');
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-MediumItalic';
+    src: url('../fonts/SF-Pro-Display-MediumItalic.otf') format('opentype');
+    font-weight: 500;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-RegularItalic';
+    src: url('../fonts/SF-Pro-Display-RegularItalic.otf') format('opentype');
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-SemiboldItalic';
+    src: url('../fonts/SF-Pro-Display-SemiboldItalic.otf') format('opentype');
+    font-weight: 600;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-ThinItalic';
+    src: url('../fonts/SF-Pro-Display-ThinItalic.otf') format('opentype');
+    font-weight: 100;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-UltralightItalic';
+    src: url('../fonts/SF-Pro-Display-UltralightItalic.otf') format('opentype');
+    font-weight: 200;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-BlackItalic';
+    src: url('../fonts/SF-Pro-Text-BlackItalic.otf') format('opentype');
+    font-weight: 900;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-BoldItalic';
+    src: url('../fonts/SF-Pro-Text-BoldItalic.otf') format('opentype');
+    font-weight: 700;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-HeavyItalic';
+    src: url('../fonts/SF-Pro-Text-HeavyItalic.otf') format('opentype');
+    font-weight: 800;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-LightItalic';
+    src: url('../fonts/SF-Pro-Text-LightItalic.otf') format('opentype');
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-MediumItalic';
+    src: url('../fonts/SF-Pro-Text-MediumItalic.otf') format('opentype');
+    font-weight: 500;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-RegularItalic';
+    src: url('../fonts/SF-Pro-Text-RegularItalic.otf') format('opentype');
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-SemiboldItalic';
+    src: url('../fonts/SF-Pro-Text-SemiboldItalic.otf') format('opentype');
+    font-weight: 600;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-ThinItalic';
+    src: url('../fonts/SF-Pro-Text-ThinItalic.otf') format('opentype');
+    font-weight: 100;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-UltralightItalic';
+    src: url('../fonts/SF-Pro-Text-UltralightItalic.otf') format('opentype');
+    font-weight: 200;
+    font-style: italic;
+}
+/*#endregion  ITALIC */
+
+@font-face {
+    font-family: 'SF-Pro';
+    src: url('../fonts/SF-Pro.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-Black';
+    src: url('../fonts/SF-Pro-Display-Black.otf') format('opentype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-Bold';
+    src: url('../fonts/SF-Pro-Display-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-Heavy';
+    src: url('../fonts/SF-Pro-Display-Heavy.otf') format('opentype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-Semibold';
+    src: url('../fonts/SF-Pro-Display-Semibold.otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-Thin';
+    src: url('../fonts/SF-Pro-Display-Thin.otf') format('opentype');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Display-Ultralight';
+    src: url('../fonts/SF-Pro-Display-Ultralight.otf') format('opentype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Rounded-Black';
+    src: url('../fonts/SF-Pro-Rounded-Black.otf') format('opentype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Rounded-Bold';
+    src: url('../fonts/SF-Pro-Rounded-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Rounded-Light';
+    src: url('../fonts/SF-Pro-Rounded-Light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Rounded-Medium';
+    src: url('../fonts/SF-Pro-Rounded-Medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Rounded-Regular';
+    src: url('../fonts/SF-Pro-Rounded-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Rounded-Semibold';
+    src: url('../fonts/SF-Pro-Rounded-Semibold.otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Rounded-Thin';
+    src: url('../fonts/SF-Pro-Rounded-Thin.otf') format('opentype');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Rounded-Ultralight';
+    src: url('../fonts/SF-Pro-Rounded-Ultralight.otf') format('opentype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-Black';
+    src: url('../fonts/SF-Pro-Text-Black.otf') format('opentype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-Bold';
+    src: url('../fonts/SF-Pro-Text-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-Heavy';
+    src: url('../fonts/SF-Pro-Text-Heavy.otf') format('opentype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-Light';
+    src: url('../fonts/SF-Pro-Text-Light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-Medium';
+    src: url('../fonts/SF-Pro-Text-Medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-Regular';
+    src: url('../fonts/SF-Pro-Text-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-Semibold';
+    src: url('../fonts/SF-Pro-Text-Semibold.otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-Thin';
+    src: url('../fonts/SF-Pro-Text-Thin.otf') format('opentype');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SF-Pro-Text-Ultralight';
+    src: url('../fonts/SF-Pro-Text-Ultralight.otf') format('opentype');
+    font-weight: 200;
+    font-style: normal;
+}

@@ -1,10 +1,10 @@
 // Path: src\components\forms\newTransferRequest.jsx
 import moment from 'moment'
 import React, {useContext, useEffect, useRef, useState} from 'react'
-import ActivityCategory from '../../constants/activityCategory'
 import creationForms from '../../constants/creationForms'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
+import ActivityCategory from '../../constants/updateCategory'
 import globalState from '../../context'
 import DB from '../../database/DB'
 import DB_UserScoped from '../../database/db_userScoped'

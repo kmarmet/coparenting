@@ -34,7 +34,7 @@ export default function SelectDropdown({
             },
             backgroundColor: 'rgba(255, 255, 255, 0.08)',
             transition: 'all 0.3s ease',
-            borderRadius: '8px',
+            borderRadius: '50px',
             backdropFilter: 'blur(8px)',
             gap: '8px',
             zIndex: state.isFocused ? 10 : 1,
@@ -54,7 +54,7 @@ export default function SelectDropdown({
         }),
         menu: (base) => ({
             ...base,
-            zIndex: 10,
+            zIndex: 10000,
             padding: '10px 0',
             backdropFilter: 'blur(8px)',
             backgroundColor: 'transparent',

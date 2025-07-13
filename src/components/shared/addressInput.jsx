@@ -2,6 +2,7 @@ import {Loader} from '@googlemaps/js-api-loader'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {FaMapLocationDot} from 'react-icons/fa6'
 import globalState from '../../context'
+import Manager from '../../managers/manager'
 import SelectDropdown from './selectDropdown'
 
 const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
@@ -59,13 +60,20 @@ const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
                 autocompleteRef.current = null
             }
         })
+        console.log(defaultValue)
     }, [])
 
     return (
         <div className={'google-autocomplete-wrapper'}>
             <div className="input-wrapper">
                 <FaMapLocationDot className={'input-icon maps'} />
-                <input ref={inputRef} type={'text'} defaultValue={defaultValue} className="google-autocomplete-input" placeholder="Address" />
+                <input
+                    ref={inputRef}
+                    type={'text'}
+                    defaultValue={defaultValue}
+                    className="google-autocomplete-input"
+                    placeholder={Manager.IsValid(defaultValue) ? defaultValue : 'Address'}
+                />
                 {/*<span className={'clear-input-button'} onClick={ClearInput}>*/}
                 {/*  CLEAR*/}
                 {/*</span>*/}

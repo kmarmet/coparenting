@@ -15,7 +15,7 @@
             // WHITE BG
             &.white-bg {
                 * {
-                    color: variables.$primaryText !important;
+                    color: palette.$primaryText !important;
                 }
 
                 .google-autocomplete-wrapper {
@@ -353,7 +353,7 @@
                         margin: 0 !important;
                         align-items: center;
                         font-size: 20px !important;
-                        color: variables.$primaryText;
+                        color: palette.$primaryText;
                         height: 50px !important;
 
                         &.Mui-expanded {
@@ -368,7 +368,7 @@
                                 justify-content: space-between;
                                 width: 100%;
                                 svg {
-                                    color: variables.$labelText !important;
+                                    color: palette.$labelText !important;
                                     top: unset !important;
                                     @include mixins.square(18px);
                                 }

@@ -39,7 +39,7 @@
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    color: variables.$primaryText;
+                    color: palette.$primaryText;
 
                     .amount {
                         &.unpaid {

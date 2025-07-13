@@ -1,11 +1,11 @@
 // Path: src\components\forms\newMemoryForm.jsx
 import moment from 'moment'
 import React, {useContext, useEffect, useRef, useState} from 'react'
-import ActivityCategory from '../../constants/activityCategory'
 import creationForms from '../../constants/creationForms'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
 import ScreenNames from '../../constants/screenNames'
+import ActivityCategory from '../../constants/updateCategory'
 import globalState from '../../context'
 import DB from '../../database/DB'
 import Storage from '../../database/storage'
