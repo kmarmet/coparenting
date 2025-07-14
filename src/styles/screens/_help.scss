@@ -14,11 +14,33 @@
                 display: flex;
                 margin-bottom: 15px;
                 opacity: 0;
-                svg {
-                    margin-right: 10px;
-                    transform: scale(0.9);
-                    color: palette.$main;
+
+                &:nth-of-type(1) {
+                    margin-top: 15px;
+                    svg {
+                        color: palette.$green;
+                    }
                 }
+                &:nth-of-type(2) {
+                    svg {
+                        color: #ecc700;
+                    }
+                }
+                &:nth-child(3) {
+                    svg {
+                        color: palette.$blendPurple;
+                    }
+                }
+                &:nth-child(4) {
+                    svg {
+                        color: palette.$main;
+                    }
+                }
+            }
+            svg {
+                margin-right: 10px;
+                transform: scale(0.9);
+                color: palette.$main;
             }
         }
     }

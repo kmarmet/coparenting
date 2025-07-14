@@ -595,8 +595,8 @@
 #overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(8px);
+    //background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(2px);
     z-index: variables.$lesserMaxZIndex;
     display: flex;
     justify-content: center;
@@ -611,7 +611,7 @@
         opacity: 1;
 
         &.with-card {
-            //z-index: variables.$lesserMaxZIndex;
+            z-index: 8;
         }
     }
 }
@@ -1364,6 +1364,8 @@
             border-radius: 50px !important;
             background-color: rgba(0, 0, 0, 0.1) !important;
             padding: 0 !important;
+            margin-top: 200px !important;
+            transform: translateY(200px) !important;
         }
 
         .sweet-alert-popup {

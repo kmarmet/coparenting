@@ -39,6 +39,7 @@ const SuccessAlert = () => {
             allowOutsideClick: true,
             allowEscapeKey: false,
             allowEnterKey: false,
+            marginTop: '10px',
             customClass: {
                 container: 'sweet-alert-frost',
                 popup: 'sweet-alert-popup',

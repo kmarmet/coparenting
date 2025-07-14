@@ -1,6 +1,6 @@
 // Path: src\components\fullMenu.jsx
 import {getAuth, signOut} from 'firebase/auth'
-import React, {useContext, useEffect, useRef} from 'react'
+import React, {useContext, useEffect, useRef, useState} from 'react'
 import {AiOutlineLogout} from 'react-icons/ai'
 import {BsHouses, BsImages} from 'react-icons/bs'
 import {GrInstallOption, GrUserAdmin} from 'react-icons/gr'
@@ -28,7 +28,8 @@ import Spacer from './shared/spacer'
 
 export default function FullMenu() {
     const {state, setState} = useContext(globalState)
-    const {currentScreen, menuIsOpen, currentAppVersion} = state
+    const {currentScreen, menuIsOpen} = state
+    const [currentAppVersion, setCurrentAppVersion] = useState('')
     const {currentUser} = useCurrentUser()
     const {feedback} = useFeedback()
     const auth = getAuth()
@@ -80,7 +81,14 @@ export default function FullMenu() {
         }
     }
 
+    const GetCurrentAppVersion = async () => {
+        const allVersions = await DB.getTable(DB.tables.appUpdates)
+        const latest = allVersions[allVersions?.length - 1]?.currentVersion
+        setCurrentAppVersion(latest)
+    }
+
     useEffect(() => {
+        GetCurrentAppVersion().then((r) => r)
         if (menuIsOpen) {
             const sharingSection = document.querySelector('.section.sharing')
             setTimeout(() => {
@@ -102,7 +110,6 @@ export default function FullMenu() {
             const informationDatabaseSection = document.querySelector('.section.info-storage')
             const settingsAndSupportSection = document.querySelector('.section.profile-settings-support')
 
-            console.log(currentScreen)
             if ([ScreenNames.calendar, ScreenNames.docsList, ScreenNames.memories, ScreenNames.updates].includes(currentScreen)) {
                 if (Manager.IsValid(sharingSection)) {
                     sharingSection.classList.add('active')
@@ -433,7 +440,9 @@ export default function FullMenu() {
                             </div>
                         </div>
                         <Spacer height={15} />
-                        <div id="action-wrapper">
+                        <div
+                            id="action-wrapper"
+                            onClick={() => setState({...state, currentScreen: ScreenNames.help, menuIsOpen: false, showOverlay: false})}>
                             <p id="report-bug">Report Bug 🐞</p>
                             <span className="seperator">|</span>
                             <p id="request-feature">Request Feature 💡</p>

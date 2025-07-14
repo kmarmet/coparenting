@@ -1,8 +1,9 @@
 import React, {useContext, useEffect, useState} from 'react'
 import {BsCalendarWeekFill} from 'react-icons/bs'
 import {FaDonate, FaFileUpload} from 'react-icons/fa'
+import {FaArrowDown} from 'react-icons/fa6'
 import {IoMdPhotos} from 'react-icons/io'
-import {IoChatbubbles, IoCloseSharp} from 'react-icons/io5'
+import {IoChatbubbles} from 'react-icons/io5'
 import {MdSwapHorizontalCircle} from 'react-icons/md'
 import {RiMapPinTimeFill} from 'react-icons/ri'
 import {useSwipeable} from 'react-swipeable'
@@ -14,7 +15,6 @@ import useCurrentUser from '../../hooks/useCurrentUser'
 import ChatManager from '../../managers/chatManager'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
-import Spacer from './spacer'
 
 const CreationMenu = () => {
     const {state, setState} = useContext(globalState)
@@ -47,12 +47,10 @@ const CreationMenu = () => {
     }, [chats, showCreationMenu])
 
     return (
-        <div className={`creation-menu-wrapper${showCreationMenu ? ' active' : ''}`}>
-            <div key={refreshKey} {...handlers} style={DomManager.AnimateDelayStyle(1, 0)} className={`creation-card`}>
-                <div className="swipe-bar"></div>
-                <Spacer height={3} />
+        <div className={`bottom-card-wrapper creation-menu-wrapper${showCreationMenu ? ' active' : ''}`}>
+            <div key={refreshKey} {...handlers} style={DomManager.AnimateDelayStyle(1, 0)} className={`creation-card bottom-card`}>
                 <div className="action-items centered">
-                    <p className="creation-menu-title">Create Resource</p>
+                    <p className="bottom-card-title">Create Resource</p>
                     {/* CALENDAR */}
                     <div
                         style={DomManager.AnimateDelayStyle(1)}
@@ -191,7 +189,7 @@ const CreationMenu = () => {
                         <div className="content">
                             <p className="close">Close</p>
                             <div className="svg-wrapper close">
-                                <IoCloseSharp className={'close'} />
+                                <FaArrowDown className={'close'} />
                             </div>
                         </div>
                     </div>

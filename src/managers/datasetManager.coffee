@@ -98,6 +98,10 @@ DatasetManager = {
       returnArray = returnArray.flat()
 
     return returnArray.filter (x) -> x
+    
+   GetLastItemInArray: (arr) ->
+    if Manager.IsValid arr
+      return arr[-1]
 
   getNestedObject: (table, objectPath) ->
     dataset = await DB.getTable(table)

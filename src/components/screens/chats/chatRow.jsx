@@ -124,7 +124,7 @@ export default function ChatRow({index, onClick, chat}) {
     }, [chat])
 
     return (
-        <div key={refreshKey} className={'two-column-chat-row'}>
+        <div className={'two-column-chat-row'}>
             <div
                 {...handlers}
                 onClick={(e) => {
@@ -137,7 +137,7 @@ export default function ChatRow({index, onClick, chat}) {
                 }}
                 data-thread-id={chat?.id}
                 style={DomManager.AnimateDelayStyle(0)}
-                className={`chat-row chats-animation-row ${DomManager.Animate.FadeInUp(Manager.IsValid(chat?.id, true))}`}>
+                className={`chat-row chats-animation-row`}>
                 {/* CO-PARENT NAME, TIMESTAMP, AND LAST MESSAGE */}
                 <div className="row-text">
                     <div className={'row-text-content'}>

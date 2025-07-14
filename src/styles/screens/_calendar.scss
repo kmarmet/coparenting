@@ -305,6 +305,7 @@
                                 color: palette.$darkGrey !important;
                                 text-align: center !important;
                             }
+
                             .MuiDayCalendar-weekDayLabel {
                                 color: palette.$mediumGreyDarker;
                                 width: auto !important;
@@ -312,7 +313,7 @@
                             }
                         }
 
-                        // DAY
+                        /*#region  DAYS */
                         .MuiPickersDay-root {
                             color: palette.$primaryText !important;
                             flex-wrap: wrap;
@@ -332,8 +333,6 @@
                             // TODAY
                             &.MuiPickersDay-today {
                                 border-radius: 0 !important;
-                                color: palette.$blend !important;
-                                font-weight: variables.$fwMediumBold !important;
 
                                 &:after {
                                     transition: all 0.3s ease-in-out;
@@ -347,7 +346,7 @@
                                     bottom: 0;
                                     height: 20px;
                                     border-radius: 100% !important;
-                                    background: #353ee3 !important;
+                                    background: rgba(209, 213, 220, 0.37) !important;
                                     @include mixins.centerHoriz;
                                     @include mixins.square(40px);
                                 }
@@ -360,6 +359,7 @@
                                 padding-bottom: 2px !important;
                                 padding-top: 2px !important;
                                 border-radius: 0 !important;
+
                                 &:after {
                                     transition: all 0.3s ease-in-out;
                                     z-index: -1;
@@ -397,6 +397,7 @@
                                 &.Mui-selected {
                                     opacity: 1 !important;
                                     color: palette.$blend !important;
+
                                     &::after {
                                         background: palette.$lightBlend !important;
                                     }
@@ -404,6 +405,7 @@
                             }
                         }
                     }
+                    /*#endregion  DAYS */
                 }
 
                 .MuiButtonBase-root {

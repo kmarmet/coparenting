@@ -104,9 +104,6 @@ const Chats = () => {
                 </div>
             </ScreenActionsMenu>
 
-            {/* NO DATA FALLBACK */}
-            {chats?.length === 0 && <p className={'no-data-fallback-text'}>No Chats</p>}
-
             {/* PAGE CONTAINER */}
             <div id="chats-container" className={`${theme} chats page-container`}>
                 <ScreenHeader
@@ -117,6 +114,8 @@ const Chats = () => {
                 />
 
                 <div className="screen-content bottom-padding-only">
+                    {/* NO DATA FALLBACK */}
+                    {chats?.length === 0 && <p className={'no-data-fallback-text'}>No Chats</p>}
                     {/* CHAT ROWS */}
                     {Manager.IsValid(chats) &&
                         chats?.map((chat, index) => {

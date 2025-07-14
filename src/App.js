@@ -179,7 +179,13 @@ export default function App() {
 
                         // Get notifications
                         if (!window.location.href.includes('localhost') && !AppManager.IsDevMode()) {
-                            UpdateManager.init(currentUserFromDb)
+                            const updateSubscribers = await DB.getTable(`${DB.tables.updateSubscribers}`)
+                            console.log(updateSubscribers)
+                            const subscriber = updateSubscribers?.find((s) => s?.email === currentUserFromDb?.email)
+                            console.log(subscriber)
+                            if (!Manager.IsValid(subscriber)) {
+                                UpdateManager.init(currentUserFromDb)
+                            }
                         }
 
                         // Back to Log in if user's email is not verified
@@ -215,6 +221,7 @@ export default function App() {
                 console.log(`Error: ${error} | Code File: App.js  | Function: useEffect |`)
             }
         })
+
         // eslint-disable-next-line no-undef
         LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
     }, [])

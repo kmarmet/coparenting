@@ -21,12 +21,12 @@ const ScreenActionsMenu = ({children, centeredActionItem, title = 'Parent', wrap
     }, [showScreenActions])
 
     return (
-        <div className={`screen-actions-menu-wrapper${showScreenActions ? ' active' : ''}${wrapperClasses ? ` ${wrapperClasses}` : ''}`}>
-            <div {...handlers} className={`screen-actions-card`}>
-                <div className="swipe-bar"></div>
-                {/*<Spacer height={3} />*/}
+        <div
+            className={`bottom-card-wrapper screen-actions-menu-wrapper${showScreenActions ? ' active' : ''}${wrapperClasses ? ` ${wrapperClasses}` : ''}`}>
+            <div className={`${showScreenActions ? ' active overlay' : ' overlay'} ${theme}`}></div>
+            <div {...handlers} className={`screen-actions-card bottom-card`}>
                 <div className={`${centeredActionItem ? 'centered action-items' : 'action-items'}${showScreenActions ? ' active' : ''}`}>
-                    <p className="screen-actions-menu-title">{title}</p>
+                    <p className="bottom-card-title">{title}</p>
                     <Spacer height={10} />
                     {children}
                 </div>

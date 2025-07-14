@@ -1187,18 +1187,13 @@ $shadows-big: multiple-box-shadow(100);
         transition: all 0.4s ease;
         pointer-events: auto;
 
-        .creation-card,
-        .screen-actions-card {
-            max-height: unset;
-            .action-items {
-                transform: translateY(0);
-            }
+        .bottom-card {
+            transform: translateY(0);
         }
     }
 
     // TITLES
-    .creation-menu-title,
-    .screen-actions-menu-title {
+    .bottom-card-title {
         opacity: 1;
         line-height: 1.2;
         text-align: center;
@@ -1210,7 +1205,7 @@ $shadows-big: multiple-box-shadow(100);
         margin: 0 auto;
         color: white;
         width: 100%;
-        padding: 15px 0 0 0;
+        padding: 25px 0 0 0;
 
         svg {
             font-size: 30px;
@@ -1222,43 +1217,66 @@ $shadows-big: multiple-box-shadow(100);
         }
     }
 
-    .swipe-bar {
-        display: block;
-        background: rgba(255, 255, 255, 0.71);
-        position: relative;
-        height: 4px;
-        border-radius: variables.$cardBorderRadius;
-        width: 90px;
-        z-index: 1;
-        margin: 0 auto;
+    .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: variables.$lesserMaxZIndex;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(2px);
+        opacity: 0;
+
+        &.active {
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            opacity: 1;
+        }
     }
 
     // Screen Actions Menu Card
-    .screen-actions-card {
+    .bottom-card {
         transition: all 0.5s ease;
         overflow: auto;
         position: fixed;
         bottom: 0;
         z-index: variables.$maxZIndex;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(8px);
         inset: 0;
-        height: 100vh;
-        padding-top: 40px;
+        transform: translateY(100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        max-height: max-content;
+        margin-top: auto;
+        box-shadow: variables.$boxShadow_top_only_extra_dark;
+        border-radius: 35px 35px 0 0;
+        @include mainColorsGradient;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 3px;
+            z-index: 1;
+        }
 
         .action-items {
             padding-bottom: 100px;
-            transition: all 0.8s ease;
             display: flex;
-            flex-direction: column;
-            bottom: 0;
-            position: fixed;
             width: 100vw;
-            border-radius: 30px 30px 0 0;
+            flex-direction: column;
             overflow: auto;
-            box-shadow: variables.$boxShadow_top_only;
-            transform: translateY(100%);
-            @include mainColorsGradient;
+            transition: all 0.6s ease;
 
             &.active {
                 transition: all 0.8s ease;
@@ -1268,20 +1286,49 @@ $shadows-big: multiple-box-shadow(100);
                 }
             }
 
+            &.centered {
+                .action-item {
+                    .content {
+                        align-items: center;
+                    }
+                }
+            }
+
             .action-item {
                 @include row;
                 text-align: center;
-                justify-content: flex-start;
+                justify-content: space-between;
                 position: relative;
                 border: 0;
                 opacity: 0;
                 background: palette.$inputBackground;
                 width: 90%;
-                padding: 15px 50px;
+                //padding: 15px 50px;
+                padding: 15px 20px;
                 margin: 0 auto 10px auto;
-                padding-inline: clamp(24px, 5vw, 50px);
-                padding-block: 16px;
+                //padding-inline: clamp(24px, 5vw, 50px);
+                //padding-block: 16px;
                 border-radius: clamp(0px, 50%, 24px);
+
+                &.close {
+                    margin: 0 auto;
+                    width: 100px;
+                    padding: 10px 10px 10px 15px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    .content {
+                        .svg-wrapper {
+                            position: relative;
+                            top: 1px;
+                            @include square(19px);
+                            svg {
+                                color: palette.$flatRed;
+                            }
+                        }
+                    }
+                }
 
                 .content {
                     display: grid;
@@ -1290,6 +1337,10 @@ $shadows-big: multiple-box-shadow(100);
                     justify-content: space-between;
                     position: relative;
                     width: 100%;
+
+                    &.align-center {
+                        align-items: center;
+                    }
 
                     input {
                         opacity: 0;
@@ -1304,7 +1355,7 @@ $shadows-big: multiple-box-shadow(100);
                         justify-content: flex-end;
                         border-radius: 0;
                         justify-self: flex-end;
-                        @include square(26px);
+                        @include square(24px);
 
                         .lg-react-element {
                             z-index: -1;
@@ -1316,14 +1367,12 @@ $shadows-big: multiple-box-shadow(100);
                             height: 100%;
                             width: 100%;
 
-                            &.transfer {
-                                //transform: scale(1.1);
+                            &.calendar {
+                                transform: scale(0.85);
                             }
-                            &.memory,
-                            &.swap,
-                            &.checklist,
-                            &.profile-pic {
-                                //transform: scale(1.2);
+                            &.expense,
+                            &.document {
+                                transform: scale(0.9);
                             }
                         }
                     }
@@ -1337,7 +1386,6 @@ $shadows-big: multiple-box-shadow(100);
                             width: 100%;
                             display: block;
                             text-align: left;
-                            font-weight: variables.$fwRegular;
                             padding-top: 2px;
                             line-height: 1.4;
                             color: palette.$subtitleTextLighter;
@@ -1355,235 +1403,10 @@ $shadows-big: multiple-box-shadow(100);
 
                     p {
                         display: inline;
-                        font-weight: variables.$fwLight;
                         font-size: 18px;
+                        line-height: 1;
                         color: white;
-                        line-height: 1;
-                    }
-
-                    &.align-center {
-                        align-items: center;
-                    }
-                }
-
-                /*#region  ROW COLORS*/
-                &:nth-of-type(1) {
-                    margin-top: 15px;
-                    .content {
-                        svg {
-                            color: #ccffff;
-                        }
-                    }
-                }
-                &:nth-of-type(2) {
-                    .content {
-                        svg {
-                            color: #ffddcc;
-                        }
-                    }
-                }
-                &:nth-child(3) {
-                    .content {
-                        svg {
-                            color: #daa520;
-                        }
-                    }
-                }
-                &:nth-child(4) {
-                    .content {
-                        svg {
-                            color: #ffffcc;
-                        }
-                    }
-                }
-                &:nth-child(5) {
-                    .content {
-                        svg {
-                            color: #b680ff;
-                        }
-                    }
-                }
-                &:nth-child(6) {
-                    .content {
-                        svg {
-                            color: #98ff98;
-                        }
-                    }
-                }
-                &:nth-child(7) {
-                    .content {
-                        svg {
-                            color: #d981ff;
-                        }
-                    }
-                }
-                &:nth-child(8) {
-                    .content {
-                        svg {
-                            color: #008080;
-                        }
-                    }
-                }
-                /*#endregion  ROW COLORS*/
-
-                &.document-image {
-                    width: 70px;
-                    img {
-                        border-radius: variables.$borderRadius;
-                        @include shadow;
-                    }
-                }
-            }
-
-            .child-info-fade-wrapper {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                width: 100%;
-            }
-        }
-    }
-
-    // Creation Menu
-    .creation-card {
-        transform: translateY(100%);
-        transition: all 0.7s ease;
-        overflow: auto;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        padding-top: 40px;
-
-        .action-items {
-            padding-bottom: 100px;
-            transition: all 0.8s ease-out;
-            display: flex;
-            flex-direction: column;
-            bottom: 0;
-            position: relative;
-            width: 100vw;
-            border-radius: 30px 30px 0 0;
-            overflow: auto;
-            box-shadow: variables.$boxShadow_top_only;
-            @include mainColorsGradient;
-
-            &.active {
-                transition: all 0.8s ease-in;
-            }
-
-            &.centered {
-                .action-item {
-                    .content {
-                        align-items: center;
-                    }
-                }
-            }
-
-            .action-item {
-                @include row;
-                text-align: center;
-                justify-content: center;
-                position: relative;
-                opacity: 0;
-                border: 0;
-                background: palette.$inputBackground;
-                width: 90%;
-                margin: 0 auto 10px auto;
-                padding: 15px 20px;
-                border-radius: variables.$buttonBorderRadius;
-
-                &.close {
-                    width: max-content;
-                    .content {
-                        p {
-                            margin-right: 10px;
-                        }
-                        svg {
-                            &.close {
-                                color: palette.$flatRed;
-                            }
-                        }
-                    }
-                }
-
-                .content {
-                    width: 100%;
-                    display: flex;
-                    justify-content: space-between;
-
-                    input {
-                        opacity: 0;
-                        display: block !important;
-                        z-index: 100;
-                        position: fixed;
-                    }
-
-                    svg,
-                    span,
-                    p {
-                        font-weight: variables.$fwLight;
-                        color: palette.$primaryText;
-                        line-height: 1;
-
-                        &.subtitle {
-                            width: 100%;
-                            display: block;
-                            text-align: left;
-                            font-weight: variables.$fwRegular;
-                            padding-top: 2px;
-                            line-height: 1.4;
-                            color: #cccccc;
-                            font-size: 14.5px;
-                            max-width: 90%;
-
-                            b {
-                                color: palette.$primaryText;
-                                font-weight: variables.$fwMedium;
-                                font-size: 14.5px;
-                            }
-                        }
-                    }
-
-                    p {
-                        display: inline;
-                        font-size: 18px;
-                        color: palette.$subtleWhite;
-                        font-weight: variables.$fwLight;
-                        line-height: 1;
-                        white-space: nowrap;
-                    }
-
-                    &.align-center {
-                        align-items: center;
-                    }
-
-                    .svg-wrapper {
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        border-radius: variables.$buttonBorderRadius;
-                        @include square(25px);
-
-                        .lg-react-element {
-                            z-index: -1;
-                        }
-
-                        svg {
-                            font-size: 22px;
-                            display: block;
-                            white-space: nowrap;
-
-                            &.transfer {
-                                transform: scale(1.1);
-                            }
-                            &.memory,
-                            &.swap,
-                            &.checklist,
-                            &.profile-pic {
-                                transform: scale(1.2);
-                            }
-                        }
+                        @include fontTypeLight($fontSize: 18px, $fontWeight: variables.$fwLight, $lineHeight: 1);
                     }
                 }
 
@@ -3233,7 +3056,7 @@ $shadows-big: multiple-box-shadow(100);
             }
 
             .subtitle {
-                color: palette.$whiteBgSubtitleTextLighter;
+                color: palette.$formSubtitleWhite;
                 text-align: center;
                 width: 100%;
                 line-height: 1.3;
@@ -3254,18 +3077,13 @@ $shadows-big: multiple-box-shadow(100);
                     position: relative;
                     font-size: 26px;
                     color: white;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
                     font-weight: variables.$fwMediumBold;
-                    width: min-content;
-                    padding: 45px 15px 0 15px;
-                    margin: 0 auto 8px auto;
+                    padding: 20px 20px 0 20px;
+                    margin: 0 auto;
                     text-decoration: none;
-                    max-width: 95%;
+                    width: 90%;
                     opacity: 1;
                     letter-spacing: 0;
-                    @include ellipsis;
 
                     &.active {
                         white-space: wrap;
@@ -3275,7 +3093,7 @@ $shadows-big: multiple-box-shadow(100);
 
                     &.long-title {
                         align-items: flex-start;
-                        @include ellipsis;
+                        //@include ellipsis;
                     }
 
                     .svg-wrapper {
@@ -4621,7 +4439,6 @@ $shadows-big: multiple-box-shadow(100);
 
     /*#endregion  SVGS BY CLASS*/
 
-    // MENU BUTTON
     #svg-wrapper {
         height: 60px;
         display: flex;
@@ -4696,15 +4513,16 @@ $shadows-big: multiple-box-shadow(100);
                 font-size: 13px;
             }
 
+            // MENU BUTTON
             &.menu-button {
+                position: relative;
+                top: -5px;
                 #svg-wrapper {
-                    @include screenHeaderGradient;
-                    min-width: 60px;
-                    min-height: 60px;
+                    box-shadow: variables.$boxShadow_button_only_medium;
                     border-radius: 100%;
-                    width: 100%;
                     margin: 0 15px;
-                    height: 100%;
+                    @include screenHeaderGradient;
+                    @include square(62px);
                     svg {
                         color: palette.$mediumGreyDarker;
                     }

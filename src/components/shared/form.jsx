@@ -71,21 +71,6 @@ export default function Form({
         }
     }, [showCard])
 
-    // Remove map branding
-    useEffect(() => {
-        let activeForm = document.querySelector(`.form-card.active`)
-
-        if (Manager.IsValid(activeForm)) {
-            const mapDivs = activeForm.querySelectorAll('div')
-            const matchingDivs = Array.from(mapDivs).filter(
-                (div) => div.style.position === 'absolute' && div.style.display === 'inline-flex' && div.style.bottom === '0px'
-            )
-            matchingDivs.forEach((div) => {
-                div.style.display = 'none'
-            })
-        }
-    }, [showCard])
-
     return (
         <div key={refreshKey} className={`form-wrapper${showCard ? ` active` : ''} ${wrapperClass}`}>
             <div className={`form-card${showCard ? ' active' : ''}`}>

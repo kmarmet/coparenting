@@ -118,6 +118,11 @@ DatasetManager = {
             return x
         })
     },
+    GetLastItemInArray: function (arr) {
+        if (Manager.IsValid(arr)) {
+            return arr[-1]
+        }
+    },
     getNestedObject: async function (table, objectPath) {
         var dataset
         dataset = await DB.getTable(table)
