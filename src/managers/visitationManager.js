@@ -232,7 +232,7 @@ const VisitationManager = {
         await VisitationManager.deleteAllHolidaysForUser(currentUser)
         holidays = DatasetManager.getUniqueArray(holidays, true)
         try {
-            await CalendarManager.addMultipleCalEvents(currentUser, holidays)
+            await CalendarManager.AddMultipleCalEvents(currentUser, holidays)
         } catch (error) {
             LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
         }
@@ -248,77 +248,36 @@ const VisitationManager = {
     addWeeks: (datetime, howManyWeeks) => {
         return new Date(datetime.setDate(datetime.getDate() + howManyWeeks * 7))
     },
-    getFiftyFifty: (dates) => {
+    GetFiftyFifty: (dates) => {
         const {firstFFPeriodStart, firstFFPeriodEnd, secondFFPeriodStart, secondFFPeriodEnd, thirdFFPeriodStart, thirdFFPeriodEnd} = dates
-        const nextYear = moment().year() + 1
+
         const year = new Date().getFullYear()
+        const nextYear = year + 1
 
-        // Periods
-        let firstPeriodArray = []
-        let secondPeriodArray = []
-        let thirdPeriodArray = []
+        function generatePeriodDates(start, end) {
+            const result = []
+            const durationInDays = DateManager.getDuration('days', start, end)
+            const day = moment(start).format('DD')
+            const month = new Date().getMonth() + 1
 
-        // First Period
-        ;(() => {
-            const visitationDurationInDays = DateManager.getDuration('days', firstFFPeriodStart, firstFFPeriodEnd)
             for (let index = 0; index <= 12; index++) {
-                const day = moment(firstFFPeriodStart).format('DD')
-                const month = new Date().getMonth() + 1
-                let datetime = new Date(`${year},${month},${day}`)
-                VisitationManager.addWeeks(datetime, index * 2).toString()
-                const visitationDates = VisitationManager.getDateRange(datetime, moment(datetime).add(visitationDurationInDays, 'days'))
+                const baseDate = new Date(`${year},${month},${day}`)
+                const incrementedDate = VisitationManager.addWeeks(baseDate, index * 2)
+                const visitationDates = VisitationManager.getDateRange(incrementedDate, moment(incrementedDate).add(durationInDays, 'days'))
                     .map((x) => moment(x).format('MM/DD/yyyy'))
-                    .filter((x) => x.toString().indexOf(nextYear) === -1)
+                    .filter((x) => !x.includes(nextYear.toString()) && x !== 'Invalid date')
 
-                // Add to date array
-                firstPeriodArray.push(visitationDates)
+                result.push(...visitationDates)
             }
-        })()
 
-        // Second Period
-        ;(() => {
-            const visitationDurationInDays = DateManager.getDuration('days', secondFFPeriodStart, secondFFPeriodEnd)
-            for (let index = 0; index <= 12; index++) {
-                const day = moment(secondFFPeriodStart).format('DD')
-                const month = new Date().getMonth() + 1
-                let datetime = new Date(`${year},${month},${day}`)
-                VisitationManager.addWeeks(datetime, index * 2).toString()
-                const visitationDates = VisitationManager.getDateRange(datetime, moment(datetime).add(visitationDurationInDays, 'days'))
-                    .map((x) => moment(x).format('MM/DD/yyyy'))
-                    .filter((x) => x.toString().indexOf(nextYear) === -1)
+            return DatasetManager.getUniqueArray(result)
+        }
 
-                // Add to date array
-                secondPeriodArray.push(visitationDates)
-            }
-        })()
-        // Third Period
-        ;(() => {
-            const visitationDurationInDays = DateManager.getDuration('days', thirdFFPeriodStart, thirdFFPeriodEnd)
-            for (let index = 0; index <= 12; index++) {
-                const day = moment(thirdFFPeriodStart).format('DD')
-                const month = new Date().getMonth() + 1
-                let datetime = new Date(`${year},${month},${day}`)
-                VisitationManager.addWeeks(datetime, index * 2).toString()
-                const visitationDates = VisitationManager.getDateRange(datetime, moment(datetime).add(visitationDurationInDays, 'days'))
-                    .map((x) => moment(x).format('MM/DD/yyyy'))
-                    .filter((x) => x.toString().indexOf(nextYear) === -1)
+        const firstPeriodDates = generatePeriodDates(firstFFPeriodStart, firstFFPeriodEnd)
+        const secondPeriodDates = generatePeriodDates(secondFFPeriodStart, secondFFPeriodEnd)
+        const thirdPeriodDates = generatePeriodDates(thirdFFPeriodStart, thirdFFPeriodEnd)
 
-                // Add to date array
-                thirdPeriodArray.push(visitationDates)
-            }
-        })()
-
-        // Formatted Date Arrays
-        const formattedSecondPeriodArray = DatasetManager.getUniqueArray(secondPeriodArray.filter((x) => x !== 'Invalid date'))
-            .SortExpenses()
-            .flat()
-        const formattedFirstPeriodArray = DatasetManager.getUniqueArray(firstPeriodArray.filter((x) => x !== 'Invalid date'))
-            .SortExpenses()
-            .flat()
-        const formattedThirdPeriodArray = DatasetManager.getUniqueArray(thirdPeriodArray.filter((x) => x !== 'Invalid date')).flat()
-
-        // Combine arrays
-        return [...formattedFirstPeriodArray, ...formattedSecondPeriodArray, ...formattedThirdPeriodArray].sort()
+        return [...firstPeriodDates, ...secondPeriodDates, ...thirdPeriodDates].sort()
     },
     deleteSchedule: async (currentUser, scheduleEvents) => {
         await CalendarManager.deleteMultipleEvents(scheduleEvents, currentUser)
@@ -332,10 +291,10 @@ const VisitationManager = {
             }
         }
     },
-    addVisitationSchedule: async (currentUser, vScheduleEvents) => {
+    AddVisitationSchedule: async (currentUser, vScheduleEvents) => {
         // await CalendarManager.deleteMultipleEvents(vScheduleEvents, currentUser)
         try {
-            await CalendarManager.addMultipleCalEvents(currentUser, vScheduleEvents)
+            await CalendarManager.AddMultipleCalEvents(currentUser, vScheduleEvents)
         } catch (error) {
             LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
         }

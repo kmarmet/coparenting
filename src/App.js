@@ -180,9 +180,7 @@ export default function App() {
                         // Get notifications
                         if (!window.location.href.includes('localhost') && !AppManager.IsDevMode()) {
                             const updateSubscribers = await DB.getTable(`${DB.tables.updateSubscribers}`)
-                            console.log(updateSubscribers)
                             const subscriber = updateSubscribers?.find((s) => s?.email === currentUserFromDb?.email)
-                            console.log(subscriber)
                             if (!Manager.IsValid(subscriber)) {
                                 UpdateManager.init(currentUserFromDb)
                             }

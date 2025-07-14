@@ -12,24 +12,29 @@ import * as Sentry from '@sentry/react'
 import ObjectManager from "./objectManager"
 
 export default CalendarManager =
-  addMultipleCalEvents: (currentUser, newEvents, isRangeClonedOrRecurring = false) ->
+  AddMultipleCalEvents: (currentUser, newEvents, isRangeClonedOrRecurring = false) ->
     dbRef = ref(getDatabase())
     currentEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}")
     multipleDatesId = Manager.GetUid()
-
-    if isRangeClonedOrRecurring = true
+    
+    # Apply multipleDatesId if cloning or recurring
+    if isRangeClonedOrRecurring
       for event in newEvents
         event.multipleDatesId = multipleDatesId
-
-    if !Manager.IsValid(currentEvents)
-      toAdd = [...newEvents]
+    
+    # Combine events
+    if Manager.IsValid(currentEvents)
+      toAdd = DatasetManager.CombineArrays(currentEvents, newEvents)
     else
-      toAdd = [currentEvents..., newEvents...]
+      [...newEvents]
+    
+    # Try writing to DB
     try
-      await set(child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.key}/"), toAdd)
+      await set child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.key}/"), toAdd
     catch error
-      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
-
+      LogManager.Log error.message, LogManager.LogTypes.error, error.stack
+  
+  
   BuildArrayOfEvents: (currentUser, eventObject, arrayType = "recurring", startDate, endDate) ->
     datesToPush = []
     datesToIterate = []

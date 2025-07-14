@@ -60,7 +60,7 @@ export default function EveryOtherWeekend({hide, showCard}) {
         MyConfetti.fire()
         await ResetForm()
         // Upload to DB
-        // VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
+        // VisitationManager.AddVisitationSchedule(currentUser, events).then((r) => r)
     }
 
     const HandleShareWithSelection = (e) => {

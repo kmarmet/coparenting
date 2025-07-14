@@ -41,9 +41,9 @@ const DateManager = {
         return currentDate.tz(currentUser?.location?.timezone).format(DatetimeFormats.timeForDb)
     },
     SortCalendarEvents: (events, datePropertyName, timePropertyName) => {
-        const sorted = events.SortExpenses((a, b) =>
-            moment(a.startTime, DatetimeFormats.timeForDb).diff(moment(b.startTime, DatetimeFormats.timeForDb))
-        )
+        // const sorted = events.SortExpenses((a, b) =>
+        //     moment(a.startTime, DatetimeFormats.timeForDb).diff(moment(b.startTime, DatetimeFormats.timeForDb))
+        // )
         // console.Log(sorted)
         let nestedSort =
             (prop1, prop2 = null, direction = 'asc') =>
@@ -56,7 +56,7 @@ const DateManager = {
         // const sortedByDate = events.sort(nestedSort(datePropertyName, null, 'asc'))
         // const sortedByDateAndTime = events.sort(nestedSort(timePropertyName, null, 'asc'))
         // const combined = DatasetManager.getUniqueArray([...sortedByDate, ...sortedByDateAndTime], true)
-        return sorted
+        // return sorted
     },
     sortByTime: (events) => {
         const sorted = events.SortExpenses((a, b) => moment(a.startTime).diff(moment(b.startTime)))
@@ -242,7 +242,6 @@ const DateManager = {
             holidays.push(...additionalHolidays)
 
             resolve(holidays)
-            console.log(holidays)
         }),
     getDuration: (timeInterval, start, end) => {
         if (timeInterval === 'days') {
@@ -259,7 +258,7 @@ const DateManager = {
         }
     },
     addDays: (inputDate, numberOfDays) => {
-        return moment(new Date(inputDate.setDate(inputDate.getDate() + numberOfDays))).format(DatetimeFormats.forDb)
+        return moment(new Date(inputDate.setDate(inputDate.getDate() + numberOfDays))).format(DatetimeFormats.dateForDb)
     },
     setHolidays: async () => {
         await DateManager.deleteAllHolidays()
@@ -311,7 +310,7 @@ const DateManager = {
             }
             newEvent.id = Manager.GetUid()
             newEvent.holidayName = holiday.name
-            newEvent.startDate = moment(holiday.date).format(DatetimeFormats.dateForDb)
+            newEvent.startDate = moment(holiday?.date).format(DatetimeFormats.dateForDb)
             newEvent.isHoliday = true
             holidayEvents.push(newEvent)
         }

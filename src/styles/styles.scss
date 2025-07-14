@@ -417,9 +417,12 @@
                 }
             }
 
-            [class*='-option'] {
-                color: palette.$darkGrey !important;
-                border-radius: variables.$borderRadius !important;
+            [id*='listbox'] {
+                [class*='-option'] {
+                    color: palette.$darkGrey !important;
+                    border: 1px solid palette.$lightBorderColor !important;
+                    border-radius: 50px !important;
+                }
             }
         }
 

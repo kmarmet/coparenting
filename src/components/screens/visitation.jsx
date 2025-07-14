@@ -1,7 +1,4 @@
 // Path: src\components\screens\visitation.jsx
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import DatetimeFormats from '../../constants/datetimeFormats'
@@ -31,7 +28,6 @@ import NavBar from '../navBar'
 import CustomWeekends from '../screens/visitation/customWeekends'
 import EveryOtherWeekend from '../screens/visitation/everyOtherWeekend'
 import FiftyFifty from '../screens/visitation/fiftyFifty'
-import AccordionTitle from '../shared/accordionTitle'
 import AddressInput from '../shared/addressInput'
 import MyConfetti from '../shared/myConfetti'
 import Note from '../shared/note'
@@ -107,7 +103,7 @@ export default function Visitation() {
         })
 
         // Upload to DB
-        VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
+        VisitationManager.AddVisitationSchedule(currentUser, events).then((r) => r)
         MyConfetti.fire()
     }
 
@@ -253,6 +249,12 @@ export default function Visitation() {
         setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
     }
 
+    const ResetCardState = () => {
+        setShowFiftyFiftyCard(false)
+        setShowEveryOtherWeekendCard(false)
+        setShowCustomWeekendsCard(false)
+    }
+
     useEffect(() => {
         if (Manager.IsValid(children) || Manager.IsValid(users)) {
             SetDefaultDropdownOptions().then((r) => r)
@@ -261,35 +263,28 @@ export default function Visitation() {
 
     // On Schedule Type Change
     useEffect(() => {
-        if (scheduleType === ScheduleTypes.fiftyFifty) {
-            setShowFiftyFiftyCard(true)
-            setShowEveryOtherWeekendCard(false)
-            setShowCustomWeekendsCard(false)
-        }
-
-        if (scheduleType === ScheduleTypes.everyOtherWeekend) {
-            setShowEveryOtherWeekendCard(true)
-            setShowFiftyFiftyCard(false)
-            setShowCustomWeekendsCard(false)
-        }
-
-        if (scheduleType === ScheduleTypes.customWeekends) {
-            setShowCustomWeekendsCard(true)
-            setShowEveryOtherWeekendCard(false)
-            setShowFiftyFiftyCard(false)
-        }
-
-        if (scheduleType === ScheduleTypes.everyWeekend) {
-            setShowEveryOtherWeekendCard(false)
-            setShowFiftyFiftyCard(false)
-            setShowCustomWeekendsCard(false)
-            AlertManager.confirmAlert('Are you sure you would like to Add an Every Weekend visitation schedule?', "I'm Sure", true, async () => {
-                await AddEveryWeekendToCalendar()
-            })
-        }
-
-        if (scheduleType === '') {
-            RemoveScheduleTypeActiveClass()
+        switch (scheduleType?.value) {
+            case ScheduleTypes.fiftyFifty:
+                ResetCardState()
+                setShowFiftyFiftyCard(true)
+                break
+            case ScheduleTypes.everyOtherWeekend:
+                ResetCardState()
+                setShowEveryOtherWeekendCard(true)
+                break
+            case ScheduleTypes.customWeekends:
+                ResetCardState()
+                setShowCustomWeekendsCard(true)
+                break
+            case ScheduleTypes.everyWeekend:
+                ResetCardState()
+                AlertManager.confirmAlert('Are you sure you would like to Add an Every Weekend visitation schedule?', "I'm Sure", true, async () => {
+                    await AddEveryWeekendToCalendar()
+                })
+                break
+            default:
+                ResetCardState()
+                break
         }
     }, [scheduleType])
 
@@ -383,51 +378,39 @@ export default function Visitation() {
                                 style={DomManager.AnimateDelayStyle(1, 0.2)}
                                 className={`visitation-section ${DomManager.Animate.FadeInUp('d', '.visitation-section')}`}>
                                 {/*  VISITATION SECTION */}
-                                <Accordion className={'white-bg'} id={'visitation-section'} expanded={showVisitationSection}>
-                                    <AccordionSummary id={'visitation-section-accordion-title'}>
-                                        <AccordionTitle
-                                            titleText={'Schedule & Transfer Location'}
-                                            onClick={() => setShowVisitationSection(!showVisitationSection)}
-                                            toggleState={showVisitationSection}
-                                        />
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        <p className="fs-15">Choose a visitation schedule and agreed upon transfer location</p>
-                                        <Spacer height={5} />
-                                        {/* SCHEDULE SELECTION */}
-                                        <div className="section visitation-schedule">
-                                            <SelectDropdown
-                                                wrapperClasses={'white-bg'}
-                                                placeholder={'Select a Schedule Type'}
-                                                options={[
-                                                    {label: '50/50', value: 'fiftyFifty'},
-                                                    {label: 'Custom Weekends', value: 'customWeekends'},
-                                                    {label: 'Every Other Weekend', value: 'everyOtherWeekend'},
-                                                    {label: 'Every Weekend', value: 'everyWeekend'},
-                                                    {label: 'Every other Weekend', value: 'everyOtherWeekend'},
-                                                ]}
-                                                onSelect={(e) => {
-                                                    setScheduleType(VisitationMapper.formattedScheduleTypes(e))
-                                                }}
-                                            />
-                                        </div>
-                                        <Spacer height={3} />
-                                        {/* DEFAULT TRANSFER LOCATION */}
-                                        <AddressInput
-                                            defaultValue={currentUser?.visitation?.transferAddress}
-                                            wrapperClasses="address-input"
-                                            labelText="Preferred Transfer Location"
-                                            onChange={(address) => {
-                                                UpdateDefaultTransferLocation(address, Manager.GetDirectionsLink(address)).then(() =>
-                                                    setTimeout(() => {
-                                                        setState({...state, successAlertMessage: 'Preferred Transfer Location Set'})
-                                                    }, 300)
-                                                )
-                                            }}
-                                        />
-                                        {/*<Spacer height={5} />*/}
-                                    </AccordionDetails>
-                                </Accordion>
+                                <p className="fs-15">Choose a visitation schedule and agreed upon transfer location.</p>
+                                <Spacer height={5} />
+                                {/* SCHEDULE SELECTION */}
+                                <div className="section visitation-schedule">
+                                    <SelectDropdown
+                                        wrapperClasses={'white-bg'}
+                                        placeholder={'Select a Schedule Type'}
+                                        options={[
+                                            {label: '50/50', value: 'fiftyFifty'},
+                                            {label: 'Custom Weekends', value: 'customWeekends'},
+                                            {label: 'Every Other Weekend', value: 'everyOtherWeekend'},
+                                            {label: 'Every Weekend', value: 'everyWeekend'},
+                                            {label: 'Every other Weekend', value: 'everyOtherWeekend'},
+                                        ]}
+                                        onSelect={(e) => {
+                                            setScheduleType(e)
+                                        }}
+                                    />
+                                </div>
+                                <Spacer height={3} />
+                                {/* DEFAULT TRANSFER LOCATION */}
+                                <AddressInput
+                                    defaultValue={currentUser?.visitation?.transferAddress}
+                                    wrapperClasses="address-input"
+                                    labelText="Preferred Transfer Location"
+                                    onChange={(address) => {
+                                        UpdateDefaultTransferLocation(address, Manager.GetDirectionsLink(address)).then(() =>
+                                            setTimeout(() => {
+                                                setState({...state, successAlertMessage: 'Preferred Transfer Location Set'})
+                                            }, 300)
+                                        )
+                                    }}
+                                />
                             </div>
                         </div>
                     )}

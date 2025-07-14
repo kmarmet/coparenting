@@ -25,23 +25,28 @@ import Manager from './manager'
 import ObjectManager from './objectManager'
 
 export default CalendarManager = {
-    addMultipleCalEvents: async function (currentUser, newEvents, isRangeClonedOrRecurring = false) {
+    AddMultipleCalEvents: async function (currentUser, newEvents, isRangeClonedOrRecurring = false) {
         var currentEvents, dbRef, error, event, i, len, multipleDatesId, toAdd
         dbRef = ref(getDatabase())
         currentEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.key}`)
         multipleDatesId = Manager.GetUid()
-        if ((isRangeClonedOrRecurring = true)) {
+
+        // Apply multipleDatesId if cloning or recurring
+        if (isRangeClonedOrRecurring) {
             for (i = 0, len = newEvents.length; i < len; i++) {
                 event = newEvents[i]
                 event.multipleDatesId = multipleDatesId
             }
         }
-        if (!Manager.IsValid(currentEvents)) {
-            toAdd = [...newEvents]
+
+        // Combine events
+        if (Manager.IsValid(currentEvents)) {
+            toAdd = DatasetManager.CombineArrays(currentEvents, newEvents)
         } else {
-            toAdd = [...currentEvents, ...newEvents]
+            ;[...newEvents]
         }
         try {
+            // Try writing to DB
             return await set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.key}/`), toAdd)
         } catch (error1) {
             error = error1

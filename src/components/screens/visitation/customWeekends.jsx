@@ -113,7 +113,7 @@ export default function CustomWeekends({hide, showCard}) {
         events = DatasetManager.getUniqueArray(events, 'startDate')
 
         // Upload to DB
-        VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
+        VisitationManager.AddVisitationSchedule(currentUser, events).then((r) => r)
     }
 
     useEffect(() => {

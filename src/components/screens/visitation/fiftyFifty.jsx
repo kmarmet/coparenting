@@ -2,29 +2,35 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
-import React, {useContext, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {FaMinus, FaPlus} from 'react-icons/fa6'
 import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
 import ScheduleTypes from '../../../constants/scheduleTypes'
 import globalState from '../../../context'
+import useChildren from '../../../hooks/useChildren'
+import useCoParents from '../../../hooks/useCoParents'
 import useCurrentUser from '../../../hooks/useCurrentUser'
+import useUsers from '../../../hooks/useUsers'
 import AlertManager from '../../../managers/alertManager'
-import DatasetManager from '../../../managers/datasetManager'
+import DropdownManager from '../../../managers/dropdownManager'
 import Manager from '../../../managers/manager'
+import ObjectManager from '../../../managers/objectManager'
 import StringManager from '../../../managers/stringManager'
 import VisitationManager from '../../../managers/visitationManager'
 import CalendarEvent from '../../../models/new/calendarEvent'
-import AccordionTitle from '../../shared/accordionTitle'
 import Form from '../../shared/form'
-import InputField from '../../shared/inputField' // Path: src\components\screens\visitation\fiftyFifty.jsx
+import InputField from '../../shared/inputField'
+import Label from '../../shared/label' // Path: src\components\screens\visitation\fiftyFifty.jsx
 import MyConfetti from '../../shared/myConfetti'
-import ShareWithDropdown from '../../shared/shareWithDropdown'
+import SelectDropdown from '../../shared/selectDropdown'
 import Spacer from '../../shared/spacer'
 
 export default function FiftyFifty({hide, showCard}) {
     const {state, setState} = useContext(globalState)
     const {theme} = state
+
+    // STATE
     const [expandFiftyFiftyInfoText, setExpandFiftyFiftyInfoText] = useState(false)
     const [firstFFPeriodStart, setFirstFFPeriodStart] = useState('')
     const [firstFFPeriodEnd, setFirstFFPeriodEnd] = useState('')
@@ -32,24 +38,32 @@ export default function FiftyFifty({hide, showCard}) {
     const [secondFFPeriodEnd, setSecondFFPeriodEnd] = useState('')
     const [thirdFFPeriodStart, setThirdFFPeriodStart] = useState('')
     const [thirdFFPeriodEnd, setThirdFFPeriodEnd] = useState('')
-    const [shareWith, setShareWith] = useState([])
+
+    // HOOKS
     const {currentUser} = useCurrentUser()
+    const {children, childrenAreLoading} = useChildren()
+    const {coParents, coParentsAreLoading} = useCoParents()
+    const {users, usersAreLoading} = useUsers()
+
+    // DROPDOWN STATE
+    const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
+    const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
 
     const ResetForm = () => {
         Manager.ResetForm('Add-fifty-fifty-schedule')
-        setShareWith([])
         setState({...state, refreshKey: Manager.GetUid()})
         hide()
     }
 
     // 50/50
-    const addToCalendar = async () => {
-        if (firstFFPeriodEnd.length === 0 || firstFFPeriodStart.length === 0 || secondFFPeriodEnd.length === 0 || secondFFPeriodStart.length === 0) {
-            AlertManager.throwError('Both schedule ranges are required')
+    const AddToCalendar = async () => {
+        const requiredFields = [firstFFPeriodStart, firstFFPeriodEnd, secondFFPeriodStart, secondFFPeriodEnd]
+
+        if (requiredFields.some((field) => field.length === 0)) {
+            AlertManager.throwError('All schedule ranges are required')
             return false
         }
 
-        let events = []
         const dates = {
             firstFFPeriodStart,
             firstFFPeriodEnd,
@@ -59,39 +73,45 @@ export default function FiftyFifty({hide, showCard}) {
             thirdFFPeriodEnd,
         }
 
-        const scheduleDates = VisitationManager.getFiftyFifty(dates)
-        scheduleDates.forEach((date) => {
+        const scheduleDates = VisitationManager.GetFiftyFifty(dates)
+
+        if (!Manager.IsValid(scheduleDates)) return false
+
+        const events = scheduleDates.map((date) => {
             const dateObject = new CalendarEvent()
-            // Required
+            dateObject.shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
             dateObject.title = `${StringManager.GetFirstNameOnly(currentUser?.name)}'s Scheduled Visitation`
             dateObject.startDate = moment(date).format(DatetimeFormats.dateForDb)
-            // Not Required
-            dateObject.ownerKey = currentUser?.key
-            dateObject.createdBy = currentUser?.name
             dateObject.fromVisitationSchedule = true
             dateObject.id = Manager.GetUid()
             dateObject.visitationSchedule = ScheduleTypes.fiftyFifty
-            dateObject.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
-            if (events.length === 0) {
-                events = [dateObject]
-            } else {
-                events = [...events, dateObject]
+            dateObject.owner = {
+                key: currentUser?.key,
+                name: currentUser?.name,
             }
+            return ObjectManager.CleanObject(dateObject)
         })
+
         MyConfetti.fire()
         // Upload to DB
-        await VisitationManager.addVisitationSchedule(currentUser, events).then((r) => r)
+        await VisitationManager.AddVisitationSchedule(currentUser, events)
         ResetForm()
     }
 
-    const HandleShareWithSelection = (e) => {
-        const updated = DomManager.HandleShareWithSelection(e, currentUser, shareWith)
-        setShareWith(updated)
+    const SetDefaultDropdownOptions = () => {
+        setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
+        setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
     }
+
+    useEffect(() => {
+        if (showCard) {
+            SetDefaultDropdownOptions()
+        }
+    }, [showCard])
 
     return (
         <Form
-            onSubmit={addToCalendar}
+            onSubmit={AddToCalendar}
             submitText={'Add Schedule'}
             className="form"
             wrapperClass="add-fifty-fifty-schedule"
@@ -100,13 +120,13 @@ export default function FiftyFifty({hide, showCard}) {
             onClose={() => ResetForm()}>
             <div className="text">
                 <Spacer height={5} />
-                <Accordion id={'fifty-fifty-info'} expanded={expandFiftyFiftyInfoText}>
+                <Accordion id={'fifty-fifty-info'} className="form-accordion" expanded={expandFiftyFiftyInfoText}>
                     <AccordionSummary>
                         <div
                             className="flex space-between"
                             id="accordion-title"
                             onClick={() => setExpandFiftyFiftyInfoText(!expandFiftyFiftyInfoText)}>
-                            <AccordionTitle text={`What is a 50/50 Visitation Schedule?`} />
+                            <Label text={`What is a 50/50 Visitation Schedule?`} classes={'always-show'} />
                             {!expandFiftyFiftyInfoText && <FaPlus className={'visitation-card'} />}
                             {expandFiftyFiftyInfoText && <FaMinus className={'visitation-card'} />}
                         </div>
@@ -124,9 +144,14 @@ export default function FiftyFifty({hide, showCard}) {
                         </p>
                         <Spacer height={5} />
                         <p>
-                            Example <br /> If you have your children (in August) Wednesday-Friday and then Monday-Wednesday during the following week:
+                            <b>Example</b> <br /> If you have your children (in August) Wednesday-Friday and then Monday-Wednesday during the
+                            following week:
                             <span>You would choose: 8/14-8/16 for the first period and 8/19-8/21 for the second period.</span>
                         </p>
+                        <Spacer height={5} />
+                        <a href={'https://www.custodyxchange.com/topics/schedules/50-50/7-examples.php'} target="_blank">
+                            Learn More
+                        </a>
                     </AccordionDetails>
                 </Accordion>
                 <Spacer height={5} />
@@ -144,6 +169,7 @@ export default function FiftyFifty({hide, showCard}) {
                         }
                     }}
                 />
+                <Spacer height={3} />
 
                 <InputField
                     wrapperClasses="date-range-input"
@@ -157,6 +183,8 @@ export default function FiftyFifty({hide, showCard}) {
                         }
                     }}
                 />
+
+                <Spacer height={3} />
 
                 {/* THIRD PERIOD */}
                 <InputField
@@ -172,14 +200,14 @@ export default function FiftyFifty({hide, showCard}) {
                     }}
                 />
 
+                <Spacer height={3} />
+
                 {/* SHARE WITH */}
-                <ShareWithDropdown
-                    required={false}
-                    shareWith={currentUser?.coParents?.map((x) => x.phone)}
-                    onCheck={HandleShareWithSelection}
+                <SelectDropdown
+                    options={defaultShareWithOptions}
+                    selectMultiple={true}
                     placeholder={'Select Contacts to Share With'}
-                    containerClass={'share-with-coparents'}
-                    dataKey={currentUser?.coParents?.map((x) => x.name)}
+                    onSelect={setSelectedShareWithOptions}
                 />
             </div>
         </Form>

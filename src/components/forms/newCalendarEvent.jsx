@@ -162,7 +162,7 @@ export default function NewCalendarEvent() {
                 if (eventIsDateRange) {
                     const dates = CalendarManager.BuildArrayOfEvents(currentUser, cleaned, 'range', cleaned.startDate, cleaned.endDate)
                     console.log(dates)
-                    await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
+                    await CalendarManager.AddMultipleCalEvents(currentUser, dates, true)
                 }
 
                 // Add cloned dates
@@ -174,13 +174,13 @@ export default function NewCalendarEvent() {
                         moment(clonedDates[0]).format(DatetimeFormats.dateForDb),
                         moment(clonedDates[clonedDates.length - 1]).format(DatetimeFormats.dateForDb)
                     )
-                    await CalendarManager.addMultipleCalEvents(currentUser, dates)
+                    await CalendarManager.AddMultipleCalEvents(currentUser, dates)
                 }
 
                 // Recurring
                 if (eventIsRecurring) {
                     const dates = CalendarManager.BuildArrayOfEvents(currentUser, cleaned, 'recurring', cleaned.startDate, cleaned.endDate)
-                    await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
+                    await CalendarManager.AddMultipleCalEvents(currentUser, dates, true)
                 }
 
                 //#endregion MULTIPLE DATES

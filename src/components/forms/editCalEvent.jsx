@@ -163,7 +163,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
                     // Add cloned dates
                     if (Manager.IsValid(clonedDates)) {
-                        // await CalendarManager.addMultipleCalEvents(currentUser, clonedDatesToSubmit)
+                        // await CalendarManager.AddMultipleCalEvents(currentUser, clonedDatesToSubmit)
                     }
 
                     if (eventIsDateRange) {

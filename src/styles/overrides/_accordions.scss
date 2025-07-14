@@ -12,6 +12,62 @@
             border-radius: 8px !important;
             background: palette.$lightBg !important;
 
+            &.form-accordion {
+                background: transparent !important;
+                border: 0 !important;
+
+                * {
+                    background: transparent !important;
+                }
+
+                .MuiCollapse-root {
+                    .MuiCollapse-wrapper {
+                        p {
+                            color: palette.$formSubtitleText !important;
+
+                            b {
+                                color: palette.$formSubtitleText !important;
+                            }
+                        }
+                        a {
+                            color: palette.$formLinkColor !important;
+                            border-bottom: 1px solid palette.$formLinkColor !important;
+                        }
+                    }
+                }
+
+                .MuiAccordion-heading {
+                    margin: 15px 0 !important;
+                    .MuiAccordionSummary-root {
+                        .MuiAccordionSummary-content {
+                            width: 100% !important;
+                            display: flex !important;
+                            justify-content: center !important;
+                            align-items: center !important;
+                            height: auto !important;
+                            .label-wrapper {
+                                width: 100% !important;
+                                label {
+                                    color: white !important;
+                                    white-space: nowrap !important;
+                                    line-height: 1 !important;
+                                    padding: 0 !important;
+                                }
+                            }
+
+                            svg {
+                                color: palette.$formSubtitleText !important;
+                                opacity: 0.6 !important;
+                                margin-left: 10px !important;
+                            }
+                            button {
+                                background: transparent !important;
+                            }
+                        }
+                    }
+                }
+            }
+
             // WHITE BG
             &.white-bg {
                 * {
@@ -414,26 +470,6 @@
                 border: 0 !important;
                 h3 {
                     border: 0 !important;
-                }
-            }
-
-            // 50/50 MODAL
-            &#fifty-fifty-info {
-                background: palette.$grey !important;
-                padding: 10px !important;
-
-                .MuiAccordionDetails-root {
-                    padding: 0 !important;
-                }
-
-                .MuiAccordion-heading {
-                    .MuiButtonBase-root {
-                        width: 100% !important;
-                    }
-                }
-
-                #accordion-title {
-                    width: 100%;
                 }
             }
         }
