@@ -1,6 +1,7 @@
 @use '../utils/mixins';
 @use '../utils/variables';
 @use '../utils/_palette';
+@use '../_fonts';
 
 #external-overrides {
     #app-container {
@@ -143,19 +144,20 @@
                 }
 
                 #images-wrapper {
-                    overflow: hidden;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    transition: all 0.5s ease;
-                    background-size: cover;
-                    background-repeat: no-repeat;
-                    background-position: center;
-                    padding: 0;
-                    max-height: 100vh;
-                    opacity: 0;
                     @include mixins.deadCenter;
+                    & {
+                        border-radius: variables.$cardBorderRadius;
+                        overflow: hidden;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        transition: all 0.5s ease;
+                        background-size: contain;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        padding: 0;
+                    }
 
                     img {
                         display: none !important;

@@ -16,19 +16,19 @@ const SuccessAlert = () => {
             // html: successAlertMessage,
             showClass: {
                 popup: `
-          animate__animated
-          animate__fadeInDown
-          animate__faster
-        `,
+                  animate__animated
+                  animate__fadeInDown
+                  animate__faster
+                `,
             },
             hideClass: {
                 popup: `
-          animate__animated
-          animate__fadeOutUp
-          animate__faster
-        `,
+                  animate__animated
+                  animate__fadeOutUp
+                  animate__faster
+                `,
             },
-            position: 'top-start',
+            position: 'top-end',
             timer: 2000,
             timerProgressBar: true,
             showConfirmButton: false,
@@ -39,13 +39,18 @@ const SuccessAlert = () => {
             allowOutsideClick: true,
             allowEscapeKey: false,
             allowEnterKey: false,
-            marginTop: '10px',
+            // transform: 'translateY(70px)',
+            // marginTop: '10px',
             customClass: {
-                container: 'sweet-alert-frost',
-                popup: 'sweet-alert-popup',
+                // container: 'sweet-alert-frost',
+                // popup: 'sweet-alert-popup',
             },
             color: '#fff',
-            didOpen: () => {},
+            didOpen: () => {
+                const popup = Swal.getPopup()
+                popup.style.marginTop = '150px'
+                popup.style.transform = 'translateY(100px)'
+            },
             willClose: () => {
                 clearInterval(timerInterval)
             },

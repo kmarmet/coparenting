@@ -59,7 +59,6 @@ import globalState from './context.js'
 import DB from './database/DB'
 import DB_UserScoped from './database/db_userScoped'
 import firebaseConfig from './firebaseConfig.js'
-import appManager from './managers/appManager'
 import AppManager from './managers/appManager.js'
 import DomManager from './managers/domManager'
 import Manager from './managers/manager'
@@ -149,7 +148,8 @@ export default function App() {
 
                     let updates = []
                     let currentUserFromDb
-                    const appVersion = await appManager.GetCurrentAppVersion()
+                    const appVersion = '1.0.1'
+                    // const appVersion = await appManager.GetCurrentAppVersion()
                     currentUserFromDb = users?.find((u) => u?.email === user?.email)
                     // User Exists
                     if (Manager.IsValid(currentUserFromDb)) {

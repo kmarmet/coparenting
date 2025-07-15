@@ -217,7 +217,7 @@ function InputField({
                                 onChange(e)
                             }}
                             name={inputName}
-                            className={`${inputClasses} with-icon`}
+                            className={`${inputClasses} with-icon url`}
                             defaultValue={defaultValue}
                             key={refreshKey}
                         />

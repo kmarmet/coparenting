@@ -22,7 +22,6 @@ import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
 import VisitationManager from '../../managers/visitationManager'
 import CalendarMapper from '../../mappers/calMapper'
-import VisitationMapper from '../../mappers/visitationMapper'
 import CalendarEvent from '../../models/new/calendarEvent'
 import NavBar from '../navBar'
 import CustomWeekends from '../screens/visitation/customWeekends'
@@ -158,20 +157,6 @@ export default function Visitation() {
                 setSelectedHolidayDates(filtered)
             },
             true
-        )
-    }
-
-    const HandleScheduleTypeSelection = (e) => {
-        DomManager.HandleCheckboxSelection(
-            e,
-            async (e) => {
-                setScheduleType(VisitationMapper.formattedScheduleTypes(e))
-                setShowCustomWeekendsCard(showCustomWeekendsCard)
-            },
-            () => {
-                setScheduleType('')
-                setShowCustomWeekendsCard(!showCustomWeekendsCard)
-            }
         )
     }
 
@@ -397,23 +382,26 @@ export default function Visitation() {
                                         }}
                                     />
                                 </div>
-                                <Spacer height={3} />
-                                {/* DEFAULT TRANSFER LOCATION */}
-                                <AddressInput
-                                    defaultValue={currentUser?.visitation?.transferAddress}
-                                    wrapperClasses="address-input"
-                                    labelText="Preferred Transfer Location"
-                                    onChange={(address) => {
-                                        UpdateDefaultTransferLocation(address, Manager.GetDirectionsLink(address)).then(() =>
-                                            setTimeout(() => {
-                                                setState({...state, successAlertMessage: 'Preferred Transfer Location Set'})
-                                            }, 300)
-                                        )
-                                    }}
-                                />
                             </div>
                         </div>
                     )}
+
+                    <Spacer height={3} />
+                    {/* DEFAULT TRANSFER LOCATION */}
+                    <AddressInput
+                        defaultValue={currentUser?.visitation?.transferAddress}
+                        wrapperClasses="address-input white-bg"
+                        labelText="Preferred Transfer Location"
+                        onChange={(address) => {
+                            UpdateDefaultTransferLocation(address, Manager.GetDirectionsLink(address)).then(() =>
+                                setTimeout(() => {
+                                    setState({...state, successAlertMessage: 'Preferred Transfer Location Set'})
+                                }, 300)
+                            )
+                        }}
+                    />
+
+                    <Spacer height={3} />
 
                     {/* HOLIDAY SELECTION */}
                     <SelectDropdown

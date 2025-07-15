@@ -278,7 +278,7 @@ export default function EventCalendar() {
     }, [showEditCard])
 
     return (
-        <Screen loadingByDefault={true} stopLoadingBool={contentIsLoaded} activeScreen={ScreenNames.calendar}>
+        <Screen loadingByDefault={true} stopLoadingBool={contentIsLoaded} activeScreen={ScreenNames.calendar} classes={'calendar'}>
             {/* CARDS */}
 
             <>

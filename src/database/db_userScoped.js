@@ -281,30 +281,44 @@ const DB_UserScoped = {
             })
         })
     },
-    addUserChildProp: async (currentUser, activeChild, infoSection, prop, value, shareWith) => {
+    AddUserChildProp: async (currentUser, activeChild, infoSection, prop, value, shareWith) => {
         const dbRef = ref(getDatabase())
-        const childKey = DB.GetChildIndex(currentUser?.children, activeChild?.id)
-        if (childKey !== null) {
-            if (Manager.IsValid(shareWith, true)) {
-                for (let userKey of shareWith) {
-                    const shareWithSet = await DB.getTable(`${DB.tables.sharedChildInfo}/${userKey}`)
-                    let sharedObject
-                    sharedObject = {
-                        prop: prop,
-                        infoSection: infoSection,
-                        childName: activeChild?.general?.name,
-                        sharedByName: currentUser?.name,
-                        sharedByOwnerKey: currentUser?.key,
-                        id: Manager.GetUid(),
-                        value: value,
-                    }
-                    await set(child(dbRef, `${DB.tables.sharedChildInfo}/${userKey}`), [...shareWithSet, sharedObject])
-                }
-            }
-            await set(
-                child(dbRef, `${DB.tables.users}/${currentUser?.key}/children/${childKey}/${infoSection}/${StringManager.formatDbProp(prop)}`),
-                `${value}`
-            )
+
+        // Get the child's index
+        const childIndex = DB.GetChildIndex(currentUser?.children, activeChild?.id)
+
+        if (!childIndex) return
+
+        // Prepare path for the child's property
+        const childPath = `${DB.tables.users}/${currentUser?.key}/children/${childIndex}/${infoSection}/${StringManager.formatDbProp(prop)}`
+
+        // Directly set the child's property
+        await set(child(dbRef, childPath), value)
+
+        // If there’s no shareWith list, skip sharing
+        if (!Manager.IsValid(shareWith, true)) return
+
+        // Share the property with other users
+        await DB_UserScoped.ShareChildInfo(shareWith, activeChild, currentUser, infoSection, prop, value)
+    },
+    ShareChildInfo: async (shareWith, activeChild, currentUser, infoSection, prop, value) => {
+        const dbRef = ref(getDatabase())
+
+        const sharedObject = {
+            prop,
+            infoSection,
+            childName: activeChild?.general?.name,
+            sharedByName: currentUser?.name,
+            sharedByOwnerKey: currentUser?.key,
+            id: Manager.GetUid(),
+            value,
+        }
+
+        for (let userKey of shareWith) {
+            const sharedPath = `${DB.tables.sharedChildInfo}/${userKey}`
+            const shareWithSet = await DB.getTable(sharedPath)
+
+            await set(child(dbRef, sharedPath), [...shareWithSet, sharedObject])
         }
     },
     addCoparentProp: async (currentUser, coparent, prop, value) => {

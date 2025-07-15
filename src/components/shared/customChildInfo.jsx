@@ -1,7 +1,6 @@
 // Path: src\components\shared\customChildInfo.jsx
 import moment from 'moment'
 import React, {useContext, useEffect, useRef, useState} from 'react'
-import {GrCheckmark} from 'react-icons/gr'
 import validator from 'validator'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
@@ -23,13 +22,26 @@ import InputField from './inputField'
 import SelectDropdown from './selectDropdown'
 import Spacer from './spacer'
 
+const defaultInfoTypes = [
+    {label: 'Text', value: 'text'},
+    {label: 'Phone', value: 'phone'},
+    {label: 'Location', value: 'location'},
+    {label: 'Email', value: 'email'},
+]
+
+const defaultSections = [
+    {label: 'General', value: 'general'},
+    {label: 'Medical', value: 'medical'},
+    {label: 'Schooling', value: 'schooling'},
+    {label: 'Behavior', value: 'behavior'},
+]
+
 export default function CustomChildInfo({hideCard, showCard, activeChild}) {
     const {state, setState} = useContext(globalState)
     const {theme} = state
 
     // STATE
     const [infoSection, setInfoSection] = useState('general')
-    const [infoType, setInfoType] = useState('text')
     const [view, setView] = useState({label: 'Details', value: 'Details'})
 
     // HOOKS
@@ -39,32 +51,29 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
     const {coParents} = useCoParents()
 
     // DROPDOWN STATE
-    const [selectedInfoType, setSelectedInfoType] = useState([
-        {label: 'Text', value: 'text'},
-        {label: 'Phone', value: 'phone'},
-        {label: 'Location', value: 'location'},
-        {label: 'Email', value: 'email'},
-    ])
-    const [selectedChildrenOptions, setSelectedChildrenOptions] = useState([])
-    const [selectedShareWithOptions, setSelectedShareWithOptions] = useState(DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users))
+    const [selectedInfoType, setSelectedInfoType] = useState([{label: 'Text', value: 'text'}])
+    const [defaultInfoTypeOptions, setDefaultInfoTypeOptions] = useState(defaultInfoTypes)
+    const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
     const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
+    const [selectedSection, setSelectedSection] = useState([])
 
     // Form Ref
-    const formRef = useRef({title: '', value: '', shareWith: ''})
+    const formRef = useRef({title: '', value: 'text', shareWith: []})
 
     const Add = async () => {
         if (formRef.current.title.length === 0 || formRef.current.value.length === 0) {
             AlertManager.throwError('Please fill/select required fields')
             return false
         }
-        if (infoType === 'phone' && !validator.isMobilePhone(formRef.current.value)) {
+
+        if (selectedInfoType?.toString() === 'phone' && !validator?.isMobilePhone(formRef.current.value)) {
             AlertManager.throwError('Please enter a valid phone number')
             return false
         }
 
         const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
 
-        await DB_UserScoped.addUserChildProp(
+        await DB_UserScoped.AddUserChildProp(
             currentUser,
             activeChild,
             infoSection,
@@ -111,6 +120,10 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
         }
     }, [showCard])
 
+    useEffect(() => {
+        console.log(selectedInfoType)
+    }, [selectedInfoType])
+
     return (
         <Form
             onSubmit={Add}
@@ -119,19 +132,32 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
             wrapperClass="custom-child-info-card"
             onClose={() => ResetForm()}
             title={'Add Your Own Info'}
-            submitIcon={<GrCheckmark />}
             showCard={showCard}>
             {/* INFO TYPE */}
             <FormDivider text={'Required'} />
 
+            {/* SECTION */}
+            <SelectDropdown
+                onSelect={(section) => {
+                    setSelectedSection(section?.value)
+                }}
+                placeholder={'Select Category'}
+                options={defaultSections}
+            />
+
+            <Spacer height={3} />
+
             {/* INFO TYPE */}
-            <SelectDropdown options={selectedInfoType} placeholder={'Select Information Type'} onSelect={setSelectedInfoType} />
+            <SelectDropdown
+                options={defaultInfoTypeOptions}
+                placeholder={'Select Information Type'}
+                onSelect={(value) => setSelectedInfoType(value?.value)}
+            />
 
             <Spacer height={3} />
 
             {/* INPUTS */}
-
-            {infoType === 'text' && (
+            {selectedInfoType?.toString() === 'text' && (
                 <>
                     {/* TEXT */}
                     <InputField
@@ -151,10 +177,24 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
                 </>
             )}
 
+            {selectedInfoType?.toString() === 'email' && (
+                <>
+                    {/* EMAIL */}
+                    <Spacer height={3} />
+                    {/* VALUE */}
+                    <InputField
+                        inputType={InputTypes.email}
+                        placeholder={'Email Address'}
+                        required={true}
+                        onChange={(e) => (formRef.current.value = e.target.value)}
+                    />
+                </>
+            )}
+
             <Spacer height={3} />
 
             {/* PHONE */}
-            {infoType === 'phone' && (
+            {selectedInfoType?.toString() === 'phone' && (
                 <>
                     <InputField
                         inputType={InputTypes.text}
@@ -172,7 +212,8 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
                 </>
             )}
 
-            {infoType === 'date' && (
+            {/* DATE */}
+            {selectedInfoType?.toString() === 'date' && (
                 <div className="w-100">
                     <InputField
                         inputType={InputTypes.text}
@@ -191,7 +232,8 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
                 </div>
             )}
 
-            {infoType === 'location' && (
+            {/* LOCATION */}
+            {selectedInfoType?.toString() === 'location' && (
                 <>
                     <InputField
                         inputType={InputTypes.text}

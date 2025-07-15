@@ -7,25 +7,31 @@ import Manager from '../managers/manager'
 import UpdateManager from '../managers/updateManager'
 
 Apis = {
+    Utils: {
+        SafeFetchJson: async function (url, options = {}) {
+            var clone, response, text
+            response = await fetch(url, options)
+            clone = response.clone()
+            text = await clone.text()
+            if (!text.trim()) {
+                return null
+            }
+            return JSON.parse(text)
+        },
+    },
     Sapler: {
         GetToneOrSentiment: function (toneOrSentiment, message) {
-            return new Promise(function (resolve, reject) {
-                return fetch(`https://api.sapling.ai/api/v1/${toneOrSentiment}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        key: '7E3IFZEMEKYEHVIMJHENF9ETHHTKARA4',
-                        text: message,
-                    }),
-                })
-                    .then(function (response) {
-                        return resolve(response.json())
-                    })
-                    .catch(function (error) {
-                        return reject(error)
-                    })
+            return Apis.Utils.SafeFetchJson(`https://api.sapling.ai/api/v1/${toneOrSentiment}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    key: process.env.REACT_APP_SAPLER_TONE_API_KEY,
+                    text: message,
+                }),
+            }).catch(function (error) {
+                return reject(error)
             })
         },
     },

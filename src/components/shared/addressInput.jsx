@@ -1,16 +1,12 @@
 import {Loader} from '@googlemaps/js-api-loader'
-import React, {useContext, useEffect, useRef, useState} from 'react'
+import React, {useContext, useEffect, useRef} from 'react'
 import {FaMapLocationDot} from 'react-icons/fa6'
 import globalState from '../../context'
 import Manager from '../../managers/manager'
-import SelectDropdown from './selectDropdown'
 
-const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
+const AddressInput = ({onChange = (e) => {}, defaultValue, wrapperClasses = ''}) => {
     const {state} = useContext(globalState)
     const {refreshKey} = state
-
-    // State
-    const [addressType, setAddressType] = useState('address')
 
     // Refs
     const inputRef = useRef(null)
@@ -21,10 +17,19 @@ const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
         const input = document.querySelector('.google-autocomplete-input')
         if (!input) return
         inputRef.current.value = ''
-        setAddressType('address')
+        input.value = ''
+        input.placeholder = 'Address'
+        inputRef.current.placeholder = 'Address'
+        onChange('')
     }
 
     useEffect(() => {
+        // if (!window.google || !inputRef.current) return
+
+        // Destroy previous instance & listener
+        if (autocompleteRef.current) {
+            window.google.maps.event.clearInstanceListeners(autocompleteRef.current)
+        }
         let isMounted = true
 
         const loader = new Loader({
@@ -37,14 +42,13 @@ const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
                 inputRef.current.autocompleteInitialized = true
                 autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
                     fields: ['name', 'formatted_address'],
-                    types: [addressType],
                 })
             }
 
             listenerRef.current = autocompleteRef.current.addListener('place_changed', () => {
                 const place = autocompleteRef.current.getPlace()
                 if (onChange) {
-                    onChange(place?.formatted_address)
+                    onChange(place.formatted_address)
                 }
             })
 
@@ -60,11 +64,16 @@ const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
                 autocompleteRef.current = null
             }
         })
-        console.log(defaultValue)
-    }, [])
+    }, ['establishment', 'point_of_interest', 'street_address'])
+
+    useEffect(() => {
+        if (Manager.IsValid(defaultValue, true)) {
+            inputRef.current.value = defaultValue
+        }
+    }, [defaultValue])
 
     return (
-        <div className={'google-autocomplete-wrapper'}>
+        <div className={`google-autocomplete-wrapper${wrapperClasses ? ` ${wrapperClasses}` : ''}`}>
             <div className="input-wrapper">
                 <FaMapLocationDot className={'input-icon maps'} />
                 <input
@@ -72,21 +81,12 @@ const AddressInput = ({onChange = (e) => {}, defaultValue}) => {
                     type={'text'}
                     defaultValue={defaultValue}
                     className="google-autocomplete-input"
-                    placeholder={Manager.IsValid(defaultValue) ? defaultValue : 'Address'}
+                    // placeholder={Manager.IsValid(defaultValue) ? defaultValue : 'Address'}
                 />
-                {/*<span className={'clear-input-button'} onClick={ClearInput}>*/}
-                {/*  CLEAR*/}
-                {/*</span>*/}
+                <span className={'clear-input-button'} onClick={ClearInput}>
+                    CLEAR
+                </span>
             </div>
-
-            <SelectDropdown
-                placeholder={'Type'}
-                options={[
-                    {value: 'address', label: 'Address'},
-                    {value: 'point_of_interest', label: 'Point of Interest'},
-                ]}
-                onSelect={(e) => setAddressType(e?.value)}
-            />
         </div>
     )
 }

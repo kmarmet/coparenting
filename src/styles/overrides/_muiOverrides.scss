@@ -1,4 +1,5 @@
 @use '../utils/_palette';
+@use '../_fonts';
 @use '../utils/variables';
 @use '../utils/mixins';
 
@@ -697,7 +698,7 @@
             line-height: 1 !important;
             z-index: variables.$middleZIndex !important;
             padding: 0 10px 0 0 !important;
-            @include mixins.fontType;
+            @include fonts.fontBase;
             font-size: 15px !important;
             font-style: italic !important;
             color: palette.$transWhite;

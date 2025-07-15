@@ -3,19 +3,33 @@ import UpdateManager from "../managers/updateManager"
 import LogManager from "../managers/logManager"
 
 Apis =
+  Utils:
+     SafeFetchJson:  (url, options = {}) ->
+       response = await fetch(url, options)
+  
+       clone = response.clone()
+       
+       text = await clone.text()
+       
+       if !text.trim()
+        return null
+        
+       return JSON.parse(text)
+
   Sapler:
     GetToneOrSentiment: (toneOrSentiment, message) ->
-      new Promise (resolve, reject) ->
-        fetch "https://api.sapling.ai/api/v1/#{toneOrSentiment}",
-          method: 'POST'
-          headers:
-            'Content-Type': 'application/json'
-          body: JSON.stringify
-            key: '7E3IFZEMEKYEHVIMJHENF9ETHHTKARA4'
-            text: message
-        .then (response) ->
-            resolve(response.json())
-        .catch (error) -> reject error
+      Apis.Utils.SafeFetchJson(
+          "https://api.sapling.ai/api/v1/#{toneOrSentiment}",
+          {
+            method: 'POST',
+            headers:
+              'Content-Type': 'application/json'
+            body: JSON.stringify(
+              key: process.env.REACT_APP_SAPLER_TONE_API_KEY
+              text: message
+            )
+          }
+      ).catch (error) -> reject error
 
   IPify:
     GetIPAddress: () ->

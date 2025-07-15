@@ -16,6 +16,7 @@ import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager.coffee'
 import AddressInput from '../../shared/addressInput'
 import InputField from '../../shared/inputField'
+import Spacer from '../../shared/spacer'
 
 function General({activeChild}) {
     const {state, setState} = useContext(globalState)
@@ -100,35 +101,37 @@ function General({activeChild}) {
                                     let infoLabel = StringManager.SpaceBetweenWords(prop[0])
                                     const value = prop[1]
                                     return (
-                                        <div
-                                            key={index}
-                                            className={`data-row ${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''} ${index === generalValues.length - 1 ? 'last' : ''}`}>
-                                            {Manager.Contains(infoLabel.toLowerCase(), 'address') && (
-                                                <AddressInput
-                                                    showAddressTypeSelector={false}
-                                                    labelText="Home Address"
-                                                    onChange={(address) => Update(infoLabel, address)}
-                                                    defaultValue={activeChild?.general?.address}
-                                                />
-                                            )}
-                                            {!Manager.Contains(infoLabel.toLowerCase(), 'address') && (
-                                                <>
-                                                    <InputField
-                                                        wrapperClasses={`${index === generalValues.length - 2 ? 'last' : ''}`}
-                                                        hasBottomSpacer={false}
-                                                        inputType={InputTypes.text}
-                                                        placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
-                                                        defaultValue={value}
-                                                        onChange={async (e) => {
-                                                            const inputValue = e.target.value
-                                                            await Update(infoLabel, inputValue)
-                                                        }}
+                                        <div key={index}>
+                                            <div
+                                                className={`data-row ${infoLabel.toLowerCase().includes('phone') ? 'phone' : ''} ${index === generalValues.length - 1 ? 'last' : ''}`}>
+                                                {Manager.Contains(infoLabel.toLowerCase(), 'address') && (
+                                                    <AddressInput
+                                                        showAddressTypeSelector={false}
+                                                        labelText="Home Address"
+                                                        onChange={(address) => Update(infoLabel, address)}
+                                                        defaultValue={activeChild?.general?.address}
                                                     />
-                                                    {infoLabel.toLowerCase() !== 'name' && (
-                                                        <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
-                                                    )}
-                                                </>
-                                            )}
+                                                )}
+                                                {!Manager.Contains(infoLabel.toLowerCase(), 'address') && (
+                                                    <>
+                                                        <InputField
+                                                            wrapperClasses={`${index === generalValues.length - 2 ? 'last' : ''}`}
+                                                            hasBottomSpacer={false}
+                                                            inputType={InputTypes.text}
+                                                            placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
+                                                            defaultValue={value}
+                                                            onChange={async (e) => {
+                                                                const inputValue = e.target.value
+                                                                await Update(infoLabel, inputValue)
+                                                            }}
+                                                        />
+                                                        {infoLabel.toLowerCase() !== 'name' && (
+                                                            <CgClose className={'close-x children'} onClick={() => DeleteProp(infoLabel)} />
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                            <Spacer height={3} />
                                         </div>
                                     )
                                 })}

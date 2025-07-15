@@ -1,5 +1,3 @@
-@use 'fonts';
-
 // Utilities
 @use 'utils/utils_base';
 
@@ -7,6 +5,9 @@
 
 // External Overrides
 @use 'overrides/overrides_base';
+
+// Fonts
+@use 'fonts';
 
 //  Responsive Styles
 

@@ -1,6 +1,7 @@
 @use '../utils/mixins';
 @use '../utils/variables';
 @use '../utils/_palette';
+@use '../_fonts';
 @use '../utils/_animations';
 
 #external-overrides {
@@ -329,6 +330,12 @@
                             margin: 0 0 8px 0 !important;
                             font-weight: variables.$fwMedium !important;
                             width: calc(100vw / 7) !important;
+
+                            [class*='day'],
+                            &[class*='day'] {
+                                font-weight: variables.$fwLight !important;
+                                font-family: 'SF-Pro-Display-Light', sans-serif !important;
+                            }
 
                             // TODAY
                             &.MuiPickersDay-today {

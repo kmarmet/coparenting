@@ -1,6 +1,15 @@
 @use '../utils/_palette';
+@use '../_fonts';
 @use '../utils/variables';
 @use '../utils/mixins';
+.swal2-timer-progress-bar {
+    background: white; /* Gradient bar */
+    height: 3px; /* Default is 0.25em (~4px) */
+    border-radius: 50px;
+    max-width: 80%;
+    margin: 0 auto;
+}
+
 .swal2-html-container {
     line-height: 1.3 !important;
     text-align: left !important;
@@ -37,7 +46,7 @@ div {
 div {
     &:where(.swal2-container) {
         #swal2-textarea {
-            @include mixins.fontType;
+            @include fonts.fontBase;
             margin: 0;
             border-radius: variables.$borderRadius !important;
             width: 100% !important;
@@ -48,7 +57,7 @@ div {
 }
 
 .swal2-title {
-    @include mixins.fontType;
+    @include fonts.fontBase;
     font-size: 18px;
     line-height: 1.4;
     font-weight: variables.$fwLight !important;
@@ -85,10 +94,22 @@ div {
     box-shadow: variables.$boxShadow_float !important;
     border-radius: clamp(0px, 50%, 24px) !important;
 
+    // Success Alert
+    &.swal2-modal {
+        margin-top: 65px !important;
+        padding: 10px 20px !important;
+        border-radius: clamp(0px, 50%, 24px) !important;
+        box-shadow: rgba(0, 0, 0, 0.56) 0 22px 30px 14px !important;
+    }
+
     &.swal2-icon-error {
         justify-content: center !important;
         border: 0 !important;
         background: #b12643;
+        padding: 25px !important;
+        * {
+            font-weight: 200 !important;
+        }
 
         #swal2-title {
             font-size: 18px;
@@ -117,7 +138,7 @@ div {
         width: 100% !important;
 
         button {
-            @include mixins.fontType;
+            @include fonts.fontBase;
             background: palette.$grey;
             color: palette.$darkestGrey;
             border-radius: variables.$buttonBorderRadius !important;
@@ -188,7 +209,7 @@ div {
         &.yellow,
         &.confirm-alert {
             input {
-                @include mixins.fontType;
+                @include fonts.fontBase;
                 outline: 0 !important;
                 user-select: none !important;
                 background: white !important;
@@ -229,7 +250,7 @@ div {
     }
 
     .swal2-html-container {
-        @include mixins.fontType;
+        @include fonts.fontBase;
         font-size: 16px;
         padding: 0;
         margin: 0;

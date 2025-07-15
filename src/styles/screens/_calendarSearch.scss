@@ -1,6 +1,7 @@
 @use '../utils/variables';
 @use '../utils/mixins';
 @use '../utils/_palette';
+@use '../_fonts';
 
 #external-overrides {
     .search-results {

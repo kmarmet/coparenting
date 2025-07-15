@@ -8,6 +8,53 @@ import Manager from "./manager"
 #return str.substring(0, firstIndex).replaceAll(target, replacement) +
 #  str.substring(firstIndex);
 StringManager = {
+  SanitizeString: (str) ->
+    return str
+      .replaceAll('</', "")
+      .replaceAll('/>', "")
+      .replaceAll('{', "")
+      .replaceAll('}', "")
+      .replaceAll('<p>', "")
+      .replaceAll('</p>', "")
+      .replaceAll('<script>', "")
+      .replaceAll('</script>', "")
+      .replaceAll('<b>', "")
+      .replaceAll('</b>', "")
+      .replaceAll('<i>', "")
+      .replaceAll('</i>', "")
+      .replaceAll('<u>', "")
+      .replaceAll('</u>', "")
+      .replaceAll('<sup>', "")
+      .replaceAll('</sup>', "")
+      .replaceAll('<html>', "")
+      .replaceAll('</html>', "")
+      .replaceAll('<del>', "")
+      .replaceAll('</del>', "")
+      .replaceAll('<ins>', "")
+      .replaceAll('</ins>', "")
+      .replaceAll('<mark>', "")
+      .replaceAll('</mark>', "")
+      .replaceAll('<s>', "")
+      .replaceAll('</s>', "")
+      .replaceAll('<q>', "")
+      .replaceAll('</q>', "")
+      .replaceAll('<dfn>', "")
+      .replaceAll('</dfn>', "")
+      .replaceAll('<code>', "")
+      .replaceAll('</code>', "")
+      .replaceAll('<var>', "")
+      .replaceAll('</var>', "")
+      .replaceAll('<samp>', "")
+      .replaceAll('</samp>', "")
+      .replaceAll('<kbd>', "")
+      .replaceAll('</kbd>', "")
+      .replaceAll('<sub>', "")
+      .replaceAll('</sub>', "")
+      .replaceAll('<sup>', "")
+      .replaceAll('</sup>', "")
+      .replaceAll('<time>', "")
+      .replaceAll('</time>', "")
+    
   ReplaceAllButFirst: (str, target, replacement, firstOccurrence = true) ->
     firstIndex = str.indexOf target
     returnString = ""

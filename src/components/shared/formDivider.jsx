@@ -1,8 +1,8 @@
 import React from 'react'
 
-const FormDivider = ({text}) => {
+const FormDivider = ({text, wrapperClass = ''}) => {
     return (
-        <div className="form-divider">
+        <div className={`form-divider${wrapperClass ? ` ${wrapperClass}` : ''}`}>
             <span>{text}</span>
         </div>
     )

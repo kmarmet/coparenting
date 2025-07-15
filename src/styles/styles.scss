@@ -2,6 +2,7 @@
 @use 'utils/_variables';
 @use 'utils/_palette';
 @use 'utils/_animations';
+@use '_fonts';
 
 // ERROR BOUNDARY SCREEN
 #error-screen {
@@ -17,7 +18,7 @@
     justify-content: center;
 
     * {
-        @include mixins.fontType;
+        @include fonts.fontBase;
     }
 
     button {
@@ -154,317 +155,6 @@
     @include mixins.loadingSkeleton;
 }
 
-/*#region  GOOGLE MAPS/AUTOCOMPLETE */
-.gm-style-mtc {
-    border-radius: variables.$borderRadius !important;
-    button {
-        border-radius: variables.$borderRadius !important;
-        background: palette.$mediumTransWhite !important;
-        color: palette.$blend !important;
-        &:first-child {
-            margin-right: 8px !important;
-        }
-    }
-}
-.gmnoprint {
-    button,
-    div {
-        border-radius: variables.$borderRadius !important;
-        font-size: 14px !important;
-    }
-}
-.gm-control-active,
-.gm-svpc {
-    border-radius: variables.$borderRadius !important;
-    background: palette.$mediumTransWhite !important;
-    color: palette.$blend !important;
-    font-size: 14px !important;
-
-    img {
-        color: palette.$blend !important;
-        //filter: brightness(100) !important;
-    }
-}
-.google-autocomplete-wrapper {
-    display: flex;
-    width: 100%;
-    gap: 0 5px;
-    .input-wrapper {
-        height: 50px;
-        display: flex;
-        position: relative;
-        background: palette.$inputBackground;
-        border-radius: 50px;
-        align-items: center;
-        justify-content: space-between;
-        overflow: auto;
-
-        // Address input
-        input {
-            margin-left: 50px;
-            padding-left: 0 !important;
-            background: transparent;
-        }
-
-        .clear-input-button {
-            font-size: 12px !important;
-            margin-top: 3px;
-            color: palette.$transWhite !important;
-            position: relative;
-            z-index: variables.$maxZIndex;
-        }
-
-        .google-autocomplete-input {
-            position: relative;
-            border: 0;
-            outline: 0;
-            border-radius: 0;
-            caret-color: white;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            font-weight: variables.$fwLight;
-            color: white;
-            z-index: 9;
-            overscroll-behavior: none;
-            overflow: auto;
-            height: 100%;
-            padding: 0;
-
-            &::placeholder {
-                font-style: italic;
-                color: palette.$transWhite;
-                font-size: 15px;
-                font-weight: variables.$fwLight;
-                text-transform: capitalize;
-            }
-        }
-
-        svg {
-            position: absolute;
-            color: palette.$transWhite;
-            left: 20px;
-            margin-left: 0;
-            @include mixins.centerVert;
-            @include mixins.square(20px);
-        }
-    }
-
-    .select-dropdown {
-        width: 40% !important;
-    }
-}
-.pac-container {
-    width: calc(100vw - 30px) !important;
-    margin: 0 auto !important;
-    z-index: 9999 !important;
-    right: unset !important;
-    left: 15px !important;
-    border-radius: variables.$mediumBorderRadius !important;
-    box-shadow: variables.$boxShadow_bottom_only_bigger !important;
-    background: white !important;
-    border: 1px solid palette.$barelyVisibleWhite !important;
-    * {
-        font-family: 'SF-Pro-Display-Regular', sans-serif !important;
-        letter-spacing: 1px !important;
-        border: 0 !important;
-    }
-
-    svg {
-        color: #8693cd !important;
-    }
-
-    span {
-        color: palette.$primaryText !important;
-
-        span,
-        svg {
-            color: palette.$blend !important;
-        }
-    }
-
-    &::after {
-        display: none !important;
-    }
-
-    .pac-item {
-        padding: 8px !important;
-
-        .pac-icon {
-            &.pac-icon-marker {
-                color: palette.$blend !important;
-            }
-        }
-    }
-}
-/*#endregion  GOOGLE MAPS */
-
-/*#region  REACT SELECT */
-.select-dropdown {
-    [class*='-menu'] {
-        z-index: 10 !important;
-        position: relative !important;
-        border: 0 !important;
-    }
-    // Dropdown Button/Input
-    [class*='-control'] {
-        background: palette.$inputBackground !important;
-        border-radius: 50px !important;
-        padding: 0 10px !important;
-        border: 0 !important;
-        box-shadow: none !important;
-        min-height: 50px !important;
-
-        [class*='css-'] {
-            color: white !important;
-            font-size: 14px !important;
-            &:first-child {
-                div {
-                    width: auto !important;
-                }
-            }
-        }
-
-        // Chips
-        [class*='-multiValue'] {
-            background: palette.$barelyVisibleWhite !important;
-            border-radius: 50px !important;
-            padding: 0 5px !important;
-            border: 0 !important;
-            color: white !important;
-            box-shadow: none !important;
-            max-width: unset !important;
-            width: auto !important;
-            margin-right: 5px !important;
-
-            [class*='css-'] {
-                color: white !important;
-                font-size: 14px !important;
-            }
-        }
-
-        [class*='-indicatorSeparator'] {
-            display: none !important;
-        }
-
-        [class*='-indicatorContainer'] {
-            color: white !important;
-
-            svg {
-                color: white !important;
-                opacity: 0.6 !important;
-            }
-        }
-
-        [class*='-singleValue'] {
-            color: white !important;
-            font-size: 16px !important;
-            font-weight: variables.$fwRegular !important;
-        }
-
-        [class*='-placeholder'] {
-            color: palette.$mediumGrey !important;
-            font-size: 16px !important;
-            font-weight: variables.$fwRegular !important;
-        }
-    }
-
-    &[class*='-container']:not(.MuiDialog-container) {
-        border-radius: variables.$borderRadius !important;
-        border: 0 !important;
-        max-width: calc(100vw - 20px) !important;
-        z-index: 9 !important;
-
-        &.white,
-        &.white-bg {
-            background: white !important;
-            border: 1px solid palette.$lightBorderColor !important;
-            [class*='-placeholder'],
-            [class*='-singleValue'] {
-                color: palette.$darkerGrey !important;
-            }
-        }
-
-        &.white-bg {
-            [id*='listbox'] {
-                max-height: unset !important;
-                //background: transparent !important;
-            }
-
-            [class*='-control'] {
-                // Chips
-                [class*='css-'] {
-                    color: palette.$darkerGrey !important;
-
-                    font-size: 14px !important;
-                    &:first-child {
-                        div {
-                            width: auto !important;
-                        }
-                    }
-                }
-
-                [class*='-multiValue'] {
-                    border: 1px solid palette.$lightBorderColor !important;
-                }
-
-                [class*='-Svg'] {
-                    color: palette.$iconGrey !important;
-                }
-
-                [class*='-singleValue'] {
-                    color: palette.$darkerGrey !important;
-                }
-            }
-
-            [id*='listbox'] {
-                [class*='-option'] {
-                    color: palette.$darkGrey !important;
-                    border: 1px solid palette.$lightBorderColor !important;
-                    border-radius: 50px !important;
-                }
-            }
-        }
-
-        [id*='listbox'] {
-            max-height: unset !important;
-            display: flex !important;
-            flex-wrap: wrap !important;
-            align-items: center !important;
-            justify-content: center !important;
-            padding: 10px !important;
-            z-index: variables.$maxZIndex !important;
-            pointer-events: all !important;
-            height: max-content !important;
-            position: relative !important;
-            margin: auto 0 !important;
-            gap: 8px 0 !important;
-            align-self: center !important;
-            background: transparent !important;
-
-            [class*='-option'] {
-                box-shadow: variables.$boxShadow_basic !important;
-                background: palette.$inputBackground !important;
-                z-index: variables.$maxZIndex !important;
-                pointer-events: all !important;
-                width: max-content !important;
-                border-radius: 50px !important;
-                border: 0 !important;
-                font-size: 14px !important;
-                min-width: 85px !important;
-                font-weight: 200 !important;
-                text-align: center !important;
-                color: white !important;
-            }
-
-            div {
-                color: white;
-            }
-        }
-    }
-}
-/*#endregion  REACT SELECT */
-
 /*#region  PASSWORD VALIDATION */
 .password-validation {
     .checklist-icon {
@@ -511,8 +201,11 @@
 
     .card-buttons {
         align-items: center;
-        border-top: 0;
         @include mixins.cardButtons;
+
+        & {
+            border-top: 0;
+        }
 
         .card-button {
             background: rgba(255, 255, 255, 0.84);
@@ -533,8 +226,7 @@
             position: relative;
             top: -20px;
             @include mixins.sparkleButton;
-            @include mixins.fontType;
-
+            @include fonts.fontBase;
             svg {
                 margin-left: 8px;
                 color: #5549ff;
@@ -598,7 +290,7 @@
 #overlay {
     position: fixed;
     inset: 0;
-    //background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(2px);
     z-index: variables.$lesserMaxZIndex;
     display: flex;
@@ -621,6 +313,9 @@
 
 // Main App Styles  (External Overrides)
 #external-overrides {
+    * {
+        @include fonts.fontBase;
+    }
     // APP CONTAINER
     #app-container {
         position: relative;
@@ -646,10 +341,6 @@
         }
 
         /*#region ELEMENT DEFAULTS */
-        * {
-            @include mixins.fontType;
-        }
-
         p,
         button,
         svg {
@@ -1116,6 +807,7 @@
             transition: all 0.5s ease-in-out;
             height: 100vh;
             top: 0;
+            width: 100vw;
             z-index: variables.$lowerZIndex;
             overscroll-behavior: none;
 
@@ -1331,6 +1023,7 @@
             font-weight: variables.$fwLight;
             line-height: 1.5;
             font-size: 15px;
+            margin: 0 auto;
             max-width: 90%;
             text-align: center;
             display: flex;
@@ -1362,6 +1055,7 @@
             @include mixins.screen;
         }
 
+        // Container
         .sweet-alert-frost {
             backdrop-filter: blur(20px) !important;
             border-radius: 50px !important;
@@ -1371,6 +1065,7 @@
             transform: translateY(200px) !important;
         }
 
+        // Popup
         .sweet-alert-popup {
             margin-top: 200px !important;
             border-radius: 50px !important;

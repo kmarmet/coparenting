@@ -15,6 +15,7 @@ import AlertManager from '../../../managers/alertManager'
 import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 import InputField from '../../shared/inputField'
+import Spacer from '../../shared/spacer'
 
 export default function Schooling({activeChild}) {
     const {state, setState} = useContext(globalState)
@@ -112,28 +113,32 @@ export default function Schooling({activeChild}) {
                                 let infoLabel = StringManager.UppercaseFirstLetterOfAllWords(StringManager.SpaceBetweenWords(prop[0]))
                                 const value = prop.flat()[1]
                                 return (
-                                    <div key={index} className="data-row">
-                                        {infoLabel.toLowerCase().includes('phone') && (
-                                            <>
-                                                <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
-                                                    {infoLabel}: {value}
-                                                </a>
-                                                <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
-                                            </>
-                                        )}
-                                        {!infoLabel.toLowerCase().includes('phone') && (
-                                            <>
-                                                <InputField
-                                                    wrapperClasses={`${index === schoolingValues.length - 2 ? 'last' : ''}`}
-                                                    hasBottomSpacer={false}
-                                                    inputType={InputTypes.text}
-                                                    placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
-                                                    defaultValue={value}
-                                                    onChange={(e) => Update(infoLabel, e.target.value)}
-                                                />
-                                                <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
-                                            </>
-                                        )}
+                                    <div key={index}>
+                                        <div className="data-row">
+                                            {infoLabel.toLowerCase().includes('phone') && (
+                                                <>
+                                                    <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
+                                                        {infoLabel}: {value}
+                                                    </a>
+                                                    <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
+                                                </>
+                                            )}
+                                            {!infoLabel.toLowerCase().includes('phone') && (
+                                                <>
+                                                    <InputField
+                                                        wrapperClasses={`${index === schoolingValues.length - 2 ? 'last' : ''}`}
+                                                        hasBottomSpacer={false}
+                                                        inputType={InputTypes.text}
+                                                        placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ''}`}
+                                                        defaultValue={value}
+                                                        onChange={(e) => Update(infoLabel, e.target.value)}
+                                                    />
+                                                    <CgClose className={'children close-x'} onClick={() => DeleteProp(infoLabel)} />
+                                                </>
+                                            )}
+                                        </div>
+                                        ]
+                                        <Spacer height={3} />
                                     </div>
                                 )
                             })}

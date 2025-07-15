@@ -2,6 +2,7 @@
 import React, {useContext, useState} from 'react'
 import {BsFillSendFill} from 'react-icons/bs'
 import {HiDotsHorizontal} from 'react-icons/hi'
+import {IoChatbubblesSharp} from 'react-icons/io5'
 import CreationForms from '../../../constants/creationForms'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
@@ -105,48 +106,51 @@ const Chats = () => {
             </ScreenActionsMenu>
 
             {/* PAGE CONTAINER */}
-            <div id="chats-container" className={`${theme} chats page-container`}>
-                <ScreenHeader
-                    screenName={ScreenNames.chats}
-                    title={'Chats'}
-                    screenDescription="Your space to peacefully chat with your co-parent and pass along any important info they need to know, or to seek clarification on
+            {!showChat && (
+                <div id="chats-container" className={`${theme} chats page-container`}>
+                    <ScreenHeader
+                        screenName={ScreenNames.chats}
+                        title={'Chats'}
+                        titleIcon={<IoChatbubblesSharp />}
+                        screenDescription="Your space to peacefully chat with your co-parent and pass along any important info they need to know, or to seek clarification on
           information that is unfamiliar to you"
-                />
+                    />
 
-                <div className="screen-content bottom-padding-only">
-                    {/* NO DATA FALLBACK */}
-                    {chats?.length === 0 && <p className={'no-data-fallback-text'}>No Chats</p>}
-                    {/* CHAT ROWS */}
-                    {Manager.IsValid(chats) &&
-                        chats?.map((chat, index) => {
-                            return (
-                                <ChatRow
-                                    chat={chat}
-                                    onClick={(otherMember) => {
-                                        setShowChat(true)
-                                        setRecipient(otherMember)
-                                    }}
-                                    key={index}
-                                    index={index}
-                                />
-                            )
-                        })}
+                    <div className="screen-content bottom-padding-only">
+                        {/* NO DATA FALLBACK */}
+                        {chats?.length === 0 && <p className={'no-data-fallback-text'}>No Chats</p>}
+                        {/* CHAT ROWS */}
+                        {Manager.IsValid(chats) &&
+                            chats?.map((chat, index) => {
+                                return (
+                                    <ChatRow
+                                        chat={chat}
+                                        onClick={(otherMember) => {
+                                            setShowChat(true)
+                                            setRecipient(otherMember)
+                                        }}
+                                        key={index}
+                                        index={index}
+                                    />
+                                )
+                            })}
+                    </div>
+                    {!showChat && (
+                        <>
+                            {/* NAVBAR */}
+                            <NavBar navbarClass={'actions white'}>
+                                <div
+                                    style={DomManager.AnimateDelayStyle(1, 0.06)}
+                                    onClick={() => setState({...state, showScreenActions: true})}
+                                    className={`menu-item ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
+                                    <HiDotsHorizontal className={'screen-actions-menu-icon more'} />
+                                    <p>More</p>
+                                </div>
+                            </NavBar>
+                        </>
+                    )}
                 </div>
-                {!showChat && (
-                    <>
-                        {/* NAVBAR */}
-                        <NavBar navbarClass={'actions white'}>
-                            <div
-                                style={DomManager.AnimateDelayStyle(1, 0.06)}
-                                onClick={() => setState({...state, showScreenActions: true})}
-                                className={`menu-item ${DomManager.Animate.FadeInUp(true, '.menu-item')}`}>
-                                <HiDotsHorizontal className={'screen-actions-menu-icon more'} />
-                                <p>More</p>
-                            </div>
-                        </NavBar>
-                    </>
-                )}
-            </div>
+            )}
         </Screen>
     )
 }

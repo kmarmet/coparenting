@@ -1,6 +1,7 @@
 @use '../utils/mixins';
 @use '../utils/variables';
 @use '../utils/_palette';
+@use '../_fonts';
 
 #co-parents-container,
 #parents-container {
@@ -61,7 +62,9 @@
 
             // ACTIVE
             &.active {
-                background: palette.$blendPurple;
+                background: palette.$main;
+                @include mixins.mainColorsGradient;
+                background: palette.$lightBlend;
                 opacity: 1;
                 transition: all 0.2s ease;
                 border: 0;
@@ -77,7 +80,7 @@
                 .co-parent-name,
                 .parent-name {
                     opacity: 1;
-                    color: white;
+                    color: palette.$blend;
                     font-size: 16px;
                     font-weight: variables.$fwBold;
                 }
@@ -100,16 +103,16 @@
         margin-top: 20px;
         padding: 15px;
         border-radius: variables.$bigBorderRadius;
-        background: palette.$main;
+        background: palette.$blendPurple;
         @include mixins.shadow;
 
         #parent-name-primary,
         #co-parent-name-primary {
-            font-weight: variables.$fwMediumBold;
             font-size: 22px;
             line-height: 1;
             color: white;
             text-align: center;
+            @include fonts.lightFont;
         }
 
         #co-parent-type-primary,

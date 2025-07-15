@@ -8,6 +8,10 @@ AppImages = {
     onboarding: 'onboarding'
   },
   misc: {
+    starBackground: {
+      name: 'starBackground',
+      url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fmisc%2FStarBackground.png?alt=media&token=87508d4e-ee11-4304-9afa-e6eb5751aa39"
+    },
     launch: {
       name: 'launch',
       url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fmisc%2Flaunch.gif?alt=media&token=f461b476-fbe4-400a-af71-bb1f1470db3f"

@@ -35,6 +35,8 @@ import LogManager from './logManager'
 
 import Manager from './manager'
 
+import StringManager from './stringManager'
+
 ObjectManager = {
     SetObjectPropertyByPath: function (obj, path, value) {
         obj[path] = value
@@ -120,6 +122,9 @@ ObjectManager = {
                 }
                 return acc
             }, {})
+        }
+        if (typeof obj === 'string') {
+            return StringManager.SanitizeString(obj)
         } else {
             // Otherwise, return the object
             return obj

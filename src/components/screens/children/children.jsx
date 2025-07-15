@@ -242,9 +242,9 @@ export default function Children() {
                         {/* CHILDREN WRAPPER */}
                         <div id="child-wrapper">
                             {Manager.IsValid(children) &&
-                                children?.map((child) => {
+                                children?.map((child, index) => {
                                     return (
-                                        <div key={child?.id}>
+                                        <div key={index}>
                                             {/* PROFILE PIC */}
                                             {Manager.IsValid(child?.profilePic) && (
                                                 <div

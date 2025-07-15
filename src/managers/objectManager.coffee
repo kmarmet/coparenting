@@ -16,6 +16,7 @@ import Parent from "../models/users/parent"
 import Manager from "./manager"
 import LogManager from "./logManager"
 import CoParent from "../models/users/coParent"
+import StringManager from "./stringManager"
 
 ObjectManager = {
   SetObjectPropertyByPath: (obj, path, value) ->
@@ -85,6 +86,9 @@ ObjectManager = {
           acc[key] = cleaned
         acc
       , {}
+      
+    if typeof obj == 'string'
+      return StringManager.SanitizeString(obj);
 
     # Otherwise, return the object
     else

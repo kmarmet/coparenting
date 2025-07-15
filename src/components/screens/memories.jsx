@@ -3,6 +3,7 @@ import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import React, {useContext, useEffect, useState} from 'react'
+import {IoMdPhotos} from 'react-icons/io'
 import ScreenNames from '../../constants/screenNames'
 import globalState from '../../context'
 import DB from '../../database/DB'
@@ -79,6 +80,7 @@ export default function Memories() {
             {/* PAGE CONTAINER */}
             <div id="memories-container" className={`${theme} page-container`}>
                 <ScreenHeader
+                    titleIcon={<IoMdPhotos />}
                     title={'Memories'}
                     screenName={ScreenNames.memories}
                     screenDescription={'Share photos of unforgettable memories that deserve to be seen!'}

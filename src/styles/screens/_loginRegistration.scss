@@ -1,6 +1,7 @@
 @use '../utils/mixins';
 @use '../utils/variables';
 @use '../utils/_palette';
+@use '../_fonts';
 #external-overrides {
     // REGISTRATION
     #registration-container {

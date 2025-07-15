@@ -6,6 +6,7 @@ import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import CardButton from './cardButton'
+import Spacer from './spacer'
 import StringAsHtmlElement from './stringAsHtmlElement'
 
 export default function Form({
@@ -81,6 +82,7 @@ export default function Form({
                                 {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
                                 {StringManager.FormatTitle(title, true)}
                             </p>
+                            <Spacer height={5} />
                             {Manager.IsValid(subtitle, true) && <StringAsHtmlElement classes={'subtitle'} text={subtitle} />}
                         </div>
                     )}
@@ -127,7 +129,7 @@ export default function Form({
                         onClose()
                         setSubmitted(false)
                         setRefreshKey(Manager.GetUid())
-                        setState({...state, showOverlay: false})
+                        setState({...state, showOverlay: false, isLoading: false, creationFormToShow: null})
                     }}
                 />
             </div>

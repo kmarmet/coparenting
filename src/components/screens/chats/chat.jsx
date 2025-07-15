@@ -3,7 +3,6 @@ import moment from 'moment-timezone'
 import React, {useContext, useEffect, useState} from 'react'
 import {BsBookmarkDashFill, BsBookmarkStarFill, BsFillBookmarksFill} from 'react-icons/bs'
 import {FaStar} from 'react-icons/fa'
-
 import {IoChevronBack, IoCopy, IoSend} from 'react-icons/io5'
 import {MdCancel, MdOutlineArrowOutward, MdOutlineSearchOff} from 'react-icons/md'
 import {PiBookmarksSimpleDuotone} from 'react-icons/pi'
@@ -14,6 +13,7 @@ import DatetimeFormats from '../../../constants/datetimeFormats'
 import InputTypes from '../../../constants/inputTypes'
 import ActivityCategory from '../../../constants/updateCategory'
 import globalState from '../../../context.js'
+import useAppImages from '../../../hooks/useAppImages'
 import useChatMessages from '../../../hooks/useChatMessages'
 import useChats from '../../../hooks/useChats'
 import useCurrentUser from '../../../hooks/useCurrentUser'
@@ -33,7 +33,16 @@ import InputField from '../../shared/inputField'
 const Chat = ({show, hide, recipient}) => {
     const {state, setState} = useContext(globalState)
     const {theme, refreshKey} = state
+
+    // HOOKS
     const {currentUser} = useCurrentUser()
+    const [chatId, setChatId] = useState()
+    const {chatMessages} = useChatMessages(chatId)
+    const [chat, setChat] = useState()
+    const {chats, chatsAreLoading} = useChats()
+    const {appImages} = useAppImages()
+
+    // STATE
     const [searchResults, setSearchResults] = useState([])
     const [showSearchInput, setShowSearchInput] = useState(false)
     const [showBookmarks, setShowBookmarks] = useState(false)
@@ -48,16 +57,13 @@ const Chat = ({show, hide, recipient}) => {
     const [bookmarks, setBookmarks] = useState([])
     const [showLongPressMenu, setShowLongPressMenu] = useState(false)
     const [activeMessage, setActiveMessage] = useState()
-    const [chatId, setChatId] = useState()
-    const {chatMessages} = useChatMessages(chatId)
-    const [chat, setChat] = useState()
     const [messagesToLoop, setMessagesToLoop] = useState(chatMessages)
-    const {chats, chatsAreLoading} = useChats()
+    const [bookmarkBg, setBookmarkBg] = useState('')
 
     // Handle long press
     const bind = useLongPress((element) => {
         const message = element.target
-        const messageId = message.getAttribute('data-id')
+        const messageId = message?.getAttribute('data-id')
         const thisMessage = messagesToLoop.find((x) => x.id === messageId)
         if (Manager.IsValid(thisMessage?.message)) {
             setActiveMessage(thisMessage)
@@ -117,8 +123,8 @@ const Chat = ({show, hide, recipient}) => {
             name: recipient?.name,
             key: recipient?.key,
         }
-
-        chatMessage.message = messageText
+        console.log(messageText)
+        chatMessage.message = StringManager.SanitizeString(messageText)
 
         // Existing chat
         if (Manager.IsValid(chat)) {
@@ -201,6 +207,7 @@ const Chat = ({show, hide, recipient}) => {
         if (!Manager.IsValid(timezone, true)) {
             timezone = await AppManager.GetTimezone()
         }
+
         setMessageTimezone(timezone)
     }
 
@@ -280,6 +287,13 @@ const Chat = ({show, hide, recipient}) => {
         }
     }, [showBookmarks])
 
+    useEffect(() => {
+        if (Manager.IsValid(appImages)) {
+            const starBg = appImages?.find((x) => x.name === 'StarBackground')
+            setBookmarkBg(starBg?.url)
+        }
+    }, [appImages])
+
     return (
         <>
             <Form
@@ -342,7 +356,8 @@ const Chat = ({show, hide, recipient}) => {
                                     className={`${Manager.IsValid(bookmarkedMessages?.find((x) => x?.id === activeMessage?.id)) ? 'remove' : 'add'}`}
                                     onClick={(e) => {
                                         const isBookmarked = Manager.IsValid(bookmarkedMessages?.find((x) => x?.id === activeMessage?.id))
-                                        e.target.parentNode.classList.remove('active')
+                                        // eslint-disable-line no-undef
+                                        e.currentTarget.parentNode.classList.remove('active') // eslint-disable-line no-undef
                                         ToggleBookmark(isBookmarked).then((r) => r)
                                         setShowLongPressMenu(false)
                                     }}>

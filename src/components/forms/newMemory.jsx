@@ -61,7 +61,9 @@ export default function NewMemory() {
     }
 
     const Upload = async () => {
-        setState({...state, isLoading: true})
+        setTimeout(() => {
+            setState({...state, isLoading: true})
+        }, 200)
         const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
 
         //#region Validation
@@ -69,7 +71,7 @@ export default function NewMemory() {
         if (validAccounts === 0) {
             AlertManager.throwError(
                 `No ${currentUser?.accountType === 'parent' ? 'co-parents or children' : 'parents'} to \n share memories with`,
-                `You have not connected any ${currentUser?.accountType === 'parent' ? 'co-parents or children' : 'parents'} to your profile. It is also possible they have closed their profile.`
+                `You have not added any ${currentUser?.accountType === 'parent' ? 'co-parent or child' : 'parent'} contacts to your profile. It is also possible they have closed their profile.`
             )
             setState({...state, isLoading: false})
             return false

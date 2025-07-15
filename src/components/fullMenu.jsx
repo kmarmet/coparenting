@@ -20,6 +20,7 @@ import globalState from '../context'
 import DB from '../database/DB'
 import useCurrentUser from '../hooks/useCurrentUser'
 import useFeedback from '../hooks/useFeedback'
+import AppManager from '../managers/appManager'
 import DomManager from '../managers/domManager'
 import Manager from '../managers/manager'
 import FeedbackEmotionsTracker from '../models/feedbackEmotionsTracker'
@@ -82,8 +83,7 @@ export default function FullMenu() {
     }
 
     const GetCurrentAppVersion = async () => {
-        const allVersions = await DB.getTable(DB.tables.appUpdates)
-        const latest = allVersions[allVersions?.length - 1]?.currentVersion
+        const latest = await AppManager.GetCurrentAppVersion()
         setCurrentAppVersion(latest)
     }
 
@@ -146,13 +146,13 @@ export default function FullMenu() {
 
     return (
         <div id="full-menu-wrapper" className={menuIsOpen ? 'active' : ''}>
-            <div className="swipe-bar"></div>
             {Manager.IsValid(currentUser) && (
                 <div ref={scrollRef} id="full-menu-card" {...handlers}>
+                    <div className="swipe-bar"></div>
                     <div id="menu-sections">
                         {/* SHARING */}
                         <div style={DomManager.AnimateDelayStyle(1, 0.3)} className={`section sharing ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
-                            <FormDivider text={'Sharing'} />
+                            <FormDivider text={'Sharing'} wrapperClass={'sharing'} />
                             <div className={`menu-items sharing`}>
                                 {/* CALENDAR */}
                                 <div

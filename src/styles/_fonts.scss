@@ -1,3 +1,69 @@
+@use 'utils/variables';
+@use 'utils/_palette';
+
+@mixin fontBase {
+    font-optical-sizing: auto;
+    font-style: normal;
+    letter-spacing: 0.8px;
+    font-family: 'SF-Pro-Display-Regular', sans-serif;
+}
+
+/*#region  FONTS */
+@mixin lightFont() {
+    @include fontBase;
+    & {
+        font-weight: variables.$fwLight;
+        font-family: 'SF-Pro-Display-Light', sans-serif;
+    }
+}
+
+@mixin lightThickerFont() {
+    @include fontBase;
+    & {
+        font-weight: variables.$fwLightThicker;
+        font-family: 'SF-Pro-Display-Light', sans-serif;
+    }
+}
+
+@mixin mediumBoldFont() {
+    font-family: 'SF-Pro-Display-Medium', sans-serif;
+    font-weight: variables.$fwMedium;
+}
+
+@mixin regularFont() {
+    @include fontBase;
+    & {
+        font-weight: variables.$fwRegular;
+        font-family: 'SF-Pro-Display-Regular', sans-serif;
+    }
+}
+
+@mixin defaultFont() {
+    @include fontBase;
+    & {
+        font-weight: variables.$fwRegular;
+        font-family: 'SF-Pro-Display-Regular', sans-serif;
+    }
+}
+
+@mixin boldFont() {
+    @include fontBase;
+    & {
+        font-weight: variables.$fwBold;
+        font-family: 'SF-Pro-Display-Bold', sans-serif;
+    }
+}
+
+@mixin paragraphFont {
+    @include fontBase;
+    & {
+        font-weight: variables.$fwLight;
+        font-family: 'SF-Pro-Display', sans-serif;
+    }
+}
+/*#endregion  FONTS */
+
+/*#region  APPLE FONT */
 // LIGHT
 @font-face {
     font-family: 'SF-Pro-Display-Light';
@@ -6,7 +72,7 @@
     font-style: normal;
 }
 
-// MEDIUM
+// MEDIUM BOLD
 @font-face {
     font-family: 'SF-Pro-Display-Medium';
     src: url('../fonts/SF-Pro-Display-Medium.otf') format('opentype');
@@ -17,9 +83,9 @@
 // REGULAR
 @font-face {
     font-family: 'SF-Pro-Display-Regular';
-    src: url('../fonts/SF-Pro-Display-Regular.otf') format('opentype');
     font-weight: 400;
     font-style: normal;
+    src: url('../fonts/SF-Pro-Display-Regular.otf') format('opentype');
 }
 
 /*#region  ITALIC */
@@ -324,3 +390,4 @@
     font-weight: 200;
     font-style: normal;
 }
+/*#endregion  APPLE FONT */
