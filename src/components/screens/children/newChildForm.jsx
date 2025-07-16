@@ -44,6 +44,7 @@ const NewChildForm = ({hideCard, showCard}) => {
     }
 
     const Submit = async () => {
+        //#region VALIDATION
         const errorString = Manager.GetInvalidInputsErrorString([{name: "Child's Name", value: newChild.current.general.name}])
 
         if (Manager.IsValid(errorString, true)) {
@@ -55,6 +56,8 @@ const NewChildForm = ({hideCard, showCard}) => {
             AlertManager.throwError('If the child has an account with us, their email is required')
             return false
         }
+        //#endregion VALIDATION
+
         let _profilePic = newChild.current.profilePic
         newChild.current.profilePic = ''
 
@@ -88,6 +91,7 @@ const NewChildForm = ({hideCard, showCard}) => {
         }
 
         // Get valid objected
+        const cleaned = ObjectManager.CleanObject(newChild.current)
 
         // Add Child's Birthday to Calendar
         if (Manager.IsValid(newChild.current.general.dateOfBirth, true)) {
@@ -99,14 +103,14 @@ const NewChildForm = ({hideCard, showCard}) => {
         }
 
         // Add child to DB
-        await DB_UserScoped.AddChildToParentProfile(currentUser, newChild)
+        await DB_UserScoped.AddChildToParentProfile(currentUser, cleaned)
 
         ResetForm(`${StringManager.GetFirstNameOnly(StringManager.FormatTitle(name, true))} Added to Your Profile`)
     }
 
     return (
         <Form
-            submitText={`Add ${name.length > 0 ? name : 'Child'}`}
+            submitText={`Add ${name?.length > 0 ? name : 'Child'}`}
             onSubmit={Submit}
             className="new-child-wrapper"
             wrapperClass="new-child-card"

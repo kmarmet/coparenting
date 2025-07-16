@@ -89,7 +89,11 @@ export default function Memories() {
                 <div className="screen-content">
                     <Accordion className={`${theme} white-bg memories-accordion accordion`} expanded={showDisclaimer}>
                         <AccordionSummary>
-                            <AccordionTitle titleText={'Memory Expiration'} onClick={() => setShowDisclaimer(!showDisclaimer)} />
+                            <AccordionTitle
+                                titleText={'Memory Expiration'}
+                                toggleState={showDisclaimer}
+                                onClick={() => setShowDisclaimer(!showDisclaimer)}
+                            />
                         </AccordionSummary>
                         <Spacer height={5} />
                         <AccordionDetails>
@@ -108,22 +112,21 @@ export default function Memories() {
                         memories?.map((imgObj, index) => {
                             return (
                                 <div className={`memory memory-wrapper ${theme}`} key={index}>
-                                    {/* IMAGE */}
+                                    {/* IMAGE WRAPPER */}
                                     <div
                                         id="memory-image-wrapper"
                                         onClick={() => {
                                             setActiveImgIndex(index)
                                             setShowSlideshow(true)
                                         }}>
+                                        {/* TITLE */}
                                         {Manager.IsValid(imgObj?.title, true) && (
                                             <p className="memory-title">{StringManager.FormatTitle(imgObj?.title, true)}</p>
                                         )}
+
+                                        {/* IMAGE */}
                                         {Manager.IsValid(imgObj?.url, true) && (
-                                            <div
-                                                style={{backgroundImage: `url(${imgObj?.url})`}}
-                                                className="memory-image"
-                                                onClick={() => setShowSlideshow(true)}
-                                                data-src={imgObj?.url}></div>
+                                            <div style={{backgroundImage: `url(${imgObj?.url})`}} className="memory-image"></div>
                                         )}
                                     </div>
                                     <Spacer height={3} />

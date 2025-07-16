@@ -9,7 +9,17 @@ import AlertManager from "./alertManager"
 import Apis from "../api/apis";
 
 ImageManager =
+  ImageIsValid: (url) ->
+    promise = new Promise (resolve) ->
+      img = new Image()
+      img.onload = -> resolve(true)   # valid image
+      img.onerror = -> resolve(false) # broken image
+      img.src = url
+    return await promise
+
   shortenUrl: (url) ->
+    shortenedUrlObject =
+      shortUrl: ''
     try
       shortenedUrlObject = await Apis.ManyApis.GetShortUrl(url);
     catch error
@@ -17,7 +27,7 @@ ImageManager =
       AlertManager.throwError('Unable to parse image. Please try again after a few minutes.')
       return false;
 
-    return shortenedUrlObject.shortUrl
+    return shortenedUrlObject?.shortUrl
 
   getStatusCode: (url) ->
     new Promise((resolve, reject) ->
@@ -125,12 +135,5 @@ ImageManager =
       if !_.isEmpty(url)
         saveAs(url, fileName)
     , 300
-
-  rotateSize: (width, height, rotation) ->
-    rotRad = getRadianAngle(rotation)
-    {
-      width: Math.abs(Math.cos(rotRad) * width) + Math.abs(Math.sin(rotRad) * height),
-      height: Math.abs(Math.sin(rotRad) * width) + Math.abs(Math.cos(rotRad) * height),
-    }
 
 export default ImageManager

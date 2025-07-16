@@ -7,7 +7,7 @@ import {GrInstallOption, GrUserAdmin} from 'react-icons/gr'
 import {IoChatbubblesOutline} from 'react-icons/io5'
 import {LiaFileInvoiceDollarSolid} from 'react-icons/lia'
 import {LuCalendarDays} from 'react-icons/lu'
-import {MdOutlineContacts} from 'react-icons/md'
+import {MdOutlineContacts, MdTipsAndUpdates} from 'react-icons/md'
 import {PiFiles, PiNotificationFill, PiSealQuestion, PiSwap, PiUsers, PiUsersThree, PiVault} from 'react-icons/pi'
 import {RiAccountPinCircleLine, RiParentLine} from 'react-icons/ri'
 import {TbTransferIn} from 'react-icons/tb'
@@ -45,7 +45,6 @@ export default function FullMenu() {
     })
 
     const ChangeCurrentScreen = async (screen, element) => {
-        console.log(element.currentTarget)
         setState({...state, currentScreen: screen, refreshKey: Manager.GetUid(), menuIsOpen: false, showOverlay: false})
     }
 
@@ -104,30 +103,33 @@ export default function FullMenu() {
 
     // Set active section
     useEffect(() => {
-        if (Manager.IsValid(currentScreen) && menuIsOpen) {
-            const sharingSection = document.querySelector('.section.sharing')
-            const coParentingSection = document.querySelector('.section.coparenting')
-            const informationDatabaseSection = document.querySelector('.section.info-storage')
-            const settingsAndSupportSection = document.querySelector('.section.profile-settings-support')
+        if (!Manager.IsValid(currentScreen) || !menuIsOpen) return
 
-            if ([ScreenNames.calendar, ScreenNames.docsList, ScreenNames.memories, ScreenNames.updates].includes(currentScreen)) {
-                if (Manager.IsValid(sharingSection)) {
-                    sharingSection.classList.add('active')
-                }
-            } else if (
-                [ScreenNames.contacts, ScreenNames.coparents, ScreenNames.vault, ScreenNames.visitation, ScreenNames.children].includes(currentScreen)
-            ) {
-                if (Manager.IsValid(informationDatabaseSection)) {
-                    informationDatabaseSection.classList.add('active')
-                }
-            } else if (
-                [ScreenNames.transferRequests, ScreenNames.swapRequests, ScreenNames.chats, ScreenNames.expenseTracker].includes(currentScreen)
-            ) {
-                if (Manager.IsValid(coParentingSection)) {
-                    coParentingSection.classList.add('active')
-                }
-            } else if (
-                [
+        // Section elements
+        const sections = {
+            sharing: document.querySelector('.section.sharing'),
+            coParenting: document.querySelector('.section.coparenting'),
+            infoStorage: document.querySelector('.section.info-storage'),
+            profileSettings: document.querySelector('.section.profile-settings-support'),
+        }
+
+        // Map screen groups to their corresponding section
+        const sectionMap = [
+            {
+                screens: [ScreenNames.calendar, ScreenNames.docsList, ScreenNames.memories, ScreenNames.updates],
+                section: 'sharing',
+            },
+
+            {
+                screens: [ScreenNames.contacts, ScreenNames.coparents, ScreenNames.vault, ScreenNames.visitation, ScreenNames.children],
+                section: 'infoStorage',
+            },
+            {
+                screens: [ScreenNames.transferRequests, ScreenNames.swapRequests, ScreenNames.chats, ScreenNames.expenseTracker],
+                section: 'coParenting',
+            },
+            {
+                screens: [
                     ScreenNames.profile,
                     ScreenNames.installApp,
                     ScreenNames.settings,
@@ -135,11 +137,18 @@ export default function FullMenu() {
                     ScreenNames.changelog,
                     ScreenNames.feedback,
                     ScreenNames.adminDashboard,
-                ].includes(currentScreen)
-            ) {
-                if (Manager.IsValid(settingsAndSupportSection)) {
-                    settingsAndSupportSection.classList.add('active')
-                }
+                ],
+                section: 'profileSettings',
+            },
+        ]
+
+        // Find the matched section for currentScreen
+        const matched = sectionMap.find((item) => item.screens.includes(currentScreen))
+
+        if (matched) {
+            const el = sections[matched.section]
+            if (Manager.IsValid(el)) {
+                el.classList.add('active')
             }
         }
     }, [currentScreen, menuIsOpen])
@@ -237,7 +246,7 @@ export default function FullMenu() {
                                     <>
                                         {/* CHILDREN */}
                                         <div
-                                            className={`menu-item children${currentScreen === ScreenNames.children ? 'active' : ''}`}
+                                            className={`menu-item children${currentScreen === ScreenNames.children ? ' active' : ''}`}
                                             onClick={(e) => ChangeCurrentScreen(ScreenNames.children, e)}>
                                             <div className="content">
                                                 <div className="svg-wrapper children">
@@ -443,9 +452,11 @@ export default function FullMenu() {
                         <div
                             id="action-wrapper"
                             onClick={() => setState({...state, currentScreen: ScreenNames.help, menuIsOpen: false, showOverlay: false})}>
-                            <p id="report-bug">Report Bug 🐞</p>
+                            <p id="report-bug">Report Bug 🪲</p>
                             <span className="seperator">|</span>
-                            <p id="request-feature">Request Feature 💡</p>
+                            <p id="request-feature">
+                                Request Feature <MdTipsAndUpdates />
+                            </p>
                         </div>
                         <Spacer height={5} />
                         <p id="current-app-version" onClick={(e) => ChangeCurrentScreen(ScreenNames.changelog, e)}>

@@ -3,7 +3,7 @@ var StringManager
 
 import lzstring from 'lz-string'
 
-import Manager from './manager'
+import Manager from './manager' //if (firstOccurrence) {
 
 //if (firstOccurrence) {
 //  return str.substring(0, firstIndex + target.length) +

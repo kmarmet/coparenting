@@ -32,6 +32,8 @@
             background: white;
             transition: all 0.8s ease;
             border: 1px solid palette.$lightBorderColor;
+            background: rgba(73, 88, 255, 0.25);
+            opacity: 0.5;
             @include mixins.hover;
 
             * {
@@ -47,24 +49,22 @@
             .co-parent-type,
             .parent-type {
                 padding-bottom: 5px;
-                color: palette.$darkerGrey;
+                color: palette.$blendDark;
                 font-size: 11px;
             }
 
             .co-parent-name,
             .parent-name {
                 font-size: 15px;
-                font-weight: variables.$fwRegular;
                 border: 0;
-                color: palette.$darkGrey;
+                color: palette.$blendDark;
                 transform: scale(1.8);
+                @include fonts.lightFont;
             }
 
             // ACTIVE
             &.active {
-                background: palette.$main;
-                @include mixins.mainColorsGradient;
-                background: palette.$lightBlend;
+                background: rgba(73, 88, 255, 0.25);
                 opacity: 1;
                 transition: all 0.2s ease;
                 border: 0;
@@ -103,7 +103,7 @@
         margin-top: 20px;
         padding: 15px;
         border-radius: variables.$bigBorderRadius;
-        background: palette.$blendPurple;
+        background: palette.$blendDark;
         @include mixins.shadow;
 
         #parent-name-primary,
@@ -121,8 +121,10 @@
             width: 100%;
             text-align: center;
             margin-bottom: 15px;
-            color: palette.$transWhite;
+            color: white;
+            opacity: 0.8;
             padding-top: 3px;
+            @include fonts.lightFont;
         }
 
         .flex {

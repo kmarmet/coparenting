@@ -107,7 +107,7 @@ export default function Behavior({activeChild}) {
                     </p>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <div className="gradient padding">
+                    <div className="padding">
                         {behaviorValues &&
                             behaviorValues.map((prop, index) => {
                                 let infoLabel = StringManager.SpaceBetweenWords(prop[0])

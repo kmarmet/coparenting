@@ -34,14 +34,20 @@ import ManageTransferChecklists from './manageTransferChecklists'
 export default function Children() {
     const {state, setState} = useContext(globalState)
     const {theme, showScreenActions} = state
+
+    // Hooks
     const {currentUser} = useCurrentUser()
     const {children} = useChildren()
+    const [activeChildId, setActiveChildId] = useState(currentUser?.children?.[0]?.id)
+    const {activeChild, activeChildIndex} = useActiveChild(activeChildId)
+
+    // State
     const [showInfoCard, setShowInfoCard] = useState(false)
     const [showNewChildForm, setShowNewChildForm] = useState(false)
     const [showNewChecklistCard, setShowNewChecklistCard] = useState(false)
     const [showChecklistsCard, setShowChecklistsCard] = useState(false)
-    const [activeChildId, setActiveChildId] = useState(currentUser?.children?.[0]?.id)
-    const {activeChild} = useActiveChild(activeChildId)
+
+    // Image Ref
     const imgRef = useRef(null)
 
     const UploadProfilePic = async (fromButton = false) => {
@@ -53,21 +59,25 @@ export default function Children() {
             imgFiles = uploadButton?.files
         }
         if (imgFiles?.length === 0) {
-            // AlertManager.throwError('Please choose an image')
+            AlertManager.throwError('Please choose an image')
             return false
         }
 
-        // Upload -> Set child/general/profilePic
-        const uploadedImageUrl = await Storage.upload(
-            Storage.directories.profilePics,
-            `${currentUser?.key}/${activeChild?.id}`,
+        // Upload to Firebase Storage -> Set child/general/profilePic
+        const uploadedImageUrl = await Storage.UploadByPath(
+            `${Storage.directories.profilePics}/${currentUser?.key}/${activeChild?.id}`,
             imgFiles[0],
             'profilePic'
         )
 
-        // Update Child profilePic
-        const childIndex = DB.GetChildIndex(children, activeChild?.id)
-        await DB_UserScoped.UpdateChild(`${DB.tables.users}/${currentUser?.key}/children/${childIndex}`, uploadedImageUrl)
+        // Update Child profilePic Record Prop
+        if (!Manager.IsValid(activeChildIndex)) return
+
+        const newChild = children[activeChildIndex]
+        newChild.profilePic = uploadedImageUrl
+        console.log('newChild', newChild)
+        console.log('activeChild', activeChild)
+        await DB.ReplaceEntireRecord(`${DB.tables.users}/${currentUser?.key}/children/${activeChildIndex}`, newChild)
     }
 
     const DeleteChild = async () => {
@@ -252,7 +262,7 @@ export default function Children() {
                                                     className={activeChild?.id === child?.id ? 'child active' : 'child'}>
                                                     <div
                                                         className="child-image"
-                                                        style={{backgroundImage: `url(${child?.profilePic})`, transition: 'all .3s linear'}}></div>
+                                                        style={{backgroundImage: `url(${child?.profilePic})`, transition: 'all .3s ease'}}></div>
                                                     {/* CHILD NAME */}
                                                     <span className="child-name">{StringManager.GetFirstNameOnly(child?.general?.name)}</span>
                                                 </div>

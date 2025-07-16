@@ -1,7 +1,6 @@
 // Path: src\components\shared\customChildInfo.jsx
 import moment from 'moment'
 import React, {useContext, useEffect, useRef, useState} from 'react'
-import validator from 'validator'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
 import globalState from '../../context'
@@ -10,7 +9,6 @@ import useChildren from '../../hooks/useChildren'
 import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useUsers from '../../hooks/useUsers'
-import AlertManager from '../../managers/alertManager'
 import DropdownManager from '../../managers/dropdownManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
@@ -55,28 +53,26 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
     const [defaultInfoTypeOptions, setDefaultInfoTypeOptions] = useState(defaultInfoTypes)
     const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
     const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
-    const [selectedSection, setSelectedSection] = useState([])
+    const [selectedCategory, setSelectedCategory] = useState([])
 
     // Form Ref
     const formRef = useRef({title: '', value: 'text', shareWith: []})
 
     const Add = async () => {
-        if (formRef.current.title.length === 0 || formRef.current.value.length === 0) {
-            AlertManager.throwError('Please fill/select required fields')
-            return false
-        }
-
-        if (selectedInfoType?.toString() === 'phone' && !validator?.isMobilePhone(formRef.current.value)) {
-            AlertManager.throwError('Please enter a valid phone number')
-            return false
+        Manager.ValidateFormProperty(formRef.current.title, 'Title')
+        if (selectedInfoType?.value === 'phone') {
+            Manager.ValidateFormProperty(formRef.current.value, 'Value', true, 'Please enter a valid phone number', 'phone')
+        } else {
+            Manager.ValidateFormProperty(formRef.current.value, 'Value')
         }
 
         const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
+        console.log(selectedCategory)
 
         await DB_UserScoped.AddUserChildProp(
             currentUser,
             activeChild,
-            infoSection,
+            selectedCategory,
             StringManager.toCamelCase(formRef.current.title),
             formRef.current.value,
             shareWith
@@ -86,13 +82,13 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
             await UpdateManager.SendToShareWith(
                 shareWith,
                 currentUser,
-                `${StringManager.UppercaseFirstLetterOfAllWords(infoSection)} Info Updated for ${activeChild?.general?.name}`,
+                `${StringManager.UppercaseFirstLetterOfAllWords(selectedCategory)} Info Updated for ${activeChild?.general?.name}`,
                 `${formRef.current.title} - ${formRef.current.value}`,
-                infoSection
+                selectedCategory
             )
         }
 
-        ResetForm(`${StringManager.UppercaseFirstLetterOfAllWords(infoSection)} Info Added`)
+        ResetForm(`${StringManager.UppercaseFirstLetterOfAllWords(selectedCategory)} Info Added`)
     }
 
     const ResetForm = (successMessage = '') => {
@@ -139,7 +135,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
             {/* SECTION */}
             <SelectDropdown
                 onSelect={(section) => {
-                    setSelectedSection(section?.value)
+                    setSelectedCategory(section?.value)
                 }}
                 placeholder={'Select Category'}
                 options={defaultSections}

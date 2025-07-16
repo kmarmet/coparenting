@@ -35,7 +35,7 @@ const SuccessAlert = () => {
             background: '#2ac08a',
             backdrop: false,
             padding: 0,
-            borderRadius: '50px',
+            borderRadius: '20px',
             allowOutsideClick: true,
             allowEscapeKey: false,
             allowEnterKey: false,

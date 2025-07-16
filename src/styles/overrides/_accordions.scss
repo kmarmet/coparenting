@@ -13,6 +13,22 @@
             border-radius: 8px !important;
             background: palette.$lightBg !important;
 
+            &.child-info {
+                .padding {
+                    background-color: palette.$blendDark;
+                    border-radius: variables.$cardBorderRadius !important;
+                    opacity: 0 !important;
+                    transition: all 0.3s ease;
+                }
+                .MuiCollapse-entered {
+                    .padding {
+                        transition: all 0.3s ease;
+                        opacity: 1 !important;
+                        padding: 15px;
+                    }
+                }
+            }
+
             &.form-accordion {
                 background: transparent !important;
                 border: 0 !important;
@@ -424,9 +440,13 @@
                                 align-items: center;
                                 justify-content: space-between;
                                 width: 100%;
+                                border-bottom: 1px solid palette.$lightBorderColor !important;
+                                padding-bottom: 3px;
+                                color: palette.$whiteBgSubtitleTextDarker !important;
+
                                 svg {
-                                    color: palette.$labelText !important;
                                     top: unset !important;
+                                    opacity: 0.6 !important;
                                     @include mixins.square(18px);
                                 }
                             }

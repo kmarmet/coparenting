@@ -19,8 +19,26 @@ import AlertManager from './alertManager'
 import SecurityManager from './securityManager'
 
 ImageManager = {
+    ImageIsValid: async function (url) {
+        var promise
+        promise = new Promise(function (resolve) {
+            var img
+            img = new Image()
+            img.onload = function () {
+                return resolve(true) // valid image
+            }
+            img.onerror = function () {
+                return resolve(false) // broken image
+            }
+            return (img.src = url)
+        })
+        return await promise
+    },
     shortenUrl: async function (url) {
         var error, shortenedUrlObject
+        shortenedUrlObject = {
+            shortUrl: '',
+        }
         try {
             shortenedUrlObject = await Apis.ManyApis.GetShortUrl(url)
         } catch (error1) {
@@ -29,7 +47,7 @@ ImageManager = {
             AlertManager.throwError('Unable to parse image. Please try again after a few minutes.')
             return false
         }
-        return shortenedUrlObject.shortUrl
+        return shortenedUrlObject != null ? shortenedUrlObject.shortUrl : void 0
     },
     getStatusCode: function (url) {
         return new Promise(function (resolve, reject) {
@@ -161,14 +179,6 @@ ImageManager = {
                 return saveAs(url, fileName)
             }
         }, 300)
-    },
-    rotateSize: function (width, height, rotation) {
-        var rotRad
-        rotRad = getRadianAngle(rotation)
-        return {
-            width: Math.abs(Math.cos(rotRad) * width) + Math.abs(Math.sin(rotRad) * height),
-            height: Math.abs(Math.sin(rotRad) * width) + Math.abs(Math.cos(rotRad) * height),
-        }
     },
 }
 

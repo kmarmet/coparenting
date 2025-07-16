@@ -92,13 +92,13 @@ div {
     justify-content: center;
     max-width: 90vw !important;
     box-shadow: variables.$boxShadow_float !important;
-    border-radius: clamp(0px, 50%, 24px) !important;
+    border-radius: variables.$cardBorderRadius !important;
 
     // Success Alert
     &.swal2-modal {
         margin-top: 65px !important;
         padding: 10px 20px !important;
-        border-radius: clamp(0px, 50%, 24px) !important;
+        border-radius: variables.$mediumBorderRadius !important;
         box-shadow: rgba(0, 0, 0, 0.56) 0 22px 30px 14px !important;
     }
 
@@ -139,7 +139,7 @@ div {
 
         button {
             @include fonts.fontBase;
-            background: palette.$grey;
+            background-color: palette.$grey !important;
             color: palette.$darkestGrey;
             border-radius: variables.$buttonBorderRadius !important;
             text-align: center;
@@ -148,10 +148,10 @@ div {
             display: flex;
             align-items: center;
             min-width: 100px !important;
-            height: 50px;
             justify-content: center;
             font-weight: variables.$fwMedium;
             line-height: 1;
+            padding: 10px 20px !important;
             border: 1px solid palette.$lightBorderColor;
             font-size: 13px;
             outline: none;

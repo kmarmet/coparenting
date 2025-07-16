@@ -39,7 +39,9 @@ export default function Updates() {
 
     const ClearNotification = async (activity) => {
         const recordIndex = DB.GetTableIndexById(updates, activity?.id)
+        console.log(Manager.IsValid(recordIndex))
         if (Manager.IsValid(recordIndex)) {
+            console.log(`${DB.tables.updates}/${currentUser?.key}/${recordIndex}`)
             await DB.DeleteByPath(`${DB.tables.updates}/${currentUser?.key}/${recordIndex}`)
         }
     }

@@ -116,6 +116,7 @@ StringManager = {
     returnString = returnString.split(' ')[0]
     StringManager.UppercaseFirstLetterOfAllWords(returnString)
 
+    
   RemoveAllLetters: (input) ->
     return input.replace(/[a-zA-Z]/g, '')
 

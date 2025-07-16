@@ -59,9 +59,6 @@ export default function SwapRequests() {
 
     const ResetForm = (showAlert = false) => {
         Manager.ResetForm('swap-request-wrapper')
-        setTimeout(() => {
-            setState({...state, refreshKey: Manager.GetUid()})
-        }, 500)
         setState({...state, successAlertMessage: showAlert ? 'Swap Request Updated' : null})
     }
 
@@ -176,11 +173,11 @@ export default function SwapRequests() {
                 onSubmit={() => SelectDecision(Decisions.approved)}
                 className="swap-requests"
                 wrapperClass="swap-requests"
-                onClose={async () => {
+                onClose={() => {
                     setShowDetails(false)
-                    setView('details')
+                    setView([{label: 'Details', value: 'Details'}])
                     setActiveRequest(null)
-                    await ResetForm()
+                    ResetForm()
                 }}
                 extraButtons={[
                     <>

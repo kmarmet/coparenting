@@ -40,15 +40,14 @@ $shadows-big: multiple-box-shadow(100);
     max-width: 100vw;
     background: palette.$lightBg;
     width: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: auto;
     overscroll-behavior: none;
     top: 0;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-
+    //padding-bottom: 80px;
     &.calendar {
         .screen-content-wrapper {
             .screen-content {
@@ -64,7 +63,9 @@ $shadows-big: multiple-box-shadow(100);
         opacity: 0;
         width: 100%;
         transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
-
+        padding-bottom: 200px;
+        display: flex;
+        flex-direction: column;
         &.active {
             opacity: 1;
             transition: all 2s cubic-bezier(0.17, 0.67, 0.21, 0.95);
@@ -72,14 +73,12 @@ $shadows-big: multiple-box-shadow(100);
 
         // CONTENT
         .screen-content {
-            max-height: 99vh;
             padding: 0 15px 200px 15px;
-            height: 100%;
             width: 100%;
             position: relative;
-            overflow: auto;
             margin-top: 70px;
-
+            flex: 1;
+            overflow: auto;
             &.calendar {
                 margin-top: 0;
             }
@@ -184,7 +183,6 @@ $shadows-big: multiple-box-shadow(100);
                     width: 100%;
                     text-align: center;
                     color: white;
-                    opacity: 0.9;
                     @include fonts.lightFont();
                     & {
                         font-size: 17px;
@@ -480,16 +478,38 @@ $shadows-big: multiple-box-shadow(100);
 }
 
 @mixin mainColorsGradient {
-    background-image: linear-gradient(to bottom, #2950ff 0%, #3c4cff 55%, #4437ff 80%, #4a33ff 100%);
+    color: #6936c9;
+    background-image: linear-gradient(
+        180deg,
+        hsl(235deg 100% 62%) 0%,
+        hsl(238deg 100% 63%) 45%,
+        hsl(240deg 100% 64%) 60%,
+        hsl(243deg 100% 63%) 70%,
+        hsl(246deg 100% 62%) 82%,
+        hsl(248deg 100% 61%) 100%
+    );
 }
 
 @mixin screenHeaderGradient {
-    //background-image: linear-gradient(to bottom, #284fff 0%, #2448e8 40%, #4437ff 70%, #4a33ff 100%);
-    background: #3c4cff;
+    background-image: linear-gradient(
+        0deg,
+        hsl(245deg 99% 64%) 0%,
+        hsl(243deg 99% 63%) 11%,
+        hsl(241deg 99% 63%) 23%,
+        hsl(239deg 100% 63%) 38%,
+        hsl(237deg 100% 62%) 61%,
+        hsl(235deg 100% 62%) 100%
+    );
 }
 
 @mixin fadeEdges {
     box-shadow: 0 0 5px 5px white inset;
+}
+
+@mixin fadeTop {
+    mask-image: linear-gradient(to bottom, transparent 0%, black 20%);
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
 }
 
 @mixin hover {
@@ -866,7 +886,8 @@ $shadows-big: multiple-box-shadow(100);
     pointer-events: none;
     transition: all 0.5s ease;
     opacity: 0;
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px);
+    background: rgba(0, 0, 0, 0.35);
 
     &.active {
         opacity: 1;
@@ -881,8 +902,8 @@ $shadows-big: multiple-box-shadow(100);
         font-weight: bold;
         text-transform: uppercase;
         color: #0000;
-        -webkit-text-stroke: 1px #5769ff;
-        --l: #0000 45%, #5769ff 0 55%, #0000 0;
+        -webkit-text-stroke: 1px #475bff;
+        --l: #0000 45%, #475bff 0 55%, #0000 0;
         --g: 0/300% 100% no-repeat text;
         background:
             linear-gradient(-60deg, var(--l)) var(--g),
@@ -960,7 +981,7 @@ $shadows-big: multiple-box-shadow(100);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 50px;
+    border-radius: 20px;
     padding: 12px;
     margin: 0 auto;
     height: max-content;
@@ -1225,6 +1246,7 @@ $shadows-big: multiple-box-shadow(100);
         align-items: center;
         backdrop-filter: blur(2px);
         opacity: 0;
+        background: rgba(0, 0, 0, 0.25);
 
         &.active {
             transition: all 0.3s ease;
@@ -1239,7 +1261,7 @@ $shadows-big: multiple-box-shadow(100);
         overflow: auto;
         position: fixed;
         bottom: 0;
-        z-index: variables.$maxZIndex;
+        z-index: 99999999999;
         inset: 0;
         transform: translateY(100%);
         display: flex;
@@ -1248,7 +1270,6 @@ $shadows-big: multiple-box-shadow(100);
         align-items: center;
         max-height: max-content;
         margin-top: auto;
-        box-shadow: variables.$boxShadow_top_only_extra_dark;
         border-radius: 35px 35px 0 0;
         @include mainColorsGradient;
 
@@ -2657,7 +2678,7 @@ $shadows-big: multiple-box-shadow(100);
     opacity: 0;
     pointer-events: none;
     transition: all 0.7s ease;
-    z-index: 10;
+    z-index: 99999999;
     @include mainColorsGradient;
 
     &.active {
@@ -4054,7 +4075,6 @@ $shadows-big: multiple-box-shadow(100);
         transition: all 0.5s ease-in;
         pointer-events: auto;
         #full-menu-card {
-            box-shadow: variables.$boxShadow_top_only;
             transition: all 0.5s ease;
             overflow: auto;
             transform: translateY(0);
@@ -4081,6 +4101,12 @@ $shadows-big: multiple-box-shadow(100);
             color: palette.$barelyVisibleWhite;
             margin: 0 10px;
         }
+        svg {
+            color: palette.$yellow;
+            position: relative;
+            top: 2px;
+            @include square(18px);
+        }
     }
 
     #menu-title {
@@ -4094,13 +4120,13 @@ $shadows-big: multiple-box-shadow(100);
 
     .swipe-bar {
         display: block;
-        background: rgba(255, 255, 255, 0.71);
+        background: #b8c1d2;
         z-index: 999999999999;
         position: relative;
         align-self: flex-end;
         height: 4px;
         border-radius: variables.$cardBorderRadius;
-        width: 90px;
+        width: 80px;
         margin: 10px auto 0 auto;
     }
 
@@ -4111,9 +4137,10 @@ $shadows-big: multiple-box-shadow(100);
         overflow: hidden;
         transition: all 0.5s ease;
         height: calc(100vh - 10vh);
-        max-height: calc(100vh - 5vh);
+        max-height: 75vh;
         position: fixed;
         bottom: 0;
+        box-shadow: variables.$boxShadow_card;
         @include mainColorsGradient;
     }
 
@@ -4125,6 +4152,7 @@ $shadows-big: multiple-box-shadow(100);
         overflow: auto;
         overflow-x: hidden;
         padding: 15px 25px 100px 25px;
+
         .section {
             border-radius: 20px;
             background-color: transparent;
@@ -4135,8 +4163,9 @@ $shadows-big: multiple-box-shadow(100);
                     span {
                         opacity: 1;
                         color: white;
-                        font-size: 16px;
+                        font-size: 17px;
                         font-style: normal;
+                        @include fonts.mediumBoldFont;
                     }
                 }
             }
@@ -4151,17 +4180,19 @@ $shadows-big: multiple-box-shadow(100);
                 }
                 span {
                     font-size: 15px;
+                    color: white;
+                    opacity: 0.6;
                     @include fonts.lightFont;
 
                     & {
-                        letter-spacing: 1px;
+                        letter-spacing: 2px;
                         font-style: italic;
                     }
                 }
             }
 
             .menu-items {
-                gap: 8px 0;
+                gap: 5px 0;
                 display: flex;
                 grid-template-columns: repeat(2, 1fr);
                 transition: all 0.6s ease-out;
@@ -4248,6 +4279,7 @@ $shadows-big: multiple-box-shadow(100);
                         display: flex;
                         align-items: center;
                         justify-content: center;
+                        opacity: 0.6;
                     }
 
                     p {
@@ -4306,9 +4338,9 @@ $shadows-big: multiple-box-shadow(100);
 
         #feedback-subtitle {
             font-size: 15px;
-            font-weight: variables.$fwLight;
-            text-align: justify;
-            color: palette.$mediumTransWhite;
+            color: white;
+            opacity: 0.85;
+            @include fonts.lightFont;
         }
 
         #icon-and-label-wrapper {
@@ -4381,21 +4413,20 @@ $shadows-big: multiple-box-shadow(100);
 @mixin navBar {
     width: 100vw;
     position: fixed;
-    transition: all 0.5s cubic-bezier(0.17, 0.67, 0.21, 0.95);
+    transition: all 0.5s ease;
     bottom: -1px;
     opacity: 1;
-    z-index: 8;
+    z-index: 99;
     left: 0;
     padding-bottom: 5vh;
-    background-color: palette.$lightBg;
+    backdrop-filter: blur(8px);
 
     &.hidden {
         bottom: -200px;
+        transition: all 1s ease;
     }
 
     &.transparent {
-        background-color: transparent;
-
         .actions,
         #menu-items {
             background-color: transparent;
@@ -4488,7 +4519,6 @@ $shadows-big: multiple-box-shadow(100);
         align-items: center;
         width: 100vw;
         height: 55px;
-        background-color: palette.$lightBg;
         position: relative;
         top: 10px;
         padding: 0 5px;
@@ -4502,7 +4532,7 @@ $shadows-big: multiple-box-shadow(100);
             position: relative;
 
             svg {
-                color: palette.$darkGrey;
+                color: palette.$inactiveNavbarElement;
                 &.calendar {
                     transform: scale(0.88);
                 }
@@ -4515,7 +4545,7 @@ $shadows-big: multiple-box-shadow(100);
             }
 
             p {
-                color: palette.$darkGrey;
+                color: palette.$inactiveNavbarElement;
                 font-size: 11px;
                 width: 100%;
                 text-align: center;
@@ -4538,11 +4568,12 @@ $shadows-big: multiple-box-shadow(100);
                     box-shadow: variables.$boxShadow_button_only_medium;
                     border-radius: 100%;
                     margin: 0 15px;
-                    @include mainColorsGradient;
                     background: palette.$blendDark;
                     @include square(62px);
+                    @include mainColorsGradient;
+
                     svg {
-                        color: palette.$lightestPurple;
+                        color: white;
                     }
                 }
             }
@@ -4554,8 +4585,8 @@ $shadows-big: multiple-box-shadow(100);
                 justify-content: center;
                 span {
                     position: absolute;
-                    color: palette.$darkerGrey;
-                    padding-top: 5px;
+                    color: #d1d5dc;
+                    padding-top: 6px;
                     font-size: 13px;
                     padding-right: 1px;
                     font-weight: variables.$fwMediumBold;
@@ -4588,7 +4619,7 @@ $shadows-big: multiple-box-shadow(100);
 
                 p,
                 svg {
-                    color: palette.$main;
+                    color: palette.$blendDark;
                     opacity: 1;
                     font-weight: variables.$fwMediumBold;
                 }

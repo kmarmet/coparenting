@@ -125,21 +125,15 @@ export default function NewCalendarEvent() {
 
             if (Manager.IsValid(formRef.current)) {
                 //#region VALIDATION
+                Manager.ValidateFormProperty(formRef.current.title, 'Event Name', true)
+                Manager.ValidateFormProperty(formRef.current.startDate, 'Event Date')
+
+                // Custom Validation
                 if (Manager.IsValid(formRef.current.phone, true)) {
                     if (!validator.isMobilePhone(formRef.current.phone)) {
                         AlertManager.throwError('Phone number is not valid')
                         return false
                     }
-                }
-
-                if (!Manager.IsValid(formRef.current.title, true)) {
-                    AlertManager.throwError('Event Name is Required')
-                    return false
-                }
-
-                if (!Manager.IsValid(formRef.current.startDate, true)) {
-                    AlertManager.throwError('Event Date is Required')
-                    return false
                 }
 
                 if (Manager.IsValid(formRef.current.reminderTimes) && !Manager.IsValid(formRef.current.startTime)) {

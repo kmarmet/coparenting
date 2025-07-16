@@ -15,7 +15,7 @@ import Manager from '../managers/manager'
 
 export default function NavBar({children, navbarClass}) {
     const {state, setState} = useContext(globalState)
-    const {currentScreen, menuIsOpen, theme} = state
+    const {currentScreen, creationFormToShow, theme, menuIsOpen} = state
     const {currentUser} = useCurrentUser()
     const {updates} = useUpdates()
 
@@ -40,6 +40,10 @@ export default function NavBar({children, navbarClass}) {
             }
         }
     }, [currentScreen])
+
+    if (creationFormToShow) {
+        return null
+    }
 
     return (
         <>

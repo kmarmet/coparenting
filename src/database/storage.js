@@ -198,16 +198,15 @@ const Storage = {
         const storage = getStorage()
         const storageRef = ref(storage, `${fileDirectory}/${id}/${fileName}/`)
         await uploadBytes(storageRef, file)
-        const returnUrl = await getDownloadURL(ref(storage, `${fileDirectory}/${id}/${fileName}/`))
-        return await returnUrl
+        return await getDownloadURL(ref(storage, `${fileDirectory}/${id}/${fileName}/`))
     },
-    uploadByPath: async (path, file) => {
+    UploadByPath: async (path, file, fileName) => {
         try {
             const storage = getStorage()
-            const storageRef = ref(storage, path)
+            const storageRef = ref(storage, `${path}/${fileName}/`)
             console.log(file)
             await uploadBytes(storageRef, file)
-            return await getDownloadURL(ref(storage, path))
+            return await getDownloadURL(ref(storage, `${path}/${fileName}/`))
         } catch (error) {
             console.log(error)
             return null

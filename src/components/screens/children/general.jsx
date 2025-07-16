@@ -95,7 +95,7 @@ function General({activeChild}) {
                         </p>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <div className="gradient padding">
+                        <div className="padding">
                             {Manager.IsValid(generalValues) &&
                                 generalValues.map((prop, index) => {
                                     let infoLabel = StringManager.SpaceBetweenWords(prop[0])

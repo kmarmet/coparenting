@@ -113,7 +113,7 @@ export default function NewDocument() {
                 const compressedDoc = await ImageManager.compressImage(doc)
                 let firebaseStorageFileName = StringManager.FormatTitle(docNameToUse, true)
                 // Upload to Firebase Storage
-                imageUrl = await Storage.uploadByPath(
+                imageUrl = await Storage.UploadByPath(
                     `${Storage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`,
                     compressedDoc
                 )
@@ -145,7 +145,7 @@ export default function NewDocument() {
 
         //#region DOCUMENT CONVERSION
         if (docType === 'document') {
-            await Storage.uploadByPath(`${Storage.directories.documents}/${currentUser.key}/${docNameToUse}`, doc)
+            await Storage.UploadByPath(`${Storage.directories.documents}/${currentUser.key}/${docNameToUse}`, doc)
             let firebaseStorageFileName = StringManager.FormatTitle(docNameToUse, true)
             docText = await DocumentConversionManager.DocToHtml(docNameToUse, currentUser?.key)
             await UploadDocToFirebaseStorage(docText, firebaseStorageFileName)

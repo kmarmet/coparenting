@@ -112,7 +112,7 @@ export default function Medical({activeChild}) {
                     </p>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <div className="gradient padding">
+                    <div className="padding">
                         {Manager.IsValid(medicalValues) &&
                             medicalValues.map((prop, index) => {
                                 const infoLabel = StringManager.SpaceBetweenWords(prop[0])

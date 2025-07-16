@@ -32,9 +32,11 @@ const useActiveChild = (activeChildId) => {
 
                 setActiveChildIndex(index)
 
-                if (Manager.IsValid(snapshot.val())) {
+                const child = children?.[index]
+
+                if (Manager.IsValid(child)) {
                     if (Manager.IsValid(currentUser) && Manager.IsValid(children) && Manager.IsValid(activeChildId)) {
-                        setActiveChild(snapshot.val())
+                        setActiveChild(child)
                     }
                 } else {
                     setActiveChild(null)

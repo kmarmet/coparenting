@@ -34,7 +34,7 @@
 
             .coparent-visitation-dot,
             .coParent-event-dot {
-                background-color: palette.$purple;
+                background-color: palette.$mediumPurple;
             }
 
             .holiday-event-dot {
@@ -355,17 +355,26 @@
                                     border-radius: 100% !important;
                                     background: rgba(209, 213, 220, 0.37) !important;
                                     @include mixins.centerHoriz;
-                                    @include mixins.square(40px);
+                                    @include mixins.square(45px);
                                 }
                             }
 
                             // SELECTED
                             &.Mui-selected {
-                                color: palette.$blend !important;
+                                color: white !important;
                                 font-weight: variables.$fwBold !important;
                                 padding-bottom: 2px !important;
                                 padding-top: 2px !important;
                                 border-radius: 0 !important;
+
+                                .dot-wrapper {
+                                    .current-user-event-dot {
+                                        background-color: #8195ff !important;
+                                    }
+                                    .coParent-event-dot {
+                                        background-color: #ab8fff;
+                                    }
+                                }
 
                                 &:after {
                                     transition: all 0.3s ease-in-out;
@@ -377,7 +386,7 @@
                                     right: 0;
                                     bottom: 0;
                                     border-radius: 100% !important;
-                                    background: rgba(209, 213, 220, 0.37) !important;
+                                    background: palette.$blend !important;
                                     border: 1px solid rgba(87, 105, 255, 0.37) !important;
                                     @include mixins.square(45px);
                                     @include mixins.centerHoriz;
@@ -455,31 +464,12 @@
 
             // CALENDAR CELLS
             .MuiPickersCalendarHeader-root {
-                //        justify-content: center !important;
-                //        padding: 0 !important;
-                //        margin: 0 !important;
-                //        min-height: 10px !important;
-                //        position: relative !important;
-                //        z-index: 99999 !important;
-                //        display: block !important;
-                //        text-align: right !important;
-                //        margin-left: auto !important;
-                //        top: 0;
-                //        right: 5px;
                 .MuiPickersCalendarHeader-labelContainer {
                     margin: 0 auto !important;
                     .MuiPickersCalendarHeader-label {
-                        //            font-weight: variables.$fwRegular !important;
-                        //            font-size: 12px !important;
-                        //            color: white !important;
-                        //            opacity: 0.8 !important;
                     }
                 }
                 .MuiPickersCalendarHeader-switchViewIcon {
-                    //          opacity: 0.6 !important;
-                    //          position: relative;
-                    //          color: white !important;
-                    //          display: none !important;
                 }
             }
         }

@@ -107,7 +107,7 @@ export default function Schooling({activeChild}) {
                     </p>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <div className="gradient padding">
+                    <div className="padding">
                         {Manager.IsValid(schoolingValues) &&
                             schoolingValues.map((prop, index) => {
                                 let infoLabel = StringManager.UppercaseFirstLetterOfAllWords(StringManager.SpaceBetweenWords(prop[0]))
@@ -137,7 +137,6 @@ export default function Schooling({activeChild}) {
                                                 </>
                                             )}
                                         </div>
-                                        ]
                                         <Spacer height={3} />
                                     </div>
                                 )

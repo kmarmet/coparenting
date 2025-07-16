@@ -1,5 +1,7 @@
 // Path: src\managers\manager.js
 import _ from 'lodash'
+import validator from 'validator'
+import AlertManager from './alertManager'
 import LogManager from './logManager'
 import StringManager from './stringManager'
 
@@ -146,6 +148,19 @@ const Manager = {
             navigator.virtualKeyboard.hide()
         }
     },
+    ValidateFormProperty: (variableToCheck, variableName = '', isString = true, errorMessage = `${variableName} is Required`, variableType = '') => {
+        if (variableType === 'phone') {
+            if (!validator?.isMobilePhone(variableToCheck)) {
+                AlertManager.throwError(errorMessage)
+                throw {silent: true}
+            }
+        }
+        if (!Manager.IsValid(variableToCheck, isString)) {
+            AlertManager.throwError(errorMessage)
+            throw {silent: true}
+        }
+        return true
+    },
     IsValid: (variable, checkStringLength = false) => {
         // Null or undefined
         if (variable == null) return false
@@ -155,12 +170,16 @@ const Manager = {
             return false
         }
 
+        if (Number.isInteger(variable)) {
+            return variable >= 0
+        }
+
         // Invalid string (like "Invalid date")
+        // String check
         if (typeof variable === 'string') {
             if (!checkStringLength && variable.trim() === '') return false
             if (variable.includes('Invalid')) return false
         }
-
         // Empty array or object
         if (_.isEmpty(variable)) return false
 

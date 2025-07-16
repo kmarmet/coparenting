@@ -9,6 +9,7 @@ import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
 import useParents from '../../hooks/useParents'
 import DatasetManager from '../../managers/datasetManager'
+import ImageManager from '../../managers/imageManager'
 import Manager from '../../managers/manager'
 import CardButton from './cardButton'
 
@@ -94,66 +95,69 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
         }
     }
 
+    const ImageIsValid = async (imgSrc) => {
+        if (Manager.IsValid(imgSrc)) {
+            return await ImageManager.ImageIsValid(imgSrc)
+        }
+        return false
+    }
+
     useEffect(() => {
         setActiveImageIndex(activeIndex)
     }, [activeIndex])
 
     useEffect(() => {
+        console.log(activeImageIndex)
         if (Manager.IsValid(images)) {
             const newImage = new Image()
             newImage.src = DatasetManager.getUniqueArray(images, true)[activeImageIndex]?.url
-            newImage.onload = () => {
-                setActiveImageHeight(newImage.naturalHeight)
-                setActiveImageWidth(newImage.naturalWidth)
-            }
+            // newImage.onload = () => {
+            //     setActiveImageHeight(newImage.naturalHeight)
+            //     setActiveImageWidth(newImage.naturalWidth)
+            // }
         }
     }, [activeImageIndex])
 
     return (
         <div id={'slideshow-wrapper'} className={`${show ? 'active' : ''}${wrapperClasses}`}>
             <div id="slideshow-overlay">
-                <div
-                    {...handlers}
-                    id={'images-wrapper'}
-                    style={{
-                        backgroundImage: `url(${Manager.IsValid(images) ? images[activeImageIndex]?.url : ''})`,
-                        height: `${activeImgHeight}px`,
-                    }}
-                    className={`${show ? 'active' : ''}`}>
+                <div {...handlers} id={'images-wrapper'} className={`${show ? 'active' : ''}`}>
                     {Manager.IsValid(images) &&
                         DatasetManager.getUniqueArray(images, true).map((imageData, index) => {
+                            const hasNotes = Manager.IsValid(imageData?.notes, true)
+                            const hasTitle = Manager.IsValid(imageData?.title, true)
+
                             return (
                                 <div key={index} className={index === activeImageIndex && show ? 'active content' : 'content'}>
                                     {/* IMAGE */}
-                                    {Manager.IsValid(imageData?.notes, true) ||
-                                        Manager.IsValid(imageData?.notes, true) ||
-                                        (Manager.IsValid(imageData?.title, true) && (
-                                            <div className={`${activeImgHeight > 700 ? 'top text' : 'regular text'}`}>
-                                                {/* TITLE */}
-                                                {imageData?.title?.length > 0 && activeImageIndex === index && (
-                                                    <p className={'title'}>{imageData?.title}</p>
-                                                )}
+                                    {ImageIsValid(imageData?.url) && <img src={imageData?.url} alt={imageData?.title} />}
+                                    {(hasNotes || hasTitle) && (
+                                        <div className={`${activeImgHeight > 700 ? 'top text' : 'regular text'}`}>
+                                            {/* TITLE */}
+                                            {imageData?.title?.length > 0 && activeImageIndex === index && (
+                                                <p className={'title'}>{imageData?.title}</p>
+                                            )}
 
-                                                {/* CAPTURE DATE */}
-                                                {Manager.IsValid(imageData?.captureDate) && activeImageIndex === index && (
-                                                    <p className={'capture-date'}>
-                                                        Captured on{' '}
-                                                        {moment(imageData?.captureDate, DatetimeFormats.dateForDb).format(
-                                                            DatetimeFormats.readableMonthAndDayWithYear
-                                                        )}
-                                                    </p>
-                                                )}
+                                            {/* CAPTURE DATE */}
+                                            {Manager.IsValid(imageData?.captureDate) && activeImageIndex === index && (
+                                                <p className={'capture-date'}>
+                                                    Captured on{' '}
+                                                    {moment(imageData?.captureDate, DatetimeFormats.dateForDb).format(
+                                                        DatetimeFormats.readableMonthAndDayWithYear
+                                                    )}
+                                                </p>
+                                            )}
 
-                                                {/* SHARED BY */}
-                                                {Manager.IsValid(imageData?.ownerKey) && activeImageIndex === index && (
-                                                    <p className={'shared-by'}>{GetOwnerName(imageData?.ownerKey)}</p>
-                                                )}
-                                                {/* NOTES */}
-                                                {imageData?.notes?.length > 0 && activeImageIndex === index && (
-                                                    <p className={'notes'}>{imageData?.notes}</p>
-                                                )}
-                                            </div>
-                                        ))}
+                                            {/* SHARED BY */}
+                                            {Manager.IsValid(imageData?.ownerKey) && activeImageIndex === index && (
+                                                <p className={'shared-by'}>{GetOwnerName(imageData?.ownerKey)}</p>
+                                            )}
+                                            {/* NOTES */}
+                                            {imageData?.notes?.length > 0 && activeImageIndex === index && (
+                                                <p className={'notes'}>{imageData?.notes}</p>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             )
                         })}
