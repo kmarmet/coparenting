@@ -3,7 +3,7 @@ import {FaUserAlt} from 'react-icons/fa'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
-import {PiCameraRotateFill, PiListChecksFill} from 'react-icons/pi'
+import {PiCameraRotateFill, PiListChecksFill, PiUsersThreeFill} from 'react-icons/pi'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import DB from '../../../database/DB'
@@ -29,7 +29,7 @@ import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
 import Checklist from './checklist'
 import Checklists from './checklists'
-import ManageTransferChecklists from './manageTransferChecklists'
+import ManageHandoffChecklists from './manageHandoffChecklists'
 
 export default function Children() {
     const {state, setState} = useContext(globalState)
@@ -109,7 +109,7 @@ export default function Children() {
                     <CustomChildInfo showCard={showInfoCard} activeChild={activeChild} hideCard={() => setShowInfoCard(false)} />
 
                     {/* NEW CHECKLIST */}
-                    <ManageTransferChecklists
+                    <ManageHandoffChecklists
                         activeChildId={activeChild?.id}
                         showCard={showNewChecklistCard}
                         hideCard={() => setShowNewChecklistCard(false)}
@@ -238,6 +238,7 @@ export default function Children() {
             {/* PAGE CONTAINER */}
             <div id="child-info-container" className={`${theme} page-container child-info`}>
                 <ScreenHeader
+                    titleIcon={<PiUsersThreeFill />}
                     title={'Children'}
                     screenDescription="You can store and access all relevant information about your child, particularly essential details that you may need to retrieve at any
           moment."

@@ -18,7 +18,7 @@ ScreenNames = {
   docsList: 'docsList',
   editCalendarEvent: 'editCalendarEvent',
   emailVerification: 'emailVerification',
-  expenseTracker: 'expenseTracker',
+  expenseManagement: 'expenseManagement',
   featureRequests: 'featureRequests',
   feedback: 'feedback',
   landing: 'landing',
@@ -27,12 +27,12 @@ ScreenNames = {
   memories: 'memories',
   newCalendarEvent: 'newCalendarEvent',
   newChild: 'newChild',
-  newChildTransferChangeRequest: 'newChildTransferChangeRequest',
-  newCoparent: 'newCoparent',
+  newChildHandoffChangeRequest: 'newChildHandoffChangeRequest',
+  newCoParent: 'newCoParent',
   newExpense: 'newExpense',
   newMemory: 'newMemory',
-  newSwapRequest: 'newSwapRequest',
-  newTransferRequest: 'newTransferRequest',
+  newVisitationChangeRequest: 'newVisitationChangeRequest',
+  newHandoffChangeRequest: 'newHandoffChangeRequest',
   updates: 'updates',
   onboarding: 'onboarding',
   parents: 'parents',
@@ -42,14 +42,14 @@ ScreenNames = {
   resetEmail: 'resetEmail',
   resetPassword: 'resetPassword',
   settings: 'settings',
-  swapRequests: 'swapRequests',
-  transferRequests: 'transferRequests',
+  handoff: 'handoff',
   updateContactInfo: 'updateContactInfo',
   uploadAgreement: 'uploadAgreement',
   uploadAgreementDocs: 'uploadAgreementDocs',
   uploadDocuments: 'uploadDocuments',
   userDetails: 'userDetails',
-  visitation: 'visitation'
+  visitation: 'visitation',
+  makeItYours: 'makeItYours'
 };
 
 export default ScreenNames;

@@ -1,12 +1,12 @@
-// Path: src\components\forms\newSwapRequest.jsx
+// Path: src\components\forms\newVisitationChangeRequest.jsx
 import moment from 'moment'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import Form from '../../components/shared/form'
 import creationForms from '../../constants/creationForms'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
-import SwapDurations from '../../constants/swapDurations'
 import ActivityCategory from '../../constants/updateCategory'
+import VisitationChangeDurations from '../../constants/visitationChangeDurations'
 import globalState from '../../context'
 import DB from '../../database/DB'
 import useChildren from '../../hooks/useChildren'
@@ -20,14 +20,14 @@ import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager'
-import SwapRequest from '../../models/new/swapRequest'
+import VisitationChangeRequest from '../../models/new/visitationChangeRequest'
 import FormDivider from '../shared/formDivider'
 import InputField from '../shared/inputField'
 import SelectDropdown from '../shared/selectDropdown'
 import Spacer from '../shared/spacer'
 import ViewDropdown from '../shared/viewDropdown'
 
-export default function NewSwapRequest() {
+export default function NewVisitationChangeRequest() {
     const {state, setState} = useContext(globalState)
     const {theme, creationFormToShow, refreshKey} = state
 
@@ -49,10 +49,10 @@ export default function NewSwapRequest() {
     const {users} = useUsers()
     const {coParents} = useCoParents()
 
-    const formRef = useRef({...new SwapRequest()})
+    const formRef = useRef({...new VisitationChangeRequest()})
 
     const ResetForm = (showSuccessAlert = false) => {
-        Manager.ResetForm('swap-request-wrapper')
+        Manager.ResetForm('visitation-request-wrapper')
 
         // setTimeout(() => {
         //   setState({...state, refreshKey: Manager.GetUid()})
@@ -61,7 +61,7 @@ export default function NewSwapRequest() {
             ...state,
             isLoading: false,
             creationFormToShow: '',
-            successAlertMessage: showSuccessAlert ? 'Swap Request Sent' : null,
+            successAlertMessage: showSuccessAlert ? 'Visitation Change Request Sent' : null,
         })
     }
 
@@ -124,13 +124,13 @@ export default function NewSwapRequest() {
         const cleanObject = ObjectManager.CleanObject(formRef.current)
 
         // Send Notification
-        await DB.Add(`${DB.tables.swapRequests}/${currentUser?.key}`, [], cleanObject).finally(() => {
+        await DB.Add(`${DB.tables.visitationRequests}/${currentUser?.key}`, [], cleanObject).finally(() => {
             UpdateManager.SendToShareWith(
                 formRef.current.shareWith,
                 currentUser,
-                'New Swap Request',
-                `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a new Swap Request`,
-                ActivityCategory.swapRequest
+                'New Visitation Change Request',
+                `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a new Visitation Change Request`,
+                ActivityCategory.visitationChangeRequest
             )
         })
 
@@ -172,7 +172,7 @@ export default function NewSwapRequest() {
             key={refreshKey}
             submitText={'Send'}
             onSubmit={Submit}
-            wrapperClass="new-swap-request"
+            wrapperClass="new-visitation-request"
             title={'Request Visitation Swap'}
             subtitle="Request for your child(ren) to remain with you during the designated visitation time of your co-parent."
             viewDropdown={
@@ -188,17 +188,17 @@ export default function NewSwapRequest() {
                     onSelect={(view) => setView(view)}
                 />
             }
-            showCard={creationFormToShow === creationForms.swapRequest}
+            showCard={creationFormToShow === creationForms.visitationChangeRequest}
             onClose={() => ResetForm()}>
             <Spacer height={3} />
-            <div id="new-swap-request-container" className={`${theme}`}>
+            <div id="new-visitation-request-container" className={`${theme}`}>
                 {/* FORM */}
                 <div id="request-form" className="single">
                     <FormDivider text={'Required'} />
                     {/* SINGLE DATE */}
-                    {view?.value === SwapDurations.single && (
+                    {view?.value === VisitationChangeDurations.single && (
                         <InputField
-                            uidClass="swap-single-date"
+                            uidClass="visitation-single-date"
                             inputType={InputTypes.date}
                             placeholder={'Date'}
                             required={true}
@@ -207,7 +207,7 @@ export default function NewSwapRequest() {
                     )}
 
                     {/* MULTIPLE DAYS */}
-                    {view?.value === SwapDurations.multiple && (
+                    {view?.value === VisitationChangeDurations.multiple && (
                         <InputField
                             onDateOrTimeSelection={(dateArray) => {
                                 if (Manager.IsValid(dateArray)) {
@@ -223,10 +223,10 @@ export default function NewSwapRequest() {
                     )}
 
                     {/* INTRA DAY - HOURS */}
-                    {view?.value === SwapDurations.intra && (
+                    {view?.value === VisitationChangeDurations.intra && (
                         <>
                             <InputField
-                                uidClass="swap-hours-date"
+                                uidClass="visitation-hours-date"
                                 inputType={InputTypes.date}
                                 placeholder={'Day'}
                                 required={true}
@@ -237,14 +237,14 @@ export default function NewSwapRequest() {
                             <div className="flex gap">
                                 <InputField
                                     inputType={InputTypes.time}
-                                    uidClass="swap-request-from-hour"
+                                    uidClass="visitation-request-from-hour"
                                     placeholder={'Start Time'}
                                     onDateOrTimeSelection={(e) => (formRef.current.fromHour = moment(e).format('ha'))}
                                 />
 
                                 <InputField
                                     inputType={InputTypes.time}
-                                    uidClass="swap-request-to-hour"
+                                    uidClass="visitation-request-to-hour"
                                     placeholder={'End Time'}
                                     onDateOrTimeSelection={(e) => (formRef.current.toHour = moment(e).format('ha'))}
                                 />
@@ -282,7 +282,7 @@ export default function NewSwapRequest() {
 
                     {/* RESPONSE DUE DATE */}
                     <InputField
-                        uidClass="swap-response-date"
+                        uidClass="visitation-response-date"
                         inputType={InputTypes.date}
                         placeholder={'Requested Response Date'}
                         required={true}

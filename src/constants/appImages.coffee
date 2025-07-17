@@ -40,7 +40,7 @@ AppImages =
       name: 'tableOfContents'
       url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Flanding%2FtableOfContents.png?alt=media&token=76acc388-f0ce-42c2-8d76-18d0c0fc9482"
     expenseTracker:
-      name: 'expenseTracker'
+      name: 'expenseManagement'
       url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Flanding%2Fexpense-tracker.png?alt=media&token=458198e5-cf0b-4bda-9cb7-f8149ee39bf6"
     collaboration:
       name: 'menu'

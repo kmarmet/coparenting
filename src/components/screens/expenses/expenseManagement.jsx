@@ -62,7 +62,7 @@ const ExpenseIcons = {
     Pet: <MdPets className={'category-icon pet'} />,
 }
 
-export default function ExpenseTracker() {
+export default function ExpenseManagement() {
     const {state, setState} = useContext(globalState)
     const {theme} = state
 
@@ -255,7 +255,7 @@ export default function ExpenseTracker() {
     return (
         <Screen
             stopLoadingBool={!currentUserIsLoading && !expensesAreLoading && !childrenAreLoading}
-            activeScreen={ScreenNames.expenseTracker}
+            activeScreen={ScreenNames.expenseManagement}
             loadingByDefault={true}>
             {/* NEW EXPENSE FORM */}
             <NewExpenseForm showCard={showNewExpenseCard} hideCard={() => setShowNewExpenseCard(false)} />
@@ -501,7 +501,7 @@ export default function ExpenseTracker() {
             {/* PAGE CONTAINER */}
             <div id="expense-tracker" className={`${theme} page-container`}>
                 <ScreenHeader
-                    title={'Expense Tracker'}
+                    title={'Expense Management'}
                     screenDescription="Incorporate expenses that your co-parent is responsible for. Should a new expense arise that requires your payment, you will have the option
           to either approve or decline it"
                 />

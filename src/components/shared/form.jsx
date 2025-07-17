@@ -83,7 +83,7 @@ export default function Form({
                                 {StringManager.FormatTitle(title, true)}
                             </p>
                             <Spacer height={5} />
-                            {Manager.IsValid(subtitle, true) && <StringAsHtmlElement classes={'subtitle'} text={subtitle} />}
+                            {Manager.IsValid(subtitle, true) && <StringAsHtmlElement classes={'subtitle in-form'} text={subtitle} />}
                         </div>
                     )}
 

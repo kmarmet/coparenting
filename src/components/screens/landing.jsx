@@ -848,8 +848,8 @@ export default function Landing() {
                             <AiTwotoneTool />
                             <p className="title">Flexible Co-Parenting Tools</p>
                             <p className="text">
-                                <b>Swap Requests:</b> Need a schedule change? Easily request new times or locations for child transfers with just a
-                                few clicks.
+                                <b>Visitation Change Requests:</b> Need a schedule change? Easily request new times or locations for child transfers
+                                with just a few clicks.
                             </p>
                             <p className="text">
                                 <b>Shared Calendar:</b> Seamlessly plan and manage visitations, holidays, and paydays with icons, search

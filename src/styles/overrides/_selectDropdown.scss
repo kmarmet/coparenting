@@ -53,7 +53,8 @@
                     [class*='-singleValue'],
                     [id*='-placeholder'],
                     [class*='-placeholder'] {
-                        color: palette.$darkerGrey !important;
+                        color: palette.$labelText !important;
+                        @include fonts.lightFont;
                     }
                 }
             }

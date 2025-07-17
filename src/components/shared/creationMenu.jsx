@@ -98,13 +98,13 @@ const CreationMenu = () => {
                                         ...state,
                                         showCreationMenu: false,
                                         showOverlay: false,
-                                        creationFormToShow: CreationForms.transferRequest,
+                                        creationFormToShow: CreationForms.handoffChangeRequest,
                                     })
                                 }}>
                                 <div className="content">
-                                    <p className="transfer">Transfer Change Request</p>
-                                    <div className="svg-wrapper transfer">
-                                        <RiMapPinTimeFill className={'transfer'} />
+                                    <p className="handoff">Handoff Change Request</p>
+                                    <div className="svg-wrapper handoff">
+                                        <RiMapPinTimeFill className={'handoff'} />
                                     </div>
                                 </div>
                             </div>
@@ -114,12 +114,17 @@ const CreationMenu = () => {
                                 style={DomManager.AnimateDelayStyle(2.4)}
                                 className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, '.action-item')}`}
                                 onClick={() => {
-                                    setState({...state, showCreationMenu: false, showOverlay: false, creationFormToShow: CreationForms.swapRequest})
+                                    setState({
+                                        ...state,
+                                        showCreationMenu: false,
+                                        showOverlay: false,
+                                        creationFormToShow: CreationForms.visitationChangeRequest,
+                                    })
                                 }}>
                                 <div className="content">
-                                    <p className="swap">Swap Request</p>
-                                    <div className="svg-wrapper swap">
-                                        <MdSwapHorizontalCircle className={'swap'} />
+                                    <p className="visitation">Visitation Change Request</p>
+                                    <div className="svg-wrapper visitation">
+                                        <MdSwapHorizontalCircle className={'visitation'} />
                                     </div>
                                 </div>
                             </div>

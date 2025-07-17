@@ -1,4 +1,4 @@
-// Path: src\components\screens\coparents\customCoparentInfo.jsx
+// Path: src\components\screens\coparents\customCoParentInfo.jsx
 import _ from 'lodash'
 import React, {useContext, useState} from 'react'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
@@ -21,7 +21,7 @@ export default function CustomParentInfo({hideCard, activeCoparent, showCard}) {
     const {currentUser} = useCurrentUser()
 
     const ResetForm = (hasMessage = false) => {
-        Manager.ResetForm('custom-coparent-info-wrapper')
+        Manager.ResetForm('custom-coParent-info-wrapper')
         setTitle('')
         setValue('')
         setState({

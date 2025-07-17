@@ -200,11 +200,13 @@ SecurityManager = {
         }
         return DatasetManager.GetValidArray(returnRecords)
     },
-    getSwapRequests: async function (currentUser) {
+    getVisitationChangeRequests: async function (currentUser) {
         var allRequests, i, len, request, returnRecords, sharedSwaps
         returnRecords = []
-        allRequests = DatasetManager.GetValidArray(await DB.getTable(`${DB.tables.swapRequests}/${currentUser != null ? currentUser.key : void 0}`))
-        sharedSwaps = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests)
+        allRequests = DatasetManager.GetValidArray(
+            await DB.getTable(`${DB.tables.visitationRequests}/${currentUser != null ? currentUser.key : void 0}`)
+        )
+        sharedSwaps = await SecurityManager.getShareWithItems(currentUser, DB.tables.visitationRequests)
         if (Manager.IsValid(allRequests)) {
             for (i = 0, len = allRequests.length; i < len; i++) {
                 request = allRequests[i]
@@ -218,13 +220,13 @@ SecurityManager = {
         }
         return DatasetManager.GetValidArray(returnRecords)
     },
-    getTransferChangeRequests: async function (currentUser) {
+    getHandoffChangeRequests: async function (currentUser) {
         var allRequests, i, len, request, returnRecords, sharedTransfers
         returnRecords = []
         allRequests = DatasetManager.GetValidArray(
-            await DB.getTable(`${DB.tables.transferChangeRequests}/${currentUser != null ? currentUser.key : void 0}`)
+            await DB.getTable(`${DB.tables.handoffChangeRequests}/${currentUser != null ? currentUser.key : void 0}`)
         )
-        sharedTransfers = await SecurityManager.getShareWithItems(currentUser, DB.tables.transferChangeRequests)
+        sharedTransfers = await SecurityManager.getShareWithItems(currentUser, DB.tables.handoffChangeRequests)
         if (Manager.IsValid(allRequests)) {
             for (i = 0, len = allRequests.length; i < len; i++) {
                 request = allRequests[i]

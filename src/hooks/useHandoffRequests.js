@@ -7,13 +7,13 @@ import Manager from '../managers/manager'
 import SecurityManager from '../managers/securityManager'
 import useCurrentUser from './useCurrentUser'
 
-const useSwapRequests = () => {
+const useHandoffRequests = () => {
     const {state, setState} = useContext(globalState)
     const {currentUser} = useCurrentUser()
-    const [swapRequests, setSwapRequests] = useState(null)
-    const [swapRequestsAreLoading, setSwapRequestsAreLoading] = useState(true)
+    const [handoffRequests, setHandoffChangeRequests] = useState(null)
+    const [handoffRequestsAreLoading, setHandoffChangeRequestsAreLoading] = useState(true)
     const [error, setError] = useState(null)
-    const path = `${DB.tables.swapRequests}/${currentUser?.key}`
+    const path = `${DB.tables.handoffChangeRequests}/${currentUser?.key}`
     const queryKey = ['realtime', path]
 
     useEffect(() => {
@@ -23,21 +23,20 @@ const useSwapRequests = () => {
         const listener = onValue(
             dataRef,
             async (snapshot) => {
-                const formattedRequests = DatasetManager.GetValidArray(snapshot.val())
-                const shared = await SecurityManager.getSharedItems(currentUser, DB.tables.swapRequests)
-                const formattedShared = DatasetManager.GetValidArray(shared)
-                console.log(formattedRequests, formattedShared)
+                const formattedRequests = DatasetManager.GetValidArray(snapshot.val()) || []
+                const shared = await SecurityManager.getSharedItems(currentUser, DB.tables.pickupDropOff)
+                const formattedShared = DatasetManager.GetValidArray(shared) || []
                 if (Manager.IsValid(formattedRequests) || Manager.IsValid(formattedShared)) {
                     const combined = DatasetManager.CombineArrays(formattedRequests, formattedShared)
-                    setSwapRequests(DatasetManager.GetValidArray(combined))
+                    setHandoffChangeRequests(combined)
                 } else {
-                    setSwapRequests([])
+                    setHandoffChangeRequests([])
                 }
-                setSwapRequestsAreLoading(false)
+                setHandoffChangeRequestsAreLoading(false)
             },
             (err) => {
                 setError(err)
-                setSwapRequestsAreLoading(false)
+                setHandoffChangeRequestsAreLoading(false)
             }
         )
 
@@ -47,11 +46,11 @@ const useSwapRequests = () => {
     }, [path, currentUser])
 
     return {
-        swapRequests,
-        swapRequestsAreLoading,
+        handoffRequests,
+        handoffRequestsAreLoading,
         error,
         queryKey,
     }
 }
 
-export default useSwapRequests
+export default useHandoffRequests

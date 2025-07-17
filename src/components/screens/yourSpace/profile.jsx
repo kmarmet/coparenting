@@ -2,29 +2,23 @@
 import {initializeApp} from 'firebase/app'
 import {EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail} from 'firebase/auth'
 import React, {useContext, useEffect, useState} from 'react'
-import {IoIosRemoveCircle} from 'react-icons/io'
 import {MdContactMail, MdOutlinePassword} from 'react-icons/md'
-import {PiHandWavingDuotone} from 'react-icons/pi'
 import validator from 'validator'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context.js'
 import DB from '../../../database/DB'
 import DB_UserScoped from '../../../database/db_userScoped'
-import Storage from '../../../database/storage'
 import firebaseConfig from '../../../firebaseConfig'
 import useCurrentUser from '../../../hooks/useCurrentUser'
 import AlertManager from '../../../managers/alertManager'
 import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
-import UpdateManager from '../../../managers/updateManager'
-import NavBar from '../../navBar'
 import AddressInput from '../../shared/addressInput'
 import Form from '../../shared/form'
 import InputField from '../../shared/inputField'
-import Screen from '../../shared/screen'
-import ScreenHeader from '../../shared/screenHeader'
+import Label from '../../shared/label'
 import Spacer from '../../shared/spacer'
 
 export default function Profile() {
@@ -73,7 +67,7 @@ export default function Profile() {
             )
             return false
         }
-        if (!validator.isEmail(email)) {
+        if (!validator?.isEmail(email)) {
             AlertManager.throwError('Email is not valid')
             return false
         }
@@ -117,7 +111,7 @@ export default function Profile() {
             AlertManager.throwError(`Please enter your new ${StringManager.UppercaseFirstLetterOfAllWords(updateType)} Number`)
             return false
         }
-        if (!validator.isMobilePhone(phone)) {
+        if (!validator?.isMobilePhone(phone)) {
             AlertManager.throwError('Phone number is not valid')
             return false
         }
@@ -128,68 +122,6 @@ export default function Profile() {
             AlertManager.successAlert('Phone number has been updated')
             Logout()
         }
-    }
-
-    const CloseAccount = async () => {
-        AlertManager.inputAlert(
-            'Enter Your Password',
-            'In order to continue with the profile deletion process, you are required to enter your password for security (verification) purposes',
-            (e) => {
-                const user = auth.currentUser
-                const credential = EmailAuthProvider.credential(user.email, e.value)
-                if (!Manager.IsValid(e.value, true)) {
-                    AlertManager.throwError('Password is required')
-                    return false
-                }
-                reauthenticateWithCredential(auth.currentUser, credential)
-                    .then(async () => {
-                        // // Delete from Firebase Storage
-                        const allStorageDirectories = Object.keys(Storage.directories)
-                        for (let dir of allStorageDirectories) {
-                            await Storage.deleteDirectory(dir, currentUser.key)
-                        }
-
-                        // Delete from OneSignal
-                        const subscriber = await DB.find(DB.tables.updateSubscribers, ['key', currentUser.key], true)
-
-                        if (subscriber) {
-                            await UpdateManager.deleteUser(subscriber?.oneSignalId, subscriber?.subscriptionId)
-                        }
-
-                        // Delete from Realtime Database
-                        await DB_UserScoped.deleteUserData(currentUser)
-
-                        // Delete from Firebase Auth
-                        firebaseUser
-                            .delete()
-                            .then(async () => {
-                                // Sign Out
-                                signOut(auth)
-                                    .then(() => {
-                                        window.location.reload()
-                                        // Sign-out successful.
-                                        console.log('User signed out')
-                                    })
-                                    .catch((error) => {
-                                        // An error happened.
-                                        console.log(error.message)
-                                    })
-                            })
-                            .catch((error) => {
-                                console.log(error.message)
-                            })
-                    })
-                    .catch((error) => {
-                        // An error ocurred
-                        console.log(error.message)
-                        // ...
-                    })
-            },
-            true,
-            true,
-            'text',
-            'yellow'
-        )
     }
 
     const SetHomeAddress = async (address) => {
@@ -204,7 +136,7 @@ export default function Profile() {
     }, [currentUser])
 
     return (
-        <Screen activeScreen={ScreenNames.profile}>
+        <>
             {/* UPDATE CARD */}
             <Form
                 onSubmit={async () => {
@@ -260,50 +192,40 @@ export default function Profile() {
             </Form>
 
             {/* PAGE CONTAINER */}
-            <div id="account-container" className={`${theme} page-container`}>
-                <ScreenHeader title={'My Profile'} />
-                <Spacer height={10} />
-                <div className="screen-content">
-                    <p id="user-name">
-                        Hey {StringManager.GetFirstNameOnly(currentUser?.name)}! <PiHandWavingDuotone />
-                    </p>
-                    <div className="sections">
-                        {/* HOME ADDRESS */}
-                        {Manager.IsValid(currentUser) && (
-                            <AddressInput
-                                wrapperClasses="on-grey-bg white"
-                                onChange={(address) => {
-                                    console.log(address)
-                                    SetHomeAddress(address).then()
-                                }}
-                                defaultValue={currentUser?.location?.homeAddress}
-                                placeholder={'Home Address'}
-                                required={true}
-                                value={currentUser?.homeAddress}
-                            />
-                        )}
+            <div id={'profile-wrapper'} className={`${theme}`}>
+                <div className="actions">
+                    <Label classes={'always-show section-title'} text={'Personal Info'} />
+                    <Spacer height={10} />
+                    {/* HOME ADDRESS */}
+                    {Manager.IsValid(currentUser) && (
+                        <AddressInput
+                            wrapperClasses="on-grey-bg"
+                            onChange={(address) => {
+                                SetHomeAddress(address).then()
+                            }}
+                            defaultValue={currentUser?.location?.homeAddress}
+                            placeholder={'Home Address'}
+                            required={true}
+                            value={currentUser?.homeAddress}
+                        />
+                    )}
+                    <Spacer height={8} />
 
-                        <p className="section" onClick={() => setState({...state, currentScreen: ScreenNames.resetPassword})}>
-                            <MdOutlinePassword />
-                            Reset Password
-                        </p>
-                        <p
-                            className="section email"
-                            onClick={() => {
-                                setUpdateType('email')
-                                setShowUpdateCard(true)
-                            }}>
-                            <MdContactMail />
-                            Update Email Address
-                        </p>
-                        <p className="section close-account" onClick={CloseAccount}>
-                            <IoIosRemoveCircle />
-                            Deactivate Account
-                        </p>
-                    </div>
+                    <p className={'reset-password'} onClick={() => setState({...state, currentScreen: ScreenNames.resetPassword})}>
+                        <MdOutlinePassword />
+                        Reset Password
+                    </p>
+                    <p
+                        className="email"
+                        onClick={() => {
+                            setUpdateType('email')
+                            setShowUpdateCard(true)
+                        }}>
+                        <MdContactMail />
+                        Update Email Address
+                    </p>
                 </div>
             </div>
-            {!showUpdateCard && !showLoginForm && <NavBar navbarClass={'profile no-Add-new-button'}></NavBar>}
-        </Screen>
+        </>
     )
 }

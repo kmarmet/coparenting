@@ -2,10 +2,10 @@
 ModelNames =
   calendarEvent: "calendarEvent"
   conversation: "conversation"
-  coparent: 'coparent'
+  coparent: 'coParent'
   expense: 'expense'
   memory: 'memory'
-  swapRequest: 'swapRequest'
+  visitationChangeRequest: 'visitationChangeRequest'
   inputSuggestion: 'inputSuggestion'
   user: "user"
   transferChangeRequest: 'transferChangeRequest'

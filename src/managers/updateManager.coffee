@@ -8,7 +8,6 @@ import Update from "../models/new/update"
 import LogManager from "./logManager"
 import Apis from "../api/apis"
 
-
 export default UpdateManager =
   currentUser: null
   lineBreak: '\r\n'
@@ -30,19 +29,19 @@ export default UpdateManager =
     updateReminder: ->
       return 'Visit New Updates in the menu to learn more'
 
-# Template for swap request decision
-    swapRequestApproval: (request, recipientName) ->
-      return "Swap Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{UpdateManager.lineBreak}#{UpdateManager.lineBreak}"
+# Template for visitation request decision
+    VisitationChangeRequestApproval: (request, recipientName) ->
+      return "Visitation Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{UpdateManager.lineBreak}#{UpdateManager.lineBreak}"
 
-    swapRequestRejection: (request, recipientName) ->
-      return "Swap Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{UpdateManager.lineBreak}#{UpdateManager.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed with the
+    VisitationChangeRequestRejection: (request, recipientName) ->
+      return "Visitation Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{UpdateManager.lineBreak}#{UpdateManager.lineBreak} Reason: #{request.reason}. If you would still prefer to proceed with the
  request, please contact #{recipientName} to negotiate a potential agreement"
 
-    transferRequestApproval: (request, recipientName) ->
-      return "Transfer Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{UpdateManager.lineBreak}#{UpdateManager.lineBreak}"
+    handoffChangeRequestApproval: (request, recipientName) ->
+      return "Handoff Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{UpdateManager.lineBreak}#{UpdateManager.lineBreak}"
 
-    transferRequestRejection: (request, recipientName) ->
-      return "Transfer Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{UpdateManager.lineBreak}#{UpdateManager.lineBreak} Reason: #{request.declineReason}. If you
+    handoffChangeRequestRejection: (request, recipientName) ->
+      return "Handoff Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{UpdateManager.lineBreak}#{UpdateManager.lineBreak} Reason: #{request.declineReason}. If you
  would still
  prefer to proceed
  with the

@@ -156,10 +156,11 @@
             .input-wrapper {
                 border: 1px solid palette.$lightBorderColor !important;
                 input {
-                    color: palette.$darkerGrey !important;
+                    color: palette.$labelText !important;
                     &::placeholder {
                         color: palette.$darkerGrey !important;
                     }
+                    @include fonts.lightFont;
                 }
             }
         }

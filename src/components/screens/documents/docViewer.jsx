@@ -210,7 +210,7 @@ export default function DocViewer() {
             return false
         }
         const textContainer = document.getElementById('doc-text')
-        const coparents = documents.map((x) => x.coparent)
+        const coparents = documents.map((x) => x.coParent)
         const relevantDoc = documents.find((x) => x?.name === docToView?.name)
 
         //#region VALIDATION

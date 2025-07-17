@@ -3,14 +3,14 @@
 var CreationForms;
 
 CreationForms = {
-  calendar: "new-calendar-event",
-  expense: "new-expense-card",
-  swapRequest: "swapRequest",
-  transferRequest: "new-transfer-request",
-  memories: "new-memory",
+  calendar: "calendar-event",
+  expense: "expense-card",
+  visitationChangeRequest: "visitation-change-request",
+  handoffChangeRequest: "handoff-change-request",
+  memories: "memory",
   documents: "documents",
-  chat: "new-chat",
-  coparent: "new-coparent"
+  chat: "chat",
+  coParent: "coParent"
 };
 
 export default CreationForms;

@@ -1,6 +1,7 @@
 // Path: src\components\screens\visitation.jsx
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
+import {BsHousesFill} from 'react-icons/bs'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import ModelNames from '../../constants/modelNames'
 import ScheduleTypes from '../../constants/scheduleTypes'
@@ -28,12 +29,13 @@ import CustomWeekends from '../screens/visitation/customWeekends'
 import EveryOtherWeekend from '../screens/visitation/everyOtherWeekend'
 import FiftyFifty from '../screens/visitation/fiftyFifty'
 import AddressInput from '../shared/addressInput'
+import Label from '../shared/label'
 import MyConfetti from '../shared/myConfetti'
-import Note from '../shared/note'
 import Screen from '../shared/screen'
 import ScreenHeader from '../shared/screenHeader'
 import SelectDropdown from '../shared/selectDropdown'
 import Spacer from '../shared/spacer'
+import VisitationRequests from './visitationRequests'
 
 export default function Visitation() {
     const {state, setState} = useContext(globalState)
@@ -51,6 +53,7 @@ export default function Visitation() {
     const [showVisitationSection, setShowVisitationSection] = useState(false)
     const [showHolidaysSection, setShowHolidaysSection] = useState(false)
     const [contentIsReady, setContentIsReady] = useState(false)
+
     // HOOKS
     const {currentUser} = useCurrentUser()
     const {calendarEvents} = useCalendarEvents()
@@ -310,8 +313,9 @@ export default function Visitation() {
             <div id="visitation-container" className={`${theme} page-container`}>
                 <ScreenHeader
                     title={'Visitation'}
+                    titleIcon={<BsHousesFill />}
                     screenName={ScreenNames.visitation}
-                    screenDescription="Oversee all aspects of visitation, including scheduling, holiday visits, and additional matters."
+                    screenDescription="Oversee all aspects of visitation, including scheduling, holiday visits, schedule change requests and additional matters"
                 />
                 <Spacer height={10} />
                 <div className="screen-content">
@@ -349,27 +353,25 @@ export default function Visitation() {
                     {/* NO EXISTING SCHEDULE */}
                     {existingScheduleEvents.length === 0 && (
                         <div className="sections">
-                            {/* VISITATION SCHEDULE */}
-                            <div className="note-container">
-                                <Note
-                                    message={
-                                        'When you establish a visitation schedule, it will be displayed on the calendar for you and anyone you permit to view it.'
-                                    }
-                                />
-                            </div>
+                            <Label classes={'always-show dark'} text={'Schedule'} />
 
-                            <Spacer height={10} />
                             <div
                                 style={DomManager.AnimateDelayStyle(1, 0.2)}
                                 className={`visitation-section ${DomManager.Animate.FadeInUp('d', '.visitation-section')}`}>
-                                {/*  VISITATION SECTION */}
-                                <p className="fs-15">Choose a visitation schedule and agreed upon transfer location.</p>
+                                {/* VISITATION SCHEDULE */}
+                                <p>
+                                    When you establish a visitation schedule, it will be displayed on the calendar for you and anyone you permit to
+                                    view it.
+                                </p>
+                                <Spacer height={3} />
+                                <p>Choose a visitation schedule and agreed upon handoff location.</p>
                                 <Spacer height={5} />
+
                                 {/* SCHEDULE SELECTION */}
                                 <div className="section visitation-schedule">
                                     <SelectDropdown
                                         wrapperClasses={'white-bg'}
-                                        placeholder={'Select a Schedule Type'}
+                                        placeholder={'Select a Visitation Schedule'}
                                         options={[
                                             {label: '50/50', value: 'fiftyFifty'},
                                             {label: 'Custom Weekends', value: 'customWeekends'},
@@ -377,9 +379,7 @@ export default function Visitation() {
                                             {label: 'Every Weekend', value: 'everyWeekend'},
                                             {label: 'Every other Weekend', value: 'everyOtherWeekend'},
                                         ]}
-                                        onSelect={(e) => {
-                                            setScheduleType(e)
-                                        }}
+                                        onSelect={(e) => setScheduleType(e)}
                                     />
                                 </div>
                             </div>
@@ -391,17 +391,22 @@ export default function Visitation() {
                     <AddressInput
                         defaultValue={currentUser?.visitation?.transferAddress}
                         wrapperClasses="address-input white-bg"
-                        labelText="Preferred Transfer Location"
+                        labelText="Preferred Handoff Location"
                         onChange={(address) => {
                             UpdateDefaultTransferLocation(address, Manager.GetDirectionsLink(address)).then(() =>
                                 setTimeout(() => {
-                                    setState({...state, successAlertMessage: 'Preferred Transfer Location Set'})
+                                    setState({...state, successAlertMessage: 'Preferred Handoff Location Set'})
                                 }, 300)
                             )
                         }}
                     />
 
-                    <Spacer height={3} />
+                    <hr className={'white-bg'} />
+
+                    {/* VISITATION PROPOSALS */}
+                    <VisitationRequests />
+
+                    <hr className={'white-bg'} />
 
                     {/* HOLIDAY SELECTION */}
                     <SelectDropdown

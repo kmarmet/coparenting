@@ -3,7 +3,7 @@
 @use '../utils/_palette';
 @use '../_fonts';
 
-#transfer-requests-container {
+#handoff-requests-container {
     .row {
         @include mixins.row;
         .content {
@@ -40,11 +40,11 @@
 }
 
 // New Request
-#new-swap-request-container {
+#new-visitation-request-container {
     /*#region  DARK THEME*/
     &.dark {
         #duration-options {
-            &.swap-request {
+            &.visitation-request {
                 .flex {
                     p,
                     span {

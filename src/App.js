@@ -11,9 +11,9 @@ import React, {useEffect, useState} from 'react'
 import EditCalEvent from './components/forms/editCalEvent'
 import NewCalendarEvent from './components/forms/newCalendarEvent.jsx'
 import NewExpenseForm from './components/forms/newExpenseForm.jsx'
+import NewHandoffChangeRequest from './components/forms/newHandoffChangeRequest.jsx'
 import NewMemory from './components/forms/newMemory.jsx'
-import NewSwapRequest from './components/forms/newSwapRequest.jsx'
-import NewTransferChangeRequest from './components/forms/newTransferRequest.jsx'
+import NewVisitationChangeRequest from './components/forms/newVisitationChangeRequest.jsx'
 import FullMenu from './components/fullMenu'
 import AdminDashboard from './components/screens/admin/adminDashboard'
 import LatestVersionUpdates from './components/screens/admin/latestVersionUpdates'
@@ -30,20 +30,18 @@ import NewCoParentForm from './components/screens/coparents/newCoParentForm.jsx'
 import DocsList from './components/screens/documents/docsList.jsx'
 import DocViewer from './components/screens/documents/docViewer'
 import NewDocument from './components/screens/documents/newDocument.jsx'
-import ExpenseTracker from './components/screens/expenses/expenseTracker.jsx'
+import ExpenseManagement from './components/screens/expenses/expenseManagement.jsx'
+import Handoff from './components/screens/handoff.jsx'
 import Help from './components/screens/help'
 import InstallApp from './components/screens/installApp.jsx'
 import Landing from './components/screens/landing'
 import Memories from './components/screens/memories.jsx'
 import Parents from './components/screens/parents/parents'
-import Profile from './components/screens/profile/profile.jsx'
-import ResetPassword from './components/screens/profile/resetPassword.jsx'
-import Settings from './components/screens/settings/settings.jsx'
-import SwapRequests from './components/screens/swapRequests.jsx'
-import TransferRequests from './components/screens/transferRequests.jsx'
 import Updates from './components/screens/updates'
 import Vault from './components/screens/vault.jsx'
 import Visitation from './components/screens/visitation.jsx'
+import MakeItYours from './components/screens/yourSpace/makeItYours'
+import ResetPassword from './components/screens/yourSpace/resetPassword.jsx'
 import AppUpdateOverlay from './components/shared/appUpdateOverlay'
 import BrandBar from './components/shared/brandBar'
 import CreationMenu from './components/shared/creationMenu'
@@ -256,13 +254,13 @@ export default function App() {
 
                     {/* NEW FORMS */}
                     <NewCalendarEvent />
-                    <NewSwapRequest />
-                    <NewTransferChangeRequest />
+                    <NewVisitationChangeRequest />
+                    <NewHandoffChangeRequest />
                     <NewMemory />
                     <NewDocument />
                     <NewExpenseForm />
                     <NewCoParentForm
-                        showCard={creationFormToShow === CreationForms.coparent}
+                        showCard={creationFormToShow === CreationForms.coParent}
                         hideCard={() => setState({...state, creationFormToShow: '', refreshKey: Manager.GetUid()})}
                     />
 
@@ -302,9 +300,9 @@ export default function App() {
                         {currentScreen === ScreenNames.newMemory && <NewMemory />}
                         {currentScreen === ScreenNames.newChild && <NewChildForm />}
                         {currentScreen === ScreenNames.newExpense && <NewExpenseForm />}
-                        {currentScreen === ScreenNames.newSwapRequest && <NewSwapRequest />}
-                        {currentScreen === ScreenNames.newTransferRequest && <NewTransferChangeRequest />}
-                        {currentScreen === ScreenNames.newCoparent && <NewCoParentForm />}
+                        {currentScreen === ScreenNames.newVisitationChangeRequest && <NewVisitationChangeRequest />}
+                        {currentScreen === ScreenNames.newHandoffChangeRequest && <NewHandoffChangeRequest />}
+                        {currentScreen === ScreenNames.newCoParent && <NewCoParentForm />}
 
                         {/* STANDARD */}
                         {currentScreen === ScreenNames.appUpdate && <AppUpdateOverlay />}
@@ -312,13 +310,11 @@ export default function App() {
                         {currentScreen === ScreenNames.landing && !isLoading && <Landing />}
                         {currentScreen === ScreenNames.updates && <Updates />}
                         {currentScreen === ScreenNames.calendar && <EventCalendar />}
-                        {currentScreen === ScreenNames.settings && <Settings />}
-                        {currentScreen === ScreenNames.profile && <Profile />}
-                        {currentScreen === ScreenNames.expenseTracker && <ExpenseTracker />}
-                        {currentScreen === ScreenNames.swapRequests && <SwapRequests />}
+                        {currentScreen === ScreenNames.expenseManagement && <ExpenseManagement />}
                         {currentScreen === ScreenNames.resetPassword && <ResetPassword />}
-                        {currentScreen === ScreenNames.transferRequests && <TransferRequests />}
+                        {currentScreen === ScreenNames.handoff && <Handoff />}
                         {currentScreen === ScreenNames.memories && <Memories />}
+                        {currentScreen === ScreenNames.makeItYours && <MakeItYours />}
                         {currentScreen === ScreenNames.children && <Children />}
                         {currentScreen === ScreenNames.coparents && <CoParents />}
                         {currentScreen === ScreenNames.parents && <Parents />}

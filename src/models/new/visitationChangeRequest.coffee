@@ -2,7 +2,7 @@ import Manager from "../../managers/manager"
 import DateFormats from "../../constants/datetimeFormats"
 import moment from "moment"
 
-class SwapRequest
+class VisitationChangeRequest
   constructor: (options = {}) ->
     @id = Manager.GetUid()
     @status = 'pending'
@@ -32,4 +32,4 @@ class SwapRequest
       key: options?.recipient?.key ''
       name: options?.recipient?.name ''
 
-export default SwapRequest
+export default VisitationChangeRequest

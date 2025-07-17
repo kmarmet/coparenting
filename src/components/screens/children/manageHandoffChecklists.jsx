@@ -16,7 +16,7 @@ import Form from '../../shared/form'
 import MyConfetti from '../../shared/myConfetti'
 import Spacer from '../../shared/spacer'
 
-export default function ManageTransferChecklists({showCard, hideCard, activeChildId}) {
+export default function ManageHandoffChecklists({showCard, hideCard, activeChildId}) {
     const {state, setState} = useContext(globalState)
     const {refreshKey} = state
     const [checkboxTextList, setCheckboxTextList] = useState([])
@@ -34,7 +34,7 @@ export default function ManageTransferChecklists({showCard, hideCard, activeChil
         newInput.placeholder = 'Checklist Item'
         newInput.classList.add('dynamic-input')
         newInput.onchange = (e) => {
-            setCheckboxTextList([...checkboxTextList, e.target.value])
+            setCheckboxTextList([...checkboxTextList, e.target?.value])
         }
         inputs.appendChild(newInput)
     }
@@ -145,8 +145,8 @@ export default function ManageTransferChecklists({showCard, hideCard, activeChil
             wrapperClass="new-checklist"
             submitText={'DONE'}
             showCard={showCard}
-            subtitle="Add a transfer checklist which will allow you and your child to ensure that nothing is left behind when transferring to or from your co-parent's home"
-            title={'Transfer Checklists'}
+            subtitle="Add a handoff checklist which will allow you and your child to ensure that nothing is left behind when transferring to or from your co-parent's home"
+            title={'Handoff Checklists'}
             onClose={hideCard}>
             <Spacer height={10} />
             <div id="inputs" key={refreshKey}></div>

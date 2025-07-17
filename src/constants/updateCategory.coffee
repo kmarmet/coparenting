@@ -9,8 +9,8 @@ UpdateCategory =
       schooling: 'schooling'
     chats: "chats"
     expenses: "expenses"
-    swapRequest: "swap request"
-    transferRequest: "transfer request"
+    visitationChangeRequest: "visitation request"
+    handoffChangeRequest: "handoff request"
     documents: "documents"
     memories: "memories"
 

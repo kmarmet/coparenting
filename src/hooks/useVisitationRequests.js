@@ -7,13 +7,13 @@ import Manager from '../managers/manager'
 import SecurityManager from '../managers/securityManager'
 import useCurrentUser from './useCurrentUser'
 
-const useTransferRequests = () => {
+const useVisitationRequests = () => {
     const {state, setState} = useContext(globalState)
     const {currentUser} = useCurrentUser()
-    const [transferRequests, setTransferRequests] = useState(null)
-    const [transferRequestsAreLoading, setTransferRequestsAreLoading] = useState(true)
+    const [visitationRequests, setVisitationRequests] = useState(null)
+    const [visitationRequestsAreLoading, setVisitationRequestsAreLoading] = useState(true)
     const [error, setError] = useState(null)
-    const path = `${DB.tables.transferChangeRequests}/${currentUser?.key}`
+    const path = `${DB.tables.visitationRequests}/${currentUser?.key}`
     const queryKey = ['realtime', path]
 
     useEffect(() => {
@@ -23,20 +23,21 @@ const useTransferRequests = () => {
         const listener = onValue(
             dataRef,
             async (snapshot) => {
-                const formattedRequests = DatasetManager.GetValidArray(snapshot.val()) || []
-                const shared = await SecurityManager.getSharedItems(currentUser, DB.tables.transferRequests)
-                const formattedShared = DatasetManager.GetValidArray(shared) || []
+                const formattedRequests = DatasetManager.GetValidArray(snapshot.val())
+                const shared = await SecurityManager.getSharedItems(currentUser, DB.tables.visitationRequests)
+                const formattedShared = DatasetManager.GetValidArray(shared)
+                console.log(formattedRequests, formattedShared)
                 if (Manager.IsValid(formattedRequests) || Manager.IsValid(formattedShared)) {
                     const combined = DatasetManager.CombineArrays(formattedRequests, formattedShared)
-                    setTransferRequests(combined)
+                    setVisitationRequests(DatasetManager.GetValidArray(combined))
                 } else {
-                    setTransferRequests([])
+                    setVisitationRequests([])
                 }
-                setTransferRequestsAreLoading(false)
+                setVisitationRequestsAreLoading(false)
             },
             (err) => {
                 setError(err)
-                setTransferRequestsAreLoading(false)
+                setVisitationRequestsAreLoading(false)
             }
         )
 
@@ -46,11 +47,11 @@ const useTransferRequests = () => {
     }, [path, currentUser])
 
     return {
-        transferRequests,
-        transferRequestsAreLoading,
+        visitationRequests,
+        visitationRequestsAreLoading,
         error,
         queryKey,
     }
 }
 
-export default useTransferRequests
+export default useVisitationRequests

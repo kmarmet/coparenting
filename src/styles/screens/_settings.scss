@@ -5,23 +5,10 @@
 
 #external-overrides {
     #settings-container {
-        .settings-section-title {
-            &.label-wrapper {
-                label {
-                    font-weight: bold;
-                }
-            }
-        }
         .rs-panel-body-collapse {
             padding: 10px;
             border-radius: 0 0 variables.$borderRadius variables.$borderRadius;
             border-top: 0;
-        }
-
-        .label-wrapper {
-            #medium-title {
-                font-size: 18px;
-            }
         }
 
         .back-button {

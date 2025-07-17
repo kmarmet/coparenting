@@ -4,8 +4,7 @@ import React, {useContext, useEffect} from 'react'
 import {BsCalendar} from 'react-icons/bs'
 import {HiOutlineMenu} from 'react-icons/hi'
 import {IoMdImages} from 'react-icons/io'
-import {IoAdd, IoChatbubblesOutline} from 'react-icons/io5'
-import {PiNotificationFill} from 'react-icons/pi'
+import {IoAdd, IoChatbubblesOutline, IoNotificationsOutline} from 'react-icons/io5'
 import ScreenNames from '../constants/screenNames'
 import globalState from '../context'
 import useCurrentUser from '../hooks/useCurrentUser'
@@ -103,7 +102,7 @@ export default function NavBar({children, navbarClass}) {
                             style={DomManager.AnimateDelayStyle(1, 0.06)}
                             onClick={() => ChangeCurrentScreen(ScreenNames.updates)}
                             className={`${Manager.IsValid(updates) ? 'unread' : ''} ${currentScreen === ScreenNames.updates ? 'active menu-item updates' : 'menu-item updates'}`}>
-                            <PiNotificationFill className={'updates'} />
+                            <IoNotificationsOutline className={'updates'} />
                             <p>
                                 Updates
                                 {Manager.IsValid(updates) && <span className="update-badge"></span>}

@@ -3,15 +3,13 @@ import {getAuth, signOut} from 'firebase/auth'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import {AiOutlineLogout} from 'react-icons/ai'
 import {BsHouses, BsImages} from 'react-icons/bs'
-import {GrInstallOption, GrUserAdmin} from 'react-icons/gr'
-import {IoChatbubblesOutline} from 'react-icons/io5'
+import {GrUserAdmin} from 'react-icons/gr'
+import {IoBugSharp, IoChatbubblesOutline, IoNotificationsOutline} from 'react-icons/io5'
 import {LiaFileInvoiceDollarSolid} from 'react-icons/lia'
 import {LuCalendarDays} from 'react-icons/lu'
-import {MdOutlineContacts, MdTipsAndUpdates} from 'react-icons/md'
-import {PiFiles, PiNotificationFill, PiSealQuestion, PiSwap, PiUsers, PiUsersThree, PiVault} from 'react-icons/pi'
-import {RiAccountPinCircleLine, RiParentLine} from 'react-icons/ri'
-import {TbTransferIn} from 'react-icons/tb'
-import {TfiSettings} from 'react-icons/tfi'
+import {MdOutlineAppShortcut, MdOutlineContacts, MdTipsAndUpdates} from 'react-icons/md'
+import {PiFiles, PiSealQuestion, PiUsers, PiUsersThree, PiVault} from 'react-icons/pi'
+import {RiMapPinTimeLine, RiParentLine} from 'react-icons/ri'
 import {useSwipeable} from 'react-swipeable'
 import NotificationBadge from '../components/shared/notificationBadge'
 import feedbackEmotions from '../constants/feedbackEmotions'
@@ -125,7 +123,7 @@ export default function FullMenu() {
                 section: 'infoStorage',
             },
             {
-                screens: [ScreenNames.transferRequests, ScreenNames.swapRequests, ScreenNames.chats, ScreenNames.expenseTracker],
+                screens: [ScreenNames.handoff, ScreenNames.visitation, ScreenNames.chats, ScreenNames.expenseManagement],
                 section: 'coParenting',
             },
             {
@@ -202,7 +200,7 @@ export default function FullMenu() {
                                     onClick={(e) => ChangeCurrentScreen(ScreenNames.updates, e)}>
                                     <div className="content">
                                         <div className="svg-wrapper">
-                                            <PiNotificationFill />
+                                            <IoNotificationsOutline />
                                         </div>
 
                                         <p>
@@ -266,18 +264,6 @@ export default function FullMenu() {
                                             <p>Co-Parents</p>
                                         </div>
 
-                                        {/* VISITATION */}
-                                        <div
-                                            className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
-                                            onClick={(e) => ChangeCurrentScreen(ScreenNames.visitation, e)}>
-                                            <div className="content">
-                                                <div className="svg-wrapper">
-                                                    <BsHouses />
-                                                </div>
-                                                <p>Visitation</p>
-                                            </div>
-                                        </div>
-
                                         {/* ARCHIVES */}
                                         <div
                                             className={`menu-item archives ${currentScreen === ScreenNames.vault ? 'active' : ''}`}
@@ -299,36 +285,28 @@ export default function FullMenu() {
                                 className={`section coparenting  ${DomManager.Animate.FadeInUp(menuIsOpen, 'slower')}`}>
                                 <FormDivider text={'Co-Parenting'} />
                                 <div className={`menu-items coparenting`}>
-                                    {/* TRANSFER CHANGE */}
+                                    {/* VISITATION */}
                                     <div
-                                        className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
-                                        onClick={(e) => ChangeCurrentScreen(ScreenNames.transferRequests, e)}>
-                                        <div className="svg-wrapper">
-                                            <TbTransferIn />
+                                        className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? 'active' : ''}`}
+                                        onClick={(e) => ChangeCurrentScreen(ScreenNames.visitation, e)}>
+                                        <div className="content">
+                                            <div className="svg-wrapper">
+                                                <BsHouses />
+                                            </div>
+                                            <p>Visitation</p>
                                         </div>
-                                        <p>Transfer Requests</p>
                                     </div>
 
                                     {/* EXPENSES */}
                                     <div
-                                        className={`menu-item expenses ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
-                                        onClick={(e) => ChangeCurrentScreen(ScreenNames.expenseTracker, e)}>
+                                        className={`menu-item expenses ${currentScreen === ScreenNames.expenseManagement ? 'active' : ''}`}
+                                        onClick={(e) => ChangeCurrentScreen(ScreenNames.expenseManagement, e)}>
                                         <div className="content">
                                             <div className="svg-wrapper">
                                                 <LiaFileInvoiceDollarSolid />
                                             </div>
                                             <p>Expenses</p>
                                         </div>
-                                    </div>
-
-                                    {/* SWAP REQUESTS */}
-                                    <div
-                                        className={`menu-item swap-request ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
-                                        onClick={(e) => ChangeCurrentScreen(ScreenNames.swapRequests, e)}>
-                                        <div className="svg-wrapper">
-                                            <PiSwap />
-                                        </div>
-                                        <p>Swap Requests</p>
                                     </div>
 
                                     {/* CHATS */}
@@ -342,6 +320,16 @@ export default function FullMenu() {
                                             <p className="text">Chats</p>
                                         </div>
                                     </div>
+
+                                    {/* HANDOFF */}
+                                    <div
+                                        className={`menu-item pickup-dropoff ${currentScreen === ScreenNames.handoff ? 'active' : ''}`}
+                                        onClick={(e) => ChangeCurrentScreen(ScreenNames.handoff, e)}>
+                                        <div className="svg-wrapper">
+                                            <RiMapPinTimeLine />
+                                        </div>
+                                        <p>Handoff Requests</p>
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -350,41 +338,19 @@ export default function FullMenu() {
                         <div
                             style={DomManager.AnimateDelayStyle(1, 0.6)}
                             className={`section profile-settings-support  ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
-                            <FormDivider text={'Profile'} />
+                            <FormDivider text={'Just For You'} />
                             <div className={`menu-items profile-settings-support`}>
-                                {/* PROFILE */}
+                                {/* MAKE IT YOURS */}
                                 <div
-                                    className={`menu-item profile ${currentScreen === ScreenNames.profile ? 'active' : ''}`}
-                                    onClick={(e) => ChangeCurrentScreen(ScreenNames.profile, e)}>
-                                    <div className="svg-wrapper">
-                                        <RiAccountPinCircleLine />
-                                    </div>
-                                    <p>Profile</p>
-                                </div>
-
-                                {/* SETTINGS */}
-                                <div
-                                    className={`menu-item settings ${currentScreen === ScreenNames.settings ? 'active' : ''}`}
-                                    onClick={(e) => ChangeCurrentScreen(ScreenNames.settings, e)}>
+                                    className={`menu-item your-space ${currentScreen === ScreenNames.makeItYours ? 'active' : ''}`}
+                                    onClick={(e) => ChangeCurrentScreen(ScreenNames.makeItYours, e)}>
                                     <div className="content">
                                         <div className="svg-wrapper">
-                                            <TfiSettings />
+                                            <MdOutlineAppShortcut />
                                         </div>
-                                        <p>Settings</p>
+                                        <p>Make It Yours</p>
                                     </div>
                                 </div>
-
-                                {/* ADMIN DASHBOARD */}
-                                {currentUser?.email === 'kmarmet1@gmail.com' && (
-                                    <div
-                                        className={`menu-item dashboard ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
-                                        onClick={(e) => ChangeCurrentScreen(ScreenNames.adminDashboard, e)}>
-                                        <div className="svg-wrapper">
-                                            <GrUserAdmin />
-                                        </div>
-                                        <p>Dashboard</p>
-                                    </div>
-                                )}
 
                                 {/* HELP */}
                                 <div
@@ -396,16 +362,6 @@ export default function FullMenu() {
                                         </div>
                                         <p>Help</p>
                                     </div>
-                                </div>
-
-                                {/* INSTALL APP BUTTON */}
-                                <div
-                                    className={`menu-item install-app ${currentScreen === ScreenNames.installApp ? 'active' : ''}`}
-                                    onClick={(e) => ChangeCurrentScreen(ScreenNames.installApp, e)}>
-                                    <div className="svg-wrapper">
-                                        <GrInstallOption />
-                                    </div>
-                                    <p>Install</p>
                                 </div>
 
                                 {/* LOGOUT BUTTON */}
@@ -421,10 +377,22 @@ export default function FullMenu() {
 
                             <Spacer height={20} />
 
+                            {/* ADMIN DASHBOARD */}
+                            {currentUser?.email === 'kmarmet1@gmail.com' && (
+                                <div
+                                    className={`menu-item dashboard ${currentScreen === ScreenNames.adminDashboard ? 'active' : ''}`}
+                                    onClick={(e) => ChangeCurrentScreen(ScreenNames.adminDashboard, e)}>
+                                    <div className="svg-wrapper">
+                                        <GrUserAdmin />
+                                    </div>
+                                    <p>Dashboard</p>
+                                </div>
+                            )}
+
                             {/* FEEDBACK WRAPPER */}
                             <div id="feedback-wrapper">
                                 <p id="feedback-title">How do you feel about the app today?</p>
-                                <p id="feedback-subtitle">
+                                <p id="feedback-subtitle" className={'subtitle in-form'}>
                                     {DomManager.tapOrClick(true)} an emoji to convey how you feel at the moment. Feel free to do this as often as you
                                     wish; the figures show the overall feedback you've provided since you began using our app.
                                 </p>
@@ -451,11 +419,13 @@ export default function FullMenu() {
                         <Spacer height={15} />
                         <div
                             id="action-wrapper"
-                            onClick={() => setState({...state, currentScreen: ScreenNames.help, menuIsOpen: false, showOverlay: false})}>
-                            <p id="report-bug">Report Bug 🪲</p>
+                            onClick={() => setState({...state, currentScreen: ScreenNames.makeItYours, menuIsOpen: false, showOverlay: false})}>
+                            <p id="report-bug">
+                                Report Bug <IoBugSharp className={'bug-icon'} />
+                            </p>
                             <span className="seperator">|</span>
                             <p id="request-feature">
-                                Request Feature <MdTipsAndUpdates />
+                                Request Feature <MdTipsAndUpdates className={'feature-icon'} />
                             </p>
                         </div>
                         <Spacer height={5} />

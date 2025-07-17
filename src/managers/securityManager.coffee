@@ -99,10 +99,10 @@ SecurityManager =
       returnRecords = [sharedExpenses..., returnRecords...]
     return DatasetManager.GetValidArray(returnRecords)
 
-  getSwapRequests: (currentUser) ->
+  getVisitationChangeRequests: (currentUser) ->
     returnRecords = []
-    allRequests = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.swapRequests}/#{currentUser?.key}"))
-    sharedSwaps = await SecurityManager.getShareWithItems(currentUser, DB.tables.swapRequests)
+    allRequests = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.visitationRequests}/#{currentUser?.key}"))
+    sharedSwaps = await SecurityManager.getShareWithItems(currentUser, DB.tables.visitationRequests)
 
     if Manager.IsValid(allRequests)
       for request in allRequests
@@ -113,10 +113,10 @@ SecurityManager =
       returnRecords = [sharedSwaps..., returnRecords...]
     return DatasetManager.GetValidArray(returnRecords)
 
-  getTransferChangeRequests: (currentUser) ->
+  getHandoffChangeRequests: (currentUser) ->
     returnRecords = []
-    allRequests = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.transferChangeRequests}/#{currentUser?.key}"))
-    sharedTransfers = await SecurityManager.getShareWithItems(currentUser, DB.tables.transferChangeRequests)
+    allRequests = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.handoffChangeRequests}/#{currentUser?.key}"))
+    sharedTransfers = await SecurityManager.getShareWithItems(currentUser, DB.tables.handoffChangeRequests)
 
     if Manager.IsValid(allRequests)
       for request in allRequests

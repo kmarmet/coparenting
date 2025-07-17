@@ -11,6 +11,7 @@
         #checkbox-group {
             margin: 0;
         }
+
         .MuiAccordionDetails-root {
             padding: 0;
         }
@@ -33,6 +34,9 @@
         }
     }
     #visitation-container {
+        p {
+            @include fonts.lightFont;
+        }
         .holiday-checkboxes-wrapper {
             margin-top: 25px;
 
@@ -41,12 +45,11 @@
             }
         }
     }
-    #coparenting-setup-container {
+    #co-parenting-setup-container {
         z-index: 1000000;
 
         .ff-note {
             padding: 10px;
-            border: 2px solid red;
         }
         /*#region rSuite */
         .rs-panel-body,

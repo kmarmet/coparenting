@@ -64,7 +64,7 @@
 /*#endregion DARK THEME*/
 /*#region  LIGHT THEME*/
 /*#endregion  LIGHT THEME*/
-@import 'screens/_expenseTracker.css';
+@import 'screens/_expenseManagement.css';
 @keyframes gradient {
   0% {
     background-position: 0% 50%;

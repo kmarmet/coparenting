@@ -39,18 +39,18 @@ export default UpdateManager = {
         updateReminder: function () {
             return 'Visit New Updates in the menu to learn more'
         },
-        // Template for swap request decision
-        swapRequestApproval: function (request, recipientName) {
-            return `Swap Request for ${moment(request != null ? request.startDate : void 0).format(DateFormats.readableMonthAndDay)} has been APPROVED by ${recipientName}${UpdateManager.lineBreak}${UpdateManager.lineBreak}`
+        // Template for visitation request decision
+        VisitationChangeRequestApproval: function (request, recipientName) {
+            return `Visitation Change Request for ${moment(request != null ? request.startDate : void 0).format(DateFormats.readableMonthAndDay)} has been APPROVED by ${recipientName}${UpdateManager.lineBreak}${UpdateManager.lineBreak}`
         },
-        swapRequestRejection: function (request, recipientName) {
-            return `Swap Request for ${moment(request != null ? request.startDate : void 0).format(DateFormats.readableMonthAndDay)} has been DECLINED.${UpdateManager.lineBreak}${UpdateManager.lineBreak} Reason: ${request.reason}. If you would still prefer to proceed with the request, please contact ${recipientName} to negotiate a potential agreement`
+        VisitationChangeRequestRejection: function (request, recipientName) {
+            return `Visitation Change Request for ${moment(request != null ? request.startDate : void 0).format(DateFormats.readableMonthAndDay)} has been DECLINED.${UpdateManager.lineBreak}${UpdateManager.lineBreak} Reason: ${request.reason}. If you would still prefer to proceed with the request, please contact ${recipientName} to negotiate a potential agreement`
         },
-        transferRequestApproval: function (request, recipientName) {
-            return `Transfer Change Request for ${moment(request != null ? request.startDate : void 0).format(DateFormats.readableMonthAndDay)} has been APPROVED by ${recipientName}${UpdateManager.lineBreak}${UpdateManager.lineBreak}`
+        handoffChangeRequestApproval: function (request, recipientName) {
+            return `Handoff Change Request for ${moment(request != null ? request.startDate : void 0).format(DateFormats.readableMonthAndDay)} has been APPROVED by ${recipientName}${UpdateManager.lineBreak}${UpdateManager.lineBreak}`
         },
-        transferRequestRejection: function (request, recipientName) {
-            return `Transfer Change Request for ${moment(request != null ? request.startDate : void 0).format(DateFormats.readableMonthAndDay)} has been DECLINED.${UpdateManager.lineBreak}${UpdateManager.lineBreak} Reason: ${request.declineReason}. If you would still prefer to proceed with the request, please contact ${recipientName} to negotiate a potential agreement`
+        handoffChangeRequestRejection: function (request, recipientName) {
+            return `Handoff Change Request for ${moment(request != null ? request.startDate : void 0).format(DateFormats.readableMonthAndDay)} has been DECLINED.${UpdateManager.lineBreak}${UpdateManager.lineBreak} Reason: ${request.declineReason}. If you would still prefer to proceed with the request, please contact ${recipientName} to negotiate a potential agreement`
         },
     },
     //  PRODUCTION

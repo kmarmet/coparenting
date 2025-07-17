@@ -2,8 +2,7 @@ import ModelNames from "../constants/modelNames"
 import CalendarEvent from "../models/new/calendarEvent"
 import Expense from "../models/new/expense"
 import Memory from "../models/new/memory"
-import TransferChangeRequest from "../models/new/transferChangeRequest"
-import SwapRequest from "../models/new/swapRequest"
+import HandoffChangeRequest from "../models/new/handoffChangeRequest"
 import User from "../models/users/user"
 import ChatThread from "../models/chat/chat"
 import Chat from "../models/chat/chat"
@@ -111,9 +110,9 @@ ObjectManager = {
       when ModelNames.memory
         Object.keys(new Memory())
       when ModelNames.transferChangeRequest
-        Object.keys(new TransferChangeRequest())
-      when ModelNames.swapRequest
-        Object.keys(new SwapRequest())
+        Object.keys(new HandoffChangeRequest())
+      when ModelNames.visitationChangeRequest
+        Object.keys(new VisitationChangeRequest())
       when ModelNames.user
         Object.keys(new User())
       when ModelNames.coparent
@@ -140,9 +139,9 @@ ObjectManager = {
       when ModelNames.memory
         new Memory()
       when ModelNames.transferChangeRequest
-        new TransferChangeRequest()
-      when ModelNames.swapRequest
-        new SwapRequest()
+        new HandoffChangeRequest()
+      when ModelNames.visitationChangeRequest
+        new VisitationChangeRequest()
       when ModelNames.user
         new User()
       when ModelNames.coparent
@@ -165,8 +164,8 @@ ObjectManager = {
       when ModelNames.calendarEvent then   new CalendarEvent()
       when ModelNames.expense then  new Expense()
       when ModelNames.memory then  new Memory()
-      when ModelNames.transferChangeRequest then  new TransferChangeRequest()
-      when ModelNames.swapRequest then  new SwapRequest()
+      when ModelNames.transferChangeRequest then  new HandoffChangeRequest()
+      when ModelNames.visitationChangeRequest then  new VisitationChangeRequest()
       when ModelNames.user then  new User()
       when ModelNames.coparent then  new CoParent()
       when ModelNames.chat then  new Chat()

@@ -5,6 +5,7 @@ import {CgClose} from 'react-icons/cg'
 import {FaWandMagicSparkles} from 'react-icons/fa6'
 import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoPersonAdd, IoPersonRemove} from 'react-icons/io5'
+import {PiUsersFill} from 'react-icons/pi'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
@@ -21,12 +22,11 @@ import NavBar from '../../navBar.jsx'
 import AddressInput from '../../shared/addressInput'
 import Form from '../../shared/form'
 import InputField from '../../shared/inputField'
-
 import Screen from '../../shared/screen'
 import ScreenActionsMenu from '../../shared/screenActionsMenu'
 import ScreenHeader from '../../shared/screenHeader'
 import Spacer from '../../shared/spacer'
-import CustomCoparentInfo from './customCoparentInfo'
+import CustomCoParentInfo from './customCoParentInfo'
 import NewCoParentForm from './newCoParentForm'
 
 export default function CoParents() {
@@ -101,7 +101,7 @@ export default function CoParents() {
             loadingByDefault={true}
             stopLoadingBool={Manager.IsValid(coParents) && Manager.IsValid(activeCoParent)}>
             {/* CUSTOM INFO FORM */}
-            <CustomCoparentInfo
+            <CustomCoParentInfo
                 hideCard={() => setShowCustomInfoCard(false)}
                 onAdd={(coParent) => setActiveCoParent(coParent)}
                 activeCoparent={activeCoParent}
@@ -241,6 +241,7 @@ export default function CoParents() {
             <div id="co-parents-container" className={`${theme} page-container parents-wrapper`}>
                 <ScreenHeader
                     title={'Co-Parents'}
+                    titleIcon={<PiUsersFill />}
                     screenDescription=" Maintain accessible records of important information regarding your co-parent."
                 />
                 <Spacer height={10} />

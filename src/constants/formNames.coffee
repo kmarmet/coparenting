@@ -1,7 +1,7 @@
 FormNames =
   calendar: 'calendar'
-  swapRequest: 'swapRequest'
-  transferRequest: 'transferRequest'
+  visitationChangeRequest: 'visitationChangeRequest'
+  handoffChangeRequest: 'handoffChangeRequest'
   expense: 'expense'
   memories: "memories"
 

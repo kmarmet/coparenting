@@ -1,4 +1,4 @@
-// Path: src\components\forms\newTransferRequest.jsx
+// Path: src\components\forms\newHandoffChangeRequest.jsx
 import moment from 'moment'
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import creationForms from '../../constants/creationForms'
@@ -11,14 +11,14 @@ import DB_UserScoped from '../../database/db_userScoped'
 import useChildren from '../../hooks/useChildren'
 import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
-import useTransferRequests from '../../hooks/useTransferRequests'
+import useHandoffRequests from '../../hooks/useHandoffRequests'
 import useUsers from '../../hooks/useUsers'
 import AlertManager from '../../managers/alertManager'
 import DropdownManager from '../../managers/dropdownManager'
 import Manager from '../../managers/manager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager.js'
-import TransferChangeRequest from '../../models/new/transferChangeRequest.js'
+import HandoffChangeRequest from '../../models/new/handoffChangeRequest.js'
 import AddressInput from '../shared/addressInput'
 import Form from '../shared/form'
 import FormDivider from '../shared/formDivider'
@@ -28,7 +28,7 @@ import SelectDropdown from '../shared/selectDropdown'
 import Spacer from '../shared/spacer'
 import ToggleButton from '../shared/toggleButton'
 
-export default function NewTransferChangeRequest() {
+export default function NewHandoffChangeRequest() {
     const {state, setState} = useContext(globalState)
     const {theme, creationFormToShow} = state
 
@@ -38,7 +38,7 @@ export default function NewTransferChangeRequest() {
     // Hooks
     const {currentUser, currentUserIsLoading} = useCurrentUser()
     const {coParents, coParentsAreLoading} = useCoParents()
-    const {transferRequests, transferRequestsIsLoading} = useTransferRequests()
+    const {handoffRequests, handoffRequestsIsLoading} = useHandoffRequests()
     const {children, childrenAreLoading} = useChildren()
     const {users, usersAreLoading} = useUsers()
 
@@ -47,17 +47,17 @@ export default function NewTransferChangeRequest() {
     const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
 
     // Form ref
-    const formRef = useRef({...new TransferChangeRequest()})
+    const formRef = useRef({...new HandoffChangeRequest()})
 
     const ResetForm = (showSuccessAlert = false) => {
-        Manager.ResetForm('transfer-request-wrapper')
+        Manager.ResetForm('handoff-request-wrapper')
         setRequestRecipientKey('')
         setState({
             ...state,
             creationFormToShow: '',
             refreshKey: Manager.GetUid(),
             isLoading: false,
-            successAlertMessage: showSuccessAlert ? 'Transfer Change Request Sent' : null,
+            successAlertMessage: showSuccessAlert ? 'Handoff Change Request Sent' : null,
         })
     }
 
@@ -81,7 +81,7 @@ export default function NewTransferChangeRequest() {
             return false
         }
         if (!Manager.IsValid(formRef.current.startDate)) {
-            AlertManager.throwError('Please choose the day of the requested transfer change')
+            AlertManager.throwError('Please choose the day of the requested handoff change')
             return false
         }
         if (validAccounts > 0) {
@@ -107,15 +107,15 @@ export default function NewTransferChangeRequest() {
         }
 
         // // Add record
-        await DB.Add(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, transferRequests, formRef.current)
+        await DB.Add(`${DB.tables.handoffChangeRequests}/${currentUser?.key}`, handoffRequests, formRef.current)
 
         // Notify
         await UpdateManager.SendUpdate(
-            `Transfer Change Request`,
-            `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a Transfer Change request`,
+            `Handoff Change Request`,
+            `${StringManager.GetFirstNameOnly(currentUser?.name)} has created a Handoff Change request`,
             requestRecipientKey,
             currentUser,
-            ActivityCategory.transferRequest
+            ActivityCategory.handoffChangeRequest
         )
 
         ResetForm(true)
@@ -136,18 +136,18 @@ export default function NewTransferChangeRequest() {
         <Form
             onSubmit={Submit}
             submitText={'Send'}
-            wrapperClass="new-transfer-request"
-            title={'Request Transfer Change '}
-            showCard={creationFormToShow === creationForms.transferRequest}
+            wrapperClass="new-handoff-request"
+            title={'Request Handoff Change '}
+            showCard={creationFormToShow === creationForms.handoffChangeRequest}
             onClose={() => ResetForm()}>
-            <div className="transfer-request-wrapper">
-                <div className={`${theme} transfer-change-container" `}>
-                    <div className="transfer-change">
+            <div className="handoff-request-wrapper">
+                <div className={`${theme} pickup-dropoff-container" `}>
+                    <div className="pickup-dropoff">
                         <FormDivider text={'Required'} />
                         {/* DAY */}
                         <InputField
                             inputType={InputTypes.date}
-                            uidClass="transfer-request-date"
+                            uidClass="handoff-request-date"
                             placeholder={'Day'}
                             required={true}
                             onDateOrTimeSelection={(e) => (formRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb))}
@@ -159,7 +159,7 @@ export default function NewTransferChangeRequest() {
                         <InputField
                             inputType={InputTypes.time}
                             placeholder={'New Time'}
-                            uidClass="transfer-request-time"
+                            uidClass="handoff-request-time"
                             onDateOrTimeSelection={(e) => (formRef.current.time = moment(e).format(DatetimeFormats.timeForDb))}
                         />
 
@@ -203,7 +203,7 @@ export default function NewTransferChangeRequest() {
                         {/* RESPONSE DUE DATE */}
                         <InputField
                             inputType={InputTypes.date}
-                            uidClass="transfer-request-response-date"
+                            uidClass="handoff-request-response-date"
                             placeholder={'Requested Response Date'}
                             required={true}
                             onDateOrTimeSelection={(e) => (formRef.current.requestedResponseDate = moment(e).format(DatetimeFormats.dateForDb))}

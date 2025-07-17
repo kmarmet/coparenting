@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useRef, useState} from 'react'
 import {FaUserEdit} from 'react-icons/fa'
 import {HiDotsHorizontal} from 'react-icons/hi'
 import {IoPersonAdd} from 'react-icons/io5'
+import {MdContacts} from 'react-icons/md'
 import InputTypes from '../../../constants/inputTypes'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
@@ -457,6 +458,7 @@ const Contacts = () => {
             {/* PAGE CONTAINER */}
             <div id="contacts-wrapper" className={`${theme} contacts page-container`}>
                 <ScreenHeader
+                    titleIcon={<MdContacts />}
                     title={'Contacts'}
                     screenDescription="Access and manage all essential and personal contact details for each of your contacts."
                 />
@@ -465,14 +467,14 @@ const Contacts = () => {
                     {/* CO-PARENTS */}
                     {currentUser?.accountType === 'parent' && (
                         <div id="contacts-wrapper">
-                            <Label classes={'black toggle always-show'} text={'CO-PARENTS'} />
+                            <Label classes={'dark toggle always-show'} text={'Co-Parents'} />
                             <Spacer height={3} />
                             {Manager.IsValid(coParents) &&
                                 coParents.map((contact, index) => {
                                     return (
                                         <div
                                             onClick={() => {
-                                                contact.accountType = 'coparent'
+                                                contact.accountType = 'coParent'
                                                 setActiveContact(contact)
                                                 setShowModal(true)
                                             }}
@@ -508,7 +510,7 @@ const Contacts = () => {
                     {currentUser?.accountType === 'parent' && (
                         <div id="contacts-wrapper">
                             <Spacer height={15} />
-                            <Label classes={'black toggle always-show'} text={'CHILDREN'} />
+                            <Label classes={'dark toggle always-show'} text={'Children'} />
                             <Spacer height={3} />
                             {Manager.IsValid(children) &&
                                 children.map((contact, index) => {
@@ -551,7 +553,7 @@ const Contacts = () => {
                     {currentUser?.accountType === 'child' && (
                         <div id="contacts-wrapper">
                             <Spacer height={15} />
-                            <Label classes={'black toggle always-show'} text={'PARENTS'} />
+                            <Label classes={'dark toggle always-show'} text={'Parents'} />
                             <Spacer height={3} />
                             {Manager.IsValid(parents) &&
                                 parents.map((contact, index) => {

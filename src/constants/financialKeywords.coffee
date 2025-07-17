@@ -14,7 +14,7 @@ FinancialKeywords = [
   'bonus'
   'stipend'
   'compensation'
-  'transfer'
+  'handoff'
   'salary credit'
   'cash'
   'allowance'

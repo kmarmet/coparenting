@@ -9,7 +9,7 @@ EmailManager =
     appFeedback: 'appFeedback'
     customerSupport: 'customerSupport'
     emailVerification: 'emailVerification'
-    coparentInvitation: 'coparent-invitation'
+    coparentInvitation: 'coParent-invitation'
     parentInvitation: 'parent-invitation'
   GetConfig: (message, templateName, fromName) ->
     config =
@@ -28,7 +28,7 @@ EmailManager =
     emailjs.send(config.service_id, config.template_id, config)
   SendEmailToUser: ( templateName, message, userEmail, fromName) ->
     config = EmailManager.GetConfig()
-    config.template_id = "coparent-invitation"
+    config.template_id = "coParent-invitation"
     config.message = message
     config.from_name = fromName
     emailjs.send('default_service', templateName,  {to_email: userEmail, from_name: fromName}).then (response) ->

@@ -3,7 +3,7 @@
 @use '../utils/_palette';
 @use '../_fonts';
 
-#swap-requests {
+#visitation-requests {
     .close {
         margin: 20px auto 10px auto;
         display: block;
@@ -15,21 +15,28 @@
         font-size: 14px;
     }
 
-    #swap-requests-container {
+    .description {
+        @include fonts.lightFont;
+    }
+
+    #visitation-requests-container {
         margin-top: 15px;
 
         #content {
             width: 100%;
             display: flex;
             flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
 
             #title {
                 width: 100%;
                 display: flex;
                 flex-wrap: wrap;
-                line-height: 1;
-                font-weight: variables.$fwRegular;
-                color: palette.$primaryText;
+                line-height: 1.5;
+                color: black;
+                opacity: 0.6;
+                @include fonts.regularFont;
                 #request-status {
                     align-self: flex-start;
                 }
@@ -39,9 +46,11 @@
             .sent-from {
                 width: 100%;
                 display: block;
-                color: palette.$labelText;
+                color: black;
+                opacity: 0.6;
                 font-weight: variables.$fwLight;
-                font-size: 14px;
+                font-size: 15px;
+                @include fonts.lightFont;
             }
 
             .row {
@@ -59,11 +68,6 @@
                     .status {
                         align-self: flex-start;
                     }
-                }
-
-                #title {
-                    max-width: 70%;
-                    line-height: 1.5;
                 }
 
                 .details {
@@ -311,14 +315,14 @@
 }
 
 // New Request
-#new-swap-request-container {
+#new-visitation-request-container {
     /*#region  DARK THEME*/
     &.dark {
         #rejection-reason-textarea {
             background-color: palette.$darkBlue;
         }
         #duration-options {
-            &.swap-request {
+            &.visitation-request {
                 .flex {
                     p,
                     span {

@@ -48,10 +48,7 @@ export default function InstallApp() {
 
             <div className="page-container install-app">
                 <div id="install-app-wrapper">
-                    <ScreenHeader
-                        title={'Install in 10 Seconds <br/> ...or Less'}
-                        screenDescription="Quickly install - no App Store or Play Store necessary!"
-                    />
+                    <ScreenHeader title={'Install in 10 Seconds or Less'} screenDescription="No App Store or Play Store necessary!" />
                     <Spacer height={10} />
 
                     <div className="screen-content">

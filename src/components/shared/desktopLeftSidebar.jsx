@@ -106,26 +106,26 @@ export default function DesktopLeftSidebar() {
 
                             {/* EXPENSES */}
                             <div
-                                className={`menu-item expenses ${currentScreen === ScreenNames.expenseTracker ? 'active' : ''}`}
-                                onClick={() => changeCurrentScreen(ScreenNames.expenseTracker)}>
+                                className={`menu-item expenses ${currentScreen === ScreenNames.expenseManagement ? 'active' : ''}`}
+                                onClick={() => changeCurrentScreen(ScreenNames.expenseManagement)}>
                                 <PiMoneyWavyDuotone />
                                 <p>Expense Tracker</p>
                             </div>
 
                             {/* SWAP REQUESTS */}
                             <div
-                                className={`menu-item swap-request ${currentScreen === ScreenNames.swapRequests ? 'active' : ''}`}
-                                onClick={() => changeCurrentScreen(ScreenNames.swapRequests)}>
+                                className={`menu-item visitation-request ${currentScreen === ScreenNames.VisitationChangeRequests ? 'active' : ''}`}
+                                onClick={() => changeCurrentScreen(ScreenNames.VisitationChangeRequests)}>
                                 <PiSwapDuotone />
-                                <p>Swap Requests</p>
+                                <p>Visitation Change Requests</p>
                             </div>
 
                             {/* TRANSFER CHANGE */}
                             <div
-                                className={`menu-item transfer-change ${currentScreen === ScreenNames.transferRequests ? 'active' : ''}`}
-                                onClick={() => changeCurrentScreen(ScreenNames.transferRequests)}>
+                                className={`menu-item pickup-dropoff ${currentScreen === ScreenNames.pickupDropoff ? 'active' : ''}`}
+                                onClick={() => changeCurrentScreen(ScreenNames.pickupDropoff)}>
                                 <PiCarProfileDuotone />
-                                <p>Transfer Change</p>
+                                <p>Handoff Change</p>
                             </div>
 
                             {/* DOCUMENTS */}

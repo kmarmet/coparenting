@@ -1,0 +1,95 @@
+@use '../utils/_palette';
+@use '../utils/_variables';
+@use '../utils/mixins';
+@use '../_fonts';
+
+#external-overrides {
+    #make-it-yours-wrapper {
+        .deactivate-account {
+            width: 100%;
+            background: palette.$red;
+            color: white;
+            padding: 10px;
+            border-radius: variables.$buttonBorderRadius;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 25px;
+
+            svg {
+                margin-left: 8px;
+            }
+        }
+        .section {
+            background: palette.$main;
+            padding: 20px;
+            border-radius: variables.$cardBorderRadius;
+            box-shadow: variables.$boxShadow_bottom_only;
+            margin-bottom: 30px;
+            opacity: 0;
+
+            .action-row {
+                color: white;
+                justify-content: flex-start;
+                font-size: 18px;
+                line-height: 1;
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
+                @include fonts.regularFont;
+
+                &.feature-request {
+                    svg {
+                        color: palette.$brightYellow;
+                    }
+                }
+                &.feedback {
+                    svg {
+                        color: palette.$brightGreen;
+                    }
+                }
+                svg {
+                    margin-right: 10px;
+                    @include mixins.square(25px);
+                }
+            }
+
+            p {
+                color: white;
+            }
+
+            .label-wrapper {
+                &.always-show {
+                    label {
+                        color: white;
+                        font-size: 18px;
+                        text-align: center;
+                        width: max-content;
+                        margin: 0 auto;
+                        @include fonts.regularFont;
+                    }
+                }
+            }
+
+            .section-title {
+                width: max-content;
+                margin: 0 auto;
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-bottom: 1px solid palette.$mediumGreyDarkest;
+                &.always-show {
+                    label {
+                        color: white;
+                        font-size: 22px;
+                        text-align: center;
+                        width: max-content;
+                        margin: 0 auto;
+                        @include fonts.regularFont;
+                    }
+                }
+            }
+        }
+    }
+}

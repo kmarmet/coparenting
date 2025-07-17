@@ -104,7 +104,7 @@ export default function Checklist({fromOrTo, activeChildId}) {
                     <AccordionSummary onClick={() => setAccordionIsExpanded(!accordionIsExpanded)} className={'header checklist'}>
                         <PiListChecksFill className={`${fromOrTo} svg`} />
                         <p id="toggle-button" className={accordionIsExpanded ? 'active' : ''}>
-                            Transfer Checklist<span className="smaller-text">({fromOrTo})</span>
+                            Handoff Checklist<span className="smaller-text">({fromOrTo})</span>
                             {accordionIsExpanded ? <FaMinus className={`plus-minus ${fromOrTo}`} /> : <FaPlus className={`plus-minus ${fromOrTo}`} />}
                         </p>
                     </AccordionSummary>

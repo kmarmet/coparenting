@@ -2,6 +2,7 @@
 import React, {useContext, useEffect, useState} from 'react'
 import {FaFileImage, FaMinus} from 'react-icons/fa'
 import {HiDocumentText} from 'react-icons/hi2'
+import {IoDocuments} from 'react-icons/io5'
 import ScreenNames from '../../../constants/screenNames'
 import globalState from '../../../context'
 import useCurrentUser from '../../../hooks/useCurrentUser'
@@ -12,7 +13,6 @@ import DomManager from '../../../managers/domManager'
 import Manager from '../../../managers/manager'
 import StringManager from '../../../managers/stringManager'
 import NavBar from '../../navBar'
-
 import Screen from '../../shared/screen'
 import ScreenHeader from '../../shared/screenHeader'
 
@@ -40,6 +40,7 @@ export default function DocsList() {
         <Screen activeScreen={ScreenNames.docsList} loadingByDefault={true} stopLoadingBool={Manager.IsValid(documents)}>
             <div id="doc-selection-container" className={`${theme} page-container`}>
                 <ScreenHeader
+                    titleIcon={<IoDocuments />}
                     title={'Documents'}
                     screenName={ScreenNames.docsList}
                     screenDescription="You may upload legal documents, such as a separation agreement or custody agreement, among others. If you wish, these documents can also be

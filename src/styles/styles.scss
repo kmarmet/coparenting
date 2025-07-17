@@ -18,7 +18,7 @@
     justify-content: center;
 
     * {
-        @include fonts.fontBase;
+        @include fonts.lightFont;
     }
 
     button {
@@ -291,7 +291,7 @@
     position: fixed;
     inset: 0;
     //background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(5px);
     z-index: variables.$lesserMaxZIndex;
     display: flex;
     justify-content: center;
@@ -314,7 +314,7 @@
 // Main App Styles  (External Overrides)
 #external-overrides {
     * {
-        @include fonts.fontBase;
+        @include fonts.lightFont;
     }
     // APP CONTAINER
     #app-container {
@@ -453,6 +453,11 @@
             width: 100%;
             margin: 20px auto;
 
+            &.white-bg {
+                background-color: black;
+                opacity: 0.1;
+            }
+
             &.faded {
                 @include mixins.hr;
                 margin: 0;
@@ -519,6 +524,17 @@
         /*#endregion ELEMENT DEFAULTS*/
 
         /*#region MIXINS */
+        .subtitle {
+            @include mixins.Subtitle;
+        }
+        .paragraph {
+            @include mixins.Paragraph;
+        }
+
+        .row-title {
+            @include mixins.rowTitle;
+        }
+
         #loading-screen-wrapper {
             @include mixins.loadingScreen;
         }
@@ -1018,12 +1034,16 @@
         /*#endregion  ID's */
 
         /*#region  CLASSES */
+        .underline {
+            border-bottom: 1px solid palette.$mediumGreyDarkest;
+        }
+
         .no-data-fallback-text {
             font-style: italic;
             font-weight: variables.$fwLight;
             line-height: 1.5;
             font-size: 15px;
-            margin: 0 auto;
+            margin: 10px auto;
             max-width: 90%;
             text-align: center;
             display: flex;
@@ -1170,10 +1190,6 @@
             width: 100vw;
             background: blue;
             z-index: 9;
-        }
-
-        .subtitle-text {
-            color: palette.$darkGrey;
         }
 
         .creation-menu-wrapper,

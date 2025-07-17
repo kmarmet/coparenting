@@ -2,7 +2,7 @@ import Manager from "../../managers/manager"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import moment from "moment"
 
-class TransferChangeRequest
+class HandoffChangeRequest
   constructor: (options = {}) ->
     @id = Manager.GetUid()
     @creationDate = moment().format(DatetimeFormats.dateForDb)
@@ -31,4 +31,4 @@ class TransferChangeRequest
     }
 
 
-export default TransferChangeRequest
+export default HandoffChangeRequest

@@ -27,29 +27,17 @@
         }
     }
 
-    #account-container {
-        #user-name {
-            font-size: 18px;
-            font-weight: variables.$fwBold;
-            padding-bottom: 8px;
-
-            svg {
-                font-size: 20px;
-                color: palette.$main;
-                position: relative;
-                top: 3px;
-                margin-right: 5px;
-            }
-        }
-
-        .sections {
-            .section {
-                @include mixins.row;
+    #profile-wrapper {
+        .actions {
+            p {
+                color: white;
                 justify-content: flex-start;
                 font-size: 18px;
-                font-weight: variables.$fwRegular;
                 line-height: 1;
-                opacity: 0;
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                @include fonts.regularFont;
 
                 svg {
                     color: palette.$main;
@@ -57,14 +45,20 @@
                     transform: scale(0.85);
                 }
 
-                span {
-                    font-size: 25px;
-                    margin-right: 20px;
-                    color: palette.$main;
+                &.reset-password {
+                    color: palette.$lightestPurple;
+
+                    svg {
+                        color: palette.$lightestPurple;
+                    }
                 }
 
-                &:first-child {
-                    border-top: 1px solid rgba(255, 255, 255, 0.1);
+                &.email {
+                    color: palette.$holidayOrange;
+
+                    svg {
+                        color: palette.$holidayOrange;
+                    }
                 }
 
                 &.close-account {

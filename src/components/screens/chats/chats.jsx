@@ -36,7 +36,7 @@ const Chats = () => {
     const {coParents} = useCoParents()
 
     return (
-        <Screen activeScreen={ScreenNames.chats}>
+        <Screen activeScreen={ScreenNames.chats} classes={`${showChat ? 'no-padding' : ''}`}>
             {/* INVITATION FORM */}
             <Form
                 submitText={'Send Invitation'}

@@ -18,8 +18,6 @@ const Screen = ({activeScreen = '', stopLoadingBool, classes = '', children, loa
         const container = scrollRef.current
         if (!container) return
 
-        console.log(container)
-
         const screenHeight = window.innerHeight
         const halfHeight = screenHeight / 2
         const navbar = document.getElementById('navbar')
@@ -31,7 +29,8 @@ const Screen = ({activeScreen = '', stopLoadingBool, classes = '', children, loa
                 })
                 isScrolling = true
             }
-            if (container.scrollTop >= 300) {
+
+            if (container.scrollTop >= 200) {
                 navbar.classList.add('hidden')
             } else {
                 navbar.classList.remove('hidden')

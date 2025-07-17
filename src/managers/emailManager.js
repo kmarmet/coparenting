@@ -12,7 +12,7 @@ EmailManager = {
         appFeedback: 'appFeedback',
         customerSupport: 'customerSupport',
         emailVerification: 'emailVerification',
-        coparentInvitation: 'coparent-invitation',
+        coparentInvitation: 'coParent-invitation',
         parentInvitation: 'parent-invitation',
     },
     GetConfig: function (message, templateName, fromName) {
@@ -38,7 +38,7 @@ EmailManager = {
     SendEmailToUser: function (templateName, message, userEmail, fromName) {
         var config
         config = EmailManager.GetConfig()
-        config.template_id = 'coparent-invitation'
+        config.template_id = 'coParent-invitation'
         config.message = message
         config.from_name = fromName
         return emailjs

@@ -8,10 +8,10 @@ import Manager from '../managers/manager'
 const DB = {
     tables: {
         expenses: 'expenses',
-        swapRequests: 'swapRequests',
+        visitationChangeRequests: 'visitationChangeRequests',
         users: 'users',
         calendarEvents: 'calendarEvents',
-        transferChangeRequests: 'transferChangeRequests',
+        handoffChangeRequests: 'handoffChangeRequests',
         documents: 'documents',
         memories: 'memories',
         updateSubscribers: 'updateSubscribers',

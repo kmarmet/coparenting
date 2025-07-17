@@ -19,11 +19,9 @@ import Doc from '../models/new/doc'
 
 import Expense from '../models/new/expense'
 
+import HandoffChangeRequest from '../models/new/handoffChangeRequest'
+
 import Memory from '../models/new/memory'
-
-import SwapRequest from '../models/new/swapRequest'
-
-import TransferChangeRequest from '../models/new/transferChangeRequest'
 
 import CoParent from '../models/users/coParent'
 
@@ -151,9 +149,9 @@ ObjectManager = {
             case ModelNames.memory:
                 return Object.keys(new Memory())
             case ModelNames.transferChangeRequest:
-                return Object.keys(new TransferChangeRequest())
-            case ModelNames.swapRequest:
-                return Object.keys(new SwapRequest())
+                return Object.keys(new HandoffChangeRequest())
+            case ModelNames.visitationChangeRequest:
+                return Object.keys(new VisitationChangeRequest())
             case ModelNames.user:
                 return Object.keys(new User())
             case ModelNames.coparent:
@@ -181,9 +179,9 @@ ObjectManager = {
             case ModelNames.memory:
                 return new Memory()
             case ModelNames.transferChangeRequest:
-                return new TransferChangeRequest()
-            case ModelNames.swapRequest:
-                return new SwapRequest()
+                return new HandoffChangeRequest()
+            case ModelNames.visitationChangeRequest:
+                return new VisitationChangeRequest()
             case ModelNames.user:
                 return new User()
             case ModelNames.coparent:
@@ -213,9 +211,9 @@ ObjectManager = {
                 case ModelNames.memory:
                     return new Memory()
                 case ModelNames.transferChangeRequest:
-                    return new TransferChangeRequest()
-                case ModelNames.swapRequest:
-                    return new SwapRequest()
+                    return new HandoffChangeRequest()
+                case ModelNames.visitationChangeRequest:
+                    return new VisitationChangeRequest()
                 case ModelNames.user:
                     return new User()
                 case ModelNames.coparent:

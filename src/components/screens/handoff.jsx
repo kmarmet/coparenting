@@ -1,8 +1,9 @@
-// Path: src\components\screens\transferRequests?.jsx
+// Path: src\components\screens\pickupDropOff?.jsx
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {setKey} from 'react-geocode'
 import {MdPersonPinCircle} from 'react-icons/md'
+import {RiMapPinTimeFill} from 'react-icons/ri'
 import ButtonThemes from '../../constants/buttonThemes'
 import DatetimeFormats from '../../constants/datetimeFormats'
 import InputTypes from '../../constants/inputTypes'
@@ -12,14 +13,14 @@ import globalState from '../../context.js'
 import DB from '../../database/DB'
 import useCoParents from '../../hooks/useCoParents'
 import useCurrentUser from '../../hooks/useCurrentUser'
-import useTransferRequests from '../../hooks/useTransferRequests'
+import useHandoffRequests from '../../hooks/useHandoffRequests'
 import AlertManager from '../../managers/alertManager'
 import DomManager from '../../managers/domManager'
 import Manager from '../../managers/manager'
 import ObjectManager from '../../managers/objectManager'
 import StringManager from '../../managers/stringManager'
 import UpdateManager from '../../managers/updateManager.js'
-import TransferChangeRequest from '../../models/new/transferChangeRequest'
+import HandoffChangeRequest from '../../models/new/handoffChangeRequest'
 import NavBar from '../navBar'
 import AddressInput from '../shared/addressInput'
 import CardButton from '../shared/cardButton'
@@ -28,7 +29,6 @@ import Form from '../shared/form'
 import InputField from '../shared/inputField'
 import Label from '../shared/label.jsx'
 import Map from '../shared/map.jsx'
-
 import Screen from '../shared/screen'
 import ScreenHeader from '../shared/screenHeader'
 import Spacer from '../shared/spacer.jsx'
@@ -41,7 +41,7 @@ const Decisions = {
     delete: 'DELETE',
 }
 
-export default function TransferRequests() {
+export default function Handoff() {
     const {state, setState} = useContext(globalState)
     const {theme} = state
     const [declineReason, setDeclineReason] = useState('')
@@ -53,12 +53,12 @@ export default function TransferRequests() {
     const [requestTimeRemaining, setRequestTimeRemaining] = useState(false)
 
     // Hooks
-    const {transferRequests, transferRequestsAreLoading} = useTransferRequests()
+    const {handoffRequests, handoffRequestsAreLoading} = useHandoffRequests()
     const {currentUser, currentUserIsLoading} = useCurrentUser()
     const {coParents, coParentsAreLoading} = useCoParents()
 
     // Refs
-    const formRef = React.useRef({...activeRequest, ...new TransferChangeRequest()})
+    const formRef = React.useRef({...activeRequest, ...new HandoffChangeRequest()})
 
     const ResetForm = (successMessage = '') => {
         Manager.ResetForm('edit-event-form')
@@ -72,20 +72,20 @@ export default function TransferRequests() {
         console.log('udpatedRequest', updatedRequest)
         const cleaned = ObjectManager.CleanObject(updatedRequest)
         if (cleaned?.owner?.key === currentUser?.key) {
-            const index = DB.GetTableIndexById(transferRequests, cleaned?.id)
+            const index = DB.GetTableIndexById(handoffRequests, cleaned?.id)
             if (parseInt(index) === -1) return false
-            await DB.ReplaceEntireRecord(`${DB.tables.transferChangeRequests}/${currentUser?.key}/${index}`, cleaned)
+            await DB.ReplaceEntireRecord(`${DB.tables.handoffChangeRequests}/${currentUser?.key}/${index}`, cleaned)
         }
         setActiveRequest(updatedRequest)
         setShowDetails(false)
-        ResetForm('Transfer Request Updated')
+        ResetForm('Handoff Request Updated')
     }
 
     const DeleteRequest = async (action = 'deleted') => {
         if (action === 'deleted') {
             AlertManager.confirmAlert('Are you sure you would like to Delete this request?', "I'm Sure", true, async () => {
-                await DB.deleteById(`${DB.tables.transferChangeRequests}/${currentUser?.key}`, activeRequest?.id)
-                setState({...state, successAlertMessage: 'Transfer Change Request Deleted', refreshKey: Manager.GetUid()})
+                await DB.deleteById(`${DB.tables.handoffChangeRequests}/${currentUser?.key}`, activeRequest?.id)
+                setState({...state, successAlertMessage: 'Handoff Change Request Deleted', refreshKey: Manager.GetUid()})
                 setShowDetails(false)
             })
         }
@@ -98,14 +98,14 @@ export default function TransferRequests() {
         if (decision === Decisions.declined) {
             activeRequest.status = 'declined'
             activeRequest.declineReason = declineReason
-            await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.owner?.key}`, activeRequest, activeRequest.id)
-            const message = UpdateManager.templates.transferRequestRejection(activeRequest, recipientName)
+            await DB.updateEntireRecord(`${DB.tables.handoffChangeRequests}/${activeRequest?.owner?.key}`, activeRequest, activeRequest.id)
+            const message = UpdateManager.templates.handoffChangeRequestRejection(activeRequest, recipientName)
             await UpdateManager.SendUpdate(
-                'Transfer Request Decision',
+                'Handoff Request Decision',
                 message,
                 activeRequest?.owner?.key,
                 currentUser,
-                ActivityCategory.transferRequest
+                ActivityCategory.handoffChangeRequest
             )
             setShowDetails(false)
         }
@@ -113,15 +113,15 @@ export default function TransferRequests() {
         // Approved
         if (decision === Decisions.approved) {
             activeRequest.status = 'approved'
-            await DB.updateEntireRecord(`${DB.tables.transferChangeRequests}/${activeRequest?.owner?.key}`, activeRequest, activeRequest.id)
-            const message = UpdateManager.templates.transferRequestApproval(activeRequest, recipientName)
+            await DB.updateEntireRecord(`${DB.tables.handoffChangeRequests}/${activeRequest?.owner?.key}`, activeRequest, activeRequest.id)
+            const message = UpdateManager.templates.handoffChangeRequestApproval(activeRequest, recipientName)
             setShowDetails(false)
             await UpdateManager.SendUpdate(
-                'Transfer Request Decision',
+                'Handoff Request Decision',
                 message,
                 activeRequest?.owner?.key,
                 currentUser,
-                ActivityCategory.transferRequest
+                ActivityCategory.handoffChangeRequest
             )
         }
 
@@ -134,11 +134,11 @@ export default function TransferRequests() {
             activeRequest?.address
         }`
         if (!sendWithAddress) {
-            notificationMessage = `${StringManager.GetFirstWord(StringManager.UppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the transfer destination`
+            notificationMessage = `${StringManager.GetFirstWord(StringManager.UppercaseFirstLetterOfAllWords(currentUser?.name))} has arrived at the handoff destination`
         }
 
         await UpdateManager.SendUpdate(
-            'Transfer Destination Arrival',
+            'Handoff Destination Arrival',
             notificationMessage,
             formRef.current?.recipient?.key,
             currentUser,
@@ -181,9 +181,9 @@ export default function TransferRequests() {
 
     return (
         <Screen
-            activeScreen={ScreenNames.transferRequests}
+            activeScreen={ScreenNames.handoff}
             loadingByDefault={true}
-            stopLoadingBool={!currentUserIsLoading && !coParentsAreLoading && !transferRequestsAreLoading}>
+            stopLoadingBool={!currentUserIsLoading && !coParentsAreLoading && !handoffRequestsAreLoading}>
             {/* DETAILS CARD */}
             <Form
                 submitText={'Approve'}
@@ -192,10 +192,10 @@ export default function TransferRequests() {
                 hasDelete={activeRequest?.owner?.key === currentUser?.key && view?.label === 'Edit'}
                 hasSubmitButton={activeRequest?.owner?.key !== currentUser?.key}
                 onSubmit={() => SelectDecision(Decisions.approved)}
-                wrapperClass="transfer-change"
+                wrapperClass="pickup-dropoff"
                 viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={(e) => setView(e)} />}
                 thirdButtonText="Decline"
-                className="transfer-change"
+                className="pickup-dropoff"
                 extraButtons={[
                     <>
                         {activeRequest?.owner?.key !== currentUser?.key && view?.label === 'Edit' && (
@@ -239,7 +239,7 @@ export default function TransferRequests() {
                                 <DetailBlock
                                     text={moment(activeRequest?.startDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
                                     valueToValidate={activeRequest?.startDate}
-                                    title={'Transfer Date'}
+                                    title={'Handoff Date'}
                                 />
 
                                 {/*  End Date */}
@@ -253,7 +253,7 @@ export default function TransferRequests() {
                                 <DetailBlock
                                     text={moment(activeRequest?.time, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)}
                                     valueToValidate={activeRequest?.time}
-                                    title={'Transfer Time'}
+                                    title={'Handoff Time'}
                                 />
 
                                 {/*  Response Due Date */}
@@ -329,7 +329,7 @@ export default function TransferRequests() {
                                 defaultValue={moment(activeRequest?.startDate)}
                                 inputType={InputTypes.date}
                                 placeholder={'Date'}
-                                uidClass="transfer-request-date"
+                                uidClass="handoff-request-date"
                                 onDateOrTimeSelection={(e) => (formRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb))}
                             />
 
@@ -337,8 +337,8 @@ export default function TransferRequests() {
                             <InputField
                                 defaultValue={activeRequest?.time}
                                 inputType={InputTypes.time}
-                                uidClass="transfer-request-time"
-                                placeholder={'Transfer Time'}
+                                uidClass="handoff-request-time"
+                                placeholder={'Handoff Time'}
                                 onDateOrTimeSelection={(e) => (formRef.current.time = moment(e).format(DatetimeFormats.timeForDb))}
                             />
 
@@ -354,7 +354,7 @@ export default function TransferRequests() {
                                 defaultValue={activeRequest?.requestedResponseDate}
                                 onDateOrTimeSelection={(e) => (formRef.current.requestedResponseDate = moment(e).format(DatetimeFormats.dateForDb))}
                                 inputType={InputTypes.date}
-                                uidClass="transfer-request-response-date"
+                                uidClass="handoff-request-response-date"
                                 placeholder={'Requested Response Date'}
                             />
 
@@ -372,21 +372,23 @@ export default function TransferRequests() {
                 </div>
             </Form>
 
-            <div id="transfer-requests-container" className={`${theme} page-container`}>
-                {transferRequests?.length === 0 && <p className={'no-data-fallback-text'}>No Transfer Requests</p>}
-
+            <div id="handoff-requests-container" className={`${theme} page-container`}>
                 <ScreenHeader
-                    title={'Transfer Change Requests'}
-                    screenDescription="A proposal to modify the time and/or location for the child exchange on a designated day"
+                    title={'Handoff Requests'}
+                    titleIcon={<RiMapPinTimeFill />}
+                    screenDescription="Submit or review requests to change pickup/drop-off time (and/or location) for a given date"
+                    showNewRequestCard={showNewRequestCard}
+                    toggleNewRequestCard={() => setShowNewRequestCard(!showNewRequestCard)}
                 />
 
                 <Spacer height={10} />
                 <div className="screen-content">
+                    {handoffRequests?.length === 0 && <p className={'no-data-fallback-text'}>No Requests</p>}
                     {/* LOOP REQUESTS */}
                     {!showNewRequestCard && (
                         <div>
-                            {Manager.IsValid(transferRequests) &&
-                                transferRequests?.map((request, index) => {
+                            {Manager.IsValid(handoffRequests) &&
+                                handoffRequests?.map((request, index) => {
                                     return (
                                         <div
                                             key={index}

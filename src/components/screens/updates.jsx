@@ -5,6 +5,7 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import moment from 'moment'
 import React, {useContext, useEffect, useState} from 'react'
 import {IoMdCheckmarkCircleOutline} from 'react-icons/io'
+import {IoNotifications} from 'react-icons/io5'
 import {MdClearAll} from 'react-icons/md'
 import ButtonThemes from '../../constants/buttonThemes'
 import DatetimeFormats from '../../constants/datetimeFormats'
@@ -73,23 +74,23 @@ export default function Updates() {
 
             case title?.indexOf('expense') > -1:
                 return {
-                    screen: ScreenNames.expenseTracker,
+                    screen: ScreenNames.expenseManagement,
                     className: 'expenses',
                     category: ActivityCategory.expenses,
                 }
 
-            case title?.indexOf('transfer') > -1:
+            case title?.indexOf('handoff') > -1:
                 return {
-                    screen: ScreenNames.transferRequests,
-                    className: 'transfer',
-                    category: ActivityCategory.transferRequest,
+                    screen: ScreenNames.pickupDropoff,
+                    className: 'handoff',
+                    category: ActivityCategory.handoffChangeRequest,
                 }
 
-            case title?.indexOf('swap') > -1:
+            case title?.indexOf('visitation') > -1:
                 return {
-                    screen: ScreenNames.swapRequests,
-                    className: 'swap',
-                    category: ActivityCategory.swapRequest,
+                    screen: ScreenNames.VisitationChangeRequests,
+                    className: 'visitation',
+                    category: ActivityCategory.visitationChangeRequest,
                 }
 
             default:
@@ -132,14 +133,14 @@ export default function Updates() {
         <Screen activeScreen={ScreenNames.updates}>
             <div id="activity-wrapper" className={`${theme} page-container`}>
                 <ScreenHeader
+                    titleIcon={<IoNotifications />}
                     screenName={ScreenNames.updates}
-                    screenDescription="Stay updated with all developments for your contacts, as they happen."
+                    screenDescription="Stay updated with all developments for your contacts, as they happen"
                     title={'Updates'}
                 />
 
                 <div className="screen-content">
                     {/* LEGEND */}
-                    <Spacer height={10} />
                     {Manager.IsValid(currentUser?.accountType) && currentUser?.accountType === 'parent' && (
                         <div className="flex">
                             <Accordion id={'updates-legend'} expanded={legendIsExpanded} className={`${theme} accordion white-bg`}>
@@ -164,6 +165,7 @@ export default function Updates() {
                             </Accordion>
                         </div>
                     )}
+                    {updates?.length === 0 && <p className={'no-data-fallback-text'}>No Updates</p>}
 
                     <Spacer height={5} />
 
@@ -209,7 +211,6 @@ export default function Updates() {
                             })}
                     </div>
                 </div>
-                {updates?.length === 0 && <p className={'no-data-fallback-text'}>No Updates</p>}
             </div>
             <NavBar navbarClass={'activity no-Add-new-button'}></NavBar>
         </Screen>

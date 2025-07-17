@@ -147,7 +147,7 @@ export default function Checklists({showCard, hideCard}) {
                     }}
                 />
             }
-            subtitle={`Review transfer checklists to guarantee that all items are accounted for during transitions to or from a co-parent's home.  ${DomManager.tapOrClick(
+            subtitle={`Review handoff checklists to guarantee that all items are accounted for during transitions to or from a co-parent's home.  ${DomManager.tapOrClick(
                 true
             )} each item to mark completed. ${DomManager.tapOrClick(true)} the delete icon to remove the item from the checklist permanently.`}
             onClose={hideCard}>

@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react'
-import {FaLightbulb} from 'react-icons/fa6'
-import {MdEmail, MdThumbsUpDown} from 'react-icons/md'
+import {GrInstallOption} from 'react-icons/gr'
+import {MdEmail} from 'react-icons/md'
 import {PiVideoFill} from 'react-icons/pi'
 import InputTypes from '../../constants/inputTypes'
 import ScreenNames from '../../constants/screenNames'
@@ -10,7 +10,6 @@ import AlertManager from '../../managers/alertManager'
 import DomManager from '../../managers/domManager'
 import EmailManager from '../../managers/emailManager'
 import Manager from '../../managers/manager'
-import StringManager from '../../managers/stringManager'
 import NavBar from '../navBar'
 import Form from '../shared/form'
 import InputField from '../shared/inputField'
@@ -21,43 +20,13 @@ import Spacer from '../shared/spacer'
 export default function Help() {
     const {state, setState} = useContext(globalState)
     const {theme} = state
-    const [featureName, setFeatureName] = useState('')
-    const [featureDescription, setFeatureDescription] = useState('')
-    const [showFeatureRequestCard, setShowFeatureRequestCard] = useState(false)
-    const [feedback, setFeedback] = useState('')
-    const [showFeedbackCard, setShowFeedbackCard] = useState(false)
+
     const [supportNotes, setSupportNotes] = useState('')
     const [showSupportCard, setShowSupportCard] = useState(false)
     const {currentUser} = useCurrentUser()
 
-    const ResetFormFeatureRequestForm = () => {
-        Manager.ResetForm('feature-request-wrapper')
-        setFeatureName('')
-        setFeatureDescription('')
-    }
-
-    const ResetFeedbackForm = () => {
-        Manager.ResetForm('feedback-wrapper')
-        setFeatureName('')
-        setFeatureDescription('')
-    }
-
     const ResetSupportForm = () => {
         Manager.ResetForm('support-wrapper')
-        setFeatureName('')
-        setFeatureDescription('')
-    }
-
-    const SubmitFeatureRequest = () => {
-        if (!Manager.IsValid(featureDescription, true)) {
-            AlertManager.throwError('Please share a description of the feature you are interested in requesting')
-            return false
-        } else {
-            setState({...state, successAlertMessage: 'Feature Request Received'})
-            EmailManager.SendFeatureRequest(currentUser?.email, `Feature Name: ${featureName} \n Description: ${featureDescription}`)
-            // setShowFeatureRequestCard(false)
-            ResetFormFeatureRequestForm()
-        }
     }
 
     const SubmitSupportRequest = () => {
@@ -72,77 +41,12 @@ export default function Help() {
         ResetSupportForm()
     }
 
-    const SubmitFeedback = () => {
-        if (feedback.length === 0) {
-            AlertManager.throwError('Please enter your feedback')
-            return false
-        }
-        setState({...state, successAlertMessage: 'Thank you for Your Feedback!'})
-
-        EmailManager.SendAppFeedback(currentUser?.email, feedback)
-        setShowFeedbackCard(false)
-        ResetFeedbackForm()
-    }
-
     useEffect(() => {
         DomManager.ToggleAnimation('add', 'section', DomManager.AnimateClasses.names.fadeInUp)
     }, [])
 
     return (
         <Screen activeScreen={ScreenNames.help}>
-            {/* FEATURE REQUEST */}
-            <Form
-                onSubmit={SubmitFeatureRequest}
-                submitText={'Send Request'}
-                wrapperClass="feature-request"
-                showCard={showFeatureRequestCard}
-                subtitle="We encourage you to request a new feature for the app! Whether big or small, we are excited to receive your ideas and may include YOUR feature suggestion in the app!"
-                onClose={() => setShowFeatureRequestCard(false)}
-                title={'Request New Feature'}>
-                <Spacer height={8} />
-                <div className="feature-request-wrapper">
-                    <div id="feature-request-container" className={`${theme}`}>
-                        <InputField
-                            placeholder={'Feature Name'}
-                            required={true}
-                            onChange={(e) => setFeatureName(e.target.value)}
-                            inputType={InputTypes.text}
-                        />
-                        <Spacer height={3} />
-                        <InputField
-                            inputType={InputTypes.textarea}
-                            placeholder={StringManager.FormatTitle('Tell us all about your idea!')}
-                            required={true}
-                            onChange={(e) => setFeatureDescription(e.target.value)}
-                        />
-                    </div>
-                </div>
-            </Form>
-
-            {/* FEEDBACK */}
-            <Form
-                submitText={'Send Feedback'}
-                className="feedback-wrapper"
-                wrapperClass="feedback-wrapper form"
-                title={'Share Your Thoughts With Us'}
-                subtitle="Your feedback helps us improve the app! Whether it's a feature request or an feature needing improvement, we value your input."
-                onSubmit={SubmitFeedback}
-                showCard={showFeedbackCard}
-                onClose={() => setShowFeedbackCard(false)}>
-                <Spacer height={8} />
-                <div className="feedback-wrapper">
-                    <div id="feedback-container" className={`${theme}`}>
-                        <InputField
-                            inputType={InputTypes.textarea}
-                            placeholder={'Thoughts here...'}
-                            required={true}
-                            onChange={(e) => setFeedback(e.target.value)}
-                            type="text"
-                        />
-                    </div>
-                </div>
-            </Form>
-
             {/* CONTACT SUPPORT */}
             <Form
                 submitText={'Get Support'}
@@ -178,18 +82,15 @@ export default function Help() {
                 <div className="screen-content">
                     {/* SECTIONS */}
                     <div className="sections">
-                        <p className="section" onClick={() => setShowFeatureRequestCard(true)}>
+                        <p className="section" onClick={() => setShowSupportCard(true)}>
                             <PiVideoFill />
                             Tutorial
                         </p>
-                        <p className="section" onClick={() => setShowFeatureRequestCard(true)}>
-                            <FaLightbulb />
-                            Feature Request
+                        <p className="section" onClick={() => setState({...state, currentScreen: ScreenNames.installApp})}>
+                            <GrInstallOption />
+                            Install
                         </p>
-                        <p className="section" onClick={() => setShowFeedbackCard(true)}>
-                            <MdThumbsUpDown />
-                            Share Feedback
-                        </p>
+
                         <p className="section" onClick={() => setShowSupportCard(true)}>
                             <MdEmail />
                             Contact Support
@@ -197,7 +98,7 @@ export default function Help() {
                     </div>
                 </div>
             </div>
-            {!showFeatureRequestCard && !showFeedbackCard && !showSupportCard && <NavBar navbarClass={'no-Add-new-button'}></NavBar>}
+            {!showSupportCard && <NavBar navbarClass={'no-Add-new-button'}></NavBar>}
         </Screen>
     )
 }

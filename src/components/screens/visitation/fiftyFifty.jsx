@@ -119,7 +119,6 @@ export default function FiftyFifty({hide, showCard}) {
             showCard={showCard}
             onClose={() => ResetForm()}>
             <div className="text">
-                <Spacer height={5} />
                 <Accordion id={'fifty-fifty-info'} className="form-accordion" expanded={expandFiftyFiftyInfoText}>
                     <AccordionSummary>
                         <div
@@ -131,8 +130,7 @@ export default function FiftyFifty({hide, showCard}) {
                             {expandFiftyFiftyInfoText && <FaMinus className={'visitation-card'} />}
                         </div>
                     </AccordionSummary>
-                    <Spacer height={5} />
-                    <AccordionDetails>
+                    <AccordionDetails className={'description'}>
                         <p>An arrangement where both you and your co-parent have equal time with your children.</p>
                         <p>
                             For the start of the next visitation period (and next period ONLY) you have your children, enter the date ranges for both
