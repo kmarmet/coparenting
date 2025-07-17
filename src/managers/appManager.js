@@ -9,15 +9,15 @@ import Apis from '../api/apis'
 
 import DateFormats from '../constants/datetimeFormats'
 import DatetimeFormats from '../constants/datetimeFormats'
-
 import DB from '../database/DB'
 
 import DB_UserScoped from '../database/db_userScoped'
 
 import Storage from '../database/storage'
 
+import Manager from '../managers/manager'
+
 import CalendarManager from './calendarManager'
-import Manager from './manager'
 
 export default AppManager = {
     OperatingSystems: {
@@ -31,19 +31,51 @@ export default AppManager = {
         var hoursSinceRefresh, lastRefresh, msSinceLastRefresh, ref1
         // Refresh check
         lastRefresh = localStorage.getItem('lastAutoRefresh')
-        // Last refresh exists
         if (Manager.IsValid(lastRefresh)) {
             msSinceLastRefresh = (ref1 = moment(lastRefresh, DatetimeFormats.timestamp).diff()) != null ? ref1 : 0
             hoursSinceRefresh = Math.abs(Math.ceil(msSinceLastRefresh / (1000 * 60 * 60)))
-            // If it has been more than 24 hours since the last refresh -> reload the page
+
+            // If more than 24 hours passed since last refresh → reload
             if (hoursSinceRefresh > 24) {
                 localStorage.setItem('lastAutoRefresh', moment().format(DatetimeFormats.timestamp))
                 window.location.reload()
                 return false
             }
         } else {
-            // Last refresh does not exist -> set one
+            // Last refresh does not exist → set it
             return localStorage.setItem('lastAutoRefresh', moment().format(DatetimeFormats.timestamp))
+        }
+    },
+    IncrementLastDigitOfVersion: function (version) {
+        var last, lastStr, parts
+        // Split into parts
+        parts = version.split('.')
+
+        // Get the last part as a number
+        last = parseInt(parts[parts.length - 1], 10)
+
+        // Increment
+        last += 1
+
+        // Keep the same padding length (optional)
+        lastStr = parts[parts.length - 1].replace(/\d+/, String(last).padStart(parts[parts.length - 1].length, '0'))
+
+        // Replace the last part
+        parts[parts.length - 1] = lastStr
+
+        // Join back
+        return parts.join('.')
+    },
+    CheckForUpdate: async function () {
+        var VERSION_KEY, currentVersion
+        currentVersion = await AppManager.GetCurrentAppVersion()
+        VERSION_KEY = localStorage.getItem('version_key')
+        if (!Manager.IsValid(VERSION_KEY) || VERSION_KEY !== currentVersion) {
+            localStorage.setItem('version_key', currentVersion)
+            return true
+        } else {
+            // Else return false
+            return false
         }
     },
     GetCurrentAppVersion: async function () {
@@ -102,7 +134,6 @@ export default AppManager = {
         try {
             timezone = await Apis.ManyApis.GetTimezone(ipAddress)
         } catch (error1) {
-            //      console.log result?.city?.timezone
             error = error1
             console.error(error)
         }
@@ -127,8 +158,6 @@ export default AppManager = {
             location.longitude = locationDetails != null ? ((ref4 = locationDetails.city) != null ? ref4.longitude : void 0) : void 0
             location.timezone = locationDetails != null ? ((ref5 = locationDetails.city) != null ? ref5.timezone : void 0) : void 0
         } catch (error1) {
-            //      console.log(location)
-            //      console.log result
             error = error1
             console.error(error)
         }
@@ -164,8 +193,8 @@ export default AppManager = {
                     return 'child'
                 }
             }
-            return 'parent'
         }
+        return 'parent'
     },
     DeleteExpiredCalendarEvents: async function (currentUser) {
         var daysPassed, event, events, i, len, results
@@ -192,7 +221,8 @@ export default AppManager = {
         var dbRef, i, lastUpdateObject, len, timestamp, updateAvailable, updateObject, user, users
         dbRef = ref(getDatabase())
         users = Manager.convertToArray(await DB.getTable(DB.tables.users))
-        // Set updatedAp to false for all users to show update alert
+
+        // Set updatedApp=false for all users to trigger update alert
         for (i = 0, len = users.length; i < len; i++) {
             user = users[i]
             await DB_UserScoped.updateUserRecord(user.phone, 'updatedApp', false)
@@ -204,7 +234,7 @@ export default AppManager = {
             lastUpdate: timestamp,
             updateAvailable: false,
         }
-        if (updateAvailableValue !== null && updateAvailableValue !== void 0) {
+        if (updateAvailableValue != null && updateAvailableValue !== void 0) {
             updateObject.lastUpdate = timestamp
             updateAvailable = false
             set(child(dbRef, 'updateAvailable'), updateObject)
@@ -227,7 +257,7 @@ export default AppManager = {
             results = []
             for (i = 0, len = memories.length; i < len; i++) {
                 memory = memories[i]
-                daysPassed = moment().diff(event.creationDate, 'days')
+                daysPassed = moment().diff(memory.creationDate, 'days')
                 if (daysPassed >= 30) {
                     await DB.Delete(`${DB.tables.memories}/${currentUser != null ? currentUser.key : void 0}`, memory.id)
                     if (Manager.IsValid(memory != null ? memory.memoryName : void 0)) {

@@ -349,7 +349,7 @@ export default function VisitationRequests() {
 
             {/* SWAP REQUESTS */}
             <div id="visitation-requests" className={`${theme}`}>
-                <Label classes={'always-show dark'} text={'Schedule Change Requests'} />
+                <Label classes={'always-show white-bg dark'} text={'Schedule Change Requests'} />
                 <p className={'description'}>Review requests to alter the visitation schedule for a specific date.</p>
                 <Spacer height={3} />
                 <p>

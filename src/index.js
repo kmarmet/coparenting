@@ -12,7 +12,7 @@ import AlertManager from './managers/alertManager'
 import AppManager from './managers/appManager'
 
 // CACHING
-const CACHE_KEY = 'v1.0.27'
+const CACHE_KEY = 'v1.0.28'
 const FILES_TO_CACHE = ['/', '/index.html', '/src/index.js', '/src/App.js', '/src/styles/bundle.css']
 
 const logout = () => {
@@ -359,11 +359,14 @@ if ('serviceWorker' in navigator) {
                 registration.onupdatefound = () => {
                     const newSW = registration.installing
                     newSW.onstatechange = () => {
+                        localStorage.setItem('sw-cache-key', CACHE_KEY)
+                        newSW.postMessage({action: 'skipWaiting'})
                         // UPDATE AVAILABLE
                         if (newSW.state === 'installed' && navigator.serviceWorker.controller && previousCacheKey !== CACHE_KEY) {
                             console.log('Update available!')
-                            localStorage.setItem('sw-cache-key', CACHE_KEY)
+                            alert('Update available!')
                             newSW.postMessage({action: 'skipWaiting'})
+                            localStorage.setItem('sw-cache-key', CACHE_KEY)
                             renderRoot(true)
                         } else {
                             renderRoot(false)

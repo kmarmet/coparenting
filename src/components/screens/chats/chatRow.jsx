@@ -163,14 +163,18 @@ export default function ChatRow({index, onClick, chat}) {
                         <FaPause
                             onClick={(e) => {
                                 e.stopPropagation()
-                                AlertManager.confirmAlert(
-                                    `When you pause the chat, it will remain accessible for your reference. However, <b>you will not receive notifications related to this particular chat until you decide to unpause it</b>. \n\n You can resume the chat at any time. \n\n Are you sure? `,
-                                    "I'm Sure",
-                                    true,
-                                    async () => {
+                                AlertManager.confirmAlert({
+                                    title: `Pause Chat`,
+                                    confirmButtonText: "I'm Sure",
+                                    showDenyButton: true,
+                                    onConfirm: async () => {
                                         await PauseChat()
-                                    }
-                                )
+                                    },
+                                    onDeny: null,
+                                    bg: '#fbd872',
+                                    color: '897235',
+                                    html: `When you pause the chat, it will remain accessible for your reference. However, <br> you will not receive notifications </br> related to this particular chat until you decide to unpause it. \n\n You can resume the chat at any time. \n\n Are you sure?`,
+                                })
                             }}
                             className={`pause icon`}
                         />

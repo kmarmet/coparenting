@@ -57,14 +57,13 @@ div {
 }
 
 .swal2-title {
-    @include fonts.fontBase;
     font-size: 18px;
     line-height: 1.4;
-    font-weight: variables.$fwLight !important;
     margin: 0 !important;
     padding: 0;
     text-align: left;
-
+    font-weight: variables.$fwBold !important;
+    font-family: 'SF-Pro-Display-Bold', sans-serif !important;
     b {
         font-weight: variables.$fwBold !important;
     }
@@ -90,16 +89,19 @@ div {
     flex-wrap: wrap;
     gap: 12px;
     justify-content: center;
-    max-width: 90vw !important;
+    max-width: 95vw !important;
     box-shadow: variables.$boxShadow_float !important;
     border-radius: variables.$cardBorderRadius !important;
 
     // Success Alert
     &.swal2-modal {
         margin-top: 65px !important;
-        padding: 10px 20px !important;
-        border-radius: variables.$mediumBorderRadius !important;
-        box-shadow: rgba(0, 0, 0, 0.56) 0 22px 30px 14px !important;
+        border-radius: variables.$cardBorderRadius !important;
+        box-shadow: rgba(0, 0, 0, 0.9) 0 40px 30px -10px !important;
+        padding: 20px 25px !important;
+        button {
+            border: 0 !important;
+        }
     }
 
     &.swal2-icon-error {
@@ -122,10 +124,10 @@ div {
                 margin: 0 auto !important;
                 height: 38px !important;
                 background: palette.$translucentLightest !important;
-                border: 0 !important;
                 font-size: 15px !important;
                 box-shadow: none !important;
                 color: rgba(255, 255, 255, 0.8) !important;
+                border: 0 !important;
             }
         }
     }
@@ -152,10 +154,10 @@ div {
             font-weight: variables.$fwMedium;
             line-height: 1;
             padding: 10px 20px !important;
-            border: 1px solid palette.$lightBorderColor;
             font-size: 13px;
             outline: none;
             user-select: none;
+            border: 0 !important;
 
             // CONFIRM
             &:where(.swal2-styled):where(.swal2-confirm) {
@@ -246,7 +248,9 @@ div {
         width: 100%;
         border-radius: variables.$borderRadius !important;
         margin: 0 !important;
-        margin-top: 15px !important;
+        margin-top: 10px !important;
+        background: palette.$inputBackground !important;
+        border: 0 !important;
     }
 
     .swal2-html-container {

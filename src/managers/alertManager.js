@@ -58,7 +58,17 @@ animate__faster`,
             },
         })
     },
-    confirmAlert: function (title, confirmButtonText = "I'm Sure", showDenyButton = true, onConfirm = () => {}, onDeny = () => {}, theme = 'light') {
+    confirmAlert: function ({
+        title,
+        confirmButtonText = "I'm Sure",
+        showDenyButton = true,
+        onConfirm = () => {},
+        onDeny = () => {},
+        bg = 'white',
+        color = 'black',
+        html = '',
+        theme = 'light',
+    } = {}) {
         return Swal.fire({
             showClass: {
                 popup: `animate__animated
@@ -71,14 +81,14 @@ animate__fadeOutDown
 animate__faster`,
             },
             title: title,
+            html: html,
+            background: bg,
             grow: true,
-            // html: 'TEst',
             showDenyButton: showDenyButton,
             showCancelButton: false,
             confirmButtonText: confirmButtonText,
             denyButtonText: 'Nevermind',
-            background: '#fff3cd !important',
-            confirmButtonColor: '#00b389 !important',
+            confirmButtonColor: '#00b389',
             customClass: {
                 container: 'sweet-alert-frost',
             },
@@ -127,7 +137,16 @@ animate__faster`,
             }
         })
     },
-    inputAlert: function (title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = 'text', bg = 'white') {
+    inputAlert: function (
+        title,
+        text,
+        onConfirm,
+        allowOutsideClick = true,
+        showCancelButton = true,
+        inputType = 'text',
+        bg = 'white',
+        color = 'black'
+    ) {
         return Swal.fire({
             title: title,
             text: text,
@@ -136,6 +155,8 @@ animate__faster`,
             showCancelButton: showCancelButton,
             confirmButtonText: 'Confirm',
             allowOutsideClick: allowOutsideClick,
+            color: color,
+            background: bg,
             customClass: {
                 container: 'sweet-alert-frost',
             },

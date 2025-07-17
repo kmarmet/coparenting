@@ -127,11 +127,11 @@
             opacity: 0;
 
             &.active {
-                padding: 15px 0 15px 15px;
                 .play-pause-wrapper {
+                    width: 70px;
                     transform: scaleX(1);
                     margin-left: 15px;
-                    width: 70px;
+                    border-radius: variables.$borderRadius;
                 }
             }
 
@@ -209,6 +209,7 @@
                 align-self: stretch;
                 transition: all 0.3s ease-in-out;
                 width: 0;
+                margin-bottom: 12px;
 
                 &.pause {
                     background: palette.$secondaryGreen;

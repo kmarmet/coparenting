@@ -56,12 +56,7 @@ $boxShadow_bottom_only_dark:
     rgba(0, 0, 0, 0.15) 0 14px 14px,
     rgba(0, 0, 0, 0.15) 0 16px 8px,
     rgba(0, 0, 0, 0.15) 0 22px 16px;
-$boxShadow_bottom_only_extra_dark:
-    rgba(0, 0, 0, 0.25) 0 2px 1px,
-    rgba(0, 0, 0, 0.25) 0 4px 2px,
-    rgba(0, 0, 0, 0.25) 0 14px 14px,
-    rgba(0, 0, 0, 0.25) 0 16px 8px,
-    rgba(0, 0, 0, 0.25) 0 22px 16px;
+$boxShadow_bottom_only_extra_dark: 0 40px 30px -10px;
 $boxShadow_fade_bottom: rgba(0, 0, 0, 0.65) 0 -40px 36px -8px inset;
 
 // SURROUND

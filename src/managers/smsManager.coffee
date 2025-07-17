@@ -12,7 +12,7 @@ export default SmsManager =
    with them: #{verificationCode} #{SmsManager.lineBreak}#{SmsManager.signature}"
 
     Invitation: (currentUser,userName, recipientPhone) ->
-      "Hello #{userName},#{SmsManager.lineBreak}#{SmsManager.lineBreak} You have been invited to join Peaceful coParenting by #{currentUser?.name}. To accept the invite please visit #{SmsManager.lineBreak}https://peaceful-coparenting.app?type=invite&senderKey=#{currentUser?.key} #{SmsManager.lineBreak}  #{SmsManager.lineBreak}#{SmsManager.signature}"
+      return "Hello #{userName},#{SmsManager.lineBreak}#{SmsManager.lineBreak} You have been invited to join Peaceful coParenting by #{currentUser?.name}. To accept the invite please visit #{SmsManager.lineBreak}https://peaceful-coparenting.app?type=invite&senderKey=#{currentUser?.key} #{SmsManager.lineBreak}  #{SmsManager.lineBreak}#{SmsManager.signature}"
 
   GetRemainingBalance: () ->
     requestOptions =

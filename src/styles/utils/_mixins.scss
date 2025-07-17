@@ -73,6 +73,7 @@ $shadows-big: multiple-box-shadow(100);
         padding-bottom: 200px;
         display: flex;
         flex-direction: column;
+
         &.active {
             opacity: 1;
             transition: all 2s cubic-bezier(0.17, 0.67, 0.21, 0.95);
@@ -80,10 +81,11 @@ $shadows-big: multiple-box-shadow(100);
 
         // CONTENT
         .screen-content {
+            max-height: calc(100vh - 250px);
             padding: 0 15px 200px 15px;
             width: 100%;
             position: relative;
-            margin-top: 70px;
+            margin-top: 60px;
             flex: 1;
             overflow: auto;
             &.calendar {
@@ -718,7 +720,7 @@ $shadows-big: multiple-box-shadow(100);
 /*#region  TEXT */
 @mixin rowTitle {
     color: black;
-    opacity: 0.9;
+    opacity: 0.68;
     @include fonts.regularFont;
 }
 
@@ -835,7 +837,6 @@ $shadows-big: multiple-box-shadow(100);
         bottom: 0;
         justify-self: center;
         line-height: 1;
-        font-weight: variables.$fwMedium;
         font-size: 14px;
         background-color: transparent;
         text-align: center;
@@ -846,6 +847,7 @@ $shadows-big: multiple-box-shadow(100);
         border-radius: 0;
         width: 100%;
         height: 60%;
+        @include fonts.regularFont;
 
         svg {
             color: white;
@@ -854,6 +856,10 @@ $shadows-big: multiple-box-shadow(100);
             justify-content: center;
             align-self: center;
             line-height: 1;
+        }
+
+        &.multi-line {
+            line-height: 1.4;
         }
 
         &.purple {
@@ -929,8 +935,8 @@ $shadows-big: multiple-box-shadow(100);
     pointer-events: none;
     transition: all 0.5s ease;
     opacity: 0;
-    backdrop-filter: blur(16px);
-    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.1);
 
     &.active {
         opacity: 1;
@@ -1601,6 +1607,16 @@ $shadows-big: multiple-box-shadow(100);
         }
     }
 
+    .profile-pic {
+        position: fixed;
+        top: 40px;
+        left: 15px;
+        border-radius: 100%;
+        background-size: contain;
+        box-shadow: variables.$boxShadow_float;
+        @include square(70px);
+    }
+
     &.child-info {
         overflow: auto;
     }
@@ -1627,6 +1643,7 @@ $shadows-big: multiple-box-shadow(100);
         width: min-content;
         padding: 0;
         height: unset;
+
         & {
             @include hover;
         }
@@ -1932,19 +1949,6 @@ $shadows-big: multiple-box-shadow(100);
         }
     }
 
-    &.dark {
-        label {
-            color: black;
-            opacity: 0.65;
-        }
-    }
-
-    &.light {
-        label {
-            color: palette.$labelText;
-        }
-    }
-
     &.always-show,
     &.toggle {
         display: block;
@@ -1956,6 +1960,19 @@ $shadows-big: multiple-box-shadow(100);
             padding-bottom: 5px;
             letter-spacing: 0.8px;
             color: palette.$transWhite;
+        }
+
+        &.dark {
+            label {
+                color: black;
+                opacity: 0.65;
+            }
+        }
+
+        &.light {
+            label {
+                color: palette.$labelText;
+            }
         }
 
         &.smaller {
@@ -2792,11 +2809,17 @@ $shadows-big: multiple-box-shadow(100);
     .custom-text {
         color: white;
         font-weight: variables.$fwLight;
+        &.in-form {
+            .link {
+                color: palette.$lightestPurple;
+                border-bottom: 1px solid palette.$lightestPurple;
+                @include fonts.lightFont;
+            }
+        }
         span {
-            color: white;
             text-transform: capitalize;
             border-bottom: 1px solid white;
-            font-weight: variables.$fwLight;
+            @include fonts.lightFont;
         }
     }
 
@@ -4214,7 +4237,8 @@ $shadows-big: multiple-box-shadow(100);
                 background-color: transparent;
                 opacity: 0;
                 width: 100%;
-
+                position: relative;
+                left: -5px;
                 &.active {
                     .form-divider {
                         span {

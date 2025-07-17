@@ -180,112 +180,6 @@
 }
 /*#endregion  PASSWORD VALIDATION */
 
-// App Update Overlay
-#app-update-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: variables.$maxZIndex;
-    transition: all 0.3s ease;
-    pointer-events: all;
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    @include mixins.starryBackground;
-
-    &.show {
-        animation: fadeIn 0.8s cubic-bezier(0.41, 0.52, 0.24, 0.82) forwards !important;
-        opacity: 1;
-    }
-
-    .card-buttons {
-        align-items: center;
-        @include mixins.cardButtons;
-
-        & {
-            border-top: 0;
-        }
-
-        .card-button {
-            background: rgba(255, 255, 255, 0.84);
-            width: max-content;
-            border-radius: 50px;
-            padding: 12px 20px 10px 20px;
-            margin: 0 auto;
-            color: rgba(24, 24, 24, 0.37);
-            color: #5549ff;
-            box-shadow: 0 0 30px 12px rgba(239, 239, 239, 0.64);
-            font-weight: variables.$fwBold;
-            line-height: 1;
-            border: 0;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            top: -20px;
-            @include mixins.sparkleButton;
-            @include fonts.fontBase;
-            svg {
-                margin-left: 8px;
-                color: #5549ff;
-            }
-        }
-    }
-
-    .animation {
-        margin-top: 100px;
-        width: fit-content;
-        font-size: 40px;
-        font-family: 'SF-Pro-Display', sans-serif !important;
-        font-weight: bold;
-        text-transform: uppercase;
-        color: #0000;
-        -webkit-text-stroke: 1px white;
-        --l: #0000 45%, rgba(229, 231, 235, 0.57) 0 55%, #0000 0;
-        --g: 0/300% 100% no-repeat text;
-        background:
-            linear-gradient(-60deg, var(--l)) var(--g),
-            linear-gradient(60deg, var(--l)) var(--g);
-        animation: l7 3.5s linear infinite;
-        text-align: center;
-        padding: 0 20px;
-        &::before {
-            content: 'update available';
-        }
-        @keyframes l7 {
-            0% {
-                background-position: 100%, 0;
-            }
-            50% {
-                background-position: 0, 0;
-            }
-            to {
-                background-position: 0, 100%;
-            }
-        }
-    }
-
-    .content {
-        align-self: center;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 50vh;
-        gap: 15px;
-        flex-wrap: wrap;
-
-        img {
-            &.takeoff-gif {
-                height: max-content;
-                @include mixins.square(150px);
-            }
-        }
-    }
-}
-
 // Overlay
 #overlay {
     position: fixed;
@@ -316,6 +210,115 @@
     * {
         @include fonts.lightFont;
     }
+
+    /*#region  APP UPDATE OVERLAY */
+    #app-update-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: variables.$maxZIndex;
+        transition: all 0.3s ease;
+        pointer-events: all;
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        @include mixins.starryBackground;
+
+        &.show {
+            animation: fadeIn 0.8s cubic-bezier(0.41, 0.52, 0.24, 0.82) forwards !important;
+            opacity: 1;
+        }
+
+        .card-buttons {
+            align-items: center;
+            @include mixins.cardButtons;
+
+            & {
+                border-top: 0;
+            }
+
+            .card-button {
+                background: rgba(255, 255, 255, 0.84);
+                width: max-content;
+                border-radius: 50px;
+                padding: 12px 20px 10px 20px;
+                margin: 0 auto;
+                color: rgba(24, 24, 24, 0.37);
+                color: #5549ff;
+                box-shadow: 0 0 30px 12px rgba(239, 239, 239, 0.64);
+                font-weight: variables.$fwBold;
+                line-height: 1;
+                border: 0;
+                white-space: nowrap;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                top: -20px;
+                @include mixins.sparkleButton;
+                @include fonts.fontBase;
+
+                svg {
+                    margin-left: 8px;
+                    color: #5549ff;
+                }
+            }
+        }
+
+        .animation {
+            margin-top: 100px;
+            width: fit-content;
+            font-size: 40px;
+            font-family: 'SF-Pro-Display', sans-serif !important;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #0000;
+            -webkit-text-stroke: 1px white;
+            --l: #0000 45%, rgba(229, 231, 235, 0.57) 0 55%, #0000 0;
+            --g: 0/300% 100% no-repeat text;
+            background:
+                linear-gradient(-60deg, var(--l)) var(--g),
+                linear-gradient(60deg, var(--l)) var(--g);
+            animation: l7 3.5s linear infinite;
+            text-align: center;
+            padding: 0 20px;
+            &::before {
+                content: 'update available';
+            }
+            @keyframes l7 {
+                0% {
+                    background-position: 100%, 0;
+                }
+                50% {
+                    background-position: 0, 0;
+                }
+                to {
+                    background-position: 0, 100%;
+                }
+            }
+        }
+
+        .content {
+            align-self: center;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50vh;
+            gap: 15px;
+            flex-wrap: wrap;
+
+            img {
+                &.takeoff-gif {
+                    height: max-content;
+                    @include mixins.square(150px);
+                }
+            }
+        }
+    }
+    /*#endregion  APP UPDATE OVERLAY */
+
     // APP CONTAINER
     #app-container {
         position: relative;
@@ -647,9 +650,11 @@
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 20px 0;
+            gap: 20px;
             justify-content: center;
             width: 100%;
+            margin-top: 20px;
+            padding: 0 10px;
 
             &.multiline-blocks {
                 margin: 20px auto;
@@ -667,15 +672,13 @@
             }
 
             .block {
-                width: calc(100% / 4 + 20px);
                 align-items: center;
                 flex-wrap: wrap;
                 justify-content: center;
-                padding: 0 10px;
                 position: relative;
                 display: flex;
                 flex-direction: column;
-                min-width: 100px;
+                width: max-content;
 
                 &.full-width {
                     width: 100%;
@@ -752,7 +755,6 @@
                     }
                 }
 
-                // Icons
                 a {
                     border: 0;
 
@@ -1034,6 +1036,9 @@
         /*#endregion  ID's */
 
         /*#region  CLASSES */
+        .link {
+            color: palette.$linkColor;
+        }
         .underline {
             border-bottom: 1px solid palette.$mediumGreyDarkest;
         }

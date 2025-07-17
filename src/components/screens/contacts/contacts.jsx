@@ -54,7 +54,8 @@ const Contacts = () => {
     const [showNewChildCard, setShowNewChildCard] = useState(false)
     const [showInvitationCard, setShowInvitationCard] = useState(false)
     const [showModal, setShowModal] = useState(false)
-    const [view, setView] = useState('details')
+    const [view, setView] = useState([{label: 'Details', value: 'details'}])
+    const [showMap, setShowMap] = useState(false)
 
     // REFS
     const updateObject = useRef({})
@@ -157,11 +158,13 @@ const Contacts = () => {
     const GetAccountType = () => {
         // eslint-disable-next-line no-prototype-builtins
         if (activeContact?.hasOwnProperty('general')) {
-            return 'child'
+            return 'children'
         } else {
-            return 'parent'
+            return 'co-parents'
         }
     }
+
+    const ImageIsValid = (src) => Manager.IsValid(src)
 
     // Remove view from the active form
     useEffect(() => {
@@ -216,6 +219,7 @@ const Contacts = () => {
                     setShowInvitationCard(false)
                 }}
                 hideCard={() => setShowInvitationCard(false)}>
+                <Spacer height={8} />
                 <InputField
                     inputType={InputTypes.phone}
                     placeholder={'Phone Number'}
@@ -227,32 +231,35 @@ const Contacts = () => {
             {/* UPDATE FORM */}
             <Form
                 onSubmit={UpdateContact}
-                activeView={view}
                 onClose={() => setShowModal(false)}
                 hideCard={() => setShowModal(false)}
                 wrapperClass="contact-form-wrapper"
-                hasSubmitButton={view === 'edit'}
+                hasSubmitButton={view[0].label === 'Edit'}
                 hasDelete={true}
                 onDelete={RemoveContact}
                 deleteButtonText={`Remove`}
                 submitText={'Update'}
                 viewDropdown={
-                    <ViewDropdown
-                        dropdownPlaceholder="Details"
-                        selectedView={view}
-                        onSelect={(view) => {
-                            setView(view)
-                        }}
-                    />
+                    <>
+                        <Spacer height={8} />
+                        <ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={setView} />
+                    </>
                 }
                 subtitle={`${!users?.map((x) => x?.key).includes(activeContact?.userKey) ? `${GetContactName()} has not created an account with us yet. Invite them to create an account to begin sharing with and receiving information from them.` : ''}`}
                 title={`${GetContactName()}`}
                 showCard={showModal}>
                 {/* DETAILS */}
-                <div className={view?.label?.toLowerCase() === 'details' ? 'view-wrapper details active' : 'view-wrapper'}>
+                <div className={view[0].label === 'Details' ? 'views-wrapper details active' : 'view-wrapper'}>
+                    {/* PROFILE PICTURE */}
+                    {ImageIsValid(activeContact?.profilePic) === true && (
+                        <div style={{backgroundImage: `url(${activeContact?.profilePic})`}} className="profile-pic"></div>
+                    )}
+
+                    <Spacer height={8} />
+                    {/* BLOCKS */}
                     <div className="blocks">
                         <DetailBlock isCustom={true} isFullWidth={true} valueToValidate={activeContact} text={''} title={''}>
-                            <p className="custom-text">
+                            <p className="custom-text in-form">
                                 Add custom information about {GetContactName()} at the&nbsp;
                                 <span className="link" onClick={() => setState({...state, currentScreen: ScreenNames.children})}>
                                     {GetAccountType()}
@@ -303,7 +310,7 @@ const Contacts = () => {
                 </div>
 
                 {/* EDIT */}
-                <div className={view?.label?.toLowerCase() === 'edit' ? 'view-wrapper edit active' : 'edit view-wrapper'}>
+                <div className={view[0].label === 'Edit' ? 'view-wrapper edit active' : 'edit view-wrapper'}>
                     {/* NAME */}
                     <InputField
                         inputType={InputTypes.text}
@@ -518,6 +525,7 @@ const Contacts = () => {
                                         <div
                                             onClick={() => {
                                                 contact.accountType = 'child'
+                                                setView([{label: 'Details', value: 'Details'}])
                                                 setActiveContact(contact)
                                                 setShowModal(true)
                                             }}

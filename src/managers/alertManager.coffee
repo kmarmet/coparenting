@@ -1,7 +1,6 @@
 import Swal from "sweetalert2"
 import DomManager from "./domManager"
 
-
 AlertManager = {
   ThreeButtonAlertConfig: {
     title: "",
@@ -35,6 +34,7 @@ AlertManager = {
           """
     DomManager.setErrorAlertRed()
     return false
+    
   successAlert: (message, allowOutsideClick = true) ->
     Swal.fire
       text: message
@@ -56,7 +56,7 @@ AlertManager = {
                 animate__faster
               """
 
-  confirmAlert: (title, confirmButtonText = "I'm Sure", showDenyButton = true, onConfirm = () =>, onDeny = () =>, theme = 'light') ->
+  confirmAlert: ({title, confirmButtonText = "I'm Sure", showDenyButton=true, onConfirm = () =>, onDeny = () =>,bg = 'white', color ='black', html = "", theme = 'light'}={}) ->
     Swal.fire
       showClass:
         popup: """
@@ -71,14 +71,14 @@ AlertManager = {
               animate__faster
             """
       title: title
+      html: html
+      background: bg
       grow: true
-#      html: 'TEst'
       showDenyButton: showDenyButton
       showCancelButton: false
       confirmButtonText: confirmButtonText
       denyButtonText: "Nevermind"
-      background: "#fff3cd !important"
-      confirmButtonColor: '#00b389 !important'
+      confirmButtonColor: '#00b389'
       customClass:
         container: 'sweet-alert-frost'
 
@@ -118,7 +118,7 @@ AlertManager = {
       if result.isConfirmed
         if onConfirm then onConfirm(result)
 
-  inputAlert: (title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "text", bg = 'white') ->
+  inputAlert: (title, text, onConfirm, allowOutsideClick = true, showCancelButton = true, inputType = "text", bg = 'white', color = 'black') ->
     Swal.fire
       title: title
       text: text
@@ -127,6 +127,8 @@ AlertManager = {
       showCancelButton: showCancelButton
       confirmButtonText: "Confirm"
       allowOutsideClick: allowOutsideClick
+      color:color,
+      background: bg
       customClass:
         container: 'sweet-alert-frost',
       showClass:

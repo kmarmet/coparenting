@@ -30,7 +30,7 @@ import NewCoParentForm from './components/screens/coparents/newCoParentForm.jsx'
 import DocsList from './components/screens/documents/docsList.jsx'
 import DocViewer from './components/screens/documents/docViewer'
 import NewDocument from './components/screens/documents/newDocument.jsx'
-import ExpenseManagement from './components/screens/expenses/expenseManagement.jsx'
+import Expenses from './components/screens/expenses/expenses.jsx'
 import Handoff from './components/screens/handoff.jsx'
 import Help from './components/screens/help'
 import InstallApp from './components/screens/installApp.jsx'
@@ -146,7 +146,8 @@ export default function App() {
 
                     let updates = []
                     let currentUserFromDb
-                    const appVersion = '1.0.1'
+                    let isLoading = true
+
                     // const appVersion = await appManager.GetCurrentAppVersion()
                     currentUserFromDb = users?.find((u) => u?.email === user?.email)
                     // User Exists
@@ -189,6 +190,14 @@ export default function App() {
                             screenToNavigateTo = ScreenNames.login
                         }
 
+                        // Check for updates -> If update is available, navigate to updates screen
+                        const updateIsAvailable = await AppManager.CheckForUpdate()
+
+                        if (updateIsAvailable) {
+                            screenToNavigateTo = ScreenNames.appUpdate
+                            isLoading = false
+                        }
+
                         // EMAIL VERIFIED
                         setState({
                             ...state,
@@ -196,7 +205,7 @@ export default function App() {
                             currentUser: currentUserFromDb,
                             currentScreen: screenToNavigateTo,
                             userIsLoggedIn: true,
-                            currentAppVersion: appVersion,
+                            isLoading: isLoading,
                             theme: currentUserFromDb?.settings?.theme,
                             notificationCount: updates?.length,
                         })
@@ -310,7 +319,7 @@ export default function App() {
                         {currentScreen === ScreenNames.landing && !isLoading && <Landing />}
                         {currentScreen === ScreenNames.updates && <Updates />}
                         {currentScreen === ScreenNames.calendar && <EventCalendar />}
-                        {currentScreen === ScreenNames.expenseManagement && <ExpenseManagement />}
+                        {currentScreen === ScreenNames.expenseManagement && <Expenses />}
                         {currentScreen === ScreenNames.resetPassword && <ResetPassword />}
                         {currentScreen === ScreenNames.handoff && <Handoff />}
                         {currentScreen === ScreenNames.memories && <Memories />}

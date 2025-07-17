@@ -137,7 +137,8 @@ export default function MakeItYours() {
             true,
             true,
             'text',
-            'yellow'
+            '#b12643',
+            'white'
         )
     }
 

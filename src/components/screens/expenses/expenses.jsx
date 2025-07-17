@@ -62,7 +62,7 @@ const ExpenseIcons = {
     Pet: <MdPets className={'category-icon pet'} />,
 }
 
-export default function ExpenseManagement() {
+export default function Expenses() {
     const {state, setState} = useContext(globalState)
     const {theme} = state
 
@@ -71,7 +71,7 @@ export default function ExpenseManagement() {
     const [showNewExpenseCard, setShowNewExpenseCard] = useState(false)
     const [activeExpense, setActiveExpense] = useState(null)
     const [showDetails, setShowDetails] = useState(false)
-    const [view, setView] = useState('Details')
+    const [view, setView] = useState({label: 'Details', value: 'details'})
     const [sortMethod, setSortMethod] = useState(ExpenseSortByTypes.recentlyAdded)
     const [selectedChildren, setSelectedChildren] = useState([])
     const [selectedCategory, setSelectedCategory] = useState([])
@@ -97,7 +97,7 @@ export default function ExpenseManagement() {
         await ExpenseManager.UpdateExpense(currentUser?.key, updateIndex, cleanedExpense)
         setActiveExpense(updatedExpense)
         setShowDetails(false)
-        setView('Details')
+        setView({label: 'Details', value: 'details'})
         setState({...state, successAlertMessage: 'Expense Updated'})
     }
 
@@ -239,7 +239,6 @@ export default function ExpenseManagement() {
 
     // Set Categories
     useEffect(() => {
-        setView('Details')
         const catsAsArray = Object.keys(ExpenseCategories)
         catsAsArray.unshift('None')
         setCategoriesAsArray(catsAsArray)
@@ -252,10 +251,16 @@ export default function ExpenseManagement() {
         }
     }, [expenses])
 
+    useEffect(() => {
+        if (view) {
+            console.log(view)
+        }
+    }, [view])
+
     return (
         <Screen
             stopLoadingBool={!currentUserIsLoading && !expensesAreLoading && !childrenAreLoading}
-            activeScreen={ScreenNames.expenseManagement}
+            activeScreen={ScreenNames.expenses}
             loadingByDefault={true}>
             {/* NEW EXPENSE FORM */}
             <NewExpenseForm showCard={showNewExpenseCard} hideCard={() => setShowNewExpenseCard(false)} />
@@ -277,45 +282,30 @@ export default function ExpenseManagement() {
                 submitText={'Update'}
                 title={`${StringManager.UppercaseFirstLetterOfAllWords(activeExpense?.name)}`}
                 onSubmit={Update}
-                hasSubmitButton={view === 'Edit'}
+                hasSubmitButton={view?.label === 'Edit'}
                 className="expense-tracker"
                 wrapperClass="expense-tracker"
                 onClose={() => {
                     setActiveExpense(null)
                     setShowDetails(false)
-                    setView('Details')
+                    setView({label: 'Details', value: 'details'})
                 }}
                 onDelete={DeleteExpense}
-                viewDropdown={
-                    <ViewDropdown
-                        dropdownPlaceholder="Details"
-                        selectedView={view}
-                        onSelect={(view) => {
-                            setView(view)
-                        }}
-                    />
-                }
+                viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={setView} />}
                 extraButtons={[
                     <>
                         {activeExpense?.paidStatus === 'unpaid' && (
-                            <CardButton buttonTheme={ButtonThemes.green} classes=" default" onClick={TogglePaidStatus}>
-                                Paid
-                            </CardButton>
+                            <CardButton text={'Mark as Paid'} buttonTheme={ButtonThemes.green} classes=" default" onClick={TogglePaidStatus} />
                         )}
 
-                        {activeExpense?.paidStatus === 'paid' && (
-                            <CardButton classes="default" onClick={TogglePaidStatus}>
-                                Mark Unpaid
-                            </CardButton>
-                        )}
+                        {activeExpense?.paidStatus === 'paid' && <CardButton text={'Mark Unpaid'} classes="default" onClick={TogglePaidStatus} />}
 
-                        <CardButton classes="center lh-1_3" onClick={SendReminder}>
-                            Send <br /> Reminder
-                        </CardButton>
+                        <CardButton text={'Send Reminder'} classes="center" onClick={SendReminder} />
                     </>,
                 ]}
                 showCard={showDetails}>
                 <div className={`details content ${activeExpense?.reason?.length > 20 ? 'long-text' : ''}`}>
+                    <Spacer height={3} />
                     {/* DETAILS */}
                     {view?.label === 'Details' && (
                         <>
@@ -448,6 +438,8 @@ export default function ExpenseManagement() {
                                 onChange={(e) => (formRef.current.name = e.target.value)}
                             />
 
+                            <Spacer height={3} />
+
                             {/* AMOUNT */}
                             <InputField
                                 placeholder={'Amount'}
@@ -455,6 +447,8 @@ export default function ExpenseManagement() {
                                 inputType={InputTypes.number}
                                 onChange={(e) => (formRef.current.amount = e.target.value)}
                             />
+
+                            <Spacer height={3} />
 
                             {/* DUE DATE */}
                             <InputField
@@ -465,6 +459,8 @@ export default function ExpenseManagement() {
                                 onDateOrTimeSelection={(e) => (formRef.current.dueDate = moment(e).format('MM/DD/yyyy'))}
                             />
 
+                            <Spacer height={3} />
+
                             {/* CATEGORY */}
                             <SelectDropdown
                                 value={DropdownManager.GetSelected.ExpenseCategory(activeExpense?.category)}
@@ -473,7 +469,7 @@ export default function ExpenseManagement() {
                                 placeholder={'Category'}
                             />
 
-                            <Spacer height={5} />
+                            <Spacer height={3} />
 
                             {/* INCLUDING WHICH CHILDREN */}
                             <SelectDropdown
@@ -501,7 +497,7 @@ export default function ExpenseManagement() {
             {/* PAGE CONTAINER */}
             <div id="expense-tracker" className={`${theme} page-container`}>
                 <ScreenHeader
-                    title={'Expense Management'}
+                    title={'Expenses'}
                     screenDescription="Incorporate expenses that your co-parent is responsible for. Should a new expense arise that requires your payment, you will have the option
           to either approve or decline it"
                 />
@@ -628,11 +624,13 @@ export default function ExpenseManagement() {
                                             {/* EXPENSE NAME */}
                                             <div className="content-columns">
                                                 <div className={'left'}>
-                                                    <p className={'category'}>{expense?.category}</p>
+                                                    <p className={`name ${!Manager.IsValid(expense?.category) ? 'no-category lightest' : ''}`}>
+                                                        {StringManager.UppercaseFirstLetterOfAllWords(expense?.name)}
+                                                    </p>
                                                     {/* DATE */}
                                                     <div className="flex below-title">
-                                                        <p className={`name ${!Manager.IsValid(expense?.category) ? 'no-category' : ''}`}>
-                                                            {StringManager.UppercaseFirstLetterOfAllWords(expense?.name)}
+                                                        <p className={'category lightest'}>
+                                                            {expense?.category ? expense?.category : 'Miscellaneous'}
                                                         </p>
                                                         {/*{Manager.IsValid(dueDate, true) && (*/}
                                                         {/*  <>*/}

@@ -49,22 +49,20 @@
                     justify-content: space-between;
                     .left {
                         .category {
+                            font-size: 14px;
+                            @include mixins.Subtitle;
+                            @include fonts.lightFont;
+                            &.no-category {
+                                padding: 0;
+                            }
+                        }
+                        .name {
+                            padding-top: 4px;
+
                             font-size: 16px;
                             line-height: 1;
                             white-space: nowrap;
-                            font-weight: variables.$fwRegular;
-                        }
-                        .name {
-                            font-weight: variables.$fwRegular;
-                            font-size: 14px;
-                            color: palette.$darkerGrey;
-                            padding-top: 4px;
-                            &.no-category {
-                                font-weight: variables.$fwRegular;
-                                font-size: 16px;
-                                color: palette.$primaryText;
-                                padding: 0;
-                            }
+                            @include mixins.rowTitle;
                         }
                     }
                     .right {
