@@ -1,793 +1,859 @@
-@use '../utils/_palette';
-@use '../_fonts';
-@use '../utils/variables';
-@use '../utils/mixins';
+@use "../utils/_palette";
+@use "../_fonts";
+@use "../utils/variables";
+@use "../utils/mixins";
 
 #external-overrides {
-    .checkbox {
-        height: 20px;
-        width: 20px;
-        border-radius: 4px;
-        border: 1px solid palette.$darkGrey;
-        margin-right: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        &.checked {
-            background: white;
-            border: 1px solid palette.$green;
-            svg {
-                color: palette.$green;
-                opacity: 1;
-                transition: all 0.3s ease-in;
-            }
-        }
-
-        svg {
-            transition: all 0.3s ease-out;
-            opacity: 0;
-        }
-    }
-    // OVERLAY
-    .MuiBackdrop-root {
-        &.MuiModal-backdrop {
-            backdrop-filter: blur(5px) !important;
-        }
-    }
-
-    .MuiPickersLayout-root {
-        background: transparent !important;
-    }
-
-    // MUI PARENT
-    .MuiPaper-root:not(.MuiAccordion-root) {
-        background-color: palette.$lightBg;
-        border-radius: variables.$cardBorderRadius !important;
-        margin: 0 !important;
-        width: calc(100vw - 20px) !important;
-        max-width: calc(100vw - 20px) !important;
-        transition: all 0.3s ease-in-out !important;
-        box-shadow: variables.$boxShadow_bottom_only_dark;
-
-        .MuiPickersArrowSwitcher-root {
-            width: 100px;
-
-            svg {
-                transform: scale(1.6);
-                color: palette.$darkGrey !important;
-            }
-        }
-
-        .MuiList-root {
-            padding: 0 !important;
-        }
-
-        &.MuiAccordion-root {
-            width: 100% !important;
-        }
-
-        /*#region  SELECT DROPDOWN */
-        &.MuiPopover-paper {
-            .MuiMenuItem-root {
-                transition: all 0.3s ease-in-out;
-                &.selected {
-                    background: palette.$green !important;
-                    color: white !important;
-                    padding-left: 25px;
-                    transition: all 0.3s ease-in-out;
-                    .MuiTypography-root {
-                        color: white !important;
-                    }
-                }
-            }
-        }
-        /*#endregion  SELECT DROPDOWN */
-
-        /*#region  MODAL BUTTONS*/
-        .MuiDialogActions-root {
-            display: grid;
-            grid-template-columns: 1fr 1fr !important;
-            width: 100%;
+      .checkbox {
+            height: 20px;
+            width: 20px;
+            border-radius: 4px;
+            border: 1px solid palette.$darkGrey;
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            padding: 10px 15px 20px 15px !important;
-            max-width: calc(100vw - 20px) !important;
-            margin: 20px auto 0 auto !important;
-
-            .MuiButton-root {
-                &.MuiButton-text {
-                    font-weight: bold;
-                    border-radius: 10px !important;
-                    font-size: 14px !important;
-                    display: flex;
-                    align-items: center;
-                    line-height: 1;
-                    height: 50px !important;
-                    color: palette.$darkerGrey !important;
-                    background: white !important;
-
-                    &:nth-child(2) {
-                        background: palette.$green !important;
-                        color: white !important;
-                        border: 1px solid palette.$green !important;
-                    }
-                }
+            &.checked {
+                  background: white;
+                  border: 1px solid palette.$green;
+                  svg {
+                        color: palette.$green;
+                        opacity: 1;
+                        transition: all 0.3s ease-in;
+                  }
             }
-        }
-        /*#endregion  MODAL BUTTONS*/
 
-        /*#region  TIMEPICKER TOOLBAR*/
-        .MuiPickersToolbar-root {
-            max-width: calc(100vw - 20px) !important;
-            padding: 15px 15px 0 15px;
+            svg {
+                  transition: all 0.3s ease-out;
+                  opacity: 0;
+            }
+      }
+      // OVERLAY
+      .MuiBackdrop-root {
+            &.MuiModal-backdrop {
+                  backdrop-filter: blur(5px) !important;
+            }
+      }
+
+      .MuiPickersLayout-root {
+            background: transparent !important;
+      }
+
+      // Static Datepicker Month Dropdown
+      .MuiFormControl-root {
+            &[class*="css-"] {
+                  height: max-content !important;
+            }
+            .MuiInputBase-fullWidth {
+                  background-color: transparent !important;
+                  border-bottom: 1px solid palette.$lightBorderColor !important;
+                  border-radius: 0 !important;
+                  margin-left: auto !important;
+                  justify-self: flex-end !important;
+
+                  &.MuiInputBase-root {
+                        &[class*="css-"] {
+                              background-color: transparent !important;
+                              border-radius: variables.$buttonBorderRadius !important;
+                              height: max-content !important;
+                              display: flex !important;
+                              align-items: center !important;
+                              justify-content: space-between !important;
+                              padding: 4px 0 4px 15px !important;
+                              margin: 0 auto !important;
+                              width: max-content !important;
+                              min-width: 120px !important;
+                              border: 1px solid palette.$iconGrey !important;
+
+                              // Empty element to left of arrow
+                              .MuiSelect-nativeInput {
+                                    display: none !important;
+                              }
+
+                              // Actual month button
+                              [role="combobox"] {
+                                    background-color: transparent !important;
+                                    border-radius: 0 !important;
+                                    width: 100% !important;
+                                    max-width: 100% !important;
+                                    color: palette.$iconGrey !important;
+                                    font-size: 17px !important;
+                                    margin: 0 !important;
+                                    padding: 0 !important;
+                                    font-weight: variables.$fwRegular !important;
+                              }
+
+                              .MuiSvgIcon-root {
+                                    color: palette.$iconGrey !important;
+                                    align-self: center !important;
+                                    position: relative !important;
+                                    margin: 0 auto !important;
+                                    display: flex !important;
+                                    align-items: center !important;
+                                    justify-content: center !important;
+                              }
+                        }
+                  }
+            }
+      }
+
+      // MUI PARENT
+      .MuiPaper-root:not(.MuiAccordion-root) {
+            background-color: palette.$lightBg;
+            border-radius: variables.$cardBorderRadius !important;
             margin: 0 !important;
+            width: calc(100vw - 20px) !important;
+            max-width: calc(100vw - 20px) !important;
+            transition: all 0.3s ease-in-out !important;
+            box-shadow: variables.$boxShadow_bottom_only_dark;
 
-            .MuiTypography-overline {
-                display: none !important;
+            .MuiPickersArrowSwitcher-root {
+                  width: 100px;
+
+                  svg {
+                        transform: scale(1.6);
+                        color: palette.$darkGrey !important;
+                  }
             }
 
-            .MuiTimePickerToolbar-ampmSelection {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                align-items: center;
-                margin: 15px 0 0 0 !important;
-                gap: 10px !important;
-                * {
-                    line-height: 1;
-                }
+            .MuiList-root {
+                  padding: 0 !important;
+            }
 
-                button {
-                    span {
-                        border-radius: 0 !important;
-                        font-size: 20px !important;
-                        background-color: transparent;
+            &.MuiAccordion-root {
+                  width: 100% !important;
+            }
+
+            /*#region  SELECT DROPDOWN */
+            &.MuiPopover-paper {
+                  .MuiMenuItem-root {
+                        transition: all 0.3s ease-in-out;
+                        &.selected {
+                              background: palette.$green !important;
+                              color: white !important;
+                              padding-left: 25px;
+                              transition: all 0.3s ease-in-out;
+                              .MuiTypography-root {
+                                    color: white !important;
+                              }
+                        }
+                  }
+            }
+            /*#endregion  SELECT DROPDOWN */
+
+            /*#region  MODAL BUTTONS*/
+            .MuiDialogActions-root {
+                  display: grid;
+                  grid-template-columns: 1fr 1fr !important;
+                  width: 100%;
+                  justify-content: center;
+                  padding: 10px 15px 20px 15px !important;
+                  max-width: calc(100vw - 20px) !important;
+                  margin: 20px auto 0 auto !important;
+
+                  .MuiButton-root {
+                        &.MuiButton-text {
+                              font-weight: bold;
+                              border-radius: 10px !important;
+                              font-size: 14px !important;
+                              display: flex;
+                              align-items: center;
+                              line-height: 1;
+                              height: 50px !important;
+                              color: palette.$darkerGrey !important;
+                              background: white !important;
+
+                              &:nth-child(2) {
+                                    background: palette.$green !important;
+                                    color: white !important;
+                                    border: 1px solid palette.$green !important;
+                              }
+                        }
+                  }
+            }
+            /*#endregion  MODAL BUTTONS*/
+
+            /*#region  TIMEPICKER TOOLBAR*/
+            .MuiPickersToolbar-root {
+                  max-width: calc(100vw - 20px) !important;
+                  padding: 15px 15px 0 15px;
+                  margin: 0 !important;
+
+                  .MuiTypography-overline {
+                        display: none !important;
+                  }
+
+                  .MuiTimePickerToolbar-ampmSelection {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        align-items: center;
+                        margin: 15px 0 0 0 !important;
+                        gap: 10px !important;
+                        * {
+                              line-height: 1;
+                        }
+
+                        button {
+                              span {
+                                    border-radius: 0 !important;
+                                    font-size: 20px !important;
+                                    background-color: transparent;
+                                    width: 100%;
+
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+
+                                    &.Mui-selected {
+                                          color: palette.$main;
+                                    }
+                              }
+                        }
+                  }
+
+                  .MuiTimePickerToolbar-hourMinuteLabel {
+                        justify-content: center !important;
+                        align-items: center !important;
+                        gap: 5px;
+
+                        .MuiTimePickerToolbar-separator {
+                              display: unset !important;
+                              margin: 0 8px !important;
+                        }
+                  }
+
+                  @media screen and (min-width: 800px) {
+                        display: flex;
+                        margin: 0 auto !important;
+                  }
+            }
+            /*#endregion  TIMEPICKER TOOLBAR*/
+
+            .MuiButtonBase-root,
+            .MuiPickersDay-hiddenDaySpacingFiller {
+                  &.MuiMenuItem-root {
                         width: 100%;
+                  }
 
+                  &.Mui-selected {
+                        //        background-color: palette.$lightMain !important;
+                        background-color: transparent !important;
+                        width: 55px !important;
+                        height: 45px !important;
+                        color: palette.$main !important;
+                        border: 0 !important;
+
+                        span {
+                              font-weight: variables.$fwMediumBold !important;
+                        }
+
+                        &:after {
+                              display: none !important;
+                        }
+
+                        &.MuiMenuItem-root {
+                              width: calc(100% - 20px) !important;
+                              border-radius: variables.$borderRadius !important;
+                        }
+                  }
+            }
+
+            /*#region  DATE RANGE*/
+            .MuiDateRangeCalendar-root {
+                  .MuiDateRangePickerDay-rangeIntervalDayHighlight {
+                        top: -5px !important;
+                        position: relative;
+                        align-items: center !important;
+                        display: flex !important;
+                        justify-content: center !important;
+                        background: palette.$lightMain !important;
+
+                        button {
+                              height: auto !important;
+                              top: unset !important;
+
+                              &.MuiButtonBase-root {
+                                    &.MuiPickersDay-root {
+                                          &.Mui-selected {
+                                                background: transparent !important;
+                                                margin: 0 !important;
+                                                height: unset !important;
+                                                width: unset !important;
+                                          }
+                                    }
+                              }
+                        }
+                  }
+
+                  .MuiDateRangePickerDay-outsideCurrentMonth,
+                  .MuiDateRangePickerDay-root {
+                        width: 55px !important;
+                        text-align: center !important;
+                        height: 50px !important;
+                  }
+                  .MuiDayCalendar-header {
+                        max-height: 30px;
+                        margin: 0;
+                        display: grid !important;
+                        gap: 0 !important;
+                        grid-template-columns: repeat(7, 1fr);
+                        align-items: flex-start !important;
+                        width: calc(100vw - 25px) !important;
+                        justify-content: center !important;
+                        overflow: hidden !important;
+                        .MuiDayCalendar-weekDayLabel {
+                              height: 30px !important;
+                              text-align: center !important;
+                              width: 100%;
+                        }
+                  }
+
+                  .MuiPickersDay-today {
+                        border: 0 !important;
+                        font-weight: variables.$fwBold;
+                        color: palette.$main;
+                  }
+            }
+            .MuiDateRangePickerToolbar-container {
+                  max-height: 40px;
+                  display: none !important;
+
+                  .MuiButtonBase-root {
+                        &.MuiButton-root {
+                              margin: 0 !important;
+
+                              span {
+                                    font-size: 18px;
+                              }
+                        }
+                  }
+                  .MuiTypography-h5 {
+                        font-size: 18px;
                         display: flex;
                         align-items: center;
-                        justify-content: center;
+                        align-self: stretch;
+                        max-height: 40px;
+                  }
+            }
+            /*#endregion  DATE RANGE*/
 
-                        &.Mui-selected {
-                            color: palette.$main;
+            .Mui-focused {
+                  border-color: transparent;
+            }
+
+            /*#region  PICKER WRAPPER*/
+            .MuiDialogContent-root {
+                  // DATEPICKER WRAPPER
+                  .MuiPickersLayout-root {
+                        .MuiPickersLayout-contentWrapper {
+                              max-width: 100vw !important;
+                              width: calc(100vw - 20px) !important;
                         }
-                    }
-                }
-            }
+                  }
+                  .MuiDateCalendar-root {
+                        margin: 0 !important;
+                        height: 100% !important;
+                        width: calc(100vw - 20px) !important;
 
-            .MuiTimePickerToolbar-hourMinuteLabel {
-                justify-content: center !important;
-                align-items: center !important;
-                gap: 5px;
-
-                .MuiTimePickerToolbar-separator {
-                    display: unset !important;
-                    margin: 0 8px !important;
-                }
-            }
-
-            @media screen and (min-width: 800px) {
-                display: flex;
-                margin: 0 auto !important;
-            }
-        }
-        /*#endregion  TIMEPICKER TOOLBAR*/
-
-        .MuiButtonBase-root,
-        .MuiPickersDay-hiddenDaySpacingFiller {
-            &.MuiMenuItem-root {
-                width: 100%;
-            }
-
-            &.Mui-selected {
-                //        background-color: palette.$lightMain !important;
-                background-color: transparent !important;
-                width: 55px !important;
-                height: 45px !important;
-                color: palette.$main !important;
-                border: 0 !important;
-
-                span {
-                    font-weight: variables.$fwMediumBold !important;
-                }
-
-                &:after {
-                    display: none !important;
-                }
-
-                &.MuiMenuItem-root {
-                    width: calc(100% - 20px) !important;
-                    border-radius: variables.$borderRadius !important;
-                }
-            }
-        }
-
-        /*#region  DATE RANGE*/
-        .MuiDateRangeCalendar-root {
-            .MuiDateRangePickerDay-rangeIntervalDayHighlight {
-                top: -5px !important;
-                position: relative;
-                align-items: center !important;
-                display: flex !important;
-                justify-content: center !important;
-                background: palette.$lightMain !important;
-
-                button {
-                    height: auto !important;
-                    top: unset !important;
-
-                    &.MuiButtonBase-root {
-                        &.MuiPickersDay-root {
-                            &.Mui-selected {
-                                background: transparent !important;
-                                margin: 0 !important;
-                                height: unset !important;
-                                width: unset !important;
-                            }
+                        @media screen and (min-width: 1000px) {
+                              margin: 0 auto !important;
+                              width: 47vw !important;
                         }
-                    }
-                }
-            }
 
-            .MuiDateRangePickerDay-outsideCurrentMonth,
-            .MuiDateRangePickerDay-root {
-                width: 55px !important;
-                text-align: center !important;
-                height: 50px !important;
-            }
-            .MuiDayCalendar-header {
-                max-height: 30px;
-                margin: 0;
-                display: grid !important;
-                gap: 0 !important;
-                grid-template-columns: repeat(7, 1fr);
-                align-items: flex-start !important;
-                width: calc(100vw - 25px) !important;
-                justify-content: center !important;
-                overflow: hidden !important;
-                .MuiDayCalendar-weekDayLabel {
-                    height: 30px !important;
-                    text-align: center !important;
-                    width: 100%;
-                }
-            }
+                        //        .MuiDayCalendar-weekDayLabel {
+                        //          font-size: 16px;
+                        //          width: 50px;
+                        //          height: 50px;
+                        //          color: red;
+                        //          opacity: 0.7;
+                        //          font-weight: bold;
+                        //        }
 
-            .MuiPickersDay-today {
-                border: 0 !important;
-                font-weight: variables.$fwBold;
-                color: palette.$main;
-            }
-        }
-        .MuiDateRangePickerToolbar-container {
-            max-height: 40px;
-            display: none !important;
+                        .MuiPickersDay-today:not(.Mui-selected) {
+                              opacity: 1 !important;
+                              border-radius: 50% !important;
+                              font-weight: variables.$fwMediumBold !important;
+                              width: 51px !important;
+                              margin-left: 5px;
+                              margin-right: 5px;
+                              height: 45px !important;
+                              position: relative;
+                              z-index: 99;
 
-            .MuiButtonBase-root {
-                &.MuiButton-root {
-                    margin: 0 !important;
+                              &:after {
+                                    content: "";
+                                    position: absolute;
+                                    top: 5px;
+                                    left: 0;
+                                    width: 35px;
+                                    @include mixins.centerHoriz;
+                                    border: 1px solid palette.$darkGrey !important;
+                                    height: 18px;
+                                    z-index: -1;
+                                    border-radius: 12px;
+                              }
+                        }
 
-                    span {
-                        font-size: 18px;
-                    }
-                }
-            }
-            .MuiTypography-h5 {
-                font-size: 18px;
-                display: flex;
-                align-items: center;
-                align-self: stretch;
-                max-height: 40px;
-            }
-        }
-        /*#endregion  DATE RANGE*/
+                        // WEEKDAY LABEL (S M W)
+                        .MuiDayCalendar-weekDayLabel {
+                              width: 60px !important;
+                              height: 30px !important;
+                              color: black !important;
+                              opacity: 0.6;
+                              font-weight: variables.$fwRegular !important;
+                        }
 
-        .Mui-focused {
-            border-color: transparent;
-        }
+                        .MuiPickersSlideTransition-root {
+                              min-height: 310px !important;
+                              max-width: calc(100vw - 100px) !important;
 
-        /*#region  PICKER WRAPPER*/
-        .MuiDialogContent-root {
-            // DATEPICKER WRAPPER
-            .MuiPickersLayout-root {
-                .MuiPickersLayout-contentWrapper {
-                    max-width: 100vw !important;
-                    width: calc(100vw - 20px) !important;
-                }
-            }
-            .MuiDateCalendar-root {
-                margin: 0 !important;
-                height: 100% !important;
-                width: calc(100vw - 20px) !important;
+                              // New/Edit Datepicker
+                              &[role="presentation"] {
+                                    width: 100%;
+                                    max-width: 100% !important;
+                              }
 
-                @media screen and (min-width: 1000px) {
-                    margin: 0 auto !important;
-                    width: 47vw !important;
-                }
+                              .MuiDayCalendar-monthContainer {
+                                    .MuiDayCalendar-weekContainer {
+                                          justify-content: center;
+                                          height: 50px !important;
+                                          text-align: center !important;
+                                          width: calc(100vw - 20px) !important;
 
-                //        .MuiDayCalendar-weekDayLabel {
-                //          font-size: 16px;
-                //          width: 50px;
-                //          height: 50px;
-                //          color: red;
-                //          opacity: 0.7;
-                //          font-weight: bold;
-                //        }
+                                          .MuiPickersDay-dayWithMargin {
+                                                width: 60px !important;
+                                                height: 50px !important;
+                                                border: 0 !important;
 
-                .MuiPickersDay-today:not(.Mui-selected) {
-                    opacity: 1 !important;
-                    border-radius: 50% !important;
-                    font-weight: variables.$fwMediumBold !important;
-                    width: 51px !important;
-                    margin-left: 5px;
-                    margin-right: 5px;
-                    height: 45px !important;
-                    position: relative;
-                    z-index: 99;
+                                                &:focus {
+                                                      background: transparent !important;
+                                                }
+                                                &.MuiPickersDay-today {
+                                                      &:after {
+                                                            content: "";
+                                                            position: absolute;
+                                                            top: 15px;
+                                                            left: 0;
+                                                            width: 35px;
+                                                            @include mixins.centerHoriz;
+                                                            height: 18px;
+                                                            z-index: -1;
+                                                            border-radius: 12px;
+                                                      }
+                                                }
+                                          }
 
-                    &:after {
-                        content: '';
-                        position: absolute;
-                        top: 5px;
-                        left: 0;
-                        width: 35px;
-                        @include mixins.centerHoriz;
-                        border: 1px solid palette.$darkGrey !important;
-                        height: 18px;
-                        z-index: -1;
-                        border-radius: 12px;
-                    }
-                }
+                                          // DAY CELL
+                                          button {
+                                                &.MuiButtonBase-root {
+                                                      &.Mui-selected {
+                                                            background: transparent !important;
+                                                            color: palette.$main !important;
+                                                            transform: scale(1.2);
+                                                            margin: 0 !important;
+                                                            transition: all 0.2s ease-in-out !important;
+                                                            position: relative;
+                                                            opacity: 1 !important;
+                                                            font-weight: variables.$fwBold !important;
+                                                            z-index: 999;
 
-                // WEEKDAY LABEL (S M W)
-                .MuiDayCalendar-weekDayLabel {
-                    width: 60px !important;
-                    height: 30px !important;
-                    color: black !important;
-                    opacity: 0.6;
-                    font-weight: variables.$fwRegular !important;
-                }
+                                                            &:after {
+                                                                  content: "";
+                                                                  position: absolute;
+                                                                  top: 5px;
+                                                                  left: 0;
+                                                                  width: 35px;
+                                                                  @include mixins.centerHoriz;
+                                                                  height: 18px;
+                                                                  z-index: -1;
+                                                                  border-radius: 12px;
+                                                                  background: palette.$main;
+                                                            }
 
-                .MuiPickersSlideTransition-root {
-                    min-height: 310px !important;
-                    max-width: calc(100vw - 100px) !important;
-
-                    // New/Edit Datepicker
-                    &[role='presentation'] {
-                        width: 100%;
-                        max-width: 100% !important;
-                    }
-
-                    .MuiDayCalendar-monthContainer {
-                        .MuiDayCalendar-weekContainer {
-                            justify-content: center;
-                            height: 50px !important;
-                            text-align: center !important;
-                            width: calc(100vw - 20px) !important;
-
-                            .MuiPickersDay-dayWithMargin {
-                                width: 60px !important;
-                                height: 50px !important;
-                                border: 0 !important;
-
-                                &:focus {
-                                    background: transparent !important;
-                                }
-                                &.MuiPickersDay-today {
-                                    &:after {
-                                        content: '';
-                                        position: absolute;
-                                        top: 15px;
-                                        left: 0;
-                                        width: 35px;
-                                        @include mixins.centerHoriz;
-                                        height: 18px;
-                                        z-index: -1;
-                                        border-radius: 12px;
+                                                            .dot-wrapper {
+                                                                  position: relative;
+                                                                  top: -5px;
+                                                            }
+                                                      }
+                                                }
+                                          }
                                     }
-                                }
-                            }
-
-                            // DAY CELL
-                            button {
-                                &.MuiButtonBase-root {
-                                    &.Mui-selected {
-                                        background: transparent !important;
-                                        color: palette.$main !important;
-                                        transform: scale(1.2);
-                                        margin: 0 !important;
-                                        transition: all 0.2s ease-in-out !important;
-                                        position: relative;
-                                        opacity: 1 !important;
-                                        font-weight: variables.$fwBold !important;
-                                        z-index: 999;
-
-                                        &:after {
-                                            content: '';
-                                            position: absolute;
-                                            top: 5px;
-                                            left: 0;
-                                            width: 35px;
-                                            @include mixins.centerHoriz;
-                                            height: 18px;
-                                            z-index: -1;
-                                            border-radius: 12px;
-                                            background: palette.$main;
-                                        }
-
-                                        .dot-wrapper {
-                                            position: relative;
-                                            top: -5px;
-                                        }
+                                    [role="row"] {
+                                          max-width: 100% !important;
                                     }
-                                }
-                            }
+                              }
                         }
-                        [role='row'] {
-                            max-width: 100% !important;
+
+                        .MuiDateCalendar-viewTransitionContainer {
+                              .MuiMonthCalendar-root {
+                                    background: palette.$grey !important;
+                                    margin: 0 auto 25px auto !important;
+                                    width: calc(100vw - 30px) !important;
+                                    border-radius: variables.$bigBorderRadius;
+                                    box-shadow: variables.$boxShadow_surround_small;
+                                    padding: 15px 0;
+
+                                    .MuiPickersMonth-monthButton {
+                                          font-weight: variables.$fwMedium !important;
+                                          color: palette.$primaryText !important;
+
+                                          &.Mui-selected {
+                                                background: palette.$lightMain !important;
+                                                opacity: 1;
+                                                color: palette.$main !important;
+                                          }
+                                    }
+                              }
+
+                              * {
+                                    text-align: center !important;
+                              }
                         }
-                    }
-                }
 
-                .MuiDateCalendar-viewTransitionContainer {
-                    .MuiMonthCalendar-root {
-                        background: palette.$grey !important;
-                        margin: 0 auto 25px auto !important;
-                        width: calc(100vw - 30px) !important;
-                        border-radius: variables.$bigBorderRadius;
-                        box-shadow: variables.$boxShadow_surround_small;
-                        padding: 15px 0;
+                        .MuiPickersDay-root {
+                              width: 60px !important;
+                              height: 50px !important;
+                              margin-bottom: 8px;
+                              display: flex;
+                              flex-wrap: wrap;
+                              align-items: center;
+                              justify-content: center;
+                              color: palette.$primaryText;
+                              border-radius: variables.$borderRadius !important;
+                              font-size: 16px !important;
 
-                        .MuiPickersMonth-monthButton {
-                            font-weight: variables.$fwMedium !important;
-                            color: palette.$primaryText !important;
+                              @media screen and (min-width: 650px) {
+                                    &:hover {
+                                          background: palette.$lightMain !important;
+                                          color: palette.$purple !important;
+                                    }
+                              }
 
-                            &.Mui-selected {
-                                background: palette.$lightMain !important;
-                                opacity: 1;
-                                color: palette.$main !important;
-                            }
+                              // Weekend
+                              &.weekend-day,
+                              &.MuiPickersDay-dayOutsideMonth,
+                              &[aria-colindex="7"],
+                              &[aria-colindex="1"] {
+                                    opacity: 0.6 !important;
+
+                                    &.Mui-selected,
+                                    &.MuiPickersDay-today {
+                                          opacity: 1 !important;
+                                    }
+                              }
                         }
-                    }
-
-                    * {
-                        text-align: center !important;
-                    }
-                }
-
-                .MuiPickersDay-root {
-                    width: 60px !important;
-                    height: 50px !important;
-                    margin-bottom: 8px;
-                    display: flex;
-                    flex-wrap: wrap;
-                    align-items: center;
-                    justify-content: center;
-                    color: palette.$primaryText;
-                    border-radius: variables.$borderRadius !important;
-                    font-size: 16px !important;
-
-                    @media screen and (min-width: 650px) {
-                        &:hover {
-                            background: palette.$lightMain !important;
-                            color: palette.$purple !important;
-                        }
-                    }
-
-                    // Weekend
-                    &.weekend-day,
-                    &.MuiPickersDay-dayOutsideMonth,
-                    &[aria-colindex='7'],
-                    &[aria-colindex='1'] {
-                        opacity: 0.6 !important;
-
-                        &.Mui-selected,
-                        &.MuiPickersDay-today {
-                            opacity: 1 !important;
-                        }
-                    }
-                }
-            }
-            // TIME SLOTS
-            .MuiTimePickerToolbar-hourMinuteLabel {
-                transform: scale(0.8);
-                position: relative;
-                left: -10px;
-                display: flex !important;
-                align-items: flex-start !important;
-
-                button {
-                    border-bottom: 1px solid palette.$darkGrey !important;
-                    border-radius: 0 !important;
-                    padding: 0 !important;
-
-                    span {
+                  }
+                  // TIME SLOTS
+                  .MuiTimePickerToolbar-hourMinuteLabel {
+                        transform: scale(0.8);
                         position: relative;
-                    }
-                }
+                        left: -10px;
+                        display: flex !important;
+                        align-items: flex-start !important;
+
+                        button {
+                              border-bottom: 1px solid palette.$darkGrey !important;
+                              border-radius: 0 !important;
+                              padding: 0 !important;
+
+                              span {
+                                    position: relative;
+                              }
+                        }
+                  }
+                  // AM/PM SELECTION
+                  .MuiTimePickerToolbar-ampmSelection {
+                        flex-wrap: nowrap;
+                        flex-direction: row;
+                        margin: 10px 25px 0 0;
+                        gap: 5px;
+                        button {
+                              min-width: 0 !important;
+                              margin: 0 !important;
+                              padding: 0 !important;
+                              width: 40px !important;
+                              justify-content: center;
+                              display: flex;
+                              align-items: center;
+
+                              span {
+                                    padding: 0 !important;
+                                    width: 40px !important;
+                              }
+
+                              &:not(.Mui-selected) {
+                                    border: 0 !important;
+                              }
+                              .Mui-selected.MuiTypography-subtitle2 {
+                                    border-radius: variables.$borderRadius;
+                                    border: 0;
+                                    width: 40px !important;
+                                    height: auto;
+                              }
+                        }
+                  }
             }
-            // AM/PM SELECTION
-            .MuiTimePickerToolbar-ampmSelection {
-                flex-wrap: nowrap;
-                flex-direction: row;
-                margin: 10px 25px 0 0;
-                gap: 5px;
-                button {
-                    min-width: 0 !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
-                    width: 40px !important;
-                    justify-content: center;
-                    display: flex;
-                    align-items: center;
+            /*#endregion  PICKER WRAPPER*/
+      }
 
-                    span {
-                        padding: 0 !important;
-                        width: 40px !important;
-                    }
-
-                    &:not(.Mui-selected) {
-                        border: 0 !important;
-                    }
-                    .Mui-selected.MuiTypography-subtitle2 {
-                        border-radius: variables.$borderRadius;
-                        border: 0;
-                        width: 40px !important;
-                        height: auto;
-                    }
-                }
-            }
-        }
-        /*#endregion  PICKER WRAPPER*/
-    }
-
-    /*#region  PICKER ARROWS*/
-    .MuiPickersCalendarHeader-root {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        padding: 0 15px 0 10px !important;
-        margin: 0 !important;
-
-        button {
-            height: unset !important;
-        }
-
-        .MuiPickersFadeTransitionGroup-root,
-        .MuiPickersCalendarHeader-switchViewButton {
-            display: none !important;
-        }
-        .MuiPickersArrowSwitcher-root {
+      /*#region  PICKER ARROWS*/
+      .MuiPickersCalendarHeader-root {
             display: flex !important;
             align-items: center !important;
             justify-content: space-between !important;
+            padding: 0 15px 0 10px !important;
+            margin: 0 !important;
 
-            #calendar-month {
-                margin: 0 !important;
-                padding: 0 !important;
-                color: palette.$darkGrey !important;
+            button {
+                  height: unset !important;
             }
 
-            .MuiPickersArrowSwitcher-spacer {
-                display: none !important;
+            .MuiPickersFadeTransitionGroup-root,
+            .MuiPickersCalendarHeader-switchViewButton {
+                  display: none !important;
             }
-            .MuiPickersArrowSwitcher-rightArrowIcon,
-            .MuiPickersArrowSwitcher-leftArrowIcon {
-                color: palette.$mediumGreyDarker !important;
-                transform: scale(2);
-                position: relative !important;
-                z-index: 999999999 !important;
+            .MuiPickersArrowSwitcher-root {
+                  display: flex !important;
+                  align-items: center !important;
+                  justify-content: space-between !important;
+
+                  // Test\
+
+                  // test
+
+                  #calendar-month {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        color: palette.$main !important;
+                        font-weight: variables.$fwMediumBold !important;
+                        font-size: 22px !important;
+                        position: relative !important;
+                        top: -2px !important;
+                  }
+
+                  .MuiPickersArrowSwitcher-spacer {
+                        display: none !important;
+                  }
+                  .MuiPickersArrowSwitcher-rightArrowIcon,
+                  .MuiPickersArrowSwitcher-leftArrowIcon {
+                        color: palette.$mediumGreyDarker !important;
+                        transform: scale(2);
+                        position: relative !important;
+                        z-index: 9 !important;
+                  }
+                  .MuiPickersArrowSwitcher-rightArrowIcon {
+                        padding-right: 0 !important;
+                  }
             }
-            .MuiPickersArrowSwitcher-rightArrowIcon {
-                padding-right: 0 !important;
-            }
-        }
-    }
-    /*#endregion  PICKER ARROWS*/
+      }
+      /*#endregion  PICKER ARROWS*/
 
-    .MuiYearCalendar-root {
-        margin: 0 auto;
-        border: 2px solid palette.$lightBorderColor !important;
-    }
+      .MuiYearCalendar-root {
+            margin: 0 auto;
+            border: 2px solid palette.$lightBorderColor !important;
+      }
 
-    /*#region  PICKER INPUTS*/
-    .MuiFormControl-root {
-        width: 100%;
-        height: 50px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-        display: flex !important;
-
-        * {
+      /*#region  PICKER INPUTS*/
+      .MuiFormControl-root {
+            width: 100%;
             height: 50px !important;
-        }
-
-        svg {
-            transform: scale(1.1) !important;
-        }
-
-        label {
+            margin: 0 !important;
+            padding: 0 !important;
             align-items: center !important;
             justify-content: flex-start !important;
             display: flex !important;
-            width: 100% !important;
-            position: relative !important;
-            top: -3px !important;
-
-            span {
-                line-height: 1 !important;
-                align-items: center !important;
-                justify-content: flex-start !important;
-                display: flex !important;
-                white-space: nowrap !important;
-                height: auto !important;
-                font-style: italic !important;
-                color: palette.$transWhite !important;
-                font-size: 15px !important;
-                width: 100% !important;
-                margin-left: 30px !important;
-                font-weight: variables.$fwLight !important;
-                text-transform: capitalize !important;
-
-                svg {
-                    margin-right: 8px !important;
-                    top: 50% !important;
-                    transform: translateY(-50%) scale(0.85) !important;
-                    position: absolute !important;
-                    color: palette.$transWhite !important;
-                    left: 0 !important;
-                    width: max-content !important;
-                    height: max-content !important;
-                    font-size: 22px !important;
-                }
-            }
-        }
-
-        &.MuiFormControl-fullWidth {
-            height: 40px !important;
-            * {
-                max-width: 100% !important;
-                width: 100% !important;
-            }
-        }
-
-        svg {
-            height: min-content !important;
-        }
-
-        fieldset {
-            border: 0 !important;
-        }
-
-        .MuiInputBase-root {
-            border: 0;
-            padding-right: 0;
-            background: palette.$inputBackground !important;
-            border-radius: variables.$borderRadius !important;
-            width: 100% !important;
-            height: 50px !important;
-            max-width: calc(100% - 20px);
-            margin: 0 auto !important;
 
             * {
-                user-select: none;
+                  height: 50px !important;
             }
 
-            input {
-                display: block !important;
-                outline: 0 !important;
-                font-weight: variables.$fwLight !important;
-                transition: all 0.2s ease-in-out !important;
-                max-height: unset !important;
-                padding: 0 !important;
-                caret-color: white !important;
-                border-radius: 0 !important;
-                color: white !important;
-                height: auto !important;
-                width: 100% !important;
-                position: relative !important;
-                background-color: transparent !important;
-            }
-        }
-
-        .MuiInputBase-root {
-            background-color: transparent !important;
-        }
-
-        .MuiInputLabel-root {
-            margin: 0 auto 0 0 !important;
-            line-height: 1 !important;
-            z-index: variables.$middleZIndex !important;
-            padding: 0 10px 0 0 !important;
-            @include fonts.fontBase;
-            font-size: 15px !important;
-            font-style: italic !important;
-            color: palette.$transWhite;
-            font-weight: variables.$fwLight !important;
-            text-transform: capitalize;
-            position: relative;
-            left: -10px;
-
-            // Small label when input has value
-            &.MuiFormLabel-filled {
-                display: none !important;
+            svg {
+                  transform: scale(1.1) !important;
             }
 
-            &.active {
-                color: palette.$primaryText !important;
+            label {
+                  align-items: center !important;
+                  justify-content: flex-start !important;
+                  display: flex !important;
+                  width: 100% !important;
+                  position: relative !important;
+                  top: -3px !important;
+
+                  span {
+                        line-height: 1 !important;
+                        align-items: center !important;
+                        justify-content: flex-start !important;
+                        display: flex !important;
+                        white-space: nowrap !important;
+                        height: auto !important;
+                        font-style: italic !important;
+                        color: palette.$transWhite !important;
+                        font-size: 15px !important;
+                        width: 100% !important;
+                        margin-left: 30px !important;
+                        font-weight: variables.$fwLight !important;
+                        text-transform: capitalize !important;
+
+                        svg {
+                              margin-right: 8px !important;
+                              top: 50% !important;
+                              transform: translateY(-50%) scale(0.85) !important;
+                              position: absolute !important;
+                              color: palette.$transWhite !important;
+                              left: 0 !important;
+                              width: max-content !important;
+                              height: max-content !important;
+                              font-size: 22px !important;
+                        }
+                  }
             }
-        }
-        .MuiSvgIcon-root {
-            font-size: 28px !important;
-            opacity: 0.45 !important;
-        }
-        .MuiOutlinedInput-root {
-            [role='combobox'] {
-                padding: 10px;
-                background: white !important;
-                border-radius: variables.$borderRadius;
-                font-size: 14px !important;
-                height: min-content !important;
 
-                .in-form {
-                    background: rgba(255, 255, 255, 0.1) !important;
-                    background: rgba(255, 255, 255, 0.1) !important;
-                }
-
-                * {
-                    height: min-content !important;
-                }
+            &.MuiFormControl-fullWidth {
+                  height: 40px !important;
+                  * {
+                        max-width: 100% !important;
+                        width: 100% !important;
+                  }
             }
-        }
-    }
-    /*#endregion  PICKER INPUTS*/
 
-    /*#region  CLOCK*/
-    .MuiTimePickerToolbar-root {
-        .MuiPickersToolbar-content {
-            display: flex !important;
-            align-items: flex-start !important;
-        }
-    }
-    .MuiTimeClock-root {
-        padding: 0 !important;
-        display: flex;
-        justify-content: center;
-        overflow: auto !important;
-        width: calc(100vw - 20px) !important;
-        max-width: calc(100vw - 20px) !important;
-        margin: 0 !important;
+            svg {
+                  height: min-content !important;
+            }
 
-        @media screen and (min-width: 800px) {
+            fieldset {
+                  border: 0 !important;
+            }
+
+            .MuiInputBase-root {
+                  border: 0;
+                  padding-right: 0;
+                  background: palette.$inputBackground !important;
+                  border-radius: variables.$borderRadius !important;
+                  width: 100% !important;
+                  height: 50px !important;
+                  max-width: calc(100% - 20px);
+                  margin: 0 auto !important;
+
+                  * {
+                        user-select: none;
+                  }
+
+                  input {
+                        display: block !important;
+                        outline: 0 !important;
+                        font-weight: variables.$fwLight !important;
+                        transition: all 0.2s ease-in-out !important;
+                        max-height: unset !important;
+                        padding: 0 !important;
+                        caret-color: white !important;
+                        border-radius: 0 !important;
+                        color: white !important;
+                        height: auto !important;
+                        width: 100% !important;
+                        position: relative !important;
+                        background-color: transparent !important;
+                  }
+            }
+
+            .MuiInputBase-root {
+                  background-color: transparent !important;
+            }
+
+            .MuiInputLabel-root {
+                  margin: 0 auto 0 0 !important;
+                  line-height: 1 !important;
+                  z-index: variables.$middleZIndex !important;
+                  padding: 0 10px 0 0 !important;
+                  @include fonts.fontBase;
+                  font-size: 15px !important;
+                  font-style: italic !important;
+                  color: palette.$transWhite;
+                  font-weight: variables.$fwLight !important;
+                  text-transform: capitalize;
+                  position: relative;
+                  left: -10px;
+
+                  // Small label when input has value
+                  &.MuiFormLabel-filled {
+                        display: none !important;
+                  }
+
+                  &.active {
+                        color: palette.$primaryText !important;
+                  }
+            }
+            .MuiSvgIcon-root {
+                  font-size: 28px !important;
+                  opacity: 0.45 !important;
+            }
+            .MuiOutlinedInput-root {
+                  [role="combobox"] {
+                        padding: 10px;
+                        background: white !important;
+                        border-radius: variables.$borderRadius;
+                        font-size: 14px !important;
+                        height: min-content !important;
+
+                        .in-form {
+                              background: rgba(255, 255, 255, 0.1) !important;
+                              background: rgba(255, 255, 255, 0.1) !important;
+                        }
+
+                        * {
+                              height: min-content !important;
+                        }
+                  }
+            }
+      }
+      /*#endregion  PICKER INPUTS*/
+
+      /*#region  CLOCK*/
+      .MuiTimePickerToolbar-root {
+            .MuiPickersToolbar-content {
+                  display: flex !important;
+                  align-items: flex-start !important;
+            }
+      }
+      .MuiTimeClock-root {
+            padding: 0 !important;
             display: flex;
-            margin: 0 auto !important;
-        }
+            justify-content: center;
+            overflow: auto !important;
+            width: calc(100vw - 20px) !important;
+            max-width: calc(100vw - 20px) !important;
+            margin: 0 !important;
 
-        .MuiTimeClock-arrowSwitcher {
-            display: none;
-        }
-
-        .MuiClock-clock {
-            margin-top: 20px !important;
-            margin-bottom: 20px !important;
-            transform: scale(1.08) !important;
-            border: 1px solid palette.$lightBorderColor !important;
-            background: palette.$grey !important;
-        }
-
-        .MuiClock-squareMask {
-        }
-        .MuiClock-root {
-            transform: scale(1.1);
-            margin: 15px auto;
-            width: 100%;
-            .MuiClockPointer-root {
-                background-color: palette.$main;
-
-                .MuiClockPointer-thumb {
-                    border: 16px solid palette.$main;
-                }
+            @media screen and (min-width: 800px) {
+                  display: flex;
+                  margin: 0 auto !important;
             }
-        }
-    }
-    /*#endregion  CLOCK*/
+
+            .MuiTimeClock-arrowSwitcher {
+                  display: none;
+            }
+
+            .MuiClock-clock {
+                  margin-top: 20px !important;
+                  margin-bottom: 20px !important;
+                  transform: scale(1.08) !important;
+                  border: 1px solid palette.$lightBorderColor !important;
+                  background: palette.$grey !important;
+            }
+
+            .MuiClock-squareMask {
+            }
+            .MuiClock-root {
+                  transform: scale(1.1);
+                  margin: 15px auto;
+                  width: 100%;
+                  .MuiClockPointer-root {
+                        background-color: palette.$main;
+
+                        .MuiClockPointer-thumb {
+                              border: 16px solid palette.$main;
+                        }
+                  }
+            }
+      }
+      /*#endregion  CLOCK*/
 }

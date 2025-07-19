@@ -12,6 +12,21 @@
     }
 }
 
+@keyframes pressEffect {
+    0% {
+        transform: translateY(0) scale(1);
+        box-shadow: 0 40px 30px -10px;
+    }
+    50% {
+        transform: translateY(2px) scale(0.98);
+        box-shadow: 0 40px 30px -10px;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        box-shadow: 0 40px 30px -10px;
+    }
+}
+
 @keyframes dropdownFadeInUp {
     from {
         opacity: 0;

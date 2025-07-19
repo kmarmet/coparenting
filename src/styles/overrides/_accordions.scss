@@ -442,11 +442,12 @@
                                 width: 100%;
                                 border-bottom: 1px solid palette.$lightBorderColor !important;
                                 padding-bottom: 3px;
-                                color: palette.$whiteBgSubtitleTextDarker !important;
+                                color: black !important;
+                                opacity: 0.6 !important;
 
                                 svg {
                                     top: unset !important;
-                                    opacity: 0.6 !important;
+                                    color: black !important;
                                     @include mixins.square(18px);
                                 }
                             }

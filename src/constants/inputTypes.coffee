@@ -12,6 +12,7 @@ InputTypes = {
   chat: 'chat'
   phone: 'phone'
   url: 'url'
+  search: 'search'
 }
 
 export default InputTypes

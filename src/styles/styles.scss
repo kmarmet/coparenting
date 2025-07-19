@@ -9,13 +9,10 @@
     height: 100vh;
     width: 100vw;
     background-color: palette.$grey;
-    padding: 20px;
-    overflow: scroll;
+    overflow: auto;
     max-height: 100vh;
+    padding: 60px 15px 200px 15px;
     @include mixins.mainColorsGradient;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 
     * {
         @include fonts.lightFont;
@@ -28,8 +25,12 @@
     #text-container {
         margin-bottom: 10px;
         background: white;
-        padding: 15px;
         border-radius: variables.$borderRadius;
+        padding: 15px;
+        p,
+        li {
+            color: palette.$primaryText;
+        }
 
         p {
             &.heading {
@@ -56,6 +57,7 @@
                 font-weight: bold;
                 margin-right: 10px;
                 width: 15px;
+                color: palette.$primaryText;
             }
 
             span {
@@ -644,6 +646,9 @@
         /*#endregion SCREENS */
 
         /*#region  CLASS/ID DEFAULTS*/
+        .pressed {
+            transform: scale(0.7) translateY(10px);
+        }
         /*#region  BLOCKS */
         .blocks,
         .multiline-blocks {
@@ -679,6 +684,7 @@
                 display: flex;
                 flex-direction: column;
                 width: max-content;
+                margin: 0 10px;
 
                 &.full-width {
                     width: 100%;
@@ -1385,12 +1391,13 @@
         }
 
         .label {
-            font-weight: variables.$fwRegular;
             margin: 0;
             line-height: 1.3;
-            color: palette.$labelText;
             font-size: 14px;
+            color: black;
+            opacity: 1;
             text-transform: uppercase;
+            @include fonts.regularFont;
 
             svg {
                 position: relative;

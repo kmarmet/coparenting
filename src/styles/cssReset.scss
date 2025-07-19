@@ -2,6 +2,45 @@
 @use 'utils/variables';
 @use 'utils/_palette';
 
+/* For Chrome, Safari, Edge */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    box-shadow: 0 0 0px 1000px transparent inset !important;
+    -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+    background-color: transparent !important;
+    -webkit-text-fill-color: inherit !important; /* keeps your normal text color */
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    /* Force override Chrome's autofill background */
+    -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.08) inset !important; /* change white → your background */
+    box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.08) inset !important;
+    -webkit-text-fill-color: #000 !important; /* or inherit if you want normal text color */
+    caret-color: #000; /* makes the cursor visible */
+    transition: background-color 9999s ease-in-out 0s !important; /* kills the flash */
+}
+
+/* Firefox autofill reset */
+input:-moz-autofill,
+textarea:-moz-autofill,
+select:-moz-autofill {
+    box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.08) inset !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: inherit !important;
+}
+
+/* Optional: remove blue border highlight */
+input {
+    &:focus {
+        outline: none;
+        box-shadow: none;
+    }
+}
+
 *,
 *::before,
 *::after {

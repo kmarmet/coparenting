@@ -45,9 +45,8 @@
                     background-size: cover;
                     border-radius: 100%;
                     position: relative;
-                    height: 80px;
-                    width: 80px;
                     transition: all 0.3s ease-in;
+                    @include mixins.square(90px);
 
                     svg {
                         color: palette.$darkGrey;

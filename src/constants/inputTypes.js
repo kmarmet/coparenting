@@ -13,7 +13,8 @@ InputTypes = {
   textarea: 'textarea',
   chat: 'chat',
   phone: 'phone',
-  url: 'url'
+  url: 'url',
+  search: 'search'
 };
 
 export default InputTypes;

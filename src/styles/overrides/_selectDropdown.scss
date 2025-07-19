@@ -73,9 +73,14 @@
             border: 0 !important;
             border-radius: clamp(0px, 50%, 24px) !important;
             background: palette.$inputBackground !important;
+            background: transparent !important;
+            box-shadow: none !important;
             max-width: calc(100% - 5px) !important;
             margin: 10px auto !important;
             padding: 10px 0 !important;
+            overflow: visible !important;
+            height: auto !important;
+            max-height: unset !important;
         }
 
         // DROPDOWN WRAPPER
@@ -148,7 +153,7 @@
             border-radius: variables.$buttonBorderRadius !important;
             border: 0 !important;
             max-width: calc(100vw - 20px) !important;
-            //z-index: 9 !important;
+            background: transparent !important;
 
             [id*='listbox'] {
                 max-height: unset !important;
@@ -156,15 +161,15 @@
                 flex-wrap: wrap !important;
                 align-items: center !important;
                 justify-content: center !important;
-                padding: 10px !important;
                 z-index: variables.$maxZIndex !important;
                 pointer-events: all !important;
-                height: max-content !important;
                 position: relative !important;
                 margin: auto 0 !important;
-                gap: 8px !important;
+                //gap: 12px !important;
                 align-self: center !important;
                 background: transparent !important;
+                padding: 10px 0 !important;
+                overflow: visible !important;
 
                 [class*='-option'] {
                     background: palette.$inputBackground !important;
@@ -174,6 +179,7 @@
                     border-radius: 50px !important;
                     border: 0 !important;
                     min-width: 85px !important;
+                    margin: 0 15px !important;
                     text-align: center !important;
                     color: white !important;
                     font-size: 13px !important;
@@ -183,6 +189,7 @@
                     white-space: nowrap !important;
                     font-weight: variables.$fwLight !important;
                     font-family: 'SF-Pro-Display-Light', sans-serif !important;
+                    box-shadow: variables.$boxShadow_float_smaller !important;
                 }
 
                 div {

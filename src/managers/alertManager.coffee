@@ -72,6 +72,7 @@ AlertManager = {
             """
       title: title
       html: html
+      color: color
       background: bg
       grow: true
       showDenyButton: showDenyButton

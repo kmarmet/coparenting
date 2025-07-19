@@ -4,12 +4,12 @@ $lightSecondaryAccent: rgba(108, 115, 200, 0.2);
 $lightMain: rgba(76, 111, 255, 0.2);
 //$lightBlend: rgba(87, 105, 255, 0.1);
 $lightBlend: rgba(43, 60, 255, 0.29);
+$blendBorder: rgba(43, 60, 255, 0.19);
 $main: #4a4aff;
-$blendPurple: #783eff;
+$blendPurple: #6047ff;
 $blendDark: #3c4cff;
 $blend: #5047ff;
-$inactiveNavbarElement: #c9ccd2;
-
+$inactiveNavbarElement: rgba(255, 255, 255, 0.4);
 // Blues
 $linkColor: #4255ff;
 $formLinkColor: #87cefa;
@@ -130,8 +130,8 @@ $darkBlueMedium: #4c6fff;
 $darkMainBlue: $darkBlueMedium;
 $darkBlueLight: cornflowerblue;
 $darkSmallShadow:
-    0 3px 6px rgba(0, 0, 0, 0.16),
-    0 3px 6px rgba(0, 0, 0, 0.23);
+      0 3px 6px rgba(0, 0, 0, 0.16),
+      0 3px 6px rgba(0, 0, 0, 0.23);
 $darkBorderColor: rgba(59, 59, 59, 0.26);
 /*#endregion DARK THEME*/
 
