@@ -1371,7 +1371,7 @@ $shadows-big: multiple-box-shadow(100);
             align-items: center;
             max-height: max-content;
             margin-top: auto;
-            border-radius: 35px 35px 0 0;
+            border-radius: 45px 45px 0 0;
             @include mainColorsGradient;
 
             &::before {
@@ -2120,6 +2120,7 @@ $shadows-big: multiple-box-shadow(100);
             input {
                   color: palette.$primaryText !important;
                   background-color: transparent;
+                  caret-color: black;
                   &::placeholder {
                         color: black;
                         opacity: 0.4;
@@ -4779,6 +4780,7 @@ $shadows-big: multiple-box-shadow(100);
                               line-height: 1;
                         }
                   }
+
                   @keyframes float {
                         0%,
                         100% {
@@ -4794,8 +4796,9 @@ $shadows-big: multiple-box-shadow(100);
                         position: relative;
                         transition: all 0.3s ease-in-out;
                         padding: 10px 0;
-                        animation: float 1.7s ease-in-out infinite;
+                        animation: float 2s ease-in-out infinite;
                         top: -10px;
+
                         &::after {
                               content: "";
                               position: absolute;

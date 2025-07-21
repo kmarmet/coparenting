@@ -112,57 +112,52 @@ export default function CalendarEvents({
             )
       }
 
+      const AnimateRows = () => {
+            setTimeout(() => {
+                  DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
+            }, 10)
+      }
+
       useEffect(() => {
-            console.log(holidayOptions.returnType)
-            // Reset search results
-            if (!showSearchResults) {
-                  setQuery("")
+            const animateEvents = () => {
+                  setTimeout(() => {
+                        DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
+                  }, 10)
             }
 
-            // Search Results
+            let nextEvents = []
+
+            // ✅ Priority 1: Search Results
             if (showSearchResults && Manager.IsValid(searchResults)) {
-                  console.log("if")
-                  setEventsToIterate(searchResults)
-                  setTimeout(() => {
-                        DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
-                  }, 10)
+                  nextEvents = searchResults
             }
-
-            // Holidays
+            // ✅ Priority 2: Holidays
             else if (holidayOptions?.show && Manager.IsValid(holidays)) {
-                  console.log("else if 1", holidays)
-                  console.log(holidays)
-                  setEventsToIterate(holidays)
-                  setTimeout(() => {
-                        DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
-                  }, 10)
+                  nextEvents = holidays
+            }
+            // ✅ Priority 3: Normal Events of Day
+            else if (!showSearchResults && !holidayOptions?.show && Manager.IsValid(eventsOfDay) && Manager.IsValid(selectedDate)) {
+                  nextEvents = eventsOfDay
             }
 
-            // Events of Day
-            else if (!showSearchResults && !holidayOptions?.show) {
-                  console.log("else")
-                  if (Manager.IsValid(eventsOfDay) && Manager.IsValid(selectedDate)) {
-                        setEventsToIterate(eventsOfDay)
-                        setTimeout(() => {
-                              DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
-                        }, 10)
-                  }
-            }
-
-            return () => {
+            // ✅ If no valid events → clear
+            if (!Manager.IsValid(nextEvents)) {
                   setEventsToIterate([])
+                  return
             }
-      }, [eventsOfDay, searchResults, selectedDate, showSearchResults, holidayOptions?.returnType])
+
+            // ✅ Set + animate
+            setEventsToIterate(nextEvents)
+            animateEvents()
+      }, [showSearchResults, searchResults, holidayOptions?.show, holidays, eventsOfDay, selectedDate])
 
       return (
             <div className="events">
-                  <Spacer height={5} />
-
-                  <div id={"search-input-wrapper"} className={`${showSearchResults ? "active" : ""}`}>
+                  <div id={"search-input-wrapper"}>
                         <InputField
                               inputType={InputTypes.search}
                               key={refreshKey}
-                              placeholder={"Begin typing an event name..."}
+                              placeholder={"Find events..."}
                               onChange={(e) => setQuery(e.target.value)}
                               className={"search"}
                               wrapperClasses={"white-bg"}

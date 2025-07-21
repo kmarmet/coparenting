@@ -110,41 +110,43 @@
             box-shadow: variables.$boxShadow_bottom_only_dark;
 
             // STATIC CALENDAR - MONTH DROPDOWN
-            &.MuiPaper-rounded:not(.date-picker) {
-                  top: 50% !important;
-                  transform: translate(-50%, -50%) !important;
-                  left: 50% !important;
-                  right: 15px !important;
-                  padding: 20px !important;
-                  width: calc(100vw - 30px) !important;
-                  box-shadow: variables.$boxShadow_bottom_only_extra_dark !important;
-                  background-color: white !important;
-                  backdrop-filter: blur(5px) !important;
-                  border: 1px solid rgba(80, 71, 255, 0.47) !important;
-                  ul {
-                        display: flex !important;
-                        gap: 10px !important;
-                        max-width: 100% !important;
-                        flex-wrap: wrap !important;
+            &.MuiPaper-rounded {
+                  &.MuiPopover-paper {
+                        top: 50% !important;
+                        transform: translate(-50%, -50%) !important;
+                        left: 50% !important;
+                        right: 15px !important;
+                        padding: 20px !important;
+                        width: calc(100vw - 30px) !important;
+                        box-shadow: variables.$boxShadow_bottom_only_extra_dark !important;
+                        background-color: white !important;
+                        backdrop-filter: blur(5px) !important;
+                        border: 1px solid rgba(80, 71, 255, 0.47) !important;
+                        ul {
+                              display: flex !important;
+                              gap: 10px !important;
+                              max-width: 100% !important;
+                              flex-wrap: wrap !important;
 
-                        li {
-                              border-radius: variables.$buttonBorderRadius !important;
-                              border: 1px solid palette.$blend !important;
-                              font-weight: variables.$fwBold !important;
-                              text-align: center !important;
-                              width: calc((100% / 3) - 10px) !important;
-                              padding: 5px 0 !important;
-                              min-height: 0 !important;
-                              justify-self: center !important;
-                              color: palette.$blend !important;
-                              justify-content: center !important;
+                              li {
+                                    border-radius: variables.$buttonBorderRadius !important;
+                                    border: 1px solid palette.$blend !important;
+                                    font-weight: variables.$fwBold !important;
+                                    text-align: center !important;
+                                    width: calc((100% / 3) - 10px) !important;
+                                    padding: 5px 0 !important;
+                                    min-height: 0 !important;
+                                    justify-self: center !important;
+                                    color: palette.$blend !important;
+                                    justify-content: center !important;
 
-                              &.Mui-selected {
-                                    &.MuiMenuItem-root {
-                                          color: white !important;
-                                          background-color: palette.$blend !important;
-                                          border-radius: variables.$buttonBorderRadius !important;
-                                          width: 100% !important;
+                                    &.Mui-selected {
+                                          &.MuiMenuItem-root {
+                                                color: white !important;
+                                                background-color: palette.$blend !important;
+                                                border-radius: variables.$buttonBorderRadius !important;
+                                                width: 100% !important;
+                                          }
                                     }
                               }
                         }

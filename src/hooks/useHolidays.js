@@ -2,82 +2,94 @@ import {useEffect, useState} from "react"
 import AlertManager from "../managers/alertManager"
 import DatasetManager from "../managers/datasetManager"
 import DateManager from "../managers/dateManager"
+import LogManager from "../managers/logManager"
 import Manager from "../managers/manager"
 import ObjectManager from "../managers/objectManager"
 
 const useHolidays = (currentUser, returnType = "none") => {
-      const [holidays, setHolidays] = useState(null)
+      const [rawHolidays, setRawHolidays] = useState([]) // store all API data
+      const [holidays, setHolidays] = useState([])
       const [holidayRetrievalError, setHolidayRetrievalError] = useState(null)
       const [holidaysAreLoading, setHolidaysAreLoading] = useState(true)
 
-      // Fetch from API
-      const FetchApiHolidays = async () => {
-            const res = await DateManager.GetHolidaysAsEvents()
-            return res ?? []
-      }
-
-      // Filter visitation holidays
-      const FetchVisitationHolidays = async () => {
-            const apiData = await FetchApiHolidays()
-            if (!Manager.IsValid(apiData)) return []
-
-            const filtered = apiData
-                  .filter((x) => x?.owner?.key === currentUser?.key)
-                  .map((holiday) => {
-                        const cleanHoliday = ObjectManager.CleanObject(holiday)
-                        cleanHoliday.title += ` (${holiday.holidayName})`
-                        return cleanHoliday
-                  })
-
-            if (Manager.IsValid(filtered)) {
-                  return DatasetManager.GetValidArray(filtered, true)
-            } else {
-                  return []
-            }
-      }
-
+      // ✅ Fetch holidays from API only ONCE per user (if needed)
       useEffect(() => {
-            const loadData = async () => {
+            let isMounted = true
+            setHolidaysAreLoading(true)
+
+            const fetchApiData = async () => {
                   try {
-                        let data = []
-                        if (returnType === "all") {
-                              data = await FetchApiHolidays()
-                              setHolidays(data)
-                        } else if (returnType === "visitation") {
-                              data = await FetchVisitationHolidays()
-                              if (!Manager.IsValid(data)) {
-                                    AlertManager.confirmAlert({
-                                          title: "No Visitation Holidays",
-                                          html: "You have not selected any visitation holidays. Go to the <b>Visitation</b> page to select them to be added to your calendar.",
-                                          confirmButtonText: "Okay",
-                                          bg: "#fbd872",
-                                          showDenyButton: false,
-                                          denyButtonText: "",
-                                    })
-                                    setHolidays([])
-                              } else {
-                                    setHolidays(data)
-                              }
-                        } else {
-                              setHolidays([])
-                        }
+                        const data = await DateManager.GetHolidaysAsEvents()
+                        if (!isMounted) return
+
+                        setRawHolidays(data ?? [])
                   } catch (err) {
                         if (err.name !== "AbortError") {
                               setHolidayRetrievalError(err.message || "Unknown Holiday Retrieval Error")
                         }
                   } finally {
-                        setHolidaysAreLoading(false)
+                        if (isMounted) setHolidaysAreLoading(false)
                   }
             }
 
-            loadData().then((r) => r)
+            if (returnType !== "none") {
+                  void fetchApiData().catch((err) => {
+                        console.error("Fetching holidays error:", err)
+                        if (isMounted) {
+                              setHolidayRetrievalError(err.message || "Unknown Holiday Retrieval Error")
+                              setHolidaysAreLoading(false)
+                              LogManager.Log(`Fetching holidays error: ${err.message}`, LogManager.LogTypes.error, err.stack)
+                        }
+                  })
+            } else {
+                  // If no returnType, just reset
+                  setRawHolidays([])
+                  setHolidays([])
+                  setHolidaysAreLoading(false)
+            }
 
             return () => {
-                  setHolidays([])
-                  setHolidayRetrievalError(null)
-                  setHolidaysAreLoading(true)
+                  isMounted = false
             }
-      }, [returnType, currentUser]) // dependencies
+      }, [returnType, currentUser])
+
+      // ✅ Filter holidays based on returnType (no extra API call)
+      useEffect(() => {
+            if (!Manager.IsValid(rawHolidays)) {
+                  setHolidays([])
+                  return
+            }
+
+            if (returnType === "all") {
+                  // Just take them all
+                  setHolidays(rawHolidays)
+            } else if (returnType === "visitation") {
+                  const filtered = rawHolidays
+                        .filter((x) => x?.owner?.key === currentUser?.key)
+                        .map((holiday) => {
+                              const cleanHoliday = ObjectManager.CleanObject(holiday)
+                              cleanHoliday.title += ` (${holiday.holidayName})`
+                              return cleanHoliday
+                        })
+
+                  if (!Manager.IsValid(filtered)) {
+                        AlertManager.confirmAlert({
+                              title: "No Visitation Holidays",
+                              html: "You have not selected any visitation holidays. Go to the <b>Visitation</b> page to select them to be added to your calendar.",
+                              confirmButtonText: "Okay",
+                              bg: "#fbd872",
+                              showDenyButton: false,
+                              denyButtonText: "",
+                        })
+                        setHolidays([])
+                  } else {
+                        setHolidays(DatasetManager.GetValidArray(filtered, true))
+                  }
+            } else {
+                  // Unknown returnType → empty
+                  setHolidays([])
+            }
+      }, [returnType, currentUser, rawHolidays])
 
       return {holidays, holidayRetrievalError, holidaysAreLoading}
 }

@@ -1,9 +1,10 @@
 // Path: src\components\screens\calendar\calendar.jsx
-import {FormControl, MenuItem, Select, Stack} from "@mui/material"
 import {StaticDatePicker} from "@mui/x-date-pickers-pro"
 import moment from "moment"
 import React, {useContext, useEffect, useState} from "react"
 import {BsStars} from "react-icons/bs"
+import {FaChevronDown} from "react-icons/fa"
+import {FaChevronDown} from "react-icons/fa6"
 import {ImSearch} from "react-icons/im"
 import {MdOutlineSearchOff} from "react-icons/md"
 import {PiCalendarXDuotone} from "react-icons/pi"
@@ -44,6 +45,7 @@ export default function EventCalendar() {
       const [contentIsLoaded, setContentIsLoaded] = useState(false)
       const [dateValue, setDateValue] = React.useState(moment())
       const [holidayReturnType, setHolidayReturnType] = useState("all")
+      const [showMonthDropdown, setShowMonthDropdown] = useState(false)
 
       // CARD STATE
       const [showEditCard, setShowEditCard] = useState(false)
@@ -221,22 +223,31 @@ export default function EventCalendar() {
                   const staticCalendar = document.querySelector(".MuiDialogActions-root")
                   const holidaysButton = document.getElementById("holidays-button")
                   const searchIcon = document.getElementById("search-icon-wrapper")
+                  const todayButton = staticCalendar.querySelector(".MuiButtonBase-root")
+                  const legendButton = document.getElementById("legend-button")
+                  const monthSelector = document.getElementById("month-selector")
 
+                  console.log(todayButton)
                   if (staticCalendar && holidaysButton && searchIcon) {
                         staticCalendar.prepend(holidaysButton)
-                        staticCalendar.prepend(searchIcon)
+                        // staticCalendar.prepend(searchIcon)
+                        todayButton.insertAdjacentElement("afterend", monthSelector)
 
                         holidaysButton.addEventListener("click", () => {
                               setShowHolidaysCard(true)
                         })
+
+                        monthSelector.addEventListener("change", (event) => {
+                              // HandleMonthChange(event)
+                        })
                   }
 
-                  const legendButton = document.getElementById("legend-button")
                   if (legendButton) {
                         legendButton.addEventListener("click", () => {
                               legendButton.classList.toggle("active")
                         })
                   }
+                  setDateValue(moment("08/01/2025"))
             }
       }, [currentScreen, currentUserIsLoading, showSearchInput])
 
@@ -300,47 +311,47 @@ export default function EventCalendar() {
                   <div id="calendar-container" className={`page-container calendar ${theme}`}>
                         {/* STATIC CALENDAR */}
                         <div id="static-calendar" className={`${theme}`}>
-                              <Stack>
-                                    {/* MONTH DROPDOWN */}
-                                    <Stack direction="row" spacing={1} alignItems="center">
-                                          <FormControl size="small">
-                                                <Select fullWidth value={dateValue?.month()} variant="outlined" onChange={HandleMonthChange}>
-                                                      {months?.map((month, index) => (
-                                                            <MenuItem key={month} value={index}>
-                                                                  {month}
-                                                            </MenuItem>
-                                                      ))}
-                                                </Select>
-                                          </FormControl>
-                                    </Stack>
-
-                                    {/* STATIC CALENDAR */}
-                                    <StaticDatePicker
-                                          slotProps={{
-                                                actionBar: {
-                                                      actions: ["today"],
-                                                },
-                                          }}
-                                          orientation="landscape"
-                                          value={dateValue}
-                                          views={["month", "day"]}
-                                          showDaysOutsideCurrentMonth={true}
-                                          minDate={moment(`${moment().year()}-01-01`)}
-                                          maxDate={moment(`${moment().year()}-12-31`)}
-                                          onMonthChange={async (month) => {
-                                                AddDayIndicators().then((r) => r)
-                                                AddMonthText(moment(month).format("MMMM"))
-                                          }}
-                                          onChange={(day) => {
-                                                setDateValue(day)
-                                                setSelectedDate(moment(day).format(DatetimeFormats.dateForDb))
-                                                setState({...state, dateToEdit: moment(day).format(DatetimeFormats.dateForDb)})
-                                          }}
-                                    />
-                              </Stack>
+                              {/* STATIC CALENDAR */}
+                              <StaticDatePicker
+                                    slotProps={{
+                                          actionBar: {
+                                                actions: ["today"],
+                                          },
+                                    }}
+                                    orientation="landscape"
+                                    value={dateValue}
+                                    views={["month", "day"]}
+                                    showDaysOutsideCurrentMonth={true}
+                                    minDate={moment(`${moment().year()}-01-01`)}
+                                    maxDate={moment(`${moment().year()}-12-31`)}
+                                    onMonthChange={async (month) => {
+                                          AddDayIndicators().then((r) => r)
+                                          AddMonthText(moment(month).format("MMMM"))
+                                    }}
+                                    onChange={(day) => {
+                                          setDateValue(day)
+                                          setSelectedDate(moment(day).format(DatetimeFormats.dateForDb))
+                                          setState({...state, dateToEdit: moment(day).format(DatetimeFormats.dateForDb)})
+                                    }}
+                              />
                         </div>
 
                         {/* BELOW CALENDAR BUTTONS */}
+
+                        {/* MONTH OPTIONS */}
+                        <div id="month-options" className={`${showMonthDropdown ? "active" : ""}`}>
+                              {months?.map((month, index) => (
+                                    <div
+                                          className={`chip${month === moment(dateValue, DatetimeFormats.dateForDb).format("MMMM") ? " active" : ""}`}
+                                          key={index}
+                                          onClick={() => {
+                                                setDateValue(moment(`${month}/${moment().year()}`))
+                                                setShowMonthDropdown(false)
+                                          }}>
+                                          {month}
+                                    </div>
+                              ))}
+                        </div>
                         <Spacer height={5} />
                         <div id="below-calendar" className={`${theme} flex`}>
                               {/* LEGEND BUTTON */}
@@ -366,6 +377,10 @@ export default function EventCalendar() {
                                     }}>
                                     {showSearchInput === true ? <MdOutlineSearchOff /> : <ImSearch />}
                               </div>
+                              <p id="month-selector" onClick={() => setShowMonthDropdown(!showMonthDropdown)}>
+                                    {moment(dateValue).format("MMMM")}
+                                    <FaChevronDown />
+                              </p>
                         </div>
 
                         {/* LEGEND */}

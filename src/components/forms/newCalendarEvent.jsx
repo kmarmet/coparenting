@@ -338,12 +338,12 @@ export default function NewCalendarEvent() {
                               <Spacer height={5} />
 
                               <FormDivider text={"Optional"} />
+
                               {view?.label === "Single Day" && (
                                     <div className={"flex gap"}>
                                           {/* EVENT WITH TIME */}
                                           <InputField
                                                 placeholder={"Start Time"}
-                                                uidClass="event-start-time time"
                                                 inputType={InputTypes.time}
                                                 onDateOrTimeSelection={(e) =>
                                                       (formRef.current.startTime = moment(e).format(DatetimeFormats.timeForDb))
@@ -352,7 +352,6 @@ export default function NewCalendarEvent() {
 
                                           <InputField
                                                 placeholder={"End Time"}
-                                                uidClass="event-end-time time"
                                                 inputType={InputTypes.time}
                                                 onDateOrTimeSelection={(e) => (formRef.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}
                                           />

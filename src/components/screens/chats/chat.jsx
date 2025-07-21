@@ -1,6 +1,6 @@
 // Path: src\components\screens\chats\chat.jsx
 import moment from "moment-timezone"
-import React, {useContext, useEffect, useState} from "react"
+import React, {useContext, useEffect, useMemo, useRef, useState} from "react"
 import {BsBookmarkDashFill, BsFillBookmarksFill, BsFillBookmarkStarFill} from "react-icons/bs"
 import {IoChevronBack, IoCopy, IoSend} from "react-icons/io5"
 import {MdCancel, MdOutlineArrowOutward, MdOutlineSearchOff} from "react-icons/md"
@@ -12,7 +12,6 @@ import DatetimeFormats from "../../../constants/datetimeFormats"
 import InputTypes from "../../../constants/inputTypes"
 import ActivityCategory from "../../../constants/updateCategory"
 import globalState from "../../../context.js"
-import useAppImages from "../../../hooks/useAppImages"
 import useChatMessages from "../../../hooks/useChatMessages"
 import useChats from "../../../hooks/useChats"
 import useCurrentUser from "../../../hooks/useCurrentUser"
@@ -37,9 +36,7 @@ const Chat = ({show, hide, recipient}) => {
       const {currentUser} = useCurrentUser()
       const [chatId, setChatId] = useState()
       const {chatMessages} = useChatMessages(chatId)
-      const [chat, setChat] = useState()
       const {chats, chatsAreLoading} = useChats()
-      const {appImages} = useAppImages()
 
       // STATE
       const [searchResults, setSearchResults] = useState([])
@@ -48,16 +45,17 @@ const Chat = ({show, hide, recipient}) => {
       const [showSearchCard, setShowSearchCard] = useState(false)
       const [messageText, setMessageText] = useState("")
       const [searchInputQuery, setSearchInputQuery] = useState("")
-      const [toneObject, setToneObject] = useState()
+      const [toneObject, setToneObject] = useState({})
       const [inSearchMode, setInSearchMode] = useState(false)
       const [inputIsActive, setInputIsActive] = useState()
-      const [messageTimezone, setMessageTimezone] = useState(false)
-      const [bookmarkedMessages, setBookmarkedMessages] = useState([])
+      const [bookmarkedMessagesToIterate, setBookmarkedMessagesToIterate] = useState([])
       const [bookmarks, setBookmarks] = useState([])
       const [showLongPressMenu, setShowLongPressMenu] = useState(false)
       const [activeMessage, setActiveMessage] = useState()
       const [messagesToLoop, setMessagesToLoop] = useState(chatMessages)
-      const [bookmarkBg, setBookmarkBg] = useState("")
+
+      // Refs
+      const messageWrapperRef = useRef(null)
 
       // Handle long press
       const bind = useLongPress((element) => {
@@ -71,6 +69,9 @@ const Chat = ({show, hide, recipient}) => {
                   }, 500)
             }
       })
+
+      // Get chat
+      const chat = useMemo(() => chats.find((c) => c?.members?.some((m) => m?.key === recipient?.key)), [chats, recipient?.key])
 
       const ToggleBookmark = async () => {
             await ChatManager.ToggleMessageBookmark(currentUser, recipient, activeMessage?.id, chat?.id, bookmarks).finally(async () => {
@@ -89,72 +90,75 @@ const Chat = ({show, hide, recipient}) => {
       }
 
       const SendMessage = async () => {
-            // Close Keyboard -> hide message input
-            HideKeyboard()
-
-            if (!Manager.IsValid(messageText, true) || messageText.length === 1) {
+            console.log(toneObject?.tone)
+            // Validate message
+            if (!Manager.IsValid(messageText, true) || messageText.length <= 1) {
                   AlertManager.throwError("Please enter a message longer than one character (letter, number, or symbol)")
-                  return false
+                  return
             }
 
-            // Clear input field
-            const input = document.querySelector(".message-input")
-            if (input) {
-                  input.value = ""
+            if (toneObject?.tone === "angry") {
+                  AlertManager.confirmAlert({
+                        title: "ANGRY EMOTION DETECTED",
+                        html: "Are you sure you want to send this message?",
+                        bg: "#c71436",
+                        color: "white",
+                        onConfirm: async () => {
+                              // Close Keyboard -> hide message input
+                              HideKeyboard()
+
+                              // Clear input field (if using uncontrolled input)
+                              const input = document.querySelector(".message-input")
+                              if (input) input.value = ""
+
+                              // Extract common sender/recipient data
+                              const {name: senderName, key: senderKey, location} = currentUser ?? {}
+                              const {name: recipientName, key: recipientKey} = recipient ?? {}
+
+                              const sender = {name: senderName, key: senderKey}
+
+                              // Build ChatMessage
+                              const chatMessage = new ChatMessage()
+                              chatMessage.sender = {
+                                    ...sender,
+                                    timezone: location?.timezone ?? "UTC",
+                              }
+                              chatMessage.recipient = {
+                                    name: recipientName,
+                                    key: recipientKey,
+                              }
+                              chatMessage.message = StringManager.SanitizeString(messageText)
+
+                              // Insert message into existing or new chat
+                              if (Manager.IsValid(chat)) {
+                                    await ChatManager.InsertChatMessage(chat?.id, chatMessage)
+                              } else {
+                                    const newChatUid = await ChatManager.CreateAndInsertChat(sender, chatMessage.recipient)
+                                    await ChatManager.InsertChatMessage(newChatUid, chatMessage)
+                              }
+
+                              // Send notification if recipient isn't paused
+                              if (!chat?.isPausedFor?.includes(recipientKey)) {
+                                    UpdateManager.SendUpdate(
+                                          "🗯️ New Message",
+                                          `${StringManager.GetFirstNameOnly(senderName ?? "Someone")} Messaged You`,
+                                          recipientKey,
+                                          currentUser,
+                                          ActivityCategory.chats
+                                    )
+                              }
+
+                              // Reset message UI state
+                              setMessageText("")
+                              setTimeout(() => setToneObject(null), 300)
+                              ScrollToLatestMessage()
+                        },
+                  })
             }
-
-            const sender = {
-                  name: currentUser?.name,
-                  key: currentUser?.key,
-            }
-
-            const chatMessage = new ChatMessage()
-
-            // Sender
-            chatMessage.sender = {
-                  name: currentUser?.name,
-                  key: currentUser?.key,
-                  timezone: currentUser?.location?.timezone,
-            }
-
-            // Recipient
-            chatMessage.recipient = {
-                  name: recipient?.name,
-                  key: recipient?.key,
-            }
-            console.log(messageText)
-            chatMessage.message = StringManager.SanitizeString(messageText)
-
-            // Existing chat
-            if (Manager.IsValid(chat)) {
-                  await ChatManager.InsertChatMessage(chat?.id, chatMessage)
-            }
-
-            // Create new chat (for each member, if one doesn't exist between members)
-            else {
-                  const newChatUid = await ChatManager.CreateAndInsertChat(sender, chatMessage.recipient)
-                  await ChatManager.InsertChatMessage(newChatUid, chatMessage)
-            }
-
-            // SEND NOTIFICATION - Only Send if it is not paused for the recipient
-            if (!chat?.isPausedFor?.includes(recipient?.key)) {
-                  UpdateManager.SendUpdate(
-                        "🗯️ New Message",
-                        `${StringManager.GetFirstNameOnly(currentUser.name)} Messaged You`,
-                        recipient?.key,
-                        currentUser,
-                        ActivityCategory.chats
-                  )
-            }
-
-            setMessageText("")
-            setTimeout(() => {
-                  setToneObject(null)
-            }, 300)
       }
 
       const ViewBookmarks = () => {
-            if (bookmarkedMessages.length > 0) {
+            if (bookmarkedMessagesToIterate.length > 0) {
                   setShowBookmarks(!showBookmarks)
                   ScrollToLatestMessage()
             }
@@ -167,21 +171,26 @@ const Chat = ({show, hide, recipient}) => {
             // Set bookmarks
             if (Manager.IsValid(bookmarkRecords)) {
                   let bookmarksToLoop = chatMessages.filter((x) => bookmarkedRecordIds.includes(x.id))
-                  setBookmarkedMessages(bookmarksToLoop)
+                  setBookmarkedMessagesToIterate(bookmarksToLoop)
             } else {
                   setShowBookmarks(false)
-                  setBookmarkedMessages([])
+                  setBookmarkedMessagesToIterate([])
             }
-            ScrollToLatestMessage()
       }
 
       const ScrollToLatestMessage = () => {
-            setTimeout(() => {
-                  const messageWrapper = document.getElementById("default-messages")
+            if (!messageWrapperRef.current || !messageWrapperRef.current.scrollHeight) return
+            const scrollToBottom = () => {
+                  if (!messageWrapperRef.current || !messageWrapperRef.current.scrollHeight) return
+                  messageWrapperRef.current.scrollTo({
+                        top: messageWrapperRef.current.scrollHeight,
+                        behavior: "smooth",
+                  })
+            }
 
-                  if (messageWrapper) {
-                        messageWrapper.scrollTop = messageWrapper.scrollHeight
-                  }
+            // Let the browser paint, then scroll
+            setTimeout(() => {
+                  requestAnimationFrame(scrollToBottom)
             }, 100)
       }
 
@@ -207,35 +216,22 @@ const Chat = ({show, hide, recipient}) => {
                   timezone = await AppManager.GetTimezone()
             }
 
-            setMessageTimezone(timezone)
-      }
-
-      const GetChat = async () => {
-            for (let _chat of chats) {
-                  const members = _chat?.members
-                  for (let member of members) {
-                        if (member?.key === recipient?.key) {
-                              setChat(_chat)
-                              setChatId(_chat?.id)
-                              break
-                        }
-                  }
-            }
+            // setMessageTimezone(timezone)
       }
 
       const GetMessageDisplayText = (message, bookmarkedMessages, currentUser) => {
-            if (!message?.timestamp || !currentUser?.location?.timezone)
-                  return {
-                        isBookmarked: false,
-                        convertedTimestamp: "",
-                  }
+            const userTimezone = currentUser?.location?.timezone
+            const senderTimezone = message?.sender?.timezone
+
+            // Quick validation
+            if (!message?.timestamp || !userTimezone) {
+                  return {isBookmarked: false, convertedTimestamp: ""}
+            }
 
             const parsed = moment(message.timestamp, DatetimeFormats.timestamp)
+            const isBookmarked = bookmarkedMessages?.some((x) => x.id === message.id) ?? false
 
-            // Check if message is bookmarked
-            const isBookmarked = !!bookmarkedMessages?.some((x) => x.id === message.id)
-
-            // If sent today, just return the time
+            // If sent today, return just the time
             if (parsed.isSame(moment(), "day")) {
                   return {
                         isBookmarked,
@@ -243,24 +239,36 @@ const Chat = ({show, hide, recipient}) => {
                   }
             }
 
-            // Otherwise, convert sender time → recipient time
+            // Convert sender time → recipient time
             const dateForDb = parsed.format(DatetimeFormats.dateForDb)
             const timeForDb = parsed.format(DatetimeFormats.timeForDb)
 
-            const convertedTime = DateManager.convertTime(timeForDb, message?.sender?.timezone, currentUser.location.timezone)
+            const convertedTime = DateManager.convertTime(timeForDb, senderTimezone, userTimezone)
 
-            const convertedTimestamp = moment(`${dateForDb} ${convertedTime}`, DatetimeFormats.timestamp)
-                  .tz(currentUser.location.timezone)
-                  .format("ddd, MMMM Do (h:mma)")
+            const convertedTimestamp = moment(`${dateForDb} ${convertedTime}`, DatetimeFormats.timestamp).tz(userTimezone).format("MMMM Do (h:mma)")
 
             return {isBookmarked, convertedTimestamp}
       }
 
+      // ON CHAT CHANGE
+      useEffect(() => {
+            // Run on initial load OR when search closes
+            const isSearchClosed = !showSearchInput
+
+            if (Manager.IsValid(chat) && isSearchClosed) {
+                  setChatId(chat?.id)
+            }
+      }, [chat, showBookmarks, showSearchInput])
+
+      useEffect(() => {
+            if (Manager.IsValid(chatId)) {
+                  void DefineBookmarks()
+                  ScrollToLatestMessage()
+            }
+      }, [chatId])
+
       // ON PAGE LOAD
       useEffect(() => {
-            if (Manager.IsValid(chats)) {
-                  GetChat().then((r) => r)
-            }
             const appContainer = document.querySelector(".App")
             const appContent = document.getElementById("app-content-with-sidebar")
             if (appContent && appContainer) {
@@ -282,25 +290,21 @@ const Chat = ({show, hide, recipient}) => {
             }
 
             DefineMessageTimezone().then((r) => r)
-            ScrollToLatestMessage()
       }, [])
-
-      useEffect(() => {
-            if (Manager.IsValid(chats)) {
-                  GetChat().then((r) => r)
-            }
-      }, [recipient])
 
       // ON SEARCH RESULTS CHANGE
       useEffect(() => {
-            const searchResultsContainer = document.querySelector(".search-results")
-            if (Manager.IsValid(searchResultsContainer)) {
-                  if (searchResults.length > 0) {
-                        document.querySelector(".search-results").classList.add("active")
-                  } else {
-                        setSearchResults([])
-                        document.querySelector(".search-results").classList.remove("active")
-                  }
+            const container = document.querySelector(".search-results")
+
+            if (!Manager.IsValid(container)) return
+
+            const hasResults = searchResults.length > 0
+
+            container.classList.toggle("active", hasResults)
+
+            // Only clear if it’s already populated
+            if (!hasResults && searchResults.length !== 0) {
+                  // setSearchResults([])
             }
       }, [searchResults.length])
 
@@ -319,13 +323,6 @@ const Chat = ({show, hide, recipient}) => {
             }
       }, [showBookmarks])
 
-      useEffect(() => {
-            if (Manager.IsValid(appImages)) {
-                  const starBg = appImages?.find((x) => x.name === "StarBackground")
-                  setBookmarkBg(starBg?.url)
-            }
-      }, [appImages])
-
       return (
             <>
                   <Form
@@ -343,7 +340,7 @@ const Chat = ({show, hide, recipient}) => {
                               }
                               const results =
                                     messagesToLoop?.filter((x) => x.message.toLowerCase().indexOf(searchInputQuery.toLowerCase()) > -1) || []
-                              setBookmarkedMessages([])
+                              setBookmarkedMessagesToIterate([])
                               setSearchResults(results)
                               setSearchInputQuery("")
                               setInSearchMode(true)
@@ -354,9 +351,11 @@ const Chat = ({show, hide, recipient}) => {
                               setShowSearchCard(false)
                               setInSearchMode(false)
                               setSearchResults([])
+                              setSearchInputQuery("")
                               ScrollToLatestMessage()
                         }}>
                         <InputField
+                              defaultValue={searchInputQuery}
                               placeholder="Find a message..."
                               inputType={InputTypes.text}
                               onChange={(e) => {
@@ -388,10 +387,10 @@ const Chat = ({show, hide, recipient}) => {
                                                 </button>
                                                 <button
                                                       id="bookmark"
-                                                      className={`${Manager.IsValid(bookmarkedMessages?.find((x) => x?.id === activeMessage?.id)) ? "remove" : "add"}`}
+                                                      className={`${Manager.IsValid(bookmarkedMessagesToIterate?.find((x) => x?.id === activeMessage?.id)) ? "remove" : "add"}`}
                                                       onClick={(e) => {
                                                             const isBookmarked = Manager.IsValid(
-                                                                  bookmarkedMessages?.find((x) => x?.id === activeMessage?.id)
+                                                                  bookmarkedMessagesToIterate?.find((x) => x?.id === activeMessage?.id)
                                                             )
                                                             const parentNode = e.currentTarget.parentNode
 
@@ -400,10 +399,10 @@ const Chat = ({show, hide, recipient}) => {
                                                             ToggleBookmark(isBookmarked).then((r) => r)
                                                             setShowLongPressMenu(false)
                                                       }}>
-                                                      {Manager.IsValid(bookmarkedMessages?.find((x) => x?.id === activeMessage?.id))
+                                                      {Manager.IsValid(bookmarkedMessagesToIterate?.find((x) => x?.id === activeMessage?.id))
                                                             ? "Remove Bookmark"
                                                             : "Add Bookmark"}
-                                                      {Manager.IsValid(bookmarkedMessages?.find((x) => x?.id === activeMessage?.id)) ? (
+                                                      {Manager.IsValid(bookmarkedMessagesToIterate?.find((x) => x?.id === activeMessage?.id)) ? (
                                                             <BsBookmarkDashFill />
                                                       ) : (
                                                             <BsFillBookmarkStarFill />
@@ -443,7 +442,7 @@ const Chat = ({show, hide, recipient}) => {
                                                             <TbMessageCircleSearch id="search-icon" onClick={() => setShowSearchCard(true)} />
                                                       )}
 
-                                                      {bookmarkedMessages.length > 0 && (
+                                                      {bookmarkedMessagesToIterate.length > 0 && (
                                                             <BsFillBookmarksFill
                                                                   id="chat-bookmark-icon"
                                                                   className={
@@ -459,39 +458,25 @@ const Chat = ({show, hide, recipient}) => {
                                     )}
 
                                     {/* SEARCH RESULTS */}
-                                    {bookmarkedMessages.length === 0 && searchResults.length > 0 && (
+                                    {searchResults.length > 0 && (
                                           <div id="messages" className="search-results">
                                                 {Manager.IsValid(searchResults) &&
                                                       searchResults.map((messageObj, index) => {
-                                                            let sender
-                                                            if (messageObj?.sender?.key === currentUser?.key) {
-                                                                  sender = "ME"
-                                                            } else {
-                                                                  sender = StringManager.GetFirstNameOnly(messageObj?.sender?.name)
-                                                            }
+                                                            const fromOrTo = messageObj?.sender?.key !== currentUser?.key ? "from" : "to"
+
                                                             return (
                                                                   <div
                                                                         key={messageObj?.id}
                                                                         className={`message-wrapper search-message-wrapper ${DomManager.Animate.FadeInUp(searchResults, ".message-wrapper")}`}
                                                                         style={DomManager.AnimateDelayStyle(index, 0.002)}>
-                                                                        <p
-                                                                              className={
-                                                                                    messageObj?.sender?.key !== currentUser?.key
-                                                                                          ? "message from"
-                                                                                          : "to message"
-                                                                              }>
+                                                                        <p className={fromOrTo === "from" ? "message from" : "to message"}>
                                                                               {messageObj.message}
                                                                         </p>
-                                                                        <span
-                                                                              className={
-                                                                                    messageObj?.sender?.key !== currentUser?.key
-                                                                                          ? "timestamp from"
-                                                                                          : "to timestamp"
-                                                                              }>
-                                                                              From {sender?.name} on&nbsp;
+                                                                        <span className={fromOrTo === "from" ? "timestamp from" : "to timestamp"}>
                                                                               {moment(messageObj.timestamp, "MM/DD/yyyy hh:mma").format(
                                                                                     "ddd, MMM DD (hh:mma)"
                                                                               )}
+                                                                              <MdOutlineArrowOutward className={fromOrTo} />
                                                                         </span>
                                                                   </div>
                                                             )
@@ -500,9 +485,9 @@ const Chat = ({show, hide, recipient}) => {
                                     )}
 
                                     {/* BOOKMARKED MESSAGES */}
-                                    {Manager.IsValid(bookmarkedMessages) && showBookmarks && (
+                                    {Manager.IsValid(bookmarkedMessagesToIterate) && showBookmarks && (
                                           <div id="bookmark-messages" className="bookmark-results">
-                                                {bookmarkedMessages.map((bookmark, index) => {
+                                                {bookmarkedMessagesToIterate.map((bookmark, index) => {
                                                       let sender
 
                                                       if (bookmark?.sender?.key === currentUser?.key) {
@@ -578,12 +563,12 @@ const Chat = ({show, hide, recipient}) => {
                                     {!showBookmarks && searchResults.length === 0 && (
                                           <>
                                                 {/* ITERATE DEFAULT MESSAGES */}
-                                                <div id="default-messages">
+                                                <div id="default-messages" ref={messageWrapperRef}>
                                                       {Manager.IsValid(messagesToLoop) &&
                                                             messagesToLoop.map((message, index) => {
                                                                   const {isBookmarked, convertedTimestamp} = GetMessageDisplayText(
                                                                         message,
-                                                                        bookmarkedMessages,
+                                                                        bookmarkedMessagesToIterate,
                                                                         currentUser
                                                                   )
                                                                   const fromOrTo = message?.sender?.key !== currentUser?.key ? "from" : "to"
@@ -619,7 +604,7 @@ const Chat = ({show, hide, recipient}) => {
                                                                                                 ? "from timestamp"
                                                                                                 : "to timestamp"
                                                                                     }>
-                                                                                    {convertedTimestamp}{" "}
+                                                                                    {convertedTimestamp}
                                                                                     <MdOutlineArrowOutward className={fromOrTo} />
                                                                               </span>
                                                                         </div>
@@ -691,25 +676,17 @@ const Chat = ({show, hide, recipient}) => {
                                                       }
                                                 />
                                                 {showBookmarks && <p>Hide Bookmarks</p>}
-                                                {!showBookmarks && bookmarkedMessages.length > 0 && <p>View Bookmarks</p>}
-                                                {bookmarkedMessages.length === 0 && !showBookmarks && <p>No Bookmarks</p>}
+                                                {!showBookmarks && bookmarkedMessagesToIterate.length > 0 && <p>View Bookmarks</p>}
+                                                {bookmarkedMessagesToIterate.length === 0 && !showBookmarks && <p>No Bookmarks</p>}
                                           </p>
                                           <InputField
                                                 inputType={InputTypes.text}
                                                 placeholder={"Find a message..."}
                                                 onChange={async (e) => {
                                                       const inputValue = e.target.value
-                                                      if (inputValue.length === 0) {
-                                                            setSearchResults([])
-                                                            await DefineBookmarks()
-                                                      }
                                                       if (inputValue.length > 2) {
                                                             setSearchInputQuery(inputValue)
-                                                            const results = messagesToLoop?.filter(
-                                                                  (x) => x?.message?.toLowerCase()?.indexOf(inputValue?.toLowerCase()) > -1
-                                                            )
-                                                            setBookmarkedMessages([])
-                                                            setSearchResults(results)
+                                                            setBookmarkedMessagesToIterate([])
                                                       }
                                                 }}
                                                 inputClasses="sidebar-search-input"

@@ -133,13 +133,16 @@ function InputField({
                                                 textField: {
                                                       label: (
                                                             <span>
-                                                                  <WiTime4 fontSize="small" />
+                                                                  <WiTime4 />
                                                                   {placeholder}
                                                             </span>
                                                       ),
                                                 },
+                                                paper: {
+                                                      className: "time-picker",
+                                                },
                                           }}
-                                          name={inputName}
+                                          name={"time-picker"}
                                           views={timeViews}
                                           value={Manager.IsValid(defaultValue) ? moment(defaultValue, DatetimeFormats.timeForDb) : null}
                                           label={placeholder}
