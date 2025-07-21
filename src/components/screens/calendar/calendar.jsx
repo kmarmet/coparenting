@@ -10,6 +10,7 @@ import {PiCalendarXDuotone} from "react-icons/pi"
 import EditCalEvent from "../../../components/forms/editCalEvent"
 import NavBar from "../../../components/navBar.jsx"
 import Form from "../../../components/shared/form"
+import ButtonThemes from "../../../constants/buttonThemes"
 import DatetimeFormats from "../../../constants/datetimeFormats"
 import FinancialKeywords from "../../../constants/financialKeywords"
 import ScreenNames from "../../../constants/screenNames"
@@ -22,6 +23,7 @@ import DatasetManager from "../../../managers/datasetManager"
 import DateManager from "../../../managers/dateManager"
 import DomManager from "../../../managers/domManager"
 import Manager from "../../../managers/manager"
+import Button from "../../shared/button"
 import InputField from "../../shared/inputField"
 import Screen from "../../shared/screen"
 import Spacer from "../../shared/spacer"
@@ -40,7 +42,8 @@ export default function EventCalendar() {
       const [selectedDate, setSelectedDate] = useState(null)
       const [eventToEdit, setEventToEdit] = useState(null)
       const [contentIsLoaded, setContentIsLoaded] = useState(false)
-      const [value, setValue] = React.useState(moment())
+      const [dateValue, setDateValue] = React.useState(moment())
+      const [holidayReturnType, setHolidayReturnType] = useState("all")
 
       // CARD STATE
       const [showEditCard, setShowEditCard] = useState(false)
@@ -136,22 +139,13 @@ export default function EventCalendar() {
       }
 
       const ShowAllHolidays = async () => {
-            setShowHolidaysCard(!showHolidaysCard)
+            setHolidayReturnType("all")
+            setShowHolidaysCard(false)
             setShowHolidays(true)
       }
 
       const ShowVisitationHolidays = async () => {
-            let allEvents = await DB.getTable(DB.tables.calendarEvents)
-            allEvents = allEvents.flat()
-            let userVisitationHolidays = []
-            if (currentUser.accountType === "parent") {
-                  userVisitationHolidays = allEvents.filter(
-                        (x) => x.isHoliday === true && x?.owner?.key === currentUser?.key && Manager.Contains(x.title.toLowerCase(), "holiday")
-                  )
-            }
-            userVisitationHolidays.forEach((holiday) => {
-                  holiday.title += ` (${holiday.holidayName})`
-            })
+            setHolidayReturnType("visitation")
             setShowHolidaysCard(!showHolidaysCard)
             setShowHolidays(true)
       }
@@ -159,7 +153,7 @@ export default function EventCalendar() {
       const ViewAllEvents = () => {
             setShowHolidaysCard(false)
             setShowSearchInput(false)
-            setState({...state, refreshKey: Manager.GetUid()})
+            setHolidayReturnType("all")
       }
 
       const GetEventDotClasses = (dayEvent, dayEvents, holidayEvents) => {
@@ -202,10 +196,10 @@ export default function EventCalendar() {
 
       const HandleMonthChange = (event) => {
             const newMonthIndex = event.target.value
-            setValue((prev) => (prev ? prev.clone().month(newMonthIndex) : moment().month(newMonthIndex)))
+            setDateValue((prev) => (prev ? prev.clone().month(newMonthIndex) : moment().month(newMonthIndex)))
       }
 
-      // SHOW HOLIDAYS
+      // SHOW HOLIDAYS -> SCROLL INTO VIEW
       useEffect(() => {
             if (DomManager.isMobile()) {
                   if (showHolidays) {
@@ -220,6 +214,9 @@ export default function EventCalendar() {
 
       // APPEND HOLIDAYS/SEARCH CAL BUTTONS
       useEffect(() => {
+            setHolidayReturnType("none")
+            setShowHolidaysCard(false)
+            setShowHolidays(false)
             if (!currentUserIsLoading) {
                   const staticCalendar = document.querySelector(".MuiDialogActions-root")
                   const holidaysButton = document.getElementById("holidays-button")
@@ -230,7 +227,7 @@ export default function EventCalendar() {
                         staticCalendar.prepend(searchIcon)
 
                         holidaysButton.addEventListener("click", () => {
-                              setShowHolidaysCard(!showHolidaysCard)
+                              setShowHolidaysCard(true)
                         })
                   }
 
@@ -243,19 +240,17 @@ export default function EventCalendar() {
             }
       }, [currentScreen, currentUserIsLoading, showSearchInput])
 
-      // ON PAGE LOAD
-      useEffect(() => {
-            AddMonthText()
-      }, [])
-
       // ADD DAY INDICATORS
       useEffect(() => {
-            setSelectedDate(moment().format(DatetimeFormats.dateForDb))
+            if (!Manager.IsValid(selectedDate)) {
+                  setSelectedDate(moment().format(DatetimeFormats.dateForDb))
+            }
             if (Manager.IsValid(currentUser)) {
                   AddDayIndicators().then((r) => r)
             }
       }, [eventsOfDay, currentUser])
 
+      // HIDE STATIC CALENDAR -> SHOW EDIT
       useEffect(() => {
             const staticCalendar = document.getElementById("static-calendar")
             if (showEditCard && staticCalendar) {
@@ -280,12 +275,20 @@ export default function EventCalendar() {
                               showCard={showHolidaysCard}
                               title={"View Holidays ✨"}>
                               <div id="holiday-card-buttons">
-                                    <button className="default button green" id="view-all-holidays-item" onClick={ShowAllHolidays}>
-                                          All
-                                    </button>
-                                    <button className="default button blue" id="view-visitation-holidays-item" onClick={ShowVisitationHolidays}>
-                                          Visitation
-                                    </button>
+                                    <Button
+                                          text={"All"}
+                                          color={"white"}
+                                          theme={ButtonThemes.green}
+                                          classes={"view-all-holidays-item"}
+                                          onClick={ShowAllHolidays}
+                                    />
+                                    <Button
+                                          text={"Visitation"}
+                                          theme={ButtonThemes.white}
+                                          color={"blend"}
+                                          classes={"view-visitation-holidays-item"}
+                                          onClick={ShowVisitationHolidays}
+                                    />
                               </div>
                         </Form>
 
@@ -301,7 +304,7 @@ export default function EventCalendar() {
                                     {/* MONTH DROPDOWN */}
                                     <Stack direction="row" spacing={1} alignItems="center">
                                           <FormControl size="small">
-                                                <Select fullWidth value={value?.month()} variant="outlined" onChange={HandleMonthChange}>
+                                                <Select fullWidth value={dateValue?.month()} variant="outlined" onChange={HandleMonthChange}>
                                                       {months?.map((month, index) => (
                                                             <MenuItem key={month} value={index}>
                                                                   {month}
@@ -319,7 +322,7 @@ export default function EventCalendar() {
                                                 },
                                           }}
                                           orientation="landscape"
-                                          value={value}
+                                          value={dateValue}
                                           views={["month", "day"]}
                                           showDaysOutsideCurrentMonth={true}
                                           minDate={moment(`${moment().year()}-01-01`)}
@@ -329,7 +332,7 @@ export default function EventCalendar() {
                                                 AddMonthText(moment(month).format("MMMM"))
                                           }}
                                           onChange={(day) => {
-                                                setValue(day)
+                                                setDateValue(day)
                                                 setSelectedDate(moment(day).format(DatetimeFormats.dateForDb))
                                                 setState({...state, dateToEdit: moment(day).format(DatetimeFormats.dateForDb)})
                                           }}
@@ -338,51 +341,42 @@ export default function EventCalendar() {
                         </div>
 
                         {/* BELOW CALENDAR BUTTONS */}
-                        {!showHolidays && (
-                              <>
-                                    <Spacer height={5} />
-                                    <div id="below-calendar" className={`${theme} flex`}>
-                                          {/* LEGEND BUTTON */}
-                                          <p id="legend-button" className="animated-button">
-                                                Legend
-                                          </p>
+                        <Spacer height={5} />
+                        <div id="below-calendar" className={`${theme} flex`}>
+                              {/* LEGEND BUTTON */}
+                              <p id="legend-button" className="animated-button">
+                                    Legend
+                              </p>
 
-                                          {/* HOLIDAY BUTTON */}
-                                          <p id="holidays-button">Holidays</p>
+                              {/* HOLIDAY BUTTON */}
+                              <p id="holidays-button">Holidays</p>
 
-                                          {/* SEARCH BUTTON */}
-                                          <div
-                                                id="search-icon-wrapper"
-                                                className={`${showSearchInput ? "pending-close" : ""}`}
-                                                onClick={() => {
-                                                      if (showSearchInput) {
-                                                            setTimeout(() => {
-                                                                  setState({
-                                                                        ...state,
-                                                                        refreshKey: Manager.GetUid(),
-                                                                        dateToEdit: moment().format(DatetimeFormats.dateForDb),
-                                                                  })
-                                                            }, 500)
-                                                            setShowSearchInput(false)
-                                                            setSelectedDate(moment().format(DatetimeFormats.dateForDb))
-                                                            setValue(moment())
-                                                      } else {
-                                                            setShowSearchInput(true)
-                                                      }
-                                                }}>
-                                                {showSearchInput === true ? <MdOutlineSearchOff /> : <ImSearch />}
-                                          </div>
-                                    </div>
-                              </>
-                        )}
+                              {/* SEARCH BUTTON */}
+                              <div
+                                    id="search-icon-wrapper"
+                                    className={`${showSearchInput ? "pending-close" : ""}`}
+                                    onClick={() => {
+                                          if (showSearchInput) {
+                                                setShowSearchInput(false)
+                                                setSelectedDate(moment().format(DatetimeFormats.dateForDb))
+                                                setDateValue(moment())
+                                          } else {
+                                                setShowSearchInput(true)
+                                          }
+                                    }}>
+                                    {showSearchInput === true ? <MdOutlineSearchOff /> : <ImSearch />}
+                              </div>
+                        </div>
 
                         {/* LEGEND */}
                         <CalendarLegend />
 
-                        {/* MAP/LOOP EVENTS */}
+                        {/* SCREEN CONTENT - MAP/LOOP CALENDAR EVENTS (CalendarEvents) */}
                         <div className="screen-content">
                               <CalendarEvents
-                                    showSearchInput={showSearchInput}
+                                    holidayOptions={{returnType: holidayReturnType, show: showHolidays}}
+                                    showSearchResults={showSearchInput}
+                                    showAllHolidays={showHolidays}
                                     selectedDate={selectedDate}
                                     setEventToEdit={(ev) => {
                                           setEventToEdit(ev)
@@ -392,15 +386,14 @@ export default function EventCalendar() {
                         </div>
 
                         {/* HIDE BUTTONS */}
-                        {showHolidays && (
-                              <button
-                                    className="button bottom-right default smaller"
-                                    onClick={async () => {
-                                          setShowHolidays(false)
-                                    }}>
-                                    Hide Holidays
-                              </button>
-                        )}
+                        <Button
+                              text={"Hide Holidays"}
+                              onClick={() => {
+                                    setShowHolidays(false)
+                                    setHolidayReturnType("none")
+                              }}
+                              classes={`${showHolidays ? "active" : ""} bottom-right smaller"`}
+                        />
                   </div>
 
                   {/* DESKTOP SIDEBAR */}

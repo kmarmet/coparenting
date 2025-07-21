@@ -71,20 +71,27 @@ SecurityManager =
 
     return DatasetManager.GetValidArray(returnRecords)
 
-  getUserVisitationHolidays: (currentUser) ->
-    returnRecords = []
-    allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.key}")
-    sharedEvents = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents)
-    if Manager.IsValid(allEvents)
-      for event in allEvents
-        if DateManager.isValidDate(event.startDate)
-          if (event.ownerKey == currentUser?.key)
-            returnRecords.push(event)
-
-    if Manager.IsValid(sharedEvents)
-      returnRecords = [sharedEvents..., returnRecords...]
-
-    return DatasetManager.GetValidArray(returnRecords)
+  GetUserVisitationHolidays: (currentUser) ->
+      return [] unless currentUser?.key
+      allEvents = []
+      sharedEvents = []
+      filteredEvents = []
+      
+      [allEvents, sharedEvents] = await Promise.all [
+        DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}")
+        SecurityManager.getShareWithItems currentUser, DB.tables.calendarEvents
+      ]
+    
+      allEvents = [allEvents..., sharedEvents...]
+    
+      if Manager.IsValid(allEvents)
+        filteredEvents = allEvents.filter (event) ->
+          Manager.IsValid(event?.startDate) and event?.ownerKey is currentUser.key and event?.isHoliday == true
+          
+      else
+        return []
+      
+      return DatasetManager.GetValidArray filteredEvents, true
 
   getExpenses: (currentUser) ->
     returnRecords = []

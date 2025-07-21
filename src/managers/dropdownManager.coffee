@@ -4,7 +4,6 @@ import CalMapper from "../mappers/calMapper"
 import CalendarMapper from "../mappers/calMapper"
 import DatasetManager from "./datasetManager"
 import ExpenseCategories from "../constants/expenseCategories"
-import ExpenseSortByTypes from "../constants/expenseSortByTypes"
 import DB_UserScoped from "../database/db_userScoped"
 import Apis from "../api/apis"
 
@@ -129,6 +128,17 @@ DropdownManager =
 
 # GET DEFAULT
   GetDefault:
+    ExpenseSortByTypes: () ->
+      return [
+        {label: "Recently Added", value: "recentlyAdded"},
+        {label: "Nearest Due Date", value: "nearestDueDate"},
+        {label: "Oldest Creation Date", value: "oldestCreationDate"},
+        {label: "Amount: High to Low", value: "amountDesc"},
+        {label: "Amount: Low to High", value: "amountAsc"},
+        {label: "Name (ascending)", value: "nameAsc"},
+        {label: "Name (descending)", value: "nameDesc"},
+      ]
+      
     Holidays: () ->
       apiHolidays = await Apis.Dates.GetHolidays()
       options = []
@@ -152,14 +162,6 @@ DropdownManager =
     ValueRecordTypes: () ->
       return [{label: "Expenses", value: "expenses"}, {label: "Chats", value: "chats"}]
 
-    ExpenseSortByTypes: () ->
-      options = []
-
-      for key, value of ExpenseSortByTypes
-        options.push
-          value: key
-          label: value
-      return options
 
     Reminders:
       [

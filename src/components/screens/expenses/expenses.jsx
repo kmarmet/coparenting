@@ -11,7 +11,6 @@ import {MdLocalActivity, MdPets, MdSportsFootball} from "react-icons/md"
 import ButtonThemes from "../../../constants/buttonThemes"
 import DatetimeFormats from "../../../constants/datetimeFormats.js"
 import ExpenseCategories from "../../../constants/expenseCategories"
-import ExpenseSortByTypes from "../../../constants/expenseSortByTypes"
 import InputTypes from "../../../constants/inputTypes"
 import ScreenNames from "../../../constants/screenNames"
 import ActivityCategory from "../../../constants/updateCategory"
@@ -38,7 +37,7 @@ import Form from "../../shared/form.jsx"
 import InputField from "../../shared/inputField.jsx"
 import Label from "../../shared/label.jsx"
 import LazyImage from "../../shared/lazyImage"
-import MyConfetti from "../../shared/myConfetti.js"
+import MyConfetti from "../../shared/myConfetti"
 import Screen from "../../shared/screen"
 import ScreenHeader from "../../shared/screenHeader"
 import SelectDropdown from "../../shared/selectDropdown.jsx"
@@ -72,7 +71,6 @@ export default function Expenses() {
       const [activeExpense, setActiveExpense] = useState(null)
       const [showDetails, setShowDetails] = useState(false)
       const [view, setView] = useState({label: "Details", value: "details"})
-      const [sortMethod, setSortMethod] = useState(ExpenseSortByTypes.recentlyAdded)
       const [selectedChildren, setSelectedChildren] = useState([])
       const [selectedCategory, setSelectedCategory] = useState([])
       const [categoriesAsArray, setCategoriesAsArray] = useState([])
@@ -85,6 +83,10 @@ export default function Expenses() {
       const {expenses, expensesAreLoading} = useExpenses()
       const {children, childrenAreLoading} = useChildren()
       const {currentUser, currentUserIsLoading} = useCurrentUser()
+
+      // DROPDOWN OPTIONS
+      const [defaultSortByTypes, setDefaultSortByTypes] = useState(DropdownManager.GetDefault.ExpenseSortByTypes)
+      const [selectedSortMethod, setSelectedSortMethod] = useState()
 
       const formRef = useRef(null)
 
@@ -103,10 +105,13 @@ export default function Expenses() {
 
       const TogglePaidStatus = async () => {
             const updatedStatus = activeExpense.paidStatus === "paid" ? "unpaid" : "paid"
-            // setPaidStatus(updatedStatus)
-            activeExpense.paidStatus = updatedStatus
+            const updatedExpense = {
+                  ...activeExpense,
+                  paidStatus: updatedStatus,
+            }
+
             const updateIndex = DB.GetTableIndexById(expenses, activeExpense?.id)
-            await ExpenseManager.UpdateExpense(currentUser?.key, updateIndex, activeExpense).then(async () => {
+            await ExpenseManager.UpdateExpense(`${DB.tables.expenses}/${currentUser?.key}/${updateIndex}`, updatedExpense).then(async () => {
                   UpdateManager.SendUpdate(
                         `Expense Paid`,
                         `An expense has been marked ${updatedStatus.toUpperCase()} by ${currentUser?.name} \nExpense Name: ${activeExpense?.name}`,
@@ -157,57 +162,61 @@ export default function Expenses() {
             }
       }
 
-      const HandleSortBySelection = (e) => {
-            const sortByName = e.value
-            const expensesAsNumbers = expenses.map((expense) => {
-                  expense.amount = parseInt(expense?.amount)
-                  return expense
-            })
-            if (sortByName === ExpenseSortByTypes.recentlyAdded) {
-                  setSortedExpenses(expenses.SortExpenses((a, b) => new Date(a.creationDate) - new Date(b.creationDate)).reverse())
-                  setSortMethod(ExpenseSortByTypes.recentlyAdded)
+      const HandleSortBySelection = () => {
+            const sortByMethodName = selectedSortMethod?.value
+            const expensesAsNumbers = expenses.map((expense) => ({
+                  ...expense,
+                  amount: parseInt(expense.amount ?? 0, 10),
+            }))
+
+            if (sortByMethodName === "recentlyAdded") {
+                  setSortedExpenses(DatasetManager.SortExpenses(expenses, "date", "desc"))
             }
-            if (sortByName === ExpenseSortByTypes.recentlyAdded) {
+
+            if (sortByMethodName === "nearestDueDate") {
+                  const sortedByNearestDueDate = DatasetManager.sortByProperty(expenses, "dueDate", "asc")
+                  setSortedExpenses(sortedByNearestDueDate)
+            }
+
+            if (sortByMethodName === "oldestCreationDate") {
                   const sortedByDateAsc = DatasetManager.sortByProperty(expenses, "creationDate", "asc", true)
                   setSortedExpenses(sortedByDateAsc)
             }
-            if (sortByName === ExpenseSortByTypes.nearestDueDate) {
+
+            if (sortByMethodName === "nearestDueDate") {
                   const sortedByDueDateDesc = DatasetManager.sortByProperty(expenses, "dueDate", "desc", true)
                   setSortedExpenses(sortedByDueDateDesc)
             }
             // High -> Low
-            if (sortByName === ExpenseSortByTypes.amountDesc) {
+            if (sortByMethodName === "amountDesc") {
                   const sortByAmountDesc = DatasetManager.sortByProperty(expensesAsNumbers, "amount", "desc")
                   setSortedExpenses(sortByAmountDesc)
-                  setSortMethod(ExpenseSortByTypes.amountDesc)
             }
+
             // Low -> High
-            if (sortByName === ExpenseSortByTypes.amountAsc) {
+            if (sortByMethodName === "amountAsc") {
                   const sortedByAmountAsc = DatasetManager.sortByProperty(expensesAsNumbers, "amount", "asc")
                   setSortedExpenses(sortedByAmountAsc)
-                  setSortMethod(ExpenseSortByTypes.amountAsc)
             }
 
             // Name Ascending
-            if (sortByName === ExpenseSortByTypes.nameAsc) {
+            if (sortByMethodName === "nameAsc") {
                   const sortedByNameAsc = DatasetManager.sortByProperty(expenses, "name", "asc")
                   setSortedExpenses(sortedByNameAsc)
-                  setSortMethod(ExpenseSortByTypes.nameAsc)
             }
 
             // Name Descending
-            if (sortByName === ExpenseSortByTypes.nameDesc) {
+            if (sortByMethodName === "nameDesc") {
                   const sortedByNameDesc = DatasetManager.sortByProperty(expenses, "name", "desc")
                   setSortedExpenses(sortedByNameDesc)
-                  setSortMethod(ExpenseSortByTypes.nameDesc)
-            }
-
-            if (sortByName === ExpenseSortByTypes.nearestDueDate) {
-                  const sortedByNearestDueDate = DatasetManager.sortByProperty(expenses, "dueDate", "asc")
-                  setSortedExpenses(sortedByNearestDueDate)
-                  setSortMethod(ExpenseSortByTypes.nearestDueDate)
             }
       }
+
+      useEffect(() => {
+            if (Manager.IsValid(expenses)) {
+                  HandleSortBySelection()
+            }
+      }, [selectedSortMethod, expenses])
 
       const DeleteExpense = async () => await DB.deleteById(`${DB.tables.expenses}/${currentUser?.key}`, activeExpense?.id)
 
@@ -312,7 +321,7 @@ export default function Expenses() {
                         ]}
                         showCard={showDetails}>
                         <div className={`details content ${activeExpense?.reason?.length > 20 ? "long-text" : ""}`}>
-                              <Spacer height={3} />
+                              <Spacer height={5} />
                               {/* DETAILS */}
                               {view?.label === "Details" && (
                                     <>
@@ -476,7 +485,7 @@ export default function Expenses() {
                                                 onChange={(e) => (formRef.current.name = e.target.value)}
                                           />
 
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           {/* AMOUNT */}
                                           <InputField
@@ -486,7 +495,7 @@ export default function Expenses() {
                                                 onChange={(e) => (formRef.current.amount = e.target.value)}
                                           />
 
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           {/* DUE DATE */}
                                           <InputField
@@ -497,7 +506,7 @@ export default function Expenses() {
                                                 onDateOrTimeSelection={(e) => (formRef.current.dueDate = moment(e).format("MM/DD/yyyy"))}
                                           />
 
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           {/* CATEGORY */}
                                           <SelectDropdown
@@ -507,7 +516,7 @@ export default function Expenses() {
                                                 placeholder={"Category"}
                                           />
 
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           {/* INCLUDING WHICH CHILDREN */}
                                           <SelectDropdown
@@ -563,7 +572,7 @@ export default function Expenses() {
                                     <AccordionDetails>
                                           <div id="filters">
                                                 <div className="filter-row">
-                                                      <Label isBold={true} text={"Type"} classes="mb-5 toggle always-show"></Label>
+                                                      <Label text={"Type"} classes="toggle always-show" />
                                                       <div className="buttons flex type">
                                                             <Button
                                                                   classes={`filter-button expense-type`}
@@ -630,10 +639,10 @@ export default function Expenses() {
                                                 <Label text={""} classes="sorting" />
                                                 <SelectDropdown
                                                       wrapperClasses={"sorting-accordion white-bg"}
-                                                      value={sortMethod}
                                                       placeholder={"Sort by"}
-                                                      options={DropdownManager.GetDefault.ExpenseSortByTypes()}
-                                                      onSelect={HandleSortBySelection}></SelectDropdown>
+                                                      options={defaultSortByTypes}
+                                                      onSelect={setSelectedSortMethod}
+                                                />
                                           </div>
                                     </AccordionDetails>
                               </Accordion>
@@ -695,11 +704,12 @@ export default function Expenses() {
 
                                                                         <div className={"right"}>
                                                                               <p className="amount">${expense?.amount}</p>
-                                                                              <div className={"icons"}>
-                                                                                    <p className="due-date">{dueDate}</p>
-                                                                                    {/*{expense?.isRecurring && <MdOutlineEventRepeat />}*/}
-                                                                                    {/*{Manager.IsValid(expense?.imageName) && <BsCardImage />}*/}
-                                                                              </div>
+                                                                              <p
+                                                                                    className={`due-date${isPastDue ? " past-due" : ""}${dueInADay || dueInHours ? " soon" : ""}`}>
+                                                                                    Due: {dueDate}
+                                                                              </p>
+                                                                              {/*{expense?.isRecurring && <MdOutlineEventRepeat />}*/}
+                                                                              {/*{Manager.IsValid(expense?.imageName) && <BsCardImage />}*/}
                                                                         </div>
 
                                                                         {/*  STATUS */}
@@ -726,7 +736,9 @@ export default function Expenses() {
                               </div>
                         </div>
                   </div>
+
                   <NavBar navbarClass={"expenses"} />
+
                   {expenses?.length === 0 && <p className={"no-data-fallback-text"}>No Expenses</p>}
             </Screen>
       )

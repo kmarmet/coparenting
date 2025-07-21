@@ -181,7 +181,7 @@ export default function Login() {
                                           placeholder={"Email Address"}
                                           onChange={(e) => (credentials.current.email = e.target.value)}
                                     />
-                                    <Spacer height={3} />
+                                    <Spacer height={5} />
                                     {/* PASSWORD */}
                                     <div className="flex">
                                           <InputField
@@ -222,7 +222,7 @@ export default function Login() {
                                     )}
 
                                     {!challengeSolved && !window.location.href.includes("localhost") && (
-                                          <p id="captcha-loading-text">Pre-Authentication in Progress...</p>
+                                          <p id="captcha-apiRequestIsLoading-text">Pre-Authentication in Progress...</p>
                                     )}
 
                                     <p id="sign-up-link" onClick={() => setState({...state, currentScreen: ScreenNames.registration})}>

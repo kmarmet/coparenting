@@ -443,7 +443,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                                 }}
                                           />
 
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           {/* DATE */}
                                           {!eventIsDateRange && (
@@ -491,7 +491,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                                 </div>
                                           )}
 
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           {/* SHARE WITH */}
                                           <SelectDropdown
@@ -502,7 +502,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                                 onSelect={setSelectedShareWithOptions}
                                           />
 
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           {/* REMINDERS */}
                                           <SelectDropdown
@@ -513,7 +513,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                                 onSelect={setSelectedReminderOptions}
                                           />
 
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           {/* INCLUDING WHICH CHILDREN */}
                                           <SelectDropdown
@@ -524,7 +524,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                                 selectMultiple={true}
                                           />
 
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           {/* URL/WEBSITE */}
                                           <InputField
@@ -536,7 +536,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                                 onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
                                           />
 
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           {/* ADDRESS */}
                                           <AddressInput
@@ -545,7 +545,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                                 onChange={(address) => (formRef.current.address = address)}
                                           />
 
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           {/* PHONE */}
                                           <InputField
@@ -556,7 +556,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                                 onChange={(e) => (formRef.current.phone = StringManager.FormatPhone(e.target.value))}
                                           />
 
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           {/* NOTES */}
                                           <InputField
@@ -568,7 +568,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                                 onChange={(e) => (formRef.current.notes = e.target.value)}
                                           />
 
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           {/* IS VISITATION? */}
                                           <div className="flex visitation-toggle">

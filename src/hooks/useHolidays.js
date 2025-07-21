@@ -1,50 +1,85 @@
-import {useEffect, useState} from 'react'
-import DB from '../database/DB'
-import DatasetManager from '../managers/datasetManager'
+import {useEffect, useState} from "react"
+import AlertManager from "../managers/alertManager"
+import DatasetManager from "../managers/datasetManager"
+import DateManager from "../managers/dateManager"
+import Manager from "../managers/manager"
+import ObjectManager from "../managers/objectManager"
 
-const cache = new Map()
+const useHolidays = (currentUser, returnType = "none") => {
+      const [holidays, setHolidays] = useState(null)
+      const [holidayRetrievalError, setHolidayRetrievalError] = useState(null)
+      const [holidaysAreLoading, setHolidaysAreLoading] = useState(true)
 
-const useHolidays = (currentUserKey, fromApi = false) => {
-    const cacheKey = currentUserKey
+      // Fetch from API
+      const FetchApiHolidays = async () => {
+            const res = await DateManager.GetHolidaysAsEvents()
+            return res ?? []
+      }
 
-    const [holidays, setHolidays] = useState(null)
-    const [error, setError] = useState(null)
-    const [holidaysAreLoading, setHolidaysAreLoading] = useState(true)
+      // Filter visitation holidays
+      const FetchVisitationHolidays = async () => {
+            const apiData = await FetchApiHolidays()
+            if (!Manager.IsValid(apiData)) return []
 
-    useEffect(() => {
-        if (cache.has(cacheKey)) return // already cached
-        const controller = new AbortController()
-        const {signal} = controller
+            const filtered = apiData
+                  .filter((x) => x?.owner?.key === currentUser?.key)
+                  .map((holiday) => {
+                        const cleanHoliday = ObjectManager.CleanObject(holiday)
+                        cleanHoliday.title += ` (${holiday.holidayName})`
+                        return cleanHoliday
+                  })
 
-        const fetchData = async () => {
-            let result = []
-            setHolidaysAreLoading(true)
-            try {
-                if (fromApi) {
-                    const response = await fetch('https://date.nager.at/api/v3/PublicHolidays/2019/US', {currentUserKey, signal})
-                    const _holidays = await response.json()
-                    result = DatasetManager.getUniqueArray(_holidays, true)
-                } else {
-                    let _holidays = await DB.getTable(DB.tables.holidayEvents)
-                    result = _holidays
-                }
-                cache.set(cacheKey, result)
-                setHolidays(result)
-                setError(null)
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    setError(err.message || 'Unknown error')
-                }
-            } finally {
-                setHolidaysAreLoading(false)
+            if (Manager.IsValid(filtered)) {
+                  return DatasetManager.GetValidArray(filtered, true)
+            } else {
+                  return []
             }
-        }
+      }
 
-        fetchData().then((r) => r)
+      useEffect(() => {
+            const loadData = async () => {
+                  try {
+                        let data = []
+                        if (returnType === "all") {
+                              data = await FetchApiHolidays()
+                              setHolidays(data)
+                        } else if (returnType === "visitation") {
+                              data = await FetchVisitationHolidays()
+                              if (!Manager.IsValid(data)) {
+                                    AlertManager.confirmAlert({
+                                          title: "No Visitation Holidays",
+                                          html: "You have not selected any visitation holidays. Go to the <b>Visitation</b> page to select them to be added to your calendar.",
+                                          confirmButtonText: "Okay",
+                                          bg: "#fbd872",
+                                          showDenyButton: false,
+                                          denyButtonText: "",
+                                    })
+                                    setHolidays([])
+                              } else {
+                                    setHolidays(data)
+                              }
+                        } else {
+                              setHolidays([])
+                        }
+                  } catch (err) {
+                        if (err.name !== "AbortError") {
+                              setHolidayRetrievalError(err.message || "Unknown Holiday Retrieval Error")
+                        }
+                  } finally {
+                        setHolidaysAreLoading(false)
+                  }
+            }
 
-        return () => controller.abort() // Cleanup on unmount or url/options change
-    }, fromApi)
+            loadData().then((r) => r)
 
-    return {holidays, error, holidaysAreLoading}
+            return () => {
+                  setHolidays([])
+                  setHolidayRetrievalError(null)
+                  setHolidaysAreLoading(true)
+            }
+      }, [returnType, currentUser]) // dependencies
+
+      return {holidays, holidayRetrievalError, holidaysAreLoading}
 }
+
 export default useHolidays

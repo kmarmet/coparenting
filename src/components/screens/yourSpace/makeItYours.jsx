@@ -258,7 +258,7 @@ export default function MakeItYours() {
                                           onChange={(e) => setFeatureName(e.target.value)}
                                           inputType={InputTypes.text}
                                     />
-                                    <Spacer height={3} />
+                                    <Spacer height={5} />
                                     <InputField
                                           inputType={InputTypes.textarea}
                                           placeholder={StringManager.FormatTitle("Tell us all about your idea!")}
@@ -358,7 +358,7 @@ export default function MakeItYours() {
                               titleIcon={<MdOutlineAppShortcut />}
                         />
                         <Spacer height={10} />
-                        <div className="screen-content">
+                        <div className="screen-content make-it-yours">
                               {/* SETTINGS */}
                               <div className="section">
                                     <Label classes={"always-show section-title"} text={"App Preferences"} />

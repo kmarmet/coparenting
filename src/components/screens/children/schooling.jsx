@@ -114,7 +114,7 @@ export default function Schooling({activeChild}) {
                                                 const value = prop.flat()[1]
                                                 return (
                                                       <div key={index}>
-                                                            <div className="data-row">
+                                                            <div className="apiResults-row">
                                                                   {infoLabel.toLowerCase().includes("phone") && (
                                                                         <>
                                                                               <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
@@ -143,7 +143,7 @@ export default function Schooling({activeChild}) {
                                                                         </>
                                                                   )}
                                                             </div>
-                                                            <Spacer height={3} />
+                                                            <Spacer height={5} />
                                                       </div>
                                                 )
                                           })}

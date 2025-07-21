@@ -151,7 +151,7 @@ export default AppManager =
   
   SetAppBadge: (count) ->
     if window.navigator.setAppBadge
-      window.navigator.setAppBadge count
+      return window.navigator.setAppBadge count
   
   clearAppBadge: ->
     if window.navigator.clearAppBadge

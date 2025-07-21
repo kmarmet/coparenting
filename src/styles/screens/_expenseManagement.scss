@@ -1,485 +1,487 @@
-@use '../utils/mixins';
-@use '../utils/variables';
-@use '../utils/_palette';
-@use '../_fonts';
+@use "../utils/mixins";
+@use "../utils/variables";
+@use "../utils/_palette";
+@use "../_fonts";
 
 #external-overrides {
-    #expenses-container {
-        margin-top: 15px;
+      #expenses-container {
+            margin-top: 15px;
 
-        .row {
-            .category-icon {
-                &.misc {
-                    color: palette.$blend;
-                }
-                &.medical {
-                    color: palette.$red;
-                }
-                &.dental {
-                    color: palette.$holidayOrange;
-                }
-                &.entertainment {
-                    color: palette.$main;
-                }
-                &.childcare {
-                    color: palette.$holidayOrange;
-                }
-                &.sports {
-                    color: palette.$purple;
-                }
-                &.educational {
-                    color: #e58c67;
-                }
-                &.pet {
-                    color: #964b00;
-                }
-                &.travel {
-                    color: #0edf5a;
-                }
-                &.transportation {
-                    color: #57d2c5;
-                }
+            .row {
+                  .category-icon {
+                        &.misc {
+                              color: palette.$blend;
+                        }
+                        &.medical {
+                              color: palette.$red;
+                        }
+                        &.clothing {
+                              color: #0fb6b7;
+                        }
+                        &.dental {
+                              color: palette.$holidayOrange;
+                        }
+                        &.entertainment {
+                              color: palette.$main;
+                        }
+                        &.childcare {
+                              color: palette.$holidayOrange;
+                        }
+                        &.sports {
+                              color: palette.$purple;
+                        }
+                        &.educational {
+                              color: #e58c67;
+                        }
+                        &.pet {
+                              color: #964b00;
+                        }
+                        &.travel {
+                              color: #0edf5a;
+                        }
+                        &.transportation {
+                              color: #57d2c5;
+                        }
+                  }
+                  .content {
+                        width: calc(100% - 15px);
+                        margin-left: 15px;
+                        .content-columns {
+                              display: flex;
+                              align-items: flex-start;
+                              justify-content: space-between;
+                              .left {
+                                    .category {
+                                          font-size: 14px;
+                                          padding-top: 3px;
+                                          @include mixins.Subtitle;
+                                          @include fonts.lightFont;
+                                          &.no-category {
+                                                padding: 0;
+                                          }
+                                    }
+                                    .name {
+                                          padding-top: 4px;
+                                          font-size: 16px;
+                                          line-height: 1;
+                                          white-space: nowrap;
+                                          @include mixins.rowTitle;
+                                    }
+                              }
+                              .right {
+                                    p {
+                                          font-weight: variables.$fwRegular;
+                                          font-size: 15px;
+
+                                          &.amount {
+                                                text-align: right;
+                                          }
+
+                                          &.due-date {
+                                                text-align: right;
+                                                font-size: 14px;
+                                                padding-top: 5px;
+                                                color: palette.$darkGrey;
+
+                                                &.soon {
+                                                      color: palette.$brightYellow;
+                                                }
+
+                                                &.past-due {
+                                                      color: palette.$red;
+                                                }
+                                          }
+                                    }
+                              }
+                        }
+                  }
             }
-            .content {
-                width: calc(100% - 15px);
-                margin-left: 15px;
-                .content-columns {
-                    display: flex;
-                    align-items: flex-start;
-                    justify-content: space-between;
-                    .left {
-                        .category {
-                            font-size: 14px;
-                            @include mixins.Subtitle;
-                            @include fonts.lightFont;
-                            &.no-category {
-                                padding: 0;
-                            }
+      }
+      #add-expense-form {
+            margin: 0;
+            position: relative;
+            .MuiFormControl-root {
+                  .MuiInputBase-input {
+                        height: auto !important;
+
+                        &[role="combobox"] {
+                              padding: 10px !important;
+                        }
+                  }
+            }
+            #amount-input-field {
+                  margin: 0 auto;
+                  width: 100px;
+                  input {
+                        padding-left: 20px;
+                        font-size: 18px;
+                        padding-top: 1px;
+                        text-align: center;
+                        &::placeholder {
+                              font-size: 20px;
+                              padding: 0;
+                              margin: 0;
+                              position: relative;
+                              text-align: center;
+                              top: 2px;
+                              border-bottom: 1px solid palette.$transWhite;
+                        }
+                  }
+
+                  .defaults {
+                        text-align: center;
+                        width: 100%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+
+                        span {
+                              text-align: center;
+                        }
+                  }
+            }
+            &.form {
+                  label {
+                        &.caption {
+                              justify-content: center;
+                        }
+                  }
+            }
+            #default-expense-amounts {
+                  gap: 8px;
+                  justify-content: center;
+                  display: grid;
+                  grid-template-columns: repeat(3, 1fr);
+                  margin: 15px auto;
+                  flex-wrap: wrap;
+
+                  button {
+                        border-radius: variables.$buttonBorderRadius;
+                        color: palette.$mediumTransWhite;
+                        padding: 20px 20px;
+                        height: unset;
+                        text-align: center;
+                        font-size: 18px;
+                        background: palette.$inputBackground;
+                        &.pressed {
+                              border-radius: variables.$borderRadius;
+                              transform: scale(1.1);
+                        }
+                        &.reset {
+                              opacity: 1;
+                              font-weight: variables.$fwMedium;
+                              color: palette.$transWhite;
+                        }
+                  }
+
+                  .done {
+                        span {
+                              color: palette.$green;
+                              transform: scale(1.8);
+                        }
+                  }
+            }
+
+            #or {
+                  width: 100%;
+                  text-align: center;
+                  font-style: italic;
+                  font-size: 18px;
+                  opacity: 0.7;
+            }
+
+            #upload-inputs {
+                  margin-bottom: 10px;
+
+                  span {
+                  }
+
+                  #upload-button {
+                        span {
+                              color: white;
+                        }
+                  }
+            }
+      }
+
+      #expense-tracker {
+            #filters {
+                  .filter-row {
+                        margin-bottom: 10px;
+
+                        .buttons {
+                              button {
+                                    &.default {
+                                          height: 30px;
+                                    }
+                              }
+                        }
+
+                        .label-wrapper {
+                              label {
+                                    line-height: 1;
+
+                                    span {
+                                          padding: 0;
+                                          font-weight: variables.$fwMedium;
+                                    }
+                              }
+                        }
+                  }
+
+                  .label-wrapper {
+                        &.sorting {
+                              label {
+                                    line-height: 1;
+
+                                    span {
+                                          padding: 0;
+                                          font-weight: variables.$fwMedium;
+                                          opacity: 0.9;
+                                    }
+                              }
+                        }
+                  }
+
+                  .sort-by {
+                        .list-item {
+                              margin-left: 10px;
+                              margin-bottom: 10px;
+                              font-weight: variables.$fwBold;
+                        }
+                  }
+            }
+
+            .action-pills {
+                  .flex {
+                        padding: 0;
+                        background-color: transparent;
+
+                        span {
+                              border-radius: 100%;
+                              font-size: 45px;
+                              color: palette.$darkBlue;
+                              padding: 0;
+                              margin: 0;
+                              box-shadow:
+                                    0 7px 8px rgba(0, 0, 0, 0.1),
+                                    0 0 0 rgba(0, 0, 0, 0);
+                        }
+                  }
+            }
+
+            .payment-options-link {
+                  color: palette.$main;
+                  font-weight: 500;
+                  opacity: 1;
+                  border-bottom: 1px solid palette.$main;
+                  display: inline;
+                  @include mixins.hover;
+
+                  span {
+                        font-size: 25px;
+                        position: relative;
+                        bottom: -5px;
+                        margin-left: 8px;
+                  }
+            }
+
+            .image-form {
+                  img {
+                        width: 100%;
+                        height: auto;
+                        max-height: 100%;
+                  }
+            }
+
+            /*#region  EXPENSE*/
+            .expense {
+                  &.active {
+                        overflow: auto;
+                        max-height: 10000px;
+                        transition: all 0.3s ease-in-out;
+                  }
+
+                  span {
+                        font-size: 14px;
+                  }
+
+                  * {
+                        line-height: 1;
+                  }
+
+                  p:not(.name) {
+                        opacity: 0.85;
+                        font-size: 13px;
+                  }
+
+                  #category-and-amount {
+                        margin-top: 0;
+                        .amount {
+                              font-size: 16px;
+                              //          color: ;$red
+                              opacity: 0.85;
+                              font-weight: variables.$fwMedium;
+                              display: inline;
+                              margin-left: auto;
+                              width: auto;
+                              float: right;
+                              text-align: right;
+
+                              &.paid {
+                                    color: palette.$green;
+                                    display: flex;
+                                    align-items: center;
+                                    font-size: 14px;
+                                    font-weight: variables.$fwMedium;
+                              }
+                        }
+
+                        #expense-category {
+                              display: flex;
+                              align-items: center;
+                              color: palette.$lightBlack;
+                              transition: all 0.3s ease-in-out;
+                              span {
+                                    margin-left: 5px;
+                                    color: palette.$lightAccent;
+                                    line-height: 1;
+                              }
+                        }
+                  }
+
+                  #name-wrapper {
+                        width: 100%;
+                        margin-top: 0;
+                        .details-toggle-arrow {
+                              display: none;
+                              opacity: 0.4;
+                              position: relative;
+                              right: 0;
+                              justify-self: flex-end;
+                              font-size: 24px;
+
+                              &.active {
+                                    display: inherit;
+                              }
                         }
                         .name {
-                            padding-top: 4px;
+                              line-height: 1;
+                              font-weight: variables.$fwMedium;
+                              width: 100%;
+                              white-space: nowrap;
+                              display: flex;
+                              align-items: center;
 
-                            font-size: 16px;
-                            line-height: 1;
-                            white-space: nowrap;
-                            @include mixins.rowTitle;
+                              svg {
+                                    align-self: flex-end;
+                                    width: 18px;
+                                    height: 18px;
+                                    margin-left: 5px;
+                                    color: palette.$darkestGrey;
+                              }
                         }
-                    }
-                    .right {
-                        p {
-                            font-weight: variables.$fwRegular;
-                            font-size: 15px;
+                  }
 
-                            &.amount {
-                                text-align: right;
-                            }
-
-                            &.due-date {
-                                text-align: right;
-                                font-size: 14px;
-                                padding-top: 5px;
-                                color: palette.$darkGrey;
-                            }
-                        }
-
-                        .icons {
-                            display: flex;
-                            justify-content: flex-end;
-                            svg {
-                                color: palette.$mediumGreyDarkest;
-                                @include mixins.square(16px);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    #add-expense-form {
-        margin: 0;
-        position: relative;
-        .MuiFormControl-root {
-            .MuiInputBase-input {
-                height: auto !important;
-
-                &[role='combobox'] {
-                    padding: 10px !important;
-                }
-            }
-        }
-        #amount-input-field {
-            margin: 0 auto;
-            width: 100px;
-            input {
-                padding-left: 20px;
-                font-size: 18px;
-                padding-top: 1px;
-                text-align: center;
-                &::placeholder {
-                    font-size: 20px;
-                    padding: 0;
-                    margin: 0;
-                    position: relative;
-                    text-align: center;
-                    top: 2px;
-                    border-bottom: 1px solid palette.$transWhite;
-                }
-            }
-
-            .defaults {
-                text-align: center;
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-
-                span {
-                    text-align: center;
-                }
-            }
-        }
-        &.form {
-            label {
-                &.caption {
-                    justify-content: center;
-                }
-            }
-        }
-        #default-expense-amounts {
-            gap: 8px;
-            justify-content: center;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            margin: 15px auto;
-            flex-wrap: wrap;
-
-            button {
-                border-radius: variables.$buttonBorderRadius;
-                color: palette.$mediumTransWhite;
-                padding: 20px 20px;
-                height: unset;
-                text-align: center;
-                font-size: 18px;
-                background: palette.$inputBackground;
-                &.pressed {
-                    border-radius: variables.$borderRadius;
-                    transform: scale(1.1);
-                }
-                &.reset {
-                    opacity: 1;
-                    font-weight: variables.$fwMedium;
-                    color: palette.$transWhite;
-                }
-            }
-
-            .done {
-                span {
-                    color: palette.$green;
-                    transform: scale(1.8);
-                }
-            }
-        }
-
-        #or {
-            width: 100%;
-            text-align: center;
-            font-style: italic;
-            font-size: 18px;
-            opacity: 0.7;
-        }
-
-        #upload-inputs {
-            margin-bottom: 10px;
-
-            span {
-            }
-
-            #upload-button {
-                span {
-                    color: white;
-                }
-            }
-        }
-    }
-
-    #expense-tracker {
-        #filters {
-            .filter-row {
-                margin-bottom: 10px;
-
-                .buttons {
-                    button {
-                        &.default {
-                            height: 30px;
-                        }
-                    }
-                }
-
-                .label-wrapper {
-                    label {
-                        line-height: 1;
-
-                        span {
-                            padding: 0;
-                            font-weight: variables.$fwMedium;
-                        }
-                    }
-                }
-            }
-
-            .label-wrapper {
-                &.sorting {
-                    label {
-                        line-height: 1;
-
-                        span {
-                            padding: 0;
-                            font-weight: variables.$fwMedium;
-                            opacity: 0.9;
-                        }
-                    }
-                }
-            }
-
-            .sort-by {
-                .list-item {
-                    margin-left: 10px;
-                    margin-bottom: 10px;
-                    font-weight: variables.$fwBold;
-                }
-            }
-        }
-
-        .action-pills {
-            .flex {
-                padding: 0;
-                background-color: transparent;
-
-                span {
-                    border-radius: 100%;
-                    font-size: 45px;
-                    color: palette.$darkBlue;
-                    padding: 0;
-                    margin: 0;
-                    box-shadow:
-                        0 7px 8px rgba(0, 0, 0, 0.1),
-                        0 0 0 rgba(0, 0, 0, 0);
-                }
-            }
-        }
-
-        .payment-options-link {
-            color: palette.$main;
-            font-weight: 500;
-            opacity: 1;
-            border-bottom: 1px solid palette.$main;
-            display: inline;
-            @include mixins.hover;
-
-            span {
-                font-size: 25px;
-                position: relative;
-                bottom: -5px;
-                margin-left: 8px;
-            }
-        }
-
-        .image-form {
-            img {
-                width: 100%;
-                height: auto;
-                max-height: 100%;
-            }
-        }
-
-        /*#region  EXPENSE*/
-        .expense {
-            &.active {
-                overflow: auto;
-                max-height: 10000px;
-                transition: all 0.3s ease-in-out;
-            }
-
-            span {
-                font-size: 14px;
-            }
-
-            * {
-                line-height: 1;
-            }
-
-            p:not(.name) {
-                opacity: 0.85;
-                font-size: 13px;
-            }
-
-            #category-and-amount {
-                margin-top: 0;
-                .amount {
-                    font-size: 16px;
-                    //          color: ;$red
-                    opacity: 0.85;
-                    font-weight: variables.$fwMedium;
-                    display: inline;
-                    margin-left: auto;
-                    width: auto;
-                    float: right;
-                    text-align: right;
-
-                    &.paid {
-                        color: palette.$green;
-                        display: flex;
-                        align-items: center;
-                        font-size: 14px;
-                        font-weight: variables.$fwMedium;
-                    }
-                }
-
-                #expense-category {
-                    display: flex;
-                    align-items: center;
-                    color: palette.$lightBlack;
-                    transition: all 0.3s ease-in-out;
-                    span {
-                        margin-left: 5px;
-                        color: palette.$lightAccent;
-                        line-height: 1;
-                    }
-                }
-            }
-
-            #name-wrapper {
-                width: 100%;
-                margin-top: 0;
-                .details-toggle-arrow {
-                    display: none;
-                    opacity: 0.4;
-                    position: relative;
-                    right: 0;
-                    justify-self: flex-end;
-                    font-size: 24px;
-
-                    &.active {
-                        display: inherit;
-                    }
-                }
-                .name {
-                    line-height: 1;
-                    font-weight: variables.$fwMedium;
-                    width: 100%;
-                    white-space: nowrap;
-                    display: flex;
-                    align-items: center;
-
-                    svg {
-                        align-self: flex-end;
-                        width: 18px;
-                        height: 18px;
-                        margin-left: 5px;
-                        color: palette.$darkestGrey;
-                    }
-                }
-            }
-
-            .details {
-                padding-left: 10px;
-                #due-in {
-                    color: palette.$flatRed;
-                    margin-top: 8px;
-                    font-weight: variables.$fwMedium;
-                }
-
-                #button-group {
-                    width: 100%;
-                    gap: 15px;
-                    border-radius: variables.$bigBorderRadius;
-                    button {
-                        border-radius: variables.$borderRadius;
-                        display: flex;
-                        align-items: center;
-                        gap: 5px;
-                        justify-content: center;
-                        line-height: 1;
-                        padding: 0;
-                        font-size: 14px;
-                        background: transparent;
-
-                        &:first-child {
-                            color: palette.$green;
+                  .details {
+                        padding-left: 10px;
+                        #due-in {
+                              color: palette.$flatRed;
+                              margin-top: 8px;
+                              font-weight: variables.$fwMedium;
                         }
 
-                        &:last-child {
-                            color: palette.$main;
-                        }
-                    }
-                }
+                        #button-group {
+                              width: 100%;
+                              gap: 15px;
+                              border-radius: variables.$bigBorderRadius;
+                              button {
+                                    border-radius: variables.$borderRadius;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 5px;
+                                    justify-content: center;
+                                    line-height: 1;
+                                    padding: 0;
+                                    font-size: 14px;
+                                    background: transparent;
 
-                #expense-image {
-                    position: relative;
-                    margin: 20px 0;
-                    img {
-                        border-radius: variables.$borderRadius variables.$borderRadius 0 0;
-                        height: 50px;
+                                    &:first-child {
+                                          color: palette.$green;
+                                    }
+
+                                    &:last-child {
+                                          color: palette.$main;
+                                    }
+                              }
+                        }
+
+                        #expense-image {
+                              position: relative;
+                              margin: 20px 0;
+                              img {
+                                    border-radius: variables.$borderRadius variables.$borderRadius 0 0;
+                                    height: 50px;
+                                    width: 50px;
+                              }
+                              svg {
+                                    position: absolute;
+                                    bottom: 15px;
+                                    right: 15px;
+                                    font-size: 20px;
+                                    color: white;
+                                    opacity: 0.6;
+                              }
+                        }
+
+                        #repeating-icon {
+                              font-size: 22px;
+                              position: relative;
+                              top: 5px;
+                        }
+                  }
+
+                  #img-container {
                         width: 50px;
-                    }
-                    svg {
-                        position: absolute;
-                        bottom: 15px;
-                        right: 15px;
-                        font-size: 20px;
-                        color: white;
-                        opacity: 0.6;
-                    }
-                }
+                        height: 50px;
+                        background-size: cover;
+                        border-radius: variables.$borderRadius;
+                        background-position: center;
+                        float: left;
+                        justify-self: flex-start;
+                  }
 
-                #repeating-icon {
-                    font-size: 22px;
-                    position: relative;
-                    top: 5px;
-                }
+                  #img-expand-text {
+                        margin-top: 10px;
+                        width: 100%;
+                        text-align: center;
+                        font-style: italic;
+                  }
+
+                  #delete-button {
+                        font-size: 14px;
+                        margin-left: auto;
+                        display: block;
+                        color: palette.$red;
+                        margin-top: 15px;
+                        text-align: right;
+                        font-weight: variables.$fwMedium;
+                  }
+
+                  .flex {
+                        align-items: center;
+
+                        p {
+                              margin-right: 10px;
+                              min-width: 120px;
+                              font-weight: variables.$fwMedium;
+                        }
+
+                        &.editable {
+                              justify-content: flex-start;
+                        }
+                  }
             }
-
-            #img-container {
-                width: 50px;
-                height: 50px;
-                background-size: cover;
-                border-radius: variables.$borderRadius;
-                background-position: center;
-                float: left;
-                justify-self: flex-start;
-            }
-
-            #img-expand-text {
-                margin-top: 10px;
-                width: 100%;
-                text-align: center;
-                font-style: italic;
-            }
-
-            #delete-button {
-                font-size: 14px;
-                margin-left: auto;
-                display: block;
-                color: palette.$red;
-                margin-top: 15px;
-                text-align: right;
-                font-weight: variables.$fwMedium;
-            }
-
-            .flex {
-                align-items: center;
-
-                p {
-                    margin-right: 10px;
-                    min-width: 120px;
-                    font-weight: variables.$fwMedium;
-                }
-
-                &.editable {
-                    justify-content: flex-start;
-                }
-            }
-        }
-        /*#endregion  EXPENSE*/
-    }
+            /*#endregion  EXPENSE*/
+      }
 }

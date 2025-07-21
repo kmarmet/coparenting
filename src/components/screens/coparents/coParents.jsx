@@ -301,7 +301,7 @@ export default function CoParents() {
                                                                                     placeholder="Home Address"
                                                                                     onChange={(address) => Update("address", address)}
                                                                               />
-                                                                              <Spacer height={3} />
+                                                                              <Spacer height={5} />
                                                                         </>
                                                                   )}
 
@@ -328,7 +328,7 @@ export default function CoParents() {
                                                                                                 onClick={() => DeleteProp(infoLabel)}
                                                                                           />
                                                                                     </div>
-                                                                                    <Spacer height={3} />
+                                                                                    <Spacer height={5} />
                                                                               </>
                                                                         )}
                                                             </div>

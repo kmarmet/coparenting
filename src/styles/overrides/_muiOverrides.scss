@@ -39,63 +39,65 @@
             background: transparent !important;
       }
 
-      // Static Datepicker Month Dropdown
-      .MuiFormControl-root {
-            &[class*="css-"] {
-                  height: max-content !important;
-            }
-            .MuiInputBase-fullWidth {
-                  background-color: transparent !important;
-                  border-bottom: 1px solid palette.$lightBorderColor !important;
-                  border-radius: 0 !important;
-                  margin-left: auto !important;
-                  justify-self: flex-end !important;
+      /*#region  STATIC CALENDAR - MONTH DROPDOWN */
+      #static-calendar {
+            .MuiFormControl-root {
+                  &[class*="css-"] {
+                        height: 40px !important;
+                  }
+                  .MuiInputBase-fullWidth {
+                        background-color: transparent !important;
+                        border-bottom: 1px solid palette.$lightBorderColor !important;
+                        border-radius: 0 !important;
+                        margin-left: auto !important;
+                        justify-self: flex-end !important;
 
-                  &.MuiInputBase-root {
-                        &[class*="css-"] {
-                              background-color: transparent !important;
-                              border-radius: variables.$buttonBorderRadius !important;
-                              height: max-content !important;
-                              display: flex !important;
-                              align-items: center !important;
-                              justify-content: space-between !important;
-                              padding: 4px 0 4px 15px !important;
-                              margin: 0 auto !important;
-                              width: max-content !important;
-                              min-width: 120px !important;
-                              border: 1px solid palette.$iconGrey !important;
-
-                              // Empty element to left of arrow
-                              .MuiSelect-nativeInput {
-                                    display: none !important;
-                              }
-
-                              // Actual month button
-                              [role="combobox"] {
+                        &.MuiInputBase-root {
+                              &[class*="css-"] {
                                     background-color: transparent !important;
-                                    border-radius: 0 !important;
-                                    width: 100% !important;
-                                    max-width: 100% !important;
-                                    color: palette.$iconGrey !important;
-                                    font-size: 17px !important;
-                                    margin: 0 !important;
-                                    padding: 0 !important;
-                                    font-weight: variables.$fwRegular !important;
-                              }
-
-                              .MuiSvgIcon-root {
-                                    color: palette.$iconGrey !important;
-                                    align-self: center !important;
-                                    position: relative !important;
-                                    margin: 0 auto !important;
+                                    height: 40px !important;
                                     display: flex !important;
                                     align-items: center !important;
-                                    justify-content: center !important;
+                                    justify-content: space-between !important;
+                                    padding: 4px 0 4px 15px !important;
+                                    margin: 0 auto !important;
+                                    width: max-content !important;
+                                    min-width: 120px !important;
+                                    border: 1px solid palette.$iconGrey !important;
+                                    border-radius: clamp(0px, 50%, 20px) !important;
+                                    // Empty element to left of arrow
+                                    .MuiSelect-nativeInput {
+                                          display: none !important;
+                                    }
+
+                                    // Actual month button
+                                    [role="combobox"] {
+                                          background-color: transparent !important;
+                                          border-radius: 0 !important;
+                                          width: 100% !important;
+                                          max-width: 100% !important;
+                                          color: palette.$iconGrey !important;
+                                          font-size: 17px !important;
+                                          margin: 0 !important;
+                                          padding: 0 !important;
+                                          font-weight: variables.$fwRegular !important;
+                                    }
+
+                                    .MuiSvgIcon-root {
+                                          color: palette.$iconGrey !important;
+                                          align-self: center !important;
+                                          position: relative !important;
+                                          margin: 0 auto !important;
+                                          display: flex !important;
+                                          align-items: center !important;
+                                          justify-content: center !important;
+                                    }
                               }
                         }
                   }
             }
       }
+      /*#endregion  STATIC CALENDAR - MONTH DROPDOWN */
 
       // MUI PARENT
       .MuiPaper-root:not(.MuiAccordion-root) {
@@ -106,6 +108,48 @@
             max-width: calc(100vw - 20px) !important;
             transition: all 0.3s ease-in-out !important;
             box-shadow: variables.$boxShadow_bottom_only_dark;
+
+            // STATIC CALENDAR - MONTH DROPDOWN
+            &.MuiPaper-rounded:not(.date-picker) {
+                  top: 50% !important;
+                  transform: translate(-50%, -50%) !important;
+                  left: 50% !important;
+                  right: 15px !important;
+                  padding: 20px !important;
+                  width: calc(100vw - 30px) !important;
+                  box-shadow: variables.$boxShadow_bottom_only_extra_dark !important;
+                  background-color: white !important;
+                  backdrop-filter: blur(5px) !important;
+                  border: 1px solid rgba(80, 71, 255, 0.47) !important;
+                  ul {
+                        display: flex !important;
+                        gap: 10px !important;
+                        max-width: 100% !important;
+                        flex-wrap: wrap !important;
+
+                        li {
+                              border-radius: variables.$buttonBorderRadius !important;
+                              border: 1px solid palette.$blend !important;
+                              font-weight: variables.$fwBold !important;
+                              text-align: center !important;
+                              width: calc((100% / 3) - 10px) !important;
+                              padding: 5px 0 !important;
+                              min-height: 0 !important;
+                              justify-self: center !important;
+                              color: palette.$blend !important;
+                              justify-content: center !important;
+
+                              &.Mui-selected {
+                                    &.MuiMenuItem-root {
+                                          color: white !important;
+                                          background-color: palette.$blend !important;
+                                          border-radius: variables.$buttonBorderRadius !important;
+                                          width: 100% !important;
+                                    }
+                              }
+                        }
+                  }
+            }
 
             .MuiPickersArrowSwitcher-root {
                   width: 100px;

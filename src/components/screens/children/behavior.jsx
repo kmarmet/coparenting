@@ -120,7 +120,7 @@ export default function Behavior({activeChild}) {
                                                 const value = prop[1]
                                                 return (
                                                       <div key={index}>
-                                                            <div className="data-row">
+                                                            <div className="apiResults-row">
                                                                   {infoLabel.toLowerCase().includes("phone") && (
                                                                         <>
                                                                               <div className="flex input">
@@ -156,7 +156,7 @@ export default function Behavior({activeChild}) {
                                                                         </>
                                                                   )}
                                                             </div>
-                                                            <Spacer height={3} />
+                                                            <Spacer height={5} />
                                                       </div>
                                                 )
                                           })}

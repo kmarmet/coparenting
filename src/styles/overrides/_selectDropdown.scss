@@ -1,201 +1,201 @@
-@use '../utils/palette';
-@use '../utils/variables';
-@use '../utils/mixins';
-@use '../_fonts';
+@use "../utils/palette";
+@use "../utils/variables";
+@use "../utils/mixins";
+@use "../_fonts";
 #external-overrides {
-    .select-dropdown {
-        /*#region  WHITE BG */
-        &.white-bg {
-            background: white !important;
-            border: 1px solid palette.$lightBorderColor !important;
+      .select-dropdown {
+            /*#region  WHITE BG */
+            &.white-bg {
+                  background: white !important;
+                  border: 1px solid palette.$lightBorderColor !important;
 
-            &[class*='-container']:not(.MuiDialog-container) {
-                border-radius: clamp(0px, 50%, 24px) !important;
+                  &[class*="-container"]:not(.MuiDialog-container) {
+                        border-radius: clamp(0px, 50%, 24px) !important;
 
-                // MENU OPTIONS
-                [class*='-menu'] {
-                    z-index: 10 !important;
-                    position: relative !important;
-                    border: 0 !important;
-                    border-radius: clamp(0px, 50%, 24px) !important;
-                    [id*='-listbox'] {
-                        gap: 8px !important;
-                        [class*='-option'] {
-                            color: palette.$blend !important;
-                            border: 1px solid palette.$blend !important;
-                            border-radius: 50px !important;
-                            font-weight: variables.$fwMedium !important;
+                        // MENU OPTIONS
+                        [class*="-menu"] {
+                              z-index: 10 !important;
+                              position: relative !important;
+                              border: 0 !important;
+                              border-radius: clamp(0px, 50%, 24px) !important;
+                              [id*="-listbox"] {
+                                    gap: 8px !important;
+                                    [class*="-option"] {
+                                          color: palette.$blend !important;
+                                          border: 1px solid palette.$blend !important;
+                                          border-radius: 50px !important;
+                                          font-weight: variables.$fwMedium !important;
+                                    }
+                              }
                         }
-                    }
-                }
-                [class*='-control'] {
-                    border: 1px solid palette.$lightBorderColor !important;
+                        [class*="-control"] {
+                              border: 1px solid palette.$lightBorderColor !important;
 
-                    [class*='css-'] {
-                        color: palette.$darkerGrey !important;
-                        font-size: 15px !important;
-                        white-space: nowrap !important;
-                        line-height: 1 !important;
+                              [class*="css-"] {
+                                    color: palette.$darkerGrey !important;
+                                    font-size: 15px !important;
+                                    white-space: nowrap !important;
+                                    line-height: 1 !important;
+
+                                    &:first-child div {
+                                          width: auto !important;
+                                    }
+                              }
+
+                              [class*="-multiValue"] {
+                                    border: 1px solid palette.$lightBorderColor !important;
+                              }
+
+                              [class*="-Svg"] {
+                                    color: palette.$darkerGrey !important;
+                              }
+
+                              [class*="-singleValue"],
+                              [id*="-placeholder"],
+                              [class*="-placeholder"] {
+                                    color: palette.$labelText !important;
+                                    @include fonts.lightFont;
+                              }
+                        }
+                  }
+
+                  [class*="-singleValue"],
+                  [class*="-placeholder"] {
+                        color: white !important;
+                  }
+            }
+            /*#endregion  WHITE BG */
+
+            // MENU OPTIONS
+            [class*="-menu"] {
+                  z-index: 10 !important;
+                  position: relative !important;
+                  border: 0 !important;
+                  border-radius: clamp(0px, 50%, 24px) !important;
+                  background: palette.$inputBackground !important;
+                  background: transparent !important;
+                  box-shadow: none !important;
+                  max-width: calc(100% - 5px) !important;
+                  margin: 10px auto !important;
+                  padding: 10px 0 !important;
+                  overflow: visible !important;
+                  height: auto !important;
+                  max-height: unset !important;
+            }
+
+            // DROPDOWN WRAPPER
+            [class*="-control"] {
+                  background: palette.$inputBackground !important;
+                  border-radius: 50px !important;
+                  padding: 0 10px !important;
+                  border: 0 !important;
+                  box-shadow: none !important;
+                  min-height: 50px !important;
+
+                  // TEXT/ICONS
+                  [class*="css-"] {
+                        color: white !important;
+                        font-size: 14px !important;
 
                         &:first-child div {
-                            width: auto !important;
+                              width: auto !important;
                         }
-                    }
+                  }
 
-                    [class*='-multiValue'] {
-                        border: 1px solid palette.$lightBorderColor !important;
-                    }
+                  [class*="-multiValue"] {
+                        background: palette.$barelyVisibleWhite !important;
+                        border-radius: 50px !important;
+                        padding: 0 5px !important;
+                        border: 0 !important;
+                        box-shadow: none !important;
+                        max-width: unset !important;
+                        width: auto !important;
+                        margin-right: 5px !important;
+                        color: white !important;
 
-                    [class*='-Svg'] {
-                        color: palette.$darkerGrey !important;
-                    }
+                        [class*="css-"] {
+                              color: white !important;
+                              font-size: 14px !important;
+                        }
+                  }
 
-                    [class*='-singleValue'],
-                    [id*='-placeholder'],
-                    [class*='-placeholder'] {
-                        color: palette.$labelText !important;
+                  [class*="-indicatorSeparator"] {
+                        display: none !important;
+                  }
+
+                  // DOWN ARROW ICON
+                  [class*="-indicatorContainer"] {
+                        color: white !important;
+                        svg {
+                              color: white !important;
+                              opacity: 0.6 !important;
+                        }
+                  }
+
+                  // TEXT ONLY
+                  [class*="-singleValue"],
+                  [class*="-placeholder"] {
+                        font-size: 15px !important;
+                        font-weight: variables.$fwRegular !important;
                         @include fonts.lightFont;
-                    }
-                }
+                  }
+
+                  [class*="-singleValue"] {
+                        color: white !important;
+                  }
+
+                  [class*="-placeholder"] {
+                        grid-area: 1 / 1 / 1 / 1 !important;
+                        text-align: left !important;
+                        font-weight: variables.$fwRegular !important;
+                  }
             }
 
-            [class*='-singleValue'],
-            [class*='-placeholder'] {
-                color: palette.$darkerGrey !important;
+            &[class*="-container"]:not(.MuiDialog-container) {
+                  border-radius: variables.$buttonBorderRadius !important;
+                  border: 0 !important;
+                  max-width: calc(100vw - 20px) !important;
+                  background: transparent !important;
+
+                  [id*="listbox"] {
+                        max-height: unset !important;
+                        display: flex !important;
+                        flex-wrap: wrap !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        z-index: variables.$maxZIndex !important;
+                        pointer-events: all !important;
+                        position: relative !important;
+                        margin: auto 0 !important;
+                        gap: 12px !important;
+                        align-self: center !important;
+                        background: transparent !important;
+                        padding: 10px 0 !important;
+                        overflow: visible !important;
+
+                        [class*="-option"] {
+                              background: palette.$inputBackground !important;
+                              z-index: variables.$maxZIndex !important;
+                              pointer-events: all !important;
+                              border-radius: 50px !important;
+                              border: 0 !important;
+                              min-width: 85px !important;
+                              text-align: center !important;
+                              width: calc(50% - 10px) !important;
+                              color: white !important;
+                              font-size: 13px !important;
+                              padding: 10px !important;
+                              letter-spacing: 0.8px !important;
+                              line-height: 1 !important;
+                              white-space: nowrap !important;
+                              font-weight: variables.$fwLight !important;
+                              font-family: "SF-Pro-Display-Light", sans-serif !important;
+                        }
+
+                        div {
+                              color: white;
+                        }
+                  }
             }
-        }
-        /*#endregion  WHITE BG */
-
-        // MENU OPTIONS
-        [class*='-menu'] {
-            z-index: 10 !important;
-            position: relative !important;
-            border: 0 !important;
-            border-radius: clamp(0px, 50%, 24px) !important;
-            background: palette.$inputBackground !important;
-            background: transparent !important;
-            box-shadow: none !important;
-            max-width: calc(100% - 5px) !important;
-            margin: 10px auto !important;
-            padding: 10px 0 !important;
-            overflow: visible !important;
-            height: auto !important;
-            max-height: unset !important;
-        }
-
-        // DROPDOWN WRAPPER
-        [class*='-control'] {
-            background: palette.$inputBackground !important;
-            border-radius: 50px !important;
-            padding: 0 10px !important;
-            border: 0 !important;
-            box-shadow: none !important;
-            min-height: 50px !important;
-
-            // TEXT/ICONS
-            [class*='css-'] {
-                color: white !important;
-                font-size: 14px !important;
-
-                &:first-child div {
-                    width: auto !important;
-                }
-            }
-
-            [class*='-multiValue'] {
-                background: palette.$barelyVisibleWhite !important;
-                border-radius: 50px !important;
-                padding: 0 5px !important;
-                border: 0 !important;
-                box-shadow: none !important;
-                max-width: unset !important;
-                width: auto !important;
-                margin-right: 5px !important;
-                color: white !important;
-
-                [class*='css-'] {
-                    color: white !important;
-                    font-size: 14px !important;
-                }
-            }
-
-            [class*='-indicatorSeparator'] {
-                display: none !important;
-            }
-
-            // DOWN ARROW ICON
-            [class*='-indicatorContainer'] {
-                color: white !important;
-                svg {
-                    color: white !important;
-                    opacity: 0.6 !important;
-                }
-            }
-
-            // TEXT ONLY
-            [class*='-singleValue'],
-            [class*='-placeholder'] {
-                font-size: 15px !important;
-                font-weight: variables.$fwRegular !important;
-                @include fonts.lightFont;
-            }
-
-            [class*='-singleValue'] {
-                color: white !important;
-            }
-
-            [class*='-placeholder'] {
-                color: palette.$mediumGrey !important;
-            }
-        }
-
-        &[class*='-container']:not(.MuiDialog-container) {
-            border-radius: variables.$buttonBorderRadius !important;
-            border: 0 !important;
-            max-width: calc(100vw - 20px) !important;
-            background: transparent !important;
-
-            [id*='listbox'] {
-                max-height: unset !important;
-                display: flex !important;
-                flex-wrap: wrap !important;
-                align-items: center !important;
-                justify-content: center !important;
-                z-index: variables.$maxZIndex !important;
-                pointer-events: all !important;
-                position: relative !important;
-                margin: auto 0 !important;
-                //gap: 12px !important;
-                align-self: center !important;
-                background: transparent !important;
-                padding: 10px 0 !important;
-                overflow: visible !important;
-
-                [class*='-option'] {
-                    background: palette.$inputBackground !important;
-                    z-index: variables.$maxZIndex !important;
-                    pointer-events: all !important;
-                    width: max-content !important;
-                    border-radius: 50px !important;
-                    border: 0 !important;
-                    min-width: 85px !important;
-                    margin: 0 15px !important;
-                    text-align: center !important;
-                    color: white !important;
-                    font-size: 13px !important;
-                    padding: 8px 10px !important;
-                    letter-spacing: 0.8px !important;
-                    line-height: 1 !important;
-                    white-space: nowrap !important;
-                    font-weight: variables.$fwLight !important;
-                    font-family: 'SF-Pro-Display-Light', sans-serif !important;
-                    box-shadow: variables.$boxShadow_float_smaller !important;
-                }
-
-                div {
-                    color: white;
-                }
-            }
-        }
-    }
+      }
 }

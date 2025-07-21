@@ -39,7 +39,7 @@ function InputField({
       const {state, setState} = useContext(globalState)
       const {refreshKey, theme} = state
       const {currentUser} = useCurrentUser()
-      const [error, setError] = useState("")
+      const [holidayRetrievalError, setError] = useState("")
 
       const textareaRef = useRef(null)
 
@@ -82,24 +82,29 @@ function InputField({
                                                       </span>
                                                 ),
                                           },
+                                          mobilePaper: {
+                                                className: "date-picker", // ✅ this will be added to MuiPaper-root
+                                          },
                                     }}
                                     showDaysOutsideCurrentMonth={true}
                                     label={labelText ? labelText : placeholder}
                                     onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
-                                    views={dateViews}
+                                    views={["month", "day"]}
                                     name={inputName}
-                                    className={`${theme} ${inputClasses}`}
+                                    className={`${theme} ${inputClasses} date-picker`}
                                     value={Manager.IsValid(defaultValue) ? moment(defaultValue) : null}
                                     key={refreshKey}
                                     multiple={false}
                                     onMonthChange={(e) => {
-                                          // const newMonth = moment(e).format('MMMM')
-                                          // const activePicker = document.querySelector(`.form-wrapper.active`)
-                                          // const monthElement = activePicker.querySelector(`.MuiDatePickerToolbar-title`)
-                                          // const all = document.querySelectorAll('.MuiPaper-root')
-                                          // console.log(all)
+                                          const newMonth = moment(e).format("MMMM")
+                                          const activePicker = document.querySelector(`.MuiPaper-root.date-picker`)
 
-                                          onDateOrTimeSelection(e)
+                                          if (!activePicker) return
+                                          const pickerMonth = activePicker.querySelector("h4.MuiTypography-root.MuiDatePickerToolbar-title")
+
+                                          if (!pickerMonth) return
+
+                                          pickerMonth.textContent = newMonth
                                     }}
                                     format={dateFormat}
                                     onAccept={onDateOrTimeSelection}
@@ -304,10 +309,10 @@ function InputField({
                               />
                         )}
                   </div>
-                  {Manager.IsValid(error, true) && (
-                        <p className="input-field-error">
+                  {Manager.IsValid(holidayRetrievalError, true) && (
+                        <p className="input-field-holidayRetrievalError">
                               <PiArrowBendLeftUpFill />
-                              {error}
+                              {holidayRetrievalError}
                         </p>
                   )}
             </>

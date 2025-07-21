@@ -56,7 +56,7 @@ AlertManager = {
                 animate__faster
               """
 
-  confirmAlert: ({title, confirmButtonText = "I'm Sure", showDenyButton=true, onConfirm = () =>, onDeny = () =>,bg = 'white', color ='black', html = "", theme = 'light'}={}) ->
+  confirmAlert: ({title, confirmButtonText = "I'm Sure", denyButtonText = "Nevermind", showDenyButton=true, onConfirm = () =>, onDeny = () =>,bg = 'white', color ='black', html = "", theme = 'light'}={}) ->
     Swal.fire
       showClass:
         popup: """
@@ -78,7 +78,7 @@ AlertManager = {
       showDenyButton: showDenyButton
       showCancelButton: false
       confirmButtonText: confirmButtonText
-      denyButtonText: "Nevermind"
+      denyButtonText: denyButtonText
       confirmButtonColor: '#00b389'
       customClass:
         container: 'sweet-alert-frost'

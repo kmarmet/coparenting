@@ -12,6 +12,7 @@ import useCalendarEvents from "../../../hooks/useCalendarEvents"
 import useCalendarSearch from "../../../hooks/useCalendarSearch"
 import useCurrentUser from "../../../hooks/useCurrentUser"
 import useEventsOfDay from "../../../hooks/useEventsOfDay"
+import useHolidays from "../../../hooks/useHolidays"
 import DatasetManager from "../../../managers/datasetManager.coffee"
 import DomManager from "../../../managers/domManager"
 import Manager from "../../../managers/manager"
@@ -19,7 +20,12 @@ import StringManager from "../../../managers/stringManager"
 import InputField from "../../shared/inputField"
 import Spacer from "../../shared/spacer"
 
-export default function CalendarEvents({selectedDate, setEventToEdit = (event) => {}, showSearchInput = false}) {
+export default function CalendarEvents({
+      selectedDate,
+      setEventToEdit = (event) => {},
+      showSearchResults = false,
+      holidayOptions = {show: false, returnType: "none"},
+}) {
       const {state, setState} = useContext(globalState)
       const {theme, refreshKey} = state
 
@@ -28,12 +34,13 @@ export default function CalendarEvents({selectedDate, setEventToEdit = (event) =
       const {eventsOfDay} = useEventsOfDay(selectedDate)
       const {calendarEvents} = useCalendarEvents()
       const {searchResults, setQuery} = useCalendarSearch(calendarEvents)
+      const {holidays} = useHolidays(currentUser, holidayOptions.returnType)
 
       // STATE
       const [eventsToIterate, setEventsToIterate] = useState([])
 
       const GetRowDotColor = (dayDate) => {
-            const arr = [...eventsOfDay]
+            const arr = showSearchResults ? searchResults : eventsOfDay
             const dayEvents = arr.filter((x) => x.startDate === dayDate)
             let dotObjects = []
             for (let event of dayEvents) {
@@ -106,10 +113,34 @@ export default function CalendarEvents({selectedDate, setEventToEdit = (event) =
       }
 
       useEffect(() => {
-            if (Manager.IsValid(searchResults)) {
+            console.log(holidayOptions.returnType)
+            // Reset search results
+            if (!showSearchResults) {
+                  setQuery("")
+            }
+
+            // Search Results
+            if (showSearchResults && Manager.IsValid(searchResults)) {
+                  console.log("if")
                   setEventsToIterate(searchResults)
-                  DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
-            } else {
+                  setTimeout(() => {
+                        DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
+                  }, 10)
+            }
+
+            // Holidays
+            else if (holidayOptions?.show && Manager.IsValid(holidays)) {
+                  console.log("else if 1", holidays)
+                  console.log(holidays)
+                  setEventsToIterate(holidays)
+                  setTimeout(() => {
+                        DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
+                  }, 10)
+            }
+
+            // Events of Day
+            else if (!showSearchResults && !holidayOptions?.show) {
+                  console.log("else")
                   if (Manager.IsValid(eventsOfDay) && Manager.IsValid(selectedDate)) {
                         setEventsToIterate(eventsOfDay)
                         setTimeout(() => {
@@ -117,13 +148,17 @@ export default function CalendarEvents({selectedDate, setEventToEdit = (event) =
                         }, 10)
                   }
             }
-      }, [eventsOfDay, searchResults, selectedDate])
+
+            return () => {
+                  setEventsToIterate([])
+            }
+      }, [eventsOfDay, searchResults, selectedDate, showSearchResults, holidayOptions?.returnType])
 
       return (
             <div className="events">
                   <Spacer height={5} />
 
-                  <div id={"search-input-wrapper"} className={`${showSearchInput ? "active" : ""}`}>
+                  <div id={"search-input-wrapper"} className={`${showSearchResults ? "active" : ""}`}>
                         <InputField
                               inputType={InputTypes.search}
                               key={refreshKey}
@@ -137,7 +172,7 @@ export default function CalendarEvents({selectedDate, setEventToEdit = (event) =
                   </div>
 
                   {/* NO EVENTS */}
-                  {!Manager.IsValid(eventsOfDay) && <p className="no-data-fallback-text">No Events</p>}
+                  {!Manager.IsValid(eventsOfDay) && <p className="no-apiResults-fallback-text">No Events</p>}
 
                   {/* EVENTS */}
                   {Manager.IsValid(eventsToIterate) &&

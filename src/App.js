@@ -322,7 +322,7 @@ export default function App() {
                                     {currentScreen === ScreenNames.landing && !isLoading && <Landing />}
                                     {currentScreen === ScreenNames.updates && <Updates />}
                                     {currentScreen === ScreenNames.calendar && <EventCalendar />}
-                                    {currentScreen === ScreenNames.expenseManagement && <Expenses />}
+                                    {currentScreen === ScreenNames.expenses && <Expenses />}
                                     {currentScreen === ScreenNames.resetPassword && <ResetPassword />}
                                     {currentScreen === ScreenNames.handoff && <Handoff />}
                                     {currentScreen === ScreenNames.memories && <Memories />}

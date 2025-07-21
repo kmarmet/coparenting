@@ -219,10 +219,10 @@ const Contacts = () => {
                         hideCard={() => setShowInvitationCard(false)}>
                         <Spacer height={8} />
                         <InputField
-                              inputType={InputTypes.phone}
-                              placeholder={"Phone Number"}
+                              inputType={InputTypes.email}
+                              placeholder={"Email Address"}
                               required={true}
-                              onChange={(e) => (updateObject.current.phone = e.target.value)}
+                              onChange={(e) => (updateObject.current.email = e.target.value)}
                         />
                   </Form>
 
@@ -463,7 +463,7 @@ const Contacts = () => {
                               {currentUser?.accountType === "parent" && (
                                     <div>
                                           <Label classes={"dark toggle always-show"} text={"Co-Parents"} />
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
 
                                           <div className={"contacts-wrapper"}>
                                                 {Manager.IsValid(coParents) &&
@@ -507,7 +507,7 @@ const Contacts = () => {
                                     <div>
                                           <Spacer height={15} />
                                           <Label classes={"dark toggle always-show"} text={"Children"} />
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
                                           <div className={"contacts-wrapper"}>
                                                 {Manager.IsValid(children) &&
                                                       children.map((contact, index) => {
@@ -550,7 +550,7 @@ const Contacts = () => {
                                     <div id="contacts-wrapper">
                                           <Spacer height={15} />
                                           <Label classes={"dark toggle always-show"} text={"Parents"} />
-                                          <Spacer height={3} />
+                                          <Spacer height={5} />
                                           {Manager.IsValid(parents) &&
                                                 parents.map((contact, index) => {
                                                       return (

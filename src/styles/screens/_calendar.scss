@@ -229,15 +229,18 @@
                               border: 1px solid palette.$lightBorderColor;
                               border-radius: variables.$buttonBorderRadius;
                               width: 100%;
+                              padding: 3px 10px;
 
                               &.pending-close {
                                     background-color: palette.$red !important;
+                                    border: 1px solid palette.$red !important;
                                     svg {
                                           color: white;
                                           transform: scale(0.9);
                                           border: 0;
                                     }
                               }
+
                               svg {
                                     display: inline;
                                     position: relative;
@@ -262,9 +265,9 @@
                               flex: 1;
                               align-items: center;
                               justify-content: center;
-                              color: palette.$iconGrey;
+                              color: #8b929f;
                               background-color: palette.$grey;
-                              padding: 5px 10px;
+                              padding: 8px 10px;
                               border: 1px solid palette.$lightBorderColor !important;
                               border-radius: variables.$buttonBorderRadius;
                               @include fonts.regularFont;
@@ -276,12 +279,12 @@
                               text-align: center !important;
                               height: auto;
                               opacity: 1 !important;
-                              color: palette.$iconGrey !important;
+                              color: #8b929f !important;
                               line-height: 1 !important;
                               white-space: nowrap !important;
                               background-color: palette.$grey;
                               border: 1px solid palette.$lightBorderColor !important;
-                              padding: 5px !important;
+                              padding: 8px 5px !important;
                               border-radius: 50px !important;
                         }
                   }
@@ -334,12 +337,14 @@
                                           *:not(.MuiDayCalendar-weekDayLabel) {
                                                 color: palette.$darkGrey !important;
                                                 text-align: center !important;
+                                                font-size: 16px !important;
                                           }
 
                                           .MuiDayCalendar-weekDayLabel {
-                                                color: palette.$mediumGreyDarker;
+                                                color: palette.$mediumGreyDarkest;
                                                 width: auto !important;
                                                 font-weight: variables.$fwRegular !important;
+                                                font-size: 16px !important;
                                           }
                                     }
 

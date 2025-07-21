@@ -15,7 +15,10 @@ const Screen = ({activeScreen = "", stopLoadingBool, classes = "", children, loa
       let isScrolling
 
       useEffect(() => {
-            const container = scrollRef.current
+            const parent = document.querySelector(".screen-content-wrapper.active")
+            const container = parent.querySelector(".screen-content")
+            if (!parent) return
+
             if (!container) return
 
             const screenHeight = window.innerHeight
@@ -63,7 +66,7 @@ const Screen = ({activeScreen = "", stopLoadingBool, classes = "", children, loa
       }, [isLoading, currentScreen])
 
       return (
-            <div ref={scrollRef} className={`screen${Manager.IsValid(classes, true) ? ` ${classes}` : ""}`}>
+            <div className={`screen${Manager.IsValid(classes, true) ? ` ${classes}` : ""}`}>
                   <div className={`screen-content-wrapper${currentScreen === activeScreen || stopLoadingBool ? " active" : ""}`}>{children}</div>
             </div>
       )
