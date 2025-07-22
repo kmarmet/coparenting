@@ -5,6 +5,7 @@ import DatetimeFormats from "../constants/datetimeFormats"
 import globalState from "../context"
 import DB from "../database/DB"
 import DatasetManager from "../managers/datasetManager"
+import DateManager from "../managers/dateManager"
 import Manager from "../managers/manager"
 import ObjectManager from "../managers/objectManager"
 import SecurityManager from "../managers/securityManager"
@@ -12,7 +13,7 @@ import useCurrentUser from "./useCurrentUser"
 
 const useEventsOfDay = () => {
       const {state, setState} = useContext(globalState)
-      const {dateToEdit, refreshKey} = state
+      const {selectedCalendarDate, refreshKey} = state
       const {currentUser} = useCurrentUser()
       const [eventsOfDay, setEventsOfDay] = useState([])
       const [eventsAreLoading, setEventsAreLoading] = useState(true)
@@ -27,8 +28,8 @@ const useEventsOfDay = () => {
             const listener = onValue(
                   dataRef,
                   async (snapshot) => {
-                        const editDate = Manager.IsValid(dateToEdit)
-                              ? moment(dateToEdit).format(DatetimeFormats.dateForDb)
+                        const editDate = Manager.IsValid(selectedCalendarDate)
+                              ? moment(selectedCalendarDate).format(DatetimeFormats.dateForDb)
                               : moment().format(DatetimeFormats.dateForDb)
 
                         // Calendar Events
@@ -39,16 +40,10 @@ const useEventsOfDay = () => {
                         const formattedShared = DatasetManager.GetValidArray(shared)
 
                         // Fetch and prepare holidays
-                        let holidays = (await DB.getTable(DB.tables.holidayEvents)) || []
-                        let sortedHolidays =
-                              DatasetManager.sortByProperty({
-                                    arr: holidays,
-                                    prop: "startDate",
-                                    direction: "asc",
-                              }) || []
+                        let holidays = (await DateManager.GetHolidaysAsEvents()) || []
 
                         // Filter holidays that match the editDate
-                        let holidaysToLoop = sortedHolidays.filter(
+                        let holidaysToLoop = holidays.filter(
                               (h) => moment(h.startDate).format(DatetimeFormats.dateForDb) === moment(editDate).format(DatetimeFormats.dateForDb)
                         )
 
@@ -109,7 +104,7 @@ const useEventsOfDay = () => {
             return () => {
                   off(dataRef, "value", listener)
             }
-      }, [path, currentUser, dateToEdit])
+      }, [path, currentUser, selectedCalendarDate])
 
       return {
             eventsOfDay,

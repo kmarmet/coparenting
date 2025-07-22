@@ -231,6 +231,7 @@ const DateManager = {
                   }))
 
                   const additionalHolidays = [
+                        {name: "Patriot's Day", date: `${currentYear}-09-11`},
                         {name: "Christmas Eve", date: `${currentYear}-12-24`},
                         {name: "New Year's Eve", date: `${currentYear}-12-31`},
                         {name: "Halloween", date: `${currentYear}-10-31`},
@@ -295,7 +296,7 @@ const DateManager = {
                         case switchCheck(holiday.name, "Mother"):
                               newEvent.title = holiday.name += " 👩‍👧‍👦"
                               break
-                        case switchCheck(holiday.name, "Patriot Day"):
+                        case switchCheck(holiday.name, "Patriot's Day"):
                               newEvent.title = holiday.name += " 🗽"
                               break
                         case switchCheck(holiday.name, "Father"):
@@ -316,7 +317,6 @@ const DateManager = {
                   newEvent.isHoliday = true
                   holidayEvents.push(newEvent)
             }
-            console.log(holidayEvents)
             return DatasetManager.getUniqueByPropValue(holidayEvents, "title")
       },
       SetHolidays: async () => {

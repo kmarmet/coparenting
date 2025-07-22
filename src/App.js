@@ -148,7 +148,6 @@ export default function App() {
                               let currentUserFromDb
                               let isLoading = true
 
-                              // const appVersion = await appManager.GetCurrentAppVersion()
                               currentUserFromDb = users?.find((u) => u?.email === user?.email)
                               // User Exists
                               if (Manager.IsValid(currentUserFromDb)) {
@@ -198,7 +197,7 @@ export default function App() {
                                           isLoading = false
                                     }
 
-                                    console.log("App.js -> useEffect -> user logged in")
+                                    // console.log("App.js -> useEffect -> user logged in")
 
                                     // EMAIL VERIFIED
                                     setState({

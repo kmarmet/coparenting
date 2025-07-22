@@ -18,7 +18,7 @@ import Manager from "../../managers/manager"
 
 const CreationMenu = () => {
       const {state, setState} = useContext(globalState)
-      const {dateToEdit, showCreationMenu, refreshKey} = state
+      const {selectedCalendarDate, showCreationMenu, refreshKey} = state
       const {chats} = useChats()
       const [showChatAction, setShowChatAction] = useState(false)
       const {currentUser} = useCurrentUser()
@@ -61,7 +61,7 @@ const CreationMenu = () => {
                                                 showCreationMenu: false,
                                                 showOverlay: false,
                                                 creationFormToShow: CreationForms.calendar,
-                                                dateToEdit: dateToEdit,
+                                                selectedCalendarDate: selectedCalendarDate,
                                           })
                                     }}>
                                     <div className="content">

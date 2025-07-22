@@ -20,13 +20,13 @@ import StringManager from "../../../managers/stringManager"
 import InputField from "../../shared/inputField"
 import Spacer from "../../shared/spacer"
 
-export default function CalendarEvents({selectedDate, setEventToEdit = (event) => {}, holidayOptions = {show: false, returnType: "none"}}) {
+export default function CalendarEvents({setEventToEdit = (event) => {}, holidayOptions = {show: false, returnType: "none"}}) {
       const {state, setState} = useContext(globalState)
-      const {theme, refreshKey} = state
+      const {selectedCalendarDate, refreshKey, currentScreen} = state
 
       // HOOKS
       const {currentUser} = useCurrentUser()
-      const {eventsOfDay} = useEventsOfDay(selectedDate)
+      const {eventsOfDay} = useEventsOfDay()
       const {calendarEvents} = useCalendarEvents()
       const {calendarSearchResults, setQuery} = useCalendarSearch(calendarEvents)
       const {holidays} = useHolidays(currentUser, holidayOptions.returnType)
@@ -85,7 +85,7 @@ export default function CalendarEvents({selectedDate, setEventToEdit = (event) =
                   return false
             }
             setTimeout(() => {
-                  setState({...state, dateToEdit: clickedEvent.startDate})
+                  setState({...state, selectedCalendarDate: clickedEvent.startDate})
             }, 300)
             setEventToEdit(clickedEvent)
       }
@@ -113,21 +113,26 @@ export default function CalendarEvents({selectedDate, setEventToEdit = (event) =
 
             // ✅ Priority 1: Search Results
             if (Manager.IsValid(calendarSearchResults)) {
+                  console.log("pri 1")
                   nextEvents = calendarSearchResults
             }
+
             // ✅ Priority 2: Holidays
             else if (holidayOptions?.show && Manager.IsValid(holidays) && !Manager.IsValid(calendarSearchResults)) {
                   nextEvents = holidays
             }
+
             // ✅ Priority 3: Normal Events of Day
             else if (
                   !holidayOptions?.show &&
                   Manager.IsValid(eventsOfDay) &&
-                  Manager.IsValid(selectedDate) &&
+                  Manager.IsValid(selectedCalendarDate) &&
                   !Manager.IsValid(calendarSearchResults)
             ) {
                   nextEvents = eventsOfDay
             }
+
+            // console.log(holidayOptions, holidays, eventsOfDay, selectedCalendarDate, calendarSearchResults)
 
             // ✅ If no valid events → clear
             if (!Manager.IsValid(nextEvents)) {
@@ -138,7 +143,7 @@ export default function CalendarEvents({selectedDate, setEventToEdit = (event) =
             // ✅ Set + animate
             setEventsToIterate(nextEvents)
             animateEvents()
-      }, [calendarSearchResults, holidayOptions?.show, holidays, eventsOfDay, selectedDate])
+      }, [calendarSearchResults, holidayOptions?.show, holidays, eventsOfDay, selectedCalendarDate, currentScreen])
 
       return (
             <div className="events">
@@ -196,8 +201,7 @@ export default function CalendarEvents({selectedDate, setEventToEdit = (event) =
                                           key={index}
                                           data-event-id={event?.id}
                                           data-from-date={startDate}
-                                          className={`row ${event?.fromVisitationSchedule ? "event-row visitation flex" : "event-row flex"} ${dotObject?.className}
-                `}>
+                                          className={`row ${event?.fromVisitationSchedule ? "event-row visitation flex" : "event-row flex"} ${dotObject?.className}`}>
                                           <div className="text flex">
                                                 {/* EVENT NAME */}
                                                 <p className="flex row-title" data-event-id={event?.id}>

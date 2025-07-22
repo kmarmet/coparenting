@@ -59,109 +59,100 @@ export default function NewMemory() {
       }
 
       const Upload = async () => {
-            setState({...state, isLoading: true, creationFormToShow: null})
-            const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
+            const setLoading = (value) => setState({...state, isLoading: value})
 
-            //#region Validation
+            setLoading(true)
+            const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
             const validAccounts = currentUser?.sharedDataUsers?.length
 
-            if (!Manager.IsValid(validAccounts)) {
-                  AlertManager.throwError(
+            //#region VALIDATION
+            // ✅ Validation helper
+            const fail = (message, subMessage = null) => {
+                  AlertManager.throwError(message, subMessage)
+                  setLoading(false)
+                  return false
+            }
+
+            // ✅ Validation Checks
+            if (validAccounts === 0) {
+                  return fail(
                         `No ${currentUser?.accountType === "parent" ? "co-parents or children" : "parents"} to \n share memories with`,
                         `You have not added any ${currentUser?.accountType === "parent" ? "co-parent or child" : "parent"} contacts to your profile. It is also possible they have closed their profile.`
                   )
-                  setState({...state, isLoading: false})
-                  return false
             }
 
-            if (Manager.IsValid(validAccounts) && !Manager.IsValid(shareWith)) {
-                  AlertManager.throwError("Please choose who you would like to share this memory with")
-                  setState({...state, isLoading: false})
-                  return false
+            if (!Manager.IsValid(shareWith)) {
+                  return fail("Please choose who you would like to share this memory with")
             }
 
-            Manager.ValidateFormProperty(images, "image", false, "Please choose an image")
-            // if (!Manager.IsValid(images)) {
-            //     AlertManager.throwError('Please choose an image')
-            //     setState({...state, isLoading: false})
-            //     return false
-            // }
+            if (!Manager.ValidateFormProperty(images, "image", false, "Please choose an image")) {
+                  return fail("Please choose an image")
+            }
 
-            const notAnImage = Object.entries(images).some((x) => {
-                  return x[1].name.includes(".doc")
-            })
-
+            const notAnImage = Object.values(images).some((file) => file?.name?.includes(".doc"))
             if (notAnImage) {
-                  AlertManager.throwError("Files uploaded MUST be images (.png, .jpg, .jpeg, etc.)")
-                  setState({...state, isLoading: false})
-                  return false
+                  return fail("Files uploaded MUST be images (.png, .jpg, .jpeg, etc.)")
             }
+            //#endregion VALIDATION
 
-            //#endregion Validation
-
-            let compressedImages = []
-
-            // Compress images
-            for (let img of images) {
-                  compressedImages.push(await ImageManager.compressImage(img))
-            }
-
-            // Check for existing memory
+            // ✅ Compress Images
+            const compressedImages = await Promise.all(images.map((img) => ImageManager.compressImage(img)))
             const validImgArray = DatasetManager.GetValidArray(compressedImages)
 
-            for (let img of validImgArray) {
+            // ✅ Check for existing memories
+            const duplicate = validImgArray.some((img) => {
                   if (Manager.IsValid(img?.title, true)) {
-                        const existingMemory = memories.find((x) => x?.id === img?.id)
-                        if (Manager.IsValid(existingMemory)) {
-                              AlertManager.throwError("This memory already exists")
-                              setState({...state, isLoading: false})
-                              return false
-                        }
+                        return memories.some((m) => m?.id === img?.id)
                   }
-            }
+                  return false
+            })
+
+            if (duplicate) return fail("This memory already exists")
 
             const clean = ObjectManager.CleanObject(formRef.current)
 
-            // Upload Image
-            await Storage.uploadMultiple(`${Storage.directories.memories}/`, currentUser?.key, compressedImages)
-                  .then(() => {})
-                  .finally(async () => {
-                        // Add memories to 'memories' property for currentUser
-                        await Storage.getUrlsFromFiles(Storage.directories.memories, currentUser?.key, compressedImages)
-                              .then(async (urls) => {
-                                    // Add to user memories object
-                                    for (const url of urls) {
-                                          const imageName = Storage.GetImageNameFromUrl(url)
-                                          clean.shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
-                                          clean.url = url
-                                          clean.title = StringManager.FormatTitle(formRef?.current?.title ?? imageName, true)
-                                          clean.owner = {
-                                                key: currentUser?.key,
-                                                name: currentUser?.name,
-                                          }
+            try {
+                  // ✅ Upload & Get URLs
+                  await Storage.uploadMultiple(`${Storage.directories.memories}/`, currentUser?.key, compressedImages)
+                  const urls = await Storage.getUrlsFromFiles(Storage.directories.memories, currentUser?.key, compressedImages)
 
-                                          // Add to Database
-                                          await DB.Add(`${DB.tables.memories}/${currentUser?.key}`, memories, clean)
-                                    }
+                  // ✅ Save memories in DB
+                  for (const url of urls) {
+                        const imageName = Storage.GetImageNameFromUrl(url)
 
-                                    // Send Notification
-                                    await UpdateManager.SendToShareWith(
-                                          clean.shareWith,
-                                          currentUser,
-                                          `New Memory`,
-                                          `${StringManager.GetFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
-                                          ActivityCategory.memories
-                                    )
-                              })
-                              .catch((error) => {
-                                    setState({...state, isLoading: false})
-                              })
-                              .finally(async () => {
-                                    await AppManager.SetAppBadge(1)
-                                    ResetForm()
-                                    MyConfetti.fire()
-                              })
-                  })
+                        const memoryData = {
+                              ...clean,
+                              shareWith: DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions),
+                              url,
+                              title: StringManager.FormatTitle(formRef?.current?.title ?? imageName, true),
+                              owner: {
+                                    key: currentUser?.key,
+                                    name: currentUser?.name,
+                              },
+                        }
+
+                        await DB.Add(`${DB.tables.memories}/${currentUser?.key}`, memories, memoryData)
+                  }
+
+                  // ✅ Send Notifications
+                  await UpdateManager.SendToShareWith(
+                        clean.shareWith,
+                        currentUser,
+                        `New Memory`,
+                        `${StringManager.GetFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
+                        ActivityCategory.memories
+                  )
+
+                  // ✅ Post-process UI
+                  await AppManager.SetAppBadge(1)
+                  ResetForm()
+                  setTimeout(() => {
+                        MyConfetti.fire()
+                  }, 500)
+            } catch (error) {
+                  console.error("Upload error:", error)
+                  setLoading(false)
+            }
       }
 
       const SetDropdownOptions = () => {
@@ -230,7 +221,7 @@ export default function NewMemory() {
                                     uploadType={"image"}
                                     actualUploadButtonText={"Upload"}
                                     getImages={(input) => {
-                                          setImages(input.target.files)
+                                          setImages(Array.from(input.target.files))
                                     }}
                                     uploadButtonText={`Choose`}
                                     upload={() => {}}

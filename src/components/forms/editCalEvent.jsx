@@ -36,7 +36,7 @@ import ViewDropdown from "../shared/viewDropdown"
 
 export default function EditCalEvent({event, showCard, hideCard}) {
       const {state, setState} = useContext(globalState)
-      const {theme, dateToEdit} = state
+      const {theme, selectedCalendarDate} = state
 
       // Hooks
       const {currentUser} = useCurrentUser()
@@ -78,7 +78,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   setState({
                         ...state,
                         successAlertMessage: alertMessage,
-                        dateToEdit: moment().format(DatetimeFormats.dateForDb),
+                        selectedCalendarDate: moment().format(DatetimeFormats.dateForDb),
                   })
                   hideCard()
             }, 10)

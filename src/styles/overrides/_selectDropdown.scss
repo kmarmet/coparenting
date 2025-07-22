@@ -166,7 +166,7 @@
                         pointer-events: all !important;
                         position: relative !important;
                         margin: auto 0 !important;
-                        gap: 12px !important;
+                        gap: 1rem !important;
                         align-self: center !important;
                         background: transparent !important;
                         padding: 10px 0 !important;
@@ -178,9 +178,9 @@
                               pointer-events: all !important;
                               border-radius: 50px !important;
                               border: 0 !important;
-                              min-width: 85px !important;
                               text-align: center !important;
-                              width: calc(50% - 10px) !important;
+                              flex: 1 1 calc(33.333% - 1rem) !important; /* 3 columns by default */
+                              max-width: calc(33.333% - 1rem) !important;
                               color: white !important;
                               font-size: 13px !important;
                               height: 40px !important;

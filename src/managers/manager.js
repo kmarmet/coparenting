@@ -165,16 +165,12 @@ const Manager = {
                   return false
             }
 
-            if (Number.isInteger(variable)) {
-                  return variable >= 0
-            }
-
             // Invalid string (like "Invalid date")
-            // String check
             if (typeof variable === "string") {
                   if (!checkStringLength && variable.trim() === "") return false
                   if (variable.includes("Invalid")) return false
             }
+
             // Empty array or object
             if (_.isEmpty(variable)) return false
 

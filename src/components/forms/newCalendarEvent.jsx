@@ -40,7 +40,7 @@ import ViewDropdown from "../shared/viewDropdown"
 export default function NewCalendarEvent() {
       // APP STATE
       const {state, setState} = useContext(globalState)
-      const {theme, creationFormToShow, dateToEdit} = state
+      const {theme, creationFormToShow, selectedCalendarDate} = state
 
       // EVENT STATE
       const [eventLength, setEventLength] = useState(EventLengths.single)
@@ -75,7 +75,7 @@ export default function NewCalendarEvent() {
       ])
 
       // REF
-      const formRef = useRef({...new CalendarEvent({startDate: moment(dateToEdit).format(DatetimeFormats.dateForDb)})})
+      const formRef = useRef({...new CalendarEvent({startDate: moment(selectedCalendarDate).format(DatetimeFormats.dateForDb)})})
 
       const ResetForm = (showSuccessAlert = false) => {
             setEventLength(EventLengths.single)
@@ -155,7 +155,6 @@ export default function NewCalendarEvent() {
                         // Date Range
                         if (eventIsDateRange) {
                               const dates = CalendarManager.BuildArrayOfEvents(currentUser, cleaned, "range", cleaned.startDate, cleaned.endDate)
-                              console.log(dates)
                               await CalendarManager.AddMultipleCalEvents(currentUser, dates, true)
                         }
 
@@ -234,10 +233,10 @@ export default function NewCalendarEvent() {
       }, [children, coParents])
 
       useEffect(() => {
-            if (dateToEdit) {
-                  formRef.current.startDate = moment(dateToEdit).format(DatetimeFormats.dateForDb)
+            if (selectedCalendarDate) {
+                  formRef.current.startDate = moment(selectedCalendarDate).format(DatetimeFormats.dateForDb)
             }
-      }, [dateToEdit])
+      }, [selectedCalendarDate])
 
       useEffect(() => {
             if (!eventIsCloned) {
@@ -303,7 +302,7 @@ export default function NewCalendarEvent() {
                               {/* START DATE */}
                               {view?.label === "Single Day" && (
                                     <InputField
-                                          defaultValue={dateToEdit}
+                                          defaultValue={selectedCalendarDate}
                                           placeholder="Date"
                                           uidClass="event-start-date"
                                           inputType={InputTypes.date}

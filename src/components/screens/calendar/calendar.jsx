@@ -16,7 +16,6 @@ import DatetimeFormats from "../../../constants/datetimeFormats"
 import FinancialKeywords from "../../../constants/financialKeywords"
 import ScreenNames from "../../../constants/screenNames"
 import globalState from "../../../context.js"
-import DB from "../../../database/DB.js"
 import useCalendarEvents from "../../../hooks/useCalendarEvents"
 import useCurrentUser from "../../../hooks/useCurrentUser"
 import useEventsOfDay from "../../../hooks/useEventsOfDay"
@@ -36,16 +35,15 @@ import DesktopLegend from "./desktopLegend.jsx"
 
 export default function EventCalendar() {
       const {state, setState} = useContext(globalState)
-      const {theme, currentScreen, refreshKey, isLoading} = state
+      const {theme, currentScreen, refreshKey, selectedCalendarDate} = state
 
       // MONTHS FOR DATE PICKER DROPDOWN
       const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
       // STATE
-      const [selectedDate, setSelectedDate] = useState(null)
       const [eventToEdit, setEventToEdit] = useState(null)
       const [contentIsLoaded, setContentIsLoaded] = useState(false)
-      const [dateValue, setDateValue] = React.useState(moment())
+      const [dateValue, setDateValue] = React.useState(moment(selectedCalendarDate))
       const [holidayReturnType, setHolidayReturnType] = useState("all")
       const [showMonthDropdown, setShowMonthDropdown] = useState(false)
 
@@ -61,30 +59,11 @@ export default function EventCalendar() {
       const {eventsOfDay} = useEventsOfDay()
       const {holidays} = useHolidays(currentUser, "all")
 
-      const AddMonthText = (updatedMonth = moment().format("MMMM")) => {
-            const leftArrow = document.querySelector(".MuiPickersArrowSwitcher-previousIconButton")
-            const arrows = document.querySelector(".MuiPickersArrowSwitcher-root")
-            if (Manager.IsValid(leftArrow) && Manager.IsValid(arrows)) {
-                  const existingNodes = arrows.querySelectorAll("#calendar-month")
-                  if (Manager.IsValid(existingNodes)) {
-                        existingNodes.forEach((node) => node.remove())
-                  }
-                  const month = document.createElement("span")
-                  month.id = "calendar-month"
-                  month.innerText = updatedMonth
-                  leftArrow.insertAdjacentElement("afterend", month)
-            }
-      }
-
       const AddDayIndicators = async () => {
-            const holidayEvents = await DB.getTable(DB.tables.holidayEvents)
-
             // Clear existing indicators
             document.querySelectorAll(".dot-wrapper, .payday-emoji, .holiday-emoji").forEach((el) => el.remove())
 
             const dayElements = document.querySelectorAll(".MuiPickersDay-root")
-
-            // console.log(holidayEvents)
 
             const holidayEmojiMap = {
                   "01/01": "🥳",
@@ -107,7 +86,7 @@ export default function EventCalendar() {
                   const formattedDay = moment(DateManager.msToDate(dayMs)).format(DatetimeFormats.dateForDb)
                   const dayEvent = calendarEvents.find((event) => moment(event?.startDate).format(DatetimeFormats.dateForDb) === formattedDay)
                   const dayEvents = calendarEvents.filter((e) => e?.startDate === formattedDay)
-                  const {dotClasses, payEvents} = GetEventDotClasses(dayEvent, dayEvents, holidayEvents)
+                  const {dotClasses, payEvents} = GetEventDotClasses(dayEvent, dayEvents, holidays)
                   const dotWrapper = document.createElement("span")
                   dotWrapper.classList.add("dot-wrapper")
 
@@ -117,7 +96,8 @@ export default function EventCalendar() {
                   }
 
                   // 🔹 Holiday Emoji
-                  const matchingHoliday = holidayEvents.find((h) => h?.startDate === dayEvent?.startDate && Manager.IsValid(h))
+                  const matchingHoliday = holidays.find((h) => h?.startDate === dayEvent?.startDate && Manager.IsValid(h))
+
                   if (matchingHoliday) {
                         const emoji = document.createElement("span")
                         emoji.classList.add("holiday-emoji")
@@ -164,11 +144,11 @@ export default function EventCalendar() {
             setHolidayReturnType("all")
       }
 
-      const GetEventDotClasses = (dayEvent, dayEvents, holidayEvents) => {
+      const GetEventDotClasses = (dayEvent, dayEvents) => {
             const payEvents = []
             let dotClasses = []
-            const dayEventsOfAllTypes = DatasetManager.CombineArrays(dayEvents, holidayEvents)
-            const holidayDates = holidayEvents?.map((holiday) => moment(holiday?.startDate).format(DatetimeFormats.dateForDb))
+            const dayEventsOfAllTypes = DatasetManager.CombineArrays(dayEvents, holidays)
+            const holidayDates = holidays?.map((holiday) => moment(holiday?.startDate).format(DatetimeFormats.dateForDb))
             for (const event of dayEventsOfAllTypes) {
                   if (!Manager.IsValid(event) || !Manager.IsValid(event?.startDate)) continue
 
@@ -244,11 +224,14 @@ export default function EventCalendar() {
             }
       }, [currentScreen, currentUserIsLoading, showSearchInput])
 
+      useEffect(() => {
+            if (Manager.IsValid(dateValue) && Manager.IsValid(currentUser) && Manager.IsValid(holidays)) {
+                  void AddDayIndicators()
+            }
+      }, [dateValue, , currentUser, holidays])
+
       // ADD DAY INDICATORS
       useEffect(() => {
-            if (!Manager.IsValid(selectedDate)) {
-                  setSelectedDate(moment().format(DatetimeFormats.dateForDb))
-            }
             if (Manager.IsValid(currentUser)) {
                   AddDayIndicators().then((r) => r)
             }
@@ -325,13 +308,15 @@ export default function EventCalendar() {
                                     minDate={moment(`${moment().year()}-01-01`)}
                                     maxDate={moment(`${moment().year()}-12-31`)}
                                     onMonthChange={async (month) => {
-                                          AddDayIndicators().then((r) => r)
-                                          AddMonthText(moment(month).format("MMMM"))
+                                          const formattedMonth = moment(month).format("MMMM")
+                                          const formattedYear = moment(month).format("YYYY")
+                                          const formattedDate = `01/${formattedMonth}/${formattedYear}`
+                                          setDateValue(moment(formattedDate))
+                                          setState({...state, selectedCalendarDate: moment(formattedDate).format(DatetimeFormats.dateForDb)})
                                     }}
                                     onChange={(day) => {
                                           setDateValue(day)
-                                          setSelectedDate(moment(day).format(DatetimeFormats.dateForDb))
-                                          setState({...state, dateToEdit: moment(day).format(DatetimeFormats.dateForDb)})
+                                          setState({...state, selectedCalendarDate: moment(day).format(DatetimeFormats.dateForDb)})
                                     }}
                               />
                         </div>
@@ -368,7 +353,6 @@ export default function EventCalendar() {
                                     onClick={() => {
                                           if (showSearchInput) {
                                                 setShowSearchInput(false)
-                                                setSelectedDate(moment().format(DatetimeFormats.dateForDb))
                                                 setDateValue(moment())
                                           } else {
                                                 setShowSearchInput(true)
@@ -377,7 +361,7 @@ export default function EventCalendar() {
                                     {showSearchInput === true ? <MdOutlineSearchOff /> : <ImSearch />}
                               </div>
                               <p id="month-selector" onClick={() => setShowMonthDropdown(!showMonthDropdown)}>
-                                    {moment(dateValue).format("MMMM")}
+                                    {moment(dateValue, "DD/MMMM/YYYY").format("MMMM")}
                                     {showMonthDropdown ? <FaChevronUp /> : <FaChevronDown />}
                               </p>
                         </div>
@@ -390,7 +374,7 @@ export default function EventCalendar() {
                               <CalendarEvents
                                     holidayOptions={{returnType: holidayReturnType, show: showHolidays}}
                                     showAllHolidays={showHolidays}
-                                    selectedDate={selectedDate}
+                                    selectedDate={dateValue}
                                     setEventToEdit={(ev) => {
                                           setEventToEdit(ev)
                                           setShowEditCard(true)

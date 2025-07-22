@@ -2,8 +2,9 @@ import ScreenNames from "./screenNames"
 import DateFormats from "./datetimeFormats"
 import moment from "moment"
 
-
 StateObj =
+  # Getters
+  activeChatId: ''
   authUser: null
   childAccessGranted: false,
   creationFormToShow: ''
@@ -13,32 +14,28 @@ StateObj =
   isLoading: true
   menuIsOpen: false
   messageToUser: null
-  oneSignalInitialized: false
-  dateToEdit: moment().format(DateFormats.dateForDb)
   modalIsOpen: false
   notificationCount: 0,
+  oneSignalInitialized: false
   parentAccessGranted: false
   refreshKey: 0,
-  showCreationMenu: false
-  showScreenActions: false
+  registrationExitStep: ""
   registrationUserName: ''
+  selectedCalendarDate: moment().format(DateFormats.dateForDb)
+  showCreationMenu: false
   showOverlay: false
+  showScreenActions: false
   successAlertMessage: null
   users: []
-  activeChatId: ''
-  registrationExitStep: ""
-  setRegistrationExitStep: (step) ->
+  
+  # Setters
   setActiveChatId: (id) ->
-  setUsers: (users) ->
-  setSuccessAlertMessage: (message) ->
-  setShowScreenActions: (bool) ->
   setAuthUser: (user) ->
   setChildAccessGranted: (bool) ->
   setContactInfoToUpdateType: ->
   setCreationFormToShow: (form) ->
   setCurrentScreen: (screen) ->
   setCurrentUser: (user) ->
-  setDateToEdit: (date) ->
   setDocToView: (doc) ->
   setEventToEdit: (event) ->
   setIsLoading: (bool) ->
@@ -48,11 +45,16 @@ StateObj =
   setNotificationCount: (count) ->
   setParentAccessGranted: (bool) ->
   setRefreshKey: (num) ->
+  setRegistrationExitStep: (step) ->
   setRegistrationUserName: (name) ->
+  setSelectedCalendarDate: (date) ->
   setShowBottomMenu: (bool) ->
   setShowOverlay: (bool) ->
+  setShowScreenActions: (bool) ->
+  setSuccessAlertMessage: (message) ->
   setTheme: (theme) ->
   setUserIsLoggedIn: (isLoggedIn) ->
+  setUsers: (users) ->
   showBottomMenu: false
   theme: 'light'
   userIsLoggedIn: false
