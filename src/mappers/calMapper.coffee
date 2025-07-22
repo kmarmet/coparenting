@@ -91,6 +91,8 @@ CalendarMapper =
         return '07/04'
       when name == 'Labor Day'
         return '09/02'
+      when name == "Patriot Day"
+        return '09/11'
       when name == 'Columbus Day'
         return '10/14'
       when name == 'Halloween'
@@ -107,6 +109,7 @@ CalendarMapper =
         return '11/28'
       else
         null
+        
   holidayDateToName: (date) ->
     date = moment(date).format("MM/DD")
     switch true
@@ -130,6 +133,8 @@ CalendarMapper =
         return 'Independence Day'
       when date == '09/02'
         return 'Labor Day'
+      when date == '09/11'
+        return "Patriot Day"
       when date == '10/14'
         return 'Columbus Day'
       when date == '10/31'

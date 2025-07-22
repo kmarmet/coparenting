@@ -99,7 +99,7 @@ const Chat = ({show, hide, recipient}) => {
 
             if (toneObject?.tone === "angry") {
                   AlertManager.confirmAlert({
-                        title: "ANGRY EMOTION DETECTED",
+                        title: "This Message Expresses Anger",
                         html: "Are you sure you want to send this message?",
                         bg: "#c71436",
                         color: "white",

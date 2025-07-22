@@ -2,6 +2,7 @@
 import moment from "moment"
 import React, {useContext, useEffect, useState} from "react"
 import {BsHousesFill} from "react-icons/bs"
+import ButtonThemes from "../../constants/buttonThemes"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import ModelNames from "../../constants/modelNames"
 import ScheduleTypes from "../../constants/scheduleTypes"
@@ -13,6 +14,7 @@ import useCalendarEvents from "../../hooks/useCalendarEvents"
 import useChildren from "../../hooks/useChildren"
 import useCoParents from "../../hooks/useCoParents"
 import useCurrentUser from "../../hooks/useCurrentUser"
+import useHolidays from "../../hooks/useHolidays"
 import useUsers from "../../hooks/useUsers"
 import AlertManager from "../../managers/alertManager"
 import DatasetManager from "../../managers/datasetManager"
@@ -29,6 +31,7 @@ import CustomWeekends from "../screens/visitation/customWeekends"
 import EveryOtherWeekend from "../screens/visitation/everyOtherWeekend"
 import FiftyFifty from "../screens/visitation/fiftyFifty"
 import AddressInput from "../shared/addressInput"
+import Button from "../shared/button"
 import Label from "../shared/label"
 import MyConfetti from "../shared/myConfetti"
 import Screen from "../shared/screen"
@@ -60,6 +63,7 @@ export default function Visitation() {
       const {children, childrenDropdownOptions} = useChildren()
       const {coParents, coParentsDropdownOptions} = useCoParents()
       const {users} = useUsers()
+      const {holidays} = useHolidays()
 
       // DROPDOWN STATE
       const [selectedVisitationHolidayOptions, setSelectedVisitationHolidayOptions] = useState([])
@@ -127,8 +131,8 @@ export default function Visitation() {
                         dateObject.createdBy = currentUser?.name
                         dateObject.fromVisitationSchedule = true
                         dateObject.isHoliday = true
-                        dateObject.shareWith = DatasetManager.getUniqueArray(shareWith, true)
-                        const cleanedObject = ObjectManager.GetModelValidatedObject(dateObject, ModelNames.calendarEvent)
+                        dateObject.shareWith = DatasetManager.GetValidArray(shareWith, true)
+                        const cleanedObject = ObjectManager.CleanObject(dateObject, ModelNames.calendarEvent)
                         events.push(cleanedObject)
                   })
                   // Upload to DB
@@ -177,22 +181,6 @@ export default function Visitation() {
             }
       }
 
-      const SetDefaultHolidayCheckboxes = () => {
-            const holidayCheckboxesWrapper = document.querySelector(".holiday-checkboxes-wrapper")
-            if (Manager.IsValid(holidayCheckboxesWrapper)) {
-                  const checkboxes = holidayCheckboxesWrapper.querySelectorAll("[data-date]")
-                  checkboxes.forEach((checkboxWrapper) => {
-                        const holidayLabel = checkboxWrapper.getAttribute("data-label")
-                        if (holidayLabel.length > 0) {
-                              if (userHolidays.includes(holidayLabel)) {
-                                    // Set checkboxes active
-                                    holidayCheckboxesWrapper.querySelector(`[data-label="${holidayLabel}"]`).classList.add("active")
-                              }
-                        }
-                  })
-            }
-      }
-
       const SetAllStates = async () => {
             await GetCurrentVisitationSchedule().then((r) => r)
             await GetVisitationHolidays(currentUser).then((holidaysObject) => {
@@ -201,9 +189,6 @@ export default function Visitation() {
                   const userHolidaysDates = userHolidaysList.map((x) => x.date)
                   setSelectedHolidayDates(DatasetManager.getUniqueArray(userHolidaysDates, true))
                   setUserHolidays(userHolidaysList.map((x) => x.name))
-                  setTimeout(() => {
-                        SetDefaultHolidayCheckboxes(holidays)
-                  }, 300)
             })
 
             setContentIsReady(true)
@@ -217,18 +202,6 @@ export default function Visitation() {
                   setShowDeleteButton(true)
             } else {
                   setExistingScheduleEvents([])
-            }
-      }
-
-      const RemoveScheduleTypeActiveClass = () => {
-            const checkboxWrapper = document.querySelector(".schedule-type-checkboxes")
-            if (Manager.IsValid(checkboxWrapper)) {
-                  const checkboxes = checkboxWrapper.querySelectorAll("#checkbox-container")
-                  if (Manager.IsValid(checkboxes)) {
-                        for (let checkbox of checkboxes) {
-                              checkbox.classList.remove("active")
-                        }
-                  }
             }
       }
 
@@ -427,9 +400,7 @@ export default function Visitation() {
                               <Spacer height={5} />
 
                               {showUpdateHolidaysButton && (
-                                    <button className="button default green center" onClick={() => SetHolidaysInDatabase()}>
-                                          Update Holidays
-                                    </button>
+                                    <Button classes={"center"} theme={ButtonThemes.green} text={"Update Holidays"} onClick={SetHolidaysInDatabase} />
                               )}
                         </div>
                   </div>

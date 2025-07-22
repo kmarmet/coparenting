@@ -14,7 +14,6 @@ import useCoParents from "../../hooks/useCoParents"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import useUsers from "../../hooks/useUsers"
 import AlertManager from "../../managers/alertManager"
-import DomManager from "../../managers/domManager"
 import DropdownManager from "../../managers/dropdownManager"
 import Manager from "../../managers/manager"
 import ObjectManager from "../../managers/objectManager"
@@ -73,19 +72,15 @@ export default function NewVisitationChangeRequest() {
             const errorString = Manager.GetInvalidInputsErrorString([
                   {
                         value: formRef.current.reason,
-                        name: "Request Reason",
+                        name: "Reason",
                   },
                   {
                         value: formRef.current.startDate,
                         name: "Date",
                   },
                   {
-                        value: formRef.current.requestedResponseDate,
-                        name: "Requested Response Date",
-                  },
-                  {
                         value: recipientName,
-                        name: "Request Recipient",
+                        name: "Recipient",
                   },
             ])
             if (Manager.IsValid(errorString, true)) {
@@ -137,22 +132,6 @@ export default function NewVisitationChangeRequest() {
             ResetForm(true)
       }
 
-      const HandleRecipientSelection = (e) => {
-            const coparentKey = e.getAttribute("data-key")
-            DomManager.HandleCheckboxSelection(
-                  e,
-                  (e) => {
-                        setRecipientKey(coparentKey)
-                        setRecipientName(e)
-                  },
-                  () => {
-                        setRecipientName("")
-                        setRecipientKey("")
-                  },
-                  false
-            )
-      }
-
       const SetDefaultDropdownOptions = () => {
             setSelectedChildrenOptions(DropdownManager.GetSelected.Children([], children))
             setSelectedReminderOptions(DropdownManager.GetSelected.Reminders([]))
@@ -173,8 +152,8 @@ export default function NewVisitationChangeRequest() {
                   submitText={"Send"}
                   onSubmit={Submit}
                   wrapperClass="new-visitation-request"
-                  title={"Request Visitation Swap"}
-                  subtitle="Request for your child(ren) to remain with you during the designated visitation time of your co-parent."
+                  title={"Request Visitation Change"}
+                  subtitle="Request for your child(ren) to remain with you during the designated visitation time of your co-parent, on singular occasions."
                   viewDropdown={
                         <ViewDropdown
                               hasSpacer={true}
@@ -206,20 +185,25 @@ export default function NewVisitationChangeRequest() {
                                     />
                               )}
 
+                              <Spacer height={5} />
+
                               {/* MULTIPLE DAYS */}
                               {view?.value === VisitationChangeDurations.multiple && (
-                                    <InputField
-                                          onDateOrTimeSelection={(dateArray) => {
-                                                if (Manager.IsValid(dateArray)) {
-                                                      formRef.current.startDate = moment(dateArray[0]).format(DatetimeFormats.dateForDb)
-                                                      formRef.current.endDate = moment(dateArray[1]).format(DatetimeFormats.dateForDb)
-                                                }
-                                          }}
-                                          useNativeDate={true}
-                                          placeholder={"Date Range"}
-                                          required={true}
-                                          inputType={InputTypes.dateRange}
-                                    />
+                                    <>
+                                          <InputField
+                                                onDateOrTimeSelection={(dateArray) => {
+                                                      if (Manager.IsValid(dateArray)) {
+                                                            formRef.current.startDate = moment(dateArray[0]).format(DatetimeFormats.dateForDb)
+                                                            formRef.current.endDate = moment(dateArray[1]).format(DatetimeFormats.dateForDb)
+                                                      }
+                                                }}
+                                                useNativeDate={true}
+                                                placeholder={"Date Range"}
+                                                required={true}
+                                                inputType={InputTypes.dateRange}
+                                          />
+                                          <Spacer height={5} />
+                                    </>
                               )}
 
                               {/* INTRA DAY - HOURS */}
@@ -251,12 +235,43 @@ export default function NewVisitationChangeRequest() {
                                                       onDateOrTimeSelection={(e) => (formRef.current.toHour = moment(e).format("ha"))}
                                                 />
                                           </div>
+                                          <Spacer height={5} />
+                                          <InputField
+                                                onDateOrTimeSelection={(dateArray) => {
+                                                      if (Manager.IsValid(dateArray)) {
+                                                            formRef.current.startDate = moment(dateArray[0]).format(DatetimeFormats.dateForDb)
+                                                            formRef.current.endDate = moment(dateArray[1]).format(DatetimeFormats.dateForDb)
+                                                      }
+                                                }}
+                                                useNativeDate={true}
+                                                placeholder={"Date Range"}
+                                                required={true}
+                                                inputType={InputTypes.dateRange}
+                                          />
+                                          <Spacer height={5} />
                                     </>
                               )}
+                              {/* INCLUDING WHICH CHILDREN */}
+                              {Manager.IsValid(children) && (
+                                    <SelectDropdown
+                                          options={childrenDropdownOptions}
+                                          placeholder={"Select Children to Include"}
+                                          onSelect={setSelectedChildrenOptions}
+                                          selectMultiple={true}
+                                    />
+                              )}
+
                               <Spacer height={5} />
 
                               {/* REQUEST RECIPIENT */}
                               <SelectDropdown options={defaultShareWithOptions} placeholder={"Request Recipient"} onSelect={setSelectedRecipient} />
+
+                              <Spacer height={5} />
+
+                              {/* NOTES */}
+                              <InputField inputType={"textarea"} placeholder={"Reason"} onChange={(e) => (formRef.current.reason = e.target.value)} />
+
+                              <Spacer height={5} />
 
                               <FormDivider text={"Optional"} />
 
@@ -267,18 +282,6 @@ export default function NewVisitationChangeRequest() {
                                     placeholder={"Select Contacts to Share With"}
                                     onSelect={setSelectedShareWithOptions}
                               />
-
-                              <Spacer height={5} />
-
-                              {/* INCLUDING WHICH CHILDREN */}
-                              {Manager.IsValid(children) && (
-                                    <SelectDropdown
-                                          options={childrenDropdownOptions}
-                                          placeholder={"Select Children to Include"}
-                                          onSelect={setSelectedChildrenOptions}
-                                          selectMultiple={true}
-                                    />
-                              )}
 
                               <Spacer height={5} />
 
@@ -294,9 +297,6 @@ export default function NewVisitationChangeRequest() {
                               />
 
                               <Spacer height={5} />
-
-                              {/* NOTES */}
-                              <InputField inputType={"textarea"} placeholder={"Reason"} onChange={(e) => (formRef.current.reason = e.target.value)} />
                         </div>
                   </div>
             </Form>

@@ -234,6 +234,25 @@ DropdownManager = {
                   if (Manager.IsValid(apiHolidays)) {
                         for (i = 0, len = apiHolidays.length; i < len; i++) {
                               holiday = apiHolidays[i]
+                              if (
+                                    Manager.IsValid(
+                                          options.find((x) => {
+                                                return (x != null ? x.value : void 0) === (holiday != null ? holiday.date : void 0)
+                                          })
+                                    )
+                              ) {
+                                    continue
+                              }
+                              if ((holiday != null ? holiday.name : void 0) === "Juneteenth National Independence Day") {
+                                    if (holiday != null) {
+                                          holiday.name = "Juneteenth"
+                                    }
+                              }
+                              if ((holiday != null ? holiday.name : void 0) === "Martin Luther King, Jr. Day") {
+                                    if (holiday != null) {
+                                          holiday.name = "MLK Jr. Day"
+                                    }
+                              }
                               options.push({
                                     label: holiday != null ? holiday.name : void 0,
                                     value: holiday != null ? holiday.date : void 0,

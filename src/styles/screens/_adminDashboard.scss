@@ -1,175 +1,180 @@
-@use '../utils/_palette';
-@use '../_fonts';
-@use '../utils/_variables';
-@use '../utils/mixins';
+@use "../utils/_palette";
+@use "../_fonts";
+@use "../utils/_variables";
+@use "../utils/mixins";
 #external-overrides {
-    .dashboard {
-        #header {
-            height: 300px;
-            width: 100vw;
-        }
-
-        .buttons {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            justify-content: center;
-
-            button {
-                &.button {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 16px;
-                    text-align: center;
-                    border: 0;
-                    margin-top: 10px;
-                    min-width: max-content;
-                    background: palette.$green;
-                    color: white;
-                    font-weight: bold;
-                    width: 100%;
-                    border-radius: variables.$borderRadius;
-
-                    &.red {
-                        background: palette.$red;
-                        color: white;
-                    }
-                }
+      .dashboard {
+            #header {
+                  height: 300px;
+                  width: 100vw;
             }
 
-            .chat-recovery-clipboard-button {
-                background-color: palette.$green;
-                color: white;
+            .screen-content {
+                  max-height: unset !important;
+                  overflow: visible !important;
             }
-        }
-        p,
-        a {
-            color: white;
-        }
-        p {
-            margin: 0 0 5px 0;
-        }
-        hr {
-            margin: 10px 0;
-            border-color: palette.$translucentLightest;
-        }
-        a {
-            display: block;
-        }
 
-        .screen-content {
-            @media screen and (min-width: 1000px) {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .tool-box {
-                padding: 20px;
-                border-radius: variables.$borderRadius;
-                width: 100%;
-                margin-bottom: 15px;
-                border: 1px solid palette.$lightBorderColor;
+            .buttons {
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  justify-content: center;
 
-                input {
-                    border-bottom: 1px solid palette.$lightBorderColor !important;
-                    padding: 5px !important;
-                }
+                  button {
+                        &.button {
+                              display: flex;
+                              align-items: center;
+                              justify-content: center;
+                              font-size: 16px;
+                              text-align: center;
+                              border: 0;
+                              margin-top: 10px;
+                              min-width: max-content;
+                              background: palette.$green;
+                              color: white;
+                              font-weight: bold;
+                              width: 100%;
+                              border-radius: variables.$borderRadius;
 
-                .box-title {
-                    font-weight: bold !important;
-                    text-align: center;
-                    font-size: 18px;
-                    margin-bottom: 10px;
-                }
-
-                &.get-records {
-                }
-
-                #code-block {
-                    background: #272822;
-                    padding: 20px;
-                    border-radius: variables.$borderRadius;
-                    color: white;
-                    margin-top: 15px;
-                    white-space: wrap;
-                    max-width: 100%;
-
-                    code {
-                        -ms-word-wrap: break-word;
-                        word-break: break-all;
-                        max-width: 200px;
-                    }
-
-                    p {
-                        color: white;
-                        -ms-word-break: break-all;
-                        word-break: break-all;
-                        span {
-                            max-width: 200px;
-                            -ms-word-wrap: break-word;
-                            word-break: break-all;
-                            &.key {
-                                color: #46b969;
-                                font-weight: bold;
-
-                                &.empty {
-                                    opacity: 0.3;
-                                }
-                            }
-
-                            &.value {
-                                display: none;
-
-                                &.active {
-                                    display: inline;
-                                }
-                            }
-
-                            &.indent-one {
-                                margin-left: 10px;
-                            }
+                              &.red {
+                                    background: palette.$red;
+                                    color: white;
+                              }
                         }
-                    }
-                }
+                  }
 
-                .data-ui {
-                    padding: 15px;
-                    margin-top: 15px;
-                    border-radius: variables.$borderRadius;
-                    background: #282a37;
-
-                    a {
-                        color: #a28fc4;
-                        text-decoration: underline;
-                        font-weight: bold;
-                    }
-
-                    .prop {
-                        color: #56e27b;
-                    }
-
-                    p {
+                  .chat-recovery-clipboard-button {
+                        background-color: palette.$green;
                         color: white;
-                    }
+                  }
+            }
+            p,
+            a {
+                  color: white;
+            }
+            p {
+                  margin: 0 0 5px 0;
+            }
+            hr {
+                  margin: 10px 0;
+                  border-color: palette.$translucentLightest;
+            }
+            a {
+                  display: block;
+            }
 
-                    .data-subset {
-                        margin-left: 15px;
+            .screen-content {
+                  @media screen and (min-width: 1000px) {
+                        grid-template-columns: repeat(2, 1fr);
+                  }
+                  .tool-box {
+                        padding: 20px;
+                        border-radius: variables.$borderRadius;
+                        width: 100%;
+                        margin-bottom: 15px;
+                        border: 1px solid palette.$lightBorderColor;
 
-                        .subset-prop {
-                            color: #7dc8da;
+                        input {
+                              border-bottom: 1px solid palette.$lightBorderColor !important;
+                              padding: 5px !important;
                         }
-                    }
-                }
-            }
 
-            // RESPONSIVE
-            @media screen and (max-width: 600px) {
-                display: block;
+                        .box-title {
+                              font-weight: bold !important;
+                              text-align: center;
+                              font-size: 18px;
+                              margin-bottom: 10px;
+                        }
 
-                .tool-box {
-                    width: 100%;
-                    margin-bottom: 10px;
-                }
+                        &.get-records {
+                        }
+
+                        #code-block {
+                              background: #272822;
+                              padding: 20px;
+                              border-radius: variables.$borderRadius;
+                              color: white;
+                              margin-top: 15px;
+                              white-space: wrap;
+                              max-width: 100%;
+
+                              code {
+                                    -ms-word-wrap: break-word;
+                                    word-break: break-all;
+                                    max-width: 200px;
+                              }
+
+                              p {
+                                    color: white;
+                                    -ms-word-break: break-all;
+                                    word-break: break-all;
+                                    span {
+                                          max-width: 200px;
+                                          -ms-word-wrap: break-word;
+                                          word-break: break-all;
+                                          &.key {
+                                                color: #46b969;
+                                                font-weight: bold;
+
+                                                &.empty {
+                                                      opacity: 0.3;
+                                                }
+                                          }
+
+                                          &.value {
+                                                display: none;
+
+                                                &.active {
+                                                      display: inline;
+                                                }
+                                          }
+
+                                          &.indent-one {
+                                                margin-left: 10px;
+                                          }
+                                    }
+                              }
+                        }
+
+                        .data-ui {
+                              padding: 15px;
+                              margin-top: 15px;
+                              border-radius: variables.$borderRadius;
+                              background: #282a37;
+
+                              a {
+                                    color: #a28fc4;
+                                    text-decoration: underline;
+                                    font-weight: bold;
+                              }
+
+                              .prop {
+                                    color: #56e27b;
+                              }
+
+                              p {
+                                    color: white;
+                              }
+
+                              .data-subset {
+                                    margin-left: 15px;
+
+                                    .subset-prop {
+                                          color: #7dc8da;
+                                    }
+                              }
+                        }
+                  }
+
+                  // RESPONSIVE
+                  @media screen and (max-width: 600px) {
+                        display: block;
+
+                        .tool-box {
+                              width: 100%;
+                              margin-bottom: 10px;
+                        }
+                  }
             }
-        }
-    }
+      }
 }

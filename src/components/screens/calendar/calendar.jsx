@@ -4,10 +4,10 @@ import moment from "moment"
 import React, {useContext, useEffect, useState} from "react"
 import {BsStars} from "react-icons/bs"
 import {FaChevronDown} from "react-icons/fa"
-import {FaChevronDown} from "react-icons/fa6"
+import {FaChevronUp} from "react-icons/fa6"
 import {ImSearch} from "react-icons/im"
 import {MdOutlineSearchOff} from "react-icons/md"
-import {PiCalendarXDuotone} from "react-icons/pi"
+import {PiCalendarDotsFill, PiCalendarXDuotone} from "react-icons/pi"
 import EditCalEvent from "../../../components/forms/editCalEvent"
 import NavBar from "../../../components/navBar.jsx"
 import Form from "../../../components/shared/form"
@@ -20,6 +20,7 @@ import DB from "../../../database/DB.js"
 import useCalendarEvents from "../../../hooks/useCalendarEvents"
 import useCurrentUser from "../../../hooks/useCurrentUser"
 import useEventsOfDay from "../../../hooks/useEventsOfDay"
+import useHolidays from "../../../hooks/useHolidays"
 import DatasetManager from "../../../managers/datasetManager"
 import DateManager from "../../../managers/dateManager"
 import DomManager from "../../../managers/domManager"
@@ -27,6 +28,7 @@ import Manager from "../../../managers/manager"
 import Button from "../../shared/button"
 import InputField from "../../shared/inputField"
 import Screen from "../../shared/screen"
+import ScreenHeader from "../../shared/screenHeader"
 import Spacer from "../../shared/spacer"
 import CalendarEvents from "./calendarEvents.jsx"
 import CalendarLegend from "./calendarLegend.jsx"
@@ -57,6 +59,7 @@ export default function EventCalendar() {
       const {currentUser, currentUserIsLoading} = useCurrentUser()
       const {calendarEvents} = useCalendarEvents()
       const {eventsOfDay} = useEventsOfDay()
+      const {holidays} = useHolidays(currentUser, "all")
 
       const AddMonthText = (updatedMonth = moment().format("MMMM")) => {
             const leftArrow = document.querySelector(".MuiPickersArrowSwitcher-previousIconButton")
@@ -81,6 +84,8 @@ export default function EventCalendar() {
 
             const dayElements = document.querySelectorAll(".MuiPickersDay-root")
 
+            // console.log(holidayEvents)
+
             const holidayEmojiMap = {
                   "01/01": "🥳",
                   "04/20": "🐇",
@@ -89,6 +94,7 @@ export default function EventCalendar() {
                   "06/15": "👨‍👧‍👦",
                   "06/19": "✨",
                   "07/04": "🎇",
+                  "09/11": "🗽",
                   "10/31": "🎃",
                   "11/28": "🦃",
                   "12/24": "🎄",
@@ -196,11 +202,6 @@ export default function EventCalendar() {
             }
       }
 
-      const HandleMonthChange = (event) => {
-            const newMonthIndex = event.target.value
-            setDateValue((prev) => (prev ? prev.clone().month(newMonthIndex) : moment().month(newMonthIndex)))
-      }
-
       // SHOW HOLIDAYS -> SCROLL INTO VIEW
       useEffect(() => {
             if (DomManager.isMobile()) {
@@ -222,23 +223,16 @@ export default function EventCalendar() {
             if (!currentUserIsLoading) {
                   const staticCalendar = document.querySelector(".MuiDialogActions-root")
                   const holidaysButton = document.getElementById("holidays-button")
-                  const searchIcon = document.getElementById("search-icon-wrapper")
                   const todayButton = staticCalendar.querySelector(".MuiButtonBase-root")
                   const legendButton = document.getElementById("legend-button")
                   const monthSelector = document.getElementById("month-selector")
 
-                  console.log(todayButton)
-                  if (staticCalendar && holidaysButton && searchIcon) {
+                  if (staticCalendar && holidaysButton) {
                         staticCalendar.prepend(holidaysButton)
-                        // staticCalendar.prepend(searchIcon)
                         todayButton.insertAdjacentElement("afterend", monthSelector)
 
                         holidaysButton.addEventListener("click", () => {
                               setShowHolidaysCard(true)
-                        })
-
-                        monthSelector.addEventListener("change", (event) => {
-                              // HandleMonthChange(event)
                         })
                   }
 
@@ -247,7 +241,6 @@ export default function EventCalendar() {
                               legendButton.classList.toggle("active")
                         })
                   }
-                  setDateValue(moment("08/01/2025"))
             }
       }, [currentScreen, currentUserIsLoading, showSearchInput])
 
@@ -309,6 +302,13 @@ export default function EventCalendar() {
 
                   {/* PAGE CONTAINER */}
                   <div id="calendar-container" className={`page-container calendar ${theme}`}>
+                        <ScreenHeader
+                              title={"Calendar"}
+                              activeScreen={currentScreen}
+                              wrapperClass={"calendar-header"}
+                              titleIcon={<PiCalendarDotsFill />}
+                        />
+
                         {/* STATIC CALENDAR */}
                         <div id="static-calendar" className={`${theme}`}>
                               {/* STATIC CALENDAR */}
@@ -337,7 +337,6 @@ export default function EventCalendar() {
                         </div>
 
                         {/* BELOW CALENDAR BUTTONS */}
-
                         {/* MONTH OPTIONS */}
                         <div id="month-options" className={`${showMonthDropdown ? "active" : ""}`}>
                               {months?.map((month, index) => (
@@ -379,7 +378,7 @@ export default function EventCalendar() {
                               </div>
                               <p id="month-selector" onClick={() => setShowMonthDropdown(!showMonthDropdown)}>
                                     {moment(dateValue).format("MMMM")}
-                                    <FaChevronDown />
+                                    {showMonthDropdown ? <FaChevronUp /> : <FaChevronDown />}
                               </p>
                         </div>
 
@@ -390,7 +389,6 @@ export default function EventCalendar() {
                         <div className="screen-content">
                               <CalendarEvents
                                     holidayOptions={{returnType: holidayReturnType, show: showHolidays}}
-                                    showSearchResults={showSearchInput}
                                     showAllHolidays={showHolidays}
                                     selectedDate={selectedDate}
                                     setEventToEdit={(ev) => {

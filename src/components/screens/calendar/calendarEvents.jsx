@@ -2,7 +2,7 @@
 import moment from "moment"
 import React, {useContext, useEffect, useState} from "react"
 import {BiSolidBellRing} from "react-icons/bi"
-import {FaChildren, FaNoteSticky} from "react-icons/fa6"
+import {FaChildren, FaEraser, FaNoteSticky} from "react-icons/fa6"
 import {MdAssistantNavigation, MdEventRepeat, MdLocalPhone} from "react-icons/md"
 import {PiLinkBold} from "react-icons/pi"
 import DatetimeFormats from "../../../constants/datetimeFormats"
@@ -20,12 +20,7 @@ import StringManager from "../../../managers/stringManager"
 import InputField from "../../shared/inputField"
 import Spacer from "../../shared/spacer"
 
-export default function CalendarEvents({
-      selectedDate,
-      setEventToEdit = (event) => {},
-      showSearchResults = false,
-      holidayOptions = {show: false, returnType: "none"},
-}) {
+export default function CalendarEvents({selectedDate, setEventToEdit = (event) => {}, holidayOptions = {show: false, returnType: "none"}}) {
       const {state, setState} = useContext(globalState)
       const {theme, refreshKey} = state
 
@@ -33,58 +28,53 @@ export default function CalendarEvents({
       const {currentUser} = useCurrentUser()
       const {eventsOfDay} = useEventsOfDay(selectedDate)
       const {calendarEvents} = useCalendarEvents()
-      const {searchResults, setQuery} = useCalendarSearch(calendarEvents)
+      const {calendarSearchResults, setQuery} = useCalendarSearch(calendarEvents)
       const {holidays} = useHolidays(currentUser, holidayOptions.returnType)
 
       // STATE
       const [eventsToIterate, setEventsToIterate] = useState([])
+      const [searchQuery, setSearchQuery] = useState("")
 
       const GetRowDotColor = (dayDate) => {
-            const arr = showSearchResults ? searchResults : eventsOfDay
-            const dayEvents = arr.filter((x) => x.startDate === dayDate)
-            let dotObjects = []
-            for (let event of dayEvents) {
+            const eventsToUse = Manager.IsValid(calendarSearchResults) ? calendarSearchResults : eventsOfDay
+            const dayEvents = eventsToUse.filter((e) => e.startDate === dayDate)
+            if (!dayEvents?.length) return []
+
+            const financialKeywords = ["pay", "paid", "salary", "expense", "refund", "payment ", "purchase", "budget"]
+
+            const dotObjects = dayEvents.flatMap((event) => {
+                  const dots = []
+                  const title = event?.title?.toLowerCase() || ""
                   const isCurrentUserDot = event?.owner?.key === currentUser?.key
+
+                  // Holiday dot
                   if (event?.isHoliday && !event?.fromVisitationSchedule && !Manager.IsValid(event?.owner?.key)) {
-                        dotObjects.push({
+                        dots.push({
                               className: "holiday-event-dot",
                               id: event?.id,
                               date: event?.startDate,
                         })
                   }
-                  if (
-                        event?.title?.toLowerCase()?.includes("pay") ||
-                        event?.title?.toLowerCase()?.includes("paid") ||
-                        event?.title?.toLowerCase()?.includes("salary") ||
-                        event?.title?.toLowerCase()?.includes("expense") ||
-                        event?.title?.toLowerCase()?.includes("refund") ||
-                        event?.title?.toLowerCase()?.includes("payment ") ||
-                        event?.title?.toLowerCase()?.includes("purchase") ||
-                        event?.title?.toLowerCase()?.includes("budget")
-                  ) {
-                        dotObjects.push({
+
+                  // Financial dot
+                  if (financialKeywords.some((keyword) => title.includes(keyword))) {
+                        dots.push({
                               className: "financial-dot",
                               id: event?.id,
                               date: event?.startDate,
                         })
                   }
-                  if (isCurrentUserDot) {
-                        dotObjects.push({
-                              className: "current-user-event-dot",
-                              id: event?.id,
-                              date: event?.startDate,
-                        })
-                  }
-                  if (!isCurrentUserDot) {
-                        dotObjects.push({
-                              className: "coParent-event-dot",
-                              id: event?.id,
-                              date: event?.startDate,
-                        })
-                  }
-            }
-            dotObjects = DatasetManager.getUniqueArray(dotObjects, true)
-            return dotObjects
+
+                  // User ownership dots
+                  dots.push({
+                        className: isCurrentUserDot ? "current-user-event-dot" : "coParent-event-dot",
+                        id: event?.id,
+                        date: event?.startDate,
+                  })
+                  return dots
+            })
+
+            return DatasetManager.getUniqueArray(dotObjects, true)
       }
 
       const HandleEventRowClick = async (clickedEvent) => {
@@ -112,12 +102,6 @@ export default function CalendarEvents({
             )
       }
 
-      const AnimateRows = () => {
-            setTimeout(() => {
-                  DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
-            }, 10)
-      }
-
       useEffect(() => {
             const animateEvents = () => {
                   setTimeout(() => {
@@ -128,15 +112,20 @@ export default function CalendarEvents({
             let nextEvents = []
 
             // ✅ Priority 1: Search Results
-            if (showSearchResults && Manager.IsValid(searchResults)) {
-                  nextEvents = searchResults
+            if (Manager.IsValid(calendarSearchResults)) {
+                  nextEvents = calendarSearchResults
             }
             // ✅ Priority 2: Holidays
-            else if (holidayOptions?.show && Manager.IsValid(holidays)) {
+            else if (holidayOptions?.show && Manager.IsValid(holidays) && !Manager.IsValid(calendarSearchResults)) {
                   nextEvents = holidays
             }
             // ✅ Priority 3: Normal Events of Day
-            else if (!showSearchResults && !holidayOptions?.show && Manager.IsValid(eventsOfDay) && Manager.IsValid(selectedDate)) {
+            else if (
+                  !holidayOptions?.show &&
+                  Manager.IsValid(eventsOfDay) &&
+                  Manager.IsValid(selectedDate) &&
+                  !Manager.IsValid(calendarSearchResults)
+            ) {
                   nextEvents = eventsOfDay
             }
 
@@ -149,25 +138,46 @@ export default function CalendarEvents({
             // ✅ Set + animate
             setEventsToIterate(nextEvents)
             animateEvents()
-      }, [showSearchResults, searchResults, holidayOptions?.show, holidays, eventsOfDay, selectedDate])
+      }, [calendarSearchResults, holidayOptions?.show, holidays, eventsOfDay, selectedDate])
 
       return (
             <div className="events">
                   <div id={"search-input-wrapper"}>
-                        <InputField
-                              inputType={InputTypes.search}
-                              key={refreshKey}
-                              placeholder={"Find events..."}
-                              onChange={(e) => setQuery(e.target.value)}
-                              className={"search"}
-                              wrapperClasses={"white-bg"}
-                        />
+                        <div id="input-row">
+                              <InputField
+                                    defaultValue={searchQuery}
+                                    inputType={InputTypes.search}
+                                    key={refreshKey}
+                                    placeholder={"Find events..."}
+                                    onChange={(e) => {
+                                          setQuery(e.target.value)
+                                          setSearchQuery(e.target.value)
+                                    }}
+                                    className={"search"}
+                                    wrapperClasses={"white-bg calendar-search"}
+                              />
+                              {Manager.IsValid(searchQuery, true) && (
+                                    <FaEraser
+                                          id={"eraser-icon"}
+                                          onClick={(e) => {
+                                                const searchInputWrapper = e.currentTarget.previousSibling
+                                                const searchInput = searchInputWrapper.querySelector("input")
+                                                setQuery("")
+                                                searchInput.value = ""
+                                                searchInput.blur()
+                                                searchInputWrapper.classList.remove("active")
+                                                searchInput.textContent = ""
+                                                setSearchQuery("")
+                                          }}
+                                    />
+                              )}
+                        </div>
 
                         <Spacer height={10} />
                   </div>
 
                   {/* NO EVENTS */}
-                  {!Manager.IsValid(eventsOfDay) && <p className="no-apiResults-fallback-text">No Events</p>}
+                  {!Manager.IsValid(eventsOfDay) && <p className="no-data-fallback-text">No Events</p>}
 
                   {/* EVENTS */}
                   {Manager.IsValid(eventsToIterate) &&

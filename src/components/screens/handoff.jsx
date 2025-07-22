@@ -325,7 +325,7 @@ export default function Handoff() {
                                           {Manager.IsValid(activeRequest?.address) && (
                                                 <>
                                                       <div className="flex send-with-address-toggle">
-                                                            <Label text={"Include Address in Notification"} classes="toggle " />
+                                                            <Label text={"Include Address with Check-In"} classes="toggle " />
                                                             <ToggleButton
                                                                   onCheck={() => setSendWithAddress(!sendWithAddress)}
                                                                   toggleState={sendWithAddress}

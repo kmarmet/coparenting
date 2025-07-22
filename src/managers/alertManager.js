@@ -42,7 +42,7 @@ animate__faster`,
             return Swal.fire({
                   text: message,
                   icon: "success",
-                  timer: 1500,
+                  timer: 1000,
                   showConfirmButton: false,
                   allowOutsideClick: allowOutsideClick,
                   customClass: "success-alert",

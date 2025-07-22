@@ -261,7 +261,6 @@ const DateManager = {
             return moment(new Date(inputDate.setDate(inputDate.getDate() + numberOfDays))).format(DatetimeFormats.dateForDb)
       },
       GetHolidaysAsEvents: async () => {
-            await DateManager.deleteAllHolidays()
             const holidays = await DateManager.GetHolidays()
             let holidayEvents = []
 
@@ -296,6 +295,9 @@ const DateManager = {
                         case switchCheck(holiday.name, "Mother"):
                               newEvent.title = holiday.name += " 👩‍👧‍👦"
                               break
+                        case switchCheck(holiday.name, "Patriot Day"):
+                              newEvent.title = holiday.name += " 🗽"
+                              break
                         case switchCheck(holiday.name, "Father"):
                               newEvent.title = holiday.name += " 👨‍👧‍👦"
                               break
@@ -314,21 +316,25 @@ const DateManager = {
                   newEvent.isHoliday = true
                   holidayEvents.push(newEvent)
             }
+            console.log(holidayEvents)
             return DatasetManager.getUniqueByPropValue(holidayEvents, "title")
       },
-      setHolidays: async () => {
-            await DateManager.deleteAllHolidays()
+      SetHolidays: async () => {
             const holidays = await DateManager.GetHolidays()
+            const patriotDay = new CalendarEvent()
+            patriotDay.id = Manager.GetUid()
+            patriotDay.holidayName = "Patriot Day 🗽"
+            patriotDay.startDate = moment(`9/11/${moment().year()}`).format(DatetimeFormats.dateForDb)
+            patriotDay.isHoliday = true
             let holidayEvents = []
-            const switchCheck = (title, holidayName) => {
-                  console.log(title, holidayName)
-                  return !!Manager.Contains(title, holidayName)
-            }
+            holidayEvents.push(patriotDay)
+
+            const switchCheck = (title, holidayName) => !!Manager.Contains(title, holidayName)
 
             // SET EMOJIS / CREATE EVENT SET
             for (const holiday of holidays) {
                   let newEvent = new CalendarEvent()
-                  console.log(holiday.name)
+
                   // Required
                   switch (true) {
                         case switchCheck(holiday.name, "Halloween"):
@@ -370,7 +376,7 @@ const DateManager = {
                   newEvent.isHoliday = true
                   holidayEvents.push(newEvent)
             }
-            await CalendarManager.setHolidays(holidayEvents)
+            await CalendarManager.SetHolidays(holidayEvents)
       },
       DateIsValid: (inputDate, format = DatetimeFormats.dateForDb) => {
             return moment(inputDate, format).isValid()

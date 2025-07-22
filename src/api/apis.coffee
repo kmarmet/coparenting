@@ -1,6 +1,7 @@
 import Manager from "../managers/manager"
 import UpdateManager from "../managers/updateManager"
 import LogManager from "../managers/logManager"
+import moment from "moment"
 
 Apis =
   Utils:
@@ -143,7 +144,7 @@ Apis =
     GetHolidays: () ->
       return await new Promise (resolve, reject) ->
         try
-          response = await fetch "https://date.nager.at/api/v3/PublicHolidays/2019/US"
+          response = await fetch "https://date.nager.at/api/v3/PublicHolidays/#{moment().year()}/US"
           result = await response.json()
           resolve result
         catch error

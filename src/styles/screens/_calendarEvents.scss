@@ -8,6 +8,20 @@
             .events {
                   border-radius: 25px 25px 0 0;
 
+                  #search-input-wrapper {
+                        #input-row {
+                              display: flex;
+                              align-items: center;
+                              justify-content: space-between;
+                              gap: 15px;
+
+                              #eraser-icon {
+                                    color: #e67b96;
+                                    @include mixins.square(28px);
+                              }
+                        }
+                  }
+
                   .event-row {
                         @include mixins.row;
                         margin-bottom: 15px;

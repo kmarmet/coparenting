@@ -1137,24 +1137,6 @@
                   @include mixins.screen;
             }
 
-            // Container
-            .sweet-alert-frost {
-                  backdrop-filter: blur(20px) !important;
-                  border-radius: 50px !important;
-                  background-color: rgba(0, 0, 0, 0.1) !important;
-                  padding: 0 !important;
-                  margin-top: 200px !important;
-                  transform: translateY(200px) !important;
-            }
-
-            // Popup
-            .sweet-alert-popup {
-                  margin-top: 200px !important;
-                  border-radius: 50px !important;
-                  padding: 0 !important;
-                  transform: translateY(200px) !important;
-            }
-
             .spacer {
                   height: 1px;
                   width: 100%;

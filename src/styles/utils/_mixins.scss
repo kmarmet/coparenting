@@ -116,6 +116,15 @@ $shadows-big: multiple-box-shadow(100);
             flex-wrap: wrap;
             @include screenHeaderGradient;
 
+            &.calendar-header {
+                  min-height: unset;
+                  height: max-content;
+
+                  .text {
+                        padding-bottom: 10px;
+                  }
+            }
+
             .text {
                   opacity: 0;
 
@@ -1371,7 +1380,7 @@ $shadows-big: multiple-box-shadow(100);
             align-items: center;
             max-height: max-content;
             margin-top: auto;
-            border-radius: 45px 45px 0 0;
+            border-radius: 30px 30px 0 0;
             @include mainColorsGradient;
 
             &::before {
@@ -2099,7 +2108,6 @@ $shadows-big: multiple-box-shadow(100);
       justify-content: flex-end;
       width: 100%;
       transition: all 0.1s ease-in-out;
-      padding: 0 10px;
       border-radius: variables.$buttonBorderRadius;
       background-color: palette.$inputBackground;
       overflow: hidden;
@@ -2121,9 +2129,21 @@ $shadows-big: multiple-box-shadow(100);
                   color: palette.$primaryText !important;
                   background-color: transparent;
                   caret-color: black;
+
                   &::placeholder {
                         color: black;
                         opacity: 0.4;
+                  }
+            }
+
+            &.calendar-search {
+                  height: 35px;
+                  &.active {
+                        border: 1px solid palette.$lightBorderColor;
+                  }
+                  svg {
+                        padding: 0;
+                        @include square(16px);
                   }
             }
       }
@@ -2197,13 +2217,14 @@ $shadows-big: multiple-box-shadow(100);
       &.date,
       &.time {
             height: 50px;
-            padding-top: 0;
+            padding: 0 10px 0 10px;
             display: flex;
             flex-direction: row;
             align-items: center;
             flex-wrap: wrap;
             justify-content: flex-start;
             user-select: none !important;
+
             input {
                   width: 100%;
                   position: relative;
@@ -2238,7 +2259,7 @@ $shadows-big: multiple-box-shadow(100);
             @include fonts.lightFont;
 
             &.with-icon {
-                  padding-left: 30px;
+                  padding-left: 50px;
             }
 
             &::placeholder {
@@ -2246,7 +2267,7 @@ $shadows-big: multiple-box-shadow(100);
                   color: palette.$transWhite;
                   font-size: 15px;
                   font-weight: variables.$fwLight;
-                  padding-left: 10px;
+                  padding-left: 0;
             }
       }
 
@@ -4265,13 +4286,13 @@ $shadows-big: multiple-box-shadow(100);
       }
 
       #full-menu-card {
-            border-radius: 35px 35px 0 0;
+            border-radius: 30px 30px 0 0;
             display: block;
             transform: translateY(100%);
             overflow: hidden;
             transition: all 0.5s ease;
             height: calc(100vh - 10vh);
-            max-height: 80vh;
+            max-height: 90vh;
             position: fixed;
             bottom: 0;
             max-width: 100%;

@@ -24,8 +24,8 @@ const logout = () => {
                   console.log("User signed out")
                   window.location.reload()
             })
-            .catch((holidayRetrievalError) => {
-                  // An holidayRetrievalError happened.
+            .catch((error) => {
+                  // An error happened.
             })
 }
 
@@ -73,8 +73,8 @@ if ("serviceWorker" in navigator) {
                   root.render(
                         <ErrorBoundary
                               fallback={
-                                    <div className="active holidayRetrievalError-boundary" id="holidayRetrievalError-screen">
-                                          <p id="holidayRetrievalError-screen-title">
+                                    <div className="active error-boundary" id="error-screen">
+                                          <p id="error-screen-title">
                                                 Oops! Something went wrong <FaSadTear />
                                           </p>
                                           <Spacer height={5} />
@@ -215,8 +215,8 @@ if ("serviceWorker" in navigator) {
                   root.render(
                         <ErrorBoundary
                               fallback={
-                                    <div className="active holidayRetrievalError-boundary" id="holidayRetrievalError-screen">
-                                          <p id="holidayRetrievalError-screen-title">
+                                    <div className="active error-boundary" id="error-screen">
+                                          <p id="error-screen-title">
                                                 Oops! Something went wrong <FaSadTear />
                                           </p>
                                           <Spacer height={5} />
@@ -382,7 +382,7 @@ if ("serviceWorker" in navigator) {
                         console.log("[SW] service Worker is registered at", registration.scope)
                   })
                   .catch((err) => {
-                        console.holidayRetrievalError("[SW] service Worker registration failed:", err)
+                        console.log("[SW] service Worker registration failed:", err)
                   })
             navigator.serviceWorker.addEventListener("controllerchange", () => {
                   window.location.reload()
@@ -439,11 +439,11 @@ if ("serviceWorker" in navigator) {
 // Add support email in text
 // const container = document.getElementById('root')
 // const root = createRoot(container, {
-//   // Callback called when an holidayRetrievalError is thrown and not caught by an ErrorBoundary.
-//   onUncaughtError: Sentry.reactErrorHandler((holidayRetrievalError, errorInfo) => {
-//     console.warn('Uncaught holidayRetrievalError', holidayRetrievalError, errorInfo.componentStack)
+//   // Callback called when an error is thrown and not caught by an ErrorBoundary.
+//   onUncaughtError: Sentry.reactErrorHandler((error, errorInfo) => {
+//     console.warn('Uncaught error', error, errorInfo.componentStack)
 //   }),
-//   // Callback called when React catches an holidayRetrievalError in an ErrorBoundary.
+//   // Callback called when React catches an error in an ErrorBoundary.
 //   onCaughtError: Sentry.reactErrorHandler(),
 //   // Callback called when React automatically recovers from errors.
 //   onRecoverableError: Sentry.reactErrorHandler(),

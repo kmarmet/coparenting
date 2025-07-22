@@ -86,12 +86,11 @@
             // DROPDOWN WRAPPER
             [class*="-control"] {
                   background: palette.$inputBackground !important;
-                  border-radius: 50px !important;
                   padding: 0 10px !important;
                   border: 0 !important;
                   box-shadow: none !important;
                   min-height: 50px !important;
-
+                  border-radius: clamp(0px, 50%, 24px) !important;
                   // TEXT/ICONS
                   [class*="css-"] {
                         color: white !important;
@@ -184,10 +183,14 @@
                               width: calc(50% - 10px) !important;
                               color: white !important;
                               font-size: 13px !important;
+                              height: 40px !important;
                               padding: 10px !important;
                               letter-spacing: 0.8px !important;
                               line-height: 1 !important;
                               white-space: nowrap !important;
+                              display: flex !important;
+                              align-items: center !important;
+                              justify-content: center !important;
                               font-weight: variables.$fwLight !important;
                               font-family: "SF-Pro-Display-Light", sans-serif !important;
                         }

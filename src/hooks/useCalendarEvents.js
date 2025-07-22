@@ -24,12 +24,13 @@ const useCalendarEvents = (userKey = null) => {
             const listener = onValue(
                   dataRef,
                   async (snapshot) => {
+                        const holidayEvents = await DB.getTable(DB.tables.holidayEvents)
                         const formattedEvents = DatasetManager.GetValidArray(snapshot.val())
                         const shared = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents)
                         const formattedShared = DatasetManager.GetValidArray(shared)
+                        const all = [...(formattedEvents || []), ...(formattedShared || []), ...(holidayEvents || [])]
                         if (Manager.IsValid(formattedEvents)) {
-                              const combined = DatasetManager.CombineArrays(formattedEvents, formattedShared)
-                              setCalendarEvents(DatasetManager.GetValidArray(combined))
+                              setCalendarEvents(DatasetManager.GetValidArray(all))
                         } else {
                               setCalendarEvents([])
                         }

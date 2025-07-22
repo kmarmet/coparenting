@@ -145,6 +145,15 @@ DropdownManager =
 
       if Manager.IsValid(apiHolidays)
         for holiday in apiHolidays
+          if Manager.IsValid(options.find((x) => x?.value == holiday?.date))
+            continue
+            
+          if holiday?.name == "Juneteenth National Independence Day"
+            holiday?.name = "Juneteenth"
+            
+          if holiday?.name == "Martin Luther King, Jr. Day"
+            holiday?.name = "MLK Jr. Day"
+            
           options.push
             label: holiday?.name
             value: holiday?.date

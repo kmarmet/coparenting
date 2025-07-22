@@ -13,24 +13,29 @@ import ObjectManager from "./objectManager"
 
 export default CalendarManager =
   AddMultipleCalEvents: (currentUser, newEvents, isRangeClonedOrRecurring = false) ->
-    dbRef = ref(getDatabase())
-    currentEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}")
-    multipleDatesId = Manager.GetUid()
+    dbRef = ref getDatabase()
+    userEventsPath = "#{DB.tables.calendarEvents}/#{currentUser.key}"
     
-    # Apply multipleDatesId if cloning or recurring
-    if isRangeClonedOrRecurring
-      for event in newEvents
-        event.multipleDatesId = multipleDatesId
-    
-    # Combine events
-    if Manager.IsValid(currentEvents)
-      toAdd = DatasetManager.CombineArrays(currentEvents, newEvents)
-    else
-      [...newEvents]
-    
-    # Try writing to DB
     try
-      await set child(dbRef, "#{DB.tables.calendarEvents}/#{currentUser.key}/"), toAdd
+    # Fetch existing events or default to []
+      currentEvents = await DB.getTable(userEventsPath) or []
+      
+      # If cloning/recurring, generate a shared multipleDatesId
+      multipleDatesId = if isRangeClonedOrRecurring then Manager.GetUid() else null
+      
+      # Process new events (add multipleDatesId if needed)
+      processedNewEvents = newEvents.map (event) ->
+        if multipleDatesId?
+          Object.assign {}, event, multipleDatesId: multipleDatesId
+        else
+          event
+      
+      # Merge current events + new ones
+      toAdd = (if Array.isArray(currentEvents) then currentEvents else []).concat processedNewEvents
+      
+      # Save to DB
+      await set child(dbRef, userEventsPath), toAdd
+    
     catch error
       LogManager.Log error.message, LogManager.LogTypes.error, error.stack
   
@@ -90,10 +95,12 @@ export default CalendarManager =
 
     return datesToPush
 
-  setHolidays: (holidays) ->
+  SetHolidays: (holidays) ->
     dbRef = ref(getDatabase())
     currentEvents = await DB.getTable(DB.tables.holidayEvents)
-    eventsToAdd = [currentEvents..., holidays...].filter((x) -> x?).flat()
+    eventsToAdd = DatasetManager.GetValidArray([currentEvents..., holidays...], true, true)
+    eventsToAdd = DatasetManager.GetValidArray(eventsToAdd, true, true)
+    
     try
       await set(child(dbRef, "#{DB.tables.holidayEvents}"), eventsToAdd)
     catch error

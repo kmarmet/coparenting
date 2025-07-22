@@ -4,7 +4,7 @@ import Manager from "../managers/manager"
 function useCalendarSearch(calendarEvents) {
       const [query, setQuery] = useState("")
 
-      const searchResults = useMemo(() => {
+      const calendarSearchResults = useMemo(() => {
             if (!Manager.IsValid(query, true)) return []
             if (!Manager.IsValid(calendarEvents)) return []
             if (query.length > 2) {
@@ -13,7 +13,7 @@ function useCalendarSearch(calendarEvents) {
             return []
       }, [calendarEvents, query])
 
-      return {query, setQuery, searchResults}
+      return {query, setQuery, calendarSearchResults}
 }
 
 export default useCalendarSearch

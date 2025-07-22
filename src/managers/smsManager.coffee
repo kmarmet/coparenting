@@ -22,10 +22,10 @@ export default SmsManager =
     try
       response = await fetch 'https://peaceful-coparenting.app:5000/messaging/GetTextBalance', requestOptions
       result = await response.text()
-      console.log result
       return result;
     catch error
       console.error error
+      return 0
 
   Send: (phoneNumber, message) ->
       console.log('sent')
