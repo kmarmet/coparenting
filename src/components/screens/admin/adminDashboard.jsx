@@ -117,7 +117,7 @@ export default function AdminDashboard() {
                         appUpdates,
                         new AppUpdate({currentVersion: newVersion, timestamp: moment().format(DatetimeFormats.dateForDb)})
                   )
-                  setState({...state, successAlertMessage: `New Version Updated`})
+                  setState({...state, successAlertMessage: `Updated to Version ${newVersion}`})
             } else {
                   await DB.Add(
                         `${DB.tables.appUpdates}`,
@@ -125,7 +125,6 @@ export default function AdminDashboard() {
                         new AppUpdate({currentVersion: 1, timestamp: moment().format(DatetimeFormats.dateForDb)})
                   )
             }
-            setState({...state, successAlertMessage: `New Version Updated`})
       }
 
       useEffect(() => {

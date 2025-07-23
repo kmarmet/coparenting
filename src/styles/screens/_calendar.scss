@@ -186,8 +186,10 @@
                   position: relative;
                   z-index: 9;
                   box-shadow: variables.$boxShadow_float;
+                  pointer-events: none;
 
                   &.active {
+                        pointer-events: auto;
                         opacity: 1;
                         max-height: unset;
                         transition: all 0.3s ease;

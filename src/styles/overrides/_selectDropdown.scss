@@ -166,7 +166,7 @@
                         pointer-events: all !important;
                         position: relative !important;
                         margin: auto 0 !important;
-                        gap: 1rem !important;
+                        gap: 0 10px !important;
                         align-self: center !important;
                         background: transparent !important;
                         padding: 10px 0 !important;
@@ -182,8 +182,7 @@
                               flex: 1 1 calc(33.333% - 1rem) !important; /* 3 columns by default */
                               color: white !important;
                               font-size: 13px !important;
-                              height: 40px !important;
-                              padding: 10px !important;
+                              padding: 15px 10px !important;
                               letter-spacing: 0.8px !important;
                               line-height: 1 !important;
                               white-space: nowrap !important;

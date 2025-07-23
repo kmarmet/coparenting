@@ -1625,7 +1625,6 @@ $shadows-big: multiple-box-shadow(100);
 @mixin viewsWrapper {
       width: 100%;
       max-width: 100vw;
-
       * {
             line-height: 1;
             margin: 0;
@@ -4250,17 +4249,6 @@ $shadows-big: multiple-box-shadow(100);
             }
       }
 
-      #full-menu-title {
-            color: white;
-            font-size: 24px;
-            text-align: center;
-            width: max-content;
-            margin: 15px auto 0 auto;
-            padding-bottom: 0;
-            border-bottom: 1px solid palette.$subtitleWhite;
-            @include fonts.boldFont;
-      }
-
       #current-app-version {
             color: palette.$mediumTransWhite;
             opacity: 0.8;
@@ -4291,15 +4279,6 @@ $shadows-big: multiple-box-shadow(100);
                         color: palette.$red;
                   }
             }
-      }
-
-      #menu-title {
-            color: white;
-            font-size: 24px;
-            text-align: center;
-            width: 100%;
-            padding: 10px 0;
-            background: rgba(255, 255, 255, 0.02);
       }
 
       .swipe-bar {
@@ -4367,16 +4346,15 @@ $shadows-big: multiple-box-shadow(100);
                   .form-divider {
                         margin: 0 0 10px 0;
                         display: flex;
-                        width: 100%;
+                        width: 260px;
+
+                        &.info-storage {
+                              width: 270px;
+                        }
 
                         &.active {
-                              &::before,
-                              &::after {
-                                    border-bottom: 1px solid palette.$brightGreen;
-                              }
                               span {
                                     opacity: 1;
-                                    color: palette.$brightGreen;
                                     font-size: 17px;
                                     font-style: normal;
                                     letter-spacing: unset;
@@ -4398,12 +4376,19 @@ $shadows-big: multiple-box-shadow(100);
                   }
 
                   .section {
-                        background-color: palette.$inputBackground;
-                        padding: 20px;
+                        background-color: rgba(135, 132, 255, 0.18);
+                        padding: 15px;
                         opacity: 0;
                         width: 100%;
-                        margin-bottom: 35px;
+                        margin-bottom: 15px;
                         border-radius: variables.$cardBorderRadius;
+
+                        .section-title {
+                              font-size: 20px;
+                              color: white;
+                              margin: 0 0 10px 8px;
+                              @include fonts.boldFont;
+                        }
 
                         .menu-items {
                               transition: all 0.6s ease-out;
@@ -4431,14 +4416,13 @@ $shadows-big: multiple-box-shadow(100);
                                           }
                                     }
 
-                                    &.updates-exist {
+                                    &.updates {
                                           opacity: 1;
-                                          p {
-                                                color: palette.$brightYellow;
-                                          }
-                                          .svg-wrapper {
-                                                svg {
-                                                      color: palette.$brightYellow;
+                                          .content {
+                                                p {
+                                                      display: flex;
+                                                      align-items: center;
+                                                      justify-content: flex-start;
                                                 }
                                           }
                                     }
@@ -4449,19 +4433,6 @@ $shadows-big: multiple-box-shadow(100);
                                           text-align: center;
                                           justify-content: flex-start;
                                           flex: 1;
-                                    }
-
-                                    &.notifications {
-                                          .badge {
-                                                height: 8px;
-                                                width: 8px;
-                                                border-radius: 50%;
-                                                background: palette.$red;
-                                                position: absolute;
-                                                top: 2px;
-                                                left: 32px;
-                                                z-index: 9;
-                                          }
                                     }
 
                                     &.active {
@@ -4506,8 +4477,6 @@ $shadows-big: multiple-box-shadow(100);
                                           line-height: 1;
                                           font-size: 16px;
                                           white-space: nowrap;
-                                          font-weight: variables.$fwLight;
-                                          color: white;
                                           padding-left: 5px;
 
                                           @include fonts.lightFont;
@@ -4855,13 +4824,13 @@ $shadows-big: multiple-box-shadow(100);
                         top: -10px;
 
                         &::after {
+                              background: radial-gradient(ellipse at center, #74c4a1 0%, rgba(0, 0, 0, 0) 80%);
                               content: "";
                               position: absolute;
                               left: 50%;
                               bottom: -8px; // distance from text to shadow
                               width: 80%;
                               height: 8px; // thickness of the shadow
-                              background: radial-gradient(ellipse at center, #74c4a1 0%, rgba(0, 0, 0, 0) 80%);
                               transform: translateX(-50%);
                               z-index: -1; // keep it behind the text
                         }

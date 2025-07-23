@@ -186,7 +186,6 @@
 #overlay {
       position: fixed;
       inset: 0;
-      //background: rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(5px);
       z-index: variables.$lesserMaxZIndex;
       display: flex;
@@ -204,6 +203,10 @@
             &.with-card {
                   z-index: 8;
             }
+      }
+
+      &.with-menu {
+            background: rgba(0, 0, 0, 0.3);
       }
 }
 
@@ -1191,28 +1194,28 @@
             }
 
             .notification-badge {
-                  position: absolute;
                   border-radius: 100%;
                   background: palette.$flatRed;
-                  opacity: 0;
                   transition: all 0.3s ease-in-out;
-
-                  @include mixins.square(10px);
+                  border: 2px solid white;
+                  display: inline-flex;
+                  justify-content: center;
+                  align-items: center;
+                  margin-left: 6px;
+                  position: relative;
+                  color: white;
+                  font-size: 12px;
+                  font-weight: variables.$fwMediumBold;
+                  @include mixins.square(22px);
+                  padding: 0 6px;
 
                   &.active {
                         opacity: 1;
                   }
 
-                  &.menu {
-                        right: 22px;
-                        bottom: 15px;
-                        height: 8px;
-                        width: 8px;
-                  }
-
                   &.navbar {
-                        left: 43px;
-                        top: 2px;
+                        right: 20px;
+                        top: -2px;
                   }
             }
 

@@ -315,7 +315,6 @@ export default function EventCalendar() {
                                     />
                               </div>
 
-                              {/* BELOW CALENDAR BUTTONS */}
                               {/* MONTH OPTIONS */}
                               <div id="month-options" className={`${showMonthDropdown ? "active" : ""}`}>
                                     {months?.map((month, index) => (
@@ -330,7 +329,7 @@ export default function EventCalendar() {
                                           </div>
                                     ))}
                               </div>
-                              <Spacer height={5} />
+                              <Spacer height={1} />
                               <div id="below-calendar" className={`${theme} flex`}>
                                     {/* LEGEND BUTTON */}
                                     <p id="legend-button" className="animated-button">

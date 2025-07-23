@@ -113,10 +113,7 @@ export default function NavBar({children, navbarClass}) {
                                           className={`${Manager.IsValid(updates) ? "unread" : ""} ${currentScreen === ScreenNames.updates ? "active menu-item updates" : "menu-item updates"}`}>
                                           {currentScreen === ScreenNames.updates && <IoNotifications className={"updates"} />}
                                           {currentScreen !== ScreenNames.updates && <IoNotificationsOutline className={"updates"} />}
-                                          <p>
-                                                Updates
-                                                {Manager.IsValid(updates) && <span className="update-badge"></span>}
-                                          </p>
+                                          {Manager.IsValid(updates) && <span className="notification-badge navbar">{updates?.length}</span>}
                                     </div>
                               )}
                               {Manager.IsValid(children) && children}
