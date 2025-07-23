@@ -53,6 +53,7 @@ const DB = {
             if (Manager.IsValid(arr)) {
                   return arr.findIndex((x) => x?.id === id)
             }
+            return -1
       },
       GetChildIndex: (children, childId) => {
             if (Manager.IsValid(children)) {

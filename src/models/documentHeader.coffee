@@ -4,6 +4,8 @@ class DocumentHeader
   constructor: (options = {}) ->
     @id = Manager.GetUid()
     @headerText = options?.headerText ? ''
-    @ownerKey = options?.ownerKey ? ''
+    @owner =
+        key: options?.owner?.key ? ''
+        name: options?.owner?.name ? ''
 
 export default DocumentHeader

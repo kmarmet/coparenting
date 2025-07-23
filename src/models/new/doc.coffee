@@ -6,11 +6,14 @@ class Doc
   constructor: (options = {}) ->
     @id = Manager.GetUid()
     @creationDate = moment().format(DatetimeFormats.dateForDb)
-    @name = options?.name ? ''
+    @documentName = options?.documentName ? ''
     @type = options?.type ? ''
     @shareWith = options?.shareWith ? []
     @url = options?.url ? ''
-    @ownerKey = options?.ownerKey ? ''
     @docText = options?.docText ? ''
+    
+    @owner =
+      name: options?.owner?.name ? ''
+      key: options?.owner?.key ? ''
 
 export default Doc

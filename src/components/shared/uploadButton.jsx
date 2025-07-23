@@ -1,5 +1,5 @@
 // Path: src\components\shared\uploadButton.jsx
-import React, {useContext, useEffect, useState} from "react"
+import React, {useContext, useRef, useState} from "react"
 import {GrAttachment} from "react-icons/gr"
 import ButtonThemes from "../../constants/buttonThemes"
 import globalState from "../../context"
@@ -10,57 +10,44 @@ import CardButton from "./cardButton"
 
 function UploadButton({
       containerClass = "",
-      getImages = (e) => {},
+      getSelectedImages = (e) => {},
       uploadType = "document",
       useAttachmentIcon = false,
       callback = (selectedFile) => {},
-      buttonText = "ChooseBu Images",
+      buttonText = "Choose Images",
 }) {
       const {state, setState} = useContext(globalState)
       const [fileName, setFileName] = useState("No File Selected")
       const [fileSelected, setFileSelected] = useState(false)
-      const [resetKey, setResetKey] = useState("00")
+
+      const fileInputRef = useRef(null)
+
+      const TriggerFileSelection = () => fileInputRef.current?.click()
+
+      const ReturnImages = (event) => {
+            const selectedFile = event.target.files?.[0]
+            if (!selectedFile) return
+
+            const name = selectedFile.name
+            setFileSelected(true)
+            setFileName(name)
+
+            // Trigger callback if provided
+            if (callback) callback({selectedFile})
+
+            console.log("selectedFile: ", selectedFile)
+            setTimeout(() => {
+                  getSelectedImages(selectedFile)
+            }, 500)
+      }
 
       const GetUploadType = () => {
-            if (uploadType === "document") {
+            if (uploadType?.toLowerCase() === "document") {
                   return "application/pdf,.doc,.docx,application/msword"
             } else {
                   return "image/*"
             }
       }
-
-      const TriggerFileSelection = () => {
-            const uploadInput = document.getElementById("upload-input")
-            uploadInput.click()
-            setFileName("")
-            setFileSelected(false)
-      }
-
-      useEffect(() => {
-            const uploadInput = document.getElementById("upload-input")
-            const fileName = document.querySelector(".file-name")
-
-            // Show selected file name
-            // uploadInput.addEventListener("change", () => {
-            //       fileName.textContent = uploadInput.files.length > 0 ? uploadInput.files[0].name : "No file chosen"
-            // })
-            if (Manager.IsValid(uploadInput)) {
-                  uploadInput.addEventListener("change", function (event) {
-                        const selectedFile = event.currentTarget?.files[0]
-
-                        // Handle the selected file here.
-                        if (selectedFile) {
-                              setFileSelected(true)
-                              const name = selectedFile?.name
-                              setFileName(name)
-                              fileName.textContent = name
-                              if (callback) {
-                                    callback(selectedFile)
-                              }
-                        }
-                  })
-            }
-      }, [])
 
       return (
             <>
@@ -72,12 +59,23 @@ function UploadButton({
                   {!useAttachmentIcon && (
                         <div id="upload-inputs" className={containerClass}>
                               <div className="flex">
-                                    <Button text={buttonText} theme={ButtonThemes.white} classes={"upload-button"} onClick={TriggerFileSelection} />
-                                    <input onChange={getImages} multiple id="upload-input" name="file-upload" type="file" accept={GetUploadType()} />
+                                    {/* Upload Button */}
+                                    <Button text={buttonText} theme={ButtonThemes.white} classes="upload-button" onClick={TriggerFileSelection} />
+
+                                    {/* Hidden File Input */}
+                                    <input
+                                          ref={fileInputRef}
+                                          onChange={(e) => ReturnImages(e)}
+                                          multiple
+                                          name="file-upload"
+                                          type="file"
+                                          accept={GetUploadType()}
+                                          style={{display: "none"}}
+                                    />
                                     {Manager.IsValid(fileName, true) && (
                                           <p className={`${fileSelected ? "file-name active" : "file-name"}`}>
                                                 {fileSelected ? "Name: " : ""}
-                                                {StringManager.removeFileExtension(StringManager.FormatTitle(fileName, true))}
+                                                {StringManager.removeFileExtension(StringManager.FormatTitle(fileName.replaceAll("_", " "), true))}
                                           </p>
                                     )}
                               </div>

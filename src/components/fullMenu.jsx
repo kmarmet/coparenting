@@ -89,15 +89,7 @@ export default function FullMenu() {
             setCurrentAppVersion(latest)
       }
 
-      const ClearAllActiveDividers = () => {
-            const allFormDividers = document.querySelectorAll(".form-divider")
-            for (const formDivider of allFormDividers) {
-                  formDivider.classList.remove("active")
-            }
-      }
-
       useEffect(() => {
-            ClearAllActiveDividers()
             GetCurrentAppVersion().then((r) => r)
             if (menuIsOpen) {
                   const sharingSection = document.querySelector(".section.sharing")
@@ -114,7 +106,6 @@ export default function FullMenu() {
 
       // Set active section
       useEffect(() => {
-            ClearAllActiveDividers()
             if (!Manager.IsValid(currentScreen) || !menuIsOpen) return
 
             // Section elements

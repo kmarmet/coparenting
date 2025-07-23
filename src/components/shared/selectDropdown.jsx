@@ -10,14 +10,16 @@ const animatedComponents = makeAnimated()
 export default function SelectDropdown({
       value,
       wrapperClasses,
-      uidClass = "",
       selectMultiple = false,
+      isFromViewDropdown = false,
       onSelect = (e) => {},
       placeholder = "",
       options = [],
 }) {
       const {state, setState} = useContext(globalState)
       const {menuIsOpen, showScreenActions, showCreationMenu, showOverlay} = state
+
+      const placheholdersWithoutLabel = ["Select", "Edit", "Details"]
 
       // STATE
       const [defaultValue, setDefaultValue] = useState(value)
@@ -27,7 +29,7 @@ export default function SelectDropdown({
 
       return (
             <>
-                  {!placeholder.includes("Details") && !placeholder.includes("Edit") && Manager.IsValid(value) && (
+                  {!isFromViewDropdown && !placheholdersWithoutLabel.includes(placeholder) && Manager.IsValid(value) && (
                         <Label text={placeholder.replaceAll("Select", "")} classes={"always-show filled-input-label"} />
                   )}
                   <Select
@@ -40,7 +42,6 @@ export default function SelectDropdown({
                         blurInputOnSelect={false}
                         closeMenuOnSelect={!selectMultiple}
                         className={`${wrapperClasses} select-dropdown`}
-                        uidClass={uidClass}
                         isMulti={selectMultiple}
                         menuShouldScrollIntoView={true}
                         value={defaultValue !== value ? value : defaultValue}

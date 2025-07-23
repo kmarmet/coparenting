@@ -934,12 +934,14 @@
                         position: relative;
                         height: 55px;
                         justify-content: space-between;
+                        width: 100%;
 
                         .file-name {
                               color: white;
                               opacity: 0.5;
                               max-width: 50%;
                               text-align: right;
+                              margin-left: auto;
                               @include fonts.lightFont;
 
                               &.active {

@@ -334,8 +334,6 @@ export default function NewCalendarEvent() {
                                     />
                               )}
 
-                              <Spacer height={5} />
-
                               <FormDivider text={"Optional"} />
 
                               {view?.label === "Single Day" && (

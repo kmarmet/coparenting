@@ -4,7 +4,6 @@ import React, {useContext, useEffect, useState} from "react"
 import Form from "../../../components/shared/form"
 import CreationForms from "../../../constants/creationForms"
 import InputTypes from "../../../constants/inputTypes"
-import ModelNames from "../../../constants/modelNames"
 import ScreenNames from "../../../constants/screenNames"
 import ActivityCategory from "../../../constants/updateCategory"
 import globalState from "../../../context"
@@ -37,7 +36,7 @@ export default function NewDocument() {
       const {state, setState} = useContext(globalState)
       const {theme, creationFormToShow} = state
       const [shareWith, setShareWith] = useState([])
-      const [docType, setDocType] = useState(null)
+      const [docType, setDocType] = useState("Document")
       const [docName, setDocName] = useState("")
       const [doc, setDoc] = useState()
 
@@ -52,6 +51,7 @@ export default function NewDocument() {
       const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
       const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
       const [selectedDocType, setSelectedDocType] = useState([])
+
       const ResetForm = (successMessage = "") => {
             Manager.ResetForm("upload-doc-wrapper")
             setShareWith([])
@@ -68,6 +68,7 @@ export default function NewDocument() {
       }
 
       const Upload = async () => {
+            console.log(doc)
             if (!doc) {
                   AlertManager.throwError("Please choose a file to upload")
                   return false
@@ -160,15 +161,17 @@ export default function NewDocument() {
             const newDocument = new Doc()
             newDocument.url = imageUrl
             newDocument.docText = docText
-            newDocument.ownerKey = currentUser?.key
             newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
             newDocument.type = docType
-            newDocument.name = StringManager.FormatTitle(docNameToUse)
+            newDocument.documentName = StringManager.FormatTitle(docNameToUse, true)
+            newDocument.owner = {
+                  name: currentUser?.name,
+                  key: currentUser?.key,
+            }
 
             if (Manager.IsValid(newDocument.docText, true)) {
-                  const cleanedDoc = ObjectManager.GetModelValidatedObject(newDocument, ModelNames.doc)
-                  console.log(cleanedDoc)
-                  await DocumentsManager.AddToDocumentsTable(currentUser, documents, newDocument)
+                  const cleanedDoc = ObjectManager.CleanObject(newDocument)
+                  await DocumentsManager.AddToDocumentsTable(currentUser, documents, cleanedDoc)
 
                   // Send Notification
                   if (Manager.IsValid(shareWith)) {
@@ -271,9 +274,12 @@ export default function NewDocument() {
                               <UploadButton
                                     containerClass={`${theme} new-document-card`}
                                     actualUploadButtonText={"Upload"}
-                                    uploadButtonText={docType === "document" ? "Document" : "Choose"}
+                                    buttonText={docType ? (docType === "document" ? "Choose Document" : "Choose Image") : "Choose Document"}
                                     uploadType={docType}
-                                    getImages={(input) => setDoc(input.target.files[0])}
+                                    getSelectedImages={(input) => {
+                                          console.log("getSelectedImages")
+                                          setDoc(input)
+                                    }}
                               />
                         </div>
                   </div>

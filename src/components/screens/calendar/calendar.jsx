@@ -354,7 +354,7 @@ export default function EventCalendar() {
                                           {showSearchInput === true ? <MdOutlineSearchOff /> : <ImSearch />}
                                     </div>
                                     <p id="month-selector" onClick={() => setShowMonthDropdown(!showMonthDropdown)}>
-                                          {moment(dateValue, "DD/MMMM/YYYY").format("MMMM")}
+                                          {moment(dateValue).format("MMMM")}
                                           {showMonthDropdown ? <FaMinus /> : <FaPlus />}
                                     </p>
                               </div>

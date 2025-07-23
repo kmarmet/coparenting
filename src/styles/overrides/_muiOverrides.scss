@@ -206,8 +206,8 @@
                               align-items: center;
                               line-height: 1;
                               height: 50px !important;
-                              color: palette.$darkerGrey !important;
-                              background: white !important;
+                              color: palette.$iconGrey !important;
+                              background: palette.$grey !important;
 
                               &:nth-child(2) {
                                     background: palette.$green !important;
@@ -224,6 +224,7 @@
                   max-width: calc(100vw - 20px) !important;
                   padding: 15px 15px 0 15px;
                   margin: 0 !important;
+                  margin-bottom: 10px !important;
 
                   .MuiTypography-overline {
                         display: none !important;
@@ -616,11 +617,12 @@
                         button {
                               min-width: 0 !important;
                               margin: 0 !important;
-                              padding: 0 !important;
-                              width: 40px !important;
+                              padding: 10px 20px !important;
+                              border-radius: variables.$buttonBorderRadius !important;
                               justify-content: center;
                               display: flex;
                               align-items: center;
+                              background-color: palette.$grey !important;
 
                               span {
                                     padding: 0 !important;
@@ -631,10 +633,9 @@
                                     border: 0 !important;
                               }
                               .Mui-selected.MuiTypography-subtitle2 {
-                                    border-radius: variables.$borderRadius;
                                     border: 0;
-                                    width: 40px !important;
                                     height: auto;
+                                    font-weight: bold !important;
                               }
                         }
                   }

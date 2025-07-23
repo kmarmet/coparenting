@@ -5,7 +5,7 @@ import React, {useContext, useEffect, useRef, useState} from "react"
 import {DebounceInput} from "react-debounce-input"
 import {BsCalendar2WeekFill} from "react-icons/bs"
 import {ImSearch} from "react-icons/im"
-import {MdEmail, MdNotes, MdOutlineTitle} from "react-icons/md"
+import {MdEmail, MdNotes, MdOutlinePassword, MdOutlineTitle} from "react-icons/md"
 import {PiArrowBendLeftUpFill, PiLinkSimpleHorizontalBold} from "react-icons/pi"
 import {RiPhoneFill} from "react-icons/ri"
 import {WiTime4} from "react-icons/wi"
@@ -279,15 +279,18 @@ function InputField({
 
                         {/* PASSWORD */}
                         {inputType === InputTypes.password && (
-                              <input
-                                    type="password"
-                                    id="password"
-                                    placeholder={placeholder}
-                                    onChange={onChange}
-                                    className={inputClasses}
-                                    defaultValue={defaultValue}
-                                    key={refreshKey}
-                              />
+                              <>
+                                    <MdOutlinePassword className={"input-icon"} />
+                                    <input
+                                          type="password"
+                                          id="password"
+                                          placeholder={placeholder}
+                                          onChange={onChange}
+                                          className={`${inputClasses} with-icon`}
+                                          defaultValue={defaultValue}
+                                          key={refreshKey}
+                                    />
+                              </>
                         )}
 
                         {/* TEXTAREA */}

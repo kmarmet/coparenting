@@ -40,8 +40,7 @@ export default function Updates() {
 
       const ClearNotification = async (activity) => {
             const recordIndex = DB.GetTableIndexById(updates, activity?.id)
-            if (Manager.IsValid(recordIndex)) {
-                  console.log(`${DB.tables.updates}/${currentUser?.key}/${recordIndex}`)
+            if (recordIndex > -1) {
                   await DB.DeleteByPath(`${DB.tables.updates}/${currentUser?.key}/${recordIndex}`)
             }
       }
@@ -169,12 +168,12 @@ export default function Updates() {
                               <Spacer height={5} />
 
                               {/* CLEAR ALL BUTTON */}
-                              {updates?.length > 0 && (
+                              {Manager.IsValid(updates) && (
                                     <Button
                                           icon={<MdClearAll className={"ml-5 fs-25"} />}
                                           text={"Clear All"}
                                           theme={ButtonThemes.green}
-                                          classes="bottom-right clear-all"
+                                          classes="clear-all"
                                           onClick={ClearAll}>
                                           Clear All
                                     </Button>
@@ -220,7 +219,7 @@ export default function Updates() {
                               </div>
                         </div>
                   </div>
-                  <NavBar navbarClass={"activity no-Add-new-button"}></NavBar>
+                  <NavBar navbarClass={"activity no-Add-new-button"} />
             </Screen>
       )
 }

@@ -41,7 +41,7 @@ export default function AdminDashboard() {
       const [recordPropToCheck, setRecordPropToCheck] = useState("User Email")
       const [recordsAsJson, setRecordsAsJson] = useState(false)
       const [applicationVersion, setApplicationVersion] = useState(0)
-      const [negativeAppEmotions, setNegativeAppEmotions] = useState()
+      const [negativeAppEmotions, setNegativeAppEmotions] = useState({})
       const {currentUser} = useCurrentUser()
       const {users} = useUsers()
       const {calendarEvents} = useCalendarEvents()
@@ -86,7 +86,6 @@ export default function AdminDashboard() {
             const emotions = await DB.getTable(`${DB.tables.feedbackEmotionsTracker}`)
             const unhappy = emotions.filter((x) => x.unhappy > 0)
             const unhappyCount = unhappy.reduce((total, current) => total + current.unhappy, 0)
-            const neutral = emotions.filter((x) => x.unhappy > 0)
             const neutralCount = unhappy.reduce((total, current) => total + current.neutral, 0)
             const obj = {
                   unhappy: unhappyCount,
