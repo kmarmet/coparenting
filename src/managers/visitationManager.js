@@ -2,8 +2,6 @@
 import moment from "moment"
 import DatetimeFormats from "../constants/datetimeFormats"
 import DB from "../database/DB"
-import Manager from "../managers/manager"
-import StringManager from "../managers/stringManager"
 import CalendarManager from "./calendarManager.js"
 import DatasetManager from "./datasetManager"
 import DateManager from "./dateManager"
@@ -186,59 +184,19 @@ const VisitationManager = {
             }
             return dateArray
       },
-      getVisitationHolidays: async () => {
+      getVisitationHolidays: async (currentUser) => {
             const holidays = await DateManager.GetHolidays()
+            const currentUserEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
 
-            // Precompute first words for quick lookup
-            const visitationRelatedHolidays = [
-                  "New Year's Day",
-                  "Good Friday",
-                  "Memorial Day",
-                  "Juneteenth",
-                  "Independence Day",
-                  "Columbus Day",
-                  "Labor Day",
-                  "Thanksgiving Day",
-                  "Christmas Day",
-                  "Christmas Eve",
-                  "New Year's Eve",
-                  "Halloween",
-                  "Easter",
-                  "Father's Day",
-                  "Mother's Day",
-            ]
+            const userHolidays = currentUserEvents.filter(
+                  (x) => x?.isHoliday && x?.owner?.key === currentUser?.key && x?.fromVisitationSchedule === true
+            )
+            console.log("Vis:", userHolidays)
 
-            const visitationFirstWords = new Set(visitationRelatedHolidays.map((h) => StringManager.GetFirstWord(h)))
-
-            const visitationHolidays = []
-
-            for (let holiday of holidays) {
-                  const firstWord = StringManager.GetFirstWord(holiday.name)
-
-                  // Only process if it matches a relevant first word
-                  if (!visitationFirstWords.has(firstWord)) continue
-
-                  // Avoid duplicates early
-                  const alreadyExists = visitationHolidays.some((x) => Manager.Contains(x.name, holiday.name))
-                  if (alreadyExists) continue
-
-                  // Normalize holiday names/dates
-                  if (holiday.name === "Juneteenth National Independence Day") {
-                        holiday.name = "Juneteenth"
-                  } else if (holiday.name === "New Year's Day") {
-                        holiday.date = "2025-01-01"
-                  }
-
-                  visitationHolidays.push({
-                        name: holiday.name,
-                        date: holiday.date,
-                  })
-            }
-
-            return DatasetManager.GetValidArray(visitationHolidays, true)
+            return DatasetManager.GetValidArray(userHolidays, true)
       },
       setVisitationHolidays: async (currentUser, holidays) => {
-            await VisitationManager.deleteAllHolidaysForUser(currentUser)
+            await VisitationManager.DeleteAllHolidaysForUser(currentUser)
             try {
                   await CalendarManager.AddMultipleCalEvents(currentUser, holidays)
             } catch (error) {
@@ -290,14 +248,11 @@ const VisitationManager = {
       deleteSchedule: async (currentUser, scheduleEvents) => {
             await CalendarManager.deleteMultipleEvents(scheduleEvents, currentUser)
       },
-      deleteAllHolidaysForUser: async (currentUser) => {
+      DeleteAllHolidaysForUser: async (currentUser) => {
             const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
             const allEvents = await DB.getTable(dbPath)
-            for (let event of allEvents) {
-                  if (event?.isHoliday && event?.ownerKey === currentUser?.key) {
-                        await DB.Delete(dbPath, event.id)
-                  }
-            }
+            const holidays = allEvents.filter((x) => x?.isHoliday && x?.owner?.key === currentUser?.key)
+            await CalendarManager.deleteMultipleEvents(holidays, currentUser)
       },
       AddVisitationSchedule: async (currentUser, vScheduleEvents) => {
             // await CalendarManager.deleteMultipleEvents(vScheduleEvents, currentUser)

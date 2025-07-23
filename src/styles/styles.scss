@@ -655,25 +655,23 @@
             /*#region  BLOCKS */
             .blocks,
             .multiline-blocks {
-                  display: flex;
-                  flex-wrap: wrap;
-                  align-items: center;
-                  gap: 20px;
+                  display: grid;
+                  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
                   justify-content: center;
-                  width: 100%;
-                  margin-top: 20px;
-                  padding: 0 10px;
 
                   &.multiline-blocks {
-                        margin: 20px auto;
-                        justify-content: center;
-                        display: grid;
-                        place-items: center;
-                        flex-grow: 1;
-                        gap: 1rem;
-                        grid-template-columns: repeat(auto-fit, minmax(33%, 1fr));
-                        .block {
-                              min-width: 200px;
+                        margin-bottom: 20px;
+                        margin-top: 0;
+                        align-items: flex-start;
+                        .blocks {
+                              justify-content: center;
+                              display: flex;
+                              place-items: center;
+                              flex-wrap: wrap;
+                              margin-top: 0;
+                              .block {
+                                    margin: 0 25px;
+                              }
                         }
                   }
 
@@ -684,12 +682,9 @@
                         position: relative;
                         display: flex;
                         flex-direction: column;
-                        width: max-content;
-                        margin: 0 10px;
-                        max-width: calc(33.333% - 10px);
+                        padding-bottom: 15px;
 
                         &.full-width {
-                              //width: 100%;
                               p {
                                     max-width: 100%;
                                     line-height: 1.3;
@@ -808,8 +803,8 @@
                                     font-size: 13px;
                                     font-weight: variables.$fwLight;
                                     color: palette.$mediumTransWhite;
-                                    margin-top: auto;
                                     line-height: 1.3;
+                                    padding-top: 3px;
                                     width: 100%;
                                     text-align: center;
                                     display: flex;

@@ -90,7 +90,15 @@ export default function FullMenu() {
             setCurrentAppVersion(latest)
       }
 
+      const ClearAllActiveDividers = () => {
+            const allFormDividers = document.querySelectorAll(".form-divider")
+            for (const formDivider of allFormDividers) {
+                  formDivider.classList.remove("active")
+            }
+      }
+
       useEffect(() => {
+            ClearAllActiveDividers()
             GetCurrentAppVersion().then((r) => r)
             if (menuIsOpen) {
                   const sharingSection = document.querySelector(".section.sharing")
@@ -107,14 +115,15 @@ export default function FullMenu() {
 
       // Set active section
       useEffect(() => {
+            ClearAllActiveDividers()
             if (!Manager.IsValid(currentScreen) || !menuIsOpen) return
 
             // Section elements
             const sections = {
-                  sharing: document.querySelector(".section.sharing"),
-                  coParenting: document.querySelector(".section.coparenting"),
-                  infoStorage: document.querySelector(".section.info-storage"),
-                  profileSettings: document.querySelector(".section.profile-settings-support"),
+                  sharing: document.querySelector(".form-divider.sharing"),
+                  coParenting: document.querySelector(".form-divider.coparenting"),
+                  infoStorage: document.querySelector(".form-divider.info-storage"),
+                  profileSettings: document.querySelector(".form-divider.profile-settings-support"),
             }
 
             // Map screen groups to their corresponding section
@@ -125,11 +134,11 @@ export default function FullMenu() {
                   },
 
                   {
-                        screens: [ScreenNames.contacts, ScreenNames.coparents, ScreenNames.vault, ScreenNames.visitation, ScreenNames.children],
+                        screens: [ScreenNames.contacts, ScreenNames.coparents, ScreenNames.vault, ScreenNames.children],
                         section: "infoStorage",
                   },
                   {
-                        screens: [ScreenNames.handoff, ScreenNames.visitation, ScreenNames.chats, ScreenNames.expenses],
+                        screens: [ScreenNames.handoff, ScreenNames.visitation, ScreenNames.chats, ScreenNames.expenses, ScreenNames.visitation],
                         section: "coParenting",
                   },
                   {
@@ -162,12 +171,13 @@ export default function FullMenu() {
                   {Manager.IsValid(currentUser) && (
                         <div ref={scrollRef} id="full-menu-card" {...handlers}>
                               <div className="swipe-bar"></div>
+                              <p id="full-menu-title">Menu</p>
                               <div id="menu-sections">
                                     {/* SHARING */}
+                                    <FormDivider text={"Sharing"} wrapperClass={"sharing form-divider"} />
                                     <div
                                           style={DomManager.AnimateDelayStyle(1, 0.3)}
                                           className={`section sharing ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
-                                          <FormDivider text={"Sharing"} wrapperClass={"sharing"} />
                                           <div className={`menu-items sharing`}>
                                                 {/* CALENDAR */}
                                                 <div
@@ -218,10 +228,10 @@ export default function FullMenu() {
                                     </div>
 
                                     {/* INFORMATION DATABASE */}
+                                    <FormDivider text={"Information Database"} wrapperClass={"info-storage form-divider"} />
                                     <div
                                           className={`section info-storage  ${DomManager.Animate.FadeInUp(menuIsOpen)}`}
                                           style={DomManager.AnimateDelayStyle(1, 0.4)}>
-                                          <FormDivider text={"Information Database"} />
                                           <div className={`menu-items info-storage`}>
                                                 {/* CONTACTS */}
                                                 <div
@@ -290,67 +300,69 @@ export default function FullMenu() {
 
                                     {/* CO-PARENTING */}
                                     {currentUser?.accountType === "parent" && (
-                                          <div
-                                                style={DomManager.AnimateDelayStyle(1, 0.5)}
-                                                className={`section coparenting  ${DomManager.Animate.FadeInUp(menuIsOpen, "slower")}`}>
-                                                <FormDivider text={"Co-Parenting"} />
-                                                <div className={`menu-items coparenting`}>
-                                                      {/* VISITATION */}
-                                                      <div
-                                                            className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? "active" : ""}`}
-                                                            onClick={(e) => ChangeCurrentScreen(ScreenNames.visitation, e)}>
-                                                            <div className="content">
-                                                                  <div className="svg-wrapper">
-                                                                        <BsHouses />
+                                          <>
+                                                <FormDivider text={"Co-Parenting"} wrapperClass={"coparenting form-divider"} />
+                                                <div
+                                                      style={DomManager.AnimateDelayStyle(1, 0.5)}
+                                                      className={`section coparenting  ${DomManager.Animate.FadeInUp(menuIsOpen, "slower")}`}>
+                                                      <div className={`menu-items coparenting`}>
+                                                            {/* VISITATION */}
+                                                            <div
+                                                                  className={`menu-item visitation ${currentScreen === ScreenNames.visitation ? "active" : ""}`}
+                                                                  onClick={(e) => ChangeCurrentScreen(ScreenNames.visitation, e)}>
+                                                                  <div className="content">
+                                                                        <div className="svg-wrapper">
+                                                                              <BsHouses />
+                                                                        </div>
+                                                                        <p>Visitation</p>
                                                                   </div>
-                                                                  <p>Visitation</p>
                                                             </div>
-                                                      </div>
 
-                                                      {/* EXPENSES */}
-                                                      <div
-                                                            className={`menu-item expenses ${currentScreen === ScreenNames.expenses ? "active" : ""}`}
-                                                            onClick={(e) => ChangeCurrentScreen(ScreenNames.expenses, e)}>
-                                                            <div className="content">
-                                                                  <div className="svg-wrapper">
-                                                                        <LiaFileInvoiceDollarSolid />
+                                                            {/* EXPENSES */}
+                                                            <div
+                                                                  className={`menu-item expenses ${currentScreen === ScreenNames.expenses ? "active" : ""}`}
+                                                                  onClick={(e) => ChangeCurrentScreen(ScreenNames.expenses, e)}>
+                                                                  <div className="content">
+                                                                        <div className="svg-wrapper">
+                                                                              <LiaFileInvoiceDollarSolid />
+                                                                        </div>
+                                                                        <p>Expenses</p>
                                                                   </div>
-                                                                  <p>Expenses</p>
                                                             </div>
-                                                      </div>
 
-                                                      {/* CHATS */}
-                                                      <div
-                                                            className={`menu-item chats ${currentScreen === ScreenNames.chats ? "active" : ""}`}
-                                                            onClick={(e) => ChangeCurrentScreen(ScreenNames.chats, e)}>
-                                                            <div className="content">
-                                                                  <div className="svg-wrapper">
-                                                                        <IoChatbubblesOutline />
+                                                            {/* CHATS */}
+                                                            <div
+                                                                  className={`menu-item chats ${currentScreen === ScreenNames.chats ? "active" : ""}`}
+                                                                  onClick={(e) => ChangeCurrentScreen(ScreenNames.chats, e)}>
+                                                                  <div className="content">
+                                                                        <div className="svg-wrapper">
+                                                                              <IoChatbubblesOutline />
+                                                                        </div>
+                                                                        <p className="text">Chats</p>
                                                                   </div>
-                                                                  <p className="text">Chats</p>
                                                             </div>
-                                                      </div>
 
-                                                      {/* HANDOFF */}
-                                                      <div
-                                                            className={`menu-item pickup-dropoff ${currentScreen === ScreenNames.handoff ? "active" : ""}`}
-                                                            onClick={(e) => ChangeCurrentScreen(ScreenNames.handoff, e)}>
-                                                            <div className="content">
-                                                                  <div className="svg-wrapper">
-                                                                        <RiMapPinTimeLine />
+                                                            {/* HANDOFF */}
+                                                            <div
+                                                                  className={`menu-item pickup-dropoff ${currentScreen === ScreenNames.handoff ? "active" : ""}`}
+                                                                  onClick={(e) => ChangeCurrentScreen(ScreenNames.handoff, e)}>
+                                                                  <div className="content">
+                                                                        <div className="svg-wrapper">
+                                                                              <RiMapPinTimeLine />
+                                                                        </div>
+                                                                        <p>Handoffs</p>
                                                                   </div>
-                                                                  <p>Handoffs</p>
                                                             </div>
                                                       </div>
                                                 </div>
-                                          </div>
+                                          </>
                                     )}
 
                                     {/* PROFILE SETTINGS & SUPPORT */}
+                                    <FormDivider text={"Just For You"} wrapperClass={"profile-settings-support form-divider"} />
                                     <div
                                           style={DomManager.AnimateDelayStyle(1, 0.6)}
                                           className={`section profile-settings-support  ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>
-                                          <FormDivider text={"Just For You"} />
                                           <div className={`menu-items profile-settings-support`}>
                                                 {/* MAKE IT YOURS */}
                                                 <div

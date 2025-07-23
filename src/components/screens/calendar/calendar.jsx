@@ -3,8 +3,7 @@ import {StaticDatePicker} from "@mui/x-date-pickers-pro"
 import moment from "moment"
 import React, {useContext, useEffect, useState} from "react"
 import {BsStars} from "react-icons/bs"
-import {FaChevronDown} from "react-icons/fa"
-import {FaChevronUp} from "react-icons/fa6"
+import {FaMinus, FaPlus} from "react-icons/fa6"
 import {ImSearch} from "react-icons/im"
 import {MdOutlineSearchOff} from "react-icons/md"
 import {PiCalendarDotsFill, PiCalendarXDuotone} from "react-icons/pi"
@@ -18,6 +17,7 @@ import ScreenNames from "../../../constants/screenNames"
 import globalState from "../../../context.js"
 import useCalendarEvents from "../../../hooks/useCalendarEvents"
 import useCurrentUser from "../../../hooks/useCurrentUser"
+import useDetectElement from "../../../hooks/useDetectElement"
 import useEventsOfDay from "../../../hooks/useEventsOfDay"
 import useHolidays from "../../../hooks/useHolidays"
 import DatasetManager from "../../../managers/datasetManager"
@@ -38,7 +38,20 @@ export default function EventCalendar() {
       const {theme, currentScreen, refreshKey, selectedCalendarDate} = state
 
       // MONTHS FOR DATE PICKER DROPDOWN
-      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+      const months = [
+            {name: "January", number: 1},
+            {name: "February", number: 2},
+            {name: "March", number: 3},
+            {name: "April", number: 4},
+            {name: "May", number: 5},
+            {name: "June", number: 6},
+            {name: "July", number: 7},
+            {name: "August", number: 8},
+            {name: "September", number: 9},
+            {name: "October", number: 10},
+            {name: "November", number: 11},
+            {name: "December", number: 12},
+      ]
 
       // STATE
       const [eventToEdit, setEventToEdit] = useState(null)
@@ -182,6 +195,12 @@ export default function EventCalendar() {
             }
       }
 
+      useDetectElement("#static-calendar", (el) => {
+            setTimeout(() => {
+                  void AddDayIndicators()
+            }, 300)
+      })
+
       // SHOW HOLIDAYS -> SCROLL INTO VIEW
       useEffect(() => {
             if (DomManager.isMobile()) {
@@ -223,31 +242,6 @@ export default function EventCalendar() {
                   }
             }
       }, [currentScreen, currentUserIsLoading, showSearchInput])
-
-      useEffect(() => {
-            if (Manager.IsValid(dateValue) && Manager.IsValid(currentUser) && Manager.IsValid(holidays)) {
-                  void AddDayIndicators()
-            }
-      }, [dateValue, , currentUser, holidays])
-
-      // ADD DAY INDICATORS
-      useEffect(() => {
-            if (Manager.IsValid(currentUser)) {
-                  AddDayIndicators().then((r) => r)
-            }
-      }, [eventsOfDay, currentUser])
-
-      // HIDE STATIC CALENDAR -> SHOW EDIT
-      useEffect(() => {
-            const staticCalendar = document.getElementById("static-calendar")
-            if (showEditCard && staticCalendar) {
-                  if (staticCalendar) {
-                        staticCalendar.classList.add("hidden")
-                  }
-            } else {
-                  staticCalendar.classList.remove("hidden")
-            }
-      }, [showEditCard])
 
       return (
             <Screen loadingByDefault={true} stopLoadingBool={contentIsLoaded} activeScreen={ScreenNames.calendar} classes={"calendar"}>
@@ -291,86 +285,86 @@ export default function EventCalendar() {
                               wrapperClass={"calendar-header"}
                               titleIcon={<PiCalendarDotsFill />}
                         />
-
-                        {/* STATIC CALENDAR */}
-                        <div id="static-calendar" className={`${theme}`}>
+                        <div className="screen-content calendar">
                               {/* STATIC CALENDAR */}
-                              <StaticDatePicker
-                                    slotProps={{
-                                          actionBar: {
-                                                actions: ["today"],
-                                          },
-                                    }}
-                                    orientation="landscape"
-                                    value={dateValue}
-                                    views={["month", "day"]}
-                                    showDaysOutsideCurrentMonth={true}
-                                    minDate={moment(`${moment().year()}-01-01`)}
-                                    maxDate={moment(`${moment().year()}-12-31`)}
-                                    onMonthChange={async (month) => {
-                                          const formattedMonth = moment(month).format("MMMM")
-                                          const formattedYear = moment(month).format("YYYY")
-                                          const formattedDate = `01/${formattedMonth}/${formattedYear}`
-                                          setDateValue(moment(formattedDate))
-                                          setState({...state, selectedCalendarDate: moment(formattedDate).format(DatetimeFormats.dateForDb)})
-                                    }}
-                                    onChange={(day) => {
-                                          setDateValue(day)
-                                          setState({...state, selectedCalendarDate: moment(day).format(DatetimeFormats.dateForDb)})
-                                    }}
-                              />
-                        </div>
-
-                        {/* BELOW CALENDAR BUTTONS */}
-                        {/* MONTH OPTIONS */}
-                        <div id="month-options" className={`${showMonthDropdown ? "active" : ""}`}>
-                              {months?.map((month, index) => (
-                                    <div
-                                          className={`chip${month === moment(dateValue, DatetimeFormats.dateForDb).format("MMMM") ? " active" : ""}`}
-                                          key={index}
-                                          onClick={() => {
-                                                setDateValue(moment(`${month}/${moment().year()}`))
-                                                setShowMonthDropdown(false)
-                                          }}>
-                                          {month}
-                                    </div>
-                              ))}
-                        </div>
-                        <Spacer height={5} />
-                        <div id="below-calendar" className={`${theme} flex`}>
-                              {/* LEGEND BUTTON */}
-                              <p id="legend-button" className="animated-button">
-                                    Legend
-                              </p>
-
-                              {/* HOLIDAY BUTTON */}
-                              <p id="holidays-button">Holidays</p>
-
-                              {/* SEARCH BUTTON */}
-                              <div
-                                    id="search-icon-wrapper"
-                                    className={`${showSearchInput ? "pending-close" : ""}`}
-                                    onClick={() => {
-                                          if (showSearchInput) {
-                                                setShowSearchInput(false)
-                                                setDateValue(moment())
-                                          } else {
-                                                setShowSearchInput(true)
-                                          }
-                                    }}>
-                                    {showSearchInput === true ? <MdOutlineSearchOff /> : <ImSearch />}
+                              <div id="static-calendar" className={`${theme}`}>
+                                    {/* STATIC CALENDAR */}
+                                    <StaticDatePicker
+                                          slotProps={{
+                                                actionBar: {
+                                                      actions: ["today"],
+                                                },
+                                          }}
+                                          orientation="landscape"
+                                          value={dateValue}
+                                          views={["month", "day"]}
+                                          showDaysOutsideCurrentMonth={true}
+                                          minDate={moment(`${moment().year()}-01-01`)}
+                                          maxDate={moment(`${moment().year()}-12-31`)}
+                                          onMonthChange={async (month) => {
+                                                const formattedMonth = moment(month).format("MMMM")
+                                                const formattedYear = moment(month).format("YYYY")
+                                                const formattedDate = `${formattedMonth}/01/${formattedYear}`
+                                                setDateValue(moment(formattedDate))
+                                                setState({...state, selectedCalendarDate: moment(formattedDate).format(DatetimeFormats.dateForDb)})
+                                          }}
+                                          onChange={(day) => {
+                                                setDateValue(day)
+                                                setState({...state, selectedCalendarDate: moment(day).format(DatetimeFormats.dateForDb)})
+                                          }}
+                                    />
                               </div>
-                              <p id="month-selector" onClick={() => setShowMonthDropdown(!showMonthDropdown)}>
-                                    {moment(dateValue, "DD/MMMM/YYYY").format("MMMM")}
-                                    {showMonthDropdown ? <FaChevronUp /> : <FaChevronDown />}
-                              </p>
-                        </div>
 
-                        {/* LEGEND */}
-                        <CalendarLegend />
+                              {/* BELOW CALENDAR BUTTONS */}
+                              {/* MONTH OPTIONS */}
+                              <div id="month-options" className={`${showMonthDropdown ? "active" : ""}`}>
+                                    {months?.map((month, index) => (
+                                          <div
+                                                className={`chip${month.name === moment(dateValue, DatetimeFormats.dateForDb).format("MMMM") ? " active" : ""}`}
+                                                key={index}
+                                                onClick={() => {
+                                                      setDateValue(moment(`${month.number}/01/${moment().format("YYYY")}`))
+                                                      setShowMonthDropdown(false)
+                                                }}>
+                                                {month.name}
+                                          </div>
+                                    ))}
+                              </div>
+                              <Spacer height={5} />
+                              <div id="below-calendar" className={`${theme} flex`}>
+                                    {/* LEGEND BUTTON */}
+                                    <p id="legend-button" className="animated-button">
+                                          Legend
+                                    </p>
 
-                        {/* SCREEN CONTENT - MAP/LOOP CALENDAR EVENTS (CalendarEvents) */}
-                        <div className="screen-content">
+                                    {/* HOLIDAY BUTTON */}
+                                    <p id="holidays-button">Holidays</p>
+
+                                    {/* SEARCH BUTTON */}
+                                    <div
+                                          id="search-icon-wrapper"
+                                          className={`${showSearchInput ? "pending-close" : ""}`}
+                                          onClick={() => {
+                                                if (showSearchInput) {
+                                                      setShowSearchInput(false)
+                                                      setDateValue(moment())
+                                                } else {
+                                                      setShowSearchInput(true)
+                                                }
+                                          }}>
+                                          {showSearchInput === true ? <MdOutlineSearchOff /> : <ImSearch />}
+                                    </div>
+                                    <p id="month-selector" onClick={() => setShowMonthDropdown(!showMonthDropdown)}>
+                                          {moment(dateValue, "DD/MMMM/YYYY").format("MMMM")}
+                                          {showMonthDropdown ? <FaMinus /> : <FaPlus />}
+                                    </p>
+                              </div>
+
+                              {/* LEGEND */}
+                              <CalendarLegend />
+
+                              {/* SCREEN CONTENT - MAP/LOOP CALENDAR EVENTS (CalendarEvents) */}
+
                               <CalendarEvents
                                     holidayOptions={{returnType: holidayReturnType, show: showHolidays}}
                                     showAllHolidays={showHolidays}

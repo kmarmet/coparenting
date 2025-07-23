@@ -122,48 +122,34 @@ export default function Medical({activeChild}) {
                               <div className="padding">
                                     {Manager.IsValid(medicalValues) &&
                                           medicalValues.map((prop, index) => {
-                                                const infoLabel = StringManager.SpaceBetweenWords(prop[0])
+                                                const rawLabel = prop[0]
+                                                const infoLabel = StringManager.SpaceBetweenWords(rawLabel)
+                                                const lowerLabel = infoLabel.toLowerCase()
+                                                const isLast = index === medicalValues.length - 1
+                                                const isPhone = lowerLabel.includes("phone")
+                                                const sharedBy = Manager.IsValid(prop[2])
+                                                      ? ` (shared by ${StringManager.GetFirstNameOnly(prop[2])})`
+                                                      : ""
+                                                const rowClass = `data-row ${isPhone ? "phone" : ""} ${isLast ? "last" : ""}`
                                                 const value = prop[1]
 
                                                 return (
-                                                      <div key={index}>
-                                                            <div className="apiResults-row">
-                                                                  {infoLabel.toLowerCase().includes("phone") && (
-                                                                        <>
-                                                                              <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
-                                                                                    {infoLabel}: {value}
-                                                                              </a>
-                                                                              <CgClose
-                                                                                    className={"close-x children"}
-                                                                                    onClick={() => DeleteProp(infoLabel)}
-                                                                              />
-                                                                        </>
-                                                                  )}
-                                                                  {!infoLabel.toLowerCase().includes("phone") && (
-                                                                        <>
-                                                                              <InputField
-                                                                                    hasBottomSpacer={false}
-                                                                                    inputType={InputTypes.text}
-                                                                                    placeholder={`${StringManager.UppercaseFirstLetterOfAllWords(infoLabel)} ${
-                                                                                          Manager.IsValid(prop[2])
-                                                                                                ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})`
-                                                                                                : ""
-                                                                                    }`}
-                                                                                    defaultValue={value}
-                                                                                    debounceTimeout={1000}
-                                                                                    onChange={(e) => {
-                                                                                          const inputValue = e.target.value
-                                                                                          Update(infoLabel, `${inputValue}`).then((r) => r)
-                                                                                    }}
-                                                                              />
-                                                                              <CgClose
-                                                                                    className={"close-x children"}
-                                                                                    onClick={() => DeleteProp(infoLabel)}
-                                                                              />
-                                                                        </>
-                                                                  )}
-                                                            </div>
-                                                            <Spacer height={5} />
+                                                      <div key={index} className={rowClass}>
+                                                            <InputField
+                                                                  wrapperClasses={`${index === medicalValues.length - 2 ? "last" : ""}`}
+                                                                  hasBottomSpacer={false}
+                                                                  customDebounceDelay={1200}
+                                                                  inputType={InputTypes.text}
+                                                                  defaultValue={value}
+                                                                  placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? sharedBy : ""}`}
+                                                                  onChange={async (e) => {
+                                                                        const inputValue = e.target.value
+                                                                        await Update(infoLabel, `${inputValue}`)
+                                                                  }}>
+                                                                  {" "}
+                                                                  <CgClose className={"close-x children"} onClick={() => DeleteProp(infoLabel)} />
+                                                            </InputField>
+                                                            {index !== medicalValues.length - 1 && <Spacer height={5} />}
                                                       </div>
                                                 )
                                           })}

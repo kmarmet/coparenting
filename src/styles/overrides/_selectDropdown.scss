@@ -14,17 +14,17 @@
 
                         // MENU OPTIONS
                         [class*="-menu"] {
-                              z-index: 10 !important;
+                              z-index: 9 !important;
                               position: relative !important;
                               border: 0 !important;
                               border-radius: clamp(0px, 50%, 24px) !important;
                               [id*="-listbox"] {
                                     gap: 8px !important;
                                     [class*="-option"] {
-                                          color: palette.$blend !important;
-                                          border: 1px solid palette.$blend !important;
+                                          color: palette.$darkestGrey !important;
+                                          border: 1px solid palette.$iconGrey !important;
                                           border-radius: 50px !important;
-                                          font-weight: variables.$fwMedium !important;
+                                          font-weight: variables.$fwLightThicker !important;
                                     }
                               }
                         }
@@ -180,7 +180,6 @@
                               border: 0 !important;
                               text-align: center !important;
                               flex: 1 1 calc(33.333% - 1rem) !important; /* 3 columns by default */
-                              max-width: calc(33.333% - 1rem) !important;
                               color: white !important;
                               font-size: 13px !important;
                               height: 40px !important;

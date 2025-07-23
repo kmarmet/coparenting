@@ -6,6 +6,7 @@
 @use "sass:color";
 @use "sass:string";
 
+/*#region  FUNCTIONS */
 @function multiple-box-shadow($n) {
       $value: #{math.random(2000)}px #{math.random(2000)}px #fff;
 
@@ -17,6 +18,12 @@
 
       @return $value;
 }
+
+@function wave-svg($path, $color: white) {
+      @return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'><path fill='#{$color}' d='#{$path}'/></svg>";
+}
+
+/*#endregion  FUNCTIONS */
 
 @keyframes animStar {
       from {
@@ -64,7 +71,7 @@ $shadows-big: multiple-box-shadow(100);
 
       // CONTENT WRAPPER
       .screen-content-wrapper {
-            height: 100vh;
+            height: max-content;
             align-self: stretch;
             flex: 1;
             opacity: 0;
@@ -81,20 +88,12 @@ $shadows-big: multiple-box-shadow(100);
 
             // CONTENT
             .screen-content {
-                  max-height: calc(100vh - 250px);
-                  padding: 0 15px 200px 15px;
+                  padding: 0 15px;
                   width: 100%;
                   position: relative;
-                  margin-top: 60px;
-                  flex: 1;
-                  overflow: auto;
 
                   &.make-it-yours {
                         padding: 0 10px 200px 10px;
-                  }
-
-                  &.calendar {
-                        margin-top: 0;
                   }
 
                   &.bottom-padding-only {
@@ -103,10 +102,12 @@ $shadows-big: multiple-box-shadow(100);
             }
       }
 
+      // 🎨 Wave SVG as a reusable variable
+      $wave-path: "M0,260 C240,340 480,200 720,260 C960,340 1200,200 1440,260 L1440,320 L0,320 Z";
+
       // HEADER
       .screen-header {
-            width: 100%;
-            padding: 55px 15px 0 15px;
+            width: 100vw;
             z-index: 9;
             position: relative;
             min-height: 20vh;
@@ -114,19 +115,24 @@ $shadows-big: multiple-box-shadow(100);
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
+            padding: 55px 15px 50px;
             @include screenHeaderGradient;
 
-            &.calendar-header {
-                  min-height: unset;
-                  height: max-content;
-
-                  .text {
-                        padding-bottom: 10px;
-                  }
+            &::after {
+                  content: "";
+                  position: absolute;
+                  bottom: -1px;
+                  left: 0;
+                  width: 100%;
+                  min-height: 22px;
+                  background: url(wave-svg($wave-path)) bottom center;
+                  background-size: cover;
             }
 
             .text {
                   opacity: 0;
+                  padding: 0 20px;
+                  height: max-content;
 
                   p {
                         text-align: center;
@@ -185,13 +191,12 @@ $shadows-big: multiple-box-shadow(100);
             }
 
             .wave {
-                  position: absolute;
-                  bottom: -75px;
-                  z-index: -1;
+                  position: relative;
+                  bottom: -1px;
                   left: 0;
                   right: 0;
                   width: 100vw;
-                  transform: scaleY(0.8);
+                  height: max-content;
             }
 
             #install-button {
@@ -1980,11 +1985,12 @@ $shadows-big: multiple-box-shadow(100);
             margin: 0;
             line-height: 1;
             letter-spacing: 0;
-            color: palette.$transWhite;
             transition: all 0.3s ease-in-out;
             display: flex;
             width: min-content;
             font-size: 17px;
+            color: white;
+            opacity: 0.7;
             @include fonts.regularFont;
 
             svg {
@@ -2041,6 +2047,18 @@ $shadows-big: multiple-box-shadow(100);
                         font-size: 16px;
                         opacity: 0.9;
                   }
+            }
+      }
+
+      &.filled-input-label {
+            width: 100%;
+            display: block;
+            padding-left: 20px;
+
+            label {
+                  text-transform: uppercase;
+                  font-size: 14px;
+                  @include fonts.lightFont;
             }
       }
 
@@ -2876,7 +2894,7 @@ $shadows-big: multiple-box-shadow(100);
 
             &.active {
                   z-index: 9;
-                  max-height: 1000px;
+                  max-height: unset;
                   transition: all 0.5s ease-in-out;
                   opacity: 1;
             }
@@ -4232,6 +4250,17 @@ $shadows-big: multiple-box-shadow(100);
             }
       }
 
+      #full-menu-title {
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            width: max-content;
+            margin: 15px auto 0 auto;
+            padding-bottom: 0;
+            border-bottom: 1px solid palette.$subtitleWhite;
+            @include fonts.boldFont;
+      }
+
       #current-app-version {
             color: palette.$mediumTransWhite;
             opacity: 0.8;
@@ -4318,7 +4347,8 @@ $shadows-big: multiple-box-shadow(100);
                         position: relative;
                         border-radius: variables.$buttonBorderRadius;
                         margin-bottom: 20px;
-                        height: 55px;
+                        padding: 10px 0;
+                        border: 0;
 
                         p {
                               color: white;
@@ -4334,43 +4364,46 @@ $shadows-big: multiple-box-shadow(100);
                         }
                   }
 
-                  .section {
-                        background-color: palette.$inputBackground;
-                        padding: 15px;
-                        opacity: 0;
+                  .form-divider {
+                        margin: 0 0 10px 0;
+                        display: flex;
                         width: 100%;
-                        margin-bottom: 15px;
-                        border-radius: variables.$cardBorderRadius;
 
                         &.active {
-                              .form-divider {
-                                    span {
-                                          opacity: 1;
-                                          color: white;
-                                          font-size: 17px;
-                                          font-style: normal;
-                                          @include fonts.mediumBoldFont;
-                                    }
+                              &::before,
+                              &::after {
+                                    border-bottom: 1px solid palette.$brightGreen;
                               }
-                        }
-
-                        .form-divider {
-                              margin: 0 0 5px 0;
-                              display: flex;
-                              width: 100%;
-
                               span {
-                                    font-size: 15px;
-                                    color: white;
-                                    opacity: 0.6;
-                                    @include fonts.lightFont;
-
-                                    & {
-                                          letter-spacing: 2px;
-                                          font-style: italic;
-                                    }
+                                    opacity: 1;
+                                    color: palette.$brightGreen;
+                                    font-size: 17px;
+                                    font-style: normal;
+                                    letter-spacing: unset;
+                                    @include fonts.mediumBoldFont;
                               }
                         }
+
+                        span {
+                              font-size: 15px;
+                              color: white;
+                              opacity: 0.6;
+                              @include fonts.lightFont;
+
+                              & {
+                                    letter-spacing: 2px;
+                                    font-style: italic;
+                              }
+                        }
+                  }
+
+                  .section {
+                        background-color: palette.$inputBackground;
+                        padding: 20px;
+                        opacity: 0;
+                        width: 100%;
+                        margin-bottom: 35px;
+                        border-radius: variables.$cardBorderRadius;
 
                         .menu-items {
                               transition: all 0.6s ease-out;
@@ -4401,11 +4434,11 @@ $shadows-big: multiple-box-shadow(100);
                                     &.updates-exist {
                                           opacity: 1;
                                           p {
-                                                color: palette.$brightGreen;
+                                                color: palette.$brightYellow;
                                           }
                                           .svg-wrapper {
                                                 svg {
-                                                      color: palette.$brightGreen;
+                                                      color: palette.$brightYellow;
                                                 }
                                           }
                                     }
@@ -4436,7 +4469,7 @@ $shadows-big: multiple-box-shadow(100);
                                           opacity: 1;
                                           p {
                                                 opacity: 1;
-                                                color: white;
+                                                color: palette.$brightGreen;
                                                 @include fonts.mediumBoldFont;
                                           }
 
@@ -4444,6 +4477,7 @@ $shadows-big: multiple-box-shadow(100);
                                                 opacity: 1;
                                                 svg {
                                                       opacity: 1;
+                                                      color: palette.$brightGreen;
                                                 }
                                           }
                                     }

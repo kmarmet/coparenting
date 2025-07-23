@@ -106,7 +106,7 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
             const animateEvents = () => {
                   setTimeout(() => {
                         DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
-                  }, 10)
+                  }, 200)
             }
 
             let nextEvents = []

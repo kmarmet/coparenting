@@ -95,7 +95,7 @@ const Chats = () => {
                                           Invite Another Co-Parent
                                           <span className={"subtitle"}>
                                                 Currently, your account is linked to {coParents?.length}{" "}
-                                                {coParents?.length > 1 ? "co-parents" : "co-parent"}. Feel free to invite another co-parent.
+                                                {coParents?.length > 1 ? "Co-Parents" : "Co-Parent"}. Feel free to invite another Co-Parent.
                                           </span>
                                     </p>
                                     <div className="svg-wrapper invite-co-parent">

@@ -4,7 +4,6 @@ import React, {useContext, useEffect, useState} from "react"
 import {BsHousesFill} from "react-icons/bs"
 import ButtonThemes from "../../constants/buttonThemes"
 import DatetimeFormats from "../../constants/datetimeFormats"
-import ModelNames from "../../constants/modelNames"
 import ScheduleTypes from "../../constants/scheduleTypes"
 import ScreenNames from "../../constants/screenNames"
 import globalState from "../../context"
@@ -19,7 +18,6 @@ import useUsers from "../../hooks/useUsers"
 import AlertManager from "../../managers/alertManager"
 import DatasetManager from "../../managers/datasetManager"
 import DomManager from "../../managers/domManager"
-import DropdownManager from "../../managers/dropdownManager"
 import Manager from "../../managers/manager"
 import ObjectManager from "../../managers/objectManager"
 import StringManager from "../../managers/stringManager"
@@ -63,14 +61,12 @@ export default function Visitation() {
       const {children, childrenDropdownOptions} = useChildren()
       const {coParents, coParentsDropdownOptions} = useCoParents()
       const {users} = useUsers()
-      const {holidays} = useHolidays()
+      const {holidays} = useHolidays(currentUser, "all")
 
       // DROPDOWN STATE
       const [selectedVisitationHolidayOptions, setSelectedVisitationHolidayOptions] = useState([])
       const [defaultHolidayOptions, setDefaultHolidayOptions] = useState([])
-      const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
-      const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
-      const [selectedScheduleOptions, setSelectedScheduleOptions] = useState([])
+      const [selectedHolidayOptions, setSelectedHolidayOptions] = useState([])
 
       // Holiday
       const [userHolidays, setUserHolidays] = useState([])
@@ -116,55 +112,33 @@ export default function Visitation() {
       // SET HOLIDAYS IN DATABASE
       const SetHolidaysInDatabase = async () => {
             // Holidays
-            if (Manager.IsValid(selectedHolidayDates)) {
+            if (Manager.IsValid(selectedVisitationHolidayOptions)) {
                   // setShowUpdateHolidaysButton(false)
                   let events = []
-                  selectedHolidayDates.forEach((holidayDateString) => {
+                  selectedVisitationHolidayOptions.forEach((holiday) => {
                         const dateObject = new CalendarEvent()
-                        const holidayName = CalendarMapper.holidayDateToName(moment(holidayDateString).format("MM/DD"))
                         // Required
                         dateObject.title = `${StringManager.GetFirstNameOnly(currentUser?.name)}'s Holiday Visitation`
-                        dateObject.startDate = moment(holidayDateString).format(DatetimeFormats.dateForDb)
-                        dateObject.holidayName = holidayName
+                        dateObject.startDate = moment(holiday?.value).format(DatetimeFormats.dateForDb)
+                        dateObject.holidayName = holiday?.label
+                        dateObject.owner = {
+                              key: currentUser?.key,
+                              name: currentUser?.name,
+                        }
                         // Not Required
-                        dateObject.ownerKey = currentUser?.key
                         dateObject.createdBy = currentUser?.name
                         dateObject.fromVisitationSchedule = true
                         dateObject.isHoliday = true
                         dateObject.shareWith = DatasetManager.GetValidArray(shareWith, true)
-                        const cleanedObject = ObjectManager.CleanObject(dateObject, ModelNames.calendarEvent)
+                        const cleanedObject = ObjectManager.CleanObject(dateObject)
                         events.push(cleanedObject)
                   })
                   // Upload to DB
                   await VisitationManager.setVisitationHolidays(currentUser, events)
             } else {
-                  await VisitationManager.deleteAllHolidaysForUser(currentUser)
+                  await VisitationManager.DeleteAllHolidaysForUser(currentUser)
             }
             setState({...state, successAlertMessage: "Visitation Holidays Updated!"})
-      }
-
-      const HandleHolidaySelection = async (e) => {
-            DomManager.HandleCheckboxSelection(
-                  e,
-                  (e) => {
-                        const dataDate = CalendarMapper.holidayNameToDate(e)
-                        const holidayMonth = moment(dataDate).month() + 1
-                        const currentMonth = moment().month() + 1
-                        const holidayYear = holidayMonth < currentMonth ? moment().year() + 1 : moment().year()
-                        const dateAsString = moment(`${dataDate}/${holidayYear}`).format(DatetimeFormats.dateForDb)
-                        setSelectedHolidayDates([...selectedHolidayDates, dateAsString])
-                  },
-                  (e) => {
-                        const dataDate = CalendarMapper.holidayNameToDate(e)
-                        const holidayMonth = moment(dataDate).month() + 1
-                        const currentMonth = moment().month() + 1
-                        const holidayYear = holidayMonth < currentMonth ? moment().year() + 1 : moment().year()
-                        const dateAsString = moment(`${dataDate}/${holidayYear}`, DatetimeFormats.dateForDb).format(DatetimeFormats.dateForDb)
-                        let filtered = selectedHolidayDates.filter((x) => x !== dateAsString)
-                        setSelectedHolidayDates(filtered)
-                  },
-                  true
-            )
       }
 
       const GetVisitationHolidays = async (currentUser) => {
@@ -206,10 +180,17 @@ export default function Visitation() {
       }
 
       const SetDefaultDropdownOptions = async () => {
-            const holidays = await DropdownManager.GetDefault.Holidays().then((r) => r)
-            setDefaultHolidayOptions(holidays)
-            setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
-            setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
+            const defaultHolidays = holidays.map((x) => ({label: x.holidayName, value: moment(x.startDate).format(DatetimeFormats.dateForDb)}))
+            setDefaultHolidayOptions(defaultHolidays)
+            const existingVisitationHolidays = await VisitationManager.getVisitationHolidays(currentUser)
+
+            if (Manager.IsValid(existingVisitationHolidays)) {
+                  const mappedExistingHolidays = existingVisitationHolidays.map((x) => ({
+                        label: x.holidayName,
+                        value: moment(x.startDate).format(DatetimeFormats.dateForDb),
+                  }))
+                  setSelectedVisitationHolidayOptions(mappedExistingHolidays)
+            }
       }
 
       const ResetCardState = () => {
@@ -219,10 +200,10 @@ export default function Visitation() {
       }
 
       useEffect(() => {
-            if (Manager.IsValid(children) || Manager.IsValid(users)) {
-                  SetDefaultDropdownOptions().then((r) => r)
+            if ((Manager.IsValid(children) || Manager.IsValid(users)) && Manager.IsValid(holidays)) {
+                  void SetDefaultDropdownOptions()
             }
-      }, [children, coParents])
+      }, [children, coParents, users, holidays])
 
       // On Schedule Type Change
       useEffect(() => {
@@ -392,6 +373,7 @@ export default function Visitation() {
                               <SelectDropdown
                                     wrapperClasses={"white-bg"}
                                     options={defaultHolidayOptions}
+                                    value={selectedVisitationHolidayOptions}
                                     onSelect={setSelectedVisitationHolidayOptions}
                                     placeholder={"Select Your Visitation Holidays"}
                                     selectMultiple={true}
@@ -405,7 +387,7 @@ export default function Visitation() {
                         </div>
                   </div>
                   {!showEveryOtherWeekendCard && !showCustomWeekendsCard && !showFiftyFiftyCard && (
-                        <NavBar navbarClass={"visitation no-Add-new-button"}></NavBar>
+                        <NavBar navbarClass={"visitation no-Add-new-button"} />
                   )}
             </Screen>
       )

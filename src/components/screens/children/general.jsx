@@ -103,43 +103,52 @@ function General({activeChild}) {
                                     <div className="padding">
                                           {Manager.IsValid(generalValues) &&
                                                 generalValues.map((prop, index) => {
-                                                      let infoLabel = StringManager.SpaceBetweenWords(prop[0])
-                                                      const value = prop[1]
+                                                      const rawLabel = prop[0]
+                                                      const infoLabel = StringManager.SpaceBetweenWords(rawLabel)
+                                                      const lowerLabel = infoLabel.toLowerCase()
+
+                                                      const isLast = index === generalValues.length - 1
+                                                      const isSecondLast = index === generalValues.length - 2
+                                                      const isPhone = lowerLabel.includes("phone")
+                                                      const isAddress = Manager.Contains(lowerLabel, "address")
+                                                      const isNameField = lowerLabel === "name"
+
+                                                      const sharedBy = Manager.IsValid(prop[2])
+                                                            ? ` (shared by ${StringManager.GetFirstNameOnly(prop[2])})`
+                                                            : ""
+
+                                                      const placeholder = `${infoLabel}${sharedBy}`
+                                                      const rowClass = `data-row ${isPhone ? "phone" : ""} ${isLast ? "last" : ""}`
+
                                                       return (
-                                                            <div key={index}>
-                                                                  <div
-                                                                        className={`data-row ${infoLabel.toLowerCase().includes("phone") ? "phone" : ""} ${index === generalValues.length - 1 ? "last" : ""}`}>
-                                                                        {Manager.Contains(infoLabel.toLowerCase(), "address") && (
-                                                                              <AddressInput
-                                                                                    showAddressTypeSelector={false}
-                                                                                    labelText="Home Address"
-                                                                                    onChange={(address) => Update(infoLabel, address)}
-                                                                                    defaultValue={activeChild?.general?.address}
-                                                                              />
-                                                                        )}
-                                                                        {!Manager.Contains(infoLabel.toLowerCase(), "address") && (
-                                                                              <>
-                                                                                    <InputField
-                                                                                          wrapperClasses={`${index === generalValues.length - 2 ? "last" : ""}`}
-                                                                                          hasBottomSpacer={false}
-                                                                                          inputType={InputTypes.text}
-                                                                                          placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ""}`}
-                                                                                          defaultValue={value}
-                                                                                          onChange={async (e) => {
-                                                                                                const inputValue = e.target.value
-                                                                                                await Update(infoLabel, inputValue)
-                                                                                          }}
+                                                            <div key={index} className={rowClass}>
+                                                                  {isAddress ? (
+                                                                        <AddressInput
+                                                                              showAddressTypeSelector={false}
+                                                                              labelText="Home Address"
+                                                                              onChange={({address}) => Update({prop: infoLabel, value: address})}
+                                                                              defaultValue={activeChild?.general?.address}
+                                                                        />
+                                                                  ) : (
+                                                                        <InputField
+                                                                              wrapperClasses={isSecondLast ? "last" : ""}
+                                                                              hasBottomSpacer={false}
+                                                                              inputType={InputTypes.text}
+                                                                              placeholder={placeholder}
+                                                                              defaultValue={prop[1]}
+                                                                              onChange={async (e) => {
+                                                                                    const inputValue = e.target.value
+                                                                                    await Update(infoLabel, inputValue)
+                                                                              }}>
+                                                                              {!isNameField && (
+                                                                                    <CgClose
+                                                                                          className="close-x children"
+                                                                                          onClick={() => DeleteProp(infoLabel)}
                                                                                     />
-                                                                                    {infoLabel.toLowerCase() !== "name" && (
-                                                                                          <CgClose
-                                                                                                className={"close-x children"}
-                                                                                                onClick={() => DeleteProp(infoLabel)}
-                                                                                          />
-                                                                                    )}
-                                                                              </>
-                                                                        )}
-                                                                  </div>
-                                                                  <Spacer height={5} />
+                                                                              )}
+                                                                        </InputField>
+                                                                  )}
+                                                                  {index !== generalValues.length - 1 && <Spacer height={5} />}
                                                             </div>
                                                       )
                                                 })}

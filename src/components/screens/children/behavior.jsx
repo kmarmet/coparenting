@@ -115,48 +115,34 @@ export default function Behavior({activeChild}) {
                               <div className="padding">
                                     {behaviorValues &&
                                           behaviorValues.map((prop, index) => {
-                                                let infoLabel = StringManager.SpaceBetweenWords(prop[0])
-                                                infoLabel = StringManager.UppercaseFirstLetterOfAllWords(infoLabel).replaceAll("OF", " of ")
+                                                const rawLabel = prop[0]
+                                                const infoLabel = StringManager.SpaceBetweenWords(rawLabel)
+                                                const lowerLabel = infoLabel.toLowerCase()
+                                                const isLast = index === behaviorValues.length - 1
+                                                const isPhone = lowerLabel.includes("phone")
+                                                const sharedBy = Manager.IsValid(prop[2])
+                                                      ? ` (shared by ${StringManager.GetFirstNameOnly(prop[2])})`
+                                                      : ""
+                                                const rowClass = `data-row ${isPhone ? "phone" : ""} ${isLast ? "last" : ""}`
                                                 const value = prop[1]
+
                                                 return (
-                                                      <div key={index}>
-                                                            <div className="apiResults-row">
-                                                                  {infoLabel.toLowerCase().includes("phone") && (
-                                                                        <>
-                                                                              <div className="flex input">
-                                                                                    <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
-                                                                                          {infoLabel}: {value}
-                                                                                    </a>
-                                                                              </div>
-                                                                              <Spacer height={5} />
-                                                                              <CgClose
-                                                                                    className={"close-x children"}
-                                                                                    onClick={() => DeleteProp(infoLabel)}
-                                                                              />
-                                                                        </>
-                                                                  )}
-                                                                  {!infoLabel.toLowerCase().includes("phone") && (
-                                                                        <>
-                                                                              <InputField
-                                                                                    wrapperClasses={`${index === behaviorValues.length - 2 ? "last" : ""}`}
-                                                                                    hasBottomSpacer={false}
-                                                                                    customDebounceDelay={1200}
-                                                                                    inputType={InputTypes.text}
-                                                                                    defaultValue={value}
-                                                                                    placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ""}`}
-                                                                                    onChange={async (e) => {
-                                                                                          const inputValue = e.target.value
-                                                                                          await Update(infoLabel, `${inputValue}`)
-                                                                                    }}
-                                                                              />
-                                                                              <CgClose
-                                                                                    className={"close-x children"}
-                                                                                    onClick={() => DeleteProp(infoLabel)}
-                                                                              />
-                                                                        </>
-                                                                  )}
-                                                            </div>
-                                                            <Spacer height={5} />
+                                                      <div key={index} className={rowClass}>
+                                                            <InputField
+                                                                  wrapperClasses={`${index === behaviorValues.length - 2 ? "last" : ""}`}
+                                                                  hasBottomSpacer={false}
+                                                                  customDebounceDelay={1200}
+                                                                  inputType={InputTypes.text}
+                                                                  defaultValue={value}
+                                                                  placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? sharedBy : ""}`}
+                                                                  onChange={async (e) => {
+                                                                        const inputValue = e.target.value
+                                                                        await Update(infoLabel, `${inputValue}`)
+                                                                  }}>
+                                                                  {" "}
+                                                                  <CgClose className={"close-x children"} onClick={() => DeleteProp(infoLabel)} />
+                                                            </InputField>
+                                                            {index !== behaviorValues.length - 1 && <Spacer height={5} />}
                                                       </div>
                                                 )
                                           })}

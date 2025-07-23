@@ -296,289 +296,285 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                         viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={(view) => setView(view)} />}>
                         {/*  CONTENT */}
                         <div id="edit-cal-event-container" className={`${theme} edit-event-form form-container`}>
-                              <div className={"content-wrapper"}>
-                                    {/* DETAILS */}
-                                    <div className={`view-wrapper${view?.label === "Details" ? " details active" : " details"}`}>
-                                          <Spacer height={15} />
-                                          <div className="blocks">
-                                                {/*  Date */}
-                                                <DetailBlock
-                                                      valueToValidate={event?.isDateRange ? event?.staticStartDate : event?.startDate}
-                                                      text={moment(event?.isDateRange ? event?.staticStartDate : event?.startDate).format(
-                                                            DatetimeFormats.readableMonthAndDayWithDayDigitOnly
-                                                      )}
-                                                      title={event?.isDateRange ? "Start Date" : "Date"}
-                                                />
-
-                                                {/*  End Date */}
-                                                <DetailBlock
-                                                      valueToValidate={event?.endDate}
-                                                      text={moment(event?.endDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                                                      title={"End Date"}
-                                                />
-
-                                                {/*  Start Time */}
-                                                <DetailBlock
-                                                      valueToValidate={event?.startTime}
-                                                      text={moment(event?.startTime, DatetimeFormats.timeForDb).format("h:mma")}
-                                                      title={"Start Time"}
-                                                />
-
-                                                {/*  End Time */}
-                                                <DetailBlock
-                                                      valueToValidate={event?.endTime}
-                                                      text={moment(event?.endTime, DatetimeFormats.timeForDb).format("h:mma")}
-                                                      title={"End time"}
-                                                />
-
-                                                {/*  Created By */}
-                                                <DetailBlock valueToValidate={event?.owner?.name} text={event?.owner?.name} title={"Creator"} />
-
-                                                {/*  Notes */}
-                                                {Manager.IsValid(event?.notes, true) && (
-                                                      <DetailBlock
-                                                            valueToValidate={event?.notes}
-                                                            text={event?.notes}
-                                                            isFullWidth={true}
-                                                            title={"Notes"}
-                                                      />
+                              {/* DETAILS */}
+                              <div className={`view-wrapper${view?.label === "Details" ? " details active" : " details"}`}>
+                                    <Spacer height={15} />
+                                    <div className="blocks">
+                                          {/*  Date */}
+                                          <DetailBlock
+                                                valueToValidate={event?.isDateRange ? event?.staticStartDate : event?.startDate}
+                                                text={moment(event?.isDateRange ? event?.staticStartDate : event?.startDate).format(
+                                                      DatetimeFormats.readableMonthAndDayWithDayDigitOnly
                                                 )}
-                                          </div>
+                                                title={event?.isDateRange ? "Start Date" : "Date"}
+                                          />
 
-                                          <div className="multiline-blocks">
-                                                {/*  Shared With */}
-                                                <MultilineDetailBlock
-                                                      title={"Shared with"}
-                                                      array={DropdownManager.GetSelected.ShareWithFromKeys(
-                                                            event?.shareWith,
-                                                            users,
-                                                            true,
-                                                            currentUser?.key
-                                                      )}
-                                                />
+                                          {/*  End Date */}
+                                          <DetailBlock
+                                                valueToValidate={event?.endDate}
+                                                text={moment(event?.endDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                                                title={"End Date"}
+                                          />
 
-                                                {/* Reminders */}
-                                                <MultilineDetailBlock
-                                                      title={"Reminders"}
-                                                      dataType={MultilineDetailBlockDataTypes.Reminders}
-                                                      array={DropdownManager.GetReadableReminderTimes(event?.reminderTimes)}
-                                                />
+                                          {/*  Start Time */}
+                                          <DetailBlock
+                                                valueToValidate={event?.startTime}
+                                                text={moment(event?.startTime, DatetimeFormats.timeForDb).format("h:mma")}
+                                                title={"Start Time"}
+                                          />
 
-                                                {/* Children */}
-                                                <MultilineDetailBlock title={"Children"} array={event?.children} />
-                                          </div>
+                                          {/*  End Time */}
+                                          <DetailBlock
+                                                valueToValidate={event?.endTime}
+                                                text={moment(event?.endTime, DatetimeFormats.timeForDb).format("h:mma")}
+                                                title={"End time"}
+                                          />
 
-                                          {/* Recurring Frequency */}
-                                          {event?.isRecurring && (
-                                                <div className="flex">
-                                                      <MdEventRepeat />
-                                                      <b>DatetimeFormats</b>
-                                                      <span>{StringManager.UppercaseFirstLetterOfAllWords(event?.recurringFrequency)}</span>
-                                                </div>
-                                          )}
-
-                                          <div className="multiline-blocks">
-                                                {(Manager.IsValid(event?.address) ||
-                                                      Manager.IsValid(event?.phone) ||
-                                                      Manager.IsValid(event?.websiteUrl)) && (
-                                                      <>
-                                                            <div className="blocks">
-                                                                  {/*  Phone */}
-                                                                  <DetailBlock
-                                                                        valueToValidate={event?.phone}
-                                                                        isPhone={true}
-                                                                        text={StringManager.FormatPhone(event?.phone)}
-                                                                        title={"Call"}
-                                                                        topSpacerMargin={8}
-                                                                        bottomSpacerMargin={8}
-                                                                  />
-
-                                                                  {/*  Website */}
-                                                                  <DetailBlock
-                                                                        valueToValidate={event?.websiteUrl}
-                                                                        linkUrl={event?.websiteUrl}
-                                                                        text={decodeURIComponent(event?.websiteUrl)}
-                                                                        isLink={true}
-                                                                        title={"Website/Link"}
-                                                                  />
-
-                                                                  {Manager.IsValid(event?.address) && (
-                                                                        <>
-                                                                              {/*  Location */}
-                                                                              <DetailBlock
-                                                                                    topSpacerMargin={8}
-                                                                                    bottomSpacerMargin={8}
-                                                                                    valueToValidate={event?.address}
-                                                                                    isNavLink={true}
-                                                                                    text={event?.address}
-                                                                                    linkUrl={event?.address}
-                                                                                    title={"Go"}
-                                                                              />
-                                                                        </>
-                                                                  )}
-                                                            </div>
-                                                      </>
-                                                )}
-                                          </div>
-
-                                          {/* Map */}
-                                          {Manager.IsValid(event?.address) && <Map locationString={event?.address} />}
+                                          {/*  Created By */}
+                                          <DetailBlock valueToValidate={event?.owner?.name} text={event?.owner?.name} title={"Creator"} />
                                     </div>
 
-                                    {/* EDIT */}
-                                    <div className={`view-wrapper${view?.label === "Edit" ? " edit active" : ""}`}>
-                                          <FormDivider text={"Required"} />
-                                          {/* EVENT NAME */}
-                                          <InputField
-                                                inputType={InputTypes.text}
-                                                placeholder={"Event Name"}
-                                                defaultValue={event?.title}
-                                                wrapperClasses="show-label"
-                                                required={true}
-                                                onChange={async (e) => {
-                                                      const inputValue = e.target.value
-                                                      if (inputValue.length > 1) {
-                                                            formRef.current.title = StringManager.FormatEventTitle(inputValue)
-                                                      }
-                                                }}
+                                    <div className="multiline-blocks">
+                                          {/*  Shared With */}
+                                          <MultilineDetailBlock
+                                                title={"Shared with"}
+                                                array={DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users, true, currentUser?.key)}
                                           />
 
-                                          <Spacer height={5} />
-
-                                          {/* DATE */}
-                                          {!eventIsDateRange && (
-                                                <InputField
-                                                      placeholder={"Date"}
-                                                      required={true}
-                                                      inputType={InputTypes.date}
-                                                      onDateOrTimeSelection={(date) =>
-                                                            (formRef.current.startDate = moment(date).format(DatetimeFormats.dateForDb))
-                                                      }
-                                                      defaultValue={event?.startDate}
-                                                />
-                                          )}
-
-                                          <FormDivider text={"Optional"} />
-
-                                          {/* EVENT START/END TIME */}
-                                          {!eventIsDateRange && (
-                                                <div className={"flex gap"}>
-                                                      {/* START TIME */}
-                                                      <InputField
-                                                            wrapperClasses="start-time"
-                                                            placeholder={"Start Time"}
-                                                            uidClass="event-start-time"
-                                                            required={false}
-                                                            inputType={InputTypes.time}
-                                                            defaultValue={event?.startTime}
-                                                            onDateOrTimeSelection={(e) =>
-                                                                  (formRef.current.startTime = moment(e).format(DatetimeFormats.timeForDb))
-                                                            }
-                                                      />
-
-                                                      {/* END TIME */}
-                                                      <InputField
-                                                            uidClass="event-end-time"
-                                                            wrapperClasses="end-time"
-                                                            placeholder={"End Time"}
-                                                            required={false}
-                                                            defaultValue={event?.endTime}
-                                                            inputType={InputTypes.time}
-                                                            onDateOrTimeSelection={(e) =>
-                                                                  (formRef.current.endTime = moment(e).format(DatetimeFormats.timeForDb))
-                                                            }
-                                                      />
-                                                </div>
-                                          )}
-
-                                          <Spacer height={5} />
-
-                                          {/* SHARE WITH */}
-                                          <SelectDropdown
-                                                options={defaultShareWithOptions}
-                                                selectMultiple={true}
-                                                value={selectedShareWithOptions}
-                                                placeholder={"Select Contacts to Share With"}
-                                                onSelect={setSelectedShareWithOptions}
+                                          {/* Reminders */}
+                                          <MultilineDetailBlock
+                                                title={"Reminders"}
+                                                dataType={MultilineDetailBlockDataTypes.Reminders}
+                                                array={DropdownManager.GetReadableReminderTimes(event?.reminderTimes)}
                                           />
 
-                                          <Spacer height={5} />
+                                          {/* Children */}
+                                          <MultilineDetailBlock title={"Children"} array={event?.children} />
+                                    </div>
 
-                                          {/* REMINDERS */}
-                                          <SelectDropdown
-                                                options={DropdownManager.GetDefault.Reminders}
-                                                value={selectedReminderOptions}
-                                                selectMultiple={true}
-                                                placeholder={"Select Reminders"}
-                                                onSelect={setSelectedReminderOptions}
-                                          />
-
-                                          <Spacer height={5} />
-
-                                          {/* INCLUDING WHICH CHILDREN */}
-                                          <SelectDropdown
-                                                options={DropdownManager.GetDefault.Children(children)}
-                                                value={selectedChildrenOptions}
-                                                placeholder={"Select Children to Include"}
-                                                onSelect={setSelectedChildrenOptions}
-                                                selectMultiple={true}
-                                          />
-
-                                          <Spacer height={5} />
-
-                                          {/* URL/WEBSITE */}
-                                          <InputField
-                                                defaultValue={event?.websiteUrl}
-                                                placeholder={"URL/Website"}
-                                                wrapperClasses={Manager.IsValid(formRef?.current?.websiteUrl) ? "show-label" : ""}
-                                                required={false}
-                                                inputType={InputTypes.url}
-                                                onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
-                                          />
-
-                                          <Spacer height={5} />
-
-                                          {/* ADDRESS */}
-                                          <AddressInput
-                                                defaultValue={event?.address}
-                                                placeholder={"Location"}
-                                                onChange={(address) => (formRef.current.address = address)}
-                                          />
-
-                                          <Spacer height={5} />
-
-                                          {/* PHONE */}
-                                          <InputField
-                                                wrapperClasses={Manager.IsValid(event?.phone) ? "show-label" : ""}
-                                                defaultValue={event?.phone}
-                                                inputType={InputTypes.phone}
-                                                placeholder={"Phone"}
-                                                onChange={(e) => (formRef.current.phone = StringManager.FormatPhone(e.target.value))}
-                                          />
-
-                                          <Spacer height={5} />
-
-                                          {/* NOTES */}
-                                          <InputField
-                                                defaultValue={event?.notes}
-                                                placeholder={"Notes"}
-                                                required={false}
-                                                wrapperClasses={Manager.IsValid(event?.notes) ? "show-label textarea" : "textarea"}
-                                                inputType={InputTypes.textarea}
-                                                onChange={(e) => (formRef.current.notes = e.target.value)}
-                                          />
-
-                                          <Spacer height={5} />
-
-                                          {/* IS VISITATION? */}
-                                          <div className="flex visitation-toggle">
-                                                <Label classes="toggle" text={"Visitation Event"} />
-                                                <ToggleButton
-                                                      isDefaultChecked={event?.fromVisitationSchedule}
-                                                      onCheck={() => setIsVisitation(!isVisitation)}
-                                                      onUncheck={() => setIsVisitation(!isVisitation)}
-                                                />
+                                    {/* Recurring Frequency */}
+                                    {event?.isRecurring && (
+                                          <div className="flex">
+                                                <MdEventRepeat />
+                                                <b>DatetimeFormats</b>
+                                                <span>{StringManager.UppercaseFirstLetterOfAllWords(event?.recurringFrequency)}</span>
                                           </div>
+                                    )}
+
+                                    {/*  Notes */}
+                                    <div className="blocks">
+                                          {Manager.IsValid(event?.notes, true) && (
+                                                <DetailBlock
+                                                      classes={"full-width block"}
+                                                      valueToValidate={event?.notes}
+                                                      text={event?.notes}
+                                                      isFullWidth={true}
+                                                      title={"Notes"}
+                                                />
+                                          )}
+                                    </div>
+
+                                    <div className="multiline-blocks">
+                                          {(Manager.IsValid(event?.address) ||
+                                                Manager.IsValid(event?.phone) ||
+                                                Manager.IsValid(event?.websiteUrl)) && (
+                                                <>
+                                                      <div className="blocks">
+                                                            {/*  Phone */}
+                                                            <DetailBlock
+                                                                  valueToValidate={event?.phone}
+                                                                  isPhone={true}
+                                                                  text={StringManager.FormatPhone(event?.phone)}
+                                                                  title={"Call"}
+                                                                  topSpacerMargin={8}
+                                                                  bottomSpacerMargin={8}
+                                                            />
+
+                                                            {/*  Website */}
+                                                            <DetailBlock
+                                                                  valueToValidate={event?.websiteUrl}
+                                                                  linkUrl={event?.websiteUrl}
+                                                                  text={decodeURIComponent(event?.websiteUrl)}
+                                                                  isLink={true}
+                                                                  title={"Website/Link"}
+                                                            />
+
+                                                            {Manager.IsValid(event?.address) && (
+                                                                  <>
+                                                                        {/*  Location */}
+                                                                        <DetailBlock
+                                                                              topSpacerMargin={8}
+                                                                              bottomSpacerMargin={8}
+                                                                              valueToValidate={event?.address}
+                                                                              isNavLink={true}
+                                                                              text={event?.address}
+                                                                              linkUrl={event?.address}
+                                                                              title={"Go"}
+                                                                        />
+                                                                  </>
+                                                            )}
+                                                      </div>
+                                                </>
+                                          )}
+                                    </div>
+
+                                    {/* Map */}
+                                    {Manager.IsValid(event?.address) && <Map locationString={event?.address} />}
+                              </div>
+
+                              {/* EDIT */}
+                              <div className={`view-wrapper${view?.label === "Edit" ? " edit active" : ""}`}>
+                                    <FormDivider text={"Required"} />
+                                    {/* EVENT NAME */}
+                                    <InputField
+                                          inputType={InputTypes.text}
+                                          placeholder={"Event Name"}
+                                          defaultValue={event?.title}
+                                          wrapperClasses="show-label"
+                                          required={true}
+                                          onChange={async (e) => {
+                                                const inputValue = e.target.value
+                                                if (inputValue.length > 1) {
+                                                      formRef.current.title = StringManager.FormatEventTitle(inputValue)
+                                                }
+                                          }}
+                                    />
+
+                                    <Spacer height={5} />
+
+                                    {/* DATE */}
+                                    {!eventIsDateRange && (
+                                          <InputField
+                                                placeholder={"Date"}
+                                                required={true}
+                                                inputType={InputTypes.date}
+                                                onDateOrTimeSelection={(date) =>
+                                                      (formRef.current.startDate = moment(date).format(DatetimeFormats.dateForDb))
+                                                }
+                                                defaultValue={event?.startDate}
+                                          />
+                                    )}
+
+                                    <FormDivider text={"Optional"} />
+
+                                    {/* EVENT START/END TIME */}
+                                    {!eventIsDateRange && (
+                                          <>
+                                                {/* START TIME */}
+                                                <InputField
+                                                      wrapperClasses="start-time"
+                                                      placeholder={"Start Time"}
+                                                      required={false}
+                                                      inputType={InputTypes.time}
+                                                      defaultValue={event?.startTime}
+                                                      onDateOrTimeSelection={(e) =>
+                                                            (formRef.current.startTime = moment(e).format(DatetimeFormats.timeForDb))
+                                                      }
+                                                />
+
+                                                <Spacer height={5} />
+
+                                                {/* END TIME */}
+                                                <InputField
+                                                      wrapperClasses="end-time"
+                                                      placeholder={"End Time"}
+                                                      required={false}
+                                                      defaultValue={event?.endTime}
+                                                      inputType={InputTypes.time}
+                                                      onDateOrTimeSelection={(e) =>
+                                                            (formRef.current.endTime = moment(e).format(DatetimeFormats.timeForDb))
+                                                      }
+                                                />
+                                          </>
+                                    )}
+
+                                    <Spacer height={5} />
+
+                                    {/* SHARE WITH */}
+                                    <SelectDropdown
+                                          options={defaultShareWithOptions}
+                                          selectMultiple={true}
+                                          value={selectedShareWithOptions}
+                                          placeholder={"Select Contacts to Share With"}
+                                          onSelect={setSelectedShareWithOptions}
+                                    />
+
+                                    <Spacer height={5} />
+
+                                    {/* REMINDERS */}
+                                    <SelectDropdown
+                                          options={DropdownManager.GetDefault.Reminders}
+                                          value={selectedReminderOptions}
+                                          selectMultiple={true}
+                                          placeholder={"Select Reminders"}
+                                          onSelect={setSelectedReminderOptions}
+                                    />
+
+                                    <Spacer height={5} />
+
+                                    {/* INCLUDING WHICH CHILDREN */}
+                                    <SelectDropdown
+                                          options={DropdownManager.GetDefault.Children(children)}
+                                          value={selectedChildrenOptions}
+                                          placeholder={"Select Children to Include"}
+                                          onSelect={setSelectedChildrenOptions}
+                                          selectMultiple={true}
+                                    />
+
+                                    <Spacer height={5} />
+
+                                    {/* URL/WEBSITE */}
+                                    <InputField
+                                          defaultValue={event?.websiteUrl}
+                                          placeholder={"URL/Website"}
+                                          wrapperClasses={Manager.IsValid(formRef?.current?.websiteUrl) ? "show-label" : ""}
+                                          required={false}
+                                          inputType={InputTypes.url}
+                                          onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
+                                    />
+
+                                    <Spacer height={5} />
+
+                                    {/* ADDRESS */}
+                                    <AddressInput
+                                          defaultValue={event?.address}
+                                          placeholder={"Location"}
+                                          onChange={(address) => (formRef.current.address = address)}
+                                    />
+
+                                    <Spacer height={5} />
+
+                                    {/* PHONE */}
+                                    <InputField
+                                          wrapperClasses={Manager.IsValid(event?.phone) ? "show-label" : ""}
+                                          defaultValue={event?.phone}
+                                          inputType={InputTypes.phone}
+                                          placeholder={"Phone"}
+                                          onChange={(e) => (formRef.current.phone = StringManager.FormatPhone(e.target.value))}
+                                    />
+
+                                    <Spacer height={5} />
+
+                                    {/* NOTES */}
+                                    <InputField
+                                          defaultValue={event?.notes}
+                                          placeholder={"Notes"}
+                                          required={false}
+                                          wrapperClasses={Manager.IsValid(event?.notes) ? "show-label textarea" : "textarea"}
+                                          inputType={InputTypes.textarea}
+                                          onChange={(e) => (formRef.current.notes = e.target.value)}
+                                    />
+
+                                    <Spacer height={5} />
+
+                                    {/* IS VISITATION? */}
+                                    <div className="flex visitation-toggle">
+                                          <Label classes="toggle" text={"Visitation Event"} />
+                                          <ToggleButton
+                                                isDefaultChecked={event?.fromVisitationSchedule}
+                                                onCheck={() => setIsVisitation(!isVisitation)}
+                                                onUncheck={() => setIsVisitation(!isVisitation)}
+                                          />
                                     </div>
                               </div>
                         </div>

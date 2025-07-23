@@ -14,6 +14,7 @@ function UploadButton({
       uploadType = "document",
       useAttachmentIcon = false,
       callback = (selectedFile) => {},
+      buttonText = "ChooseBu Images",
 }) {
       const {state, setState} = useContext(globalState)
       const [fileName, setFileName] = useState("No File Selected")
@@ -71,7 +72,7 @@ function UploadButton({
                   {!useAttachmentIcon && (
                         <div id="upload-inputs" className={containerClass}>
                               <div className="flex">
-                                    <Button text={"Upload"} theme={ButtonThemes.white} classes={"upload-button"} onClick={TriggerFileSelection} />
+                                    <Button text={buttonText} theme={ButtonThemes.white} classes={"upload-button"} onClick={TriggerFileSelection} />
                                     <input onChange={getImages} multiple id="upload-input" name="file-upload" type="file" accept={GetUploadType()} />
                                     {Manager.IsValid(fileName, true) && (
                                           <p className={`${fileSelected ? "file-name active" : "file-name"}`}>

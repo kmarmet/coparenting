@@ -16,6 +16,7 @@ import globalState from "../../context.js"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import DomManager from "../../managers/domManager"
 import Manager from "../../managers/manager"
+import Label from "./label"
 
 function InputField({
       wrapperClasses = "",
@@ -32,6 +33,7 @@ function InputField({
       placeholder = "",
       dateFormat = DatetimeFormats.readableMonthAndDay,
       inputName = "",
+      children = null,
       isCurrency = false,
       customDebounceDelay = null,
       errorMessage = "",
@@ -57,6 +59,9 @@ function InputField({
 
       return (
             <>
+                  {Manager.IsValid(defaultValue) && inputType !== InputTypes.search && (
+                        <Label text={placeholder} classes={"always-show filled-input-label"} />
+                  )}
                   <div
                         onClick={(e) => {
                               const wrapper = e.currentTarget
@@ -126,49 +131,51 @@ function InputField({
 
                         {/* TIME */}
                         {inputType === InputTypes.time && (
-                              <>
-                                    <MobileTimePicker
-                                          slotProps={{
-                                                actionBar: {actions: ["clear", "accept"]},
-                                                textField: {
-                                                      label: (
-                                                            <span>
-                                                                  <WiTime4 />
-                                                                  {placeholder}
-                                                            </span>
-                                                      ),
-                                                },
-                                                paper: {
-                                                      className: "time-picker",
-                                                },
-                                          }}
-                                          name={"time-picker"}
-                                          views={timeViews}
-                                          value={Manager.IsValid(defaultValue) ? moment(defaultValue, DatetimeFormats.timeForDb) : null}
-                                          label={placeholder}
-                                          minutesStep={5}
-                                          onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
-                                          key={refreshKey}
-                                          format={"h:mma"}
-                                          onAccept={onDateOrTimeSelection}
-                                    />
-                              </>
+                              <MobileTimePicker
+                                    slotProps={{
+                                          actionBar: {actions: ["clear", "accept"]},
+                                          textField: {
+                                                label: (
+                                                      <span>
+                                                            <WiTime4 />
+                                                            {placeholder}
+                                                      </span>
+                                                ),
+                                          },
+                                          paper: {
+                                                className: "time-picker",
+                                          },
+                                    }}
+                                    name={"time-picker"}
+                                    views={timeViews}
+                                    value={Manager.IsValid(defaultValue) ? moment(defaultValue, DatetimeFormats.timeForDb) : null}
+                                    label={placeholder}
+                                    minutesStep={5}
+                                    onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
+                                    key={refreshKey}
+                                    format={"h:mma"}
+                                    onAccept={onDateOrTimeSelection}
+                              />
                         )}
 
                         {/* TEXT */}
                         {inputType === InputTypes.text && (
                               <>
                                     <MdOutlineTitle className={"input-icon text"} />
-                                    <DebounceInput
-                                          value={Manager.IsValid(defaultValue) ? defaultValue : ""}
-                                          placeholder={placeholder}
-                                          className={`${inputClasses} with-icon`}
-                                          onChange={onChange}
-                                          name={inputName}
-                                          debounceTimeout={0}
-                                          // debounceTimeout={customDebounceDelay !== 1000 ? customDebounceDelay : 1000}
-                                          key={refreshKey}
-                                    />
+
+                                    <div className="input-and-children">
+                                          <DebounceInput
+                                                value={Manager.IsValid(defaultValue) ? defaultValue : ""}
+                                                placeholder={placeholder}
+                                                className={`${inputClasses} with-icon`}
+                                                onChange={onChange}
+                                                name={inputName}
+                                                debounceTimeout={0}
+                                                // debounceTimeout={customDebounceDelay !== 1000 ? customDebounceDelay : 1000}
+                                                key={refreshKey}
+                                          />
+                                          {children}
+                                    </div>
                               </>
                         )}
 
@@ -211,23 +218,26 @@ function InputField({
                         {inputType === InputTypes.phone && (
                               <>
                                     <RiPhoneFill className={"input-icon phone"} />
-                                    <input
-                                          type="tel"
-                                          id="phone"
-                                          name={inputName}
-                                          maxLength={16}
-                                          className={`${inputClasses} with-icon`}
-                                          placeholder={placeholder}
-                                          key={refreshKey}
-                                          pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                                          defaultValue={defaultValue}
-                                          required={required}
-                                          onChange={(e) => {
-                                                let value = e.target.value
-                                                e.target.value = value.replace(/[^0-9+]/g, "")
-                                                onChange(e)
-                                          }}
-                                    />
+                                    <div className={"input-and-children"}>
+                                          <input
+                                                type="tel"
+                                                id="phone"
+                                                name={inputName}
+                                                maxLength={16}
+                                                className={`${inputClasses} with-icon`}
+                                                placeholder={placeholder}
+                                                key={refreshKey}
+                                                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                                                defaultValue={defaultValue}
+                                                required={required}
+                                                onChange={(e) => {
+                                                      let value = e.target.value
+                                                      e.target.value = value.replace(/[^0-9+]/g, "")
+                                                      onChange(e)
+                                                }}
+                                          />
+                                          {children}
+                                    </div>
                               </>
                         )}
 

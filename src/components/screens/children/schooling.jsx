@@ -110,40 +110,33 @@ export default function Schooling({activeChild}) {
                               <div className={`${Manager.IsValid(schoolingValues) ? "padding" : "hidden"}`}>
                                     {Manager.IsValid(schoolingValues) &&
                                           schoolingValues.map((prop, index) => {
-                                                let infoLabel = StringManager.UppercaseFirstLetterOfAllWords(StringManager.SpaceBetweenWords(prop[0]))
-                                                const value = prop.flat()[1]
+                                                const rawLabel = prop[0]
+                                                const infoLabel = StringManager.SpaceBetweenWords(rawLabel)
+                                                const lowerLabel = infoLabel.toLowerCase()
+                                                const isLast = index === schoolingValues.length - 1
+                                                const isPhone = lowerLabel.includes("phone")
+                                                const sharedBy = Manager.IsValid(prop[2])
+                                                      ? ` (shared by ${StringManager.GetFirstNameOnly(prop[2])})`
+                                                      : ""
+                                                const rowClass = `data-row ${isPhone ? "phone" : ""} ${isLast ? "last" : ""}`
+                                                const value = prop[1]
                                                 return (
-                                                      <div key={index}>
-                                                            <div className="apiResults-row">
-                                                                  {infoLabel.toLowerCase().includes("phone") && (
-                                                                        <>
-                                                                              <a href={`tel:${StringManager.FormatPhone(value).toString()}`}>
-                                                                                    {infoLabel}: {value}
-                                                                              </a>
-                                                                              <CgClose
-                                                                                    className={"children close-x"}
-                                                                                    onClick={() => DeleteProp(infoLabel)}
-                                                                              />
-                                                                        </>
-                                                                  )}
-                                                                  {!infoLabel.toLowerCase().includes("phone") && (
-                                                                        <>
-                                                                              <InputField
-                                                                                    wrapperClasses={`${index === schoolingValues.length - 2 ? "last" : ""}`}
-                                                                                    hasBottomSpacer={false}
-                                                                                    inputType={InputTypes.text}
-                                                                                    placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? `(shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ""}`}
-                                                                                    defaultValue={value}
-                                                                                    onChange={(e) => Update(infoLabel, e.target.value)}
-                                                                              />
-                                                                              <CgClose
-                                                                                    className={"children close-x"}
-                                                                                    onClick={() => DeleteProp(infoLabel)}
-                                                                              />
-                                                                        </>
-                                                                  )}
-                                                            </div>
-                                                            <Spacer height={5} />
+                                                      <div key={index} className={rowClass}>
+                                                            <InputField
+                                                                  wrapperClasses={`${index === schoolingValues.length - 2 ? "last" : ""}`}
+                                                                  hasBottomSpacer={false}
+                                                                  customDebounceDelay={1200}
+                                                                  inputType={InputTypes.text}
+                                                                  defaultValue={value}
+                                                                  placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? sharedBy : ""}`}
+                                                                  onChange={async (e) => {
+                                                                        const inputValue = e.target.value
+                                                                        await Update(infoLabel, `${inputValue}`)
+                                                                  }}>
+                                                                  {" "}
+                                                                  <CgClose className={"close-x children"} onClick={() => DeleteProp(infoLabel)} />
+                                                            </InputField>
+                                                            {index !== schoolingValues.length - 1 && <Spacer height={5} />}
                                                       </div>
                                                 )
                                           })}

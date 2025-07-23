@@ -191,10 +191,18 @@
                         justify-content: center;
                         align-items: center;
                         font-weight: variables.$fwBold;
-                        padding: 0 20px 0 15px;
+                        padding: 0 15px;
                         border-radius: 0 variables.$buttonBorderRadius variables.$buttonBorderRadius 0;
-                        background: palette.$inputBackground;
                         @include fonts.mediumBoldFont;
+
+                        svg {
+                              @include mixins.square(25px);
+                              position: relative;
+                              display: inline;
+                              top: unset;
+                              left: unset;
+                              transform: unset;
+                        }
                   }
 
                   .google-autocomplete-input {
