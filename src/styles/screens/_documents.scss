@@ -42,32 +42,39 @@
                         width: 100%;
                         align-items: stretch;
                         justify-content: center;
-                        background: palette.$lightMain;
-                        border-radius: variables.$buttonBorderRadius;
                         margin: 20px auto 5px auto;
-                        padding: 5px 10px;
+                        padding: 5px 10px 10px 10px;
+                        border-left: 4px solid palette.$blend;
+                        background-color: palette.$lightBlend;
+                        border-radius: variables.$borderRadius;
                         @include mixins.hover;
 
                         &:after {
                               content: "DELETE";
                               font-size: 12px;
-                              font-weight: variables.$fwMedium;
-                              color: palette.$red;
+                              color: palette.$bootstrapRed;
+                              background-color: palette.$bootstrapRedBg;
+                              border-radius: variables.$buttonBorderRadius;
+                              width: max-content;
+                              height: 20px;
+                              line-height: 1.2;
+                              padding: 5px 15px;
                               align-self: stretch;
                               display: flex;
-                              justify-content: center;
-                              padding-top: 2px;
+                              justify-content: flex-start;
                               align-items: center;
+                              margin-top: 5px;
+                              @include fonts.mediumBoldFont;
                         }
 
                         .header-text {
                               font-size: 18px;
-                              font-weight: variables.$fwMedium;
-                              color: palette.$purple !important;
-                              text-align: center;
+                              color: palette.$blend !important;
+                              text-align: left;
                               display: flex;
-                              justify-content: center;
+                              justify-content: flex-start;
                               width: 100%;
+                              @include fonts.boldFont;
                         }
                   }
                   .Text_Body {

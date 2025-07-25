@@ -38,7 +38,7 @@ export default function DocsList() {
 
       useEffect(() => {
             setTimeout(() => {
-                  DomManager.ToggleAnimation("add", "row", DomManager.AnimateClasses.names.fadeInRight, 80)
+                  DomManager.ToggleAnimation("add", "row", DomManager.AnimateClasses.names.fadeInUp, 80)
             }, 300)
       }, [])
 
@@ -59,7 +59,9 @@ export default function DocsList() {
                                           {Manager.IsValid(documents) &&
                                                 documents.map((doc, index) => {
                                                       const documentExts = ["doc", "docx", "pdf", "txt", "odt"]
-                                                      const fileType = documentExts.includes(StringManager.GetFileExtension(doc.name).toString())
+                                                      const fileType = documentExts.includes(
+                                                            StringManager.GetFileExtension(doc.documentName).toString()
+                                                      )
                                                             ? "Document"
                                                             : "Image"
                                                       return (

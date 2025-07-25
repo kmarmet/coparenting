@@ -1,6 +1,7 @@
 import debounce from "debounce"
 import _ from "lodash"
-import React, {useContext, useEffect, useState} from "react"
+import moment from "moment"
+import React, {useContext, useEffect, useMemo, useState} from "react"
 import {FaShare} from "react-icons/fa"
 import {FaLightbulb} from "react-icons/fa6"
 import {HiDotsHorizontal} from "react-icons/hi"
@@ -10,6 +11,7 @@ import {MdDriveFileRenameOutline} from "react-icons/md"
 import {TbFileSearch} from "react-icons/tb"
 import searchTextHL from "search-text-highlight"
 import ButtonThemes from "../../../constants/buttonThemes"
+import DatetimeFormats from "../../../constants/datetimeFormats"
 import InputTypes from "../../../constants/inputTypes"
 import ScreenNames from "../../../constants/screenNames"
 import globalState from "../../../context"
@@ -46,10 +48,14 @@ export default function DocViewer() {
       const [docType, setDocType] = useState("document")
       const [showTips, setShowTips] = useState(false)
       const [showRenameFile, setShowRenameFile] = useState(false)
-      const [newFileName, setNewFileName] = useState("")
+      const [newFileName, setNewFileName] = useState(docToView?.documentName)
       const [searchValue, setSearchValue] = useState("")
       const [showShareCard, setShowShareCard] = useState(false)
       const [shareEmail, setShareEmail] = useState("")
+      const [headersAdded, setHeadersAdded] = useState(false)
+
+      const docText = document.getElementById("doc-text")
+
       // HOOKS
       const {currentUser, currentUserIsLoading} = useCurrentUser()
       const {documents, documentsAreLoading} = useDocuments()
@@ -68,12 +74,15 @@ export default function DocViewer() {
             }
       }
 
+      const userHeaders = useMemo(() => {
+            return DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
+      }, [currentUser])
+
       const OnLoad = async () => {
             const fileType = `.${StringManager.GetFileExtension(docToView.documentName)}`.toLowerCase()
             const nonImageFileTypes = [".docx", ".doc", ".pdf", ".odt", ".txt"]
             if (currentUser && nonImageFileTypes.includes(fileType)) {
                   setTimeout(async () => {
-                        // await FormatDocument()
                         await AppendText()
                   }, 1000)
             } else {
@@ -86,11 +95,12 @@ export default function DocViewer() {
       const SetTableOfContentsHeaders = async () => {
             let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
             let headersInDocument = []
+            let mappedHeaders = userHeaders
 
-            if (!userHeaders) {
-                  userHeaders = predefinedHeaders
+            if (!mappedHeaders) {
+                  mappedHeaders = predefinedHeaders
             } else {
-                  userHeaders = userHeaders?.map((x) => x.headerText)
+                  mappedHeaders = userHeaders?.map((x) => x.headerText)
             }
 
             const domHeaders = document.querySelectorAll(".header")
@@ -115,7 +125,7 @@ export default function DocViewer() {
                         }
                   }
             }
-            const userHeadersMatchingHeadersInDocument = userHeaders.filter((x) => headersInDocument.includes(x))
+            const userHeadersMatchingHeadersInDocument = mappedHeaders.filter((x) => headersInDocument.includes(x))
             let allHeaders = []
 
             if (Manager.IsValid(userHeadersMatchingHeadersInDocument)) {
@@ -141,7 +151,6 @@ export default function DocViewer() {
                   setShowSearch(false)
                   setTimeout(() => {
                         let headers = docText.querySelectorAll(".header")
-                        console.log(headers)
                         if (Manager.IsValid(headers)) {
                               for (let header of headers) {
                                     if (header.textContent.includes(searchValue.toUpperCase())) {
@@ -170,7 +179,6 @@ export default function DocViewer() {
                         setImgUrl(docToView.url)
 
                         let text = docToView.docText
-                        console.log(text)
                         // if (!text) {
                         //         //   AlertManager.throwError(
                         //         //     `Unable to find or convert document, please try again after awhile. ${docToView?.type === 'image' ? `In the meantime, you can view the document image while this is being resolved.` : ''}`
@@ -269,16 +277,20 @@ export default function DocViewer() {
       }
 
       const AddAndFormatHeaders = async () => {
-            const docText = document.getElementById("doc-text")
-            let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
-            userHeaders = userHeaders.map((x) => x.headerText)
-            for (let header of userHeaders) {
-                  docText.innerHTML = docText.innerHTML.replaceAll(
-                        header,
-                        `<div data-hashed-header=${Manager.GenerateHash(header).replaceAll(" ", "")} class="header">
-                          <span class="header-text">${header}</span>
+            if (headersAdded === false) {
+                  if (!Manager.IsValid(docText)) return false
+
+                  let userHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
+                  userHeaders = userHeaders.map((x) => x.headerText)
+                  for (let header of userHeaders) {
+                        docText.innerHTML = docText.innerHTML.replaceAll(
+                              header,
+                              `<div data-hashed-header=${Manager.GenerateHash(header).replaceAll(" ", "")} class="header">
+                          <span class="header-text">${StringManager.UppercaseFirstLetterOfAllWords(header)}</span>
                         </div>`
-                  )
+                        )
+                  }
+                  setHeadersAdded(true)
             }
       }
 
@@ -315,8 +327,7 @@ export default function DocViewer() {
                                           email: currentUser?.email,
                                           name: currentUser?.name,
                                     }
-                                    const existingHeaders = await DB.getTable(`${DB.tables.documentHeaders}/${currentUser?.key}`)
-                                    await DB.Add(`${DB.tables.documentHeaders}/${currentUser?.key}`, existingHeaders, header)
+                                    await DB.Add(`${DB.tables.documentHeaders}/${currentUser?.key}`, userHeaders, header)
                                     await OnLoad()
                               },
                               onDeny: () => {
@@ -353,12 +364,14 @@ export default function DocViewer() {
             if (Manager.IsValid(newFileName, true)) {
                   const newName = `${newFileName}.${StringManager.GetFileExtension(docToView.documentName).toLowerCase()}`
                   const recordIndex = DB.GetTableIndexById(documents, docToView?.id)
-                  if (Manager.IsValid(recordIndex)) {
-                        await DB.updateByPath(`${DB.tables.documents}/${currentUser?.key}/${recordIndex}/name`, newName)
-                        setState({...state, refreshKey: Manager.GetUid(), docToView: {...docToView, name: newName}})
+                  if (recordIndex > -1) {
+                        let updatedDocument = documents[recordIndex]
+                        updatedDocument.documentName = newName
+                        console.log("rname")
+                        setNewFileName(newName)
+                        await DB.ReplaceEntireRecord(`${DB.tables.documents}/${currentUser?.key}/${recordIndex}`, updatedDocument)
                   }
                   setShowRenameFile(false)
-                  setNewFileName("")
             } else {
                   AlertManager.throwError("Please enter a new document name")
                   return false
@@ -373,6 +386,20 @@ export default function DocViewer() {
             })
       }
 
+      // Add and format headers when document text changes
+      useEffect(() => {
+            if (Manager.IsValid(docText) && Manager.IsValid(docText?.textContent) && Manager.IsValid(currentUser)) {
+                  const docTextLength = docText.textContent.length
+                  if (docTextLength > 100) {
+                        setTimeout(async () => {
+                              await AddAndFormatHeaders()
+                              await SetTableOfContentsHeaders()
+                        }, 2000)
+                  }
+            }
+      }, [docText?.textContent?.length, currentUser])
+
+      // PAGE LOAD -> When document is loaded
       useEffect(() => {
             if (!currentUserIsLoading && !documentsAreLoading && Manager.IsValid(docViewerUrl, true)) {
                   void OnLoad()
@@ -411,7 +438,7 @@ export default function DocViewer() {
                         title={"Find Text"}
                         showOverlay={false}
                         onSubmit={Search}
-                        onShow={() => {
+                        onOpen={() => {
                               const searchInput = document.querySelector(".search-input")
                               if (searchInput) {
                                     searchInput.value = ""
@@ -525,18 +552,32 @@ export default function DocViewer() {
                         wrapperClass="rename-file-card"
                         onClose={() => setShowRenameFile(false)}
                         onSubmit={RenameFile}
+                        onOpen={() => {
+                              const renameFileInput = document.querySelector(".rename-file-input")
+                              if (renameFileInput) {
+                                    renameFileInput.value = ""
+                                    renameFileInput.focus()
+                              }
+                        }}
                         className="rename-file"
                         title={"Rename Document"}>
-                        <InputField
-                              placeholder={"New document name"}
-                              required={true}
-                              inputType={InputTypes.text}
-                              onChange={(e) => setNewFileName(e.target.value)}
-                        />
+                        {showRenameFile && (
+                              <InputField
+                                    placeholder={"New document name"}
+                                    required={true}
+                                    defaultValue={StringManager.removeFileExtension(newFileName)}
+                                    inputClasses={"rename-file-input"}
+                                    inputType={InputTypes.text}
+                                    onChange={(e) => {
+                                          console.log("from form")
+                                          setNewFileName(e.target.value)
+                                    }}
+                              />
+                        )}
                   </Form>
 
                   {/* SCREEN ACTIONS */}
-                  <ScreenActionsMenu centeredActionItem={true}>
+                  <ScreenActionsMenu>
                         {/* SCROLL TO TOP BUTTON */}
                         <div
                               className="action-item scroll-to-top"
@@ -641,18 +682,23 @@ export default function DocViewer() {
                         {/*)}*/}
                   </ScreenActionsMenu>
 
+                  {/* SCREEN */}
                   <Screen activeScreen={currentScreen}>
                         {/* PAGE CONTAINER / TEXT */}
                         <div id="documents-container" className={`${theme} page-container  documents`}>
                               <ScreenHeader
-                                    title={StringManager.removeFileExtension(StringManager.UppercaseFirstLetterOfAllWords(docToView?.documentName))
+                                    title={StringManager.removeFileExtension(StringManager.UppercaseFirstLetterOfAllWords(newFileName))
                                           .replaceAll("-", " ")
                                           .replaceAll("_", " ")}
-                                    screenDescription={`${docToView?.owner?.key !== currentUser?.key ? `Shared by ${docToView?.owner?.name}` : ""}`}
+                                    screenDescription={`${docToView?.owner?.key !== currentUser?.key ? `Shared by ${docToView?.owner?.name}` : ""} <br/> ${docToView?.owner?.key === currentUser?.key ? `Uploaded on ${moment(docToView?.creationDate).format(DatetimeFormats.readableMonthAndDayWithYear)}` : ""}`}
                               />
+
+                              {/* SCREEN CONTENT - DOC TEXT */}
                               <div className="screen-content">
                                     <div id="doc-text" key={refreshKey}></div>
                               </div>
+
+                              {/* CLOSE SEARCH BUTTON */}
                               <Button
                                     theme={ButtonThemes.blend}
                                     text={"Close Search"}

@@ -243,10 +243,6 @@ export default function EventCalendar() {
             }
       }, [currentScreen, currentUserIsLoading, showSearchInput])
 
-      useEffect(() => {
-            console.log(dateValue)
-      }, [dateValue])
-
       return (
             <Screen loadingByDefault={true} stopLoadingBool={contentIsLoaded} activeScreen={ScreenNames.calendar} classes={"calendar"}>
                   {/* CARDS */}

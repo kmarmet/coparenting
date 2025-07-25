@@ -25,7 +25,7 @@ export default function Form({
       viewDropdown,
       cancelButtonText = "Close",
       extraButtons = [],
-      onShow = () => {},
+      onOpen = () => {},
 }) {
       const {state, setState} = useContext(globalState)
       const {theme, creationFormToShow} = state
@@ -70,7 +70,7 @@ export default function Form({
                         }
                   }
             }
-            if (onShow) onShow()
+            if (onOpen) onOpen()
       }, [showCard])
 
       return (

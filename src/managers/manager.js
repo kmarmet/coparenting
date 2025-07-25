@@ -184,6 +184,10 @@ const Manager = {
                   case variable == null:
                         return false
 
+                  // Invalid number
+                  case typeof variable === "number" && variable < 0:
+                        return false
+
                   // Moment.js invalid date
                   case typeof variable === "object" && variable?._isAMomentObject && !variable._isValid:
                         return false
