@@ -48,28 +48,31 @@ Apis =
 
   ManyApis:
     GetShortUrl: (url) ->
-      new Promise (resolve, reject) ->
-        myHeaders = new Headers()
-        myHeaders.append "content-type", "application/json"
-        myHeaders.append "x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY
-        raw = JSON.stringify
-          expiry: "5m"
-          url: url
+        try
+          myHeaders = new Headers()
+          myHeaders.append "content-type", "application/json"
+          myHeaders.append "x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY
+          raw = JSON.stringify
+            expiry: "10m"
+            url: url
+          
+          requestOptions =
+            method: "POST"
+            headers: myHeaders
+            body: raw
+            redirect: "follow"
+          
+          response = await fetch "https://api.manyapis.com/v1-create-short-url", requestOptions
+          result = await response.json()
+          
+          if Manager.IsValid(result)
+            resolve result
+          else
+            reject "Unable to parse ManyApis response"
 
-        requestOptions =
-          method: "POST"
-          headers: myHeaders
-          body: raw
-          redirect: "follow"
-
-        response = await fetch "https://api.manyapis.com/v1-create-short-url", requestOptions
-        result = await response.json()
-
-        if Manager.IsValid(result)
-          resolve result
-        else
-          reject "Unable to parse ManyApis response"
-
+        catch error
+          LogManager.Log("Error: #{error} | Code File: Apis | Function: ManyApis.GetShortUrl", LogManager.LogTypes.error, error.stack, error)
+          
     GetTimezone: (ipAddress) ->
       new Promise (resolve, reject) ->
         myHeaders = new Headers()

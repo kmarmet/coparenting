@@ -59,11 +59,11 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
       const formRef = useRef({title: "", value: "text", shareWith: []})
 
       const Add = async () => {
-            Manager.ValidateFormProperty(formRef.current.title, "Title")
+            Manager.ValidateWithError(formRef.current.title, "Title")
             if (selectedInfoType?.value === "phone") {
-                  Manager.ValidateFormProperty(formRef.current.value, "Value", true, "Please enter a valid phone number", "phone")
+                  Manager.ValidateWithError(formRef.current.value, "Value", true, "Please enter a valid phone number", "phone")
             } else {
-                  Manager.ValidateFormProperty(formRef.current.value, "Value")
+                  Manager.ValidateWithError(formRef.current.value, "Value")
             }
 
             const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)

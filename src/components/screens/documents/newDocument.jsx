@@ -17,7 +17,6 @@ import AlertManager from "../../../managers/alertManager"
 import DatasetManager from "../../../managers/datasetManager"
 import DocumentConversionManager from "../../../managers/documentConversionManager.js"
 import DocumentsManager from "../../../managers/documentsManager"
-import DomManager from "../../../managers/domManager"
 import DropdownManager from "../../../managers/dropdownManager"
 import ImageManager from "../../../managers/imageManager"
 import LogManager from "../../../managers/logManager"
@@ -35,8 +34,9 @@ import UploadButton from "../../shared/uploadButton"
 export default function NewDocument() {
       const {state, setState} = useContext(globalState)
       const {theme, creationFormToShow} = state
-      const [shareWith, setShareWith] = useState([])
-      const [docType, setDocType] = useState("Document")
+
+      // FORM STATE
+      const [docType, setDocType] = useState()
       const [docName, setDocName] = useState("")
       const [doc, setDoc] = useState()
 
@@ -50,16 +50,13 @@ export default function NewDocument() {
       // Dropdown State
       const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
       const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
-      const [selectedDocType, setSelectedDocType] = useState([])
 
       const ResetForm = (successMessage = "") => {
             Manager.ResetForm("upload-doc-wrapper")
-            setShareWith([])
             setDocType(null)
             setDoc(null)
             setState({
                   ...state,
-                  refreshKey: Manager.GetUid(),
                   isLoading: false,
                   creationFormToShow: "",
                   successAlertMessage: successMessage,
@@ -68,130 +65,154 @@ export default function NewDocument() {
       }
 
       const Upload = async () => {
-            console.log(doc)
-            if (!doc) {
-                  AlertManager.throwError("Please choose a file to upload")
-                  return false
-            }
-            const fileExtension = StringManager.GetFileExtension(doc?.name).toString()
-            let docNameToUse = `${docName}.${fileExtension}`
-
-            if (!Manager.IsValid(docName, true)) {
-                  docNameToUse = doc?.name
-            }
-
-            //#region VALIDATION
-            if (!Manager.IsValid(docType)) {
-                  AlertManager.throwError("Please choose a document type")
-                  return false
-            }
-
-            // if (docType === 'document' && Object.entries(files).map((x) => !Manager.Contains(x[1].name, '.docx'))[0]) {
-            //   AlertManager.throwError('Uploaded file MUST be of type .docx')
-            //   setState({ ...state, isLoading: false })
-            //   return false
-            // }
-
-            // Check for existing document
-            const existingDocument = documents.find((doc) => doc?.name === docName && doc?.ownerKey === currentUser.key)
-            if (Manager.IsValid(existingDocument)) {
-                  AlertManager.throwError("Document has already been uploaded")
-                  return false
-            }
-            //#endregion VALIDATION
-
-            setState({...state, isLoading: true, loadingText: "Making the magic happen!"})
-            let html = ""
-            let imageUrl = ""
-            let docText = ""
-
-            //#region IMAGE CONVERSION
-            if (docType === "image") {
-                  try {
-                        if (!Manager.IsValid(imageUrl, true)) {
-                              imageUrl = await Storage.GetFileUrl(Storage.directories.documents, currentUser?.key, docNameToUse)
-                        }
-                        const compressedDoc = await ImageManager.compressImage(doc)
-                        let firebaseStorageFileName = StringManager.FormatTitle(docNameToUse, true)
-                        // Upload to Firebase Storage
-                        imageUrl = await Storage.UploadByPath(
-                              `${Storage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`,
-                              compressedDoc
-                        )
-                        const imageName = Storage.GetImageNameFromUrl(imageUrl)
-                        const ocrObject = await DocumentConversionManager.imageToHtml(imageUrl, imageName)
-                        html = ocrObject?.ParsedResults[0]?.ParsedText
-                        html = html
-                              .replaceAll(/([a-z])([A-Z])/g, "$1 $2")
-                              .replaceAll("\n", "")
-                              .replaceAll("\r", "")
-                              .replaceAll(" p.x.", "pm ")
-                              .replaceAll(" p..", "pm ")
-                              .replaceAll(" p.wn", "pm ")
-                              .replaceAll(" p.m.", "pm ")
-                              .replaceAll(" a.x.", "am ")
-                              .replaceAll(" a..", "am ")
-                              .replaceAll(" a.wn", "am ")
-                              .replaceAll(" a.m.", "am ")
-                              .replaceAll(" .", ". ")
-                              .replaceAll("Triday", "Friday")
-                  } catch (error) {
-                        console.log(error)
-                        AlertManager.throwError("Unable to process image. Please try again after awhile.")
-                        setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+            try {
+                  setState({...state, isLoading: true})
+                  if (doc === null || doc === undefined) {
+                        AlertManager.throwError("Please choose a file to upload")
+                        setState({...state, isLoading: false})
                         return false
                   }
-            }
-            //#endregion IMAGE CONVERSION
 
-            //#region DOCUMENT CONVERSION
-            if (docType === "document") {
-                  await Storage.UploadByPath(`${Storage.directories.documents}/${currentUser.key}/${docNameToUse}`, doc)
-                  let firebaseStorageFileName = StringManager.FormatTitle(docNameToUse, true)
-                  docText = await DocumentConversionManager.DocToHtml(docNameToUse, currentUser?.key)
-                  await UploadDocToFirebaseStorage(docText, firebaseStorageFileName)
-            }
+                  let docNameToUse = ""
 
-            //#endregion DOCUMENT CONVERSION
-
-            //#region ADD TO DB / SEND NOTIFICATION
-
-            // Add to user documents object
-
-            const newDocument = new Doc()
-            newDocument.url = imageUrl
-            newDocument.docText = docText
-            newDocument.shareWith = DatasetManager.getUniqueArray(shareWith).flat()
-            newDocument.type = docType
-            newDocument.documentName = StringManager.FormatTitle(docNameToUse, true)
-            newDocument.owner = {
-                  name: currentUser?.name,
-                  key: currentUser?.key,
-            }
-
-            if (Manager.IsValid(newDocument.docText, true)) {
-                  const cleanedDoc = ObjectManager.CleanObject(newDocument)
-                  await DocumentsManager.AddToDocumentsTable(currentUser, documents, cleanedDoc)
-
-                  // Send Notification
-                  if (Manager.IsValid(shareWith)) {
-                        await UpdateManager.SendToShareWith(
-                              shareWith,
-                              currentUser,
-                              `New Document`,
-                              `${StringManager.GetFirstNameOnly(currentUser?.name)} has uploaded a new document`,
-                              ActivityCategory.documents
-                        )
+                  if (!Manager.IsValid(docName, true)) {
+                        docNameToUse = docName
+                  } else {
+                        let formattedDocName = StringManager.FormatTitle(docName?.replaceAll(" ", ""), true)
+                        docNameToUse = `${StringManager.FormatTitle(formattedDocName)}`
                   }
+
+                  //#region VALIDATION
+                  if (
+                        !Manager.Validate({
+                              value: docType,
+                              title: "No Document Type Selected",
+                              errorMessage: "Please choose a type for this document",
+                        })
+                  ) {
+                        setState({...state, isLoading: false})
+                        return false
+                  }
+
+                  // Check for other file types
+                  // const fileExtension = StringManager.GetFileExtension(docName).toString()
+                  // if (docType === 'document' && Object.entries(files).map((x) => !Manager.Contains(x[1].name, '.docx'))[0]) {
+                  //   AlertManager.throwError('Uploaded file MUST be of type .docx')
+                  //   setState({ ...state, isLoading: false })
+                  //   return false
+                  // }
+
+                  // Check for existing document
+                  const existingDocument = documents.find((doc) => doc?.documentName === docName && doc?.ownerKey === currentUser.key)
+                  if (Manager.IsValid(existingDocument)) {
+                        AlertManager.throwError("Document has already been uploaded")
+                        setState({...state, isLoading: false})
+                        return false
+                  } //#endregion VALIDATION
+
+                  let html = ""
+                  let imageUrl = ""
+                  let documentUrl = ""
+                  let docText = ""
+
+                  //#region IMAGE CONVERSION
+                  if (docType === "image") {
+                        try {
+                              if (!Manager.IsValid(imageUrl, true)) {
+                                    imageUrl = await Storage.GetFileUrl(Storage.directories.documents, currentUser?.key, docNameToUse)
+                              }
+                              const compressedDoc = await ImageManager.compressImage(doc)
+                              let firebaseStorageFileName = StringManager.FormatTitle(docNameToUse, true)
+                              // Upload to Firebase Storage
+                              imageUrl = await Storage.UploadByPath(
+                                    `${Storage.directories.documents}/${currentUser?.key}/${firebaseStorageFileName}`,
+                                    compressedDoc
+                              )
+                              const imageName = Storage.GetImageNameFromUrl(imageUrl)
+                              const ocrObject = await DocumentConversionManager.imageToHtml(imageUrl, imageName)
+                              html = ocrObject?.ParsedResults[0]?.ParsedText
+                              html = html
+                                    .replaceAll(/([a-z])([A-Z])/g, "$1 $2")
+                                    .replaceAll("\n", "")
+                                    .replaceAll("\r", "")
+                                    .replaceAll(" p.x.", "pm ")
+                                    .replaceAll(" p..", "pm ")
+                                    .replaceAll(" p.wn", "pm ")
+                                    .replaceAll(" p.m.", "pm ")
+                                    .replaceAll(" a.x.", "am ")
+                                    .replaceAll(" a..", "am ")
+                                    .replaceAll(" a.wn", "am ")
+                                    .replaceAll(" a.m.", "am ")
+                                    .replaceAll(" .", ". ")
+                                    .replaceAll("Triday", "Friday")
+                        } catch (error) {
+                              console.log(error)
+                              AlertManager.throwError("Unable to process image. Please try again after awhile.")
+                              setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+                              return false
+                        }
+                  }
+                  //#endregion IMAGE CONVERSION
+
+                  //#region UPLOAD TO FIREBASE STORAGE
+                  if (docType === "document") {
+                        documentUrl = await Storage.UploadByPath(`${Storage.directories.documents}/${currentUser.key}`, doc, docNameToUse)
+                        const docToHTMLResponse = await fetch(documentUrl)
+                        const blob = await docToHTMLResponse.blob()
+                        if (!Manager.IsValid(blob)) return false
+                        docText = await DocumentConversionManager.GetTextFromDocx(blob)
+                  }
+
+                  //#endregion UPLOAD TO FIREBASE STORAGE
+
+                  //#region ADD TO DB / SEND NOTIFICATION
+                  const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
+
+                  // Add to user documents object
+                  const newDocument = new Doc()
+                  newDocument.url = docType?.toLowerCase() === "image" ? imageUrl : documentUrl
+                  newDocument.docText = docText
+                  newDocument.shareWith = DatasetManager.GetValidArray(shareWith, true)
+                  newDocument.type = docType
+                  newDocument.documentName = StringManager.FormatTitle(docName, true)
+                  newDocument.owner = {
+                        name: currentUser?.name,
+                        key: currentUser?.key,
+                  }
+
+                  console.log(newDocument)
+
+                  if (Manager.IsValid(newDocument.docText, true)) {
+                        const cleanedDoc = ObjectManager.CleanObject(newDocument)
+
+                        // Add to Firebase Realtime Database
+                        await DocumentsManager.AddToDocumentsTable(currentUser, documents, cleanedDoc)
+
+                        // Send Notification
+                        if (Manager.IsValid(shareWith)) {
+                              await UpdateManager.SendToShareWith(
+                                    shareWith,
+                                    currentUser,
+                                    `New Document`,
+                                    `${StringManager.GetFirstNameOnly(currentUser?.name)} has uploaded a new document`,
+                                    ActivityCategory.documents
+                              )
+                        }
+                  }
+                  //#endregion ADD TO DB / SEND NOTIFICATION
+
+                  // await Storage.deleteFile(`${Storage.directories.documents}/${currentUser?.key}/${StringManager.FormatTitle(docNameToUse)}`)
+
+                  ResetForm("Document Uploaded!")
+            } catch (error) {
+                  console.log(error)
+                  AlertManager.throwError("Unable to upload document. Please try again after awhile.")
+                  setState({...state, isLoading: false})
+                  return false
             }
-            //#endregion ADD TO DB / SEND NOTIFICATION
-
-            await Storage.deleteFile(`${Storage.directories.documents}/${currentUser?.key}/${StringManager.FormatTitle(docNameToUse)}`)
-
-            ResetForm("Document Uploaded!")
       }
 
-      const UploadDocToFirebaseStorage = async (txt, fileName) => {
+      const UploadRawDocumentText = async (txt, fileName) => {
             const storage = getStorage()
             const storageRef = ref(storage, `${Storage.directories.documents}/${currentUser?.key}/${fileName}`)
 
@@ -208,16 +229,6 @@ export default function NewDocument() {
                   })
       }
 
-      const HandleCheckboxSelection = (e) => {
-            DomManager.HandleCheckboxSelection(
-                  e,
-                  (e) => {
-                        setDocType(e.toLowerCase())
-                  },
-                  () => {},
-                  false
-            )
-      }
       const SetDefaultDropdownOptions = () => {
             setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
             setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
@@ -228,11 +239,13 @@ export default function NewDocument() {
                   SetDefaultDropdownOptions()
             }
       }, [children, coParents])
+
       return (
             <Form
                   className="upload-document-card"
                   wrapperClass="upload-document-form"
                   onSubmit={Upload}
+                  hasSubmitButton={doc !== null && doc !== undefined}
                   submitText={"Upload"}
                   showCard={creationFormToShow === CreationForms.documents}
                   title={"Upload Document"}
@@ -265,22 +278,24 @@ export default function NewDocument() {
                                           {label: "Image", value: "image"},
                                     ]}
                                     placeholder={"Select Document Type"}
-                                    onSelect={setSelectedDocType}
+                                    onSelect={(e) => setDocType(e.value)}
                               />
 
                               <Spacer height={5} />
 
                               {/* UPLOAD BUTTONS */}
-                              <UploadButton
-                                    containerClass={`${theme} new-document-card`}
-                                    actualUploadButtonText={"Upload"}
-                                    buttonText={docType ? (docType === "document" ? "Choose Document" : "Choose Image") : "Choose Document"}
-                                    uploadType={docType}
-                                    getSelectedImages={(input) => {
-                                          console.log("getSelectedImages")
-                                          setDoc(input)
-                                    }}
-                              />
+                              {Manager.IsValid(docType) && (
+                                    <UploadButton
+                                          containerClass={`${theme} new-document-card`}
+                                          buttonText={`Select ${StringManager.UppercaseFirstLetterOfAllWords(docType)}`}
+                                          uploadType={docType}
+                                          callback={(input) => {
+                                                const {selectedFile, fileName, size} = input
+                                                setDocName(fileName)
+                                                setDoc(selectedFile)
+                                          }}
+                                    />
+                              )}
                         </div>
                   </div>
             </Form>

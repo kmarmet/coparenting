@@ -56,14 +56,14 @@ Apis = {
             },
       },
       ManyApis: {
-            GetShortUrl: function (url) {
-                  return new Promise(async function (resolve, reject) {
-                        var myHeaders, raw, requestOptions, response, result
+            GetShortUrl: async function (url) {
+                  var error, myHeaders, raw, requestOptions, response, result
+                  try {
                         myHeaders = new Headers()
                         myHeaders.append("content-type", "application/json")
                         myHeaders.append("x-api-key", process.env.REACT_APP_MANY_APIS_API_KEY)
                         raw = JSON.stringify({
-                              expiry: "5m",
+                              expiry: "10m",
                               url: url,
                         })
                         requestOptions = {
@@ -79,7 +79,15 @@ Apis = {
                         } else {
                               return reject("Unable to parse ManyApis response")
                         }
-                  })
+                  } catch (error1) {
+                        error = error1
+                        return LogManager.Log(
+                              `Error: ${error} | Code File: Apis | Function: ManyApis.GetShortUrl`,
+                              LogManager.LogTypes.error,
+                              error.stack,
+                              error
+                        )
+                  }
             },
             GetTimezone: function (ipAddress) {
                   return new Promise(async function (resolve, reject) {

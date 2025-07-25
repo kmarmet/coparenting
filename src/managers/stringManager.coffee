@@ -169,12 +169,18 @@ StringManager = {
       return ''
 
   GetFileExtension: (fileName) ->
-    return fileName.split('.').pop()
+    if !Manager.IsValid(fileName, true) or fileName?.length == 0
+      return ""
+      
+    return fileName?.split('.')?.pop()
 
   lowercaseShouldBeLowercase: (input) ->
     return input.replace('Of', 'of')
 
   removeFileExtension: (input) ->
+    if !Manager.IsValid(input, true) or input?.length == 0
+      return ""
+      
     return input.replace(/\.[^/.]+$/, '')
 
   GetWordCount: (input) ->

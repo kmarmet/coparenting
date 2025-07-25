@@ -13,6 +13,10 @@
             }
             #doc-text {
                   overflow: hidden;
+                  font-family: "SF-Pro-Display-Light", sans-serif !important;
+                  color: palette.$primaryText !important;
+                  font-size: 16px !important;
+                  line-height: 1.6 !important;
                   * {
                         text-decoration: unset !important;
                         line-height: 1.6 !important;
@@ -23,7 +27,7 @@
 
                   .text-highlight {
                         color: white;
-                        background: palette.$main;
+                        background: palette.$blend;
                         border-radius: 50px;
                         font-size: 12px;
                         position: relative;
@@ -107,6 +111,10 @@
                         text-decoration: none !important;
                         line-height: 1;
 
+                        &.link {
+                              color: palette.$linkColor !important;
+                        }
+
                         &[name="Check2"] {
                               color: inherit;
                         }
@@ -130,12 +138,23 @@
                               padding: 8px 0;
                         }
                   }
+
+                  span:not(.text-highlight),
+                  li,
+                  a,
+                  p {
+                        font-family: "SF-Pro-Display-Light", sans-serif !important;
+                        color: palette.$primaryText !important;
+                        font-size: 16px !important;
+                  }
+
                   p {
                         font-size: 16px;
                         opacity: 1;
                         max-width: 95%;
                         word-break: break-word;
                         font-family: "SF-Pro-Display-Light", sans-serif !important;
+                        margin-left: 0 !important;
                         &.delete-header-button {
                               font-size: 12px;
                         }
@@ -144,9 +163,17 @@
                   li {
                         font-size: 18px;
                         font-weight: variables.$fwLight;
-                        margin: 0;
-                        span {
+                        margin-left: 0 !important;
+                        span,
+                        a {
                               line-height: 1.4 !important;
+                              height: max-content !important;
+                              margin: 0 auto !important;
+                        }
+                        a {
+                              display: block !important;
+                              width: 100% !important;
+                              margin: 8px 0 !important;
                         }
                         &.delete-header-button {
                               margin: 5px auto 0 auto;
@@ -447,13 +474,12 @@
 
             ol,
             ul {
-                  max-width: 92%;
                   position: relative;
-                  left: 8%;
 
                   li {
                         opacity: 1 !important;
                         color: black !important;
+                        margin-left: 0 !important;
 
                         &::marker {
                               font-size: 16px;

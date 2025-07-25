@@ -225,7 +225,7 @@ export default function FullMenu() {
                                     <div
                                           className={`section info-storage  ${DomManager.Animate.FadeInUp(menuIsOpen)}`}
                                           style={DomManager.AnimateDelayStyle(1, 0.4)}>
-                                          <p className="section-title">Information Database</p>
+                                          <p className="section-title">Contact Details</p>
                                           <div className={`menu-items info-storage`}>
                                                 {/* CONTACTS */}
                                                 <div
@@ -275,18 +275,6 @@ export default function FullMenu() {
                                                                         <p>Co-Parents</p>
                                                                   </div>
                                                             </div>
-
-                                                            {/*  VAULT */}
-                                                            <div
-                                                                  className={`menu-item archives ${currentScreen === ScreenNames.vault ? "active" : ""}`}
-                                                                  onClick={(e) => ChangeCurrentScreen(ScreenNames.vault, e)}>
-                                                                  <div className="content">
-                                                                        <div className="svg-wrapper">
-                                                                              <PiVault />
-                                                                        </div>
-                                                                        <p>The Vault</p>
-                                                                  </div>
-                                                            </div>
                                                       </>
                                                 )}
                                           </div>
@@ -298,7 +286,7 @@ export default function FullMenu() {
                                                 <div
                                                       style={DomManager.AnimateDelayStyle(1, 0.5)}
                                                       className={`section coparenting  ${DomManager.Animate.FadeInUp(menuIsOpen, "slower")}`}>
-                                                      <p className="section-title">Co-Parenting</p>
+                                                      <p className="section-title">Co-Parenting Corner</p>
                                                       <div className={`menu-items coparenting`}>
                                                             {/* VISITATION */}
                                                             <div
@@ -345,6 +333,18 @@ export default function FullMenu() {
                                                                               <RiMapPinTimeLine />
                                                                         </div>
                                                                         <p>Handoffs</p>
+                                                                  </div>
+                                                            </div>
+
+                                                            {/*  VAULT */}
+                                                            <div
+                                                                  className={`menu-item archives ${currentScreen === ScreenNames.vault ? "active" : ""}`}
+                                                                  onClick={(e) => ChangeCurrentScreen(ScreenNames.vault, e)}>
+                                                                  <div className="content">
+                                                                        <div className="svg-wrapper">
+                                                                              <PiVault />
+                                                                        </div>
+                                                                        <p>The Vault</p>
                                                                   </div>
                                                             </div>
                                                       </div>

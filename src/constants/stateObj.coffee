@@ -11,6 +11,7 @@ StateObj =
   currentScreen: ScreenNames.landing
   currentUser: {}
   docToView: ''
+  docViewerUrl: ""
   isLoading: true
   menuIsOpen: false
   messageToUser: null
@@ -37,6 +38,7 @@ StateObj =
   setCurrentScreen: (screen) ->
   setCurrentUser: (user) ->
   setDocToView: (doc) ->
+  setDocViewerUrl: (url) ->
   setEventToEdit: (event) ->
   setIsLoading: (bool) ->
   setMenuIsOpen: (isOpen) ->

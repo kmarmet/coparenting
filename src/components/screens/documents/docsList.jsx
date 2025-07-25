@@ -63,28 +63,29 @@ export default function DocsList() {
                                                             ? "Document"
                                                             : "Image"
                                                       return (
-                                                            <div className="row" key={index}>
-                                                                  <div className="flex section">
-                                                                        <p
-                                                                              data-id={doc.id}
-                                                                              onClick={(e) => {
-                                                                                    if (!Manager.Contains(e.currentTarget.classList, "delete")) {
-                                                                                          setSelectedDoc(doc)
+                                                            <div
+                                                                  className="row"
+                                                                  key={index}
+                                                                  data-url={doc?.url}
+                                                                  onClick={() => {
+                                                                        setSelectedDoc(doc)
 
-                                                                                          setState({
-                                                                                                ...state,
-                                                                                                docToView: doc,
-                                                                                                currentScreen: ScreenNames.docViewer,
-                                                                                          })
-                                                                                    }
-                                                                              }}>
+                                                                        setState({
+                                                                              ...state,
+                                                                              docToView: doc,
+                                                                              docViewerUrl: doc?.url,
+                                                                              currentScreen: ScreenNames.docViewer,
+                                                                        })
+                                                                  }}>
+                                                                  <div className="flex section">
+                                                                        <p data-id={doc.id}>
                                                                               {fileType === "Document" ? (
                                                                                     <HiDocumentText className={"file-type"} />
                                                                               ) : (
                                                                                     <FaFileImage className={"file-type"} />
                                                                               )}
                                                                               {StringManager.removeFileExtension(
-                                                                                    StringManager.UppercaseFirstLetterOfAllWords(doc.name)
+                                                                                    StringManager.UppercaseFirstLetterOfAllWords(doc.documentName)
                                                                               )}
                                                                         </p>
                                                                         <div className="svg-wrapper" onClick={DeleteDoc}>

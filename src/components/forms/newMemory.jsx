@@ -59,6 +59,7 @@ export default function NewMemory() {
       }
 
       const Upload = async () => {
+            console.log("uplolad")
             const setLoading = (value) => setState({...state, isLoading: value})
 
             setLoading(true)
@@ -80,19 +81,12 @@ export default function NewMemory() {
                         `You have not added any ${currentUser?.accountType === "parent" ? "co-parent or child" : "parent"} contacts to your profile. It is also possible they have closed their profile.`
                   )
             }
-
-            if (!Manager.IsValid(shareWith)) {
-                  return fail("Please choose who you would like to share this memory with")
-            }
-
-            if (!Manager.ValidateFormProperty(images, "image", false, "Please choose an image")) {
-                  return fail("Please choose an image")
-            }
-
+            console.log("before validate")
+            Manager.Validate({value: shareWith, title: "Share With", errorMessage: "Please choose who you would like to share this memory with"})
+            Manager.Validate({value: images, title: "No Image Selected", errorMessage: "Please choose an image", isString: false})
+            console.log("after validate")
             const notAnImage = Object.values(images).some((file) => file?.name?.includes(".doc"))
-            if (notAnImage) {
-                  return fail("Files uploaded MUST be images (.png, .jpg, .jpeg, etc.)")
-            }
+            if (notAnImage) fail("Files uploaded MUST be images (.png, .jpg, .jpeg, etc.)")
             //#endregion VALIDATION
 
             // ✅ Compress Images
@@ -120,6 +114,7 @@ export default function NewMemory() {
                   for (const url of urls) {
                         const imageName = Storage.GetImageNameFromUrl(url)
 
+                        console.log(imageName)
                         const memoryData = {
                               ...clean,
                               shareWith: DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions),
@@ -220,11 +215,8 @@ export default function NewMemory() {
                                     containerClass={`${theme} new-memory-card`}
                                     uploadType={"image"}
                                     actualUploadButtonText={"Upload"}
-                                    getImages={(input) => {
-                                          setImages(Array.from(input.target.files))
-                                    }}
+                                    getImages={(input) => setImages(Array.from(input.target.files))}
                                     uploadButtonText={`Choose`}
-                                    upload={() => {}}
                               />
                         </div>
                   </div>

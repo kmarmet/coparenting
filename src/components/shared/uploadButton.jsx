@@ -7,6 +7,7 @@ import Manager from "../../managers/manager"
 import StringManager from "../../managers/stringManager"
 import Button from "./button"
 import CardButton from "./cardButton"
+import Spacer from "./spacer"
 
 function UploadButton({
       containerClass = "",
@@ -15,6 +16,7 @@ function UploadButton({
       useAttachmentIcon = false,
       callback = (selectedFile) => {},
       buttonText = "Choose Images",
+      allowMultiple = false,
 }) {
       const {state, setState} = useContext(globalState)
       const [fileName, setFileName] = useState("No File Selected")
@@ -25,20 +27,14 @@ function UploadButton({
       const TriggerFileSelection = () => fileInputRef.current?.click()
 
       const ReturnImages = (event) => {
-            const selectedFile = event.target.files?.[0]
+            const selectedFile = fileInputRef.current?.files?.[0]
             if (!selectedFile) return
 
-            const name = selectedFile.name
             setFileSelected(true)
-            setFileName(name)
+            setFileName(selectedFile?.name)
 
             // Trigger callback if provided
-            if (callback) callback({selectedFile})
-
-            console.log("selectedFile: ", selectedFile)
-            setTimeout(() => {
-                  getSelectedImages(selectedFile)
-            }, 500)
+            if (callback) callback({selectedFile, fileName: selectedFile.name, size: selectedFile.size})
       }
 
       const GetUploadType = () => {
@@ -56,29 +52,29 @@ function UploadButton({
                               <GrAttachment className={"attachment-icon"} />
                         </CardButton>
                   )}
+
+                  {/* Hidden File Input */}
+                  <input
+                        ref={fileInputRef}
+                        onChange={ReturnImages}
+                        multiple={allowMultiple}
+                        name="file-upload"
+                        type="file"
+                        accept={GetUploadType()}
+                        style={{display: "none"}}
+                  />
+
                   {!useAttachmentIcon && (
                         <div id="upload-inputs" className={containerClass}>
-                              <div className="flex">
-                                    {/* Upload Button */}
-                                    <Button text={buttonText} theme={ButtonThemes.white} classes="upload-button" onClick={TriggerFileSelection} />
+                              {/* Upload Button */}
+                              <Button text={buttonText} theme={ButtonThemes.white} classes="upload-button" onClick={TriggerFileSelection} />
 
-                                    {/* Hidden File Input */}
-                                    <input
-                                          ref={fileInputRef}
-                                          onChange={(e) => ReturnImages(e)}
-                                          multiple
-                                          name="file-upload"
-                                          type="file"
-                                          accept={GetUploadType()}
-                                          style={{display: "none"}}
-                                    />
-                                    {Manager.IsValid(fileName, true) && (
-                                          <p className={`${fileSelected ? "file-name active" : "file-name"}`}>
-                                                {fileSelected ? "Name: " : ""}
-                                                {StringManager.removeFileExtension(StringManager.FormatTitle(fileName.replaceAll("_", " "), true))}
-                                          </p>
-                                    )}
-                              </div>
+                              <Spacer height={10} />
+                              {Manager.IsValid(fileName, true) && (
+                                    <p className={`${fileSelected ? "file-name active" : "file-name"}`}>
+                                          {StringManager.removeFileExtension(StringManager.FormatTitle(fileName.replaceAll("_", " "), true))}
+                                    </p>
+                              )}
                         </div>
                   )}
             </>

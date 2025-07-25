@@ -3,6 +3,7 @@ import DB from "../database/DB"
 import {child, getDatabase, ref, set} from 'firebase/database'
 import DatasetManager from "./datasetManager"
 import StringManager from "./stringManager"
+import LogManager from "./logManager"
 
 export default DocumentsManager =
   DeleteDocsWithIds: (idsToDelete, currentUser, callback = () => {}) ->
@@ -12,22 +13,22 @@ export default DocumentsManager =
         for thisDoc in docs
           if thisDoc.id == docId
             await DB.deleteById("#{DB.tables.documents}/#{currentUser?.key}", docId)
-            thisDoc.name = StringManager.formatFileName(thisDoc.name)
+            thisDoc.name = StringManager.FormatTitle(thisDoc.name, true)
 #            await FirebaseStorage.deleteFile("#{FirebaseStorage.directories.documents}/#{currentUser.key}/#{thisDoc.name}")
             if callback then callback(docId)
 
   AddToDocumentsTable: (currentUser, existingDocuments, data) ->
-    dbRef = ref getDatabase()
-
-    if Manager.IsValid (existingDocuments)
-      existingDocuments = [existingDocuments..., data].filter (item) -> item
-    else
-      existingDocuments = [data].filter (item) -> item
-
     try
+      dbRef = ref getDatabase()
+      console.log("db")
+      if Manager.IsValid (existingDocuments)
+        existingDocuments = [existingDocuments..., data].filter (item) -> item
+      else
+        existingDocuments = [data].filter (item) -> item
+
       await set child(dbRef, "#{DB.tables.documents}/#{currentUser?.key}"), existingDocuments
     catch error
-      console.log("Error: #{error} | Path: #{DB.tables.documents}/#{currentUser?.key}")
+      LogManager.Log(error.message, LogManager.LogTypes.error, error.stack, error)
 
   IsDocumentOrImage: (file) ->
     extension = StringManager.GetFileExtension(file?.name)

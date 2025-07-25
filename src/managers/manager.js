@@ -1,11 +1,17 @@
 // Path: src\managers\manager.js
 import _ from "lodash"
-import validator from "validator"
 import AlertManager from "./alertManager"
 import LogManager from "./logManager"
 import StringManager from "./stringManager"
 
 const Manager = {
+      Validate: ({value, title, errorMessage = "", isString = false}) => {
+            if (!Manager.IsValid(value, isString)) {
+                  AlertManager.throwError(title, errorMessage)
+                  return false
+            }
+            return true
+      },
       GetPromise: async (callback, delay = 0) =>
             await new Promise((resolve) => {
                   setTimeout(() => {
@@ -36,23 +42,58 @@ const Manager = {
                   }
             }, 1000)
       },
-      GetInvalidInputsErrorString: (requiredInputs) => {
-            const invalidNames = []
+      ValidateFields: (validationFields) => {
+            const errors = []
 
-            for (const input of requiredInputs) {
-                  if (Manager.IsValid(input.name) && !Manager.IsValid(input.value, {minLength: 1})) {
-                        invalidNames.push(input.name)
+            const isMoment = (val) => val && typeof val === "object" && typeof val.isValid === "function" && val._isAMomentObject
+
+            const isEmpty = (val) =>
+                  val === null || val === undefined || (typeof val === "string" && val.trim() === "") || (Array.isArray(val) && val.length === 0)
+
+            validationFields.forEach(({name, value, required = true, type, errorMessage}) => {
+                  // 1️⃣ Required check
+                  if (required && isEmpty(value)) {
+                        errors.push(`${name} is required`)
+                        return // move to next
                   }
-            }
 
-            if (!invalidNames?.length) return ""
+                  // 2️⃣ Type check
+                  if (type && value != null) {
+                        let validType = true
 
-            const isPlural = invalidNames.length > 1
-            const last = invalidNames.pop()
-            const formattedNames = invalidNames.length ? `${invalidNames.join(", ")} and ${last}` : last
+                        switch (type.toLowerCase()) {
+                              case "string":
+                                    validType = typeof value === "string"
+                                    break
+                              case "number":
+                                    validType = typeof value === "number" && !isNaN(value)
+                                    break
+                              case "boolean":
+                                    validType = typeof value === "boolean"
+                                    break
+                              case "array":
+                                    validType = Array.isArray(value)
+                                    break
+                              case "object":
+                                    validType = typeof value === "object" && !Array.isArray(value) && true
+                                    break
+                              case "date":
+                                    validType = value instanceof Date && !isNaN(value.getTime())
+                                    break
+                              case "moment":
+                                    validType = isMoment(value) && value.isValid()
+                                    break
+                              default:
+                                    validType = true // unknown type, skip
+                        }
 
-            return `${formattedNames} ${isPlural ? "are" : "is"} required`
+                        if (!validType) errors.push(`${name} must be a valid ${type}`)
+                  }
+            })
+
+            return errors
       },
+
       ResetForm: (parentClass) => {
             const inputWrappers = document.querySelectorAll(".input-container")
 
@@ -137,46 +178,44 @@ const Manager = {
                   navigator.virtualKeyboard.hide()
             }
       },
-      ValidateFormProperty: (
-            variableToCheck,
-            variableName = "",
-            isString = true,
-            errorMessage = `${variableName} is Required`,
-            variableType = ""
-      ) => {
-            if (variableType === "phone") {
-                  if (!validator?.isMobilePhone(variableToCheck)) {
-                        AlertManager.throwError(errorMessage)
-                        throw {silent: true}
-                  }
+      IsValid: (variable, checkStringLength = false, checkFile = false) => {
+            switch (true) {
+                  // Null or undefined
+                  case variable == null:
+                        return false
+
+                  // Moment.js invalid date
+                  case typeof variable === "object" && variable?._isAMomentObject && !variable._isValid:
+                        return false
+
+                  // Invalid string (like "Invalid date")
+                  case typeof variable === "string" && checkStringLength && variable.trim() === "":
+                        return false
+                  case typeof variable === "string" && variable.includes("Invalid"):
+                        return false
+
+                  // File with no size
+                  case checkFile && variable instanceof File && variable?.size <= 0:
+                        return false
+
+                  // Empty object or array using Object.entries or lodash
+                  case typeof variable === "object" && Object.entries(variable).length === 0:
+                        return false
+
+                  // Generic empty check
+                  case _.isEmpty(variable):
+                        return false
+
+                  // Explicit empty array check
+                  case Array.isArray(variable) && variable.length === 0:
+                        return false
+
+                  // Everything else is valid
+                  default:
+                        return true
             }
-            if (!Manager.IsValid(variableToCheck, isString)) {
-                  AlertManager.throwError(errorMessage)
-                  throw {silent: true}
-            }
-            return true
       },
-      IsValid: (variable, checkStringLength = false) => {
-            // Null or undefined
-            if (variable == null) return false
 
-            // Moment.js invalid date
-            if (typeof variable === "object" && variable?._isAMomentObject && !variable._isValid) {
-                  return false
-            }
-
-            // Invalid string (like "Invalid date")
-            if (typeof variable === "string") {
-                  if (!checkStringLength && variable.trim() === "") return false
-                  if (variable.includes("Invalid")) return false
-            }
-
-            // Empty array or object
-            if (_.isEmpty(variable)) return false
-
-            // -1 check (optional - make this explicit if tied to your domain)
-            return !(parseInt(variable) === -1 && variable < 1)
-      },
       GetDirectionsLink: (address) => {
             let directionsLink
             if (!Manager.IsValid(address, true)) {

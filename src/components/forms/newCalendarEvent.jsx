@@ -125,8 +125,14 @@ export default function NewCalendarEvent() {
 
                   if (Manager.IsValid(formRef.current)) {
                         //#region VALIDATION
-                        Manager.ValidateFormProperty(formRef.current.title, "Event Name", true)
-                        Manager.ValidateFormProperty(formRef.current.startDate, "Event Date")
+                        if (!Manager.IsValid(formRef.current.title, true)) {
+                              AlertManager.throwError("Please add an event name")
+                              return false
+                        }
+                        if (!Manager.IsValid(formRef.current.startDate)) {
+                              AlertManager.throwError("Please add an event date")
+                              return false
+                        }
 
                         // Custom Validation
                         if (Manager.IsValid(formRef.current.phone, true)) {

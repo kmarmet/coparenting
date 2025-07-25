@@ -243,6 +243,10 @@ export default function EventCalendar() {
             }
       }, [currentScreen, currentUserIsLoading, showSearchInput])
 
+      useEffect(() => {
+            console.log(dateValue)
+      }, [dateValue])
+
       return (
             <Screen loadingByDefault={true} stopLoadingBool={contentIsLoaded} activeScreen={ScreenNames.calendar} classes={"calendar"}>
                   {/* CARDS */}
@@ -302,7 +306,7 @@ export default function EventCalendar() {
                                           minDate={moment(`${moment().year()}-01-01`)}
                                           maxDate={moment(`${moment().year()}-12-31`)}
                                           onMonthChange={async (month) => {
-                                                const formattedMonth = moment(month).format("MMMM")
+                                                const formattedMonth = moment(month).format("MM")
                                                 const formattedYear = moment(month).format("YYYY")
                                                 const formattedDate = `${formattedMonth}/01/${formattedYear}`
                                                 setDateValue(moment(formattedDate))
