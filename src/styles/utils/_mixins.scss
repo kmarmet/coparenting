@@ -2954,6 +2954,18 @@ $shadows-big: multiple-box-shadow(100);
                   left: 0;
                   width: 100%;
 
+                  #table-of-contents {
+                        p {
+                              background: palette.$inputBackground;
+                              width: 100%;
+                              color: white;
+                              margin-bottom: 8px;
+                              padding: 10px 20px;
+                              border-radius: variables.$buttonBorderRadius;
+                              @include fonts.regularFont;
+                        }
+                  }
+
                   .share-with-checkbox-group {
                         .checkboxes {
                               display: flex;
@@ -3025,17 +3037,6 @@ $shadows-big: multiple-box-shadow(100);
                                           display: flex;
                                           align-items: flex-start;
                                     }
-                              }
-                        }
-
-                        #table-of-contents {
-                              p {
-                                    background: palette.$grey;
-                                    width: 100%;
-                                    margin-bottom: 8px;
-                                    border-radius: variables.$borderRadius;
-                                    padding: 10px;
-                                    font-weight: variables.$fwMedium;
                               }
                         }
 

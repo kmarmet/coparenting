@@ -11,7 +11,7 @@ import StringManager from "./stringManager"
 const DateManager = {
       GetRepeatingEvents: async (object) => {
             const eventTitle = object.title
-            let repeatingEvents = await DB.getTable(DB.tables.calendarEvents)
+            let repeatingEvents = await DB.GetTableData(DB.tables.calendarEvents)
             repeatingEvents = repeatingEvents.filter((event) => event.title === eventTitle)
             const recurringInterval = object.recurringInterval
             const active = document.querySelector(`[data-label=${StringManager.UppercaseFirstLetterOfAllWords(recurringInterval)}]`)

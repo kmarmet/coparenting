@@ -80,7 +80,7 @@ export default AppManager = {
       },
       GetCurrentAppVersion: async function () {
             var ref1, versions
-            versions = await DB.getTable(`${DB.tables.appUpdates}`)
+            versions = await DB.GetTableData(`${DB.tables.appUpdates}`)
             return (ref1 = versions[(versions != null ? versions.length : void 0) - 1]) != null ? ref1.currentVersion : void 0
       },
       UpdateOrRefreshIfNecessary: async function (currentUser, latestVersion) {
@@ -198,7 +198,7 @@ export default AppManager = {
       },
       DeleteExpiredCalendarEvents: async function (currentUser) {
             var daysPassed, event, events, i, len, results
-            events = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.key : void 0}`)
+            events = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.key : void 0}`)
             if (Manager.IsValid(events)) {
                   events = events.filter(function (x) {
                         return x != null
@@ -220,14 +220,14 @@ export default AppManager = {
       setUpdateAvailable: async function (updateAvailableValue = null) {
             var dbRef, i, lastUpdateObject, len, timestamp, updateAvailable, updateObject, user, users
             dbRef = ref(getDatabase())
-            users = Manager.convertToArray(await DB.getTable(DB.tables.users))
+            users = Manager.convertToArray(await DB.GetTableData(DB.tables.users))
 
             // Set updatedApp=false for all users to trigger update alert
             for (i = 0, len = users.length; i < len; i++) {
                   user = users[i]
                   await DB_UserScoped.updateUserRecord(user.phone, "updatedApp", false)
             }
-            lastUpdateObject = await DB.getTable("updateAvailable")
+            lastUpdateObject = await DB.GetTableData("updateAvailable")
             ;({updateAvailable} = lastUpdateObject)
             timestamp = moment().format(DateFormats.timestamp)
             updateObject = {
@@ -247,12 +247,12 @@ export default AppManager = {
       },
       getLastUpdateObject: async function () {
             var updateObject
-            updateObject = await DB.getTable("updateAvailable")
+            updateObject = await DB.GetTableData("updateAvailable")
             return updateObject
       },
       DeleteExpiredMemories: async function (currentUser) {
             var daysPassed, i, len, memories, memory, results
-            memories = await DB.getTable(DB.tables.memories)
+            memories = await DB.GetTableData(DB.tables.memories)
             if (Manager.IsValid(memories)) {
                   results = []
                   for (i = 0, len = memories.length; i < len; i++) {

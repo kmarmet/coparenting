@@ -11,6 +11,8 @@ EmailManager =
     emailVerification: 'emailVerification'
     coparentInvitation: 'coParent-invitation'
     parentInvitation: 'parent-invitation'
+    shareDocument: 'shareDocument'
+    
   GetConfig: (message, templateName, fromName) ->
     config =
       service_id: 'service_ml9j8d3'
@@ -26,6 +28,13 @@ EmailManager =
     config.message = message
     config.from_name = userEmail
     emailjs.send(config.service_id, config.template_id, config)
+  SendDocumentSharingEmail: ( templateName, message, userEmail) ->
+    config = EmailManager.GetConfig()
+    config.template_id = templateName
+    config.message = message
+    config.from_name = userEmail
+    emailjs.send(config.service_id, config.template_id, {reply_to: userEmail,from_name: userEmail,to_email: userEmail, from_name: config.reply_to}).then (response)  ->
+      console.log('SUCCESS!', response.status, response.text)
   SendEmailToUser: ( templateName, message, userEmail, fromName) ->
     config = EmailManager.GetConfig()
     config.template_id = "coParent-invitation"

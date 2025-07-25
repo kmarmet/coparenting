@@ -17,7 +17,7 @@ ChatManager =
     newChat.id = Manager.GetUid()
     newChat.members = [{recipient...}, {sender...}]
     newChat.ownerKey = sender?.key
-    existingChats = await DB.getTable("#{DB.tables.chats}/#{sender?.key}")
+    existingChats = await DB.GetTableData("#{DB.tables.chats}/#{sender?.key}")
     updatedChats = DatasetManager.AddToArray(existingChats, newChat)
 
     try
@@ -31,7 +31,7 @@ ChatManager =
   InsertChatMessage:  (chatId, message) ->
     try
       dbRef = ref(getDatabase())
-      currentMessages = await DB.getTable("#{DB.tables.chatMessages}/#{chatId}")
+      currentMessages = await DB.GetTableData("#{DB.tables.chatMessages}/#{chatId}")
       console.log("#{DB.tables.chatMessages}/#{chatId}", message)
       toAdd = DatasetManager.AddToArray(currentMessages, message)
       await set(child(dbRef, "#{DB.tables.chatMessages}/#{chatId}"), toAdd)
@@ -89,7 +89,7 @@ ChatManager =
       LogManager.Log(error.message, LogManager.LogTypes.error)
 
   GetMessages:  (chatId) ->
-    return await DB.getTable("#{DB.tables.chatMessages}/#{chatId}")
+    return await DB.GetTableData("#{DB.tables.chatMessages}/#{chatId}")
 
   PauseChat:  (currentUser, coParentKey, chat) ->
     try
@@ -120,7 +120,7 @@ ChatManager =
       LogManager.Log(error.message, LogManager.LogTypes.error)
 
   GetBookmarks:  (chatId) ->
-    existingBookmarks = await DB.getTable("#{DB.tables.chatBookmarks}/#{chatId}")
+    existingBookmarks = await DB.GetTableData("#{DB.tables.chatBookmarks}/#{chatId}")
     existingBookmarks = DatasetManager.GetValidArray(existingBookmarks)
 
     return existingBookmarks

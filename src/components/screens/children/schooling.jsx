@@ -25,7 +25,7 @@ export default function Schooling({activeChild}) {
       const {currentUser} = useCurrentUser()
 
       const DeleteProp = async (prop) => {
-            const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
+            const sharing = await DB.GetTableData(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
 
             const existingPropCount = Object.keys(activeChild?.schooling).length
 
@@ -56,7 +56,7 @@ export default function Schooling({activeChild}) {
       }
 
       const SetSelectedChild = async () => {
-            const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
+            const sharing = await DB.GetTableData(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
             let sharedValues = []
             if (Manager.IsValid(sharing)) {
                   for (let obj of sharing) {

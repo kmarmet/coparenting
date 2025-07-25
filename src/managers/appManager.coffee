@@ -67,7 +67,7 @@ export default AppManager =
       return false
   
   GetCurrentAppVersion: ->
-    versions = await DB.getTable "#{DB.tables.appUpdates}"
+    versions = await DB.GetTableData "#{DB.tables.appUpdates}"
     return versions[versions?.length - 1]?.currentVersion
   
   UpdateOrRefreshIfNecessary: (currentUser, latestVersion) ->
@@ -170,7 +170,7 @@ export default AppManager =
     'parent'
   
   DeleteExpiredCalendarEvents: (currentUser) ->
-    events = await DB.getTable "#{DB.tables.calendarEvents}/#{currentUser?.key}"
+    events = await DB.GetTableData "#{DB.tables.calendarEvents}/#{currentUser?.key}"
     
     if Manager.IsValid events
       events = events.filter (x) -> x?
@@ -184,13 +184,13 @@ export default AppManager =
   
   setUpdateAvailable: (updateAvailableValue = null) ->
     dbRef = ref getDatabase()
-    users = Manager.convertToArray await DB.getTable DB.tables.users
+    users = Manager.convertToArray await DB.GetTableData DB.tables.users
     
     # Set updatedApp=false for all users to trigger update alert
     for user in users
       await DB_UserScoped.updateUserRecord user.phone, "updatedApp", false
     
-    lastUpdateObject = await DB.getTable "updateAvailable"
+    lastUpdateObject = await DB.GetTableData "updateAvailable"
     { updateAvailable } = lastUpdateObject
     timestamp = moment().format DateFormats.timestamp
     
@@ -209,11 +209,11 @@ export default AppManager =
       set child(dbRef, "updateAvailable"), updateObject
   
   getLastUpdateObject: ->
-    updateObject = await DB.getTable "updateAvailable"
+    updateObject = await DB.GetTableData "updateAvailable"
     return updateObject
   
   DeleteExpiredMemories: (currentUser) ->
-    memories = await DB.getTable DB.tables.memories
+    memories = await DB.GetTableData DB.tables.memories
     
     if Manager.IsValid memories
       for memory in memories

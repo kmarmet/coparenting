@@ -142,7 +142,7 @@ export default function App() {
                               }
                               // await AppManager.setAppBadge(0)
                               await AppManager.clearAppBadge()
-                              const users = await DB.getTable(DB.tables.users)
+                              const users = await DB.GetTableData(DB.tables.users)
 
                               let updates = []
                               let currentUserFromDb
@@ -154,7 +154,7 @@ export default function App() {
                                     let screenToNavigateTo = ScreenNames.calendar
                                     const body = document.getElementById("external-overrides")
                                     const navbar = document.getElementById("navbar")
-                                    updates = await DB.getTable(`${DB.tables.updates}/${currentUserFromDb?.key}`)
+                                    updates = await DB.GetTableData(`${DB.tables.updates}/${currentUserFromDb?.key}`)
 
                                     if (Manager.IsValid(navbar)) {
                                           navbar.setAttribute("account-type", currentUserFromDb?.accountType)
@@ -177,7 +177,7 @@ export default function App() {
 
                                     // Get notifications
                                     if (!window.location.href.includes("localhost") && !AppManager.IsDevMode()) {
-                                          const updateSubscribers = await DB.getTable(`${DB.tables.updateSubscribers}`)
+                                          const updateSubscribers = await DB.GetTableData(`${DB.tables.updateSubscribers}`)
                                           const subscriber = updateSubscribers?.find((s) => s?.email === currentUserFromDb?.email)
                                           if (!Manager.IsValid(subscriber)) {
                                                 UpdateManager.init(currentUserFromDb)

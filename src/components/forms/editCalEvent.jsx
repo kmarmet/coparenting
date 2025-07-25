@@ -236,7 +236,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   await CalendarManager.deleteEvent(currentUser, event.id)
                   await ResetForm("Event Deleted")
             } else {
-                  let clonedEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
+                  let clonedEvents = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser?.key}`)
                   if (Manager.IsValid(clonedEvents)) {
                         clonedEvents = clonedEvents.filter((x) => x.title === event?.title)
                         await CalendarManager.deleteMultipleEvents(clonedEvents, currentUser)

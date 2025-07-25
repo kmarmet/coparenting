@@ -22,7 +22,7 @@ SecurityManager = {
             if (Manager.IsValid(currentUser) && Manager.IsValid(linkedAccountKeys)) {
                   for (i = 0, len = linkedAccountKeys.length; i < len; i++) {
                         accountKey = linkedAccountKeys[i]
-                        userAccountItems = await DB.getTable(`${table}/${accountKey}`)
+                        userAccountItems = await DB.GetTableData(`${table}/${accountKey}`)
                         for (j = 0, len1 = userAccountItems.length; j < len1; j++) {
                               item = userAccountItems[j]
                               if (Manager.IsValid(item != null ? item.shareWith : void 0)) {
@@ -74,7 +74,7 @@ SecurityManager = {
                   ref = currentUser != null ? currentUser.coparents : void 0
                   for (i = 0, len = ref.length; i < len; i++) {
                         coparent = ref[i]
-                        coparentItems = await DB.getTable(`${table}/${coparent != null ? coparent.userKey : void 0}`)
+                        coparentItems = await DB.GetTableData(`${table}/${coparent != null ? coparent.userKey : void 0}`)
                         for (j = 0, len1 = coparentItems.length; j < len1; j++) {
                               item = coparentItems[j]
                               if (Manager.IsValid(item != null ? item.shareWith : void 0)) {
@@ -96,7 +96,7 @@ SecurityManager = {
                   ref2 = currentUser != null ? currentUser.parents : void 0
                   for (k = 0, len2 = ref2.length; k < len2; k++) {
                         parent = ref2[k]
-                        parentItems = await DB.getTable(`${table}/${parent != null ? parent.userKey : void 0}`)
+                        parentItems = await DB.GetTableData(`${table}/${parent != null ? parent.userKey : void 0}`)
                         for (l = 0, len3 = parentItems.length; l < len3; l++) {
                               item = parentItems[l]
                               if (Manager.IsValid(item != null ? item.shareWith : void 0)) {
@@ -118,7 +118,7 @@ SecurityManager = {
                   ref4 = currentUser != null ? currentUser.children : void 0
                   for (m = 0, len4 = ref4.length; m < len4; m++) {
                         child = ref4[m]
-                        childItems = await DB.getTable(`${table}/${child != null ? child.userKey : void 0}`)
+                        childItems = await DB.GetTableData(`${table}/${child != null ? child.userKey : void 0}`)
                         for (n = 0, len5 = childItems.length; n < len5; n++) {
                               item = childItems[n]
                               if (Manager.IsValid(item != null ? item.shareWith : void 0)) {
@@ -140,12 +140,12 @@ SecurityManager = {
       },
       getCalendarEvents: async function (currentUser) {
             var allEvents, event, i, len, returnRecords, sharedEvents, users
-            users = await DB.getTable(DB.tables.users)
+            users = await DB.GetTableData(DB.tables.users)
             currentUser = users.find(function (x) {
                   return x.email === (currentUser != null ? currentUser.email : void 0)
             })
             returnRecords = []
-            allEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.key : void 0}`)
+            allEvents = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser != null ? currentUser.key : void 0}`)
             sharedEvents = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents)
             if (Manager.IsValid(allEvents)) {
                   for (i = 0, len = allEvents.length; i < len; i++) {
@@ -171,7 +171,7 @@ SecurityManager = {
             sharedEvents = []
             filteredEvents = []
             ;[allEvents, sharedEvents] = await Promise.all([
-                  DB.getTable(`${DB.tables.calendarEvents}/${currentUser.key}`),
+                  DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser.key}`),
                   SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents),
             ])
             allEvents = [...allEvents, ...sharedEvents]
@@ -191,7 +191,7 @@ SecurityManager = {
       getExpenses: async function (currentUser) {
             var allExpenses, expense, i, len, returnRecords, sharedExpenses
             returnRecords = []
-            allExpenses = DatasetManager.GetValidArray(DB.getTable(`${DB.tables.expenses}/${currentUser != null ? currentUser.key : void 0}`))
+            allExpenses = DatasetManager.GetValidArray(DB.GetTableData(`${DB.tables.expenses}/${currentUser != null ? currentUser.key : void 0}`))
             sharedExpenses = await SecurityManager.getShareWithItems(currentUser, DB.tables.expenses)
             if (Manager.IsValid(allExpenses)) {
                   for (i = 0, len = allExpenses.length; i < len; i++) {
@@ -210,7 +210,7 @@ SecurityManager = {
             var allRequests, i, len, request, returnRecords, sharedSwaps
             returnRecords = []
             allRequests = DatasetManager.GetValidArray(
-                  await DB.getTable(`${DB.tables.visitationRequests}/${currentUser != null ? currentUser.key : void 0}`)
+                  await DB.GetTableData(`${DB.tables.visitationRequests}/${currentUser != null ? currentUser.key : void 0}`)
             )
             sharedSwaps = await SecurityManager.getShareWithItems(currentUser, DB.tables.visitationRequests)
             if (Manager.IsValid(allRequests)) {
@@ -230,7 +230,7 @@ SecurityManager = {
             var allRequests, i, len, request, returnRecords, sharedTransfers
             returnRecords = []
             allRequests = DatasetManager.GetValidArray(
-                  await DB.getTable(`${DB.tables.handoffChangeRequests}/${currentUser != null ? currentUser.key : void 0}`)
+                  await DB.GetTableData(`${DB.tables.handoffChangeRequests}/${currentUser != null ? currentUser.key : void 0}`)
             )
             sharedTransfers = await SecurityManager.getShareWithItems(currentUser, DB.tables.handoffChangeRequests)
             if (Manager.IsValid(allRequests)) {
@@ -249,7 +249,7 @@ SecurityManager = {
       getDocuments: async function (currentUser) {
             var allDocs, doc, i, len, returnRecords, sharedDocs
             returnRecords = []
-            allDocs = DatasetManager.GetValidArray(await DB.getTable(`${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`))
+            allDocs = DatasetManager.GetValidArray(await DB.GetTableData(`${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`))
             sharedDocs = await SecurityManager.getShareWithItems(currentUser, DB.tables.documents)
             if (Manager.IsValid(allDocs)) {
                   for (i = 0, len = allDocs.length; i < len; i++) {
@@ -267,7 +267,9 @@ SecurityManager = {
       getMemories: async function (currentUser) {
             var allMemories, i, len, memory, returnRecords, sharedMemories
             returnRecords = []
-            allMemories = DatasetManager.GetValidArray(await DB.getTable(`${DB.tables.memories}/${currentUser != null ? currentUser.key : void 0}`))
+            allMemories = DatasetManager.GetValidArray(
+                  await DB.GetTableData(`${DB.tables.memories}/${currentUser != null ? currentUser.key : void 0}`)
+            )
             sharedMemories = await SecurityManager.getShareWithItems(currentUser, DB.tables.memories)
             if (Manager.IsValid(allMemories)) {
                   for (i = 0, len = allMemories.length; i < len; i++) {
@@ -285,7 +287,7 @@ SecurityManager = {
       getInputSuggestions: async function (currentUser) {
             var i, len, returnRecords, suggestion, suggestions
             returnRecords = []
-            suggestions = DatasetManager.GetValidArray(await DB.getTable(DB.tables.suggestions))
+            suggestions = DatasetManager.GetValidArray(await DB.GetTableData(DB.tables.suggestions))
             if (Manager.IsValid(suggestions)) {
                   for (i = 0, len = suggestions.length; i < len; i++) {
                         suggestion = suggestions[i]
@@ -298,13 +300,13 @@ SecurityManager = {
       },
       getChats: async function (currentUser) {
             var chats, securedChats
-            chats = DatasetManager.GetValidArray(await DB.getTable(`${DB.tables.chats}/${currentUser != null ? currentUser.key : void 0}`))
+            chats = DatasetManager.GetValidArray(await DB.GetTableData(`${DB.tables.chats}/${currentUser != null ? currentUser.key : void 0}`))
             securedChats = []
             return securedChats
       },
       getCoparentChats: async function (currentUser) {
             var activeChats, allChats, allChatsFlattened, chat, i, len, members, ref
-            allChats = await DB.getTable("chats")
+            allChats = await DB.GetTableData("chats")
             activeChats = []
             allChatsFlattened = allChats
             if (Manager.IsValid(allChatsFlattened)) {

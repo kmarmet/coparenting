@@ -24,7 +24,9 @@ export default DocumentsManager = {
             results = []
             for (i = 0, len = idsToDelete.length; i < len; i++) {
                   docId = idsToDelete[i]
-                  docs = DatasetManager.GetValidArray(await DB.getTable(`${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`))
+                  docs = DatasetManager.GetValidArray(
+                        await DB.GetTableData(`${DB.tables.documents}/${currentUser != null ? currentUser.key : void 0}`)
+                  )
                   if (Manager.IsValid(docs)) {
                         results.push(
                               await (async function () {

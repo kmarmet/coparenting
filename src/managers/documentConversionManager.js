@@ -83,9 +83,13 @@ const DocumentConversionManager = {
       ],
 
       GetTextFromDocx: async (blob) => {
-            const arrayBuffer = await blob.arrayBuffer()
-            const result = await mammoth.convertToHtml({arrayBuffer})
-            return result.value.trim()
+            try {
+                  const arrayBuffer = await blob.arrayBuffer()
+                  const result = await mammoth.convertToHtml({arrayBuffer})
+                  return result.value.trim()
+            } catch (error) {
+                  LogManager.Log(`Error: ${error} | Code File: documentConversionManager | Function: GetTextFromDocx`)
+            }
       },
 
       DocToHtml: async (fileName, url, currentUserKey) => {

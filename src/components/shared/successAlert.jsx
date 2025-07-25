@@ -27,7 +27,7 @@ const SuccessAlert = () => {
                 `,
                   },
                   position: "top-end",
-                  timer: 1500,
+                  timer: 1800,
                   timerProgressBar: true,
                   showConfirmButton: false,
                   background: "#2ac08a",

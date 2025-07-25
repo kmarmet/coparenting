@@ -179,7 +179,7 @@ const DB_UserScoped = {
       // ADD
       addMultipleExpenses: async (currentUser, data) => {
             const dbRef = ref(getDatabase())
-            const currentExpenses = await DB.getTable(`${DB.tables.expenses}/${currentUser.key}`)
+            const currentExpenses = await DB.GetTableData(`${DB.tables.expenses}/${currentUser.key}`)
             const toAdd = [...currentExpenses, [...data]].filter((x) => x !== undefined).flat()
             set(child(dbRef, `${DB.tables.expenses}/${currentUser.key}`), toAdd).catch((error) => {
                   console.log(error)
@@ -187,7 +187,7 @@ const DB_UserScoped = {
       },
       addUser: async (newUser) => {
             const dbRef = ref(getDatabase())
-            const currentUsers = await DB.getTable(DB.tables.users)
+            const currentUsers = await DB.GetTableData(DB.tables.users)
             const toAdd = [...currentUsers, [...newUser]].filter((x) => x !== undefined).flat()
             set(child(dbRef, `${DB.tables.users}`), toAdd).catch((error) => {
                   console.log(error)
@@ -196,7 +196,7 @@ const DB_UserScoped = {
       addCoparent: async (currentUser, newCoparent) => {
             const dbRef = ref(getDatabase())
             let updatedCoparents = []
-            const coparents = await DB.getTable(`${DB.tables.users}/${currentUser?.key}/coparents`)
+            const coparents = await DB.GetTableData(`${DB.tables.users}/${currentUser?.key}/coparents`)
             if (Manager.IsValid(coparents, true)) {
                   updatedCoparents = DatasetManager.GetValidArray([...coparents, newCoparent])
             } else {
@@ -249,7 +249,7 @@ const DB_UserScoped = {
       },
       addToUserMemories: async (currentUser, objectName, value, id) => {
             const dbRef = ref(getDatabase())
-            let tableRecords = await DB.getTable(DB.tables.users)
+            let tableRecords = await DB.GetTableData(DB.tables.users)
             tableRecords = DatasetManager.GetValidArray(tableRecords)
             let toUpdate = tableRecords.filter((x) => x.phone === currentUser?.key)[0]
             if (toUpdate[objectName] !== undefined && toUpdate[objectName].length > 0) {
@@ -316,7 +316,7 @@ const DB_UserScoped = {
 
             for (let userKey of shareWith) {
                   const sharedPath = `${DB.tables.sharedChildInfo}/${userKey}`
-                  const shareWithSet = await DB.getTable(sharedPath)
+                  const shareWithSet = await DB.GetTableData(sharedPath)
 
                   await set(child(dbRef, sharedPath), [...shareWithSet, sharedObject])
             }
@@ -327,7 +327,7 @@ const DB_UserScoped = {
             if (key !== null) {
                   await set(child(dbRef, `${DB.tables.users}/${currentUser?.key}/coparents/${key}/${StringManager.formatDbProp(prop)}`), `${value}`)
             }
-            return await DB.getTable(`${DB.tables.users}/${currentUser?.key}/coparents/${key}`, true)
+            return await DB.GetTableData(`${DB.tables.users}/${currentUser?.key}/coparents/${key}`, true)
       },
       addParentProp: async (currentUser, parent, prop, value) => {
             const dbRef = ref(getDatabase())
@@ -531,10 +531,10 @@ const DB_UserScoped = {
       },
       deleteUserData: async (currentUser) => {
             const dbRef = ref(getDatabase())
-            const events = await DatasetManager.GetValidArray(DB.getTable(DB.tables.calendarEvents))
-            const memories = await DatasetManager.GetValidArray(DB.getTable(DB.tables.memories))
-            const expenses = await DatasetManager.GetValidArray(DB.getTable(DB.tables.expenses))
-            const suggestions = await DatasetManager.GetValidArray(DB.getTable(DB.tables.suggestions))
+            const events = await DatasetManager.GetValidArray(DB.GetTableData(DB.tables.calendarEvents))
+            const memories = await DatasetManager.GetValidArray(DB.GetTableData(DB.tables.memories))
+            const expenses = await DatasetManager.GetValidArray(DB.GetTableData(DB.tables.expenses))
+            const suggestions = await DatasetManager.GetValidArray(DB.GetTableData(DB.tables.suggestions))
             const merged = _.concat(events, memories, expenses, suggestions).filter((x) => x)
             const scopedToCurrentUser = merged.filter(
                   (x) =>

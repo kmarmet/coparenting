@@ -104,7 +104,7 @@ DatasetManager = {
       return arr[-1]
 
   getNestedObject: (table, objectPath) ->
-    dataset = await DB.getTable(table)
+    dataset = await DB.GetTableData(table)
     _.get(dataset[0], objectPath)
   getUniqueArray: (arr, flatten = false) ->
     if flatten

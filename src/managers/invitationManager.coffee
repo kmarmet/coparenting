@@ -9,7 +9,7 @@ export default InvitationManager =
     try
       dbRef = ref(getDatabase())
       tableData = []
-      existingInvitations = await DB.getTable("#{DB.tables.invitations}/#{currentUserKey}")
+      existingInvitations = await DB.GetTableData("#{DB.tables.invitations}/#{currentUserKey}")
       if Manager.IsValid(existingInvitations)
         if (Manager.IsValid(existingInvitations))
           tableData = DatasetManager.AddToArray(existingInvitations, invitation)

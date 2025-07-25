@@ -83,7 +83,7 @@ export default function AdminDashboard() {
       }
 
       const GetNegativeAppEmotions = async () => {
-            const emotions = await DB.getTable(`${DB.tables.feedbackEmotionsTracker}`)
+            const emotions = await DB.GetTableData(`${DB.tables.feedbackEmotionsTracker}`)
             const unhappy = emotions.filter((x) => x.unhappy > 0)
             const unhappyCount = unhappy.reduce((total, current) => total + current.unhappy, 0)
             const neutralCount = unhappy.reduce((total, current) => total + current.neutral, 0)

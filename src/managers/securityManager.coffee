@@ -13,7 +13,7 @@ SecurityManager =
 
     if Manager.IsValid(currentUser) && Manager.IsValid(linkedAccountKeys)
       for accountKey in linkedAccountKeys
-        userAccountItems = await DB.getTable("#{table}/#{accountKey}")
+        userAccountItems = await DB.GetTableData("#{table}/#{accountKey}")
         for item in userAccountItems
           if Manager.IsValid(item?.shareWith)
             if item?.shareWith?.includes currentUser?.key
@@ -27,7 +27,7 @@ SecurityManager =
     #   COPARENT ACCOUNTS
     if Manager.IsValid(currentUser) && Manager.IsValid(currentUser?.coparents)
       for coparent in currentUser?.coparents
-        coparentItems = await DB.getTable("#{table}/#{coparent?.userKey}")
+        coparentItems = await DB.GetTableData("#{table}/#{coparent?.userKey}")
         for item in coparentItems
           if Manager.IsValid(item?.shareWith)
             if item?.shareWith?.includes currentUser?.key
@@ -36,7 +36,7 @@ SecurityManager =
     #   PARENT ACCOUNTS
     if Manager.IsValid(currentUser) && Manager.IsValid(currentUser?.parents)
       for parent in currentUser?.parents
-        parentItems = await DB.getTable("#{table}/#{parent?.userKey}")
+        parentItems = await DB.GetTableData("#{table}/#{parent?.userKey}")
         for item in parentItems
           if Manager.IsValid(item?.shareWith)
             if item?.shareWith?.includes currentUser?.key
@@ -45,7 +45,7 @@ SecurityManager =
     #   CHILD ACCOUNTS
     if Manager.IsValid(currentUser) && Manager.IsValid(currentUser?.children)
       for child in currentUser?.children
-        childItems = await DB.getTable("#{table}/#{child?.userKey}")
+        childItems = await DB.GetTableData("#{table}/#{child?.userKey}")
         for item in childItems
           if Manager.IsValid(item?.shareWith)
             if item?.shareWith?.includes currentUser?.key
@@ -55,10 +55,10 @@ SecurityManager =
     return DatasetManager.GetValidArray(sharedItems)
 
   getCalendarEvents: (currentUser) ->
-    users = await DB.getTable(DB.tables.users)
+    users = await DB.GetTableData(DB.tables.users)
     currentUser = users.find (x) -> x.email == currentUser?.email
     returnRecords = []
-    allEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser?.key}")
+    allEvents = await DB.GetTableData("#{DB.tables.calendarEvents}/#{currentUser?.key}")
     sharedEvents = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents)
     if Manager.IsValid(allEvents)
       for event in allEvents
@@ -78,7 +78,7 @@ SecurityManager =
       filteredEvents = []
       
       [allEvents, sharedEvents] = await Promise.all [
-        DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}")
+        DB.GetTableData("#{DB.tables.calendarEvents}/#{currentUser.key}")
         SecurityManager.getShareWithItems currentUser, DB.tables.calendarEvents
       ]
     
@@ -95,7 +95,7 @@ SecurityManager =
 
   getExpenses: (currentUser) ->
     returnRecords = []
-    allExpenses = DatasetManager.GetValidArray DB.getTable("#{DB.tables.expenses}/#{currentUser?.key}")
+    allExpenses = DatasetManager.GetValidArray DB.GetTableData("#{DB.tables.expenses}/#{currentUser?.key}")
     sharedExpenses = await SecurityManager.getShareWithItems(currentUser, DB.tables.expenses)
 
     if Manager.IsValid(allExpenses)
@@ -108,7 +108,7 @@ SecurityManager =
 
   getVisitationChangeRequests: (currentUser) ->
     returnRecords = []
-    allRequests = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.visitationRequests}/#{currentUser?.key}"))
+    allRequests = DatasetManager.GetValidArray(await DB.GetTableData("#{DB.tables.visitationRequests}/#{currentUser?.key}"))
     sharedSwaps = await SecurityManager.getShareWithItems(currentUser, DB.tables.visitationRequests)
 
     if Manager.IsValid(allRequests)
@@ -122,7 +122,7 @@ SecurityManager =
 
   getHandoffChangeRequests: (currentUser) ->
     returnRecords = []
-    allRequests = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.handoffChangeRequests}/#{currentUser?.key}"))
+    allRequests = DatasetManager.GetValidArray(await DB.GetTableData("#{DB.tables.handoffChangeRequests}/#{currentUser?.key}"))
     sharedTransfers = await SecurityManager.getShareWithItems(currentUser, DB.tables.handoffChangeRequests)
 
     if Manager.IsValid(allRequests)
@@ -136,7 +136,7 @@ SecurityManager =
 
   getDocuments: (currentUser) ->
     returnRecords = []
-    allDocs = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.documents}/#{currentUser?.key}"))
+    allDocs = DatasetManager.GetValidArray(await DB.GetTableData("#{DB.tables.documents}/#{currentUser?.key}"))
     sharedDocs = await SecurityManager.getShareWithItems(currentUser, DB.tables.documents)
 
     if Manager.IsValid(allDocs)
@@ -150,7 +150,7 @@ SecurityManager =
 
   getMemories: (currentUser) ->
     returnRecords = []
-    allMemories = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.memories}/#{currentUser?.key}"))
+    allMemories = DatasetManager.GetValidArray(await DB.GetTableData("#{DB.tables.memories}/#{currentUser?.key}"))
     sharedMemories = await SecurityManager.getShareWithItems(currentUser, DB.tables.memories)
 
     if Manager.IsValid(allMemories)
@@ -164,7 +164,7 @@ SecurityManager =
 
   getInputSuggestions: (currentUser) ->
     returnRecords = []
-    suggestions = DatasetManager.GetValidArray(await DB.getTable(DB.tables.suggestions))
+    suggestions = DatasetManager.GetValidArray(await DB.GetTableData(DB.tables.suggestions))
     if Manager.IsValid(suggestions)
       for suggestion in suggestions
         if suggestion.ownerKey == currentUser?.key
@@ -172,12 +172,12 @@ SecurityManager =
     return DatasetManager.GetValidArray(returnRecords)
 
   getChats: (currentUser) ->
-    chats = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.chats}/#{currentUser?.key}"))
+    chats = DatasetManager.GetValidArray(await DB.GetTableData("#{DB.tables.chats}/#{currentUser?.key}"))
     securedChats = []
     return securedChats
 
   getCoparentChats: (currentUser) ->
-    allChats = await DB.getTable('chats')
+    allChats = await DB.GetTableData('chats')
     activeChats = []
     allChatsFlattened = allChats
     if Manager.IsValid(allChatsFlattened)

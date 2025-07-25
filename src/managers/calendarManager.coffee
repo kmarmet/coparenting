@@ -18,7 +18,7 @@ export default CalendarManager =
     
     try
     # Fetch existing events or default to []
-      currentEvents = await DB.getTable(userEventsPath) or []
+      currentEvents = await DB.GetTableData(userEventsPath) or []
       
       # If cloning/recurring, generate a shared multipleDatesId
       multipleDatesId = if isRangeClonedOrRecurring then Manager.GetUid() else null
@@ -97,7 +97,7 @@ export default CalendarManager =
 
   SetHolidays: (holidays) ->
     dbRef = ref(getDatabase())
-    currentEvents = await DB.getTable(DB.tables.holidayEvents)
+    currentEvents = await DB.GetTableData(DB.tables.holidayEvents)
     eventsToAdd = DatasetManager.GetValidArray([currentEvents..., holidays...], true, true)
     eventsToAdd = DatasetManager.GetValidArray(eventsToAdd, true, true)
     
@@ -108,7 +108,7 @@ export default CalendarManager =
 
   addCalendarEvent: (currentUser, newEvent) ->
     dbRef = ref(getDatabase())
-    currentEvents = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}")
+    currentEvents = await DB.GetTableData("#{DB.tables.calendarEvents}/#{currentUser.key}")
     currentEvents = currentEvents.filter (n) -> n
 
     toAdd = []
@@ -133,7 +133,7 @@ export default CalendarManager =
 
   deleteMultipleEvents: (events, currentUser) ->
     dbRef = ref(getDatabase())
-    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}")
+    tableRecords = await DB.GetTableData("#{DB.tables.calendarEvents}/#{currentUser.key}")
     idsToDelete = events.map (x) -> x.id
     if Manager.IsValid(tableRecords)
       for record in tableRecords
@@ -142,7 +142,7 @@ export default CalendarManager =
 
   deleteAllHolidayEvents: () ->
     dbRef = ref(getDatabase())
-    tableRecords = await DB.getTable("#{DB.tables.holidayEvents}")
+    tableRecords = await DB.GetTableData("#{DB.tables.holidayEvents}")
     for record in tableRecords
       idToDelete = await DB.getSnapshotKey("#{DB.tables.holidayEvents}", record, 'id')
       await remove(child(dbRef, "#{DB.tables.holidayEvents}/#{idToDelete}"))
@@ -150,7 +150,7 @@ export default CalendarManager =
   deleteEvent: (currentUser, id) ->
     dbRef = ref(getDatabase())
     idToDelete = null
-    tableRecords = await DB.getTable("#{DB.tables.calendarEvents}/#{currentUser.key}/")
+    tableRecords = await DB.GetTableData("#{DB.tables.calendarEvents}/#{currentUser.key}/")
     for record in tableRecords
       if record?.id is id
         idToDelete = await DB.getSnapshotKey("#{DB.tables.calendarEvents}/#{currentUser.key}/", record, 'id')

@@ -83,7 +83,7 @@ export default UpdateManager =
           fetch("https://api.onesignal.com/apps/#{UpdateManager.appId}/subscriptions/#{subId}/user/identity")
             .then (identity) ->
               userIdentity = await identity.json()
-              currentSubscribers = await DB.getTable("#{DB.tables.updateSubscribers}")
+              currentSubscribers = await DB.GetTableData("#{DB.tables.updateSubscribers}")
               newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
               existingSubscriber = currentSubscribers?.find (x) -> x?.email == UpdateManager?.currentUser?.email
 
@@ -110,7 +110,7 @@ export default UpdateManager =
       method: 'DELETE'
 
   SendUpdate: (title, message, recipientKey, currentUser = null, category = '') ->
-    allSubs = await DB.getTable("#{DB.tables.updateSubscribers}")
+    allSubs = await DB.GetTableData("#{DB.tables.updateSubscribers}")
     subIdRecord = allSubs.find (sub) -> sub.key == recipientKey
     console.log(subIdRecord)
     #    If user is not subscribed, do not send notification

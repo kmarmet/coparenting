@@ -29,14 +29,14 @@ const DB = {
       find: async (arrayOrTable, matchArray, isFromDb = true, filterFunction = null) => {
             if (filterFunction) {
                   if (isFromDb) {
-                        const records = await DB.getTable(arrayOrTable)
+                        const records = await DB.GetTableData(arrayOrTable)
                         return _.find(records, filterFunction)
                   } else {
                         return _.find(arrayOrTable, filterFunction)
                   }
             }
             if (isFromDb) {
-                  const records = await DB.getTable(arrayOrTable)
+                  const records = await DB.GetTableData(arrayOrTable)
                   return _.find(records, matchArray)
             } else {
                   return _.find(arrayOrTable, matchArray)
@@ -91,7 +91,7 @@ const DB = {
                   //     }
                   //   })
                   // })
-                  await DB.getTable(recordPath).then((data) => {
+                  await DB.GetTableData(recordPath).then((data) => {
                         if (Array.isArray(data)) {
                               for (let prop in data) {
                                     if (data[prop][propertyToCompare] === objectToCheck[propertyToCompare]) {
@@ -174,7 +174,7 @@ const DB = {
       deleteById: async (path, id) => {
             const dbRef = ref(getDatabase())
             let key = null
-            const tableRecords = await DB.getTable(path)
+            const tableRecords = await DB.GetTableData(path)
 
             for (const record of tableRecords) {
                   if (record?.id === id) {
@@ -197,7 +197,7 @@ const DB = {
                   LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
             }
       },
-      getTable: async (path, returnObject = false) => {
+      GetTableData: async (path, returnObject = false) => {
             const dbRef = ref(getDatabase())
             let tableData = []
             await get(child(dbRef, path)).then((snapshot) => {
@@ -217,7 +217,7 @@ const DB = {
       },
       updateRecord: async (tableName, currentUser, recordToUpdate, prop, value, propUid) => {
             const dbRef = ref(getDatabase())
-            const tableRecords = DatasetManager.GetValidArray(await DB.getTable(tableName))
+            const tableRecords = DatasetManager.GetValidArray(await DB.GetTableData(tableName))
             let toUpdate
             if (propUid) {
                   toUpdate = tableRecords.filter((x) => x[propUid] === recordToUpdate[propUid])[0]
@@ -251,7 +251,7 @@ const DB = {
             try {
                   const dbRef = getDatabase()
                   let key = null
-                  const tableRecords = await DB.getTable(path)
+                  const tableRecords = await DB.GetTableData(path)
                   for (const record of tableRecords) {
                         if (record?.id === id) {
                               key = await DB.getSnapshotKey(path, record, "id")
@@ -262,7 +262,7 @@ const DB = {
                         .catch((error) => {
                               console.log(error)
                         })
-                  return await DB.getTable(`${path}/${key}`, true)
+                  return await DB.GetTableData(`${path}/${key}`, true)
             } catch (error) {
                   LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
             }

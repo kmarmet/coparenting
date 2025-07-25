@@ -24,7 +24,7 @@ const useCalendarEvents = (userKey = null) => {
             const listener = onValue(
                   dataRef,
                   async (snapshot) => {
-                        const holidayEvents = await DB.getTable(DB.tables.holidayEvents)
+                        const holidayEvents = await DB.GetTableData(DB.tables.holidayEvents)
                         const formattedEvents = DatasetManager.GetValidArray(snapshot.val())
                         const shared = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents)
                         const formattedShared = DatasetManager.GetValidArray(shared)

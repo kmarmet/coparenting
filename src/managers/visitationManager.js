@@ -186,7 +186,7 @@ const VisitationManager = {
       },
       getVisitationHolidays: async (currentUser) => {
             const holidays = await DateManager.GetHolidays()
-            const currentUserEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`)
+            const currentUserEvents = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser?.key}`)
 
             const userHolidays = currentUserEvents.filter(
                   (x) => x?.isHoliday && x?.owner?.key === currentUser?.key && x?.fromVisitationSchedule === true
@@ -205,7 +205,7 @@ const VisitationManager = {
       },
       getSchedule: async (currentUser) => {
             return new Promise((resolve) => {
-                  DB.getTable(`${DB.tables.calendarEvents}/${currentUser?.key}`).then((events) => {
+                  DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser?.key}`).then((events) => {
                         let scheduleEvents = events.filter((x) => x.fromVisitationSchedule === true && x.ownerKey === currentUser?.key)
                         resolve(scheduleEvents)
                   })
@@ -250,7 +250,7 @@ const VisitationManager = {
       },
       DeleteAllHolidaysForUser: async (currentUser) => {
             const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
-            const allEvents = await DB.getTable(dbPath)
+            const allEvents = await DB.GetTableData(dbPath)
             const holidays = allEvents.filter((x) => x?.isHoliday && x?.owner?.key === currentUser?.key)
             await CalendarManager.deleteMultipleEvents(holidays, currentUser)
       },

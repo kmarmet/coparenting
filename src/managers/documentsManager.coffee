@@ -8,7 +8,7 @@ import LogManager from "./logManager"
 export default DocumentsManager =
   DeleteDocsWithIds: (idsToDelete, currentUser, callback = () => {}) ->
     for docId in idsToDelete
-      docs = DatasetManager.GetValidArray(await DB.getTable("#{DB.tables.documents}/#{currentUser?.key}"))
+      docs = DatasetManager.GetValidArray(await DB.GetTableData("#{DB.tables.documents}/#{currentUser?.key}"))
       if Manager.IsValid(docs)
         for thisDoc in docs
           if thisDoc.id == docId

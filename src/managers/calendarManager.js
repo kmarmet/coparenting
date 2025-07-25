@@ -31,7 +31,7 @@ export default CalendarManager = {
             userEventsPath = `${DB.tables.calendarEvents}/${currentUser.key}`
             try {
                   // Fetch existing events or default to []
-                  currentEvents = (await DB.getTable(userEventsPath)) || []
+                  currentEvents = (await DB.GetTableData(userEventsPath)) || []
 
                   // If cloning/recurring, generate a shared multipleDatesId
                   multipleDatesId = isRangeClonedOrRecurring ? Manager.GetUid() : null
@@ -114,7 +114,7 @@ export default CalendarManager = {
       SetHolidays: async function (holidays) {
             var currentEvents, dbRef, error, eventsToAdd
             dbRef = ref(getDatabase())
-            currentEvents = await DB.getTable(DB.tables.holidayEvents)
+            currentEvents = await DB.GetTableData(DB.tables.holidayEvents)
             eventsToAdd = DatasetManager.GetValidArray([...currentEvents, ...holidays], true, true)
             eventsToAdd = DatasetManager.GetValidArray(eventsToAdd, true, true)
             try {
@@ -127,7 +127,7 @@ export default CalendarManager = {
       addCalendarEvent: async function (currentUser, newEvent) {
             var currentEvents, dbRef, error, toAdd
             dbRef = ref(getDatabase())
-            currentEvents = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.key}`)
+            currentEvents = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser.key}`)
             currentEvents = currentEvents.filter(function (n) {
                   return n
             })
@@ -159,7 +159,7 @@ export default CalendarManager = {
       deleteMultipleEvents: async function (events, currentUser) {
             var dbRef, i, idsToDelete, len, record, results, tableRecords
             dbRef = ref(getDatabase())
-            tableRecords = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.key}`)
+            tableRecords = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser.key}`)
             idsToDelete = events.map(function (x) {
                   return x.id
             })
@@ -179,7 +179,7 @@ export default CalendarManager = {
       deleteAllHolidayEvents: async function () {
             var dbRef, i, idToDelete, len, record, results, tableRecords
             dbRef = ref(getDatabase())
-            tableRecords = await DB.getTable(`${DB.tables.holidayEvents}`)
+            tableRecords = await DB.GetTableData(`${DB.tables.holidayEvents}`)
             results = []
             for (i = 0, len = tableRecords.length; i < len; i++) {
                   record = tableRecords[i]
@@ -192,7 +192,7 @@ export default CalendarManager = {
             var dbRef, error, i, idToDelete, len, record, results, tableRecords
             dbRef = ref(getDatabase())
             idToDelete = null
-            tableRecords = await DB.getTable(`${DB.tables.calendarEvents}/${currentUser.key}/`)
+            tableRecords = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser.key}/`)
             results = []
             for (i = 0, len = tableRecords.length; i < len; i++) {
                   record = tableRecords[i]

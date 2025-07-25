@@ -26,7 +26,7 @@ export default function Medical({activeChild}) {
       const {children} = useChildren()
 
       const DeleteProp = async (prop) => {
-            const sharedInfoRecords = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
+            const sharedInfoRecords = await DB.GetTableData(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
             const existingPropCount = Object.keys(activeChild?.medical).length
 
             if (existingPropCount <= 1) {
@@ -65,7 +65,7 @@ export default function Medical({activeChild}) {
       }
 
       const SetChildData = async () => {
-            const sharing = await DB.getTable(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
+            const sharing = await DB.GetTableData(`${DB.tables.sharedChildInfo}/${currentUser?.key}`)
             let sharedValues = []
             for (let obj of sharing) {
                   sharedValues.push([obj.prop, obj.value, obj.sharedByName])
