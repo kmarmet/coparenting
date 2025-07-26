@@ -8,6 +8,8 @@ import {child, getDatabase, ref, remove, set, update} from "firebase/database"
 import moment from "moment"
 
 import DateFormats from "../constants/datetimeFormats"
+
+import EventCategories from "../constants/eventCategories"
 import DB from "../database/DB"
 
 import CalendarMapper from "../mappers/calMapper"
@@ -57,6 +59,19 @@ export default CalendarManager = {
                   return LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
             }
       },
+      MapCategoryToParent: function (categoryName) {
+            var categories, group, i, len
+            categories = EventCategories
+            for (i = 0, len = categories.length; i < len; i++) {
+                  group = categories[i]
+                  if (group.categories.includes(categoryName)) {
+                        return group.parentCategory
+                  }
+            }
+            return null
+      },
+
+      // Example Usage:  console.log categoryToParentMap["Marathon"] # "Sports & Fitness 🏃"
       BuildArrayOfEvents: function (currentUser, eventObject, arrayType = "recurring", startDate, endDate) {
             var date, dateObject, datesToIterate, datesToPush, i, len
             datesToPush = []

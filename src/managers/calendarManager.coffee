@@ -10,6 +10,7 @@ import DatasetManager from "./datasetManager"
 import CalendarEvent from "../models/new/calendarEvent"
 import * as Sentry from '@sentry/react'
 import ObjectManager from "./objectManager"
+import EventCategories from "../constants/eventCategories"
 
 export default CalendarManager =
   AddMultipleCalEvents: (currentUser, newEvents, isRangeClonedOrRecurring = false) ->
@@ -38,8 +39,18 @@ export default CalendarManager =
     
     catch error
       LogManager.Log error.message, LogManager.LogTypes.error, error.stack
-  
-  
+      
+  MapCategoryToParent: (categoryName) ->
+    categories = EventCategories
+    
+    for group in categories
+      if (group.categories.includes(categoryName))
+        return group.parentCategory;
+        
+    return null;
+    
+     # Example Usage:  console.log categoryToParentMap["Marathon"] # "Sports & Fitness 🏃"
+
   BuildArrayOfEvents: (currentUser, eventObject, arrayType = "recurring", startDate, endDate) ->
     datesToPush = []
     datesToIterate = []
@@ -129,7 +140,6 @@ export default CalendarManager =
         await update(ref(dbRef, "#{DB.tables.calendarEvents}/#{currentUserKey}/#{updateIndex}"), updatedEvent)
     catch error
       Sentry.captureException("Error: #{error} | Code File: CalendarManager | Function: UpdateExpense")
-
 
   deleteMultipleEvents: (events, currentUser) ->
     dbRef = ref(getDatabase())

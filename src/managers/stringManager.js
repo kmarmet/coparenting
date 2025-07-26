@@ -13,6 +13,12 @@ import Manager from "./manager" //if (firstOccurrence) {
 //return str.substring(0, firstIndex).replaceAll(target, replacement) +
 //  str.substring(firstIndex);
 StringManager = {
+      GetLastCharacter: function (str) {
+            if (!Manager.IsValid(str, true)) {
+                  return str
+            }
+            return str.charAt(str.length - 1)
+      },
       SanitizeString: function (str) {
             return str
                   .replaceAll("</", "")

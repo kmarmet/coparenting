@@ -5,7 +5,6 @@ import AccordionSummary from "@mui/material/AccordionSummary"
 import moment from "moment"
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {BsCalendarCheck} from "react-icons/bs"
-import {IoClose} from "react-icons/io5"
 import validator from "validator"
 import ButtonThemes from "../../constants/buttonThemes"
 import CreationForms from "../../constants/creationForms"
@@ -408,35 +407,12 @@ export default function NewCalendarEvent() {
 
                               <Spacer height={5} />
 
-                              {/* CATEGORIES */}
-                              {Manager.IsValid(categories) && (
-                                    <>
-                                          <Label text={"Selected Categories"} classes={"always-show"} />
-                                          <div className={"category-chips"}>
-                                                <>
-                                                      {categories.map((cat, index) => {
-                                                            return (
-                                                                  <span
-                                                                        key={index}
-                                                                        className="chip"
-                                                                        onClick={() => setCategories(categories.filter((c) => c !== cat))}>
-                                                                        {cat} <IoClose />
-                                                                  </span>
-                                                            )
-                                                      })}
-                                                </>
-                                          </div>
-                                    </>
-                              )}
-
-                              <Spacer height={5} />
-
                               {/* CATEGORIES SELECTOR */}
                               <Accordion className={`${theme} event-categories`} expanded={showCategories}>
                                     <AccordionSummary onClick={() => setShowCategories(!showCategories)}>
                                           <AccordionTitle
                                                 className={`${theme} event-categories`}
-                                                titleText={"Categories"}
+                                                titleText={"Select Categories"}
                                                 toggleState={showCategories}
                                                 onClick={() => setShowCategories(!showCategories)}
                                           />

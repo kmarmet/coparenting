@@ -26,15 +26,21 @@ import Spacer from "./shared/spacer"
 
 export default function FullMenu() {
       const {state, setState} = useContext(globalState)
-      const {currentScreen, menuIsOpen} = state
+      const {currentScreen, menuIsOpen, refreshKey} = state
 
       // STATE
       const [currentAppVersion, setCurrentAppVersion] = useState("")
 
       // HOOKS
       const {currentUser} = useCurrentUser()
-      const {feedback} = useFeedback()
+      const {feedback, feedbackIsLoading} = useFeedback()
       const {updates} = useUpdates()
+
+      useEffect(() => {
+            if (Manager.IsValid(feedback)) {
+                  console.log(feedback)
+            }
+      }, [feedback])
 
       // MISC
       const auth = getAuth()
@@ -417,22 +423,24 @@ export default function FullMenu() {
                                           <div id="icon-and-label-wrapper">
                                                 <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.unhappy)}>
                                                       <span className="icon unhappy">☹️</span>
-                                                      <span className="count">{feedback?.unhappy ?? 0}</span>
+                                                      <span className="count">{feedback?.unhappy || 0}</span>
                                                 </p>
                                                 <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.neutral)}>
                                                       <span className="icon neutral">😐</span>
-                                                      <span className="count">{feedback?.neutral ?? 0}</span>
+                                                      <span className="count">{feedback?.neutral || 0}</span>
                                                 </p>
                                                 <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.peaceful)}>
                                                       <span className="icon peaceful">😁</span>
-                                                      <span className="count">{feedback?.peaceful ?? 0}</span>
+                                                      <span className="count">{feedback?.peaceful || 0}</span>
                                                 </p>
                                                 <p onClick={() => UpdateFeedbackCounter(feedbackEmotions.love)}>
                                                       <span className="icon love">❤️‍🔥</span>
-                                                      <span className="count">{feedback?.love ?? 0} </span>
+                                                      <span className="count">{feedback?.love || 0} </span>
                                                 </p>
                                           </div>
                                     </div>
+
+                                    {/* BUG/FEATURES ACTIONS */}
                                     <div
                                           id="action-wrapper"
                                           onClick={() =>
@@ -448,7 +456,7 @@ export default function FullMenu() {
                                     </div>
                                     <Spacer height={5} />
                                     <p id="current-app-version" onClick={(e) => ChangeCurrentScreen(ScreenNames.changelog, e)}>
-                                          v.{currentAppVersion}
+                                          v{currentAppVersion}
                                     </p>
                               </div>
                         </div>

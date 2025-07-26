@@ -1,6 +1,6 @@
 EventCategories = [
     {
-        parentCategory: "Business & Professional"
+        parentCategory: "Business & Professional 💼"
         categories: [
             "Conference"
             "Interview"
@@ -12,7 +12,7 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Education"
+        parentCategory: "Education 📖"
         categories: [
             "Exam"
             "Graduation"
@@ -25,7 +25,7 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Entertainment"
+        parentCategory: "Entertainment 🎬"
         categories: [
             "Art Exhibition"
             "Book Launch"
@@ -39,7 +39,7 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Food & Drink"
+        parentCategory: "Food & Drink 🍔🥤"
         categories: [
             "Barbecue"
             "Brunch"
@@ -49,7 +49,7 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Health & Wellness"
+        parentCategory: "Health & Wellness 🩺"
         categories: [
             "Blood Donation Camp"
             "Dentist Appointment"
@@ -61,7 +61,7 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Personal"
+        parentCategory: "Personal 📅"
         categories: [
             "Family Time"
             "Pet Appointment"
@@ -69,7 +69,7 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Religious & Spiritual"
+        parentCategory: "Religious ⛪️"
         categories: [
             "Bible Study"
             "Church Service"
@@ -80,7 +80,7 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Seasonal & Holiday"
+        parentCategory: "Seasonal & Holiday ✨"
         categories: [
             "Christmas Party"
             "Easter Event"
@@ -93,7 +93,7 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Social & Community"
+        parentCategory: "Family, Friends & Community 🤝"
         categories: [
             "Anniversary"
             "Baby Shower"
@@ -109,7 +109,7 @@ EventCategories = [
     }
 
     {
-        parentCategory: "Sports & Fitness"
+        parentCategory: "Sports & Fitness 👟"
         categories: [
             "Dance Class"
             "Game"
@@ -124,7 +124,7 @@ EventCategories = [
     }
 
     {
-        parentCategory: "Travel & Leisure"
+        parentCategory: "Travel & Leisure✈️"
         categories: [
             "Beach Day"
             "Camping Trip"

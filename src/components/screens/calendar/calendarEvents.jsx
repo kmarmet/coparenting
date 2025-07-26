@@ -13,6 +13,7 @@ import useCalendarSearch from "../../../hooks/useCalendarSearch"
 import useCurrentUser from "../../../hooks/useCurrentUser"
 import useEventsOfDay from "../../../hooks/useEventsOfDay"
 import useHolidays from "../../../hooks/useHolidays"
+import CalendarManager from "../../../managers/calendarManager"
 import DatasetManager from "../../../managers/datasetManager.coffee"
 import DomManager from "../../../managers/domManager"
 import Manager from "../../../managers/manager"
@@ -101,6 +102,8 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
                   event?.isRecurring
             )
       }
+
+      const GetParentCategoryIcon = (category) => [...category.matchAll(/\p{Emoji_Presentation}/gu)].pop()?.[0]
 
       useEffect(() => {
             const animateEvents = () => {
@@ -210,7 +213,6 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
                                                             {isBirthdayEvent && `${StringManager.FormatTitle(event?.title)} 🎂`}
                                                       </span>
                                                       <span className={"title-text"}>
-                                                            {" "}
                                                             {!isBirthdayEvent && StringManager.FormatTitle(event?.title)}
                                                       </span>
                                                 </p>
@@ -250,6 +252,21 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
                                                             )}
                                                       </div>
                                                 </div>
+                                                {/* CATEGORIES */}
+                                                {Manager.IsValid(event?.categories) && event?.categories?.length > 0 && (
+                                                      <div className="categories">
+                                                            {event?.categories?.map((category, index) => {
+                                                                  const cat = CalendarManager.MapCategoryToParent(category)
+                                                                  const emoji = GetParentCategoryIcon(cat)
+                                                                  return (
+                                                                        <span key={index} className="chip">
+                                                                              {category}
+                                                                              {emoji}
+                                                                        </span>
+                                                                  )
+                                                            })}
+                                                      </div>
+                                                )}
                                           </div>
                                           {/* ICONS */}
                                           {HasRowIcons(event) && (

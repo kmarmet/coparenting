@@ -54,6 +54,25 @@
                               flex-wrap: wrap;
                               justify-content: flex-start;
 
+                              .categories {
+                                    display: flex;
+                                    flex-wrap: wrap;
+                                    gap: 5px;
+                                    align-items: center;
+                                    justify-content: flex-start;
+                                    padding: 5px 0;
+                                    margin-left: 15px;
+
+                                    .chip {
+                                          display: inline;
+                                          font-size: 11px;
+                                          background-color: palette.$grey;
+                                          padding: 5px 10px;
+                                          border-radius: variables.$buttonBorderRadius;
+                                          color: palette.$darkerGrey;
+                                    }
+                              }
+
                               .details {
                                     #nav-website {
                                           display: flex;

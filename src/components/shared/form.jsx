@@ -28,8 +28,7 @@ export default function Form({
       onOpen = () => {},
 }) {
       const {state, setState} = useContext(globalState)
-      const {theme, creationFormToShow} = state
-      const [refreshKey, setRefreshKey] = useState(Manager.GetUid())
+      const {refreshKey, creationFormToShow} = state
       const [submitted, setSubmitted] = useState(false)
 
       const ScrollToTop = () => {
@@ -70,7 +69,9 @@ export default function Form({
                         }
                   }
             }
-            if (onOpen) onOpen()
+            if (showCard) {
+                  if (onOpen) onOpen()
+            }
       }, [showCard])
 
       return (
@@ -131,7 +132,6 @@ export default function Form({
                               onClick={() => {
                                     onClose()
                                     setSubmitted(false)
-                                    setRefreshKey(Manager.GetUid())
                                     setState({...state, showOverlay: false, isLoading: false, creationFormToShow: null})
                               }}
                         />

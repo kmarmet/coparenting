@@ -1,9 +1,13 @@
 // Path: src\components\forms\EditCalEvent.jsx
+import Accordion from "@mui/material/Accordion"
+import AccordionDetails from "@mui/material/AccordionDetails"
+import AccordionSummary from "@mui/material/AccordionSummary"
 import MultilineDetailBlockDataTypes from "firebase/compat"
 import moment from "moment"
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {MdEventRepeat} from "react-icons/md"
 import DatetimeFormats from "../../constants/datetimeFormats"
+import EventCategories from "../../constants/eventCategories"
 import InputTypes from "../../constants/inputTypes"
 import ActivityCategory from "../../constants/updateCategory"
 import globalState from "../../context"
@@ -21,6 +25,7 @@ import Manager from "../../managers/manager"
 import ObjectManager from "../../managers/objectManager"
 import StringManager from "../../managers/stringManager"
 import UpdateManager from "../../managers/updateManager"
+import AccordionTitle from "../shared/accordionTitle"
 import AddressInput from "../shared/addressInput"
 import DetailBlock from "../shared/detailBlock"
 import Form from "../shared/form"
@@ -36,7 +41,7 @@ import ViewDropdown from "../shared/viewDropdown"
 
 export default function EditCalEvent({event, showCard, hideCard}) {
       const {state, setState} = useContext(globalState)
-      const {theme, selectedCalendarDate} = state
+      const {theme, refreshKey} = state
 
       // Hooks
       const {currentUser} = useCurrentUser()
@@ -54,6 +59,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       const [isVisitation, setIsVisitation] = useState(false)
       const [clonedDates, setClonedDates] = useState([])
       const [view, setView] = useState({label: "Details", value: "Details"})
+      const [categories, setCategories] = useState([])
+      const [showCategories, setShowCategories] = useState(false)
 
       // Set Default Dropdown Options
       const [selectedChildrenOptions, setSelectedChildrenOptions] = useState(
@@ -67,21 +74,22 @@ export default function EditCalEvent({event, showCard, hideCard}) {
       const formRef = useRef({...event})
 
       const ResetForm = (alertMessage = "") => {
+            Manager.ResetForm("edit-event-form")
+            setEventIsDateRange(false)
+            setClonedDates([])
+            setIsVisitation(false)
+            setEventIsRecurring(false)
+            setEventIsCloned(false)
+            setView({label: "Details", value: "Details"})
+            setState({
+                  ...state,
+                  successAlertMessage: alertMessage,
+                  selectedCalendarDate: moment().format(DatetimeFormats.dateForDb),
+            })
+            hideCard()
             setTimeout(() => {
-                  Manager.ResetForm("edit-event-form")
-                  setEventIsDateRange(false)
-                  setClonedDates([])
-                  setIsVisitation(false)
-                  setEventIsRecurring(false)
-                  setEventIsCloned(false)
-                  setView({label: "Details", value: "Details"})
-                  setState({
-                        ...state,
-                        successAlertMessage: alertMessage,
-                        selectedCalendarDate: moment().format(DatetimeFormats.dateForDb),
-                  })
-                  hideCard()
-            }, 10)
+                  setState({...state, refreshKey: Manager.GetUid()})
+            }, 500)
       }
 
       const EditNonOwnerEvent = async (_formRef) => {
@@ -119,6 +127,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   updatedEvent.reminderTimes = DropdownManager.MappedForDatabase.RemindersFromArray(selectedReminderOptions)
                   updatedEvent.shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
                   updatedEvent.address = formRef.current.address
+                  updatedEvent.categories = categories
 
                   // Set Owner
                   updatedEvent.owner = {
@@ -174,7 +183,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                           existing[0].startDate,
                                           cleaned.endDate
                                     )
-                                    await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
+                                    await CalendarManager.AddMultipleCalEvents(currentUser, dates, true)
                               }
 
                               // Add repeating dates
@@ -186,7 +195,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                           existing[0]?.startDate,
                                           cleaned.endDate
                                     )
-                                    await CalendarManager.addMultipleCalEvents(currentUser, dates, true)
+                                    await CalendarManager.AddMultipleCalEvents(currentUser, dates, true)
                               }
 
                               // Delete all before updated
@@ -197,7 +206,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                         //#region SINGLE EVENT
                         else {
                               if (cleaned?.owner?.key === currentUser?.key) {
-                                    const index = DB.GetTableIndexById(calendarEvents, updatedEvent?.id)
+                                    const index = DB.GetTableIndexById(calendarEvents, event?.id)
                                     if (parseInt(index) === -1) return false
                                     await DB.ReplaceEntireRecord(`${dbPath}/${index}`, cleaned)
                               }
@@ -264,8 +273,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
       useEffect(() => {
             if (Manager.IsValid(event)) {
-                  const index = DB.GetTableIndexById(calendarEvents, event?.id)
                   SetDropdownOptions().then((r) => r)
+                  setShowCategories(Manager.IsValid(event?.categories))
             }
       }, [event])
 
@@ -298,17 +307,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                         <div id="edit-cal-event-container" className={`${theme} edit-event-form form-container`}>
                               {/* DETAILS */}
                               <div className={`view-wrapper${view?.label === "Details" ? " details active" : " details"}`}>
-                                    <Spacer height={5} />
-                                    <div className={"categories-wrapper"}>
-                                          {Manager.IsValid(event?.categories) &&
-                                                event?.categories.map((category, index) => {
-                                                      return (
-                                                            <div key={index} className="categories">
-                                                                  <div className="chip">{category}</div>
-                                                            </div>
-                                                      )
-                                                })}
-                                    </div>
                                     <Spacer height={15} />
                                     <div className="blocks">
                                           {/*  Date */}
@@ -424,6 +422,16 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                                 </>
                                           )}
                                     </div>
+                                    <div className={"categories-wrapper"}>
+                                          {Manager.IsValid(event?.categories) &&
+                                                event?.categories.map((category, index) => {
+                                                      return (
+                                                            <div key={index} className="categories">
+                                                                  <div className="chip">{category}</div>
+                                                            </div>
+                                                      )
+                                                })}
+                                    </div>
                                     {/* Map */}
                                     {Manager.IsValid(event?.address) && <Map locationString={event?.address} />}
                               </div>
@@ -526,6 +534,53 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                           onSelect={setSelectedChildrenOptions}
                                           selectMultiple={true}
                                     />
+
+                                    <Spacer height={5} />
+
+                                    {/* CATEGORIES SELECTOR */}
+                                    <Accordion className={`${theme} event-categories`} expanded={showCategories}>
+                                          <AccordionSummary onClick={() => setShowCategories(!showCategories)}>
+                                                <AccordionTitle
+                                                      className={`${theme} event-categories`}
+                                                      titleText={"Select Categories"}
+                                                      toggleState={showCategories}
+                                                      onClick={() => setShowCategories(!showCategories)}
+                                                />
+                                          </AccordionSummary>
+                                          <AccordionDetails key={refreshKey}>
+                                                {EventCategories?.map((catObj, index) => {
+                                                      return (
+                                                            <div key={index} className={"parent-category-wrapper"}>
+                                                                  <p className={"parent-category"}>{catObj.parentCategory}</p>
+                                                                  <div className="categories">
+                                                                        {catObj.categories.map((category, catIndex) => {
+                                                                              return (
+                                                                                    <p
+                                                                                          className={`child-category${event?.categories?.includes(category) ? " active" : ""}`}
+                                                                                          key={catIndex}
+                                                                                          onClick={(el) => {
+                                                                                                const thisChip = el.currentTarget
+                                                                                                thisChip.classList.toggle("active")
+
+                                                                                                if (categories?.includes(category)) {
+                                                                                                      console.log(true)
+                                                                                                      setCategories((prev) =>
+                                                                                                            prev.filter((x) => x !== category)
+                                                                                                      )
+                                                                                                } else {
+                                                                                                      setCategories((prev) => [...prev, category])
+                                                                                                }
+                                                                                          }}>
+                                                                                          {category}
+                                                                                    </p>
+                                                                              )
+                                                                        })}
+                                                                  </div>
+                                                            </div>
+                                                      )
+                                                })}
+                                          </AccordionDetails>
+                                    </Accordion>
 
                                     <Spacer height={5} />
 

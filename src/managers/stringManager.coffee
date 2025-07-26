@@ -8,6 +8,11 @@ import Manager from "./manager"
 #return str.substring(0, firstIndex).replaceAll(target, replacement) +
 #  str.substring(firstIndex);
 StringManager = {
+  GetLastCharacter: (str) ->
+    if !Manager.IsValid(str, true)
+      return str
+    return str.charAt(str.length - 1)
+    
   SanitizeString: (str) ->
     return str
       .replaceAll('</', "")

@@ -2867,6 +2867,7 @@ $shadows-big: multiple-box-shadow(100);
                   //pointer-events: none;
             }
       }
+
       .close-dropdown-button {
             position: fixed !important;
             bottom: 110px;
@@ -2943,6 +2944,7 @@ $shadows-big: multiple-box-shadow(100);
             display: flex;
             align-items: center;
             justify-content: center;
+
             @include mainColorsGradient;
 
             &.active {
@@ -2971,7 +2973,7 @@ $shadows-big: multiple-box-shadow(100);
                         flex-wrap: wrap;
                         gap: 8px;
                         align-items: center;
-                        justify-content: center;
+                        justify-content: flex-start;
 
                         .chip {
                               font-size: 12px;
@@ -4622,7 +4624,7 @@ $shadows-big: multiple-box-shadow(100);
 
             #feedback-title {
                   font-size: 18px;
-                  color: palette.$brightGreen;
+                  color: palette.$mediumGreen;
                   @include fonts.mediumBoldFont;
             }
 
@@ -4707,18 +4709,19 @@ $shadows-big: multiple-box-shadow(100);
       z-index: 9;
       left: 0;
       padding-bottom: 5.5vh;
-      backdrop-filter: blur(8px);
+      background-color: white;
 
       &::before {
             content: " ";
-            position: relative;
-            top: -5px; /* how far it fades upward */
-            z-index: 99;
+            position: fixed;
+            top: -2px; /* how far it fades upward */
+            z-index: 999;
             left: 0;
+            right: 0;
             width: 100vw;
-            height: 20px; /* height of fade */
+            height: 5px; /* height of fade */
             pointer-events: none;
-            border: 1px solid transparent;
+            backdrop-filter: blur(1px);
       }
 
       &.hidden {
@@ -4821,6 +4824,7 @@ $shadows-big: multiple-box-shadow(100);
             height: 55px;
             position: relative;
             top: 10px;
+            padding-top: 8px;
 
             .menu-item {
                   transition: all 0.3s ease-in-out;

@@ -42,13 +42,9 @@ export default function Login() {
                   setState({...state, isLoading: false})
                   return false
             }
-            const errorString = Manager.GetInvalidInputsErrorString([
-                  {name: "Email", value: credentials.current.email},
-                  {name: "Password", value: credentials.current.password},
-            ])
 
-            if (Manager.IsValid(errorString, true)) {
-                  AlertManager.throwError(errorString)
+            if (!Manager.IsValid(credentials.current.email) || !Manager.IsValid(credentials.current.password)) {
+                  AlertManager.throwError("Please enter a valid email and password")
                   setState({...state, isLoading: false})
                   return false
             }

@@ -81,10 +81,13 @@ export default function NewMemory() {
                         `You have not added any ${currentUser?.accountType === "parent" ? "co-parent or child" : "parent"} contacts to your profile. It is also possible they have closed their profile.`
                   )
             }
-            console.log("before validate")
-            Manager.Validate({value: shareWith, title: "Share With", errorMessage: "Please choose who you would like to share this memory with"})
-            Manager.Validate({value: images, title: "No Image Selected", errorMessage: "Please choose an image", isString: false})
-            console.log("after validate")
+            if (!Manager.IsValid(shareWith)) {
+                  return fail("Please choose who you would like to share this memory with")
+            }
+            if (!Manager.IsValid(images)) {
+                  return fail("Please choose document")
+            }
+
             const notAnImage = Object.values(images).some((file) => file?.name?.includes(".doc"))
             if (notAnImage) fail("Files uploaded MUST be images (.png, .jpg, .jpeg, etc.)")
             //#endregion VALIDATION
