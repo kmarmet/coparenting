@@ -2966,6 +2966,22 @@ $shadows-big: multiple-box-shadow(100);
                   left: 0;
                   width: 100%;
 
+                  .categories-wrapper {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 8px;
+                        align-items: center;
+                        justify-content: center;
+
+                        .chip {
+                              font-size: 12px;
+                              background-color: palette.$inputBackground;
+                              padding: 5px 10px;
+                              border-radius: variables.$buttonBorderRadius;
+                              color: palette.$mediumTransWhite;
+                        }
+                  }
+
                   .category-chips {
                         display: flex;
                         flex-wrap: wrap;
@@ -3019,7 +3035,7 @@ $shadows-big: multiple-box-shadow(100);
                                     @include fonts.lightFont;
 
                                     &.active {
-                                          background-color: white;
+                                          background-color: palette.$lighterTransWhite;
                                           color: palette.$blend;
                                           @include fonts.mediumBoldFont;
                                     }

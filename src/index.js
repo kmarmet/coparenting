@@ -12,7 +12,7 @@ import AlertManager from "./managers/alertManager"
 import AppManager from "./managers/appManager"
 
 // CACHING
-const CACHE_KEY = "v1.0.42"
+const CACHE_KEY = "v1.0.44"
 const FILES_TO_CACHE = ["/", "/index.html", "/src/index.js", "/src/App.js", "/src/styles/bundle.css"]
 
 const logout = () => {

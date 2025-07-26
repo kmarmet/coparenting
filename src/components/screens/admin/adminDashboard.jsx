@@ -140,7 +140,7 @@ export default function AdminDashboard() {
             changelogInput.value = ""
 
             await DB.Add(`${DB.tables.changelogs}`, changelogs || [], newChangelog)
-            // await UpdateAppVersion()
+            await UpdateAppVersion()
       }
 
       useEffect(() => {

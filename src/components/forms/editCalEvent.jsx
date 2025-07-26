@@ -298,16 +298,18 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                         <div id="edit-cal-event-container" className={`${theme} edit-event-form form-container`}>
                               {/* DETAILS */}
                               <div className={`view-wrapper${view?.label === "Details" ? " details active" : " details"}`}>
+                                    <Spacer height={5} />
+                                    <div className={"categories-wrapper"}>
+                                          {Manager.IsValid(event?.categories) &&
+                                                event?.categories.map((category, index) => {
+                                                      return (
+                                                            <div key={index} className="categories">
+                                                                  <div className="chip">{category}</div>
+                                                            </div>
+                                                      )
+                                                })}
+                                    </div>
                                     <Spacer height={15} />
-                                    {Manager.IsValid(event) &&
-                                          Manager.IsValid(event?.categories) &&
-                                          event?.categories.map((category, index) => {
-                                                return (
-                                                      <div key={index} className="categories">
-                                                            <div className="chip">{category}</div>
-                                                      </div>
-                                                )
-                                          })}
                                     <div className="blocks">
                                           {/*  Date */}
                                           <DetailBlock
@@ -342,7 +344,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                           {/*  Created By */}
                                           <DetailBlock valueToValidate={event?.owner?.name} text={event?.owner?.name} title={"Creator"} />
                                     </div>
-
                                     <div className="multiline-blocks">
                                           {/*  Shared With */}
                                           <MultilineDetailBlock
@@ -360,7 +361,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                           {/* Children */}
                                           <MultilineDetailBlock title={"Children"} array={event?.children} />
                                     </div>
-
                                     {/* Recurring Frequency */}
                                     {event?.isRecurring && (
                                           <div className="flex">
@@ -369,7 +369,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                                 <span>{StringManager.UppercaseFirstLetterOfAllWords(event?.recurringFrequency)}</span>
                                           </div>
                                     )}
-
                                     {/*  Notes */}
                                     <div className="blocks">
                                           {Manager.IsValid(event?.notes, true) && (
@@ -382,7 +381,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                                 />
                                           )}
                                     </div>
-
                                     <div className="multiline-blocks">
                                           {(Manager.IsValid(event?.address) ||
                                                 Manager.IsValid(event?.phone) ||
@@ -426,7 +424,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                                 </>
                                           )}
                                     </div>
-
                                     {/* Map */}
                                     {Manager.IsValid(event?.address) && <Map locationString={event?.address} />}
                               </div>

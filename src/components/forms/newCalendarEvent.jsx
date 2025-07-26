@@ -416,7 +416,10 @@ export default function NewCalendarEvent() {
                                                 <>
                                                       {categories.map((cat, index) => {
                                                             return (
-                                                                  <span key={index} className="chip">
+                                                                  <span
+                                                                        key={index}
+                                                                        className="chip"
+                                                                        onClick={() => setCategories(categories.filter((c) => c !== cat))}>
                                                                         {cat} <IoClose />
                                                                   </span>
                                                             )
