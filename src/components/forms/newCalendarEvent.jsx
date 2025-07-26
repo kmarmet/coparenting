@@ -1,11 +1,16 @@
 // Path: src\components\forms\newCalendarEvent.jsx
+import Accordion from "@mui/material/Accordion"
+import AccordionDetails from "@mui/material/AccordionDetails"
+import AccordionSummary from "@mui/material/AccordionSummary"
 import moment from "moment"
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {BsCalendarCheck} from "react-icons/bs"
+import {IoClose} from "react-icons/io5"
 import validator from "validator"
 import ButtonThemes from "../../constants/buttonThemes"
 import CreationForms from "../../constants/creationForms"
 import DatetimeFormats from "../../constants/datetimeFormats"
+import EventCategories from "../../constants/eventCategories"
 import EventLengths from "../../constants/eventLengths"
 import InputTypes from "../../constants/inputTypes"
 import ActivityCategory from "../../constants/updateCategory"
@@ -25,6 +30,7 @@ import ObjectManager from "../../managers/objectManager"
 import StringManager from "../../managers/stringManager"
 import UpdateManager from "../../managers/updateManager"
 import CalendarEvent from "../../models/new/calendarEvent"
+import AccordionTitle from "../shared/accordionTitle"
 import AddressInput from "../shared/addressInput"
 import Button from "../shared/button"
 import Form from "../shared/form"
@@ -61,6 +67,8 @@ export default function NewCalendarEvent() {
       const [isVisitation, setIsVisitation] = useState(false)
       const [dynamicInputs, setDynamicInputs] = useState([])
       const [view, setView] = useState({label: "Single Day", value: "Single Day"})
+      const [showCategories, setShowCategories] = useState(false)
+      const [categories, setCategories] = useState([])
 
       // DROPDOWN STATE
       const [selectedReminderOptions, setSelectedReminderOptions] = useState([])
@@ -114,6 +122,7 @@ export default function NewCalendarEvent() {
                   formRef.current.isRecurring = eventIsRecurring
                   formRef.current.isCloned = Manager.IsValid(clonedDates)
                   formRef.current.isDateRange = eventIsDateRange
+                  formRef.current.categories = categories
 
                   // Map dropdown selections to database
                   formRef.current.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
@@ -399,6 +408,65 @@ export default function NewCalendarEvent() {
 
                               <Spacer height={5} />
 
+                              {/* CATEGORIES */}
+                              {Manager.IsValid(categories) && (
+                                    <>
+                                          <Label text={"Selected Categories"} classes={"always-show"} />
+                                          <div className={"category-chips"}>
+                                                <>
+                                                      {categories.map((cat, index) => {
+                                                            return (
+                                                                  <span key={index} className="chip">
+                                                                        {cat} <IoClose />
+                                                                  </span>
+                                                            )
+                                                      })}
+                                                </>
+                                          </div>
+                                    </>
+                              )}
+
+                              <Spacer height={5} />
+
+                              {/* CATEGORIES SELECTOR */}
+                              <Accordion className={`${theme} event-categories`} expanded={showCategories}>
+                                    <AccordionSummary onClick={() => setShowCategories(!showCategories)}>
+                                          <AccordionTitle
+                                                className={`${theme} event-categories`}
+                                                titleText={"Categories"}
+                                                toggleState={showCategories}
+                                                onClick={() => setShowCategories(!showCategories)}
+                                          />
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                          {EventCategories?.map((catObj, index) => {
+                                                return (
+                                                      <div key={index} className={"parent-category-wrapper"}>
+                                                            <p className={"parent-category"}>{catObj.parentCategory}</p>
+                                                            <div className="categories">
+                                                                  {catObj.categories.map((type, catIndex) => {
+                                                                        return (
+                                                                              <p
+                                                                                    className={"child-category"}
+                                                                                    key={catIndex}
+                                                                                    onClick={(el) => {
+                                                                                          const thisChip = el.currentTarget
+                                                                                          thisChip.classList.toggle("active")
+                                                                                          setCategories((prev) => [...prev, type])
+                                                                                    }}>
+                                                                                    {type}
+                                                                              </p>
+                                                                        )
+                                                                  })}
+                                                            </div>
+                                                      </div>
+                                                )
+                                          })}
+                                    </AccordionDetails>
+                              </Accordion>
+
+                              <Spacer height={5} />
+
                               {/* ADDRESS */}
                               <AddressInput
                                     wrapperClasses={Manager.IsValid(formRef.current.address, true) ? "show-label" : ""}
@@ -435,7 +503,7 @@ export default function NewCalendarEvent() {
                                     inputType={InputTypes.textarea}
                                     onChange={(e) => (formRef.current.notes = e.target.value)}
                               />
-                              <Spacer height={5} />
+                              <Spacer height={10} />
                               {/* IS VISITATION? */}
                               <div>
                                     <div className="flex">

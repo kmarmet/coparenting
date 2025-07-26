@@ -3,6 +3,8 @@ var DropdownManager
 
 import Apis from "../api/apis"
 
+import EventCategories from "../constants/eventCategories"
+
 import ExpenseCategories from "../constants/expenseCategories"
 
 import DB_UserScoped from "../database/db_userScoped"
@@ -195,6 +197,22 @@ DropdownManager = {
       },
       // GET DEFAULT
       GetDefault: {
+            EventCategories: function () {
+                  var cat, i, j, len, len1, ref, results, value
+                  results = []
+                  for (i = 0, len = EventCategories.length; i < len; i++) {
+                        cat = EventCategories[i]
+                        ref = cat.types
+                        for (j = 0, len1 = ref.length; j < len1; j++) {
+                              value = ref[j]
+                              results.push({
+                                    label: value,
+                                    value: value,
+                              })
+                        }
+                  }
+                  return results
+            },
             ExpenseSortByTypes: function () {
                   return [
                         {

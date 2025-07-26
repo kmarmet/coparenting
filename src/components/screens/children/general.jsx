@@ -106,7 +106,6 @@ function General({activeChild}) {
                                                       const rawLabel = prop[0]
                                                       const infoLabel = StringManager.SpaceBetweenWords(rawLabel)
                                                       const lowerLabel = infoLabel.toLowerCase()
-
                                                       const isLast = index === generalValues.length - 1
                                                       const isSecondLast = index === generalValues.length - 2
                                                       const isPhone = lowerLabel.includes("phone")

@@ -12,7 +12,7 @@ EmailManager = {
             appFeedback: "appFeedback",
             customerSupport: "customerSupport",
             emailVerification: "emailVerification",
-            coparentInvitation: "coParent-invitation",
+            coparentInvitation: "coparent-invitation",
             parentInvitation: "parent-invitation",
             shareDocument: "shareDocument",
       },
@@ -36,14 +36,17 @@ EmailManager = {
             config.from_name = userEmail
             return emailjs.send(config.service_id, config.template_id, config)
       },
-      SendDocumentSharingEmail: function (templateName, message, userEmail) {
-            var config
+      SendDocumentSharingEmail: function ({templateName, message, userEmail}) {
+            var config, url
             config = EmailManager.GetConfig()
-            config.template_id = templateName
+            config.template_id = EmailManager.Templates.coparentInvitation
             config.message = message
-            config.from_name = userEmail
+            config.from_name = config.reply_to
+            url = "https://peaceful-coparenting.app/"
             return emailjs
                   .send(config.service_id, config.template_id, {
+                        url: url,
+                        message: message,
                         reply_to: userEmail,
                         from_name: userEmail,
                         to_email: userEmail,

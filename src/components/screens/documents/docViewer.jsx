@@ -538,11 +538,10 @@ export default function DocViewer() {
                         submitText={"Share"}
                         showCard={showShareCard}
                         onSubmit={() => {
-                              EmailManager.SendDocumentSharingEmail(
-                                    EmailManager.Templates.appFeedback,
-                                    `${StringManager.FormatTitle(currentUser.name, true)} has shared a document with you. View this document here: ${docToView?.url}`,
-                                    shareEmail
-                              )
+                              EmailManager.SendDocumentSharingEmail({
+                                    message: `${StringManager.FormatTitle(currentUser.name, true)} has shared a document with you. View this document here: ${docToView?.url}`,
+                                    userEmail: shareEmail,
+                              })
                               setShowShareCard(false)
                               setState({...state, successAlertMessage: `A link to view this document has been sent to ${shareEmail}`})
                         }}

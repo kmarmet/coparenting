@@ -362,65 +362,6 @@
                   outline: none !important;
             }
 
-            #changelog-wrapper {
-                  height: 100vh;
-                  width: 100vw;
-                  @include mixins.mainColorsGradient;
-                  padding: 20px;
-
-                  .content {
-                        height: 100%;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        flex-direction: column;
-                        h1 {
-                              color: white;
-                              width: 100%;
-                              text-align: center;
-                              font-size: 40px;
-                              font-weight: bold;
-                              margin-bottom: auto;
-                              justify-self: flex-start;
-                              margin-top: 65px;
-                        }
-
-                        .sections {
-                              margin-bottom: auto;
-                              position: relative;
-                              top: -65px;
-                              align-self: flex-start;
-
-                              .section {
-                                    h2 {
-                                          color: white;
-                                          font-size: 25px;
-                                          font-weight: variables.$fwLight;
-                                          text-align: left;
-                                    }
-                                    h3 {
-                                          display: flex;
-                                          align-items: center;
-                                          font-weight: variables.$fwLight;
-                                          gap: 10px;
-                                          font-size: 20px;
-                                          margin: 15px 0;
-                                          color: white;
-
-                                          svg {
-                                                &.star {
-                                                      color: palette.$yellow;
-                                                }
-                                                &.bug {
-                                                      color: palette.$red;
-                                                }
-                                          }
-                                    }
-                              }
-                        }
-                  }
-            }
-
             // Datepicker
             fieldset {
                   top: 50% !important;

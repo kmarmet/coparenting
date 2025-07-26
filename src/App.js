@@ -16,7 +16,8 @@ import NewMemory from "./components/forms/newMemory.jsx"
 import NewVisitationChangeRequest from "./components/forms/newVisitationChangeRequest.jsx"
 import FullMenu from "./components/fullMenu"
 import AdminDashboard from "./components/screens/admin/adminDashboard"
-import LatestVersionUpdates from "./components/screens/admin/latestVersionUpdates"
+import Changelogs from "./components/screens/admin/changelogs"
+
 import Login from "./components/screens/auth/login.jsx"
 import Registration from "./components/screens/auth/registration.jsx"
 import EventCalendar from "./components/screens/calendar/calendar.jsx"
@@ -289,7 +290,7 @@ export default function App() {
 
                                     {/* ADMIN */}
                                     {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}
-                                    {currentScreen === ScreenNames.changelog && <LatestVersionUpdates />}
+                                    {currentScreen === ScreenNames.changelog && <Changelogs />}
 
                                     {/* AUTHENTICATION */}
                                     {currentScreen === ScreenNames.login && <Login />}

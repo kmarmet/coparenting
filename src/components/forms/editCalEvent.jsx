@@ -299,6 +299,15 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                               {/* DETAILS */}
                               <div className={`view-wrapper${view?.label === "Details" ? " details active" : " details"}`}>
                                     <Spacer height={15} />
+                                    {Manager.IsValid(event) &&
+                                          Manager.IsValid(event?.categories) &&
+                                          event?.categories.map((category, index) => {
+                                                return (
+                                                      <div key={index} className="categories">
+                                                            <div className="chip">{category}</div>
+                                                      </div>
+                                                )
+                                          })}
                                     <div className="blocks">
                                           {/*  Date */}
                                           <DetailBlock

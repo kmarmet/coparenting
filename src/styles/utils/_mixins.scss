@@ -2024,8 +2024,19 @@ $shadows-big: multiple-box-shadow(100);
                   white-space: nowrap;
                   display: flex;
                   padding-bottom: 5px;
-                  letter-spacing: 0.8px;
-                  color: palette.$transWhite;
+                  color: white;
+                  font-size: 16px;
+            }
+            &.toggle {
+                  opacity: 1;
+
+                  label {
+                        opacity: 1;
+                        @include fonts.lightFont;
+                        & {
+                              letter-spacing: 1px;
+                        }
+                  }
             }
 
             &.dark {
@@ -2142,7 +2153,8 @@ $shadows-big: multiple-box-shadow(100);
                   color: palette.$iconGrey;
             }
 
-            input {
+            input,
+            textarea {
                   color: palette.$primaryText !important;
                   background-color: transparent;
                   caret-color: black;
@@ -2953,6 +2965,67 @@ $shadows-big: multiple-box-shadow(100);
                   top: 0;
                   left: 0;
                   width: 100%;
+
+                  .category-chips {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 8px;
+                        background-color: palette.$inputBackground;
+                        border-radius: variables.$bigBorderRadius;
+                        padding: 15px;
+                        .chip {
+                              border-radius: 50px;
+                              font-size: 12px;
+                              background-color: palette.$inputBackground;
+                              padding: 5px 10px;
+                              color: palette.$mediumTransWhite;
+                              display: flex;
+                              align-items: center;
+                              gap: 3px;
+                              line-height: 1;
+                              white-space: nowrap;
+                              justify-content: center;
+                              @include fonts.lightFont;
+
+                              svg {
+                                    position: relative;
+                                    top: 1px;
+                                    @include square(15px);
+                              }
+                        }
+                  }
+
+                  .parent-category-wrapper {
+                        .parent-category {
+                              color: white;
+                              font-size: 18px;
+                              padding-bottom: 3px;
+                        }
+                        .categories {
+                              display: flex;
+                              flex-wrap: wrap;
+                              gap: 8px;
+                              background-color: palette.$inputBackground;
+                              border-radius: variables.$bigBorderRadius;
+                              padding: 15px;
+                              margin-bottom: 15px;
+
+                              .child-category {
+                                    border-radius: 50px;
+                                    font-size: 12px;
+                                    background-color: palette.$inputBackground;
+                                    padding: 5px 10px;
+                                    color: palette.$mediumTransWhite;
+                                    @include fonts.lightFont;
+
+                                    &.active {
+                                          background-color: white;
+                                          color: palette.$blend;
+                                          @include fonts.mediumBoldFont;
+                                    }
+                              }
+                        }
+                  }
 
                   #table-of-contents {
                         p {

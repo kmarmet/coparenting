@@ -22,13 +22,18 @@ import Manager from "../../../managers/manager"
 import SmsManager from "../../../managers/smsManager"
 import StringManager from "../../../managers/stringManager"
 import AppUpdate from "../../../models/appUpdate"
+import Changelog from "../../../models/changelog"
 import NavBar from "../../navBar"
 import Button from "../../shared/button"
 import InputField from "../../shared/inputField"
 import Screen from "../../shared/screen"
+import ScreenHeader from "../../shared/screenHeader"
+import Spacer from "../../shared/spacer"
 
 export default function AdminDashboard() {
       const {state, setState} = useContext(globalState)
+
+      // STATE
       const [chatRecoveryRequestEmail, setChatRecoveryRequestEmail] = useState("")
       const [chatRequests, setChatRequests] = useState([])
       const [getUserEmail, setGetUserEmail] = useState("")
@@ -42,6 +47,10 @@ export default function AdminDashboard() {
       const [recordsAsJson, setRecordsAsJson] = useState(false)
       const [applicationVersion, setApplicationVersion] = useState(0)
       const [negativeAppEmotions, setNegativeAppEmotions] = useState({})
+      const [finalCmsOutput, setFinalCmsOutput] = useState("")
+      const [roughDraftCmsOutput, setRoughDraftCmsOutput] = useState("")
+
+      // HOOKS
       const {currentUser} = useCurrentUser()
       const {users} = useUsers()
       const {calendarEvents} = useCalendarEvents()
@@ -94,19 +103,6 @@ export default function AdminDashboard() {
             setNegativeAppEmotions(obj)
       }
 
-      useEffect(() => {
-            if (tableName === "users") {
-                  setRecordPropToCheck("User's Email Address")
-            }
-      }, [recordPropToCheck])
-
-      useEffect(() => {
-            GetNegativeAppEmotions().then((r) => r)
-            SmsManager.GetRemainingBalance().then((balance) => {
-                  setTextBalance(balance)
-            })
-      }, [])
-
       const UpdateAppVersion = async () => {
             if (Manager.IsValid(appUpdates)) {
                   let latestVersion = appUpdates[appUpdates?.length - 1]?.currentVersion
@@ -126,6 +122,40 @@ export default function AdminDashboard() {
             }
       }
 
+      const PreviewChangelog = async () => {
+            const changelogInput = document.querySelector(".changelog-input")
+            const changelogPreview = document.getElementById("changelog-preview")
+            changelogPreview.innerHTML = changelogInput.value
+      }
+
+      const PushChangelogUpdate = async () => {
+            const changelogInput = document.querySelector(".changelog-input")
+            const changelogPreview = document.getElementById("changelog-preview")
+            const changelogs = await DB.GetTableData(`${DB.tables.changelogs}`)
+            const newVersion = StringManager.IncrementPatchVersion(await AppManager.GetCurrentAppVersion())
+            const newChangelog = new Changelog({
+                  updatedVersion: newVersion,
+                  html: changelogPreview?.innerHTML.trim(),
+            })
+            changelogInput.value = ""
+
+            await DB.Add(`${DB.tables.changelogs}`, changelogs || [], newChangelog)
+            // await UpdateAppVersion()
+      }
+
+      useEffect(() => {
+            if (tableName === "users") {
+                  setRecordPropToCheck("User's Email Address")
+            }
+      }, [recordPropToCheck])
+
+      useEffect(() => {
+            GetNegativeAppEmotions().then((r) => r)
+            SmsManager.GetRemainingBalance().then((balance) => {
+                  setTextBalance(balance)
+            })
+      }, [])
+
       useEffect(() => {
             if (Manager.IsValid(appUpdates)) {
                   const latestVersion = appUpdates[appUpdates.length - 1]
@@ -135,6 +165,7 @@ export default function AdminDashboard() {
 
       return (
             <Screen activeScreen={ScreenNames.adminDashboard} classes={"dashboard"}>
+                  <ScreenHeader title={"Admin Dashboard"} />
                   {/* TOOLBOXES */}
                   <div className="screen-content">
                         {/* UPDATE */}
@@ -146,10 +177,53 @@ export default function AdminDashboard() {
                               </div>
                         </div>
 
+                        {/* CHANGELOG CMS */}
+                        <div className="tool-box">
+                              <p className="box-title">Changelog CMS</p>
+                              <div id={"changelog-preview"}></div>
+                              <Spacer height={5} />
+                              <Button
+                                    text={"Clear Preview"}
+                                    className="button centered center block"
+                                    theme={ButtonThemes.green}
+                                    onClick={() => {
+                                          const changelogPreview = document.getElementById("changelog-preview")
+                                          changelogPreview.innerHTML = ""
+                                          setRoughDraftCmsOutput("")
+                                    }}
+                              />
+                              <hr />
+                              <InputField
+                                    onChange={(textElement) => setRoughDraftCmsOutput((prev) => prev + textElement.target.value)}
+                                    placeholder={"New Features, Improvements, Fixes"}
+                                    wrapperClasses={"white-bg with-icon"}
+                                    inputType={InputTypes.textarea}
+                                    inputClasses={"with-icon changelog-input"}
+                              />
+                              <Spacer height={5} />
+                              <Button
+                                    text={"Clear Input"}
+                                    className="button"
+                                    theme={ButtonThemes.green}
+                                    onClick={() => {
+                                          const changelogInput = document.querySelector(".changelog-input")
+                                          changelogInput.value = ""
+                                    }}
+                              />
+
+                              <hr />
+
+                              <div className="buttons">
+                                    <Button theme={ButtonThemes.green} text="Preview" className="button" onClick={PreviewChangelog} />
+                              </div>
+                              <div className="buttons">
+                                    <Button theme={ButtonThemes.green} text="Push" className="button" onClick={PushChangelogUpdate} />
+                              </div>
+                        </div>
+
                         {/* TEST SUCCESS ALERT */}
                         <div className="tool-box">
                               <p className="box-title">Test Success Alert</p>
-                              <p className="center-text">Current Version: {applicationVersion}</p>
                               <div className="buttons">
                                     <Button
                                           theme={ButtonThemes.green}

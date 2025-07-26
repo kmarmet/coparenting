@@ -38,6 +38,7 @@
     "firebase": "^10.14.1",
     "firebaseui": "^6.1.0",
     "flatted": "^3.3.3",
+    "html-react-parser": "^5.2.6",
     "imagesloaded": "^5.0.0",
     "js2coffee": "2.2.0",
     "luxon": "3.4.4",

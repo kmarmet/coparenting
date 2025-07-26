@@ -6,6 +6,7 @@ import DatasetManager from "./datasetManager"
 import ExpenseCategories from "../constants/expenseCategories"
 import DB_UserScoped from "../database/db_userScoped"
 import Apis from "../api/apis"
+import EventCategories from "../constants/eventCategories"
 
 DropdownManager =
 # HELPERS
@@ -128,6 +129,14 @@ DropdownManager =
 
 # GET DEFAULT
   GetDefault:
+    EventCategories: () ->
+      results = []
+      for cat in EventCategories
+        for value in cat.types
+          results.push(label: value, value: value)
+        
+      return results
+
     ExpenseSortByTypes: () ->
       return [
         {label: "Recently Added", value: "recentlyAdded"},

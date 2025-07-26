@@ -67,7 +67,25 @@ ObjectManager = {
           return result
     return undefined
 
-  CleanObject: (obj) ->
+  RecursivelyFlattenObjects: (obj, prefix, result = {}) ->
+    for key of obj
+      value = obj[key]
+      newKey = ''
+      
+      if value? and typeof value is 'object' and not Array.isArray(value)
+        if 'name' in value and 'url' in value and Object.keys(value).length is 2
+  # Case: { name, url }
+          result[value.name] = value.url
+        else
+  # Continue recursion
+         ObjectManager.RecursivelyFlattenObjects(value, newKey, result)
+      else
+  # Primitive value (e.g., string)
+        result[newKey] = value
+      return result
+
+
+CleanObject: (obj) ->
     # If the object is an array, clean each element
     if Array.isArray(obj)
       if !Manager.IsValid(obj)

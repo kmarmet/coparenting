@@ -31,6 +31,7 @@ class CalendarEvent
     @shareWith = options?.shareWith ? []
     @children = options?.children ? []
     @sentReminders = options?.sentReminders ? []
+    @categories = options?.categories ? []
 
   # BOOLEANS
     @fromVisitationSchedule = options?.fromVisitationSchedule ? false

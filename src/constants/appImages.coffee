@@ -1,8 +1,28 @@
+import ObjectManager from "../managers/objectManager"
+import Manager from "../managers/manager"
+
 AppImages =
+  # Directories
   dirs:
     landing: 'landing'
     brandLogos: 'brandLogos'
     onboarding: 'onboarding'
+    
+  # Functions
+  GetUrlFromName: (name) ->
+    imgObj = ObjectManager.RecursivelyFlattenObjects(AppImages, '', {})
+    if Manager.IsValid(name, true)
+      if Manager.IsValid(imgObj) and Manager.IsValid(imgObj, true)
+        return imgObj[name]?.url
+    
+    return null
+  
+    
+  # Firebase Storage Images
+  changelog:
+    cardBackground:
+      name: 'cardBackground'
+      url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fchangelog%2Fchangelog-card-background.jpg?alt=media&token=077e9ea0-6c18-475e-8d3d-603b4b300058"
   misc:
     starBackground:
       name: 'starBackground'
@@ -68,5 +88,6 @@ AppImages =
   onboarding:
     calendar: 'calendar'
     welcome: 'welcome'
+  
 
 export default AppImages

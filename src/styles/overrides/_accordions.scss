@@ -13,6 +13,43 @@
                   border-radius: 8px !important;
                   background: palette.$lightBg !important;
 
+                  &.event-categories {
+                        background-color: palette.$inputBackground !important;
+                        border-radius: clamp(0px, 50%, 24px) !important;
+
+                        .MuiCollapse-root {
+                              .MuiAccordionDetails-root {
+                                    padding: 0 15px !important;
+                              }
+                        }
+
+                        .MuiAccordion-heading {
+                              .MuiAccordionSummary-root {
+                                    .MuiAccordionSummary-content {
+                                          button {
+                                                background-color: transparent !important;
+                                                border-radius: variables.$buttonBorderRadius !important;
+                                                padding: 0 15px !important;
+
+                                                svg {
+                                                      color: white !important;
+                                                      opacity: 1 !important;
+                                                      margin: 0 !important;
+                                                }
+                                          }
+                                          .label {
+                                                border: 0 !important;
+                                                color: white !important;
+                                                opacity: 1 !important;
+                                                text-transform: capitalize !important;
+                                                font-weight: variables.$fwLight !important;
+                                                letter-spacing: 1px !important;
+                                          }
+                                    }
+                              }
+                        }
+                  }
+
                   &.child-info {
                         .padding {
                               background-color: palette.$main;
@@ -62,6 +99,7 @@
                                           justify-content: center !important;
                                           align-items: center !important;
                                           height: auto !important;
+
                                           .label-wrapper {
                                                 width: 100% !important;
                                                 label {

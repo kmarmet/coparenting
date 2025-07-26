@@ -69,10 +69,20 @@
                   }
                   .tool-box {
                         padding: 20px;
-                        border-radius: variables.$borderRadius;
+                        border-radius: variables.$cardBorderRadius;
                         width: 100%;
                         margin-bottom: 15px;
                         border: 1px solid palette.$lightBorderColor;
+
+                        #changelog-preview {
+                              background-color: palette.$grey;
+                              padding: 15px;
+                              font-size: 14px;
+                              border-radius: variables.$bigBorderRadius;
+                              white-space: wrap;
+                              overflow: auto;
+                              word-break: break-all;
+                        }
 
                         input {
                               border-bottom: 1px solid palette.$lightBorderColor !important;
