@@ -97,7 +97,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                   // Remove currentUser from original event shareWith
                   const shareWithWithoutCurrentUser = event.shareWith.filter((x) => x !== currentUser?.key)
                   event.shareWith = shareWithWithoutCurrentUser
-                  const updateIndex = DB.GetTableIndexById(calendarEvents, formRef?.current?.id)
+                  const updateIndex = DB.GetIndexById(calendarEvents, formRef?.current?.id)
 
                   if (!Manager.IsValid(updateIndex)) {
                         return false
@@ -206,7 +206,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                         //#region SINGLE EVENT
                         else {
                               if (cleaned?.owner?.key === currentUser?.key) {
-                                    const index = DB.GetTableIndexById(calendarEvents, event?.id)
+                                    const index = DB.GetIndexById(calendarEvents, event?.id)
                                     if (parseInt(index) === -1) return false
                                     await DB.ReplaceEntireRecord(`${dbPath}/${index}`, cleaned)
                               }

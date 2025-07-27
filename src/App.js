@@ -29,7 +29,7 @@ import Contacts from "./components/screens/contacts/contacts"
 import CoParents from "./components/screens/coparents/coParents.jsx"
 import NewCoParentForm from "./components/screens/coparents/newCoParentForm.jsx"
 import DocsList from "./components/screens/documents/docsList.jsx"
-import DocViewer from "./components/screens/documents/docViewer"
+import DocumentViewer from "./components/screens/documents/documentViewer"
 import NewDocument from "./components/screens/documents/newDocument.jsx"
 import Expenses from "./components/screens/expenses/expenses.jsx"
 import Handoff from "./components/screens/handoff.jsx"
@@ -301,7 +301,7 @@ export default function App() {
 
                                     {/* DOCUMENTS */}
                                     {currentScreen === ScreenNames.docsList && <DocsList />}
-                                    {currentScreen === ScreenNames.docViewer && <DocViewer />}
+                                    {currentScreen === ScreenNames.docViewer && <DocumentViewer />}
                                     {currentScreen === ScreenNames.vault && <Vault />}
 
                                     {/* UPLOAD */}

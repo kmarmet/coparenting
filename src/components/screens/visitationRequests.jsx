@@ -66,7 +66,7 @@ export default function VisitationRequests() {
             updatedRequest.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
 
             const cleanedRequest = ObjectManager.CleanObject(updatedRequest)
-            const requestId = DB.GetTableIndexById(visitationRequests, activeRequest?.id)
+            const requestId = DB.GetIndexById(visitationRequests, activeRequest?.id)
             await DB.ReplaceEntireRecord(`${DB.tables.visitationRequests}/${currentUser?.key}/${requestId}`, cleanedRequest)
             setActiveRequest(updatedRequest)
             setShowDetails(false)
@@ -128,7 +128,7 @@ export default function VisitationRequests() {
                   })
             } else {
                   if (activeRequest?.owner?.key === currentUser?.key) {
-                        const recordIndex = DB.GetTableIndexById(visitationRequests, activeRequest?.id)
+                        const recordIndex = DB.GetIndexById(visitationRequests, activeRequest?.id)
                         await DB.Delete(`${DB.tables.visitationRequests}/${activeRequest?.owner?.key}/${recordIndex}`)
                         setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: "Visitation Change Request Deleted"})
                   }

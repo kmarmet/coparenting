@@ -72,7 +72,7 @@ export default function Handoff() {
             console.log("udpatedRequest", updatedRequest)
             const cleaned = ObjectManager.CleanObject(updatedRequest)
             if (cleaned?.owner?.key === currentUser?.key) {
-                  const index = DB.GetTableIndexById(handoffRequests, cleaned?.id)
+                  const index = DB.GetIndexById(handoffRequests, cleaned?.id)
                   if (parseInt(index) === -1) return false
                   await DB.ReplaceEntireRecord(`${DB.tables.handoffChangeRequests}/${currentUser?.key}/${index}`, cleaned)
             }

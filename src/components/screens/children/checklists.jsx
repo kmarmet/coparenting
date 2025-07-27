@@ -63,7 +63,7 @@ export default function Checklists({showCard, hideCard}) {
                         const updated = {...activeChecklist, ...newChecklist}
 
                         if (filteredText.length === 0) {
-                              const deleteIndex = DB.GetTableIndexById(activeChild?.checklists, activeChecklist?.id)
+                              const deleteIndex = DB.GetIndexById(activeChild?.checklists, activeChecklist?.id)
                               const deletePath = `${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists/${deleteIndex}`
                               await DB.Delete(deletePath)
                               hideCard()

@@ -12,7 +12,7 @@ import AlertManager from "./managers/alertManager"
 import AppManager from "./managers/appManager"
 
 // CACHING
-const CACHE_KEY = "v1.0.45"
+const CACHE_KEY = "v1.0.46"
 const FILES_TO_CACHE = ["/", "/index.html", "/src/index.js", "/src/App.js", "/src/styles/bundle.css"]
 
 const logout = () => {
@@ -149,7 +149,7 @@ if ("serviceWorker" in navigator) {
                                                 <div className="flex" id="steps wrap">
                                                       <p>
                                                             From the <span className="emphasize">Home Screen</span>, swipe up from the bottom of the
-                                                            screen and pause in the middle of the screen
+                                                            screen, find our app and then swipe up to force close it
                                                       </p>
                                                 </div>
                                           </div>

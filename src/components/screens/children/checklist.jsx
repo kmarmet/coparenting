@@ -56,7 +56,7 @@ export default function Checklist({fromOrTo, activeChildId}) {
                   return false
             }
 
-            const activeChecklistIndex = DB.GetTableIndexById(activeChild?.checklists, activeChecklist?.id)
+            const activeChecklistIndex = DB.GetIndexById(activeChild?.checklists, activeChecklist?.id)
 
             if (!Manager.IsValid(activeChecklistIndex)) {
                   return false

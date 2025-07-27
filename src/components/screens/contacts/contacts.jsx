@@ -63,17 +63,17 @@ const Contacts = () => {
       // CONTACT UPDATE STATE
       const UpdateContact = async () => {
             const {model, propertyPath, inputValue} = updateObject
-            let userIndex = DB.GetTableIndexById(children, activeContact?.id)
+            let userIndex = DB.GetIndexById(children, activeContact?.id)
             let groupType = "children"
             // Parents
             if (currentUser?.accountType === "child" && GetAccountType() === "parent") {
-                  userIndex = DB.GetTableIndexById(parents, activeContact?.id)
+                  userIndex = DB.GetIndexById(parents, activeContact?.id)
                   groupType = "parents"
             }
 
             // Co-parents
             else if (currentUser?.accountType === "parent" && GetAccountType() === "parent") {
-                  userIndex = DB.GetTableIndexById(coParents, activeContact?.id)
+                  userIndex = DB.GetIndexById(coParents, activeContact?.id)
                   groupType = "coparents"
             }
 
@@ -98,7 +98,7 @@ const Contacts = () => {
                               let toRemove = coParents?.find((x) => x.id === activeContact?.id)
 
                               if (Manager.IsValid(toRemove)) {
-                                    const coParentIndex = DB.GetTableIndexById(coParents, activeContact?.id)
+                                    const coParentIndex = DB.GetIndexById(coParents, activeContact?.id)
                                     await DB_UserScoped.DeleteCoParent(currentUser, coParentIndex, toRemove?.userKey)
                               }
                         }
@@ -108,7 +108,7 @@ const Contacts = () => {
                               let toRemove = parents.find((x) => x.id === activeContact?.id)
 
                               if (Manager.IsValid(toRemove)) {
-                                    const parentIndex = DB.GetTableIndexById(parents, activeContact?.id)
+                                    const parentIndex = DB.GetIndexById(parents, activeContact?.id)
                                     await DB_UserScoped.DeleteParent(currentUser, parentIndex, toRemove?.userKey)
                               }
                         }

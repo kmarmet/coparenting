@@ -9,6 +9,7 @@ import {IoListOutline} from "react-icons/io5"
 import {MdDriveFileRenameOutline} from "react-icons/md"
 import {TbFileSearch} from "react-icons/tb"
 import searchTextHL from "search-text-highlight"
+import AppImages from "../../../constants/appImages"
 import ButtonThemes from "../../../constants/buttonThemes"
 import DatetimeFormats from "../../../constants/datetimeFormats"
 import InputTypes from "../../../constants/inputTypes"
@@ -17,6 +18,7 @@ import globalState from "../../../context"
 import DB from "../../../database/DB"
 import useCurrentUser from "../../../hooks/useCurrentUser"
 import useDocuments from "../../../hooks/useDocuments"
+import useUserDocumentHeaders from "../../../hooks/useUserDocumentHeaders"
 import AlertManager from "../../../managers/alertManager"
 import DocumentConversionManager from "../../../managers/documentConversionManager"
 import DomManager from "../../../managers/domManager"
@@ -34,7 +36,7 @@ import ScreenActionsMenu from "../../shared/screenActionsMenu"
 import ScreenHeader from "../../shared/screenHeader"
 import Spacer from "../../shared/spacer"
 
-export default function DocViewer() {
+export default function DocumentViewer() {
       const predefinedHeaders = DocumentConversionManager.tocHeaders
       const {state, setState} = useContext(globalState)
       const {theme, docToView, docViewerUrl, currentScreen, refreshKey} = state
@@ -43,86 +45,247 @@ export default function DocViewer() {
       const [tocHeaders, setTocHeaders] = useState([])
       const [showToc, setShowToc] = useState(false)
       const [showSearch, setShowSearch] = useState(false)
-      const [imgUrl, setImgUrl] = useState("")
-      const [docType, setDocType] = useState("document")
       const [showTips, setShowTips] = useState(false)
       const [showRenameFile, setShowRenameFile] = useState(false)
       const [newFileName, setNewFileName] = useState(docToView?.documentName)
       const [searchValue, setSearchValue] = useState("")
       const [showShareCard, setShowShareCard] = useState(false)
       const [shareEmail, setShareEmail] = useState("")
-      const [headersAdded, setHeadersAdded] = useState(false)
-      const [userHeaders, setUserHeaders] = useState([])
-      const [userHeadersAreDefined, setUserHeadersAreDefined] = useState(false)
-
-      const docText = document.getElementById("doc-text")
+      const [processedHTML, setProcessedHTML] = useState("")
 
       // HOOKS
       const {currentUser, currentUserIsLoading} = useCurrentUser()
       const {documents, documentsAreLoading} = useDocuments()
+      const {userDocumentHeaders, userDocumentHeadersAreLoading} = useUserDocumentHeaders()
 
-      const ScrollToHeader = (headerId) => {
-            const domHeader = document.querySelector(`#doc-text [data-header-id="${headerId}"]`)
-            if (domHeader) {
-                  setTimeout(() => {
-                        if (domHeader) {
-                              domHeader.scrollIntoView({
-                                    behavior: "smooth",
-                                    block: "center",
-                              })
-                        }
-                  }, 300)
-            }
-      }
-
-      const OnLoad = async () => {
-            const fileType = `.${StringManager.GetFileExtension(docToView.documentName)}`.toLowerCase()
-            const nonImageFileTypes = [".docx", ".doc", ".pdf", ".odt", ".txt"]
-            if (currentUser && nonImageFileTypes.includes(fileType)) {
-                  setTimeout(async () => {
-                        await AppendText()
-                  }, 1000)
-            } else {
-                  setDocType("image")
-                  await FormatImageDocument()
-            }
-            ClearEmptyElements()
-      }
-
-      const SetTableOfContentsHeaders = async () => {
-            if (!Manager.IsValid(userHeaders)) return false
-            let mappedHeaders = []
-
-            // Add Delete Click Listener
-            const domHeaders = document.querySelectorAll(".header")
-            if (Manager.IsValid(domHeaders)) {
-                  for (let domHeader of domHeaders) {
-                        domHeader.addEventListener("click", DeleteHeader)
+      // HELPER OBJECTS
+      const Util = {
+            ThrowError: (message) => {
+                  AlertManager.throwError(message)
+                  setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+                  return false
+            },
+            ScrollToHeader: (headerId) => {
+                  const domHeader = document.querySelector(`#doc-text [data-header-id="${headerId}"]`)
+                  if (domHeader) {
+                        setTimeout(() => {
+                              if (domHeader) {
+                                    domHeader.scrollIntoView({
+                                          behavior: "smooth",
+                                          block: "center",
+                                    })
+                              }
+                        }, 300)
                   }
-            }
+            },
+            SetTableOfContentsHeaders: () => {
+                  if (!Manager.IsValid(userDocumentHeaders)) return false
+                  let mappedHeaders = []
 
-            if (Manager.IsValid(userHeaders)) {
-                  // Loop through user headers
-                  for (let header of userHeaders) {
-                        // Add header to headersInDocument
-                        if (!mappedHeaders.includes(header.headerText)) {
-                              mappedHeaders.push({
-                                    headerText: StringManager.FormatTitle(header?.headerText, true),
-                                    id: header?.id,
-                              })
+                  // Add Delete Click Listener
+                  const domHeaders = document.querySelectorAll(".header")
+                  if (Manager.IsValid(domHeaders)) {
+                        for (let domHeader of domHeaders) {
+                              domHeader.addEventListener("click", Crud.DeleteHeader)
                         }
                   }
-            }
 
-            // const userHeadersMatchingHeadersInDocument = mappedHeaders.filter((x) => headersInDocument.includes(x))
-            // let allHeaders = []
-            //
-            // if (Manager.IsValid(userHeadersMatchingHeadersInDocument)) {
-            //       allHeaders = userHeadersMatchingHeadersInDocument
-            // } else {
-            //       allHeaders = headersInDocument
-            // }
-            setTocHeaders(mappedHeaders)
+                  if (Manager.IsValid(userDocumentHeaders)) {
+                        // Loop through user headers
+                        for (let header of userDocumentHeaders) {
+                              // Add header to headersInDocument
+                              if (!mappedHeaders.includes(header.headerText)) {
+                                    mappedHeaders.push({
+                                          headerText: StringManager.FormatTitle(header?.headerText, true),
+                                          id: header?.id,
+                                    })
+                              }
+                        }
+                  }
+                  setTocHeaders(mappedHeaders)
+            },
+            NormalizeText: (str) => {
+                  return str
+                        .toLowerCase() // case-insensitive
+                        .normalize("NFD") // handle accented chars
+                        .replace(/[\u0300-\u036f]/g, "") // remove diacritics
+                        .replace(/[^a-z0-9]+/g, " ") // remove special chars
+                        .trim() // trim extra spaces
+            },
+            ScrollToTop: () => {
+                  const header = document.querySelector(".screen-title")
+                  header.scrollIntoView({behavior: "smooth", block: "end"})
+            },
+            FormatAndCleanupText: () => {
+                  const docText = document.getElementById("doc-text")
+                  const linksOnPage = docText?.querySelectorAll("a")
+                  const paragraphsOnPage = docText?.querySelectorAll("p")
+
+                  // Correct Links
+                  if (Manager.IsValid(linksOnPage)) {
+                        linksOnPage.forEach((link) => {
+                              // Trimmed text content
+                              const text = link.textContent.trim()
+
+                              link.classList.add("link")
+
+                              // If the link has no text or only whitespace
+                              if (!text) {
+                                    const href = link.getAttribute("href")
+
+                                    // Only set text if href exists
+                                    if (href) {
+                                          link.textContent = href
+                                    }
+                              }
+                        })
+                  }
+
+                  // Clear Empty Elements
+                  if (Manager.IsValid(paragraphsOnPage)) {
+                        paragraphsOnPage?.forEach((p) => {
+                              if (!p.textContent.trim()) {
+                                    p.style.display = "none"
+                              }
+                        })
+                  }
+            },
+      }
+
+      const Crud = {
+            DeleteHeader: async (headerElement) => {
+                  const headerTarget = headerElement?.currentTarget
+
+                  if (headerTarget) {
+                        const headerId = headerTarget.dataset.headerId
+                        const headerIndex = DB.GetIndexById(userDocumentHeaders, headerId)
+
+                        if (headerIndex > -1) {
+                              await DB.DeleteByPath(`${DB.tables.documentHeaders}/${currentUser?.key}/${headerIndex}`)
+                              const updatedHeaders = userDocumentHeaders.filter((x) => x.id !== headerId)
+                              setTocHeaders([])
+                              await Init()
+                        }
+                  }
+            },
+            AddUserHeaderToDatabase: async () => {
+                  const text = DomManager.GetSelectionText()
+                  const alreadyExists = Manager.IsValid(
+                        userDocumentHeaders.find((x) => Util.NormalizeText(x.headerText).includes(Util.NormalizeText(text)))
+                  )
+
+                  if (!alreadyExists) {
+                        if (text.length > 5 && currentScreen === ScreenNames.docViewer) {
+                              AlertManager.confirmAlert({
+                                    title: "Would you like to use the selected text as a header?",
+                                    confirmButtonText: "Yes",
+                                    showCancelButton: true,
+                                    onConfirm: async () => {
+                                          const header = new DocumentHeader()
+                                          header.headerText = text.trim()
+                                          header.owner = {
+                                                key: currentUser?.key,
+                                                email: currentUser?.email,
+                                                name: currentUser?.name,
+                                          }
+                                          await DB.Add(`${DB.tables.documentHeaders}/${currentUser?.key}`, userDocumentHeaders || [], header)
+                                          await Init()
+                                    },
+                                    onDeny: () => {
+                                          DomManager.ClearTextSelection()
+                                    },
+                              })
+                        }
+                  } else {
+                        if (text.length > 5) {
+                              AlertManager.throwError("This header already exists")
+                              return false
+                        }
+                  }
+            },
+            RenameFile: async () => {
+                  if (Manager.IsValid(newFileName, true)) {
+                        const newName = `${newFileName}.${StringManager.GetFileExtension(docToView.documentName).toLowerCase()}`
+                        const recordIndex = DB.GetIndexById(documents, docToView?.id)
+                        if (recordIndex > -1) {
+                              let updatedDocument = documents[recordIndex]
+                              updatedDocument.documentName = newName
+                              setNewFileName(newName)
+                              await DB.ReplaceEntireRecord(`${DB.tables.documents}/${currentUser?.key}/${recordIndex}`, updatedDocument)
+                        }
+                        setShowRenameFile(false)
+                  } else {
+                        AlertManager.throwError("Please enter a new document name")
+                        return false
+                  }
+            },
+      }
+
+      const UI = {
+            FileTypes: {
+                  Document: {
+                        AppendHTMLFromDocument: async () => {
+                              const failureMessage = `Unable to find or load document. Please try again after awhile.`
+                              const docText = document.getElementById("doc-text")
+                              const docToHTMLResponse = await fetch(docViewerUrl).catch(() => Util.ThrowError(failureMessage))
+
+                              const blob = await docToHTMLResponse.blob()
+
+                              if (blob === null || blob?.size === 0) Util.ThrowError(failureMessage)
+
+                              const htmlResult = await DocumentConversionManager.GetTextFromDocx(blob)
+
+                              // Invalid: htmlResult
+                              if (!Manager.IsValid(htmlResult, true)) Util.ThrowError(failureMessage)
+
+                              //  Add Headers
+                              let processedHtml = htmlResult
+                              if (Manager.IsValid(userDocumentHeaders)) {
+                                    userDocumentHeaders.forEach((header) => {
+                                          const rawHeaderText = header?.headerText?.trim()
+                                          if (!rawHeaderText) return
+
+                                          // Escape regex special chars
+                                          const safeHeader = rawHeaderText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+
+                                          // Match header text allowing optional HTML tags/spaces
+                                          const regex = new RegExp(`(?:\\s*<[^>]+>\\s*)*${safeHeader}(?:\\s*<[^>]+>\\s*)*`, "gi")
+
+                                          // Text replacement
+                                          const replacement = `
+                                                  <div data-header-id="${header?.id}" class="header">
+                                                    <span class="header-text">
+                                                      ${StringManager.UppercaseFirstLetterOfAllWords(header?.headerText.trim())}
+                                                    </span>
+                                                  </div>
+                                                `
+                                          processedHtml = processedHtml.replace(regex, replacement)
+                                    })
+                              }
+
+                              // Append processed text
+                              setProcessedHTML(processedHtml)
+                        },
+                  },
+            },
+      }
+
+      // COMPONENT FUNCTIONS
+      const FormatImageDocument = async () => {
+            try {
+                  // Insert text
+                  if (Manager.IsValid(docToView) && Manager.IsValid(docToView.url, true)) {
+                        const htmlResult = await DocumentConversionManager.ImageToHTML(AppImages.testing.legalDoc.url)
+                        setProcessedHTML(htmlResult)
+                        Util.FormatAndCleanupText()
+                        Util.SetTableOfContentsHeaders()
+                  } else {
+                        AlertManager.throwError("No Document Found")
+                        return false
+                  }
+            } catch (error) {
+                  AlertManager.throwError("Unable to find or load document")
+            }
       }
 
       const Search = async () => {
@@ -161,210 +324,6 @@ export default function DocViewer() {
             }
       }
 
-      const FormatImageDocument = async () => {
-            try {
-                  // Insert text
-                  if (Manager.IsValid(docToView)) {
-                        setImgUrl(docToView.url)
-
-                        let text = docToView.docText
-                        // if (!text) {
-                        //         //   AlertManager.throwError(
-                        //         //     `Unable to find or convert document, please try again after awhile. ${docToView?.type === 'image' ? `In the meantime, you can view the document image while this is being resolved.` : ''}`
-                        //         //   )
-                        //         //   return false
-                        //         // }
-
-                        // Remove line breaks after header
-                        const lineBreaks = document.querySelectorAll("br")
-                        for (let lineBreak of lineBreaks) {
-                              const previousSibling = lineBreak.previousElementSibling
-                              if (previousSibling && previousSibling?.tagName === "SPAN") {
-                                    lineBreak.remove()
-                              }
-                        }
-
-                        const docText = document.getElementById("doc-text")
-                        docText.innerHTML = text
-
-                        await AddAndFormatHeaders()
-                        CorrectTextErrors()
-                        await SetTableOfContentsHeaders()
-                  } else {
-                        AlertManager.throwError("No Document Found")
-                        return false
-                  }
-            } catch (error) {
-                  AlertManager.throwError("Unable to find or load document")
-            }
-      }
-
-      const CleanBrokenHTML = (input) => {
-            return input
-                  .replaceAll("p>", "")
-                  .replaceAll("li>", "")
-                  .replaceAll("ul>", "")
-                  .replaceAll("a>", "")
-                  .replaceAll("ol>", "")
-                  .replaceAll("br>", "")
-                  .replaceAll("span>", "")
-                  .replaceAll("h2>", "")
-                  .replaceAll("  ", " ")
-                  .replaceAll("Triday", "Friday")
-                  .trim()
-      }
-
-      const FixLinksWithoutText = () => {
-            const linksOnPage = document.querySelectorAll("a")
-
-            if (Manager.IsValid(linksOnPage)) {
-                  linksOnPage.forEach((link) => {
-                        // Trimmed text content
-                        const text = link.textContent.trim()
-
-                        link.classList.add("link")
-
-                        // If the link has no text or only whitespace
-                        if (!text) {
-                              const href = link.getAttribute("href")
-
-                              // Only set text if href exists
-                              if (href) {
-                                    link.textContent = href
-                              }
-                        }
-                  })
-            }
-      }
-
-      const AppendText = async () => {
-            // docText.innerHTML = ""
-            const docToHTMLResponse = await fetch(docViewerUrl)
-            const blob = await docToHTMLResponse.blob()
-            const htmlResult = await DocumentConversionManager.GetTextFromDocx(blob)
-
-            if (!Manager.IsValid(docToView) || !Manager.IsValid(htmlResult, true)) {
-                  AlertManager.throwError("Unable to find or load document. Please try again after awhile.")
-                  setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
-                  return false
-            }
-            // APPEND HTML
-            if (Manager.IsValid(docText)) {
-                  docText.innerHTML = htmlResult
-            }
-      }
-
-      const CorrectTextErrors = () => {
-            let docText = document.getElementById("doc-text")
-
-            if (docText && docText.innerHTML) {
-                  docText.innerHTML = CleanBrokenHTML(docText.innerHTML)
-                  FixLinksWithoutText()
-            }
-      }
-
-      const NormalizeText = (str) => {
-            return str
-                  .toLowerCase() // case-insensitive
-                  .normalize("NFD") // handle accented chars
-                  .replace(/[\u0300-\u036f]/g, "") // remove diacritics
-                  .replace(/[^a-z0-9]+/g, " ") // remove special chars
-                  .trim() // trim extra spaces
-      }
-
-      const ReturnNormalizedText = (sourceHtml, original, replacement) => {
-            // Normalize original for matching
-            const normalizedOriginal = NormalizeText(original)
-
-            // Create a regex that matches even if spaces/special chars differ
-            const escapedPattern = original
-                  .replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&") // escape regex chars
-                  .split(/\s+/)
-                  .join("\\s*") // allow flexible spacing
-
-            const regex = new RegExp(escapedPattern, "gi")
-
-            return sourceHtml.replace(regex, (match) => {
-                  // Extra safety: only replace if normalized matches
-                  if (NormalizeText(match) === normalizedOriginal) {
-                        return replacement
-                  }
-                  return match // leave as is if mismatch
-            })
-      }
-
-      const AddAndFormatHeaders = async () => {
-            if (headersAdded === false) {
-                  if (!Manager.IsValid(docText)) return false
-                  console.log(userHeaders)
-                  if (Manager.IsValid(userHeaders)) {
-                        for (let header of userHeaders) {
-                              const replacement = `
-                                      <div data-header-id="${header?.id}" class="header">
-                                        <span class="header-text">
-                                          ${StringManager.UppercaseFirstLetterOfAllWords(header?.headerText)}
-                                        </span>
-                                      </div>
-                                    `
-
-                              docText.innerHTML = ReturnNormalizedText(docText.innerHTML, header?.headerText, replacement)
-                        }
-                        setHeadersAdded(true)
-                  }
-            }
-      }
-
-      const DeleteHeader = async (headerElement) => {
-            const headerTarget = headerElement?.currentTarget
-
-            if (headerTarget) {
-                  const headerId = headerTarget.dataset.headerId
-                  const headerIndex = DB.GetTableIndexById(userHeaders, headerId)
-
-                  if (headerIndex > -1) {
-                        await DB.DeleteByPath(`${DB.tables.documentHeaders}/${currentUser?.key}/${headerIndex}`)
-                        const updatedHeaders = userHeaders.filter((x) => x.id !== headerId)
-                        setUserHeaders(updatedHeaders)
-                        setTocHeaders([])
-                        await OnLoad()
-                  }
-            }
-      }
-
-      const AddUserHeaderToDatabase = async () => {
-            const text = DomManager.GetSelectionText()
-            const alreadyExists = Manager.IsValid(userHeaders.find((x) => NormalizeText(x.headerText).includes(NormalizeText(text))))
-
-            if (!alreadyExists) {
-                  if (text.length > 5 && currentScreen === ScreenNames.docViewer) {
-                        AlertManager.confirmAlert({
-                              title: "Would you like to use the selected text as a header?",
-                              confirmButtonText: "Yes",
-                              showCancelButton: true,
-                              onConfirm: async () => {
-                                    const header = new DocumentHeader()
-                                    header.headerText = text.trim()
-                                    header.owner = {
-                                          key: currentUser?.key,
-                                          email: currentUser?.email,
-                                          name: currentUser?.name,
-                                    }
-                                    await DB.Add(`${DB.tables.documentHeaders}/${currentUser?.key}`, userHeaders || [], header)
-                                    await OnLoad()
-                              },
-                              onDeny: () => {
-                                    DomManager.ClearTextSelection()
-                              },
-                        })
-                  }
-            } else {
-                  if (text.length > 5) {
-                        AlertManager.throwError("This header already exists")
-                        return false
-                  }
-            }
-      }
-
       const CloseSearch = async () => {
             setShowSearch(false)
             setSearchValue("")
@@ -374,88 +333,41 @@ export default function DocViewer() {
                         highlight.classList.remove("text-highlight")
                   }
             }
-            await OnLoad()
+            await Init()
       }
 
-      const ScrollToTop = () => {
-            const header = document.querySelector(".screen-title")
-            header.scrollIntoView({behavior: "smooth", block: "end"})
-      }
+      const Init = async () => {
+            const fileType = `.${StringManager.GetFileExtension(docToView.documentName)}`.toLowerCase()
+            const nonImageFileTypes = [".docx", ".doc", ".pdf", ".odt", ".txt"]
 
-      const RenameFile = async () => {
-            if (Manager.IsValid(newFileName, true)) {
-                  const newName = `${newFileName}.${StringManager.GetFileExtension(docToView.documentName).toLowerCase()}`
-                  const recordIndex = DB.GetTableIndexById(documents, docToView?.id)
-                  if (recordIndex > -1) {
-                        let updatedDocument = documents[recordIndex]
-                        updatedDocument.documentName = newName
-                        console.log("rname")
-                        setNewFileName(newName)
-                        await DB.ReplaceEntireRecord(`${DB.tables.documents}/${currentUser?.key}/${recordIndex}`, updatedDocument)
-                  }
-                  setShowRenameFile(false)
-            } else {
-                  AlertManager.throwError("Please enter a new document name")
-                  return false
+            // Document Parsing
+            if (nonImageFileTypes.includes(fileType)) {
+                  await UI.FileTypes.Document.AppendHTMLFromDocument()
+                  await Util.FormatAndCleanupText()
+
+                  // Add TOC Headers
+                  if (Manager.IsValid(userDocumentHeaders)) Util.SetTableOfContentsHeaders()
+            }
+
+            // Image Parsing
+            else {
+                  await FormatImageDocument()
             }
       }
 
-      const ClearEmptyElements = () => {
-            document.querySelectorAll("p").forEach((p) => {
-                  if (!p.textContent.trim()) {
-                        p.style.display = "none"
-                  }
-            })
-      }
-
-      const DefineUserHeaders = async () => {
-            if (Manager.IsValid(docToView)) {
-                  const headers = await DB.GetTableData(`${DB.tables.documentHeaders}/${currentUser?.key}`)
-                  setUserHeaders(headers)
-            }
-      }
-
-      // Add and format headers when document text changes
+      // INIT
       useEffect(() => {
-            if (Manager.IsValid(docText) && Manager.IsValid(docText?.textContent) && Manager.IsValid(currentUser)) {
-                  const docTextLength = docText.textContent.length
-                  if (docTextLength > 100) {
-                        setTimeout(async () => {
-                              if (!userHeadersAreDefined) {
-                                    await DefineUserHeaders()
-                              }
-                              await AddAndFormatHeaders()
-                              await SetTableOfContentsHeaders()
-                              setUserHeadersAreDefined(true)
-                        }, 2000)
-                  }
-            }
-      }, [docText?.textContent?.length, currentUser, userHeaders])
+            if (Manager.IsValid(docToView) && Manager.IsValid(docToView?.url)) void Init()
+      }, [docToView, userDocumentHeaders])
 
-      // PAGE LOAD -> When document is loaded
+      // INIT -> Listen for selection change
       useEffect(() => {
-            if (!currentUserIsLoading && !documentsAreLoading && Manager.IsValid(docViewerUrl, true)) {
-                  void OnLoad()
-            }
-      }, [currentUserIsLoading, documentsAreLoading, docViewerUrl])
-
-      // PAGE LOAD
-      useEffect(() => {
-            const appContentWithSidebar = document.getElementById("app-content-with-sidebar")
-            if (appContentWithSidebar) {
-                  appContentWithSidebar.classList.add("doc-viewer")
-            }
-
-            // Listen for selection change
             if (currentScreen === ScreenNames.docViewer) {
-                  document.addEventListener("selectionchange", debounce(AddUserHeaderToDatabase, 1500))
+                  document.addEventListener("selectionchange", debounce(Crud.AddUserHeaderToDatabase, 1500))
             }
 
             return () => {
-                  document.removeEventListener("selectionchange", AddUserHeaderToDatabase)
-                  if (appContentWithSidebar) {
-                        appContentWithSidebar.classList.remove("doc-viewer")
-                  }
+                  document.removeEventListener("selectionchange", Crud.AddUserHeaderToDatabase)
             }
       }, [])
 
@@ -572,7 +484,7 @@ export default function DocViewer() {
                                                                   <p
                                                                         onClick={() => {
                                                                               setShowToc(false)
-                                                                              ScrollToHeader(header?.id)
+                                                                              Util.ScrollToHeader(header?.id)
                                                                         }}
                                                                         className={`toc-header`}
                                                                         data-id={header?.id}
@@ -591,7 +503,7 @@ export default function DocViewer() {
                         submitText={"Rename"}
                         wrapperClass="rename-file-card"
                         onClose={() => setShowRenameFile(false)}
-                        onSubmit={RenameFile}
+                        onSubmit={Crud.RenameFile}
                         onOpen={() => {
                               const renameFileInput = document.querySelector(".rename-file-input")
                               if (renameFileInput) {
@@ -609,7 +521,6 @@ export default function DocViewer() {
                                     inputClasses={"rename-file-input"}
                                     inputType={InputTypes.text}
                                     onChange={(e) => {
-                                          console.log("from form")
                                           setNewFileName(e.target.value)
                                     }}
                               />
@@ -638,7 +549,7 @@ export default function DocViewer() {
                               <div
                                     className="action-item toc"
                                     onClick={async () => {
-                                          await SetTableOfContentsHeaders()
+                                          Util.SetTableOfContentsHeaders()
                                           setShowToc(true)
                                           setState({...state, showScreenActions: false})
                                     }}>
@@ -723,7 +634,7 @@ export default function DocViewer() {
                   </ScreenActionsMenu>
 
                   {/* SCREEN */}
-                  <Screen activeScreen={currentScreen}>
+                  <Screen activeScreen={currentScreen} stopLoadingBool={Manager.IsValid(docToView)}>
                         {/* PAGE CONTAINER / TEXT */}
                         <div id="documents-container" className={`${theme} page-container  documents`}>
                               <ScreenHeader
@@ -735,7 +646,7 @@ export default function DocViewer() {
 
                               {/* SCREEN CONTENT - DOC TEXT */}
                               <div className="screen-content">
-                                    <div id="doc-text" key={refreshKey}></div>
+                                    <div id="doc-text" dangerouslySetInnerHTML={{__html: processedHTML}} />
                               </div>
 
                               {/* CLOSE SEARCH BUTTON */}

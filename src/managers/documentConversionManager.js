@@ -1,9 +1,7 @@
 import mammoth from "mammoth"
-import Apis from "../api/apis"
+import Tesseract from "tesseract.js"
 import Storage from "../database/storage"
-import AlertManager from "./alertManager"
 import LogManager from "./logManager"
-import StringManager from "./stringManager"
 
 const DocumentConversionManager = {
       tocHeaders: [
@@ -145,27 +143,40 @@ const DocumentConversionManager = {
             }
             return returnHtml
       },
-      imageToHtml: async (url, fileName) => {
+      ImageToHTML: async (url) => {
             let returnHtml = ""
-            const extension = StringManager.GetFileExtension(fileName)
-            const myHeaders = new Headers()
-            myHeaders.append("Content-Type", "image/*")
-            let shortenedUrl = await Apis.ManyApis.GetShortUrl(url)
-
-            const requestOptions = {
-                  method: "GET",
-                  headers: myHeaders,
-                  redirect: "follow",
-            }
-
-            try {
-                  returnHtml = await Apis.OCR.GetHTMLFromImage(extension, shortenedUrl)
-            } catch (error) {
-                  AlertManager.throwError("Unable to parse image. Please try again after a few minutes.")
-                  console.error(error)
-            }
+            await Tesseract.recognize(
+                  url,
+                  "eng", // language
+                  {logger: (info) => console.log(info)} // optional logging
+            )
+                  .then(({data: {text}}) => {
+                        console.log("Extracted Text:", text)
+                        returnHtml = text
+                  })
+                  .catch((err) => console.error(err))
 
             return returnHtml
+            // let returnHtml = ""
+            // const extension = StringManager.GetFileExtension(fileName)
+            // const myHeaders = new Headers()
+            // myHeaders.append("Content-Type", "image/*")
+            // let shortenedUrl = await Apis.ManyApis.GetShortUrl(url)
+            //
+            // const requestOptions = {
+            //       method: "GET",
+            //       headers: myHeaders,
+            //       redirect: "follow",
+            // }
+            //
+            // try {
+            //       returnHtml = await Apis.OCR.GetHTMLFromImage(extension, shortenedUrl)
+            // } catch (error) {
+            //       AlertManager.throwError("Unable to parse image. Please try again after a few minutes.")
+            //       console.error(error)
+            // }
+            //
+            // return returnHtml
       },
 }
 

@@ -95,7 +95,7 @@ export default function Expenses() {
             let updatedExpense = ObjectManager.Merge(formRef.current, activeExpense, "deep")
             formRef.current.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildren)
             const cleanedExpense = ObjectManager.CleanObject(updatedExpense)
-            const updateIndex = DB.GetTableIndexById(expenses, activeExpense?.id)
+            const updateIndex = DB.GetIndexById(expenses, activeExpense?.id)
             await ExpenseManager.UpdateExpense(currentUser?.key, updateIndex, cleanedExpense)
             setActiveExpense(updatedExpense)
             setShowDetails(false)
@@ -110,7 +110,7 @@ export default function Expenses() {
                   paidStatus: updatedStatus,
             }
 
-            const updateIndex = DB.GetTableIndexById(expenses, activeExpense?.id)
+            const updateIndex = DB.GetIndexById(expenses, activeExpense?.id)
             await ExpenseManager.UpdateExpense(`${DB.tables.expenses}/${currentUser?.key}/${updateIndex}`, updatedExpense).then(async () => {
                   UpdateManager.SendUpdate(
                         `Expense Paid`,

@@ -39,7 +39,7 @@ export default function Updates() {
       const ClearAll = async () => await DB.DeleteByPath(`${DB.tables.updates}/${currentUser?.key}`)
 
       const ClearNotification = async (activity) => {
-            const recordIndex = DB.GetTableIndexById(updates, activity?.id)
+            const recordIndex = DB.GetIndexById(updates, activity?.id)
             if (recordIndex > -1) {
                   await DB.DeleteByPath(`${DB.tables.updates}/${currentUser?.key}/${recordIndex}`)
             }

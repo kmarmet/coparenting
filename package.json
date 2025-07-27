@@ -89,6 +89,7 @@
     "shorten-url": "^1.1.0",
     "style-loader": "^4.0.0",
     "sweetalert2": "^11.14.3",
+    "tesseract.js": "^6.0.1",
     "text-from-image": "^1.1.1",
     "use-long-press": "3.2.0",
     "validator": "^13.12.0",

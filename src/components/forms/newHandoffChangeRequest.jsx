@@ -102,7 +102,7 @@ export default function NewHandoffChangeRequest() {
             // Update address
             if (Manager.IsValid(formRef.current.address, true)) {
                   const coParent = coParents.filter((x) => x?.userKey === formRef?.current?.recipient?.key)[0]
-                  const key = DB.GetTableIndexById(coParents, coParent?.id)
+                  const key = DB.GetIndexById(coParents, coParent?.id)
                   await DB_UserScoped.updateUserRecord(currentUser?.key, `coparents/${key}/preferredTransferAddress`, formRef.current.address)
             }
 

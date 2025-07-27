@@ -16,9 +16,12 @@ AppImages =
         return imgObj[name]?.url
     
     return null
-  
     
   # Firebase Storage Images
+  testing:
+   legalDoc:
+      name: 'legalDoc'
+      url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Ftesting%2Flegal-doc.jpg?alt=media&token=8208f828-c8a5-42c3-809e-a43d3ed9fe3e"
   changelog:
     cardBackground:
       name: 'cardBackground'

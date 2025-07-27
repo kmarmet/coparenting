@@ -17,25 +17,15 @@
                   color: palette.$primaryText !important;
                   font-size: 16px !important;
                   line-height: 1.6 !important;
+
                   * {
                         text-decoration: unset !important;
                         line-height: 1.6 !important;
                         text-align: left !important;
                         font-size: 16px !important;
+                        font-family: "SF-Pro-Display-Light", sans-serif !important;
                         text-indent: 0 !important;
-                  }
-
-                  .text-highlight {
-                        color: white;
-                        background: palette.$blend;
-                        border-radius: 50px;
-                        font-size: 12px;
-                        position: relative;
-                        top: -2px;
-                        padding: 5px 10px;
-                        line-height: 1;
-                        white-space: nowrap;
-                        font-weight: variables.$fwBold;
+                        color: palette.$primaryText !important;
                   }
 
                   .header {
@@ -46,7 +36,6 @@
                         padding: 10px;
                         border-left: 3px solid palette.$blend;
                         background-color: rgba(43, 60, 255, 0.07);
-                        border-radius: variables.$borderRadius;
                         position: relative;
                         @include mixins.hover;
 
@@ -70,50 +59,36 @@
                         }
 
                         .header-text {
-                              font-size: 18px;
+                              font-size: 18px !important;
                               color: palette.$blend !important;
                               text-align: left;
                               display: flex;
                               max-width: calc(100% - 100px);
                               justify-content: flex-start;
                               width: 100%;
-                              @include fonts.boldFont;
+                              @include fonts.mediumBoldFont;
                         }
                   }
-                  .Text_Body {
-                        font-size: 16px !important;
-                        span {
-                              font-size: 16px !important;
-                        }
-                  }
-                  .Heading_1,
-                  .Heading_2 {
-                        width: 100%;
-                        margin: 20px 0 5px 0 !important;
-                        background-color: palette.$lightIconBgBlue;
-                        border-radius: 5px;
-                        padding: 8px 0;
-                        display: block;
-                        opacity: 1;
-                        position: relative;
-                        text-align: center;
 
-                        span {
-                              line-height: 1.3;
-                              text-transform: capitalize;
-                              font-weight: variables.$fwMediumBold;
-                              color: palette.$main;
-
-                              text-indent: unset !important;
-                        }
-                  }
                   input {
                         display: none;
                   }
 
                   span {
                         text-decoration: none !important;
-                        font-family: "SF-Pro-Display-Light", sans-serif !important;
+
+                        & .text-highlight {
+                              color: white !important;
+                              background: palette.$main;
+                              border-radius: 50px;
+                              font-size: 12px;
+                              position: relative;
+                              top: -2px;
+                              padding: 3px 15px;
+                              line-height: 1;
+                              white-space: nowrap;
+                              font-weight: variables.$fwBold;
+                        }
                   }
 
                   a {
@@ -139,36 +114,27 @@
                               padding: 8px 0;
                         }
                   }
-                  h3 {
-                        width: 100%;
-                        margin: 15px 0;
-                  }
-                  ol {
+
+                  // LISTS
+                  ol,
+                  ul {
                         li {
-                              padding: 8px 0;
+                              padding: 5px 0;
                         }
                   }
 
-                  span:not(.text-highlight),
-                  li,
-                  a,
+                  // PARAGRAPH (P)
                   p {
-                        font-family: "SF-Pro-Display-Light", sans-serif !important;
-                        color: palette.$primaryText !important;
-                        font-size: 16px !important;
-                  }
-
-                  p {
-                        font-size: 16px;
                         opacity: 1;
                         max-width: 95%;
                         word-break: break-word;
-                        font-family: "SF-Pro-Display-Light", sans-serif !important;
-                        margin-left: 0 !important;
+                        margin: 0 0 10px 0 !important;
                         &.delete-header-button {
                               font-size: 12px;
                         }
                   }
+
+                  // LINK (A) & PARAGRAPH (P)
                   p,
                   li {
                         font-size: 18px;

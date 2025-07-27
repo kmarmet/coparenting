@@ -47,7 +47,7 @@ export default function Memories() {
             }
             // Memory was shared with current user -> hide it
             else {
-                  const memoryKey = DB.GetTableIndexById(memories, record?.id)
+                  const memoryKey = DB.GetIndexById(memories, record?.id)
                   if (Manager.IsValid(memoryKey)) {
                         const updatedShareWith = record.shareWith.filter((x) => x?.owner?.key !== currentUser?.key)
                         await DB.updateByPath(`${DB.tables.memories}/${record?.ownerKey}/${memoryKey}/shareWith`, updatedShareWith)

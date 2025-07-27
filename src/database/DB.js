@@ -50,7 +50,7 @@ const DB = {
                         .flat()[0]
             }
       },
-      GetTableIndexById: (arr, id) => {
+      GetIndexById: (arr, id) => {
             if (Manager.IsValid(arr)) {
                   return arr.findIndex((x) => x?.id === id)
             }
