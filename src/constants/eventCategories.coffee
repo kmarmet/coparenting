@@ -1,6 +1,6 @@
 EventCategories = [
     {
-        parentCategory: "Business & Professional 💼"
+        parentCategory: "💼    Business & Professional "
         categories: [
             "Conference"
             "Interview"
@@ -12,7 +12,7 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Education 📖"
+        parentCategory: "📖    Education "
         categories: [
             "Exam"
             "Graduation"
@@ -25,7 +25,7 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Entertainment 🎬"
+        parentCategory: "🎬    Entertainment "
         categories: [
             "Art Exhibition"
             "Book Launch"
@@ -39,7 +39,7 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Food & Drink 🍔🥤"
+        parentCategory: "🍔    Food & Drink"
         categories: [
             "Barbecue"
             "Brunch"
@@ -49,27 +49,59 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Health & Wellness 🩺"
+        parentCategory: "🩺    Health & Wellness "
         categories: [
             "Blood Donation Camp"
             "Dentist Appointment"
             "Doctor Appointment"
             "Health Check-up"
             "Meditation Class"
+            "Physical Therapy"
+            "Prescription Refill"
             "Therapy Session"
+            "Vision Test"
             "Wellness Retreat"
         ]
     }
+# Life Admin & Chores
     {
-        parentCategory: "Personal 📅"
+        parentCategory: "✅    Life Chores & Tasks "
         categories: [
-            "Family Time"
-            "Pet Appointment"
-            "Self-Care Day"
+            "Bill Payment"
+            "Budget Review"
+            "Car Maintenance"
+            "Decluttering"
+            "Grocery Shopping"
+            "House Repairs"
+            "Laundry Day"
+            "Trash/Recycling Day"
         ]
     }
     {
-        parentCategory: "Religious ⛪️"
+        parentCategory: "📅    Personal "
+        categories: [
+            "Alone Time"
+            "Babysitting"
+            "Family Time"
+            "Friends Hangout"
+            "Haircut / Grooming"
+            "Hobby Time"
+            "Kid’s School Event"
+            "Mental Health Day"
+            "Moving Day"
+            "Nature Walk"
+            "New Pet Arrival"
+            "Online Course"
+            "Pet Appointment"
+            "Screen-Free Day"
+            "Self-Care Day"
+            "Spa Time / Facial"
+            "Study Session"
+            "Tattoo Appointment"
+        ]
+    }
+    {
+        parentCategory: "️⛪    Religious"
         categories: [
             "Bible Study"
             "Church Service"
@@ -80,7 +112,7 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Seasonal & Holiday ✨"
+        parentCategory: "✨    Seasonal & Holiday "
         categories: [
             "Christmas Party"
             "Easter Event"
@@ -93,7 +125,7 @@ EventCategories = [
         ]
     }
     {
-        parentCategory: "Family, Friends & Community 🤝"
+        parentCategory: "🤝    Family Friends & Community "
         categories: [
             "Anniversary"
             "Baby Shower"
@@ -109,7 +141,7 @@ EventCategories = [
     }
 
     {
-        parentCategory: "Sports & Fitness 👟"
+        parentCategory: "👟    Sports & Fitness "
         categories: [
             "Dance Class"
             "Game"
@@ -124,7 +156,7 @@ EventCategories = [
     }
 
     {
-        parentCategory: "Travel & Leisure✈️"
+        parentCategory: "️✈️                                                             Travel & Leisure"
         categories: [
             "Beach Day"
             "Camping Trip"

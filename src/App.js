@@ -32,7 +32,7 @@ import DocsList from "./components/screens/documents/docsList.jsx"
 import DocumentViewer from "./components/screens/documents/documentViewer"
 import NewDocument from "./components/screens/documents/newDocument.jsx"
 import Expenses from "./components/screens/expenses/expenses.jsx"
-import Handoff from "./components/screens/handoff.jsx"
+import Handoffs from "./components/screens/handoffs.jsx"
 import Help from "./components/screens/help"
 import InstallApp from "./components/screens/installApp.jsx"
 import Landing from "./components/screens/landing"
@@ -64,280 +64,280 @@ import Manager from "./managers/manager"
 import UpdateManager from "./managers/updateManager"
 
 export default function App() {
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig)
-      const auth = getAuth(app)
-      const [state, setState] = useState(StateObj)
-      const stateToUpdate = {state, setState}
-      const myCanvas = document.createElement("canvas")
-      const fullscreenScreens = [ScreenNames.login, ScreenNames.landing, ScreenNames.registration]
-      const screensToHideSidebar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.landing]
-      const screensToHideBrandbar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.landing]
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig)
+    const auth = getAuth(app)
+    const [state, setState] = useState(StateObj)
+    const stateToUpdate = {state, setState}
+    const myCanvas = document.createElement("canvas")
+    const fullscreenScreens = [ScreenNames.login, ScreenNames.landing, ScreenNames.registration]
+    const screensToHideSidebar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.landing]
+    const screensToHideBrandbar = [ScreenNames.resetPassword, ScreenNames.login, ScreenNames.landing]
 
-      // Init Sentry
-      Sentry.init({
-            dsn: "https://15c40c1ea019fafd61508f12c6a03298@o4509223026163712.ingest.us.sentry.io/4509223028129792",
-            integrations: [Sentry.browserTracingIntegration()],
+    // Init Sentry
+    Sentry.init({
+        dsn: "https://15c40c1ea019fafd61508f12c6a03298@o4509223026163712.ingest.us.sentry.io/4509223028129792",
+        integrations: [Sentry.browserTracingIntegration()],
 
-            // Set tracesSampleRate to 1.0 to capture 100%
-            // of transactions for performance monitoring.
-            // We recommend adjusting this value in production
-            tracesSampleRate: 1.0,
-            sendDefaultPii: true,
-      })
+        // Set tracesSampleRate to 1.0 to capture 100%
+        // of transactions for performance monitoring.
+        // We recommend adjusting this value in production
+        tracesSampleRate: 1.0,
+        sendDefaultPii: true,
+    })
 
-      // Init EmailJS
-      emailjs.init({
-            // eslint-disable-next-line no-undef
-            publicKey: process.env.REACT_EMAILJS_API_KEY,
-            // Do not allow headless browsers
-            blockHeadless: true,
-            blockList: {
-                  // Block the suspended emails
-                  list: [],
-                  // The variable Contains the email address
-                  // watchVariable: 'userEmail',
-            },
-            limitRate: {
-                  // Set the limit rate for the application
-                  id: "app",
-                  // Allow 1 request per 10s
-                  throttle: 5000,
-            },
-      })
+    // Init EmailJS
+    emailjs.init({
+        // eslint-disable-next-line no-undef
+        publicKey: process.env.REACT_EMAILJS_API_KEY,
+        // Do not allow headless browsers
+        blockHeadless: true,
+        blockList: {
+            // Block the suspended emails
+            list: [],
+            // The variable Contains the email address
+            // watchVariable: 'userEmail',
+        },
+        limitRate: {
+            // Set the limit rate for the application
+            id: "app",
+            // Allow 1 request per 10s
+            throttle: 5000,
+        },
+    })
 
-      // State to include in App.js
-      const {isLoading, currentScreen, userIsLoggedIn, loadingText, currentUser, theme, authUser, creationFormToShow, successAlertMessage} = state
+    // State to include in App.js
+    const {isLoading, currentScreen, userIsLoggedIn, loadingText, currentUser, theme, authUser, creationFormToShow, successAlertMessage} = state
 
-      // ON PAGE LOAD
-      useEffect(() => {
-            // setState({...state, isLoading: true})
-            // Error Boundary Test
-            // throw new Error('Something went wrong')
-            document.body.appendChild(myCanvas)
+    // ON PAGE LOAD
+    useEffect(() => {
+        // setState({...state, isLoading: true})
+        // Error Boundary Test
+        // throw new Error('Something went wrong')
+        document.body.appendChild(myCanvas)
 
-            // FIREBASE AUTH
-            onAuthStateChanged(auth, async (user) => {
-                  // USER LOGGED IN FROM PERSISTED STATE
-                  // console.Log(user)
+        // FIREBASE AUTH
+        onAuthStateChanged(auth, async (user) => {
+            // USER LOGGED IN FROM PERSISTED STATE
+            // console.Log(user)
 
-                  try {
-                        if (user) {
-                              const user = auth.currentUser
-                              // Manager.CallbackOnTimeout(10, async () => {
-                              //   setState({...state, isLoading: false, loadingText: ''})
-                              // })
+            try {
+                if (user) {
+                    const user = auth.currentUser
+                    // Manager.CallbackOnTimeout(10, async () => {
+                    //   setState({...state, isLoading: false, loadingText: ''})
+                    // })
 
-                              // Check for last auto refresh time and last login datetime
-                              if (Manager.IsValid(user)) {
-                                    // Login check
-                                    const lastLogin = moment(user?.metadata?.lastSignInTime).format(DatetimeFormats.timestamp)
-                                    const msSinceLastLogin = moment(lastLogin, DatetimeFormats.timestamp).diff()
-                                    const hoursSinceLastLogin = Math.abs(Math.ceil(msSinceLastLogin / (1000 * 60 * 60))) ?? 0
+                    // Check for last auto refresh time and last login datetime
+                    if (Manager.IsValid(user)) {
+                        // Login check
+                        const lastLogin = moment(user?.metadata?.lastSignInTime).format(DatetimeFormats.timestamp)
+                        const msSinceLastLogin = moment(lastLogin, DatetimeFormats.timestamp).diff()
+                        const hoursSinceLastLogin = Math.abs(Math.ceil(msSinceLastLogin / (1000 * 60 * 60))) ?? 0
 
-                                    // If user has been logged in for more than 30 days -> sign them out
-                                    if (hoursSinceLastLogin >= 720) {
-                                          await auth.signOut()
-                                          return
-                                    }
-                              }
-                              // await AppManager.setAppBadge(0)
-                              await AppManager.clearAppBadge()
-                              const users = await DB.GetTableData(DB.tables.users)
-
-                              let updates = []
-                              let currentUserFromDb
-                              let isLoading = true
-
-                              currentUserFromDb = users?.find((u) => u?.email === user?.email)
-                              // User Exists
-                              if (Manager.IsValid(currentUserFromDb)) {
-                                    let screenToNavigateTo = ScreenNames.calendar
-                                    const body = document.getElementById("external-overrides")
-                                    const navbar = document.getElementById("navbar")
-                                    updates = await DB.GetTableData(`${DB.tables.updates}/${currentUserFromDb?.key}`)
-
-                                    if (Manager.IsValid(navbar)) {
-                                          navbar.setAttribute("account-type", currentUserFromDb?.accountType)
-                                    }
-                                    if (body) {
-                                          body.classList.add(currentUserFromDb?.settings?.theme)
-                                    }
-
-                                    // Check if child profile and if parent access is granted
-                                    // Add location details to use record if they do not exist
-                                    if (!Manager.IsValid(currentUserFromDb?.location)) {
-                                          AppManager.GetLocationDetails().then(async (r) => {
-                                                await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUserFromDb?.key}/location`, r)
-                                          })
-
-                                          // Delete expired items
-                                          AppManager.DeleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
-                                          AppManager.DeleteExpiredMemories(currentUserFromDb).then((r) => r)
-                                    }
-
-                                    // Get notifications
-                                    if (!window.location.href.includes("localhost") && !AppManager.IsDevMode()) {
-                                          const updateSubscribers = await DB.GetTableData(`${DB.tables.updateSubscribers}`)
-                                          const subscriber = updateSubscribers?.find((s) => s?.email === currentUserFromDb?.email)
-                                          if (!Manager.IsValid(subscriber)) {
-                                                UpdateManager.init(currentUserFromDb)
-                                          }
-                                    }
-
-                                    // Back to Log in if user's email is not verified
-                                    if (!user?.emailVerified) {
-                                          screenToNavigateTo = ScreenNames.login
-                                    }
-
-                                    // Check for updates -> If update is available, navigate to updates screen
-                                    const updateIsAvailable = await AppManager.CheckForUpdate()
-
-                                    if (updateIsAvailable) {
-                                          screenToNavigateTo = ScreenNames.appUpdate
-                                          isLoading = false
-                                    }
-
-                                    // console.log("App.js -> useEffect -> user logged in")
-
-                                    // EMAIL VERIFIED
-                                    setState({
-                                          ...state,
-                                          authUser: user,
-                                          currentUser: currentUserFromDb,
-                                          currentScreen: screenToNavigateTo,
-                                          userIsLoggedIn: true,
-                                          isLoading: isLoading,
-                                          theme: currentUserFromDb?.settings?.theme,
-                                          notificationCount: updates?.length,
-                                    })
-                              }
-                        } else {
-                              setState({
-                                    ...state,
-                                    authUser: user,
-                                    currentScreen: ScreenNames.landing,
-                                    userIsLoggedIn: false,
-                                    loadingText: "",
-                                    isLoading: false,
-                              })
-                              console.log("user signed out or user does not exist")
+                        // If user has been logged in for more than 30 days -> sign them out
+                        if (hoursSinceLastLogin >= 720) {
+                            await auth.signOut()
+                            return
                         }
-                  } catch (error) {
-                        setState({...state, isLoading: false})
-                        console.log(`Error: ${error} | Code File: App.js  | Function: useEffect |`)
-                  }
-            })
+                    }
+                    // await AppManager.setAppBadge(0)
+                    await AppManager.clearAppBadge()
+                    const users = await DB.GetTableData(DB.tables.users)
 
-            // eslint-disable-next-line no-undef
-            LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
-      }, [])
+                    let updates = []
+                    let currentUserFromDb
+                    let isLoading = true
 
-      // Refresh on error resolution in development
-      useEffect(() => {
-            if (process.env.NODE_ENV === "development") {
-                  // throw new Error('This is a test error')
-                  // const interval = setInterval(() => {
-                  //   fetch(window.location.href)
-                  //     .then(() => {
-                  //       window.location.reload()
-                  //     });lkjsdfds
-                  //     .catch(() => {}) // still broken
-                  // }, 3000) // check every 3s
-                  // return () => clearInterval(interval)
+                    currentUserFromDb = users?.find((u) => u?.email === user?.email)
+                    // User Exists
+                    if (Manager.IsValid(currentUserFromDb)) {
+                        let screenToNavigateTo = ScreenNames.calendar
+                        const body = document.getElementById("external-overrides")
+                        const navbar = document.getElementById("navbar")
+                        updates = await DB.GetTableData(`${DB.tables.updates}/${currentUserFromDb?.key}`)
+
+                        if (Manager.IsValid(navbar)) {
+                            navbar.setAttribute("account-type", currentUserFromDb?.accountType)
+                        }
+                        if (body) {
+                            body.classList.add(currentUserFromDb?.settings?.theme)
+                        }
+
+                        // Check if child profile and if parent access is granted
+                        // Add location details to use record if they do not exist
+                        if (!Manager.IsValid(currentUserFromDb?.location)) {
+                            AppManager.GetLocationDetails().then(async (r) => {
+                                await DB_UserScoped.updateByPath(`${DB.tables.users}/${currentUserFromDb?.key}/location`, r)
+                            })
+
+                            // Delete expired items
+                            AppManager.DeleteExpiredCalendarEvents(currentUserFromDb).then((r) => r)
+                            AppManager.DeleteExpiredMemories(currentUserFromDb).then((r) => r)
+                        }
+
+                        // Get notifications
+                        if (!window.location.href.includes("localhost") && !AppManager.IsDevMode()) {
+                            const updateSubscribers = await DB.GetTableData(`${DB.tables.updateSubscribers}`)
+                            const subscriber = updateSubscribers?.find((s) => s?.email === currentUserFromDb?.email)
+                            if (!Manager.IsValid(subscriber)) {
+                                UpdateManager.init(currentUserFromDb)
+                            }
+                        }
+
+                        // Back to Log in if user's email is not verified
+                        if (!user?.emailVerified) {
+                            screenToNavigateTo = ScreenNames.login
+                        }
+
+                        // Check for updates -> If update is available, navigate to updates screen
+                        const updateIsAvailable = await AppManager.CheckForUpdate()
+
+                        if (updateIsAvailable) {
+                            screenToNavigateTo = ScreenNames.appUpdate
+                            isLoading = false
+                        }
+
+                        // console.log("App.js -> useEffect -> user logged in")
+
+                        // EMAIL VERIFIED
+                        setState({
+                            ...state,
+                            authUser: user,
+                            currentUser: currentUserFromDb,
+                            currentScreen: screenToNavigateTo,
+                            userIsLoggedIn: true,
+                            isLoading: isLoading,
+                            theme: currentUserFromDb?.settings?.theme,
+                            notificationCount: updates?.length,
+                        })
+                    }
+                } else {
+                    setState({
+                        ...state,
+                        authUser: user,
+                        currentScreen: ScreenNames.landing,
+                        userIsLoggedIn: false,
+                        loadingText: "",
+                        isLoading: false,
+                    })
+                    console.log("user signed out or user does not exist")
+                }
+            } catch (error) {
+                setState({...state, isLoading: false})
+                console.log(`Error: ${error} | Code File: App.js  | Function: useEffect |`)
             }
-      }, [])
+        })
 
-      return (
-            <LocalizationProvider dateAdapter={AdapterMoment}>
-                  <div className={`App ${theme}`} id="app-container">
-                        <globalState.Provider value={stateToUpdate}>
-                              {/* SUCCESS ALERT */}
-                              <SuccessAlert />
+        // eslint-disable-next-line no-undef
+        LicenseInfo.setLicenseKey(process.env.REACT_APP_MUI_KEY)
+    }, [])
 
-                              {/* LOADING SCREEN */}
-                              <LoadingScreen />
+    // Refresh on error resolution in development
+    useEffect(() => {
+        if (process.env.NODE_ENV === "development") {
+            // throw new Error('This is a test error')
+            // const interval = setInterval(() => {
+            //   fetch(window.location.href)
+            //     .then(() => {
+            //       window.location.reload()
+            //     });lkjsdfds
+            //     .catch(() => {}) // still broken
+            // }, 3000) // check every 3s
+            // return () => clearInterval(interval)
+        }
+    }, [])
 
-                              {/* FULL MENU */}
-                              {userIsLoggedIn && <FullMenu />}
+    return (
+        <LocalizationProvider dateAdapter={AdapterMoment}>
+            <div className={`App ${theme}`} id="app-container">
+                <globalState.Provider value={stateToUpdate}>
+                    {/* SUCCESS ALERT */}
+                    <SuccessAlert />
 
-                              {/* CREATION MENU */}
-                              <CreationMenu />
+                    {/* LOADING SCREEN */}
+                    <LoadingScreen />
 
-                              {/* NEW FORMS */}
-                              <NewCalendarEvent />
-                              <NewVisitationChangeRequest />
-                              <NewHandoffChangeRequest />
-                              <NewMemory />
-                              <NewDocument />
-                              <NewExpenseForm />
-                              <NewCoParentForm
-                                    showCard={creationFormToShow === CreationForms.coParent}
-                                    hideCard={() => setState({...state, creationFormToShow: "", refreshKey: Manager.GetUid()})}
-                              />
+                    {/* FULL MENU */}
+                    {userIsLoggedIn && <FullMenu />}
 
-                              <Overlay />
+                    {/* CREATION MENU */}
+                    <CreationMenu />
 
-                              {/* BRAND BAR */}
-                              {!screensToHideBrandbar.includes(currentScreen) && <BrandBar />}
+                    {/* NEW FORMS */}
+                    <NewCalendarEvent />
+                    <NewVisitationChangeRequest />
+                    <NewHandoffChangeRequest />
+                    <NewMemory />
+                    <NewDocument />
+                    <NewExpenseForm />
+                    <NewCoParentForm
+                        showCard={creationFormToShow === CreationForms.coParent}
+                        hideCard={() => setState({...state, creationFormToShow: "", refreshKey: Manager.GetUid()})}
+                    />
 
-                              {/* SCREENS */}
-                              <div
-                                    id="app-content-with-sidebar"
-                                    className={`${fullscreenScreens.includes(currentScreen) ? "fullscreen" : ""}${Manager.IsValid(authUser) ? " logged-in" : ""}${currentScreen === ScreenNames.calendar ? " three-columns" : ""}`}>
-                                    {/* SIDE NAVBAR */}
-                                    {!screensToHideSidebar.includes(currentScreen) && !DomManager.isMobile() && <DesktopLeftSidebar />}
+                    <Overlay />
 
-                                    {/* ADMIN */}
-                                    {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}
-                                    {currentScreen === ScreenNames.changelog && <Changelogs />}
+                    {/* BRAND BAR */}
+                    {!screensToHideBrandbar.includes(currentScreen) && <BrandBar />}
 
-                                    {/* AUTHENTICATION */}
-                                    {currentScreen === ScreenNames.login && <Login />}
-                                    {currentScreen === ScreenNames.registration && <Registration />}
+                    {/* SCREENS */}
+                    <div
+                        id="app-content-with-sidebar"
+                        className={`${fullscreenScreens.includes(currentScreen) ? "fullscreen" : ""}${Manager.IsValid(authUser) ? " logged-in" : ""}${currentScreen === ScreenNames.calendar ? " three-columns" : ""}`}>
+                        {/* SIDE NAVBAR */}
+                        {!screensToHideSidebar.includes(currentScreen) && !DomManager.isMobile() && <DesktopLeftSidebar />}
 
-                                    {/* UPDATE/EDIT */}
-                                    {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}
+                        {/* ADMIN */}
+                        {currentScreen === ScreenNames.adminDashboard && <AdminDashboard />}
+                        {currentScreen === ScreenNames.changelog && <Changelogs />}
 
-                                    {/* DOCUMENTS */}
-                                    {currentScreen === ScreenNames.docsList && <DocsList />}
-                                    {currentScreen === ScreenNames.docViewer && <DocumentViewer />}
-                                    {currentScreen === ScreenNames.vault && <Vault />}
+                        {/* AUTHENTICATION */}
+                        {currentScreen === ScreenNames.login && <Login />}
+                        {currentScreen === ScreenNames.registration && <Registration />}
 
-                                    {/* UPLOAD */}
-                                    {currentScreen === ScreenNames.uploadDocuments && <NewDocument />}
+                        {/* UPDATE/EDIT */}
+                        {currentScreen === ScreenNames.editCalendarEvent && <EditCalEvent />}
 
-                                    {/* NEW */}
-                                    {currentScreen === ScreenNames.newCalendarEvent && <NewCalendarEvent />}
-                                    {currentScreen === ScreenNames.newMemory && <NewMemory />}
-                                    {currentScreen === ScreenNames.newChild && <NewChildForm />}
-                                    {currentScreen === ScreenNames.newExpense && <NewExpenseForm />}
-                                    {currentScreen === ScreenNames.newVisitationChangeRequest && <NewVisitationChangeRequest />}
-                                    {currentScreen === ScreenNames.newHandoffChangeRequest && <NewHandoffChangeRequest />}
-                                    {currentScreen === ScreenNames.newCoParent && <NewCoParentForm />}
+                        {/* DOCUMENTS */}
+                        {currentScreen === ScreenNames.docsList && <DocsList />}
+                        {currentScreen === ScreenNames.docViewer && <DocumentViewer />}
+                        {currentScreen === ScreenNames.vault && <Vault />}
 
-                                    {/* STANDARD */}
-                                    {currentScreen === ScreenNames.appUpdate && <AppUpdateOverlay />}
-                                    {currentScreen === ScreenNames.installApp && <InstallApp />}
-                                    {currentScreen === ScreenNames.landing && !isLoading && <Landing />}
-                                    {currentScreen === ScreenNames.updates && <Updates />}
-                                    {currentScreen === ScreenNames.calendar && <EventCalendar />}
-                                    {currentScreen === ScreenNames.expenses && <Expenses />}
-                                    {currentScreen === ScreenNames.resetPassword && <ResetPassword />}
-                                    {currentScreen === ScreenNames.handoff && <Handoff />}
-                                    {currentScreen === ScreenNames.memories && <Memories />}
-                                    {currentScreen === ScreenNames.makeItYours && <MakeItYours />}
-                                    {currentScreen === ScreenNames.children && <Children />}
-                                    {currentScreen === ScreenNames.coparents && <CoParents />}
-                                    {currentScreen === ScreenNames.parents && <Parents />}
-                                    {currentScreen === ScreenNames.chat && <Chat />}
-                                    {currentScreen === ScreenNames.chats && <Chats />}
-                                    {currentScreen === ScreenNames.visitation && <Visitation />}
-                                    {currentScreen === ScreenNames.contacts && <Contacts />}
-                                    {currentScreen === ScreenNames.help && <Help />}
-                              </div>
-                        </globalState.Provider>
-                  </div>
-            </LocalizationProvider>
-      )
+                        {/* UPLOAD */}
+                        {currentScreen === ScreenNames.uploadDocuments && <NewDocument />}
+
+                        {/* NEW */}
+                        {currentScreen === ScreenNames.newCalendarEvent && <NewCalendarEvent />}
+                        {currentScreen === ScreenNames.newMemory && <NewMemory />}
+                        {currentScreen === ScreenNames.newChild && <NewChildForm />}
+                        {currentScreen === ScreenNames.newExpense && <NewExpenseForm />}
+                        {currentScreen === ScreenNames.newVisitationChangeRequest && <NewVisitationChangeRequest />}
+                        {currentScreen === ScreenNames.newHandoffChangeRequest && <NewHandoffChangeRequest />}
+                        {currentScreen === ScreenNames.newCoParent && <NewCoParentForm />}
+
+                        {/* STANDARD */}
+                        {currentScreen === ScreenNames.appUpdate && <AppUpdateOverlay />}
+                        {currentScreen === ScreenNames.installApp && <InstallApp />}
+                        {currentScreen === ScreenNames.landing && !isLoading && <Landing />}
+                        {currentScreen === ScreenNames.updates && <Updates />}
+                        {currentScreen === ScreenNames.calendar && <EventCalendar />}
+                        {currentScreen === ScreenNames.expenses && <Expenses />}
+                        {currentScreen === ScreenNames.resetPassword && <ResetPassword />}
+                        {currentScreen === ScreenNames.handoff && <Handoffs />}
+                        {currentScreen === ScreenNames.memories && <Memories />}
+                        {currentScreen === ScreenNames.makeItYours && <MakeItYours />}
+                        {currentScreen === ScreenNames.children && <Children />}
+                        {currentScreen === ScreenNames.coparents && <CoParents />}
+                        {currentScreen === ScreenNames.parents && <Parents />}
+                        {currentScreen === ScreenNames.chat && <Chat />}
+                        {currentScreen === ScreenNames.chats && <Chats />}
+                        {currentScreen === ScreenNames.visitation && <Visitation />}
+                        {currentScreen === ScreenNames.contacts && <Contacts />}
+                        {currentScreen === ScreenNames.help && <Help />}
+                    </div>
+                </globalState.Provider>
+            </div>
+        </LocalizationProvider>
+    )
 }

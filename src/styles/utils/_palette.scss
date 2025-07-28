@@ -7,8 +7,9 @@ $lightBlend: rgba(43, 60, 255, 0.29);
 $blendBorder: rgba(43, 60, 255, 0.19);
 $main: #355aff;
 $blendPurple: #3c3fff;
-$blendDark: #3c4cff;
+$blendDark: #3c47ff;
 $blend: #475bff;
+
 $inactiveNavbarElement: rgba(255, 255, 255, 0.4);
 // Blues
 $linkColor: #4255ff;
@@ -28,7 +29,7 @@ $headerText: #4b5563;
 $labelText: #4b5563;
 
 // Input
-$inputBackground: rgba(255, 255, 255, 0.08);
+$inputBackground: rgba(255, 255, 255, 0.05);
 /*#endregion  PRIMARY COLORS */
 
 /*#region  GREENS */
@@ -130,8 +131,8 @@ $darkBlueMedium: #4c6fff;
 $darkMainBlue: $darkBlueMedium;
 $darkBlueLight: cornflowerblue;
 $darkSmallShadow:
-      0 3px 6px rgba(0, 0, 0, 0.16),
-      0 3px 6px rgba(0, 0, 0, 0.23);
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
 $darkBorderColor: rgba(59, 59, 59, 0.26);
 /*#endregion DARK THEME*/
 

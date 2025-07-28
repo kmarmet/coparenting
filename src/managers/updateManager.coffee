@@ -38,10 +38,10 @@ export default UpdateManager =
  request, please contact #{recipientName} to negotiate a potential agreement"
 
     handoffChangeRequestApproval: (request, recipientName) ->
-      return "Handoff Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{UpdateManager.lineBreak}#{UpdateManager.lineBreak}"
+      return "Handoffs Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been APPROVED by #{recipientName}#{UpdateManager.lineBreak}#{UpdateManager.lineBreak}"
 
     handoffChangeRequestRejection: (request, recipientName) ->
-      return "Handoff Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{UpdateManager.lineBreak}#{UpdateManager.lineBreak} Reason: #{request.declineReason}. If you
+      return "Handoffs Change Request for #{moment(request?.startDate).format(DateFormats.readableMonthAndDay)} has been DECLINED.#{UpdateManager.lineBreak}#{UpdateManager.lineBreak} Reason: #{request.declineReason}. If you
  would still
  prefer to proceed
  with the

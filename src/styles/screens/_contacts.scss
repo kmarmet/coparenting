@@ -1,7 +1,7 @@
-@use '../utils/mixins';
-@use '../utils/variables';
-@use '../utils/_palette';
-@use '../_fonts';
+@use "../utils/mixins";
+@use "../utils/variables";
+@use "../utils/_palette";
+@use "../_fonts";
 
 #external-overrides {
     #contacts-wrapper {
@@ -30,13 +30,8 @@
         }
         .contacts-wrapper {
             display: flex;
-            gap: 0 30px;
-            height: 150px;
-
+            gap: 0 20px;
             .contact-card {
-                width: 100%;
-                height: auto;
-                @include mixins.square(110px);
                 border-radius: 100%;
                 padding-right: 15px;
                 margin-bottom: 8px;
@@ -45,6 +40,7 @@
                 background-size: cover;
                 background-repeat: no-repeat;
                 overflow: hidden;
+                @include mixins.square(90px);
 
                 &.no-pic {
                     @include mixins.mainColorsGradient;
@@ -82,7 +78,7 @@
                     bottom: 0;
                     align-items: center;
                     justify-content: flex-start;
-                    backdrop-filter: blur(5px);
+                    backdrop-filter: blur(15px);
                     position: absolute;
                     border-radius: 0 0 100% 100%;
                     margin: 0 auto;
@@ -96,17 +92,15 @@
                     }
 
                     .contact-card-pic {
-                        height: 50px;
-                        width: 50px;
                         border-radius: 50%;
                         background-size: cover;
-                        margin-right: 10px;
                         display: flex;
                         justify-content: center;
                         align-items: center;
                         position: relative;
                         left: 0;
                         transform: scale(0.88);
+                        @include mixins.square(50px);
 
                         &.no-pic {
                             border: 0;

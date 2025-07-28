@@ -1,19 +1,19 @@
-import React, {useContext} from 'react'
-import {ImAppleinc} from 'react-icons/im'
-import {IoLogoVenmo} from 'react-icons/io5'
-import {LiaCcPaypal} from 'react-icons/lia'
-import {SiCashapp, SiZelle} from 'react-icons/si'
-import globalState from '../../../context.js'
-import Form from '../../shared/form.jsx'
-import Spacer from '../../shared/spacer'
+import React, {useContext} from "react"
+import {ImAppleinc} from "react-icons/im"
+import {IoLogoVenmo} from "react-icons/io5"
+import {LiaCcPaypal} from "react-icons/lia"
+import {SiCashapp, SiZelle} from "react-icons/si"
+import globalState from "../../../context.js"
+import Form from "../../shared/form.jsx"
+import Spacer from "../../shared/spacer"
 
-const zelleLink = 'https://www.zellepay.com/how-it-works'
-const zelleVideoLink = 'https://www.youtube.com/embed/FhL1HKUOStM?si=0xzdELJcIfnbHIRO'
-const venmoLink = 'https://help.venmo.com/hc/en-us/articles/209690068-How-to-Sign-Up-for-a-Personal-Venmo-Account'
-const venmoVideoLink = 'https://www.youtube.com/embed/zAqz0Kzootg'
-const appleLink = 'https://support.apple.com/en-us/105013'
-const paypalLink = 'https://www.paypal.com/us/digital-wallet/send-receive-money'
-const cashappLink = 'https://cash.app/help/6485-getting-started-with-cash-app'
+const zelleLink = "https://www.zellepay.com/how-it-works"
+const zelleVideoLink = "https://www.youtube.com/embed/FhL1HKUOStM?si=0xzdELJcIfnbHIRO"
+const venmoLink = "https://help.venmo.com/hc/en-us/articles/209690068-How-to-Sign-Up-for-a-Personal-Venmo-Account"
+const venmoVideoLink = "https://www.youtube.com/embed/zAqz0Kzootg"
+const appleLink = "https://support.apple.com/en-us/105013"
+const paypalLink = "https://www.paypal.com/us/digital-wallet/send-receive-money"
+const cashappLink = "https://cash.app/help/6485-getting-started-with-cash-app"
 
 export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
     const {state, setState} = useContext(globalState)
@@ -24,7 +24,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
             <Form
                 hasSubmitButton={false}
                 subtitle={`There are numerous straightforward and cost-free methods available for transferring money to a co-parent for expenses or other purposes. <br /><br /> Please review the options below to determine which one suits your needs best.`}
-                title={'Payment/Handoff Options'}
+                title={"Payment/Handoffs Options"}
                 className="payment-options-card"
                 wrapperClass="payment-options-card at-top"
                 onClose={onClose}
@@ -35,7 +35,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
                             {/* ZELLE */}
                             <div className="option zelle">
                                 <div className="flex brand-name-wrapper zelle">
-                                    <SiZelle className={'zelle-icon'} />
+                                    <SiZelle className={"zelle-icon"} />
                                     <p className="brand-name accent">Zelle</p>
                                 </div>
                                 <div className="flex">
@@ -62,7 +62,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
                             {/* VENMO */}
                             <div className="option venmo">
                                 <div className="flex brand-name-wrapper venmo">
-                                    <IoLogoVenmo className={'venmo-icon'} />
+                                    <IoLogoVenmo className={"venmo-icon"} />
                                     <p className="brand-name">Venmo</p>
                                 </div>
                                 <div className="flex">
@@ -87,7 +87,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
                             {/* APPLE PAY */}
                             <div className="option apple-cash">
                                 <div className="flex brand-name-wrapper apple">
-                                    <ImAppleinc className={'apple-icon'} />
+                                    <ImAppleinc className={"apple-icon"} />
                                     <p className="brand-name">Apple Cash</p>
                                 </div>
                                 <div className="flex ">
@@ -106,7 +106,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
                             {/* PAYPAL */}
                             <div className="option paypal">
                                 <div className="flex brand-name-wrapper paypal">
-                                    <LiaCcPaypal className={'paypal-icon'} />
+                                    <LiaCcPaypal className={"paypal-icon"} />
                                     <p className="brand-name">PayPal</p>
                                 </div>
                                 <div className="flex">

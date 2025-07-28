@@ -4,245 +4,245 @@
 @use "../_fonts";
 
 #external-overrides {
-      /*#region  MAPS */
-      .pac-container {
-            width: calc(100vw - 30px) !important;
-            margin: 0 auto !important;
-            z-index: 9999 !important;
-            right: unset !important;
-            left: 15px !important;
-            border-radius: variables.$mediumBorderRadius !important;
-            box-shadow: variables.$boxShadow_bottom_only_bigger !important;
-            background: white !important;
-            border: 1px solid palette.$barelyVisibleWhite !important;
-            * {
-                  font-family: "SF-Pro-Display-Regular", sans-serif !important;
-                  letter-spacing: 1px !important;
-                  border: 0 !important;
-            }
+    /*#region  MAPS */
+    .pac-container {
+        width: calc(100vw - 30px) !important;
+        margin: 0 auto !important;
+        z-index: 9999 !important;
+        right: unset !important;
+        left: 15px !important;
+        border-radius: variables.$mediumBorderRadius !important;
+        box-shadow: variables.$boxShadow_bottom_only_bigger !important;
+        background: white !important;
+        border: 1px solid palette.$barelyVisibleWhite !important;
+        * {
+            font-family: "SF-Pro-Display-Regular", sans-serif !important;
+            letter-spacing: 1px !important;
+            border: 0 !important;
+        }
 
+        svg {
+            color: #8693cd !important;
+        }
+
+        span {
+            color: palette.$primaryText !important;
+
+            span,
             svg {
-                  color: #8693cd !important;
+                color: palette.$blend !important;
             }
+        }
 
-            span {
-                  color: palette.$primaryText !important;
+        &::after {
+            display: none !important;
+        }
 
-                  span,
-                  svg {
-                        color: palette.$blend !important;
-                  }
-            }
+        .pac-item {
+            padding: 8px !important;
 
-            &::after {
-                  display: none !important;
+            .pac-icon {
+                &.pac-icon-marker {
+                    color: palette.$blend !important;
+                }
             }
-
-            .pac-item {
-                  padding: 8px !important;
-
-                  .pac-icon {
-                        &.pac-icon-marker {
-                              color: palette.$blend !important;
-                        }
-                  }
-            }
-      }
-      .gm-style-mtc {
-            border-radius: variables.$borderRadius !important;
-            button {
-                  border-radius: variables.$borderRadius !important;
-                  background: palette.$mediumTransWhite !important;
-                  color: palette.$blend !important;
-                  &:first-child {
-                        margin-right: 8px !important;
-                  }
-            }
-      }
-      .gmnoprint {
-            button,
-            div {
-                  border-radius: variables.$borderRadius !important;
-                  font-size: 14px !important;
-            }
-      }
-      .gm-control-active,
-      .gm-svpc {
+        }
+    }
+    .gm-style-mtc {
+        border-radius: variables.$borderRadius !important;
+        button {
             border-radius: variables.$borderRadius !important;
             background: palette.$mediumTransWhite !important;
             color: palette.$blend !important;
-            font-size: 14px !important;
-
-            img {
-                  color: palette.$blend !important;
+            &:first-child {
+                margin-right: 8px !important;
             }
-      }
-      /*#endregion  MAPS */
+        }
+    }
+    .gmnoprint {
+        button,
+        div {
+            border-radius: variables.$borderRadius !important;
+            font-size: 14px !important;
+        }
+    }
+    .gm-control-active,
+    .gm-svpc {
+        border-radius: variables.$borderRadius !important;
+        background: palette.$mediumTransWhite !important;
+        color: palette.$blend !important;
+        font-size: 14px !important;
 
-      /*#region  AUTOCOMPLETE */
-      .google-autocomplete-wrapper {
-            width: 100%;
-            gap: 0 5px;
+        img {
+            color: palette.$blend !important;
+        }
+    }
+    /*#endregion  MAPS */
 
-            &.white-bg {
-                  border-radius: clamp(0px, 50%, 24px) !important;
+    /*#region  AUTOCOMPLETE */
+    .google-autocomplete-wrapper {
+        width: 100%;
+        gap: 0 5px;
 
-                  .google-autocomplete-type {
-                        width: 100% !important;
+        &.white-bg {
+            border-radius: clamp(0px, 50%, 24px) !important;
+
+            .google-autocomplete-type {
+                width: 100% !important;
+                border-radius: clamp(0px, 50%, 24px) !important;
+                max-width: unset !important;
+                [class*="-control"] {
+                    width: 100% !important;
+                    max-width: unset !important;
+                }
+
+                &[class*="-container"]:not(.MuiDialog-container) {
+                    color: palette.$darkGrey !important;
+                    // MENU OPTIONS
+                    [class*="-menu"] {
+                        z-index: 10 !important;
+                        position: relative !important;
+                        border: 0 !important;
                         border-radius: clamp(0px, 50%, 24px) !important;
-                        max-width: unset !important;
-                        [class*="-control"] {
-                              width: 100% !important;
-                              max-width: unset !important;
+                        [id*="-listbox"] {
+                            gap: 8px !important;
+                            [class*="-option"] {
+                                color: palette.$blend !important;
+                                border: 1px solid palette.$blend !important;
+                                border-radius: 50px !important;
+                                font-size: 12px !important;
+                                padding: 8px 10px !important;
+                                letter-spacing: 0.3px !important;
+                                font-weight: variables.$fwMedium !important;
+                            }
                         }
+                    }
 
-                        &[class*="-container"]:not(.MuiDialog-container) {
-                              color: palette.$darkGrey !important;
-                              // MENU OPTIONS
-                              [class*="-menu"] {
-                                    z-index: 10 !important;
-                                    position: relative !important;
-                                    border: 0 !important;
-                                    border-radius: clamp(0px, 50%, 24px) !important;
-                                    [id*="-listbox"] {
-                                          gap: 8px !important;
-                                          [class*="-option"] {
-                                                color: palette.$blend !important;
-                                                border: 1px solid palette.$blend !important;
-                                                border-radius: 50px !important;
-                                                font-size: 12px !important;
-                                                padding: 8px 10px !important;
-                                                letter-spacing: 0.3px !important;
-                                                font-weight: variables.$fwMedium !important;
-                                          }
-                                    }
-                              }
+                    // PLACEHOLDER
+                    [class*="-placeholder"] {
+                        color: palette.$darkGrey !important;
+                        font-size: 15px !important;
+                    }
 
-                              // PLACEHOLDER
-                              [class*="-placeholder"] {
-                                    color: palette.$darkGrey !important;
-                                    font-size: 15px !important;
-                              }
-
-                              [class*="-control"] {
-                                    border: 1px solid palette.$lightBorderColor !important;
-
-                                    [class*="-singleValue"] {
-                                          color: palette.$darkerGrey !important;
-                                          font-size: 15px !important;
-                                          font-weight: variables.$fwRegular !important;
-                                          border: 0 !important;
-                                    }
-                                    [class*="-multiValue"] {
-                                          border: 0 !important;
-                                          color: palette.$blend !important;
-                                    }
-                                    // DOWN ARROW ICON
-                                    [class*="-indicatorContainer"] {
-                                          color: white !important;
-                                          svg {
-                                                color: palette.$iconGrey !important;
-                                                opacity: 0.6 !important;
-                                          }
-                                    }
-                              }
-                        }
-                  }
-
-                  svg {
-                        color: palette.$iconGrey !important;
-                  }
-
-                  .input-wrapper {
+                    [class*="-control"] {
                         border: 1px solid palette.$lightBorderColor !important;
-                        input {
-                              color: palette.$labelText !important;
-                              &::placeholder {
-                                    color: palette.$darkerGrey !important;
-                              }
-                              @include fonts.lightFont;
+
+                        [class*="-singleValue"] {
+                            color: palette.$darkerGrey !important;
+                            font-size: 15px !important;
+                            font-weight: variables.$fwRegular !important;
+                            border: 0 !important;
                         }
-                  }
+                        [class*="-multiValue"] {
+                            border: 0 !important;
+                            color: palette.$blend !important;
+                        }
+                        // DOWN ARROW ICON
+                        [class*="-indicatorContainer"] {
+                            color: white !important;
+                            svg {
+                                color: palette.$iconGrey !important;
+                                opacity: 0.6 !important;
+                            }
+                        }
+                    }
+                }
+            }
+
+            svg {
+                color: palette.$iconGrey !important;
             }
 
             .input-wrapper {
-                  height: 50px;
-                  position: relative;
-                  background: palette.$inputBackground;
-                  border-radius: 50px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: flex-start;
-
-                  // Address input
-                  input {
-                        margin-left: 50px;
-                        padding-left: 0 !important;
-                        background: transparent;
-                  }
-
-                  .clear-input-button {
-                        font-size: 12px !important;
-                        color: white !important;
-                        position: relative;
-                        z-index: variables.$maxZIndex;
-                        height: 48px;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        font-weight: variables.$fwBold;
-                        padding: 0 15px;
-                        border-radius: 0 variables.$buttonBorderRadius variables.$buttonBorderRadius 0;
-                        @include fonts.mediumBoldFont;
-
-                        svg {
-                              @include mixins.square(25px);
-                              position: relative;
-                              display: inline;
-                              top: unset;
-                              left: unset;
-                              transform: unset;
-                        }
-                  }
-
-                  .google-autocomplete-input {
-                        position: relative;
-                        border: 0;
-                        outline: 0;
-                        border-radius: 0;
-                        caret-color: white;
-                        display: flex;
-                        justify-content: flex-start;
-                        align-items: center;
-                        font-weight: variables.$fwLight;
-                        color: white;
-                        z-index: 9;
-                        font-size: 15px !important;
-                        overscroll-behavior: none;
-                        overflow: auto;
-                        height: 100%;
-                        width: 100% !important;
-                        max-width: calc(100% - 50px) !important;
-                        padding: 0;
-
-                        &::placeholder {
-                              font-style: italic;
-                              color: palette.$transWhite;
-                              font-size: 15px;
-                              font-weight: variables.$fwLight;
-                              text-transform: capitalize;
-                        }
-                  }
-
-                  svg {
-                        position: absolute;
-                        color: palette.$transWhite;
-                        left: 20px;
-                        margin-left: 0;
-                        @include mixins.centerVert;
-                        @include mixins.square(20px);
-                  }
+                border: 1px solid palette.$lightBorderColor !important;
+                input {
+                    color: palette.$labelText !important;
+                    &::placeholder {
+                        color: palette.$darkerGrey !important;
+                    }
+                    @include fonts.lightFont;
+                }
             }
-      }
-      /*#endregion  AUTOCOMPLETE */
+        }
+
+        .input-wrapper {
+            height: 50px;
+            position: relative;
+            background: palette.$inputBackground;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+
+            // Address input
+            input {
+                margin-left: 50px;
+                padding-left: 0 !important;
+                background: transparent;
+            }
+
+            .clear-input-button {
+                font-size: 12px !important;
+                color: white !important;
+                position: relative;
+                z-index: variables.$maxZIndex;
+                height: 48px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-weight: variables.$fwBold;
+                padding: 0 15px;
+                border-radius: 0 variables.$buttonBorderRadius variables.$buttonBorderRadius 0;
+                @include fonts.mediumBoldFont;
+
+                svg {
+                    @include mixins.square(20px);
+                    position: relative;
+                    display: inline;
+                    top: unset;
+                    left: unset;
+                    transform: unset;
+                }
+            }
+
+            .google-autocomplete-input {
+                position: relative;
+                border: 0;
+                outline: 0;
+                border-radius: 0;
+                caret-color: white;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                font-weight: variables.$fwLight;
+                color: white;
+                z-index: 9;
+                font-size: 15px !important;
+                overscroll-behavior: none;
+                overflow: auto;
+                height: 100%;
+                width: 100% !important;
+                max-width: calc(100% - 50px) !important;
+                padding: 0;
+
+                &::placeholder {
+                    font-style: italic;
+                    color: palette.$transWhite;
+                    font-size: 15px;
+                    font-weight: variables.$fwLight;
+                    text-transform: capitalize;
+                }
+            }
+
+            svg {
+                position: absolute;
+                color: palette.$transWhite;
+                left: 20px;
+                margin-left: 0;
+                @include mixins.centerVert;
+                @include mixins.square(18px);
+            }
+        }
+    }
+    /*#endregion  AUTOCOMPLETE */
 }

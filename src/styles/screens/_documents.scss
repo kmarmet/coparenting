@@ -98,6 +98,9 @@
 
                         &.link {
                               color: palette.$linkColor !important;
+                              border-bottom: 1px solid palette.$linkColor !important;
+                              width: max-content !important;
+                              display: inline !important;
                         }
 
                         &[name="Check2"] {

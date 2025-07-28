@@ -5,597 +5,598 @@
 @use "../utils/_animations";
 
 #external-overrides {
-      #calendar-container {
-            /*#region  DOTS & EMOJIS*/
-            .dot-wrapper {
-                  width: 100%;
-                  display: flex;
-                  justify-content: center;
-                  gap: 3px;
-                  position: relative;
-                  top: -5px;
+    #calendar-container {
+        /*#region  DOTS & EMOJIS*/
+        .dot-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+            position: relative;
+            top: -5px;
 
-                  .dot {
-                        margin: 0;
-                        height: 5px;
-                        width: 5px;
-                        border: 0;
-                        display: block;
-                        border-radius: 100%;
-                  }
-
-                  .payday-dot {
-                        background: palette.$green;
-                  }
-                  .current-user-visitation-dot,
-                  .current-user-event-dot {
-                        background-color: palette.$blend;
-                  }
-
-                  .coparent-visitation-dot,
-                  .coParent-event-dot {
-                        background-color: palette.$mediumPurple;
-                  }
-
-                  .holiday-event-dot {
-                        background-color: palette.$holidayOrange;
-                  }
-            }
-            .invisible-dots {
-                  width: 100%;
-                  height: 2px;
+            .dot {
+                margin: 0;
+                height: 5px;
+                width: 5px;
+                border: 0;
+                display: block;
+                border-radius: 100%;
             }
 
-            .holiday-emoji,
-            .payday-emoji {
-                  position: absolute;
-                  top: -5px;
-                  left: 60%;
-                  right: 50%;
-                  z-index: 100;
-                  width: 15px;
-                  height: 20px;
-                  display: flex;
-                  justify-content: center;
-                  border-radius: 50%;
-                  align-items: center;
+            .payday-dot {
+                background: palette.$green;
             }
-            /*#endregion  DOTS & EMOJIS*/
-
-            /*#region  LEGEND*/
-            #legend-wrapper,
-            #calendar-legend {
-                  margin-left: 0;
-
-                  &#legend-wrapper {
-                        background: palette.$grey !important;
-                        order: -1;
-                        border-radius: variables.$bigBorderRadius;
-
-                        #legend-button {
-                              border: 0 !important;
-                        }
-                  }
-
-                  &#calendar-legend {
-                        border: 0 !important;
-                        position: relative;
-
-                        &.MuiPaper-root {
-                              &:before {
-                                    display: none;
-                              }
-                              &.Mui-expanded {
-                                    width: calc(100vw - 30px) !important;
-                                    padding: 15px 0 !important;
-                                    background: palette.$lightGrey !important;
-                                    border-radius: variables.$bigBorderRadius !important;
-                                    border: 1px solid palette.$lightBorderColor !important;
-                                    margin: 0 auto 20px auto !important;
-                              }
-                        }
-
-                        .flex {
-                              justify-content: center;
-                              padding-bottom: 5px;
-                        }
-
-                        .MuiButtonBase-root {
-                              width: auto !important;
-                              padding: 0 !important;
-                              height: unset !important;
-                              min-height: unset !important;
-                              opacity: 0.75;
-                              position: absolute;
-                              bottom: 0;
-                              z-index: 1000;
-                              right: 8px;
-
-                              svg {
-                                    font-size: 26px !important;
-                                    color: palette.$red !important;
-                                    margin: 0 !important;
-                              }
-                        }
-                  }
-
-                  p {
-                        opacity: 1 !important;
-                        &.coparent {
-                              color: palette.$purple;
-                        }
-
-                        &.financial {
-                              color: palette.$green;
-                        }
-
-                        &.holiday {
-                              color: palette.$holidayOrange;
-                        }
-
-                        &.current-user {
-                              color: palette.$main;
-                        }
-                  }
-
-                  .dot {
-                        height: 5px;
-                        width: 5px;
-                        border-radius: 100%;
-                        position: relative;
-
-                        &.in-legend {
-                              margin-right: 10px;
-                              display: block;
-                        }
-
-                        &.coparent {
-                              background: palette.$purple;
-                              top: -5px;
-                        }
-
-                        &.holiday {
-                              background: palette.$holidayOrange;
-                              top: 5px;
-                              right: 8px;
-                        }
-
-                        &.payday {
-                              background: palette.$green;
-                              right: 11px;
-                        }
-
-                        &.currentUser {
-                              left: 3px;
-                              background: palette.$main;
-                        }
-                  }
-            }
-            /*#endregion  LEGEND*/
-
-            #month-options {
-                  display: grid;
-                  grid-template-columns: repeat(3, 1fr);
-                  gap: 10px;
-                  opacity: 0;
-                  transition: opacity 0.3s ease;
-                  max-height: 0;
-                  background: palette.$grey;
-                  border-radius: variables.$cardBorderRadius;
-                  margin-top: 10px;
-                  position: relative;
-                  z-index: 9;
-                  box-shadow: variables.$boxShadow_float;
-                  pointer-events: none;
-
-                  &.active {
-                        pointer-events: auto;
-                        opacity: 1;
-                        max-height: unset;
-                        transition: all 0.3s ease;
-                        padding: 15px;
-                  }
-
-                  .chip {
-                        border: 1px solid palette.$iconGrey !important;
-                        color: palette.$darkerGrey !important;
-                        font-weight: variables.$fwRegular !important;
-                        height: 40px !important;
-                        border-radius: variables.$buttonBorderRadius;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        font-size: 14px !important;
-
-                        &.active {
-                              background: palette.$bootstrapGreenBg !important;
-                              color: palette.$bootstrapGreen !important;
-                              border: 1px solid palette.$bootstrapGreen !important;
-                              @include fonts.mediumBoldFont;
-                        }
-                  }
+            .current-user-visitation-dot,
+            .current-user-event-dot {
+                background-color: palette.$blend;
             }
 
-            /*#region  STATIC CALENDAR*/
-            #static-calendar {
-                  width: 100vw !important;
-                  position: relative;
-                  left: -15px !important;
+            .coparent-visitation-dot,
+            .coParent-event-dot {
+                background-color: palette.$mediumPurple;
+            }
 
-                  &.hidden {
-                        z-index: -1;
-                  }
+            .holiday-event-dot {
+                background-color: palette.$holidayOrange;
+            }
+        }
+        .invisible-dots {
+            width: 100%;
+            height: 2px;
+        }
 
-                  .MuiDayCalendar-monthContainer {
-                        position: unset !important;
-                  }
+        .holiday-emoji,
+        .payday-emoji {
+            position: absolute;
+            top: -5px;
+            left: 60%;
+            right: 50%;
+            z-index: 100;
+            width: 15px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            border-radius: 50%;
+            align-items: center;
+        }
+        /*#endregion  DOTS & EMOJIS*/
 
-                  .MuiMonthCalendar-root {
+        /*#region  LEGEND*/
+        #legend-wrapper,
+        #calendar-legend {
+            margin-left: 0;
+
+            &#legend-wrapper {
+                background: palette.$grey !important;
+                order: -1;
+                border-radius: variables.$bigBorderRadius;
+
+                #legend-button {
+                    border: 0 !important;
+                }
+            }
+
+            &#calendar-legend {
+                border: 0 !important;
+                position: relative;
+
+                &.MuiPaper-root {
+                    &:before {
+                        display: none;
+                    }
+                    &.Mui-expanded {
+                        width: calc(100vw - 30px) !important;
+                        padding: 15px 0 !important;
+                        background: palette.$lightGrey !important;
+                        border-radius: variables.$bigBorderRadius !important;
+                        border: 1px solid palette.$lightBorderColor !important;
                         margin: 0 auto 20px auto !important;
-                        background: white !important;
-                        border-radius: variables.$cardBorderRadius !important;
-                        @include mixins.shadow;
-                        .MuiPickersMonth-root {
-                              button {
-                                    color: palette.$darkestGrey !important;
+                    }
+                }
 
-                                    &.Mui-selected {
-                                          color: palette.$main !important;
-                                    }
-                              }
-                        }
-                  }
+                .flex {
+                    justify-content: center;
+                    padding-bottom: 5px;
+                }
 
-                  /*#region  BELOW CALENDAR BUTTONS*/
-                  .MuiDialogActions-root {
-                        max-width: 100vw !important;
-                        width: calc(100vw - 30px);
-                        margin: 10px auto 0 auto !important;
-                        align-items: center;
-                        gap: 10px !important;
-                        display: grid;
-                        grid-template-columns: repeat(4, 1fr);
-                        position: relative;
-                        justify-content: center;
-                        padding: 0 !important;
-                        left: 0;
+                .MuiButtonBase-root {
+                    width: auto !important;
+                    padding: 0 !important;
+                    height: unset !important;
+                    min-height: unset !important;
+                    opacity: 0.75;
+                    position: absolute;
+                    bottom: 0;
+                    z-index: 1000;
+                    right: 8px;
 
-                        @media screen and (min-width: 1000px) {
-                              width: auto;
-                        }
+                    svg {
+                        font-size: 26px !important;
+                        color: palette.$red !important;
+                        margin: 0 !important;
+                    }
+                }
+            }
 
-                        #month-selector {
-                              height: 30px;
-                              svg {
-                                    margin-left: 5px;
-                                    position: relative;
-                                    opacity: 0.7;
-                                    @include mixins.square(13px);
-                              }
-                        }
+            p {
+                opacity: 1 !important;
+                @include fonts.mediumBoldFont;
+                &.coparent {
+                    color: palette.$purple;
+                }
 
-                        #search-icon-wrapper {
-                              background-color: palette.$grey;
-                              display: flex;
-                              align-items: center;
-                              justify-content: center;
-                              border: 1px solid palette.$lightBorderColor;
-                              border-radius: variables.$buttonBorderRadius;
-                              width: 100%;
-                              padding: 3px 10px;
+                &.financial {
+                    color: palette.$green;
+                }
 
-                              &.pending-close {
-                                    background-color: palette.$red !important;
-                                    border: 1px solid palette.$red !important;
-                                    svg {
-                                          color: white;
-                                          transform: scale(0.9);
-                                          border: 0;
-                                    }
-                              }
+                &.holiday {
+                    color: palette.$holidayOrange;
+                }
 
-                              svg {
-                                    display: inline;
-                                    position: relative;
-                                    top: 0;
-                                    left: -1px;
-                                    transform: scale(0.65);
-                                    color: palette.$iconGrey;
-                                    @include mixins.square(22px);
-                              }
-                        }
+                &.current-user {
+                    color: palette.$main;
+                }
+            }
 
-                        // BELOW CALENDAR BUTTONS
-                        button,
-                        p {
-                              text-transform: uppercase;
-                              margin: 0;
-                              font-size: 12px !important;
-                              line-height: 1 !important;
-                              text-align: center !important;
-                              position: relative;
-                              display: flex;
-                              flex: 1;
-                              align-items: center;
-                              justify-content: center;
-                              color: #8b929f;
-                              background-color: palette.$grey;
-                              padding: 8px 10px;
-                              border: 1px solid palette.$lightBorderColor !important;
-                              border-radius: variables.$buttonBorderRadius;
-                              @include fonts.regularFont;
-                        }
+            .dot {
+                height: 5px;
+                width: 5px;
+                border-radius: 100%;
+                position: relative;
 
-                        // TODAY BUTTON
-                        .MuiButtonBase-root {
-                              font-size: 12px !important;
-                              text-align: center !important;
-                              height: auto;
-                              opacity: 1 !important;
-                              color: #8b929f !important;
-                              line-height: 1 !important;
-                              white-space: nowrap !important;
-                              background-color: palette.$grey;
-                              border: 1px solid palette.$lightBorderColor !important;
-                              padding: 8px 5px !important;
-                              border-radius: 50px !important;
-                        }
-                  }
-                  /*#endregion  BELOW CALENDAR BUTTONS*/
+                &.in-legend {
+                    margin-right: 10px;
+                    display: block;
+                }
 
-                  // PARENT/ROOT CALENDAR WRAPPER
-                  .MuiPickersLayout-contentWrapper {
-                        max-width: 100% !important;
-                        top: 10px;
-                        position: relative;
-                        width: 100vw;
-                        overflow: hidden;
-                        * {
-                              max-width: 100% !important;
-                        }
+                &.coparent {
+                    background: palette.$purple;
+                    top: -5px;
+                }
 
-                        .MuiDateCalendar-root {
-                              height: unset;
-                              margin: 0;
-                              width: 100vw;
-                              overflow: hidden;
-                              max-height: unset;
+                &.holiday {
+                    background: palette.$holidayOrange;
+                    top: 5px;
+                    right: 8px;
+                }
 
-                              .MuiMonthCalendar-root {
-                                    border: 1px solid palette.$lightBorderColor;
-                                    border-radius: variables.$buttonBorderRadius;
-                                    .MuiPickersMonth-root {
-                                          button {
-                                                color: palette.$darkGrey;
-                                                font-size: 16px !important;
+                &.payday {
+                    background: palette.$green;
+                    right: 11px;
+                }
 
-                                                &.Mui-selected {
-                                                      background: transparent;
-                                                      color: palette.$main;
-                                                }
-                                          }
-                                    }
-                              }
+                &.currentUser {
+                    left: 3px;
+                    background: palette.$main;
+                }
+            }
+        }
+        /*#endregion  LEGEND*/
 
-                              [role="row"] {
-                                    width: 100vw;
-                                    display: grid !important;
-                                    grid-template-columns: repeat(7, 1fr) !important;
-                                    margin-top: 0 !important;
+        #month-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-height: 0;
+            background: palette.$grey;
+            border-radius: variables.$cardBorderRadius;
+            margin-top: 10px;
+            position: relative;
+            z-index: 9;
+            box-shadow: variables.$boxShadow_float;
+            pointer-events: none;
 
-                                    &.MuiDayCalendar-header {
-                                          width: 100vw;
-                                          justify-content: center !important;
+            &.active {
+                pointer-events: auto;
+                opacity: 1;
+                max-height: unset;
+                transition: all 0.3s ease;
+                padding: 15px;
+            }
 
-                                          *:not(.MuiDayCalendar-weekDayLabel) {
-                                                color: palette.$darkGrey !important;
-                                                text-align: center !important;
-                                                font-size: 16px !important;
-                                          }
+            .chip {
+                border: 1px solid palette.$iconGrey !important;
+                color: palette.$darkerGrey !important;
+                font-weight: variables.$fwRegular !important;
+                height: 40px !important;
+                border-radius: variables.$buttonBorderRadius;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 14px !important;
 
-                                          .MuiDayCalendar-weekDayLabel {
-                                                color: palette.$mediumGreyDarkest;
-                                                width: auto !important;
-                                                font-weight: variables.$fwRegular !important;
-                                                font-size: 16px !important;
-                                          }
-                                    }
+                &.active {
+                    background: palette.$bootstrapGreenBg !important;
+                    color: palette.$bootstrapGreen !important;
+                    border: 1px solid palette.$bootstrapGreen !important;
+                    @include fonts.mediumBoldFont;
+                }
+            }
+        }
 
-                                    /*#region  DAYS */
-                                    .MuiPickersDay-root {
-                                          color: palette.$primaryText !important;
-                                          flex-wrap: wrap;
-                                          justify-content: center;
-                                          align-items: center;
-                                          display: flex;
-                                          border-radius: 0 !important;
-                                          font-size: 14px !important;
-                                          background: transparent;
-                                          position: relative;
-                                          z-index: 99;
-                                          gap: 0 !important;
-                                          margin: 0 0 8px 0 !important;
-                                          font-weight: variables.$fwMedium !important;
-                                          width: calc(100vw / 7) !important;
+        /*#region  STATIC CALENDAR*/
+        #static-calendar {
+            width: 100vw !important;
+            position: relative;
+            left: -15px !important;
 
-                                          [class*="day"],
-                                          &[class*="day"] {
-                                                font-weight: variables.$fwLight !important;
-                                                font-family: "SF-Pro-Display-Light", sans-serif !important;
-                                          }
+            &.hidden {
+                z-index: -1;
+            }
 
-                                          // TODAY
-                                          &.MuiPickersDay-today {
-                                                border-radius: 0 !important;
+            .MuiDayCalendar-monthContainer {
+                position: unset !important;
+            }
 
-                                                &:after {
-                                                      transition: all 0.3s ease-in-out;
-                                                      width: 80%;
-                                                      z-index: -1;
-                                                      content: "";
-                                                      position: absolute;
-                                                      top: -4px;
-                                                      left: 0;
-                                                      right: 0;
-                                                      bottom: 0;
-                                                      height: 20px;
-                                                      border-radius: 100% !important;
-                                                      background: rgba(209, 213, 220, 0.37) !important;
-                                                      @include mixins.centerHoriz;
-                                                      @include mixins.square(45px);
-                                                }
-                                          }
-
-                                          // SELECTED
-                                          &.Mui-selected {
-                                                color: white !important;
-                                                font-weight: variables.$fwBold !important;
-                                                padding-bottom: 2px !important;
-                                                padding-top: 2px !important;
-                                                border-radius: 0 !important;
-
-                                                .dot-wrapper {
-                                                      .current-user-event-dot {
-                                                            background-color: #8195ff !important;
-                                                      }
-                                                      .coParent-event-dot {
-                                                            background-color: #ab8fff;
-                                                      }
-                                                }
-
-                                                &:after {
-                                                      transition: all 0.3s ease-in-out;
-                                                      z-index: -1;
-                                                      content: "";
-                                                      position: absolute;
-                                                      top: -4px;
-                                                      left: 0;
-                                                      right: 0;
-                                                      bottom: 0;
-                                                      border-radius: 100% !important;
-                                                      background: palette.$blend !important;
-                                                      border: 1px solid rgba(87, 105, 255, 0.37) !important;
-                                                      @include mixins.square(45px);
-                                                      @include mixins.centerHoriz;
-                                                }
-                                          }
-
-                                          // Weekend
-                                          &.weekend-day,
-                                          &.MuiPickersDay-dayOutsideMonth,
-                                          &[aria-colindex="7"],
-                                          &[aria-colindex="1"] {
-                                                color: palette.$mediumGreyDarker !important;
-
-                                                .dot-wrapper {
-                                                      opacity: 0.5 !important;
-                                                }
-
-                                                &.MuiPickersDay-today {
-                                                      &::after {
-                                                            background: palette.$lightGrey !important;
-                                                      }
-                                                }
-
-                                                &.Mui-selected {
-                                                      opacity: 1 !important;
-                                                      color: palette.$blend !important;
-
-                                                      &::after {
-                                                            background: palette.$lightBlend !important;
-                                                      }
-                                                }
-                                          }
-                                    }
-                              }
-                              /*#endregion  DAYS */
-                        }
-
-                        .MuiButtonBase-root {
-                              padding: 0 !important;
-                        }
-                  }
-
-                  // MONTH HEADER
-                  .MuiPickersLayout-root {
-                        .MuiPickersCalendarHeader-label {
-                              font-weight: variables.$fwRegular !important;
-                              font-size: 14px !important;
-                              color: palette.$darkerGrey;
-                        }
-                        .MuiPickersCalendarHeader-switchViewButton {
-                              height: unset !important;
-                              font-size: unset !important;
-
-                              svg {
-                                    font-size: 25px !important;
-                              }
-                        }
-                  }
-                  .MuiButtonBase-root {
-                        color: palette.$darkerGrey !important;
-                        padding: 0 !important;
+            .MuiMonthCalendar-root {
+                margin: 0 auto 20px auto !important;
+                background: white !important;
+                border-radius: variables.$cardBorderRadius !important;
+                @include mixins.shadow;
+                .MuiPickersMonth-root {
+                    button {
+                        color: palette.$darkestGrey !important;
 
                         &.Mui-selected {
-                              color: white !important;
+                            color: palette.$main !important;
                         }
-                  }
-
-                  .MuiPickersArrowSwitcher-root {
-                        //        display: none !important;
-                  }
-
-                  .MuiPickersToolbar-root {
-                        display: none !important;
-                  }
-
-                  // CALENDAR CELLS
-                  .MuiPickersCalendarHeader-root {
-                        display: none !important;
-                        .MuiPickersCalendarHeader-labelContainer {
-                              margin: 0 auto !important;
-                              .MuiPickersCalendarHeader-label {
-                              }
-                        }
-                        .MuiPickersCalendarHeader-switchViewIcon {
-                        }
-                  }
-            }
-            /*#endregion  STATIC CALENDAR*/
-
-            #calendar-month {
-                  color: palette.$darkerGrey;
-                  text-align: center;
-                  margin-bottom: 10px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  position: relative;
-                  width: 100vw;
-                  font-weight: variables.$fwMedium;
-
-                  .MuiPickersArrowSwitcher-root {
-                        gap: 3px;
-                        position: absolute;
-                        right: 10px;
-                        button {
-                              padding: 0;
-
-                              svg {
-                                    -webkit-transform: scale(0.9);
-                                    -moz-transform: scale(0.9);
-                                    -ms-transform: scale(0.9);
-                                    -o-transform: scale(0.9);
-                                    transform: scale(0.9);
-                                    color: palette.$purple;
-                              }
-                        }
-                  }
+                    }
+                }
             }
 
-            // BELOW CALENDAR
-            #below-calendar {
-                  display: none;
+            /*#region  BELOW CALENDAR BUTTONS*/
+            .MuiDialogActions-root {
+                max-width: 100vw !important;
+                width: calc(100vw - 30px);
+                margin: 10px auto 0 auto !important;
+                align-items: center;
+                gap: 10px !important;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                position: relative;
+                justify-content: center;
+                padding: 0 !important;
+                left: 0;
+
+                @media screen and (min-width: 1000px) {
+                    width: auto;
+                }
+
+                #month-selector {
+                    height: 30px;
+                    svg {
+                        margin-left: 5px;
+                        position: relative;
+                        opacity: 0.7;
+                        @include mixins.square(13px);
+                    }
+                }
+
+                #search-icon-wrapper {
+                    background-color: palette.$grey;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: 1px solid palette.$lightBorderColor;
+                    border-radius: variables.$buttonBorderRadius;
+                    width: 100%;
+                    padding: 3px 10px;
+
+                    &.pending-close {
+                        background-color: palette.$red !important;
+                        border: 1px solid palette.$red !important;
+                        svg {
+                            color: white;
+                            transform: scale(0.9);
+                            border: 0;
+                        }
+                    }
+
+                    svg {
+                        display: inline;
+                        position: relative;
+                        top: 0;
+                        left: -1px;
+                        transform: scale(0.65);
+                        color: palette.$iconGrey;
+                        @include mixins.square(22px);
+                    }
+                }
+
+                // BELOW CALENDAR BUTTONS
+                button,
+                p {
+                    text-transform: uppercase;
+                    margin: 0;
+                    font-size: 12px !important;
+                    line-height: 1 !important;
+                    text-align: center !important;
+                    position: relative;
+                    display: flex;
+                    flex: 1;
+                    align-items: center;
+                    justify-content: center;
+                    color: #8b929f;
+                    background-color: palette.$grey;
+                    padding: 8px 10px;
+                    border: 1px solid palette.$lightBorderColor !important;
+                    border-radius: variables.$buttonBorderRadius;
+                    @include fonts.regularFont;
+                }
+
+                // TODAY BUTTON
+                .MuiButtonBase-root {
+                    font-size: 12px !important;
+                    text-align: center !important;
+                    height: auto;
+                    opacity: 1 !important;
+                    color: #8b929f !important;
+                    line-height: 1 !important;
+                    white-space: nowrap !important;
+                    background-color: palette.$grey;
+                    border: 1px solid palette.$lightBorderColor !important;
+                    padding: 8px 5px !important;
+                    border-radius: 50px !important;
+                }
             }
-      }
+            /*#endregion  BELOW CALENDAR BUTTONS*/
+
+            // PARENT/ROOT CALENDAR WRAPPER
+            .MuiPickersLayout-contentWrapper {
+                max-width: 100% !important;
+                top: 10px;
+                position: relative;
+                width: 100vw;
+                overflow: hidden;
+                * {
+                    max-width: 100% !important;
+                }
+
+                .MuiDateCalendar-root {
+                    height: unset;
+                    margin: 0;
+                    width: 100vw;
+                    overflow: hidden;
+                    max-height: unset;
+
+                    .MuiMonthCalendar-root {
+                        border: 1px solid palette.$lightBorderColor;
+                        border-radius: variables.$buttonBorderRadius;
+                        .MuiPickersMonth-root {
+                            button {
+                                color: palette.$darkGrey;
+                                font-size: 16px !important;
+
+                                &.Mui-selected {
+                                    background: transparent;
+                                    color: palette.$main;
+                                }
+                            }
+                        }
+                    }
+
+                    [role="row"] {
+                        width: 100vw;
+                        display: grid !important;
+                        grid-template-columns: repeat(7, 1fr) !important;
+                        margin-top: 0 !important;
+
+                        &.MuiDayCalendar-header {
+                            width: 100vw;
+                            justify-content: center !important;
+
+                            *:not(.MuiDayCalendar-weekDayLabel) {
+                                color: palette.$darkGrey !important;
+                                text-align: center !important;
+                                font-size: 16px !important;
+                            }
+
+                            .MuiDayCalendar-weekDayLabel {
+                                color: palette.$mediumGreyDarkest;
+                                width: auto !important;
+                                font-weight: variables.$fwRegular !important;
+                                font-size: 16px !important;
+                            }
+                        }
+
+                        /*#region  DAYS */
+                        .MuiPickersDay-root {
+                            color: palette.$primaryText !important;
+                            flex-wrap: wrap;
+                            justify-content: center;
+                            align-items: center;
+                            display: flex;
+                            border-radius: 0 !important;
+                            font-size: 14px !important;
+                            background: transparent;
+                            position: relative;
+                            z-index: 99;
+                            gap: 0 !important;
+                            margin: 0 0 8px 0 !important;
+                            font-weight: variables.$fwMedium !important;
+                            width: calc(100vw / 7) !important;
+
+                            [class*="day"],
+                            &[class*="day"] {
+                                font-weight: variables.$fwLight !important;
+                                font-family: "SF-Pro-Display-Light", sans-serif !important;
+                            }
+
+                            // TODAY
+                            &.MuiPickersDay-today {
+                                border-radius: 0 !important;
+
+                                &:after {
+                                    transition: all 0.3s ease-in-out;
+                                    width: 80%;
+                                    z-index: -1;
+                                    content: "";
+                                    position: absolute;
+                                    top: -4px;
+                                    left: 0;
+                                    right: 0;
+                                    bottom: 0;
+                                    height: 20px;
+                                    border-radius: 100% !important;
+                                    background: rgba(209, 213, 220, 0.37) !important;
+                                    @include mixins.centerHoriz;
+                                    @include mixins.square(45px);
+                                }
+                            }
+
+                            // SELECTED
+                            &.Mui-selected {
+                                color: white !important;
+                                font-weight: variables.$fwBold !important;
+                                padding-bottom: 2px !important;
+                                padding-top: 2px !important;
+                                border-radius: 0 !important;
+
+                                .dot-wrapper {
+                                    .current-user-event-dot {
+                                        background-color: #8195ff !important;
+                                    }
+                                    .coParent-event-dot {
+                                        background-color: #ab8fff;
+                                    }
+                                }
+
+                                &:after {
+                                    transition: all 0.3s ease-in-out;
+                                    z-index: -1;
+                                    content: "";
+                                    position: absolute;
+                                    top: -4px;
+                                    left: 0;
+                                    right: 0;
+                                    bottom: 0;
+                                    border-radius: 100% !important;
+                                    background: palette.$blend !important;
+                                    border: 1px solid rgba(87, 105, 255, 0.37) !important;
+                                    @include mixins.square(45px);
+                                    @include mixins.centerHoriz;
+                                }
+                            }
+
+                            // Weekend
+                            &.weekend-day,
+                            &.MuiPickersDay-dayOutsideMonth,
+                            &[aria-colindex="7"],
+                            &[aria-colindex="1"] {
+                                color: palette.$mediumGreyDarker !important;
+
+                                .dot-wrapper {
+                                    opacity: 0.5 !important;
+                                }
+
+                                &.MuiPickersDay-today {
+                                    &::after {
+                                        background: palette.$lightGrey !important;
+                                    }
+                                }
+
+                                &.Mui-selected {
+                                    opacity: 1 !important;
+                                    color: palette.$blend !important;
+
+                                    &::after {
+                                        background: palette.$lightBlend !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    /*#endregion  DAYS */
+                }
+
+                .MuiButtonBase-root {
+                    padding: 0 !important;
+                }
+            }
+
+            // MONTH HEADER
+            .MuiPickersLayout-root {
+                .MuiPickersCalendarHeader-label {
+                    font-weight: variables.$fwRegular !important;
+                    font-size: 14px !important;
+                    color: palette.$darkerGrey;
+                }
+                .MuiPickersCalendarHeader-switchViewButton {
+                    height: unset !important;
+                    font-size: unset !important;
+
+                    svg {
+                        font-size: 25px !important;
+                    }
+                }
+            }
+            .MuiButtonBase-root {
+                color: palette.$darkerGrey !important;
+                padding: 0 !important;
+
+                &.Mui-selected {
+                    color: white !important;
+                }
+            }
+
+            .MuiPickersArrowSwitcher-root {
+                //        display: none !important;
+            }
+
+            .MuiPickersToolbar-root {
+                display: none !important;
+            }
+
+            // CALENDAR CELLS
+            .MuiPickersCalendarHeader-root {
+                display: none !important;
+                .MuiPickersCalendarHeader-labelContainer {
+                    margin: 0 auto !important;
+                    .MuiPickersCalendarHeader-label {
+                    }
+                }
+                .MuiPickersCalendarHeader-switchViewIcon {
+                }
+            }
+        }
+        /*#endregion  STATIC CALENDAR*/
+
+        #calendar-month {
+            color: palette.$darkerGrey;
+            text-align: center;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100vw;
+            font-weight: variables.$fwMedium;
+
+            .MuiPickersArrowSwitcher-root {
+                gap: 3px;
+                position: absolute;
+                right: 10px;
+                button {
+                    padding: 0;
+
+                    svg {
+                        -webkit-transform: scale(0.9);
+                        -moz-transform: scale(0.9);
+                        -ms-transform: scale(0.9);
+                        -o-transform: scale(0.9);
+                        transform: scale(0.9);
+                        color: palette.$purple;
+                    }
+                }
+            }
+        }
+
+        // BELOW CALENDAR
+        #below-calendar {
+            display: none;
+        }
+    }
 }

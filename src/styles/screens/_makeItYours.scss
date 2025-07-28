@@ -1,7 +1,7 @@
-@use '../utils/_palette';
-@use '../utils/_variables';
-@use '../utils/mixins';
-@use '../_fonts';
+@use "../utils/_palette";
+@use "../utils/_variables";
+@use "../utils/mixins";
+@use "../_fonts";
 
 #external-overrides {
     #make-it-yours-wrapper {
@@ -26,7 +26,7 @@
             border-radius: variables.$cardBorderRadius;
             box-shadow: variables.$boxShadow_bottom_only;
             margin-bottom: 30px;
-            opacity: 0;
+            //opacity: 0;
 
             .action-row {
                 color: white;
@@ -56,19 +56,6 @@
 
             p {
                 color: white;
-            }
-
-            .label-wrapper {
-                &.always-show {
-                    label {
-                        color: white;
-                        font-size: 18px;
-                        text-align: center;
-                        width: max-content;
-                        margin: 0 auto;
-                        @include fonts.regularFont;
-                    }
-                }
             }
 
             .section-title {
