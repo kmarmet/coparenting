@@ -3,6 +3,7 @@ import moment from "moment"
 import React, {useContext, useRef, useState} from "react"
 import DatetimeFormats from "../../../constants/datetimeFormats"
 import InputTypes from "../../../constants/inputTypes"
+import ScreenNames from "../../../constants/screenNames"
 import globalState from "../../../context"
 import DB_UserScoped from "../../../database/db_userScoped"
 import Storage from "../../../database/storage"
@@ -36,6 +37,12 @@ const NewChildForm = ({hideCard, showCard}) => {
 
     const newChild = useRef({...new Child()})
 
+    const ThrowError = (message) => {
+        AlertManager.throwError(message)
+        setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+        return false
+    }
+
     const ResetForm = (successMessage = "") => {
         Manager.ResetForm("new-child-wrapper")
         hideCard()
@@ -45,17 +52,13 @@ const NewChildForm = ({hideCard, showCard}) => {
 
     const Submit = async () => {
         //#region VALIDATION
-        const errorString = Manager.GetInvalidInputsErrorString([{name: "Child's Name", value: newChild.current.general.name}])
 
-        if (Manager.IsValid(errorString, true)) {
-            AlertManager.throwError(errorString)
-            return false
-        }
+        // Child Name
+        if (!Manager.IsValid(newChild.current.general.name, true)) ThrowError("Please enter a name")
 
-        if (childHasAccount && !Manager.IsValid(newChild.current.general.email)) {
-            AlertManager.throwError("If the child has an account with us, their email is required")
-            return false
-        }
+        // If child has an account -> email is required
+        if (childHasAccount && !Manager.IsValid(newChild.current.general.email))
+            ThrowError("If the child has an account with us, their email is required")
         //#endregion VALIDATION
 
         let _profilePic = newChild.current.profilePic

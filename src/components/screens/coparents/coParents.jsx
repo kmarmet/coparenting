@@ -244,7 +244,6 @@ export default function CoParents() {
                     titleIcon={<PiUsersFill />}
                     screenDescription=" Maintain accessible records of important information regarding your co-parent."
                 />
-                <Spacer height={10} />
                 <div style={DomManager.AnimateDelayStyle(1)} className={`fade-up-wrapper ${DomManager.Animate.FadeInUp(true, ".fade-up-wrapper")}`}>
                     <div className="screen-content">
                         {/* CO-PARENT ICONS CONTAINER */}
@@ -268,8 +267,11 @@ export default function CoParents() {
 
                         {/* CO-PARENT INFO */}
                         <div id="co-parent-info" key={activeCoParent?.current?.userKey}>
-                            <p id="co-parent-name-primary">{StringManager.GetFirstNameAndLastInitial(activeCoParent?.name)}</p>
-                            <p id="co-parent-type-primary"> {activeCoParent?.parentType}</p>
+                            <div id="co-parent-name-and-parent-type">
+                                <p id="co-parent-name-primary">{StringManager.GetFirstNameAndLastInitial(activeCoParent?.name)}</p>
+                                <span>-</span>
+                                <p id="co-parent-type-primary"> {activeCoParent?.parentType}</p>
+                            </div>
                             {/* ITERATE CO-PARENT INFO */}
                             {Manager.IsValid(activeCoParent) &&
                                 Object.entries(activeCoParent).map((propArray, index) => {
@@ -277,7 +279,6 @@ export default function CoParents() {
                                     infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
                                     infoLabel = StringManager.FormatTitle(infoLabel, true)
                                     const value = propArray[1]
-
                                     const inputsToSkip = ["address", "key", "id", "user key"]
 
                                     return (
@@ -307,6 +308,7 @@ export default function CoParents() {
                                                             await Update(infoLabel, `${inputValue}`).then((r) => r)
                                                             setActiveCoParent(activeCoParent)
                                                         }}
+                                                        wrapperClasses={"grey-bg"}
                                                         inputType={InputTypes.text}
                                                         placeholder={infoLabel}>
                                                         <CgClose className={"close-x children"} onClick={() => DeleteProp(infoLabel)} />

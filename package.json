@@ -100,7 +100,7 @@
   },
   "scripts": {
     "startWithoutSourceMaps": "npm run removeParcelCache && parcel public/index.html --no-source-maps",
-    "build": "npm run deleteBuild && npm run removeParcelCache && cd public && parcel build index.html --no-source-maps && npm run deleteUnwantedFilesFromBuild && compress-cra",
+    "build": "npm run deleteBuild && npm run removeParcelCache && cd public && parcel build index.html  --no-source-maps && npm run deleteUnwantedFilesFromBuild && compress-cra",
     "start": "npm run removeParcelCache && cd public && parcel serve index.html",
     "watch-coffee": "coffee --watch --compile src",
     "buildWithNewFonts": "npm run deleteBuild && npm run removeParcelCache && parcel build public/index.html && npm run deleteAllButNewFonts && compress-cra",

@@ -56,15 +56,51 @@
                 }
             }
 
-            &.child-info {
-                .padding {
-                    background-color: palette.$main;
+            &#children-general,
+            &#children-medical,
+            &#children-schooling,
+            &#children-behavior {
+                .section-wrapper {
+                    background: rgba(73, 88, 255, 0.15);
                     border-radius: variables.$cardBorderRadius !important;
                     opacity: 0 !important;
                     transition: all 0.3s ease;
+                    .data-row {
+                        .label-wrapper {
+                            &.always-show {
+                                &.filled-input-label {
+                                    label {
+                                        color: rgba(80, 71, 255, 1);
+                                        @include fonts.regularFont;
+                                    }
+                                }
+                            }
+                        }
+                        .input-wrapper,
+                        .input-field {
+                            background-color: rgba(255, 255, 255, 0.9) !important;
+                            input {
+                                color: palette.$primaryText;
+                            }
+                            .input-and-children {
+                                input {
+                                    color: palette.$primaryText;
+                                }
+                            }
+                        }
+
+                        .google-autocomplete-input {
+                            color: palette.$primaryText;
+                        }
+
+                        svg {
+                            color: palette.$iconGrey;
+                            opacity: 0.65;
+                        }
+                    }
                 }
                 .MuiCollapse-entered {
-                    .padding {
+                    .section-wrapper {
                         transition: all 0.3s ease;
                         opacity: 1 !important;
                         padding: 15px;

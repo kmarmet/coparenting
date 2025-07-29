@@ -2,6 +2,7 @@
 import React, {useContext, useState} from "react"
 import validator from "validator"
 import InputTypes from "../../../constants/inputTypes"
+import ScreenNames from "../../../constants/screenNames"
 import globalState from "../../../context"
 import DB_UserScoped from "../../../database/db_userScoped"
 import useCurrentUser from "../../../hooks/useCurrentUser"
@@ -44,25 +45,26 @@ const NewCoParentForm = ({showCard, hideCard}) => {
         hideCard()
     }
 
+    const ThrowError = (message) => {
+        AlertManager.throwError(message)
+        setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+        return false
+    }
+
     const Submit = async () => {
         formRef.current.userKey = Manager.GetUid()
-        if (!validator.isEmail(formRef.current.email) && coParentHasAccount) {
-            AlertManager.throwError("Email address is not valid")
-            return false
-        }
-        if (!Manager.IsValid(formRef.current.name, true)) {
-            AlertManager.throwError("Please enter a name")
-            return false
-        }
-        if (!Manager.IsValid(formRef.current.parentType, true)) {
-            AlertManager.throwError("Please select a parent type")
-            return false
-        }
 
-        if (coParentHasAccount && !Manager.IsValid(formRef.current.email)) {
-            AlertManager.throwError("If the co-parent has an account with us, their email is required")
-            return false
-        }
+        // Check for Valid Email
+        if (!validator?.isEmail(formRef.current.email) && coParentHasAccount) ThrowError("Please enter a valid email")
+
+        // CoParent Name
+        if (!Manager.IsValid(formRef.current.name, true)) ThrowError("Please enter a name")
+
+        // Parent Type
+        if (!Manager.IsValid(formRef.current.parentType, true)) ThrowError("Please select a parent type")
+
+        // If coParent has an account -> email is required
+        if (coParentHasAccount && !Manager.IsValid(formRef.current.email)) ThrowError("Please enter an email")
 
         const existingCoParentRecord = users.find((x) => x?.email === formRef.current.email)
 

@@ -42,7 +42,6 @@
                 &:after {
                     content: "REMOVE";
                     font-size: 12px;
-                    color: palette.$iconGrey;
                     width: max-content;
                     line-height: 1;
                     white-space: nowrap;
@@ -51,11 +50,12 @@
                     right: 10px;
                     align-self: stretch;
                     border-bottom: 1px solid palette.$iconGrey;
+                    opacity: 0.4;
                     display: flex;
                     padding-bottom: 1px;
                     justify-content: flex-start;
                     align-items: center;
-                    @include fonts.mediumBoldFont;
+                    @include fonts.regularFont;
                 }
 
                 .header-text {
@@ -66,6 +66,7 @@
                     max-width: calc(100% - 100px);
                     justify-content: flex-start;
                     width: 100%;
+                    margin: 0 !important;
                     @include fonts.mediumBoldFont;
                 }
             }

@@ -25,8 +25,8 @@
     #text-container {
         margin-bottom: 10px;
         background: white;
-        border-radius: variables.$cardBorderRadius;
-        padding: 15px;
+        border-radius: clamp(0px, 50%, 22px);
+        padding: 20px;
         p,
         li {
             color: palette.$primaryText;
@@ -186,13 +186,14 @@
 #overlay {
     position: fixed;
     inset: 0;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(6px);
     z-index: variables.$lesserMaxZIndex;
     display: flex;
     justify-content: center;
     align-items: center;
     opacity: 0;
     transition: all 0.3s ease;
+    background: rgba(0, 0, 0, 0.3);
     pointer-events: none;
 
     &.show {
@@ -883,6 +884,20 @@
         /*#endregion  BLOCKS */
 
         /*#region  ID's */
+        #inline-loading-spinner-wrapper {
+            @include mixins.deadCenter;
+            min-width: 50px;
+            min-height: 50px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            & {
+                position: fixed;
+                background-color: transparent;
+                z-index: 9;
+            }
+        }
         #app-content-with-sidebar {
             position: fixed;
             transition: all 0.5s ease-in-out;

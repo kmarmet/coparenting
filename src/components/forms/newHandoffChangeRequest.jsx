@@ -4,6 +4,7 @@ import React, {useContext, useEffect, useRef, useState} from "react"
 import creationForms from "../../constants/creationForms"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import InputTypes from "../../constants/inputTypes"
+import ScreenNames from "../../constants/screenNames"
 import ActivityCategory from "../../constants/updateCategory"
 import globalState from "../../context"
 import DB from "../../database/DB"
@@ -61,36 +62,33 @@ export default function NewHandoffChangeRequest() {
         })
     }
 
+    const ThrowError = (title, message = "") => {
+        AlertManager.throwError(title, message)
+        setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+        return false
+    }
+
     const Submit = async () => {
-        const validAccounts = currentUser?.sharedDataUsers
-
         //#region VALIDATION
-        if (validAccounts === 0) {
-            AlertManager.throwError(
-                "No co-parent to \n assign requests to",
-                "You have not added any co-parents. Or, it is also possible they have closed their profile."
+        // Valid Accounts
+        if (currentUser?.sharedDataUsers === 0)
+            ThrowError(
+                "No Co-Parents",
+                "It appears that you have not created any co-parents, or it is possible that they may have deactivated their profile."
             )
-            return false
-        }
-        if (!Manager.IsValid(formRef.current.recipient)) {
-            AlertManager.throwError("Please choose who to Send the request to")
-            return false
-        }
-        if (!Manager.IsValid(formRef.current.address) && !Manager.IsValid(formRef.current.time)) {
-            AlertManager.throwError("Please choose a new location or time")
-            return false
-        }
-        if (!Manager.IsValid(formRef.current.startDate)) {
-            AlertManager.throwError("Please choose the day of the requested handoff change")
-            return false
-        }
-        if (validAccounts > 0) {
-            if (!Manager.IsValid(formRef.current.shareWith)) {
-                AlertManager.throwError("Please choose who you would like to share this request with")
-                return false
-            }
-        }
 
+        // Recipient
+        if (!Manager.IsValid(formRef.current.recipient)) ThrowError("Please choose a recipient")
+
+        // Address/Time
+        if (!Manager.IsValid(formRef.current.address) && !Manager.IsValid(formRef.current.time)) ThrowError("Please add an address or a time")
+
+        // Start Date
+        if (!Manager.IsValid(formRef.current.startDate)) ThrowError("Please choose the day of the requested handoff change")
+
+        // Share With
+        if (currentUser?.sharedDataUsers > 0 && !Manager.IsValid(formRef.current.shareWith))
+            ThrowError("Please choose who you would like to share this request with")
         //#endregion VALIDATION
 
         formRef.current.directionsLink = Manager.GetDirectionsLink(formRef.current.address)

@@ -174,40 +174,40 @@ export default function Expenses() {
         }
 
         if (sortByMethodName === "nearestDueDate") {
-            const sortedByNearestDueDate = DatasetManager.sortByProperty(expenses, "dueDate", "asc")
+            const sortedByNearestDueDate = DatasetManager.SortByProperty(expenses, "dueDate", "asc")
             setSortedExpenses(sortedByNearestDueDate)
         }
 
         if (sortByMethodName === "oldestCreationDate") {
-            const sortedByDateAsc = DatasetManager.sortByProperty(expenses, "creationDate", "asc", true)
+            const sortedByDateAsc = DatasetManager.SortByProperty(expenses, "creationDate", "asc", true)
             setSortedExpenses(sortedByDateAsc)
         }
 
         if (sortByMethodName === "nearestDueDate") {
-            const sortedByDueDateDesc = DatasetManager.sortByProperty(expenses, "dueDate", "desc", true)
+            const sortedByDueDateDesc = DatasetManager.SortByProperty(expenses, "dueDate", "desc", true)
             setSortedExpenses(sortedByDueDateDesc)
         }
         // High -> Low
         if (sortByMethodName === "amountDesc") {
-            const sortByAmountDesc = DatasetManager.sortByProperty(expensesAsNumbers, "amount", "desc")
+            const sortByAmountDesc = DatasetManager.SortByProperty(expensesAsNumbers, "amount", "desc")
             setSortedExpenses(sortByAmountDesc)
         }
 
         // Low -> High
         if (sortByMethodName === "amountAsc") {
-            const sortedByAmountAsc = DatasetManager.sortByProperty(expensesAsNumbers, "amount", "asc")
+            const sortedByAmountAsc = DatasetManager.SortByProperty(expensesAsNumbers, "amount", "asc")
             setSortedExpenses(sortedByAmountAsc)
         }
 
         // Name Ascending
         if (sortByMethodName === "nameAsc") {
-            const sortedByNameAsc = DatasetManager.sortByProperty(expenses, "name", "asc")
+            const sortedByNameAsc = DatasetManager.SortByProperty(expenses, "name", "asc")
             setSortedExpenses(sortedByNameAsc)
         }
 
         // Name Descending
         if (sortByMethodName === "nameDesc") {
-            const sortedByNameDesc = DatasetManager.sortByProperty(expenses, "name", "desc")
+            const sortedByNameDesc = DatasetManager.SortByProperty(expenses, "name", "desc")
             setSortedExpenses(sortedByNameDesc)
         }
     }

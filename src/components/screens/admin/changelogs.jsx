@@ -1,4 +1,3 @@
-import parse from "html-react-parser"
 import moment from "moment"
 import React, {useContext, useEffect} from "react"
 import {FaStar} from "react-icons/fa"
@@ -11,10 +10,6 @@ import DomManager from "../../../managers/domManager"
 import Manager from "../../../managers/manager"
 import Button from "../../shared/button"
 import Spacer from "../../shared/spacer"
-
-function HtmlOutput({htmlString}) {
-    return <div>{parse(htmlString)}</div>
-}
 
 const Changelogs = () => {
     const {state, setState} = useContext(globalState)
@@ -64,7 +59,7 @@ const Changelogs = () => {
                                         <FaStar />
                                     </p>
                                     <div id="html-wrapper">
-                                        <HtmlOutput htmlString={htmlWithIcons} />
+                                        <div dangerouslySetInnerHTML={{__html: htmlWithIcons}}></div>
                                     </div>
                                 </div>
                             )

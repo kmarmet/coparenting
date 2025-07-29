@@ -1,19 +1,19 @@
-import moment from 'moment'
-import React, {useContext, useEffect, useState} from 'react'
-import {useSwipeable} from 'react-swipeable'
-import ButtonThemes from '../../constants/buttonThemes'
-import DatetimeFormats from '../../constants/datetimeFormats'
-import globalState from '../../context'
-import useChildren from '../../hooks/useChildren'
-import useCoParents from '../../hooks/useCoParents'
-import useCurrentUser from '../../hooks/useCurrentUser'
-import useParents from '../../hooks/useParents'
-import DatasetManager from '../../managers/datasetManager'
-import ImageManager from '../../managers/imageManager'
-import Manager from '../../managers/manager'
-import CardButton from './cardButton'
+import moment from "moment"
+import React, {useContext, useEffect, useState} from "react"
+import {useSwipeable} from "react-swipeable"
+import ButtonThemes from "../../constants/buttonThemes"
+import DatetimeFormats from "../../constants/datetimeFormats"
+import globalState from "../../context"
+import useChildren from "../../hooks/useChildren"
+import useCoParents from "../../hooks/useCoParents"
+import useCurrentUser from "../../hooks/useCurrentUser"
+import useParents from "../../hooks/useParents"
+import DatasetManager from "../../managers/datasetManager"
+import ImageManager from "../../managers/imageManager"
+import Manager from "../../managers/manager"
+import CardButton from "./cardButton"
 
-export default function Slideshow({activeIndex = 0, images = [], wrapperClasses = '', show = false, hide = () => {}}) {
+export default function Slideshow({activeIndex = 0, images = [], wrapperClasses = "", show = false, hide = () => {}}) {
     const {state, setState} = useContext(globalState)
     const {refreshKey} = state
 
@@ -58,10 +58,10 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
     })
 
     const GetOwnerName = (key) => {
-        if (key === currentUser?.key) return ''
+        if (key === currentUser?.key) return ""
 
         // Parent
-        if (currentUser?.accountType === 'parent') {
+        if (currentUser?.accountType === "parent") {
             // Child name
             let name = children?.find((x) => x.userKey === key)?.general?.name
 
@@ -80,7 +80,7 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
     }
 
     const Navigate = (direction) => {
-        if (direction === 'left') {
+        if (direction === "left") {
             if (activeImageIndex > 0) {
                 setActiveImageIndex(activeImageIndex - 1)
             } else {
@@ -107,7 +107,6 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
     }, [activeIndex])
 
     useEffect(() => {
-        console.log(activeImageIndex)
         if (Manager.IsValid(images)) {
             const newImage = new Image()
             newImage.src = DatasetManager.getUniqueArray(images, true)[activeImageIndex]?.url
@@ -118,30 +117,34 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
         }
     }, [activeImageIndex])
 
+    useEffect(() => {
+        console.log(images)
+    }, [images])
+
     return (
-        <div id={'slideshow-wrapper'} className={`${show ? 'active' : ''}${wrapperClasses}`}>
+        <div id={"slideshow-wrapper"} className={`${show ? "active" : ""}${wrapperClasses}`}>
             <div id="slideshow-overlay">
-                <div {...handlers} id={'images-wrapper'} className={`${show ? 'active' : ''}`}>
+                <div {...handlers} id={"images-wrapper"} className={`${show ? "active" : ""}`}>
                     {Manager.IsValid(images) &&
                         DatasetManager.getUniqueArray(images, true).map((imageData, index) => {
                             const hasNotes = Manager.IsValid(imageData?.notes, true)
                             const hasTitle = Manager.IsValid(imageData?.title, true)
 
                             return (
-                                <div key={index} className={index === activeImageIndex && show ? 'active content' : 'content'}>
+                                <div key={index} className={index === activeImageIndex && show ? "active content" : "content"}>
                                     {/* IMAGE */}
                                     {ImageIsValid(imageData?.url) && <img src={imageData?.url} alt={imageData?.title} />}
                                     {(hasNotes || hasTitle) && (
-                                        <div className={`${activeImgHeight > 700 ? 'top text' : 'regular text'}`}>
+                                        <div className={`${activeImgHeight > 700 ? "top text" : "regular text"}`}>
                                             {/* TITLE */}
                                             {imageData?.title?.length > 0 && activeImageIndex === index && (
-                                                <p className={'title'}>{imageData?.title}</p>
+                                                <p className={"title"}>{imageData?.title}</p>
                                             )}
 
                                             {/* CAPTURE DATE */}
                                             {Manager.IsValid(imageData?.captureDate) && activeImageIndex === index && (
-                                                <p className={'capture-date'}>
-                                                    Captured on{' '}
+                                                <p className={"capture-date"}>
+                                                    Captured on{" "}
                                                     {moment(imageData?.captureDate, DatetimeFormats.dateForDb).format(
                                                         DatetimeFormats.readableMonthAndDayWithYear
                                                     )}
@@ -150,11 +153,11 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
 
                                             {/* SHARED BY */}
                                             {Manager.IsValid(imageData?.ownerKey) && activeImageIndex === index && (
-                                                <p className={'shared-by'}>{GetOwnerName(imageData?.ownerKey)}</p>
+                                                <p className={"shared-by"}>{GetOwnerName(imageData?.ownerKey)}</p>
                                             )}
                                             {/* NOTES */}
                                             {imageData?.notes?.length > 0 && activeImageIndex === index && (
-                                                <p className={'notes'}>{imageData?.notes}</p>
+                                                <p className={"notes"}>{imageData?.notes}</p>
                                             )}
                                         </div>
                                     )}
@@ -168,15 +171,15 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
                         {activeImageIndex + 1} <span className="op-8">of</span> {images?.length}
                     </p>
                 )}
-                <div className={`navigation ${images?.length < 2 ? 'full-width' : ''}`}>
+                <div className={`navigation ${images?.length < 2 ? "full-width" : ""}`}>
                     {images?.length > 1 && (
                         <>
-                            <CardButton onClick={() => Navigate('left')} classes="button" text={'Previous'} />
-                            <CardButton buttonTheme={ButtonThemes.white} classes="button close" onClick={hide} text={'Close'} />
-                            <CardButton onClick={() => Navigate('right')} classes="button" text={'Next'} />
+                            <CardButton onClick={() => Navigate("left")} classes="button" text={"Previous"} />
+                            <CardButton buttonTheme={ButtonThemes.white} classes="button close" onClick={hide} text={"Close"} />
+                            <CardButton onClick={() => Navigate("right")} classes="button" text={"Next"} />
                         </>
                     )}
-                    {images?.length === 1 && <CardButton buttonTheme={ButtonThemes.white} classes="button close" onClick={hide} text={'Close'} />}
+                    {images?.length === 1 && <CardButton buttonTheme={ButtonThemes.white} classes="button close" onClick={hide} text={"Close"} />}
                 </div>
             </div>
         </div>

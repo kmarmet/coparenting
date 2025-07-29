@@ -8,6 +8,7 @@ import CreationForms from "../../constants/creationForms"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import EventLengths from "../../constants/eventLengths"
 import InputTypes from "../../constants/inputTypes"
+import ScreenNames from "../../constants/screenNames"
 import ActivityCategory from "../../constants/updateCategory"
 import globalState from "../../context"
 import useChildren from "../../hooks/useChildren"
@@ -80,6 +81,12 @@ export default function NewCalendarEvent() {
     // REF
     const formRef = useRef({...new CalendarEvent({startDate: moment(selectedCalendarDate).format(DatetimeFormats.dateForDb)})})
 
+    const ThrowError = (message) => {
+        AlertManager.throwError(message)
+        setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+        return false
+    }
+
     const ResetForm = (showSuccessAlert = false) => {
         setEventLength(EventLengths.single)
         setEventIsDateRange(false)
@@ -129,34 +136,21 @@ export default function NewCalendarEvent() {
 
             if (Manager.IsValid(formRef.current)) {
                 //#region VALIDATION
-                if (!Manager.IsValid(formRef.current.title, true)) {
-                    // AlertManager.throwError("Please add an event name")
-                    setState({...state, bannerMessage: "Please add an event name", bannerType: "error"})
-                    return false
-                    return false
-                }
-                if (!Manager.IsValid(formRef.current.startDate)) {
-                    AlertManager.throwError("Please add an event date")
-                    return false
-                }
+                if (!Manager.IsValid(formRef.current.title, true)) ThrowError("Please add an event title")
+
+                // Start Date
+                if (!Manager.IsValid(formRef.current.startDate)) ThrowError("Please add an event date")
 
                 // Custom Validation
-                if (Manager.IsValid(formRef.current.phone, true)) {
-                    if (!validator.isMobilePhone(formRef.current.phone)) {
-                        AlertManager.throwError("Phone number is not valid")
-                        return false
-                    }
-                }
+                if (Manager.IsValid(formRef.current.phone, true) && !validator.isMobilePhone(formRef.current.phone))
+                    ThrowError("Please enter a valid phone number")
 
-                if (Manager.IsValid(formRef.current.reminderTimes) && !Manager.IsValid(formRef.current.startTime)) {
-                    AlertManager.throwError("Please select a start time when using reminders")
-                    return false
-                }
+                // Start Time
+                if (Manager.IsValid(formRef.current.reminderTimes) && !Manager.IsValid(formRef.current.startTime))
+                    ThrowError("Please add a start time")
 
-                if (eventIsRecurring && !Manager.IsValid(recurringFrequency)) {
-                    AlertManager.throwError("If event is recurring, please select a frequency")
-                    return false
-                }
+                // Recurring Frequency
+                if (eventIsRecurring && !Manager.IsValid(recurringFrequency)) ThrowError("Please add a recurring frequency")
 
                 //#endregion VALIDATION
 

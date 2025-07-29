@@ -161,6 +161,7 @@ export default function FullMenu() {
             {Manager.IsValid(currentUser) && (
                 <div ref={scrollRef} id="full-menu-card" {...handlers}>
                     <div className="swipe-bar"></div>
+                    <p id="full-menu-title">Navigation</p>
                     <div id="menu-sections">
                         {/* SHARING */}
                         <div style={DomManager.AnimateDelayStyle(1, 0.3)} className={`section sharing ${DomManager.Animate.FadeInUp(menuIsOpen)}`}>

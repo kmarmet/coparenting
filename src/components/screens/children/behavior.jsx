@@ -19,136 +19,129 @@ import InputField from "../../shared/inputField"
 import Spacer from "../../shared/spacer"
 
 export default function Behavior({activeChild}) {
-      const {state, setState} = useContext(globalState)
-      const {theme, refreshKey} = state
-      const [behaviorValues, setBehaviorValues] = useState([])
-      const [showInputs, setShowInputs] = useState(false)
-      const {currentUser, currentUserIsLoading} = useCurrentUser()
-      const {sharedChildInfo} = useSharedChildInfo()
+    const {state, setState} = useContext(globalState)
+    const {theme, refreshKey} = state
+    const [behaviorValues, setBehaviorValues] = useState([])
+    const [showInputs, setShowInputs] = useState(false)
+    const {currentUser, currentUserIsLoading} = useCurrentUser()
+    const {sharedChildInfo} = useSharedChildInfo()
 
-      const DeleteProp = async (prop) => {
-            const existingPropCount = Object.keys(activeChild?.behavior).length
+    const DeleteProp = async (prop) => {
+        const existingPropCount = Object.keys(activeChild?.behavior).length
 
-            if (existingPropCount <= 1) {
-                  const accordion = document.querySelector(".behavior.info-section")
-                  if (accordion) {
-                        accordion.querySelector(".MuiCollapse-root").remove()
-                  }
-                  setShowInputs(false)
+        if (existingPropCount <= 1) {
+            const accordion = document.querySelector(".behavior.info-section")
+            if (accordion) {
+                accordion.querySelector(".MuiCollapse-root").remove()
             }
+            setShowInputs(false)
+        }
 
-            // Delete Shared
-            const sharedProps = sharedChildInfo?.map((x) => x?.prop)
-            if (Manager.IsValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
-                  const scopedSharingObject = await DB.find(sharedChildInfo, ["prop", prop.toLowerCase()], false)
-                  await DB_UserScoped.deleteSharedChildInfoProp(
-                        currentUser,
-                        sharedChildInfo,
-                        prop.toLowerCase(),
-                        scopedSharingObject?.sharedByOwnerKey
-                  )
-                  await SetSelectedChild()
+        // Delete Shared
+        const sharedProps = sharedChildInfo?.map((x) => x?.prop)
+        if (Manager.IsValid(sharedProps) && sharedProps.includes(prop.toLowerCase())) {
+            const scopedSharingObject = await DB.find(sharedChildInfo, ["prop", prop.toLowerCase()], false)
+            await DB_UserScoped.deleteSharedChildInfoProp(currentUser, sharedChildInfo, prop.toLowerCase(), scopedSharingObject?.sharedByOwnerKey)
+            await SetSelectedChild()
+        }
+
+        // Delete NOT shared
+        else {
+            const childIndex = DB.GetChildIndex(currentUser?.children, activeChild?.id)
+
+            if (Manager.IsValid(childIndex)) {
+                await DB_UserScoped.DeleteChildInfoProp(currentUser?.key, childIndex, "behavior", StringManager.formatDbProp(prop))
+                await SetSelectedChild()
             }
+        }
+    }
 
-            // Delete NOT shared
-            else {
-                  const childIndex = DB.GetChildIndex(currentUser?.children, activeChild?.id)
+    const Update = async (prop, value) => {
+        await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, "behavior", StringManager.formatDbProp(prop), value)
+        AlertManager.successAlert("Updated!")
+    }
 
-                  if (Manager.IsValid(childIndex)) {
-                        await DB_UserScoped.DeleteChildInfoProp(currentUser?.key, childIndex, "behavior", StringManager.formatDbProp(prop))
-                        await SetSelectedChild()
-                  }
+    const SetSelectedChild = async () => {
+        let sharedValues = []
+        for (let obj of sharedChildInfo) {
+            sharedValues.push([obj.prop, obj.value, obj.sharedByName])
+        }
+        if (Manager.IsValid(activeChild.behavior)) {
+            // Set info
+            let values = Object.entries(activeChild.behavior)
+
+            if (Manager.IsValid(sharedValues)) {
+                values = [...values, ...sharedValues]
             }
-      }
-
-      const Update = async (prop, value) => {
-            await DB_UserScoped.UpdateChildInfo(currentUser, activeChild, "behavior", StringManager.formatDbProp(prop), value)
-            AlertManager.successAlert("Updated!")
-      }
-
-      const SetSelectedChild = async () => {
-            let sharedValues = []
-            for (let obj of sharedChildInfo) {
-                  sharedValues.push([obj.prop, obj.value, obj.sharedByName])
-            }
-            if (Manager.IsValid(activeChild.behavior)) {
-                  // Set info
-                  let values = Object.entries(activeChild.behavior)
-
-                  if (Manager.IsValid(sharedValues)) {
-                        values = [...values, ...sharedValues]
-                  }
-                  const valuesArr = values.filter((x) => x[1].length === 0).map((x) => x[1])
-                  if (values.length === valuesArr.length) {
-                        setBehaviorValues([])
-                  } else {
-                        setBehaviorValues(values)
-                  }
+            const valuesArr = values.filter((x) => x[1].length === 0).map((x) => x[1])
+            if (values.length === valuesArr.length) {
+                setBehaviorValues([])
             } else {
-                  if (sharedValues.length > 0) {
-                        setBehaviorValues(sharedValues)
-                  } else {
-                        setBehaviorValues([])
-                  }
+                setBehaviorValues(values)
             }
-      }
+        } else {
+            if (sharedValues.length > 0) {
+                setBehaviorValues(sharedValues)
+            } else {
+                setBehaviorValues([])
+            }
+        }
+    }
 
-      useEffect(() => {
-            SetSelectedChild().then((r) => r)
-      }, [activeChild, sharedChildInfo])
+    useEffect(() => {
+        SetSelectedChild().then((r) => r)
+    }, [activeChild, sharedChildInfo])
 
-      return (
-            <div className="info-section section behavior" key={refreshKey}>
-                  <Accordion className={`${theme} child-info`} disabled={!Manager.IsValid(behaviorValues)}>
-                        <AccordionSummary
-                              onClick={() => setShowInputs(!showInputs)}
-                              className={!Manager.IsValid(activeChild.behavior) ? "disabled header behavior" : "header behavior"}>
-                              <FaBrain className={"svg behavior"} />
-                              <p id="toggle-button" className={showInputs ? "active" : ""}>
-                                    Behavior {!Manager.IsValid(behaviorValues) ? "- no info" : ""}
-                                    {Manager.IsValid(behaviorValues) && (
-                                          <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>
-                                    )}
-                              </p>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                              <div className="padding">
-                                    {behaviorValues &&
-                                          behaviorValues.map((prop, index) => {
-                                                const rawLabel = prop[0]
-                                                const infoLabel = StringManager.SpaceBetweenWords(rawLabel)
-                                                const lowerLabel = infoLabel.toLowerCase()
-                                                const isLast = index === behaviorValues.length - 1
-                                                const isPhone = lowerLabel.includes("phone")
-                                                const sharedBy = Manager.IsValid(prop[2])
-                                                      ? ` (shared by ${StringManager.GetFirstNameOnly(prop[2])})`
-                                                      : ""
-                                                const rowClass = `data-row ${isPhone ? "phone" : ""} ${isLast ? "last" : ""}`
-                                                const value = prop[1]
+    return (
+        <div className="info-section section behavior" key={refreshKey}>
+            <Accordion className={`${theme} child-info`} id={"children-behavior"} disabled={!Manager.IsValid(behaviorValues)}>
+                <AccordionSummary
+                    onClick={() => setShowInputs(!showInputs)}
+                    className={!Manager.IsValid(activeChild.behavior) ? "disabled header behavior" : "header behavior"}>
+                    <FaBrain className={"svg behavior"} />
+                    <p id="toggle-button" className={showInputs ? "active" : ""}>
+                        Behavior {!Manager.IsValid(behaviorValues) ? "- no info" : ""}
+                        {Manager.IsValid(behaviorValues) && (
+                            <>{showInputs ? <FaMinus className="plus-minus" /> : <FaPlus className="plus-minus" />}</>
+                        )}
+                    </p>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <div className="section-wrapper">
+                        {behaviorValues &&
+                            behaviorValues.map((prop, index) => {
+                                const rawLabel = prop[0]
+                                const infoLabel = StringManager.SpaceBetweenWords(rawLabel)
+                                const lowerLabel = infoLabel.toLowerCase()
+                                const isLast = index === behaviorValues.length - 1
+                                const isPhone = lowerLabel.includes("phone")
+                                const sharedBy = Manager.IsValid(prop[2]) ? ` (shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ""
+                                const rowClass = `data-row ${isPhone ? "phone" : ""} ${isLast ? "last" : ""}`
+                                const value = prop[1]
 
-                                                return (
-                                                      <div key={index} className={rowClass}>
-                                                            <InputField
-                                                                  wrapperClasses={`${index === behaviorValues.length - 2 ? "last" : ""}`}
-                                                                  hasBottomSpacer={false}
-                                                                  customDebounceDelay={1200}
-                                                                  inputType={InputTypes.text}
-                                                                  defaultValue={value}
-                                                                  placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? sharedBy : ""}`}
-                                                                  onChange={async (e) => {
-                                                                        const inputValue = e.target.value
-                                                                        await Update(infoLabel, `${inputValue}`)
-                                                                  }}>
-                                                                  {" "}
-                                                                  <CgClose className={"close-x children"} onClick={() => DeleteProp(infoLabel)} />
-                                                            </InputField>
-                                                            {index !== behaviorValues.length - 1 && <Spacer height={5} />}
-                                                      </div>
-                                                )
-                                          })}
-                              </div>
-                        </AccordionDetails>
-                  </Accordion>
-            </div>
-      )
+                                return (
+                                    <div key={index} className={rowClass}>
+                                        <InputField
+                                            wrapperClasses={`${index === behaviorValues.length - 2 ? "last" : ""}`}
+                                            hasBottomSpacer={false}
+                                            customDebounceDelay={1200}
+                                            inputType={InputTypes.text}
+                                            defaultValue={value}
+                                            placeholder={`${infoLabel} ${Manager.IsValid(prop[2]) ? sharedBy : ""}`}
+                                            onChange={async (e) => {
+                                                const inputValue = e.target.value
+                                                await Update(infoLabel, `${inputValue}`)
+                                            }}>
+                                            {" "}
+                                            <CgClose className={"close-x children"} onClick={() => DeleteProp(infoLabel)} />
+                                        </InputField>
+                                        {index !== behaviorValues.length - 1 && <Spacer height={5} />}
+                                    </div>
+                                )
+                            })}
+                    </div>
+                </AccordionDetails>
+            </Accordion>
+        </div>
+    )
 }

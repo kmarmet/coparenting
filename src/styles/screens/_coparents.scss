@@ -1,7 +1,7 @@
-@use '../utils/mixins';
-@use '../utils/variables';
-@use '../utils/_palette';
-@use '../_fonts';
+@use "../utils/mixins";
+@use "../utils/variables";
+@use "../utils/_palette";
+@use "../_fonts";
 
 #co-parents-container,
 #parents-container {
@@ -100,31 +100,74 @@
 
     #co-parent-info,
     #parent-info {
-        margin-top: 20px;
-        padding: 15px;
-        border-radius: variables.$bigBorderRadius;
-        background: palette.$blendDark;
-        @include mixins.shadow;
+        margin-top: 45px;
+        padding: 35px 15px 15px 15px;
+        border-radius: variables.$cardBorderRadius;
+        position: relative;
+        background: rgba(73, 88, 255, 0.15);
+        #co-parent-name-and-parent-type {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: palette.$blend;
+            width: max-content;
+            padding: 3px 15px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
 
-        #parent-name-primary,
-        #co-parent-name-primary {
-            font-size: 22px;
-            line-height: 1;
-            color: white;
-            text-align: center;
-            @include fonts.lightFont;
+            #parent-name-primary,
+            #co-parent-name-primary {
+                font-size: 14px;
+                line-height: 1;
+                color: white;
+                text-align: center;
+                @include fonts.lightFont;
+            }
+
+            #co-parent-type-primary,
+            #parent-type-primary {
+                font-size: 12px;
+                width: 100%;
+                text-align: center;
+                color: white;
+                opacity: 0.75;
+                @include fonts.lightFont;
+            }
+
+            span {
+                color: white;
+                opacity: 0.85;
+                padding: 0 5px;
+            }
         }
+        .info-row {
+            .google-autocomplete-wrapper {
+                .input-wrapper {
+                    background-color: rgba(255, 255, 255, 0.9);
+                    .google-autocomplete-input {
+                        color: palette.$primaryText;
+                    }
 
-        #co-parent-type-primary,
-        #parent-type-primary {
-            font-size: 16px;
-            width: 100%;
-            text-align: center;
-            margin-bottom: 15px;
-            color: white;
-            opacity: 0.8;
-            padding-top: 3px;
-            @include fonts.lightFont;
+                    svg {
+                        color: palette.$iconGrey;
+                        opacity: 0.65;
+                    }
+                }
+            }
+
+            .label-wrapper {
+                &.always-show {
+                    &.filled-input-label {
+                        label {
+                            color: rgba(80, 71, 255, 0.9);
+                            @include fonts.regularFont;
+                        }
+                    }
+                }
+            }
         }
 
         .flex {

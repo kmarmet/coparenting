@@ -8,6 +8,7 @@ import ButtonThemes from "../../constants/buttonThemes"
 import CreationForms from "../../constants/creationForms"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import InputTypes from "../../constants/inputTypes"
+import ScreenNames from "../../constants/screenNames"
 import ActivityCategory from "../../constants/updateCategory"
 import globalState from "../../context"
 import DB from "../../database/DB"
@@ -81,28 +82,27 @@ export default function NewExpenseForm() {
         }, 10)
     }
 
+    const ThrowError = (title, message = "") => {
+        AlertManager.throwError(title, message)
+        setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+        return false
+    }
+
     const SubmitNewExpense = async () => {
         //#region VALIDATION
-        const validAccounts = currentUser?.sharedDataUsers
-        if (validAccounts === 0) {
-            AlertManager.throwError(
-                "No co-parent to \n assign expenses to",
-                "You have not added any co-parents. Or, it is also possible they have closed their profile."
-            )
-            return false
-        }
-        if (!Manager.IsValid(formRef.current.payer.name, true)) {
-            AlertManager.throwError("Please select will be paying the expense")
-            return false
-        }
-        if (!Manager.IsValid(formRef.current.name, true)) {
-            AlertManager.throwError("Please add an expense name")
-            return false
-        }
-        if (formRef.current.amount <= 0) {
-            AlertManager.throwError("Please add an expense amount")
-            return false
-        }
+
+        // Valid Accounts
+        if (currentUser?.sharedDataUsers === 0)
+            ThrowError("No valid accounts", "You have not added any co-parents. Or, it is also possible they have closed their profile.")
+
+        // Pay Name
+        if (!Manager.IsValid(formRef.current.payer.name, true)) ThrowError("Please add a payer name")
+
+        // Expense Name
+        if (!Manager.IsValid(formRef.current.name, true)) ThrowError("Please add an expense name")
+
+        // Expense Amount
+        if (formRef.current.amount <= 0) ThrowError("Please add an amount")
         //#endregion VALIDATION
 
         const newExpense = {...formRef.current}

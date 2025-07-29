@@ -5,6 +5,7 @@ import Form from "../../components/shared/form"
 import creationForms from "../../constants/creationForms"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import InputTypes from "../../constants/inputTypes"
+import ScreenNames from "../../constants/screenNames"
 import ActivityCategory from "../../constants/updateCategory"
 import VisitationChangeDurations from "../../constants/visitationChangeDurations"
 import globalState from "../../context"
@@ -64,46 +65,29 @@ export default function NewVisitationChangeRequest() {
         })
     }
 
+    const ThrowError = (title, message = "") => {
+        AlertManager.throwError(title, message)
+        setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+        return false
+    }
+
     const Submit = async () => {
         // Map Dropdown to Database
         formRef.current.children = DropdownManager.MappedForDatabase.ChildrenFromArray(selectedChildrenOptions)
         formRef.current.reminderTimes = DropdownManager.MappedForDatabase.RemindersFromArray(selectedReminderOptions)
         formRef.current.shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
-        const errorString = Manager.GetInvalidInputsErrorString([
-            {
-                value: formRef.current.reason,
-                name: "Reason",
-            },
-            {
-                value: formRef.current.startDate,
-                name: "Date",
-            },
-            {
-                value: recipientName,
-                name: "Recipient",
-            },
-        ])
-        if (Manager.IsValid(errorString, true)) {
-            AlertManager.throwError(errorString)
-            return false
-        }
-        const validAccounts = currentUser?.sharedDataUsers
 
         //#region VALIDATION
-        if (validAccounts.length === 0) {
-            AlertManager.throwError(
+        // Valid Accounts
+        if (currentUser?.sharedDataUsers.length === 0)
+            ThrowError(
                 "No co-parent to \n assign requests to",
                 "It appears that you have not created any co-parents, or it is possible that they may have deactivated their profile."
             )
-            return false
-        }
 
-        if (validAccounts.length > 0) {
-            if (!Manager.IsValid(formRef.current.shareWith)) {
-                AlertManager.throwError("Please choose who you would like to share this request with")
-                return false
-            }
-        }
+        // Share With
+        if (currentUser?.sharedDataUsers.length > 0 && !Manager.IsValid(formRef.current.shareWith))
+            ThrowError("Please choose who you would like to share this request with")
         //#endregion VALIDATION
 
         formRef.current.duration = view?.value

@@ -17,11 +17,11 @@
     }
 }
 
-@mixin thinnest {
+@mixin thinnestFont {
     @include fontBase;
     & {
         font-family: "SF-Pro-Text-Thin", sans-serif;
-        font-weight: 100;
+        font-weight: variables.$fwThinnest;
     }
 }
 
@@ -33,9 +33,20 @@
     }
 }
 
+@mixin mediumFont() {
+    @include fontBase;
+    & {
+        font-weight: variables.$fwMedium;
+        font-family: "SF-Pro-Display-Medium", sans-serif;
+    }
+}
+
 @mixin mediumBoldFont() {
-    font-family: "SF-Pro-Display-Medium", sans-serif;
-    font-weight: variables.$fwMedium;
+    @include fontBase;
+    & {
+        font-weight: variables.$fwMedium;
+        font-family: "SF-Pro-Display-Semibold", sans-serif;
+    }
 }
 
 @mixin regularFont() {

@@ -1,13 +1,14 @@
 import debounce from "debounce"
 import moment from "moment"
 import React, {useContext, useEffect, useState} from "react"
+import {BsFileEarmarkImageFill} from "react-icons/bs"
 import {FaShare} from "react-icons/fa"
 import {FaLightbulb} from "react-icons/fa6"
 import {HiDotsHorizontal} from "react-icons/hi"
+import {HiDocumentMagnifyingGlass} from "react-icons/hi2"
 import {IoIosArrowUp} from "react-icons/io"
 import {IoListOutline} from "react-icons/io5"
 import {MdDriveFileRenameOutline} from "react-icons/md"
-import {TbFileSearch} from "react-icons/tb"
 import searchTextHL from "search-text-highlight"
 import AppImages from "../../../constants/appImages"
 import ButtonThemes from "../../../constants/buttonThemes"
@@ -26,14 +27,17 @@ import EmailManager from "../../../managers/emailManager"
 import Manager from "../../../managers/manager"
 import StringManager from "../../../managers/stringManager"
 import DocumentHeader from "../../../models/documentHeader"
+import SlideshowImage from "../../../models/slideshowImage"
 import NavBar from "../../navBar"
 import Button from "../../shared/button"
 import Form from "../../shared/form"
+import InlineLoadingSpinner from "../../shared/inlineLoadingSpinner"
 import InputField from "../../shared/inputField"
 import Label from "../../shared/label.jsx"
 import Screen from "../../shared/screen"
 import ScreenActionsMenu from "../../shared/screenActionsMenu"
 import ScreenHeader from "../../shared/screenHeader"
+import Slideshow from "../../shared/slideshow"
 import Spacer from "../../shared/spacer"
 
 export default function DocumentViewer() {
@@ -52,6 +56,8 @@ export default function DocumentViewer() {
     const [showShareCard, setShowShareCard] = useState(false)
     const [shareEmail, setShareEmail] = useState("")
     const [processedHTML, setProcessedHTML] = useState("")
+    const [showSlideshow, setShowSlideshow] = useState(false)
+    const [slideshowImages, setSlideshowImages] = useState([])
 
     // HOOKS
     const {currentUser, currentUserIsLoading} = useCurrentUser()
@@ -276,6 +282,12 @@ export default function DocumentViewer() {
         try {
             // Insert text
             if (Manager.IsValid(docToView) && Manager.IsValid(docToView.url, true)) {
+                const slideshowImage = new SlideshowImage({
+                    url: docToView.url,
+                    title: docToView.documentName,
+                    alt: docToView.documentName,
+                })
+                setSlideshowImages([slideshowImage])
                 const htmlResult = await DocumentConversionManager.ImageToHTML(AppImages.testing.legalDoc.url)
                 setProcessedHTML(htmlResult)
                 Util.FormatAndCleanupText()
@@ -294,9 +306,8 @@ export default function DocumentViewer() {
             const docText = document.getElementById("doc-text")
             let textAsHtml = docText.innerHTML
             if (!textAsHtml.includes(searchValue.toLowerCase().trim())) {
-                AlertManager.throwError(`Unable to find "${searchValue}" in this document`)
                 setShowSearch(false)
-                return false
+                Util.ThrowError("No results found")
             }
             textAsHtml = searchTextHL.highlight(textAsHtml, searchValue)
             textAsHtml = textAsHtml.replaceAll('<span class=" text-highlight"="', "")
@@ -374,6 +385,7 @@ export default function DocumentViewer() {
 
     return (
         <>
+            <Slideshow show={showSlideshow} hide={() => setShowSlideshow(false)} images={slideshowImages} />
             {/* SEARCH CARD */}
             <Form
                 wrapperClass="doc-search-card"
@@ -563,7 +575,7 @@ export default function DocumentViewer() {
                     <div className="content">
                         <p>Find Text</p>
                         <div className="svg-wrapper">
-                            <TbFileSearch id={"desktop-search-icon"} />
+                            <HiDocumentMagnifyingGlass id={"desktop-search-icon"} />
                         </div>
                     </div>
                 </div>
@@ -615,13 +627,16 @@ export default function DocumentViewer() {
 
                 {/* DOCUMENT IMAGE */}
 
-                {/*{docType === 'image' && (*/}
-                {/*  <LightGallery elementClassNames={`light-gallery ${theme}`} speed={500} selector={'#document-image'}>*/}
-                {/*    <div data-src={imgUrl} className="action-item document-image">*/}
-                {/*      <img data-src={imgUrl} id="document-image" src={imgUrl} alt="" />*/}
-                {/*    </div>*/}
-                {/*  </LightGallery>*/}
-                {/*)}*/}
+                {docToView?.documentType === "image" && Manager.IsValid(docToView) && (
+                    <div className={"action-item image"} onClick={() => setShowSlideshow(true)}>
+                        <div className="content">
+                            <p>Document Image</p>
+                            <div className="svg-wrapper">
+                                <BsFileEarmarkImageFill />
+                            </div>
+                        </div>
+                    </div>
+                )}
             </ScreenActionsMenu>
 
             {/* SCREEN */}
@@ -637,7 +652,8 @@ export default function DocumentViewer() {
 
                     {/* SCREEN CONTENT - DOC TEXT */}
                     <div className="screen-content document-viewer">
-                        <div id="doc-text" dangerouslySetInnerHTML={{__html: processedHTML}} />
+                        {Manager.IsValid(processedHTML, true) && <div id="doc-text" dangerouslySetInnerHTML={{__html: processedHTML}} />}
+                        {!Manager.IsValid(processedHTML, true) && <InlineLoadingSpinner />}
                     </div>
 
                     {/* CLOSE SEARCH BUTTON */}

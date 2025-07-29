@@ -81,7 +81,7 @@ function General({activeChild}) {
     return (
         <div className="info-section section general" key={refreshKey}>
             {Manager.IsValid(currentUser) && Manager.IsValid(currentUser?.key) && Manager.IsValid(activeChild) && (
-                <Accordion className={`${theme} child-info`} expanded={showInputs}>
+                <Accordion className={`${theme} children`} id={"children-general"} expanded={showInputs}>
                     <AccordionSummary
                         onClick={() => setShowInputs(!showInputs)}
                         className={!Manager.IsValid(activeChild?.general) ? "disabled header general" : "header general"}>
@@ -95,7 +95,7 @@ function General({activeChild}) {
                         </p>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <div className="padding">
+                        <div className="section-wrapper">
                             {Manager.IsValid(generalValues) &&
                                 generalValues.map((prop, index) => {
                                     const rawLabel = prop[0]
@@ -106,9 +106,7 @@ function General({activeChild}) {
                                     const isPhone = lowerLabel.includes("phone")
                                     const isAddress = Manager.Contains(lowerLabel, "address")
                                     const isNameField = lowerLabel === "name"
-
                                     const sharedBy = Manager.IsValid(prop[2]) ? ` (shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ""
-
                                     const placeholder = `${infoLabel}${sharedBy}`
                                     const rowClass = `data-row ${isPhone ? "phone" : ""} ${isLast ? "last" : ""}`
 

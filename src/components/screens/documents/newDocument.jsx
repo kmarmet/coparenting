@@ -1,5 +1,4 @@
 // Path: src\components\screens\documents\newDocument.jsx
-import {getStorage, ref, uploadString} from "firebase/storage"
 import moment from "moment"
 import React, {useContext, useEffect, useState} from "react"
 import Form from "../../../components/shared/form"
@@ -20,7 +19,6 @@ import DocumentConversionManager from "../../../managers/documentConversionManag
 import DocumentsManager from "../../../managers/documentsManager"
 import DropdownManager from "../../../managers/dropdownManager"
 import ImageManager from "../../../managers/imageManager"
-import LogManager from "../../../managers/logManager"
 import Manager from "../../../managers/manager.js"
 import ObjectManager from "../../../managers/objectManager"
 import StringManager from "../../../managers/stringManager"
@@ -65,14 +63,16 @@ export default function NewDocument() {
         })
     }
 
+    const ThrowError = (message) => {
+        AlertManager.throwError(message)
+        setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+        return false
+    }
+
     const Upload = async () => {
         try {
             setState({...state, isLoading: true})
-            if (doc === null || doc === undefined) {
-                AlertManager.throwError("Please choose a file to upload")
-                setState({...state, isLoading: false})
-                return false
-            }
+            if (doc === null || doc === undefined) ThrowError("Please select a document to upload")
 
             let docNameToUse = ""
 
@@ -84,24 +84,13 @@ export default function NewDocument() {
             }
 
             //#region VALIDATION
-            if (
-                !Manager.Validate({
-                    value: docType,
-                    title: "No Document Type Selected",
-                    errorMessage: "Please choose a type for this document",
-                })
-            ) {
-                setState({...state, isLoading: false})
-                return false
-            }
+
+            // Doc Type
+            if (!Manager.IsValid(docType, true)) ThrowError("Please choose a type for this document")
 
             // Check for existing document
             const existingDocument = documents.find((doc) => doc?.documentName === docName && doc?.ownerKey === currentUser.key)
-            if (Manager.IsValid(existingDocument)) {
-                AlertManager.throwError("Document has already been uploaded")
-                setState({...state, isLoading: false})
-                return false
-            }
+            if (Manager.IsValid(existingDocument)) ThrowError("A document with that name already exists")
             //#endregion VALIDATION
 
             let imageUrl = ""
@@ -117,7 +106,6 @@ export default function NewDocument() {
                     // Upload to Firebase Storage
                     imageUrl = await Storage.UploadByPath(`${Storage.directories.documents}/${currentUser.key}`, doc, firebaseStorageFileName)
                 } catch (error) {
-                    console.log(error)
                     AlertManager.throwError("Unable to process image. Please try again after awhile.")
                     setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
                     return false
@@ -174,27 +162,8 @@ export default function NewDocument() {
             ResetForm("Document Uploaded!")
         } catch (error) {
             console.log(error)
-            AlertManager.throwError("Unable to upload document. Please try again after awhile.")
-            setState({...state, isLoading: false})
-            return false
+            ThrowError("Unable to upload document. Please try again after awhile.")
         }
-    }
-
-    const UploadRawDocumentText = async (txt, fileName) => {
-        const storage = getStorage()
-        const storageRef = ref(storage, `${Storage.directories.documents}/${currentUser?.key}/${fileName}`)
-
-        // Upload the string
-        uploadString(storageRef, txt, "raw")
-            .then(() => {
-                console.log("Uploaded a raw string!")
-            })
-            .catch((error) => {
-                console.error("Error uploading string:", error)
-                LogManager.Log(
-                    `Error: ${error} | Code File: newDocument | Function: StoreTextInFirebase | File: ${fileName} | User: ${currentUser?.key}`
-                )
-            })
     }
 
     const SetDefaultDropdownOptions = () => {

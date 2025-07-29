@@ -27,6 +27,9 @@ AppImages =
       name: 'cardBackground'
       url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fchangelog%2Fchangelog-card-background.jpg?alt=media&token=077e9ea0-6c18-475e-8d3d-603b4b300058"
   misc:
+    inlineLoadingSvg:
+      name: 'inlineLoadingSvg'
+      url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fmisc%2Finline-loading-svg.svg?alt=media&token=181c16e6-e9ba-4ca0-99a8-53b21d077187"
     starBackground:
       name: 'starBackground'
       url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fmisc%2FStarBackground.png?alt=media&token=87508d4e-ee11-4304-9afa-e6eb5751aa39"

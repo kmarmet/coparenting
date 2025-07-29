@@ -3,6 +3,7 @@ import React, {useContext, useState} from "react"
 import validator from "validator"
 import InputTypes from "../../../constants/inputTypes"
 import ModelNames from "../../../constants/modelNames"
+import ScreenNames from "../../../constants/screenNames"
 import globalState from "../../../context"
 import DB_UserScoped from "../../../database/db_userScoped"
 import useCurrentUser from "../../../hooks/useCurrentUser"
@@ -34,7 +35,7 @@ const NewParentForm = ({showCard, hideCard}) => {
     const [email, setEmail] = useState("")
     const [parentType, setParentType] = useState("")
 
-    const ResetForm = async (successMessage = "") => {
+    const ResetForm = (successMessage = "") => {
         Manager.ResetForm("new-parent-wrapper")
         setName("")
         setAddress("")
@@ -44,28 +45,21 @@ const NewParentForm = ({showCard, hideCard}) => {
         hideCard()
     }
 
-    const Submit = async () => {
-        if ((!validator.isEmail(email) || !Manager.IsValid(email)) && parentHasAccount) {
-            AlertManager.throwError("Email address is not valid")
-            return false
-        }
-        const errorString = Manager.GetInvalidInputsErrorString([
-            {
-                name: "Name",
-                value: name,
-            },
-        ])
-        if (Manager.IsValid(errorString, true)) {
-            AlertManager.throwError(errorString)
-            return false
-        }
-        if (parentHasAccount && !Manager.IsValid(email)) {
-            AlertManager.throwError("If the parent has an account with us, their email is required")
-            return false
-        }
-        const existingParent = users.find((x) => x?.email === email)
-        let newParent = new Parent()
+    const ThrowError = (title, message = "") => {
+        AlertManager.throwError(title, message)
+        setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+        return false
+    }
 
+    const Submit = async () => {
+        // Email
+        if ((!validator?.isEmail(email) || !Manager.IsValid(email)) && parentHasAccount) ThrowError("Please enter a valid email")
+
+        // If parent has an account -> email is required
+        if (parentHasAccount && !Manager.IsValid(email)) ThrowError("If the parent has an account with us, their email is required")
+        const existingParent = users.find((x) => x?.email === email)
+
+        let newParent = new Parent()
         newParent.email = email
         newParent.id = Manager.GetUid()
         newParent.address = address
@@ -93,7 +87,7 @@ const NewParentForm = ({showCard, hideCard}) => {
             console.log(error)
             // LogManager.Log(error.message, LogManager.LogTypes.error)
         }
-        await ResetForm(`${StringManager.GetFirstNameOnly(name)} Added!`)
+        ResetForm(`${StringManager.GetFirstNameOnly(name)} Added!`)
     }
 
     return (

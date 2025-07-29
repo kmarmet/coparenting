@@ -21,7 +21,7 @@ const useChangelogs = () => {
             dataRef,
             async (snapshot) => {
                 if (Manager.IsValid(snapshot.val())) {
-                    const sorted = DatasetManager.sortByProperty(snapshot.val(), "updatedVersion", "desc")
+                    const sorted = DatasetManager.SortByProperty(snapshot.val(), "updatedVersion", "desc")
                     setChangelogs(sorted)
                 } else {
                     setChangelogs(null)

@@ -33,196 +33,192 @@ import Spacer from "../shared/spacer"
 import UploadButton from "../shared/uploadButton"
 
 export default function NewMemory() {
-      const {state, setState} = useContext(globalState)
-      const {theme, creationFormToShow} = state
+    const {state, setState} = useContext(globalState)
+    const {theme, creationFormToShow} = state
 
-      // App State
-      const [images, setImages] = useState([])
+    // App State
+    const [images, setImages] = useState([])
 
-      // Hooks
-      const {currentUser} = useCurrentUser()
-      const {memories} = useMemories()
-      const {users} = useUsers()
-      const {children} = useChildren()
-      const {coParents} = useCoParents()
+    // Hooks
+    const {currentUser} = useCurrentUser()
+    const {memories} = useMemories()
+    const {users} = useUsers()
+    const {children} = useChildren()
+    const {coParents} = useCoParents()
 
-      // Dropdown State
-      const [selectedShareWithOptions, setSelectedShareWithOptions] = useState(DropdownManager.GetSelected.ShareWithFromKeys([], users))
-      const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
+    // Dropdown State
+    const [selectedShareWithOptions, setSelectedShareWithOptions] = useState(DropdownManager.GetSelected.ShareWithFromKeys([], users))
+    const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
 
-      // Form Ref
-      const formRef = useRef({...new Memory()})
+    // Form Ref
+    const formRef = useRef({...new Memory()})
 
-      const ResetForm = () => {
-            Manager.ResetForm("new-memory-wrapper")
-            setState({...state, isLoading: false, currentScreen: ScreenNames.memories, creationFormToShow: ""})
-      }
+    const ResetForm = () => {
+        Manager.ResetForm("new-memory-wrapper")
+        setState({...state, isLoading: false, currentScreen: ScreenNames.memories, creationFormToShow: ""})
+    }
 
-      const Upload = async () => {
-            console.log("uplolad")
-            const setLoading = (value) => setState({...state, isLoading: value})
+    const ThrowError = (title, message = "") => {
+        AlertManager.throwError(title, message)
+        setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+        return false
+    }
 
-            setLoading(true)
-            const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
-            const validAccounts = currentUser?.sharedDataUsers?.length
+    const Upload = async () => {
+        const setLoading = (value) => setState({...state, isLoading: value})
 
-            //#region VALIDATION
-            // ✅ Validation helper
-            const fail = (message, subMessage = null) => {
-                  AlertManager.throwError(message, subMessage)
-                  setLoading(false)
-                  return false
+        setLoading(true)
+        const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
+        const validAccounts = currentUser?.sharedDataUsers?.length
+
+        //#region VALIDATION
+        // ✅ Validation helper
+
+        // ✅ Validation Checks
+        if (validAccounts === 0)
+            ThrowError(
+                `No ${currentUser?.accountType === "parent" ? "co-parents or children" : "parents"} to \n share memories with`,
+                `You have not added any ${currentUser?.accountType === "parent" ? "co-parent or child" : "parent"} contacts to your profile. It is also possible they have closed their profile.`
+            )
+
+        // Shared With
+        if (!Manager.IsValid(shareWith)) ThrowError("Please choose who you would like to share this memory with")
+
+        // Images
+        if (!Manager.IsValid(images)) ThrowError("Please upload at least one image")
+
+        // Not an image
+        const notAnImage = Object.values(images).some((file) => file?.name?.includes(".doc"))
+        if (notAnImage) ThrowError("Files uploaded MUST be images (.png, .jpg, .jpeg, etc.)")
+        //#endregion VALIDATION
+
+        // ✅ Compress Images
+        const compressedImages = await Promise.all(images.map((img) => ImageManager.compressImage(img)))
+        const validImgArray = DatasetManager.GetValidArray(compressedImages)
+
+        // ✅ Check for existing memories
+        const duplicate = validImgArray.some((img) => {
+            if (Manager.IsValid(img?.title, true)) {
+                return memories.some((m) => m?.id === img?.id)
+            }
+            return false
+        })
+
+        if (duplicate) return fail("This memory already exists")
+
+        const clean = ObjectManager.CleanObject(formRef.current)
+
+        try {
+            // ✅ Upload & Get URLs
+            await Storage.uploadMultiple(`${Storage.directories.memories}/`, currentUser?.key, compressedImages)
+            const urls = await Storage.getUrlsFromFiles(Storage.directories.memories, currentUser?.key, compressedImages)
+
+            // ✅ Save memories in DB
+            for (const url of urls) {
+                const imageName = Storage.GetImageNameFromUrl(url)
+
+                console.log(imageName)
+                const memoryData = {
+                    ...clean,
+                    shareWith: DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions),
+                    url,
+                    title: StringManager.FormatTitle(formRef?.current?.title ?? imageName, true),
+                    owner: {
+                        key: currentUser?.key,
+                        name: currentUser?.name,
+                    },
+                }
+
+                await DB.Add(`${DB.tables.memories}/${currentUser?.key}`, memories, memoryData)
             }
 
-            // ✅ Validation Checks
-            if (validAccounts === 0) {
-                  return fail(
-                        `No ${currentUser?.accountType === "parent" ? "co-parents or children" : "parents"} to \n share memories with`,
-                        `You have not added any ${currentUser?.accountType === "parent" ? "co-parent or child" : "parent"} contacts to your profile. It is also possible they have closed their profile.`
-                  )
-            }
-            if (!Manager.IsValid(shareWith)) {
-                  return fail("Please choose who you would like to share this memory with")
-            }
-            if (!Manager.IsValid(images)) {
-                  return fail("Please choose document")
-            }
+            // ✅ Send Notifications
+            await UpdateManager.SendToShareWith(
+                clean.shareWith,
+                currentUser,
+                `New Memory`,
+                `${StringManager.GetFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
+                ActivityCategory.memories
+            )
 
-            const notAnImage = Object.values(images).some((file) => file?.name?.includes(".doc"))
-            if (notAnImage) fail("Files uploaded MUST be images (.png, .jpg, .jpeg, etc.)")
-            //#endregion VALIDATION
+            // ✅ Post-process UI
+            await AppManager.SetAppBadge(1)
+            ResetForm()
+            setTimeout(() => {
+                MyConfetti.fire()
+            }, 500)
+        } catch (error) {
+            console.error("Upload error:", error)
+            setLoading(false)
+        }
+    }
 
-            // ✅ Compress Images
-            const compressedImages = await Promise.all(images.map((img) => ImageManager.compressImage(img)))
-            const validImgArray = DatasetManager.GetValidArray(compressedImages)
+    const SetDropdownOptions = () => {
+        setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
+        setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
+    }
 
-            // ✅ Check for existing memories
-            const duplicate = validImgArray.some((img) => {
-                  if (Manager.IsValid(img?.title, true)) {
-                        return memories.some((m) => m?.id === img?.id)
-                  }
-                  return false
-            })
+    useEffect(() => {
+        if (Manager.IsValid(children) && Manager.IsValid(coParents) && Manager.IsValid(users)) {
+            SetDropdownOptions()
+        }
+    }, [children, coParents, users])
 
-            if (duplicate) return fail("This memory already exists")
+    return (
+        <Form
+            onSubmit={Upload}
+            wrapperClass="new-memory"
+            submitText={"Upload"}
+            title={"Share Memory"}
+            onClose={() => ResetForm()}
+            showCard={creationFormToShow === creationForms.memories}>
+            <div className="new-memory-wrapper">
+                <FormDivider text={"Required"} />
+                {/* SHARE WITH */}
+                <SelectDropdown
+                    required={true}
+                    options={defaultShareWithOptions}
+                    selectMultiple={true}
+                    value={selectedShareWithOptions}
+                    placeholder={"Select Contacts to Share With"}
+                    onSelect={setSelectedShareWithOptions}
+                />
 
-            const clean = ObjectManager.CleanObject(formRef.current)
+                <FormDivider text={"Optional"} />
 
-            try {
-                  // ✅ Upload & Get URLs
-                  await Storage.uploadMultiple(`${Storage.directories.memories}/`, currentUser?.key, compressedImages)
-                  const urls = await Storage.getUrlsFromFiles(Storage.directories.memories, currentUser?.key, compressedImages)
-
-                  // ✅ Save memories in DB
-                  for (const url of urls) {
-                        const imageName = Storage.GetImageNameFromUrl(url)
-
-                        console.log(imageName)
-                        const memoryData = {
-                              ...clean,
-                              shareWith: DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions),
-                              url,
-                              title: StringManager.FormatTitle(formRef?.current?.title ?? imageName, true),
-                              owner: {
-                                    key: currentUser?.key,
-                                    name: currentUser?.name,
-                              },
-                        }
-
-                        await DB.Add(`${DB.tables.memories}/${currentUser?.key}`, memories, memoryData)
-                  }
-
-                  // ✅ Send Notifications
-                  await UpdateManager.SendToShareWith(
-                        clean.shareWith,
-                        currentUser,
-                        `New Memory`,
-                        `${StringManager.GetFirstNameOnly(currentUser?.name)} has uploaded a new memory!`,
-                        ActivityCategory.memories
-                  )
-
-                  // ✅ Post-process UI
-                  await AppManager.SetAppBadge(1)
-                  ResetForm()
-                  setTimeout(() => {
-                        MyConfetti.fire()
-                  }, 500)
-            } catch (error) {
-                  console.error("Upload error:", error)
-                  setLoading(false)
-            }
-      }
-
-      const SetDropdownOptions = () => {
-            setSelectedShareWithOptions(DropdownManager.GetSelected.ShareWithFromKeys([], users))
-            setDefaultShareWithOptions(DropdownManager.GetDefault.ShareWith(children, coParents))
-      }
-
-      useEffect(() => {
-            if (Manager.IsValid(children) && Manager.IsValid(coParents) && Manager.IsValid(users)) {
-                  SetDropdownOptions()
-            }
-      }, [children, coParents, users])
-
-      return (
-            <Form
-                  onSubmit={Upload}
-                  wrapperClass="new-memory"
-                  submitText={"Upload"}
-                  title={"Share Memory"}
-                  onClose={() => ResetForm()}
-                  showCard={creationFormToShow === creationForms.memories}>
-                  <div className="new-memory-wrapper">
-                        <FormDivider text={"Required"} />
-                        {/* SHARE WITH */}
-                        <SelectDropdown
-                              required={true}
-                              options={defaultShareWithOptions}
-                              selectMultiple={true}
-                              value={selectedShareWithOptions}
-                              placeholder={"Select Contacts to Share With"}
-                              onSelect={setSelectedShareWithOptions}
-                        />
-
-                        <FormDivider text={"Optional"} />
-
-                        {/* TITLE */}
-                        <InputField
-                              inputType={InputTypes.text}
-                              placeholder={"Title"}
-                              onChange={(e) => {
-                                    formRef.current.title = e.target.value
-                              }}
-                        />
-                        <Spacer height={5} />
-                        {/* DATE */}
-                        <InputField
-                              uidClass="memory-capture-date-uid"
-                              placeholder={"Capture Date"}
-                              inputType={InputTypes.date}
-                              onDateOrTimeSelection={(e) => {
-                                    formRef.current.captureDate = moment(e).format(DatetimeFormats.dateForDb)
-                              }}
-                        />
-                        <Spacer height={5} />
-                        {/* NOTES */}
-                        <InputField
-                              onChange={(e) => (formRef.current.notes = e.target.value)}
-                              inputType={InputTypes.textarea}
-                              placeholder={"Notes"}
-                        />
-                        <div id="new-memory-form-container" className={`${theme}`}>
-                              <Spacer height={5} />
-                              {/* UPLOAD BUTTON */}
-                              <UploadButton
-                                    containerClass={`${theme} new-memory-card`}
-                                    uploadType={"image"}
-                                    actualUploadButtonText={"Upload"}
-                                    getImages={(input) => setImages(Array.from(input.target.files))}
-                                    uploadButtonText={`Choose`}
-                              />
-                        </div>
-                  </div>
-            </Form>
-      )
+                {/* TITLE */}
+                <InputField
+                    inputType={InputTypes.text}
+                    placeholder={"Title"}
+                    onChange={(e) => {
+                        formRef.current.title = e.target.value
+                    }}
+                />
+                <Spacer height={5} />
+                {/* DATE */}
+                <InputField
+                    uidClass="memory-capture-date-uid"
+                    placeholder={"Capture Date"}
+                    inputType={InputTypes.date}
+                    onDateOrTimeSelection={(e) => {
+                        formRef.current.captureDate = moment(e).format(DatetimeFormats.dateForDb)
+                    }}
+                />
+                <Spacer height={5} />
+                {/* NOTES */}
+                <InputField onChange={(e) => (formRef.current.notes = e.target.value)} inputType={InputTypes.textarea} placeholder={"Notes"} />
+                <div id="new-memory-form-container" className={`${theme}`}>
+                    <Spacer height={5} />
+                    {/* UPLOAD BUTTON */}
+                    <UploadButton
+                        containerClass={`${theme} new-memory-card`}
+                        uploadType={"image"}
+                        actualUploadButtonText={"Upload"}
+                        getImages={(input) => setImages(Array.from(input.target.files))}
+                        uploadButtonText={`Choose`}
+                    />
+                </div>
+            </div>
+        </Form>
+    )
 }
