@@ -32,6 +32,7 @@ EventCategories = [
             "Concert"
             "Gaming Night"
             "Live Show"
+            "Movie Night"
             "Music Festival"
             "Stand-up Comedy"
             "Talent Show"
@@ -63,7 +64,6 @@ EventCategories = [
             "Wellness Retreat"
         ]
     }
-# Life Admin & Chores
     {
         parentCategory: "✅    Life Chores & Tasks "
         categories: [
@@ -139,7 +139,6 @@ EventCategories = [
             "Wedding"
         ]
     }
-
     {
         parentCategory: "👟    Sports & Fitness "
         categories: [
@@ -154,7 +153,6 @@ EventCategories = [
             "Tournament"
         ]
     }
-
     {
         parentCategory: "️✈️                                                             Travel & Leisure"
         categories: [
@@ -167,10 +165,6 @@ EventCategories = [
             "Vacation"
         ]
     }
- 
-
-
-
 ]
 
 export default EventCategories

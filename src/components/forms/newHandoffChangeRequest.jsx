@@ -57,7 +57,7 @@ export default function NewHandoffChangeRequest() {
             creationFormToShow: "",
             refreshKey: Manager.GetUid(),
             isLoading: false,
-            successAlertMessage: showSuccessAlert ? "Handoffs Change Request Sent" : null,
+            bannerMessage: showSuccessAlert ? "Handoffs Change Request Sent" : null,
         })
     }
 

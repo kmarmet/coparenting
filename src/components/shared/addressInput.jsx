@@ -6,7 +6,7 @@ import globalState from "../../context"
 import Manager from "../../managers/manager"
 import Label from "./label"
 
-const AddressInput = ({onChange = (e) => {}, defaultValue, wrapperClasses = "", labelText = ""}) => {
+const AddressInput = ({onChange = (e) => {}, defaultValue, wrapperClasses = "", labelClasses = "", labelText = ""}) => {
     const {state} = useContext(globalState)
     const {refreshKey} = state
 
@@ -77,7 +77,10 @@ const AddressInput = ({onChange = (e) => {}, defaultValue, wrapperClasses = "", 
     return (
         <div className={`google-autocomplete-wrapper${wrapperClasses ? ` ${wrapperClasses}` : ""}`}>
             {Manager.IsValid(defaultValue) && (
-                <Label text={Manager.IsValid(labelText, true) ? labelText : "Address"} classes={"always-show filled-input-label"} />
+                <Label
+                    text={Manager.IsValid(labelText, true) ? labelText : "Address"}
+                    classes={`always-show${Manager.IsValid(defaultValue) ? " filled-input-label" : ""}${Manager.IsValid(labelClasses) ? ` ${labelClasses}` : ""}`}
+                />
             )}
             <div className="input-wrapper">
                 <FaMapLocation className={"input-icon maps"} />

@@ -64,7 +64,7 @@ export default function Handoffs() {
         Manager.ResetForm("edit-event-form")
         setShowDetails(false)
         setView({label: "Details", value: "Details"})
-        setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
+        setState({...state, refreshKey: Manager.GetUid(), bannerMessage: successMessage})
     }
 
     const Update = async () => {
@@ -85,7 +85,7 @@ export default function Handoffs() {
         if (action === "deleted") {
             AlertManager.confirmAlert("Are you sure you would like to Delete this request?", "I'm Sure", true, async () => {
                 await DB.deleteById(`${DB.tables.handoffChangeRequests}/${currentUser?.key}`, activeRequest?.id)
-                setState({...state, successAlertMessage: "Handoffs Change Request Deleted", refreshKey: Manager.GetUid()})
+                setState({...state, bannerMessage: "Handoffs Change Request Deleted", refreshKey: Manager.GetUid()})
                 setShowDetails(false)
             })
         }
@@ -125,7 +125,7 @@ export default function Handoffs() {
             )
         }
 
-        setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: `Decision Sent to ${recipientName}`})
+        setState({...state, refreshKey: Manager.GetUid(), bannerMessage: `Decision Sent to ${recipientName}`})
     }
 
     const CheckIn = async () => {
@@ -144,7 +144,7 @@ export default function Handoffs() {
             currentUser,
             ActivityCategory.expenses
         )
-        setState({...state, successAlertMessage: "Arrival Notification Sent"})
+        setState({...state, bannerMessage: "Arrival Notification Sent"})
     }
 
     const GetFromOrToName = (key) => {

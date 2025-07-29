@@ -80,7 +80,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         setView({label: "Details", value: "Details"})
         setState({
             ...state,
-            successAlertMessage: alertMessage,
+            bannerMessage: alertMessage,
             selectedCalendarDate: moment().format(DatetimeFormats.dateForDb),
         })
         hideCard()
@@ -362,7 +362,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                         <div className="blocks">
                             {Manager.IsValid(event?.notes, true) && (
                                 <DetailBlock
-                                    classes={"full-width block"}
+                                    classes={"full-width block notes"}
                                     valueToValidate={event?.notes}
                                     text={event?.notes}
                                     isFullWidth={true}
@@ -523,8 +523,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                         {/* CATEGORIES SELECTOR */}
                         <EventCategoryDropdown
                             selectedCategories={event?.categories}
-                            updateCategories={(categoryObject) => {
-                                const {category, parentCategory} = categoryObject
+                            updateCategories={(category) => {
                                 if (event?.categories?.includes(category)) {
                                     setCategories((prev) =>
                                         DatasetManager.GetValidArray(

@@ -90,6 +90,7 @@ export default function DocumentViewer() {
                 }
             }
 
+            // Add mapped user headers
             if (Manager.IsValid(userDocumentHeaders)) {
                 // Loop through user headers
                 for (let header of userDocumentHeaders) {
@@ -161,10 +162,12 @@ export default function DocumentViewer() {
                 const headerIndex = DB.GetIndexById(userDocumentHeaders, headerId)
 
                 if (headerIndex > -1) {
+                    const docText = document.getElementById("doc-text")
+                    setProcessedHTML("")
                     await DB.DeleteByPath(`${DB.tables.documentHeaders}/${currentUser?.key}/${headerIndex}`)
-                    const updatedHeaders = userDocumentHeaders.filter((x) => x.id !== headerId)
-                    setTocHeaders([])
                     await Init()
+                    // const updatedHeaders = userDocumentHeaders.filter((x) => x.id !== headerId)
+                    // setTocHeaders(updatedHeaders)
                 }
             }
         },
@@ -188,7 +191,7 @@ export default function DocumentViewer() {
                                 email: currentUser?.email,
                                 name: currentUser?.name,
                             }
-                            await DB.Add(`${DB.tables.documentHeaders}/${currentUser?.key}`, userDocumentHeaders || [], header)
+                            await DB.Add(`${DB.tables.documentHeaders}/${currentUser?.key}`, userDocumentHeaders, header)
                             await Init()
                         },
                         onDeny: () => {
@@ -226,7 +229,6 @@ export default function DocumentViewer() {
             Document: {
                 AppendHTMLFromDocument: async () => {
                     const failureMessage = `Unable to find or load document. Please try again after awhile.`
-                    const docText = document.getElementById("doc-text")
                     const docToHTMLResponse = await fetch(docViewerUrl).catch(() => Util.ThrowError(failureMessage))
 
                     const blob = await docToHTMLResponse.blob()
@@ -238,9 +240,11 @@ export default function DocumentViewer() {
                     // Invalid: htmlResult
                     if (!Manager.IsValid(htmlResult, true)) Util.ThrowError(failureMessage)
 
-                    //  Add Headers
-                    let processedHtml = htmlResult
+                    // Append processed text
+                    setProcessedHTML(htmlResult)
+
                     if (Manager.IsValid(userDocumentHeaders)) {
+                        const docTextWrapper = document.getElementById("doc-text")
                         userDocumentHeaders.forEach((header) => {
                             const rawHeaderText = header?.headerText?.trim()
                             if (!rawHeaderText) return
@@ -251,20 +255,17 @@ export default function DocumentViewer() {
                             // Match header text allowing optional HTML tags/spaces
                             const regex = new RegExp(`(?:\\s*<[^>]+>\\s*)*${safeHeader}(?:\\s*<[^>]+>\\s*)*`, "gi")
 
+                            const docTextContents = docTextWrapper.innerHTML
+
                             // Text replacement
-                            const replacement = `
-                                                  <div data-header-id="${header?.id}" class="header">
-                                                    <span class="header-text">
-                                                      ${StringManager.UppercaseFirstLetterOfAllWords(header?.headerText.trim())}
-                                                    </span>
-                                                  </div>
-                                                `
-                            processedHtml = processedHtml.replace(regex, replacement)
+                            docTextWrapper.innerHTML = docTextContents.replace(regex, (match) => {
+                                return `
+                                    <div data-header-id="${header?.id}" class="header">
+                                      <span class="header-text">${StringManager.UppercaseFirstLetterOfAllWords(header?.headerText.trim())}</span>
+                                    </div>`
+                            })
                         })
                     }
-
-                    // Append processed text
-                    setProcessedHTML(processedHtml)
                 },
             },
         },
@@ -292,7 +293,7 @@ export default function DocumentViewer() {
         if (Manager.IsValid(searchValue, true)) {
             const docText = document.getElementById("doc-text")
             let textAsHtml = docText.innerHTML
-            if (!textAsHtml.includes(searchValue)) {
+            if (!textAsHtml.includes(searchValue.toLowerCase().trim())) {
                 AlertManager.throwError(`Unable to find "${searchValue}" in this document`)
                 setShowSearch(false)
                 return false
@@ -358,7 +359,7 @@ export default function DocumentViewer() {
     // INIT
     useEffect(() => {
         if (Manager.IsValid(docToView) && Manager.IsValid(docToView?.url)) void Init()
-    }, [docToView, userDocumentHeaders])
+    }, [docToView, userDocumentHeaders?.length])
 
     // INIT -> Listen for selection change
     useEffect(() => {
@@ -449,7 +450,7 @@ export default function DocumentViewer() {
                         userEmail: shareEmail,
                     })
                     setShowShareCard(false)
-                    setState({...state, successAlertMessage: `A link to view this document has been sent to ${shareEmail}`})
+                    setState({...state, bannerMessage: `A link to view this document has been sent to ${shareEmail}`})
                 }}
                 title={"Share Your Document"}
                 onClose={() => setShowShareCard(false)}>
@@ -635,7 +636,7 @@ export default function DocumentViewer() {
                     />
 
                     {/* SCREEN CONTENT - DOC TEXT */}
-                    <div className="screen-content">
+                    <div className="screen-content document-viewer">
                         <div id="doc-text" dangerouslySetInnerHTML={{__html: processedHTML}} />
                     </div>
 

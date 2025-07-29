@@ -42,7 +42,7 @@ AlertManager = {
       timer: 1000
       showConfirmButton: false
       allowOutsideClick: allowOutsideClick
-      customClass: 'success-alert'
+      customClass: 'banner'
       showClass:
         popup: """
                 animate__animated

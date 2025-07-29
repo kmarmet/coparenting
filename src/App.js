@@ -44,12 +44,12 @@ import Visitation from "./components/screens/visitation.jsx"
 import MakeItYours from "./components/screens/yourSpace/makeItYours"
 import ResetPassword from "./components/screens/yourSpace/resetPassword.jsx"
 import AppUpdateOverlay from "./components/shared/appUpdateOverlay"
+import Banner from "./components/shared/banner"
 import BrandBar from "./components/shared/brandBar"
 import CreationMenu from "./components/shared/creationMenu"
 import DesktopLeftSidebar from "./components/shared/desktopLeftSidebar"
 import LoadingScreen from "./components/shared/loadingScreen"
 import Overlay from "./components/shared/overlay"
-import SuccessAlert from "./components/shared/successAlert"
 import CreationForms from "./constants/creationForms"
 import DatetimeFormats from "./constants/datetimeFormats"
 import ScreenNames from "./constants/screenNames"
@@ -107,7 +107,7 @@ export default function App() {
     })
 
     // State to include in App.js
-    const {isLoading, currentScreen, userIsLoggedIn, loadingText, currentUser, theme, authUser, creationFormToShow, successAlertMessage} = state
+    const {isLoading, currentScreen, userIsLoggedIn, loadingText, currentUser, theme, authUser, creationFormToShow, bannerMessage} = state
 
     // ON PAGE LOAD
     useEffect(() => {
@@ -253,7 +253,7 @@ export default function App() {
             <div className={`App ${theme}`} id="app-container">
                 <globalState.Provider value={stateToUpdate}>
                     {/* SUCCESS ALERT */}
-                    <SuccessAlert />
+                    <Banner />
 
                     {/* LOADING SCREEN */}
                     <LoadingScreen />

@@ -26,12 +26,14 @@ StateObj =
   showCreationMenu: false
   showOverlay: false
   showScreenActions: false
-  successAlertMessage: null
+  bannerMessage: null
+  bannerType: 'success'
   users: []
   
   # Setters
   setActiveChatId: (id) ->
   setAuthUser: (user) ->
+  setBannerType: (type) ->
   setChildAccessGranted: (bool) ->
   setContactInfoToUpdateType: ->
   setCreationFormToShow: (form) ->
@@ -53,7 +55,7 @@ StateObj =
   setShowBottomMenu: (bool) ->
   setShowOverlay: (bool) ->
   setShowScreenActions: (bool) ->
-  setSuccessAlertMessage: (message) ->
+  setBannerMessage: (message) ->
   setTheme: (theme) ->
   setUserIsLoggedIn: (isLoggedIn) ->
   setUsers: (users) ->

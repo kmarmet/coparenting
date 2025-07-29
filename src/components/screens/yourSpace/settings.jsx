@@ -44,7 +44,7 @@ export default function Settings() {
                 moment(eveningSummaryHour).format(DatetimeFormats.summaryHour)
             )
         }
-        setState({...state, successAlertMessage: "Summary Times Updated"})
+        setState({...state, bannerMessage: "Summary Times Updated"})
     }
 
     const ToggleNotifications = async () => {

@@ -81,7 +81,7 @@ export default function Visitation() {
         await VisitationManager.deleteSchedule(currentUser, existingScheduleEvents)
         setExistingScheduleEvents([])
         setShowDeleteButton(false)
-        setState({...state, successAlertMessage: "Visitation Schedule Removed", isLoading: false})
+        setState({...state, bannerMessage: "Visitation Schedule Removed", isLoading: false})
     }
 
     // Every Weekend
@@ -138,7 +138,7 @@ export default function Visitation() {
         } else {
             await VisitationManager.DeleteAllHolidaysForUser(currentUser)
         }
-        setState({...state, successAlertMessage: "Visitation Holidays Updated!"})
+        setState({...state, bannerMessage: "Visitation Holidays Updated!"})
     }
 
     const GetVisitationHolidays = async (currentUser) => {
@@ -343,13 +343,14 @@ export default function Visitation() {
                     <Spacer height={5} />
                     {/* DEFAULT TRANSFER LOCATION */}
                     <AddressInput
+                        labelClasses={"always-show white-bg"}
                         defaultValue={currentUser?.visitation?.transferAddress}
                         wrapperClasses="address-input white-bg"
                         labelText="Preferred Handoff Location"
                         onChange={(address) => {
                             UpdateDefaultTransferLocation(address, Manager.GetDirectionsLink(address)).then(() =>
                                 setTimeout(() => {
-                                    setState({...state, successAlertMessage: "Preferred Handoffs Location Set"})
+                                    setState({...state, bannerMessage: "Preferred Handoffs Location Set"})
                                 }, 300)
                             )
                         }}

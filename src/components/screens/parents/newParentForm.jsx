@@ -1,25 +1,25 @@
 // Path: src\components\screens\parents\newParentForm.jsx
-import React, {useContext, useState} from 'react'
-import validator from 'validator'
-import InputTypes from '../../../constants/inputTypes'
-import ModelNames from '../../../constants/modelNames'
-import globalState from '../../../context'
-import DB_UserScoped from '../../../database/db_userScoped'
-import useCurrentUser from '../../../hooks/useCurrentUser'
-import useUsers from '../../../hooks/useUsers'
-import AlertManager from '../../../managers/alertManager'
-import Manager from '../../../managers/manager'
-import ObjectManager from '../../../managers/objectManager'
-import StringManager from '../../../managers/stringManager'
-import Parent from '../../../models/users/parent'
-import AddressInput from '../../shared/addressInput'
-import Form from '../../shared/form'
-import FormDivider from '../../shared/formDivider'
-import InputField from '../../shared/inputField'
-import Label from '../../shared/label'
-import SelectDropdown from '../../shared/selectDropdown'
-import Spacer from '../../shared/spacer'
-import ToggleButton from '../../shared/toggleButton'
+import React, {useContext, useState} from "react"
+import validator from "validator"
+import InputTypes from "../../../constants/inputTypes"
+import ModelNames from "../../../constants/modelNames"
+import globalState from "../../../context"
+import DB_UserScoped from "../../../database/db_userScoped"
+import useCurrentUser from "../../../hooks/useCurrentUser"
+import useUsers from "../../../hooks/useUsers"
+import AlertManager from "../../../managers/alertManager"
+import Manager from "../../../managers/manager"
+import ObjectManager from "../../../managers/objectManager"
+import StringManager from "../../../managers/stringManager"
+import Parent from "../../../models/users/parent"
+import AddressInput from "../../shared/addressInput"
+import Form from "../../shared/form"
+import FormDivider from "../../shared/formDivider"
+import InputField from "../../shared/inputField"
+import Label from "../../shared/label"
+import SelectDropdown from "../../shared/selectDropdown"
+import Spacer from "../../shared/spacer"
+import ToggleButton from "../../shared/toggleButton"
 
 const NewParentForm = ({showCard, hideCard}) => {
     const {state, setState} = useContext(globalState)
@@ -29,29 +29,29 @@ const NewParentForm = ({showCard, hideCard}) => {
     const [parentHasAccount, setParentHasAccount] = useState(false)
 
     // State
-    const [name, setName] = useState('')
-    const [address, setAddress] = useState('')
-    const [email, setEmail] = useState('')
-    const [parentType, setParentType] = useState('')
+    const [name, setName] = useState("")
+    const [address, setAddress] = useState("")
+    const [email, setEmail] = useState("")
+    const [parentType, setParentType] = useState("")
 
-    const ResetForm = async (successMessage = '') => {
-        Manager.ResetForm('new-parent-wrapper')
-        setName('')
-        setAddress('')
-        setEmail('')
-        setParentType('')
-        setState({...state, refreshKey: Manager.GetUid(), successAlertMessage: successMessage})
+    const ResetForm = async (successMessage = "") => {
+        Manager.ResetForm("new-parent-wrapper")
+        setName("")
+        setAddress("")
+        setEmail("")
+        setParentType("")
+        setState({...state, refreshKey: Manager.GetUid(), bannerMessage: successMessage})
         hideCard()
     }
 
     const Submit = async () => {
         if ((!validator.isEmail(email) || !Manager.IsValid(email)) && parentHasAccount) {
-            AlertManager.throwError('Email address is not valid')
+            AlertManager.throwError("Email address is not valid")
             return false
         }
         const errorString = Manager.GetInvalidInputsErrorString([
             {
-                name: 'Name',
+                name: "Name",
                 value: name,
             },
         ])
@@ -60,7 +60,7 @@ const NewParentForm = ({showCard, hideCard}) => {
             return false
         }
         if (parentHasAccount && !Manager.IsValid(email)) {
-            AlertManager.throwError('If the parent has an account with us, their email is required')
+            AlertManager.throwError("If the parent has an account with us, their email is required")
             return false
         }
         const existingParent = users.find((x) => x?.email === email)
@@ -99,8 +99,8 @@ const NewParentForm = ({showCard, hideCard}) => {
     return (
         <Form
             onSubmit={Submit}
-            submitText={name.length > 0 ? `Add ${StringManager.UppercaseFirstLetterOfAllWords(name)}` : 'Add'}
-            title={`Add ${Manager.IsValid(name, true) ? StringManager.UppercaseFirstLetterOfAllWords(name) : 'Co-Parent'} to Your Profile`}
+            submitText={name.length > 0 ? `Add ${StringManager.UppercaseFirstLetterOfAllWords(name)}` : "Add"}
+            title={`Add ${Manager.IsValid(name, true) ? StringManager.UppercaseFirstLetterOfAllWords(name) : "Co-Parent"} to Your Profile`}
             wrapperClass="new-parent-card"
             showCard={showCard}
             onClose={() => ResetForm()}>
@@ -108,28 +108,28 @@ const NewParentForm = ({showCard, hideCard}) => {
                 <Spacer height={5} />
                 <div id="new-parent-container" className={`${theme}`}>
                     <div className="new-parent-form">
-                        <FormDivider text={'Required'} />
+                        <FormDivider text={"Required"} />
 
-                        <InputField inputType={InputTypes.text} required={true} placeholder={'Name'} onChange={(e) => setName(e.target.value)} />
+                        <InputField inputType={InputTypes.text} required={true} placeholder={"Name"} onChange={(e) => setName(e.target.value)} />
 
-                        <FormDivider text={'Optional'} />
+                        <FormDivider text={"Optional"} />
 
                         <InputField
                             inputType={InputTypes.email}
                             inputValueType="email"
                             required={parentHasAccount}
-                            placeholder={'Email Address'}
+                            placeholder={"Email Address"}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                         <AddressInput
-                            placeholder={'Home Address'}
+                            placeholder={"Home Address"}
                             onChange={(place) => {
                                 setAddress(place)
                             }}
                         />
 
                         <div className="flex">
-                            <Label text={'Parent has an Account with Us'} />
+                            <Label text={"Parent has an Account with Us"} />
                             <ToggleButton onCheck={() => setParentHasAccount(true)} onUncheck={() => setParentHasAccount(false)} />
                         </div>
 
@@ -138,13 +138,13 @@ const NewParentForm = ({showCard, hideCard}) => {
                         {/* PARENT TYPE */}
                         <SelectDropdown
                             onSelect={(e) => setParentType(e.label)}
-                            placeholder={'Parent Type'}
+                            placeholder={"Parent Type"}
                             options={[
-                                {label: 'Biological', value: 'Biological'},
-                                {label: 'Step-Parent', value: 'Step-Parent'},
-                                {label: 'Guardian', value: 'Guardian'},
-                                {label: 'Foster', value: 'Foster'},
-                                {label: 'Adoptive', value: 'Adoptive'},
+                                {label: "Biological", value: "Biological"},
+                                {label: "Step-Parent", value: "Step-Parent"},
+                                {label: "Guardian", value: "Guardian"},
+                                {label: "Foster", value: "Foster"},
+                                {label: "Adoptive", value: "Adoptive"},
                             ]}
                         />
                     </div>

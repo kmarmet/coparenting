@@ -1,5 +1,5 @@
-@use '../utils/_variables';
-@use '../utils/_mixins';
+@use "../utils/_variables";
+@use "../utils/_mixins";
 
 #external-overrides {
     /*#region STANDARD PHONE*/
@@ -62,7 +62,7 @@
             #navbar {
                 //        padding-bottom: $homeIndicatorHeight;
             }
-            #success-alert-wrapper {
+            #banner-wrapper {
                 //        top: -$homeIndicatorHeight;
             }
             .form-wrapper {

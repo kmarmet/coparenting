@@ -377,7 +377,7 @@ const Chat = ({show, hide, recipient}) => {
                                 onClick={() => {
                                     navigator.clipboard.writeText(Manager.IsValid(activeMessage) ? activeMessage?.message : "")
                                     setShowLongPressMenu(false)
-                                    setState({...state, successAlertMessage: "Message Copied"})
+                                    setState({...state, bannerMessage: "Message Copied"})
                                 }}>
                                 Copy <IoCopy />
                             </button>
@@ -489,7 +489,7 @@ const Chat = ({show, hide, recipient}) => {
                                                 <button
                                                     id="copy"
                                                     onClick={(e) => {
-                                                        setState({...state, successAlertMessage: "Message Copied"})
+                                                        setState({...state, bannerMessage: "Message Copied"})
                                                         const parentNode = e.currentTarget.parentNode
                                                         const message = parentNode.parentNode.querySelector(".message")
                                                         navigator.clipboard.writeText(message.textContent)

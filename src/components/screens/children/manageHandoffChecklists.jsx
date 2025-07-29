@@ -60,7 +60,7 @@ export default function ManageHandoffChecklists({showCard, hideCard, activeChild
                     `${DB.tables.users}/${currentUser?.key}/children/${childKey}/checklists/${existingChecklistIndex}`,
                     existingChecklist
                 )
-                setState({...state, successAlertMessage: "Checklist Updated", refreshKey: Manager.GetUid()})
+                setState({...state, bannerMessage: "Checklist Updated", refreshKey: Manager.GetUid()})
             }
 
             // CREATE
@@ -71,7 +71,7 @@ export default function ManageHandoffChecklists({showCard, hideCard, activeChild
                         activeChild?.checklists || [],
                         newChecklist
                     )
-                    setState({...state, successAlertMessage: "Checklist Created", refreshKey: Manager.GetUid()})
+                    setState({...state, bannerMessage: "Checklist Created", refreshKey: Manager.GetUid()})
                 } else {
                     AlertManager.throwError("Please enter at least one item")
                     return false

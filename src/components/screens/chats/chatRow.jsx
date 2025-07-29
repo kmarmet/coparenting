@@ -55,7 +55,7 @@ export default function ChatRow({index, onClick, chat}) {
                 }
                 playPauseWrapper.classList.add("pause")
                 playPauseWrapper.classList.remove("resume")
-                setState({...state, currentScreen: ScreenNames.chats, successAlertMessage: "Chat Paused"})
+                setState({...state, currentScreen: ScreenNames.chats, bannerMessage: "Chat Paused"})
             })
         }
     }
@@ -71,7 +71,7 @@ export default function ChatRow({index, onClick, chat}) {
                 }
                 playPauseWrapper.classList.add("resume")
                 playPauseWrapper.classList.remove("pause")
-                setState({...state, currentScreen: ScreenNames.chats, successAlertMessage: "Chat Resumed"})
+                setState({...state, currentScreen: ScreenNames.chats, bannerMessage: "Chat Resumed"})
             })
         }
     }

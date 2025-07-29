@@ -6,7 +6,6 @@ import {FaChildren, FaEraser, FaNoteSticky} from "react-icons/fa6"
 import {MdAssistantNavigation, MdEventRepeat, MdLocalPhone} from "react-icons/md"
 import {PiLinkBold} from "react-icons/pi"
 import DatetimeFormats from "../../../constants/datetimeFormats"
-import EventCategories from "../../../constants/eventCategories"
 import InputTypes from "../../../constants/inputTypes"
 import globalState from "../../../context.js"
 import useCalendarEvents from "../../../hooks/useCalendarEvents"
@@ -36,7 +35,6 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
     // STATE
     const [eventsToIterate, setEventsToIterate] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
-    const [displayedCategories, setDisplayedCategories] = useState([])
 
     const GetRowDotColor = (dayDate) => {
         const eventsToUse = Manager.IsValid(calendarSearchResults) ? calendarSearchResults : eventsOfDay
@@ -105,7 +103,10 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
         )
     }
 
-    const GetParentCategoryIcon = (category) => [...category.matchAll(/\p{Emoji_Presentation}/gu)].pop()?.[0]
+    const GetParentCategoryIcon = (category) => {
+        if (!Manager.IsValid(category)) return
+        return [...category.matchAll(/\p{Emoji_Presentation}/gu)].pop()?.[0]
+    }
 
     useEffect(() => {
         const animateEvents = () => {
@@ -137,8 +138,6 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
             nextEvents = eventsOfDay
         }
 
-        // console.log(holidayOptions, holidays, eventsOfDay, selectedCalendarDate, calendarSearchResults)
-
         // ✅ If no valid events → clear
         if (!Manager.IsValid(nextEvents)) {
             setEventsToIterate([])
@@ -149,6 +148,8 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
         setEventsToIterate(nextEvents)
         animateEvents()
     }, [calendarSearchResults, holidayOptions?.show, holidays, eventsOfDay, selectedCalendarDate, currentScreen])
+
+    const displayedCategories = []
 
     return (
         <div className="events">
@@ -247,26 +248,26 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
                                         )}
                                     </div>
                                 </div>
+
                                 {/* CATEGORIES */}
                                 {Manager.IsValid(event?.categories) && event?.categories?.length > 0 && (
                                     <div className="categories">
-                                        {event?.categories?.map((category, index) => {
-                                            const parentCategory = CalendarManager.MapCategoryToParent(category)
-                                            console.log(parentCategory)
-                                            console.log(EventCategories[parentCategory])
-                                            const emoji = GetParentCategoryIcon(parentCategory)
-                                            // setDisplayedCategories((prev) => [...prev, category])
+                                        {(() => {
+                                            const seen = new Set()
+                                            return event?.categories?.map((category, index) => {
+                                                const parentCategory = CalendarManager.MapCategoryToParent(category)
+                                                const emoji = GetParentCategoryIcon(parentCategory)
 
-                                            if (displayedCategories.includes(category)) {
-                                                return <p key={index}></p>
-                                            } else {
+                                                if (seen.has(parentCategory)) return null
+                                                seen.add(parentCategory)
+
                                                 return (
                                                     <span key={index} className="emoji-only">
                                                         {emoji}
                                                     </span>
                                                 )
-                                            }
-                                        })}
+                                            })
+                                        })()}
                                     </div>
                                 )}
                             </div>

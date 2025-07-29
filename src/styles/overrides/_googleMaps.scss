@@ -196,12 +196,13 @@
                 @include fonts.mediumBoldFont;
 
                 svg {
-                    @include mixins.square(20px);
                     position: relative;
                     display: inline;
                     top: unset;
                     left: unset;
+                    margin-right: 5px;
                     transform: unset;
+                    @include mixins.square(18px);
                 }
             }
 

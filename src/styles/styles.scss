@@ -458,7 +458,7 @@
 
         p {
             color: palette.$primaryText;
-
+            user-select: unset;
             &.screen-intro-text {
                 color: palette.$darkestGrey;
             }
@@ -605,7 +605,7 @@
             gap: 0 30px;
             flex-wrap: wrap;
             margin-top: 0;
-            padding: 10px 0;
+            padding: 0 0 20px 0;
 
             .block {
                 padding-bottom: 0;
@@ -688,6 +688,7 @@
                 }
             }
         }
+
         .blocks {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
@@ -700,9 +701,62 @@
                 position: relative;
                 display: flex;
                 flex-direction: column;
-                padding-bottom: 15px;
+                padding-bottom: 20px;
 
                 &.full-width {
+                    margin-top: 15px;
+
+                    &.notes {
+                        background-color: #fffaf0;
+                        border-radius: variables.$bigBorderRadius;
+                        padding: 20px 15px 15px 15px;
+
+                        @include mixins.shadow;
+                        svg {
+                            color: #01e17b;
+                            position: absolute;
+                            top: -10px;
+                            right: 10px;
+                            @include mixins.square(25px);
+                        }
+                        .block-text,
+                        .block-title {
+                            color: palette.$primaryText;
+                            opacity: 1;
+                            @include fonts.lightThickerFont;
+                        }
+                        .block-text {
+                            line-height: 1.5;
+                            opacity: 0.95;
+                            @include fonts.regularFont;
+
+                            & {
+                                letter-spacing: 0.5px;
+                            }
+                        }
+                        .block-title {
+                            position: absolute;
+                            top: -18px;
+                            border-radius: 7px;
+                            width: max-content;
+                            background-color: #fffaf0;
+                            padding: 5px 20px;
+                            display: flex;
+                            color: palette.$main;
+                            @include fonts.mediumBoldFont;
+
+                            svg {
+                                color: palette.$main;
+                                top: unset;
+                                right: unset;
+                                position: unset;
+                                font-size: 19px;
+                                height: unset;
+                                width: unset;
+                            }
+                        }
+                    }
+
                     p {
                         max-width: 100%;
                         line-height: 1.3;
@@ -981,8 +1035,8 @@
             @include mixins.brandBar;
         }
 
-        #success-alert-wrapper {
-            @include mixins.successAlert;
+        #banner-wrapper {
+            @include mixins.banner;
         }
 
         #navbar {

@@ -96,7 +96,7 @@ export default function NewCalendarEvent() {
             setState({
                 ...state,
                 creationFormToShow: "",
-                successAlertMessage: showSuccessAlert ? "Event Created" : null,
+                bannerMessage: showSuccessAlert ? "Event Created" : null,
             })
         }, 10)
     }
@@ -130,7 +130,9 @@ export default function NewCalendarEvent() {
             if (Manager.IsValid(formRef.current)) {
                 //#region VALIDATION
                 if (!Manager.IsValid(formRef.current.title, true)) {
-                    AlertManager.throwError("Please add an event name")
+                    // AlertManager.throwError("Please add an event name")
+                    setState({...state, bannerMessage: "Please add an event name", bannerType: "error"})
+                    return false
                     return false
                 }
                 if (!Manager.IsValid(formRef.current.startDate)) {

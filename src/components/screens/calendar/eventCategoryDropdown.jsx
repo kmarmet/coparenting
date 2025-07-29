@@ -64,7 +64,7 @@ const EventCategoryDropdown = ({updateCategories = (category) => {}, selectedCat
                                                 onClick={(el) => {
                                                     const thisChip = el.currentTarget
                                                     thisChip.classList.toggle("active")
-                                                    updateCategories({category: type, parentCategory: catObj.parentCategory})
+                                                    updateCategories(type)
                                                 }}>
                                                 {type}
                                             </p>
