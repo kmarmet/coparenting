@@ -92,7 +92,7 @@ export default function NewExpenseForm() {
         //#region VALIDATION
 
         // Valid Accounts
-        if (currentUser?.sharedDataUsers === 0)
+        if (currentUser?.sharedDataUserKeys === 0)
             ThrowError("No valid accounts", "You have not added any co-parents. Or, it is also possible they have closed their profile.")
 
         // Pay Name

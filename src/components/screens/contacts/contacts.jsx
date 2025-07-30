@@ -17,7 +17,6 @@ import AlertManager from "../../../managers/alertManager"
 import DomManager from "../../../managers/domManager"
 import InvitationManager from "../../../managers/invitationManager"
 import Manager from "../../../managers/manager"
-import ObjectManager from "../../../managers/objectManager"
 import SmsManager from "../../../managers/smsManager"
 import StringManager from "../../../managers/stringManager"
 import Invitation from "../../../models/new/invitation"
@@ -31,6 +30,7 @@ import Screen from "../../shared/screen"
 import ScreenActionsMenu from "../../shared/screenActionsMenu"
 import ScreenHeader from "../../shared/screenHeader"
 import Spacer from "../../shared/spacer"
+import ToggleButton from "../../shared/toggleButton"
 import ViewDropdown from "../../shared/viewDropdown"
 import NewChildForm from "../children/newChildForm"
 import NewCoParentForm from "../coparents/newCoParentForm"
@@ -57,6 +57,8 @@ const Contacts = () => {
     const [view, setView] = useState([{label: "Details", value: "details"}])
     const [showMap, setShowMap] = useState(false)
     const [pressed, setPressed] = useState(false)
+    const [notificationToggleState, setNotificationToggleState] = useState(true)
+
     // REFS
     const updateObject = useRef({})
 
@@ -76,15 +78,29 @@ const Contacts = () => {
             userIndex = DB.GetIndexById(coParents, activeContact?.id)
             groupType = "coparents"
         }
+        const updatedContact = {...activeContact}
+        updatedContact[propertyPath] = inputValue
 
         // Database Update
-        const updated = ObjectManager.UpdateObjectByModel(activeContact, propertyPath, inputValue, model)
 
-        if (userIndex > -1 && Manager.IsValid(updated)) {
-            await DB.ReplaceEntireRecord(`${DB.tables.users}/${currentUser?.key}/${groupType}/${userIndex}`, updated)
+        if (userIndex > -1 && Manager.IsValid(updatedContact)) {
+            await DB.ReplaceEntireRecord(`${DB.tables.users}/${currentUser?.key}/${groupType}/${userIndex}`, updatedContact)
             setState({...state, bannerMessage: `${StringManager.GetFirstNameOnly(activeContact?.name)} updated!`})
             setShowModal(false)
         }
+    }
+
+    const ToggleNotifications = async () => {
+        const mutedUserKeys = currentUser?.mutedUserKeys
+        const updatedMutesUserKeys = mutedUserKeys || []
+        if (mutedUserKeys?.includes(activeContact?.userKey)) {
+            updatedMutesUserKeys.splice(mutedUserKeys.indexOf(activeContact?.userKey), 1)
+        } else {
+            updatedMutesUserKeys.push(activeContact?.userKey)
+        }
+        await DB.UpdateByPath(`${DB.tables.users}/${currentUser?.key}/mutedUserKeys`, updatedMutesUserKeys)
+        setState({...state, bannerMessage: `${StringManager.GetFirstNameOnly(activeContact?.name)} updated!`})
+        setShowModal(false)
     }
 
     const RemoveContact = async () => {
@@ -92,6 +108,8 @@ const Contacts = () => {
             title: `Removing ${StringManager.GetFirstNameOnly(activeContact?.name)} as a Contact`,
             html: `Doing so will <b>remove them from your contact list, along with any information stored about them and sharing permissions.</b>`,
             confirmButtonText: `I'm Sure`,
+            bg: "#c71436",
+            color: "#fff",
             showCancelButton: true,
             onConfirm: async () => {
                 // Remove co-parent
@@ -165,6 +183,24 @@ const Contacts = () => {
         }
     }
 
+    // Update Notification State Toggle
+    useEffect(() => {
+        if (Manager.IsValid(activeContact)) {
+            // Muted User Keys is Empty and Active Contact is MUTED
+            if (Manager.IsValid(currentUser?.mutedUserKeys) && currentUser?.mutedUserKeys?.includes(activeContact?.userKey)) {
+                setNotificationToggleState(false)
+            }
+            // Muted User Keys is Empty and Active Contact is UNMUTED
+            else if (Manager.IsValid(currentUser?.mutedUserKeys) && !currentUser?.mutedUserKeys?.includes(activeContact?.userKey)) {
+                setNotificationToggleState(true)
+            } else if (!Manager.IsValid(currentUser?.mutedUserKeys)) {
+                setNotificationToggleState(true)
+            } else {
+                setNotificationToggleState(true)
+            }
+        }
+    }, [activeContact, view?.label])
+
     // Remove view from the active form
     useEffect(() => {
         if (showNewCoparentCard || showNewParentCard || showNewChildCard) {
@@ -233,37 +269,31 @@ const Contacts = () => {
                 onClose={() => setShowModal(false)}
                 hideCard={() => setShowModal(false)}
                 wrapperClass="contact-form-wrapper"
-                hasSubmitButton={view[0]?.label === "Edit"}
+                hasSubmitButton={view?.label === "Edit"}
                 hasDelete={true}
                 onDelete={RemoveContact}
                 deleteButtonText={`Remove`}
                 submitText={"Update"}
-                viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={setView} />}
+                viewDropdown={<ViewDropdown hasSpacer={true} dropdownPlaceholder="Details" selectedView={view} onSelect={setView} />}
                 subtitle={`${!users?.map((x) => x?.key).includes(activeContact?.userKey) ? `${GetContactName()} has not created an account with us yet. Invite them to create an account to begin sharing with and receiving information from them.` : ""}`}
-                title={`${GetContactName()}`}
+                title={`${GetContactName()} ${Manager.IsValid(activeContact?.parentType) ? `<br/><span>${activeContact?.parentType}</span>` : ""}`}
                 showCard={showModal}>
                 {/* DETAILS */}
-                <div className={view[0]?.label === "Details" ? "views-wrapper details active" : "view-wrapper"}>
+
+                <div className={!Manager.IsValid(view?.label) || view?.label === "Details" ? "views-wrapper details active" : "view-wrapper"}>
                     <Spacer height={8} />
                     {/* BLOCKS */}
-                    <div className="blocks">
-                        <DetailBlock isCustom={true} isFullWidth={true} valueToValidate={activeContact} text={""} title={""}>
-                            <p className="custom-text in-form">
-                                Add custom information about {GetContactName()} at the&nbsp;
-                                <span className="link" onClick={() => setState({...state, currentScreen: ScreenNames.children})}>
-                                    {GetAccountType()}
-                                </span>
-                                &nbsp;page
-                            </p>
-                        </DetailBlock>
-                        <DetailBlock
-                            valueToValidate={activeContact?.relationshipToMe}
-                            text={activeContact?.relationshipToMe}
-                            title={"Relationship"}
-                        />
-                        <DetailBlock valueToValidate={activeContact?.parentType} text={activeContact?.parentType} title={"Parent Type"} />
-                    </div>
-                    <div className="blocks">
+                    <DetailBlock isCustom={true} isFullWidth={true} valueToValidate={activeContact} text={""} title={""}>
+                        <p className="custom-info-text">
+                            Add custom information about {GetContactName()} at the&nbsp;
+                            <span className="link" onClick={() => setState({...state, currentScreen: ScreenNames.children})}>
+                                {GetAccountType()}
+                            </span>
+                            &nbsp;page
+                        </p>
+                    </DetailBlock>
+                    <DetailBlock valueToValidate={activeContact?.relationshipToMe} text={activeContact?.relationshipToMe} title={"Relationship"} />
+                    <div className="multiline-blocks">
                         <DetailBlock
                             topSpacerMargin={10}
                             bottomSpacerMargin={10}
@@ -299,7 +329,24 @@ const Contacts = () => {
                 </div>
 
                 {/* EDIT */}
-                <div className={view[0]?.label === "Edit" ? "view-wrapper edit active" : "edit view-wrapper"}>
+                <div className={view?.label === "Edit" ? "view-wrapper edit active" : "edit view-wrapper"}>
+                    <Spacer height={8} />
+
+                    {GetAccountType() === "parent" && (
+                        <>
+                            <div className="notifications-toggle">
+                                <Label text={`Receive Notifications from ${GetContactName()}`} classes={"always-show toggle"} />
+                                <ToggleButton
+                                    isDefaultChecked={notificationToggleState}
+                                    onCheck={() => ToggleNotifications(true)}
+                                    onUncheck={() => ToggleNotifications(false)}
+                                />
+                            </div>
+                            <p className={"notification-disclaimer"}>If disabled, you will not receive ANY notifications from {GetContactName()}</p>
+                        </>
+                    )}
+                    <Spacer height={10} />
+
                     {/* NAME */}
                     <InputField
                         inputType={InputTypes.text}
@@ -315,6 +362,7 @@ const Contacts = () => {
                             }
                         }}
                     />
+                    <Spacer height={5} />
 
                     {/* EMAIL */}
                     {Manager.IsValid(GetContactEmail()) && (
@@ -334,6 +382,7 @@ const Contacts = () => {
                         />
                     )}
 
+                    <Spacer height={5} />
                     {/* PHONE */}
                     {Manager.IsValid(GetContactPhone()) && (
                         <InputField
@@ -373,7 +422,7 @@ const Contacts = () => {
                             </div>
                         </div>
 
-                        {/* NEW COPARENT CONTACT */}
+                        {/* NEW CO-PARENT CONTACT */}
                         <div
                             className="action-item"
                             onClick={() => {
@@ -402,7 +451,7 @@ const Contacts = () => {
                             </div>
                         </div>
 
-                        {/* MANAGE COPARENTS */}
+                        {/* MANAGE CO-PARENTS */}
                         <div
                             className="action-item"
                             onClick={() => {

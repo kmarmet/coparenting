@@ -245,31 +245,30 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
-            border-radius: variables.$cardBorderRadius;
             transition: all 0.3s ease-out;
             width: 50vw;
             height: auto;
             z-index: 99999;
-            box-shadow: variables.$boxShadow_float;
+            box-shadow: variables.$boxShadow_bottom_only_bigger;
             min-width: 60vw;
+            border-radius: variables.$bigBorderRadius;
+            background-color: #e9eaec;
 
             button {
                 &#copy,
                 &#bookmark,
                 &#cancel {
-                    background: transparent;
-                    color: black;
                     border-radius: 0;
                     text-align: center;
                     width: 100%;
-                    height: 52px;
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
                     font-size: 14px;
-                    padding: 0 10px;
+                    padding: 25px 20px;
                     border: 0;
+                    color: #767779;
+                    background-color: transparent;
 
                     svg {
                         transform: scale(1);
@@ -284,24 +283,26 @@
                     }
 
                     &#copy {
-                        background: palette.$blend;
-                        color: white;
-                        border-radius: variables.$cardBorderRadius variables.$cardBorderRadius 0 0;
+                        svg {
+                            color: palette.$blend;
+                        }
                     }
                     &#bookmark {
-                        color: white;
+                        border-top: 1px solid palette.$mediumGreyDarker;
+                        border-bottom: 1px solid palette.$mediumGreyDarker;
                         &.add {
-                            background: palette.$blendPurple;
+                            svg {
+                                color: palette.$green;
+                            }
                         }
 
                         &.remove {
-                            background: palette.$flatRed;
+                            svg {
+                                color: palette.$flatRed;
+                            }
                         }
                     }
                     &#cancel {
-                        background: palette.$grey;
-                        color: palette.$darkerGrey;
-                        border-radius: 0 0 variables.$cardBorderRadius variables.$cardBorderRadius;
                     }
                 }
             }
@@ -433,7 +434,7 @@
             padding: 105px 15px 15px 15px;
             position: relative;
             overscroll-behavior: none;
-            height: calc(100vh - 105px);
+            height: 100%;
 
             @media screen and (min-width: 800px) {
                 min-width: 10%;
@@ -617,6 +618,13 @@
 
         #emotion-and-input-field {
             max-width: 100vw;
+            padding: 0 10px 50px 10px;
+            overflow: visible;
+
+            &.with-emotion {
+                padding: 0 10px 70px 10px;
+            }
+
             #tone-wrapper {
                 width: calc(100vw - 60px);
                 bottom: 25px;
@@ -709,7 +717,8 @@
                 transition: all 0.3s ease-out;
                 display: flex;
                 justify-content: space-between;
-                padding: 0 20px 65px 20px;
+                max-width: calc(100vw - 30px);
+                margin: 0 auto;
 
                 .input-field {
                     &.chat-input {
@@ -721,11 +730,10 @@
 
                 #message-input-container {
                     width: 100vw;
-                    border-radius: variables.$borderRadius;
                     background: white;
-                    padding-right: 5px;
                     display: flex;
                     align-items: center !important;
+                    max-width: 100vw;
 
                     #send-button {
                         color: palette.$green;

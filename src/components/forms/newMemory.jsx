@@ -72,7 +72,7 @@ export default function NewMemory() {
 
         // setLoading(true)
         const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
-        const validAccounts = currentUser?.sharedDataUsers?.length
+        const validAccounts = currentUser?.sharedDataUserKeys?.length
 
         //#region VALIDATION
         // ✅ Validation helper

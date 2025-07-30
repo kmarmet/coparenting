@@ -79,14 +79,14 @@ export default function NewVisitationChangeRequest() {
 
         //#region VALIDATION
         // Valid Accounts
-        if (currentUser?.sharedDataUsers.length === 0)
+        if (currentUser?.sharedDataUserKeys.length === 0)
             ThrowError(
                 "No co-parent to \n assign requests to",
                 "It appears that you have not created any co-parents, or it is possible that they may have deactivated their profile."
             )
 
         // Share With
-        if (currentUser?.sharedDataUsers.length > 0 && !Manager.IsValid(formRef.current.shareWith))
+        if (currentUser?.sharedDataUserKeys.length > 0 && !Manager.IsValid(formRef.current.shareWith))
             ThrowError("Please choose who you would like to share this request with")
         //#endregion VALIDATION
 

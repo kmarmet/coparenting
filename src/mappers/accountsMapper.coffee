@@ -3,7 +3,7 @@ import StringManager from "../managers/stringManager"
 
 AccountsMapper =
   GetShareWithNames: (currentUser,users, shareWith) ->
-    filtered = shareWith?.filter (x) -> x != currentUser?.key && currentUser?.sharedDataUsers.includes x
+    filtered = shareWith?.filter (x) -> x != currentUser?.key && currentUser?.sharedDataUserKeys.includes x
 
     if not Manager.IsValid(filtered)
       return false

@@ -7,7 +7,7 @@ import DatasetManager from "./datasetManager"
 
 SecurityManager =
   getSharedItems: (currentUser, table) ->
-    linkedAccounts = await DB_UserScoped.getLinkedAccounts(currentUser)
+    linkedAccounts = await DB_UserScoped.GetLinkedAccounts(currentUser)
     linkedAccountKeys = linkedAccounts.accountKeys
     sharedItems = []
 

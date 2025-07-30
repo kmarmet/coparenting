@@ -583,7 +583,9 @@ const Chat = ({show, hide, recipient}) => {
                     )}
 
                     {/* EMOTION METER - MESSAGE INPUT */}
-                    <div id="emotion-and-input-field">
+                    <div
+                        id="emotion-and-input-field"
+                        className={`${Manager.IsValid(toneObject) && Manager.IsValid(messageText, true) ? "with-emotion" : ""}`}>
                         {/* EMOTION METER */}
                         <div
                             id="tone-wrapper"

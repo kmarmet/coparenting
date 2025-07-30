@@ -33,13 +33,13 @@ export default function Settings() {
 
     const SubmitCalendarSettings = async () => {
         if (DateManager.DateIsValid(morningSummaryHour)) {
-            await DB.updateByPath(
+            await DB.UpdateByPath(
                 `${DB.tables.users}/${currentUser?.key}/dailySummaries/morningReminderSummaryHour`,
                 moment(morningSummaryHour).format(DatetimeFormats.summaryHour)
             )
         }
         if (DateManager.DateIsValid(eveningSummaryHour)) {
-            await DB.updateByPath(
+            await DB.UpdateByPath(
                 `${DB.tables.users}/${currentUser?.key}/dailySummaries/eveningReminderSummaryHour`,
                 moment(eveningSummaryHour).format(DatetimeFormats.summaryHour)
             )
@@ -51,7 +51,7 @@ export default function Settings() {
         setNotificationsToggled(!notificationsToggled)
         const subscriber = await DB.find(DB.tables.updateSubscribers, ["key", currentUser.key], true)
         const {subscriptionId} = subscriber
-        await DB.updateByPath(`${DB.tables.users}/${currentUser?.key}/settings/notificationsEnabled`, !currentUser?.settings?.notificationsEnabled)
+        await DB.UpdateByPath(`${DB.tables.users}/${currentUser?.key}/settings/notificationsEnabled`, !currentUser?.settings?.notificationsEnabled)
         if (notificationsToggled === true) {
             await UpdateManager.enableNotifications(subscriptionId)
         } else {

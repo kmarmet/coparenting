@@ -50,7 +50,7 @@ export default function Memories() {
             const memoryKey = DB.GetIndexById(memories, record?.id)
             if (Manager.IsValid(memoryKey)) {
                 const updatedShareWith = record.shareWith.filter((x) => x?.owner?.key !== currentUser?.key)
-                await DB.updateByPath(`${DB.tables.memories}/${record?.ownerKey}/${memoryKey}/shareWith`, updatedShareWith)
+                await DB.UpdateByPath(`${DB.tables.memories}/${record?.ownerKey}/${memoryKey}/shareWith`, updatedShareWith)
             }
         }
         setState({...state, bannerMessage: "Memory Deleted", refreshKey: Manager.GetUid()})

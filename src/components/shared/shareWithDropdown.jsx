@@ -1,11 +1,11 @@
 // Path: src\components\shared\shareWithCheckboxes.jsx
-import React, {useContext, useEffect, useState} from 'react'
-import globalState from '../../context'
-import useCurrentUser from '../../hooks/useCurrentUser'
-import useUsers from '../../hooks/useUsers'
-import DropdownManager from '../../managers/dropdownManager'
-import Manager from '../../managers/manager'
-import SelectDropdown from './selectDropdown'
+import React, {useContext, useEffect, useState} from "react"
+import globalState from "../../context"
+import useCurrentUser from "../../hooks/useCurrentUser"
+import useUsers from "../../hooks/useUsers"
+import DropdownManager from "../../managers/dropdownManager"
+import Manager from "../../managers/manager"
+import SelectDropdown from "./selectDropdown"
 
 export default function ShareWithDropdown({selectedValues = [], onSelect = (e) => {}}) {
     const {state, setState} = useContext(globalState)
@@ -16,8 +16,8 @@ export default function ShareWithDropdown({selectedValues = [], onSelect = (e) =
     const [selected, setSelected] = useState([])
 
     const SetShareWithUsers = async () => {
-        const sharedDataUsers = currentUser?.sharedDataUsers
-        const sharedDataUsersAccounts = users?.filter((x) => sharedDataUsers?.includes(x.key))
+        const sharedDataUserKeys = currentUser?.sharedDataUserKeys
+        const sharedDataUsersAccounts = users?.filter((x) => sharedDataUserKeys?.includes(x.key))
         let options = []
         options = DropdownManager.GetDefault.ShareWith(sharedDataUsersAccounts)
         setDropdownOptions(options)

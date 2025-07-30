@@ -2357,13 +2357,13 @@ $shadows-big: multiple-box-shadow(100);
             padding-left: 50px;
         }
 
-        &[type="tel"] {
-            color: palette.$transWhite !important;
-
-            &::placeholder {
-                color: palette.$transWhite !important;
-            }
-        }
+        //&[type="tel"] {
+        //    color: palette.$transWhite !important;
+        //
+        //    &::placeholder {
+        //        color: palette.$transWhite !important;
+        //    }
+        //}
 
         &::placeholder {
             font-style: italic;
@@ -3456,6 +3456,7 @@ $shadows-big: multiple-box-shadow(100);
                     margin: 0 auto;
                     text-decoration: none;
                     opacity: 1;
+                    line-height: 1;
                     @include fonts.mediumBoldFont;
 
                     &.active {
@@ -3466,7 +3467,18 @@ $shadows-big: multiple-box-shadow(100);
 
                     &.long-title {
                         align-items: flex-start;
-                        //@include ellipsis;
+                        line-height: 1.3;
+                    }
+
+                    span {
+                        font-size: 18px;
+                        color: white;
+                        margin: 0;
+                        padding: 0;
+                        white-space: nowrap;
+                        line-height: 1;
+                        opacity: 0.6;
+                        font-weight: variables.$fwRegular;
                     }
 
                     .svg-wrapper {
@@ -3914,9 +3926,15 @@ $shadows-big: multiple-box-shadow(100);
 
     // CONTACTS
     &.contact-form-wrapper {
-        .views-wrapper {
+        .view-wrapper {
+            .notifications-toggle {
+                display: flex;
+                max-width: calc(100% - 20px);
+                margin: 0 auto;
+            }
             .blocks {
                 display: block;
+
                 .block {
                     &.full-width {
                         width: 100% !important;
@@ -3924,13 +3942,27 @@ $shadows-big: multiple-box-shadow(100);
                 }
             }
         }
-        .custom-text {
-            &.in-form {
-                padding-left: 10px;
-                text-align: center;
-                white-space: normal;
-                line-height: 1.5;
-                max-width: 85%;
+        .custom-info-text,
+        .notification-disclaimer {
+            color: white;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.5;
+            max-width: 90%;
+            margin: 0 auto;
+
+            &.notification-disclaimer {
+                text-align: left;
+                max-width: 80%;
+                margin: 0 0 0 10px;
+                font-size: 14px;
+                opacity: 0.6;
+            }
+
+            span {
+                color: palette.$formLinkColor;
+                text-transform: capitalize;
+                border-bottom: 1px solid palette.$formLinkColor;
             }
         }
     }

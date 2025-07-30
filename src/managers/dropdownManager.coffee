@@ -100,7 +100,7 @@ DropdownManager =
 
     ShareWith: (currentUser) ->
       options = []
-      validAccounts = await DB_UserScoped.getValidAccountsForUser(currentUser)
+      validAccounts = await DB_UserScoped.GetValidAccountsForUser(currentUser)
       if Manager.IsValid(validAccounts)
         for account in validAccounts
           if Manager.IsValid(account) and (Manager.IsValid(account.userKey) or Manager.IsValid(account.key))

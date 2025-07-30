@@ -12,7 +12,8 @@ class User
     @phone =  options?.phone ? ''
     @children =   options?.children ?  []
     @coparents = options?.coparents ? []
-    @sharedDataUsers = options?.sharedDataUsers ? []
+    @sharedDataUserKeys = options?.sharedDataUserKeys ? []
+    @mutedUserKeys = options?.mutedUserKeys ? []
     @parentType = options?.parentType ? ''
     @accountType = options?.accountType ? ''
     @homeAddress = options?.homeAddress ? ''

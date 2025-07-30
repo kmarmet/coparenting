@@ -244,9 +244,9 @@ export default function Registration() {
                         childToAdd.general = general
                         childToAdd.userKey = currentUserToUse?.key
 
-                        // Add child key to parent sharedDataUsers
-                        const updatedSharedDataUsers = DatasetManager.AddToArray(existingParentAccount?.sharedDataUsers, currentUserToUse?.key)
-                        await DB.updateByPath(`${DB.tables.users}/${existingParentAccount?.key}/sharedDataUsers`, updatedSharedDataUsers)
+                        // Add child key to parent sharedDataUserKeys
+                        const updatedSharedDataUsers = DatasetManager.AddToArray(existingParentAccount?.sharedDataUserKeys, currentUserToUse?.key)
+                        await DB.UpdateByPath(`${DB.tables.users}/${existingParentAccount?.key}/sharedDataUserKeys`, updatedSharedDataUsers)
 
                         // Add child to parent's children array
                         const cleanChild = ObjectManager.GetModelValidatedObject(childToAdd, ModelNames.child)
@@ -258,7 +258,7 @@ export default function Registration() {
                         const existingChildKey = DB.GetChildIndex(currentUserToUse?.children, existingChild?.id)
 
                         if (Manager.IsValid(existingChildKey)) {
-                            await DB.updateByPath(
+                            await DB.UpdateByPath(
                                 `${DB.tables.users}/${existingParentAccount?.key}/children/${existingChildKey}/userKey/${currentUserToUse?.key}`,
                                 existingChild
                             )
@@ -275,7 +275,7 @@ export default function Registration() {
                     const cleanParent = ObjectManager.GetModelValidatedObject(newParent, ModelNames.parent)
                     await DB_UserScoped.AddParent(currentUserToUse, cleanParent)
                     await DB_UserScoped.updateUserRecord(currentUserToUse?.key, "parentAccessGranted", true)
-                    await DB_UserScoped.updateUserRecord(currentUserToUse?.key, "sharedDataUsers", [existingParentAccount?.key])
+                    await DB_UserScoped.updateUserRecord(currentUserToUse?.key, "sharedDataUserKeys", [existingParentAccount?.key])
                     localStorage.removeItem("pcp_registration_started")
                     setActiveStep(Steps.Onboarding)
                 } else {

@@ -10,5 +10,6 @@ class CoParent
     @address = options?.address ? ''
     @relationship = options?.relationship ? ''
     @email = options?.email ? ''
+    @notificationsEnabled = options?.notificationsEnabled ? true
 
 export default CoParent

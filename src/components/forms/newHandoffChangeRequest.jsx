@@ -71,7 +71,7 @@ export default function NewHandoffChangeRequest() {
     const Submit = async () => {
         //#region VALIDATION
         // Valid Accounts
-        if (currentUser?.sharedDataUsers === 0)
+        if (currentUser?.sharedDataUserKeys === 0)
             ThrowError(
                 "No Co-Parents",
                 "It appears that you have not created any co-parents, or it is possible that they may have deactivated their profile."
@@ -87,7 +87,7 @@ export default function NewHandoffChangeRequest() {
         if (!Manager.IsValid(formRef.current.startDate)) return ThrowError("Please choose the day of the requested handoff change")
 
         // Share With
-        if (currentUser?.sharedDataUsers > 0 && !Manager.IsValid(formRef.current.shareWith))
+        if (currentUser?.sharedDataUserKeys > 0 && !Manager.IsValid(formRef.current.shareWith))
             ThrowError("Please choose who you would like to share this request with")
         //#endregion VALIDATION
 
