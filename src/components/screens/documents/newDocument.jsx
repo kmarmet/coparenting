@@ -72,7 +72,7 @@ export default function NewDocument() {
     const Upload = async () => {
         try {
             setState({...state, isLoading: true})
-            if (doc === null || doc === undefined) ThrowError("Please select a document to upload")
+            if (doc === null || doc === undefined) return ThrowError("Please select a document to upload")
 
             let docNameToUse = ""
 
@@ -86,11 +86,11 @@ export default function NewDocument() {
             //#region VALIDATION
 
             // Doc Type
-            if (!Manager.IsValid(docType, true)) ThrowError("Please choose a type for this document")
+            if (!Manager.IsValid(docType, true)) return ThrowError("Please choose a type for this document")
 
             // Check for existing document
             const existingDocument = documents.find((doc) => doc?.documentName === docName && doc?.ownerKey === currentUser.key)
-            if (Manager.IsValid(existingDocument)) ThrowError("A document with that name already exists")
+            if (Manager.IsValid(existingDocument)) return ThrowError("A document with that name already exists")
             //#endregion VALIDATION
 
             let imageUrl = ""

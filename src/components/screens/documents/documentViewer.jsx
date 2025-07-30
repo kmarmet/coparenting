@@ -626,7 +626,6 @@ export default function DocumentViewer() {
                 </div>
 
                 {/* DOCUMENT IMAGE */}
-
                 {docToView?.documentType === "image" && Manager.IsValid(docToView) && (
                     <div className={"action-item image"} onClick={() => setShowSlideshow(true)}>
                         <div className="content">
@@ -653,7 +652,7 @@ export default function DocumentViewer() {
                     {/* SCREEN CONTENT - DOC TEXT */}
                     <div className="screen-content document-viewer">
                         {Manager.IsValid(processedHTML, true) && <div id="doc-text" dangerouslySetInnerHTML={{__html: processedHTML}} />}
-                        {!Manager.IsValid(processedHTML, true) && <InlineLoadingSpinner />}
+                        {!Manager.IsValid(processedHTML, true) && <InlineLoadingSpinner wrapperClasses={"documents"} />}
                     </div>
 
                     {/* CLOSE SEARCH BUTTON */}

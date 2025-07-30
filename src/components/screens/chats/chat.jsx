@@ -89,13 +89,65 @@ const Chat = ({show, hide, recipient}) => {
         }
     }
 
+    const ThrowError = (title, message = "") => {
+        AlertManager.throwError(title, message)
+        return false
+    }
+
     const SendMessage = async () => {
-        console.log(toneObject?.tone)
-        // Validate message
-        if (!Manager.IsValid(messageText, true) || messageText.length <= 1) {
-            AlertManager.throwError("Please enter a message longer than one character (letter, number, or symbol)")
-            return
+        const Send = async () => {
+            // Close Keyboard -> hide message input
+            HideKeyboard()
+
+            // Clear input field (if using uncontrolled input)
+            const input = document.querySelector(".message-input")
+            if (input) input.value = ""
+
+            // Extract common sender/recipient data
+            const {name: senderName, key: senderKey, location} = currentUser ?? {}
+            const {name: recipientName, key: recipientKey} = recipient ?? {}
+
+            const sender = {name: senderName, key: senderKey}
+
+            // Build ChatMessage
+            const chatMessage = new ChatMessage()
+            chatMessage.sender = {
+                ...sender,
+                timezone: location?.timezone ?? "UTC",
+            }
+            chatMessage.recipient = {
+                name: recipientName,
+                key: recipientKey,
+            }
+            chatMessage.message = StringManager.SanitizeString(messageText)
+
+            // Insert message into existing or new chat
+            if (Manager.IsValid(chat)) {
+                await ChatManager.InsertChatMessage(chat?.id, chatMessage)
+            } else {
+                const newChatUid = await ChatManager.CreateAndInsertChat(sender, chatMessage.recipient)
+                await ChatManager.InsertChatMessage(newChatUid, chatMessage)
+            }
+
+            // Send notification if recipient isn't paused
+            if (!chat.isPausedFor?.includes(recipientKey)) {
+                UpdateManager.SendUpdate(
+                    "🗯️ New Message",
+                    `${StringManager.GetFirstNameOnly(senderName ?? "Someone")} Messaged You`,
+                    recipientKey,
+                    currentUser,
+                    ActivityCategory.chats
+                )
+            }
+
+            // Reset message UI state
+            setMessageText("")
+            setTimeout(() => setToneObject(null), 300)
+            ScrollToLatestMessage()
         }
+        // Validate message
+        if (!Manager.IsValid(messageText, true) || messageText.length <= 1)
+            return ThrowError("Check Your Message", "Please enter a message longer than one character (letter, number, or symbol)")
 
         if (toneObject?.tone === "angry") {
             AlertManager.confirmAlert({
@@ -104,56 +156,11 @@ const Chat = ({show, hide, recipient}) => {
                 bg: "#c71436",
                 color: "white",
                 onConfirm: async () => {
-                    // Close Keyboard -> hide message input
-                    HideKeyboard()
-
-                    // Clear input field (if using uncontrolled input)
-                    const input = document.querySelector(".message-input")
-                    if (input) input.value = ""
-
-                    // Extract common sender/recipient data
-                    const {name: senderName, key: senderKey, location} = currentUser ?? {}
-                    const {name: recipientName, key: recipientKey} = recipient ?? {}
-
-                    const sender = {name: senderName, key: senderKey}
-
-                    // Build ChatMessage
-                    const chatMessage = new ChatMessage()
-                    chatMessage.sender = {
-                        ...sender,
-                        timezone: location?.timezone ?? "UTC",
-                    }
-                    chatMessage.recipient = {
-                        name: recipientName,
-                        key: recipientKey,
-                    }
-                    chatMessage.message = StringManager.SanitizeString(messageText)
-
-                    // Insert message into existing or new chat
-                    if (Manager.IsValid(chat)) {
-                        await ChatManager.InsertChatMessage(chat?.id, chatMessage)
-                    } else {
-                        const newChatUid = await ChatManager.CreateAndInsertChat(sender, chatMessage.recipient)
-                        await ChatManager.InsertChatMessage(newChatUid, chatMessage)
-                    }
-
-                    // Send notification if recipient isn't paused
-                    if (!chat?.isPausedFor?.includes(recipientKey)) {
-                        UpdateManager.SendUpdate(
-                            "🗯️ New Message",
-                            `${StringManager.GetFirstNameOnly(senderName ?? "Someone")} Messaged You`,
-                            recipientKey,
-                            currentUser,
-                            ActivityCategory.chats
-                        )
-                    }
-
-                    // Reset message UI state
-                    setMessageText("")
-                    setTimeout(() => setToneObject(null), 300)
-                    ScrollToLatestMessage()
+                    await Send()
                 },
             })
+        } else {
+            await Send()
         }
     }
 
@@ -170,7 +177,7 @@ const Chat = ({show, hide, recipient}) => {
         setBookmarks(bookmarkRecords)
         // Set bookmarks
         if (Manager.IsValid(bookmarkRecords)) {
-            let bookmarksToLoop = chatMessages.filter((x) => bookmarkedRecordIds.includes(x.id))
+            let bookmarksToLoop = chatMessages.filter((x) => bookmarkedRecordIds?.includes(x.id))
             setBookmarkedMessagesToIterate(bookmarksToLoop)
         } else {
             setShowBookmarks(false)
@@ -334,11 +341,9 @@ const Chat = ({show, hide, recipient}) => {
                 showCard={showSearchCard}
                 showOverlay={false}
                 onSubmit={() => {
-                    if (searchInputQuery.length === 0) {
-                        AlertManager.throwError("Please enter a search value")
-                        return false
-                    }
+                    if (searchInputQuery.length === 0) return ThrowError("Please enter a search word or phrase")
                     const results = messagesToLoop?.filter((x) => x.message.toLowerCase().indexOf(searchInputQuery.toLowerCase()) > -1) || []
+
                     setBookmarkedMessagesToIterate([])
                     setSearchResults(results)
                     setSearchInputQuery("")
@@ -578,17 +583,17 @@ const Chat = ({show, hide, recipient}) => {
                     )}
 
                     {/* EMOTION METER - MESSAGE INPUT */}
-                    {Manager.IsValid(chat) && !chat?.isPausedFor.includes(currentUser?.key) && (
-                        <div id="emotion-and-input-field">
-                            {/* EMOTION METER */}
-                            <div
-                                id="tone-wrapper"
-                                className={`${toneObject?.color} ${Manager.IsValid(toneObject) && Manager.IsValid(messageText, true) ? "active" : ""}`}>
-                                <span className="emotion-text">EMOTION</span>
-                                <span className="icon">{toneObject?.icon}</span>
-                                <span className="tone">{StringManager.UppercaseFirstLetterOfAllWords(toneObject?.tone)}</span>
-                            </div>
-                            {/* MESSAGE INPUT & SEND BUTTON */}
+                    <div id="emotion-and-input-field">
+                        {/* EMOTION METER */}
+                        <div
+                            id="tone-wrapper"
+                            className={`${toneObject?.color} ${Manager.IsValid(toneObject) && Manager.IsValid(messageText, true) ? "active" : ""}`}>
+                            <span className="emotion-text">EMOTION</span>
+                            <span className="icon">{toneObject?.icon}</span>
+                            <span className="tone">{StringManager.UppercaseFirstLetterOfAllWords(toneObject?.tone)}</span>
+                        </div>
+                        {/* MESSAGE INPUT & SEND BUTTON */}
+                        {Manager.IsValid(chat) && !chat?.isPausedFor?.includes(currentUser?.key) && (
                             <div
                                 className={`message-input-field ${inputIsActive ? "active" : ""}`}
                                 onFocus={(e) => e.target.classList.add("active")}
@@ -618,10 +623,10 @@ const Chat = ({show, hide, recipient}) => {
                                     )}
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
-                    {Manager.IsValid(chat) && chat?.isPausedFor.includes(currentUser?.key) && (
+                    {Manager.IsValid(chat) && chat?.isPausedFor?.includes(currentUser?.key) && (
                         <p id={"chat-paused-message"}>Chat Paused - Read Only</p>
                     )}
 

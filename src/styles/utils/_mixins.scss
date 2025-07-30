@@ -1116,7 +1116,7 @@ $shadows-big: multiple-box-shadow(100);
     top: 0;
     width: 100vw;
     background: palette.$greenForWhiteText;
-    padding: 50px 12px 15px 12px;
+    padding: 60px 12px 15px 12px;
     bottom: 0;
     transition: all 2s cubic-bezier(0.17, 0.67, 0.21, 0.95);
     pointer-events: none;
@@ -2934,6 +2934,11 @@ $shadows-big: multiple-box-shadow(100);
         transition: all 0.4s ease;
     }
 
+    &.submitting {
+        filter: grayscale(50%);
+        pointer-events: none;
+    }
+
     .close-dropdown-button {
         position: fixed !important;
         bottom: 110px;
@@ -3010,7 +3015,6 @@ $shadows-big: multiple-box-shadow(100);
         display: flex;
         align-items: center;
         justify-content: center;
-
         @include mainColorsGradient;
 
         &.active {
@@ -3561,17 +3565,15 @@ $shadows-big: multiple-box-shadow(100);
 
     // NEW CHAT
     &.new-chat {
-        .content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 30px;
+        .content-wrapper {
             #coParent-names {
                 display: flex;
-                overflow: auto;
-                border-radius: 100%;
-                @include bestShadow;
                 margin: 20px 0 80px 0;
+                justify-content: center;
+                gap: 40px;
+                padding: 20px 0;
+                overflow: visible;
+
                 .coParent-name {
                     height: 100px;
                     width: 100px;
@@ -3579,10 +3581,11 @@ $shadows-big: multiple-box-shadow(100);
                     background: white;
                     display: flex;
                     font-size: 20px;
-                    font-weight: variables.$fwRegular;
                     align-items: center;
                     justify-content: center;
                     color: palette.$blend;
+                    box-shadow: variables.$boxShadow_bottom_only_bigger;
+                    @include fonts.mediumFont;
                 }
             }
         }

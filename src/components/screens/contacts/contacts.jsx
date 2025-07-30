@@ -88,11 +88,12 @@ const Contacts = () => {
     }
 
     const RemoveContact = async () => {
-        AlertManager.confirmAlert(
-            `Are you sure you want to remove ${StringManager.GetFirstNameOnly(activeContact?.name)} as a contact? \n\n Doing so will <b>remove them from your contact list, along with any information stored about them and sharing permissions.</b>`,
-            `I'm Sure`,
-            true,
-            async () => {
+        AlertManager.confirmAlert({
+            title: `Removing ${StringManager.GetFirstNameOnly(activeContact?.name)} as a Contact`,
+            html: `Doing so will <b>remove them from your contact list, along with any information stored about them and sharing permissions.</b>`,
+            confirmButtonText: `I'm Sure`,
+            showCancelButton: true,
+            onConfirm: async () => {
                 // Remove co-parent
                 if (currentUser?.accountType === "parent" && activeContact?.accountType === "parent") {
                     let toRemove = coParents?.find((x) => x.id === activeContact?.id)
@@ -127,8 +128,8 @@ const Contacts = () => {
                 setShowNewParentCard(false)
                 setShowNewCoparentCard(false)
                 setShowModal(false)
-            }
-        )
+            },
+        })
     }
 
     const GetContactName = () => {
@@ -520,7 +521,7 @@ const Contacts = () => {
                                                 style={{
                                                     backgroundImage: Manager.IsValid(contact?.profilePic) ? `url(${contact?.profilePic})` : "",
                                                 }}
-                                                className={`contact-card ${pressed ? "pressed" : ""} ${DomManager.Animate.FadeInUp(contact, ".contact-card")}`}
+                                                className={`contact-card ${pressed ? "pressed" : ""} ${DomManager.Animate.FadeInUp(contact, ".contact-card")}${Manager.IsValid(contact?.profilePic) ? "" : " no-pic"}`}
                                                 key={index}>
                                                 <div className="header">
                                                     {/*<div*/}
@@ -532,7 +533,7 @@ const Contacts = () => {
                                                     {/*        <span>{StringManager.GetFirstNameOnly(contact?.general?.name)[0]} </span>*/}
                                                     {/*    )}*/}
                                                     {/*</div>*/}
-                                                    <p className="contact-card-name">{contact?.general?.name}</p>
+                                                    <p className="contact-card-name">{StringManager.GetFirstNameOnly(contact?.general?.name)}</p>
                                                 </div>
                                             </div>
                                         )

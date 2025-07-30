@@ -15,208 +15,208 @@ import useCurrentUser from "../../hooks/useCurrentUser"
 import ChatManager from "../../managers/chatManager"
 import DomManager from "../../managers/domManager"
 import Manager from "../../managers/manager"
+import Spacer from "./spacer"
 
 const CreationMenu = () => {
-      const {state, setState} = useContext(globalState)
-      const {selectedCalendarDate, showCreationMenu, refreshKey} = state
-      const {chats} = useChats()
-      const [showChatAction, setShowChatAction] = useState(false)
-      const {currentUser} = useCurrentUser()
+    const {state, setState} = useContext(globalState)
+    const {selectedCalendarDate, showCreationMenu, refreshKey} = state
+    const {chats} = useChats()
+    const [showChatAction, setShowChatAction] = useState(false)
+    const {currentUser} = useCurrentUser()
 
-      const handlers = useSwipeable({
-            swipeDuration: 300,
-            preventScrollOnSwipe: true,
-            onSwipedDown: () => {
-                  setState({...state, showCreationMenu: false, showOverlay: false})
-            },
-      })
+    const handlers = useSwipeable({
+        swipeDuration: 300,
+        preventScrollOnSwipe: true,
+        onSwipedDown: () => {
+            setState({...state, showCreationMenu: false, showOverlay: false})
+        },
+    })
 
-      const CheckIfChatsShouldBeShown = async () => {
-            const chattableKeys = await ChatManager.GetInactiveChatKeys(currentUser, chats).then((r) => r)
-            if (Manager.IsValid(chattableKeys)) {
-                  setShowChatAction(true)
-            } else {
-                  setShowChatAction(false)
-            }
-      }
+    const CheckIfChatsShouldBeShown = async () => {
+        const chattableKeys = await ChatManager.GetInactiveChatKeys(currentUser, chats).then((r) => r)
+        if (Manager.IsValid(chattableKeys)) {
+            setShowChatAction(true)
+        } else {
+            setShowChatAction(false)
+        }
+    }
 
-      useEffect(() => {
-            if (Manager.IsValid(chats)) {
-                  CheckIfChatsShouldBeShown().then((r) => r)
-            }
-      }, [chats, showCreationMenu])
+    useEffect(() => {
+        CheckIfChatsShouldBeShown().then((r) => r)
+    }, [chats, showCreationMenu])
 
-      return (
-            <div className={`bottom-card-wrapper creation-menu-wrapper${showCreationMenu ? " active" : ""}`}>
-                  <div key={refreshKey} {...handlers} style={DomManager.AnimateDelayStyle(1, 0)} className={`creation-card bottom-card`}>
-                        <div className="action-items centered">
-                              <p className="bottom-card-title">Create & Share</p>
-                              {/* CALENDAR */}
-                              <div
-                                    style={DomManager.AnimateDelayStyle(1)}
-                                    className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
-                                    onClick={() => {
-                                          setState({
-                                                ...state,
-                                                showCreationMenu: false,
-                                                showOverlay: false,
-                                                creationFormToShow: CreationForms.calendar,
-                                                selectedCalendarDate: selectedCalendarDate,
-                                          })
-                                    }}>
-                                    <div className="content">
-                                          <p className="calendar">Calendar Event</p>
-                                          <div className="svg-wrapper calendar">
-                                                <BsCalendarWeekFill className={"calendar"} />
-                                          </div>
-                                    </div>
-                              </div>
-
-                              {currentUser?.accountType === "parent" && (
-                                    <>
-                                          {/* EXPENSE */}
-                                          <div
-                                                style={DomManager.AnimateDelayStyle(2)}
-                                                className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
-                                                onClick={() => {
-                                                      setState({
-                                                            ...state,
-                                                            showCreationMenu: false,
-                                                            showOverlay: false,
-                                                            creationFormToShow: CreationForms.expense,
-                                                      })
-                                                }}>
-                                                <div className="content">
-                                                      <p className="expense">Expense</p>
-                                                      <div className="svg-wrapper expense">
-                                                            <FaDonate className={"expense"} />
-                                                      </div>
-                                                </div>
-                                          </div>
-
-                                          {/* TRANSFER */}
-                                          <div
-                                                style={DomManager.AnimateDelayStyle(2.2)}
-                                                className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
-                                                onClick={() => {
-                                                      setState({
-                                                            ...state,
-                                                            showCreationMenu: false,
-                                                            showOverlay: false,
-                                                            creationFormToShow: CreationForms.handoffChangeRequest,
-                                                      })
-                                                }}>
-                                                <div className="content">
-                                                      <p className="handoff">Handoff Change Request</p>
-                                                      <div className="svg-wrapper handoff">
-                                                            <RiMapPinTimeFill className={"handoff"} />
-                                                      </div>
-                                                </div>
-                                          </div>
-
-                                          {/* SWAPS */}
-                                          <div
-                                                style={DomManager.AnimateDelayStyle(2.4)}
-                                                className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
-                                                onClick={() => {
-                                                      setState({
-                                                            ...state,
-                                                            showCreationMenu: false,
-                                                            showOverlay: false,
-                                                            creationFormToShow: CreationForms.visitationChangeRequest,
-                                                      })
-                                                }}>
-                                                <div className="content">
-                                                      <p className="visitation">Visitation Change Request</p>
-                                                      <div className="svg-wrapper visitation">
-                                                            <MdSwapHorizontalCircle className={"visitation"} />
-                                                      </div>
-                                                </div>
-                                          </div>
-                                    </>
-                              )}
-
-                              {/* MEMORY */}
-                              <div
-                                    style={DomManager.AnimateDelayStyle(2.6)}
-                                    className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
-                                    onClick={() => {
-                                          setState({
-                                                ...state,
-                                                showCreationMenu: false,
-                                                showOverlay: false,
-                                                creationFormToShow: CreationForms.memories,
-                                          })
-                                    }}>
-                                    <div className="content">
-                                          <p className="memory-icon">Memory</p>
-                                          <div className="svg-wrapper memory">
-                                                <IoMdPhotos className={"memory"} />
-                                          </div>
-                                    </div>
-                              </div>
-
-                              {currentUser?.accountType === "parent" && (
-                                    <>
-                                          {/* CHAT */}
-                                          {showChatAction === true && (
-                                                <div
-                                                      style={DomManager.AnimateDelayStyle(2.8)}
-                                                      className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
-                                                      onClick={() => {
-                                                            setState({
-                                                                  ...state,
-                                                                  showCreationMenu: false,
-                                                                  showOverlay: false,
-                                                                  currentScreen: ScreenNames.chats,
-                                                                  creationFormToShow: CreationForms.chat,
-                                                            })
-                                                      }}>
-                                                      <div className="content">
-                                                            <p className="chat">Chat</p>
-                                                            <div className="svg-wrapper chat">
-                                                                  <IoChatbubbles className={"chat"} />
-                                                            </div>
-                                                      </div>
-                                                </div>
-                                          )}
-
-                                          {/* DOCS */}
-                                          <div
-                                                style={DomManager.AnimateDelayStyle(3)}
-                                                className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
-                                                onClick={() => {
-                                                      setState({
-                                                            ...state,
-                                                            showCreationMenu: false,
-                                                            showOverlay: false,
-                                                            creationFormToShow: CreationForms.documents,
-                                                      })
-                                                }}>
-                                                <div className="content">
-                                                      <p className="document">Document Upload</p>
-                                                      <div className="svg-wrapper document">
-                                                            <FaFileUpload className={"document"} />
-                                                      </div>
-                                                </div>
-                                          </div>
-                                    </>
-                              )}
-                              <div
-                                    style={DomManager.AnimateDelayStyle(3.5)}
-                                    onClick={() => setState({...state, showOverlay: false, showCreationMenu: false})}
-                                    className={`action-item close ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}>
-                                    <div className="content">
-                                          <p className="close">Close</p>
-                                          <div className="svg-wrapper close">
-                                                <FaArrowDown className={"close"} />
-                                          </div>
-                                    </div>
-                              </div>
+    return (
+        <div className={`bottom-card-wrapper creation-menu-wrapper${showCreationMenu ? " active" : ""}`}>
+            <div key={refreshKey} {...handlers} style={DomManager.AnimateDelayStyle(1, 0)} className={`creation-card bottom-card`}>
+                <div className="action-items centered">
+                    <p className="bottom-card-title">Create & Share</p>
+                    <Spacer height={4} />
+                    {/* CALENDAR */}
+                    <div
+                        style={DomManager.AnimateDelayStyle(1)}
+                        className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
+                        onClick={() => {
+                            setState({
+                                ...state,
+                                showCreationMenu: false,
+                                showOverlay: false,
+                                creationFormToShow: CreationForms.calendar,
+                                selectedCalendarDate: selectedCalendarDate,
+                            })
+                        }}>
+                        <div className="content">
+                            <p className="calendar">Calendar Event</p>
+                            <div className="svg-wrapper calendar">
+                                <BsCalendarWeekFill className={"calendar"} />
+                            </div>
                         </div>
-                  </div>
+                    </div>
+
+                    {currentUser?.accountType === "parent" && (
+                        <>
+                            {/* EXPENSE */}
+                            <div
+                                style={DomManager.AnimateDelayStyle(2)}
+                                className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
+                                onClick={() => {
+                                    setState({
+                                        ...state,
+                                        showCreationMenu: false,
+                                        showOverlay: false,
+                                        creationFormToShow: CreationForms.expense,
+                                    })
+                                }}>
+                                <div className="content">
+                                    <p className="expense">Expense</p>
+                                    <div className="svg-wrapper expense">
+                                        <FaDonate className={"expense"} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* TRANSFER */}
+                            <div
+                                style={DomManager.AnimateDelayStyle(2.2)}
+                                className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
+                                onClick={() => {
+                                    setState({
+                                        ...state,
+                                        showCreationMenu: false,
+                                        showOverlay: false,
+                                        creationFormToShow: CreationForms.handoffChangeRequest,
+                                    })
+                                }}>
+                                <div className="content">
+                                    <p className="handoff">Handoff Change Request</p>
+                                    <div className="svg-wrapper handoff">
+                                        <RiMapPinTimeFill className={"handoff"} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* SWAPS */}
+                            <div
+                                style={DomManager.AnimateDelayStyle(2.4)}
+                                className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
+                                onClick={() => {
+                                    setState({
+                                        ...state,
+                                        showCreationMenu: false,
+                                        showOverlay: false,
+                                        creationFormToShow: CreationForms.visitationChangeRequest,
+                                    })
+                                }}>
+                                <div className="content">
+                                    <p className="visitation">Visitation Change Request</p>
+                                    <div className="svg-wrapper visitation">
+                                        <MdSwapHorizontalCircle className={"visitation"} />
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {/* MEMORY */}
+                    <div
+                        style={DomManager.AnimateDelayStyle(2.6)}
+                        className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
+                        onClick={() => {
+                            setState({
+                                ...state,
+                                showCreationMenu: false,
+                                showOverlay: false,
+                                creationFormToShow: CreationForms.memories,
+                            })
+                        }}>
+                        <div className="content">
+                            <p className="memory-icon">Memory</p>
+                            <div className="svg-wrapper memory">
+                                <IoMdPhotos className={"memory"} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {currentUser?.accountType === "parent" && (
+                        <>
+                            {/* CHAT */}
+                            {showChatAction === true && (
+                                <div
+                                    style={DomManager.AnimateDelayStyle(2.8)}
+                                    className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
+                                    onClick={() => {
+                                        setState({
+                                            ...state,
+                                            showCreationMenu: false,
+                                            showOverlay: false,
+                                            currentScreen: ScreenNames.chats,
+                                            creationFormToShow: CreationForms.chat,
+                                        })
+                                    }}>
+                                    <div className="content">
+                                        <p className="chat">Chat</p>
+                                        <div className="svg-wrapper chat">
+                                            <IoChatbubbles className={"chat"} />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* DOCS */}
+                            <div
+                                style={DomManager.AnimateDelayStyle(3)}
+                                className={`action-item ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}
+                                onClick={() => {
+                                    setState({
+                                        ...state,
+                                        showCreationMenu: false,
+                                        showOverlay: false,
+                                        creationFormToShow: CreationForms.documents,
+                                    })
+                                }}>
+                                <div className="content">
+                                    <p className="document">Document Upload</p>
+                                    <div className="svg-wrapper document">
+                                        <FaFileUpload className={"document"} />
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                    <div
+                        style={DomManager.AnimateDelayStyle(3.5)}
+                        onClick={() => setState({...state, showOverlay: false, showCreationMenu: false})}
+                        className={`action-item close ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}>
+                        <div className="content">
+                            <p className="close">Close</p>
+                            <div className="svg-wrapper close">
+                                <FaArrowDown className={"close"} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-      )
+        </div>
+    )
 }
 
 export default CreationMenu

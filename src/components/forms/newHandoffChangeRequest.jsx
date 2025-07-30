@@ -78,13 +78,13 @@ export default function NewHandoffChangeRequest() {
             )
 
         // Recipient
-        if (!Manager.IsValid(formRef.current.recipient)) ThrowError("Please choose a recipient")
+        if (!Manager.IsValid(formRef.current.recipient)) return ThrowError("Please choose a recipient")
 
         // Address/Time
-        if (!Manager.IsValid(formRef.current.address) && !Manager.IsValid(formRef.current.time)) ThrowError("Please add an address or a time")
+        if (!Manager.IsValid(formRef.current.address) && !Manager.IsValid(formRef.current.time)) return ThrowError("Please add an address or a time")
 
         // Start Date
-        if (!Manager.IsValid(formRef.current.startDate)) ThrowError("Please choose the day of the requested handoff change")
+        if (!Manager.IsValid(formRef.current.startDate)) return ThrowError("Please choose the day of the requested handoff change")
 
         // Share With
         if (currentUser?.sharedDataUsers > 0 && !Manager.IsValid(formRef.current.shareWith))

@@ -96,13 +96,13 @@ export default function NewExpenseForm() {
             ThrowError("No valid accounts", "You have not added any co-parents. Or, it is also possible they have closed their profile.")
 
         // Pay Name
-        if (!Manager.IsValid(formRef.current.payer.name, true)) ThrowError("Please add a payer name")
+        if (!Manager.IsValid(formRef.current.payer.name, true)) return ThrowError("Please add a payer name")
 
         // Expense Name
-        if (!Manager.IsValid(formRef.current.name, true)) ThrowError("Please add an expense name")
+        if (!Manager.IsValid(formRef.current.name, true)) return ThrowError("Please add an expense name")
 
         // Expense Amount
-        if (formRef.current.amount <= 0) ThrowError("Please add an amount")
+        if (formRef.current.amount <= 0) return ThrowError("Please add an amount")
         //#endregion VALIDATION
 
         const newExpense = {...formRef.current}
@@ -231,7 +231,7 @@ export default function NewExpenseForm() {
                 <UploadButton
                     useAttachmentIcon={true}
                     uploadType="image"
-                    getImages={(input) => {
+                    callback={(input) => {
                         if (input.target.files.length === 0) {
                             AlertManager.throwError("Please choose an image first")
                         } else {

@@ -36,8 +36,9 @@ export default function NewMemory() {
     const {state, setState} = useContext(globalState)
     const {theme, creationFormToShow} = state
 
-    // App State
+    // Component State
     const [images, setImages] = useState([])
+    const [isUploading, setIsUploading] = useState(false)
 
     // Hooks
     const {currentUser} = useCurrentUser()
@@ -55,19 +56,21 @@ export default function NewMemory() {
 
     const ResetForm = () => {
         Manager.ResetForm("new-memory-wrapper")
+        setIsUploading(false)
         setState({...state, isLoading: false, currentScreen: ScreenNames.memories, creationFormToShow: ""})
     }
 
     const ThrowError = (title, message = "") => {
         AlertManager.throwError(title, message)
+        setIsUploading(false)
         setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
         return false
     }
 
     const Upload = async () => {
-        const setLoading = (value) => setState({...state, isLoading: value})
+        setIsUploading(true)
 
-        setLoading(true)
+        // setLoading(true)
         const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
         const validAccounts = currentUser?.sharedDataUsers?.length
 
@@ -82,14 +85,14 @@ export default function NewMemory() {
             )
 
         // Shared With
-        if (!Manager.IsValid(shareWith)) ThrowError("Please choose who you would like to share this memory with")
+        if (!Manager.IsValid(shareWith)) return ThrowError("Please choose who you would like to share this memory with")
 
         // Images
-        if (!Manager.IsValid(images)) ThrowError("Please upload at least one image")
+        if (!Manager.IsValid(images)) return ThrowError("Please upload at least one image")
 
         // Not an image
         const notAnImage = Object.values(images).some((file) => file?.name?.includes(".doc"))
-        if (notAnImage) ThrowError("Files uploaded MUST be images (.png, .jpg, .jpeg, etc.)")
+        if (notAnImage) return ThrowError("Files uploaded MUST be images (.png, .jpg, .jpeg, etc.)")
         //#endregion VALIDATION
 
         // ✅ Compress Images
@@ -149,7 +152,7 @@ export default function NewMemory() {
             }, 500)
         } catch (error) {
             console.error("Upload error:", error)
-            setLoading(false)
+            setIsUploading(false)
         }
     }
 
@@ -169,6 +172,7 @@ export default function NewMemory() {
             onSubmit={Upload}
             wrapperClass="new-memory"
             submitText={"Upload"}
+            showLoadingSpinner={isUploading}
             title={"Share Memory"}
             onClose={() => ResetForm()}
             showCard={creationFormToShow === creationForms.memories}>
@@ -214,7 +218,7 @@ export default function NewMemory() {
                         containerClass={`${theme} new-memory-card`}
                         uploadType={"image"}
                         actualUploadButtonText={"Upload"}
-                        getImages={(input) => setImages(Array.from(input.target.files))}
+                        callback={(fileObj) => setImages([fileObj?.selectedFile])}
                         uploadButtonText={`Choose`}
                     />
                 </div>

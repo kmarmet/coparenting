@@ -54,7 +54,7 @@ const NewChildForm = ({hideCard, showCard}) => {
         //#region VALIDATION
 
         // Child Name
-        if (!Manager.IsValid(newChild.current.general.name, true)) ThrowError("Please enter a name")
+        if (!Manager.IsValid(newChild.current.general.name, true)) return ThrowError("Please enter a name")
 
         // If child has an account -> email is required
         if (childHasAccount && !Manager.IsValid(newChild.current.general.email))
@@ -182,7 +182,7 @@ const NewChildForm = ({hideCard, showCard}) => {
                         containerClass={`${theme} new-child-card`}
                         uploadType={"image"}
                         actualUploadButtonText={"Upload"}
-                        getImages={(files) => {
+                        callback={(files) => {
                             newChild.current.profilePic = files[0]
                         }}
                         uploadButtonText={`Choose`}

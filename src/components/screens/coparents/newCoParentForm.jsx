@@ -55,16 +55,16 @@ const NewCoParentForm = ({showCard, hideCard}) => {
         formRef.current.userKey = Manager.GetUid()
 
         // Check for Valid Email
-        if (!validator?.isEmail(formRef.current.email) && coParentHasAccount) ThrowError("Please enter a valid email")
+        if (!validator?.isEmail(formRef.current.email) && coParentHasAccount) return ThrowError("Please enter a valid email")
 
         // CoParent Name
-        if (!Manager.IsValid(formRef.current.name, true)) ThrowError("Please enter a name")
+        if (!Manager.IsValid(formRef.current.name, true)) return ThrowError("Please enter a name")
 
         // Parent Type
-        if (!Manager.IsValid(formRef.current.parentType, true)) ThrowError("Please select a parent type")
+        if (!Manager.IsValid(formRef.current.parentType, true)) return ThrowError("Please select a parent type")
 
         // If coParent has an account -> email is required
-        if (coParentHasAccount && !Manager.IsValid(formRef.current.email)) ThrowError("Please enter an email")
+        if (coParentHasAccount && !Manager.IsValid(formRef.current.email)) return ThrowError("Please enter an email")
 
         const existingCoParentRecord = users.find((x) => x?.email === formRef.current.email)
 

@@ -885,17 +885,36 @@
 
         /*#region  ID's */
         #inline-loading-spinner-wrapper {
-            @include mixins.deadCenter;
-            min-width: 50px;
-            min-height: 50px;
-            width: 100%;
+            width: 65px;
+            height: 65px;
             display: flex;
             justify-content: center;
             align-items: center;
+            transform: scale(0.7);
+
+            &.documents {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            img {
+                width: 100%;
+                height: auto;
+            }
+
             & {
                 position: fixed;
                 background-color: transparent;
                 z-index: 9;
+            }
+
+            &.dead-center {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
             }
         }
         #app-content-with-sidebar {

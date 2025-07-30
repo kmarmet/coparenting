@@ -53,10 +53,10 @@ const NewParentForm = ({showCard, hideCard}) => {
 
     const Submit = async () => {
         // Email
-        if ((!validator?.isEmail(email) || !Manager.IsValid(email)) && parentHasAccount) ThrowError("Please enter a valid email")
+        if ((!validator?.isEmail(email) || !Manager.IsValid(email)) && parentHasAccount) return ThrowError("Please enter a valid email")
 
         // If parent has an account -> email is required
-        if (parentHasAccount && !Manager.IsValid(email)) ThrowError("If the parent has an account with us, their email is required")
+        if (parentHasAccount && !Manager.IsValid(email)) return ThrowError("If the parent has an account with us, their email is required")
         const existingParent = users.find((x) => x?.email === email)
 
         let newParent = new Parent()

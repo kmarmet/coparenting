@@ -8,7 +8,6 @@ import CreationForms from "../../constants/creationForms"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import EventLengths from "../../constants/eventLengths"
 import InputTypes from "../../constants/inputTypes"
-import ScreenNames from "../../constants/screenNames"
 import ActivityCategory from "../../constants/updateCategory"
 import globalState from "../../context"
 import useChildren from "../../hooks/useChildren"
@@ -63,8 +62,8 @@ export default function NewCalendarEvent() {
     const [isVisitation, setIsVisitation] = useState(false)
     const [dynamicInputs, setDynamicInputs] = useState([])
     const [view, setView] = useState({label: "Single Day", value: "Single Day"})
-    const [showCategories, setShowCategories] = useState(false)
     const [categories, setCategories] = useState([])
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     // DROPDOWN STATE
     const [selectedReminderOptions, setSelectedReminderOptions] = useState([])
@@ -83,7 +82,8 @@ export default function NewCalendarEvent() {
 
     const ThrowError = (message) => {
         AlertManager.throwError(message)
-        setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+        setIsSubmitting(false)
+        setState({...state, isLoading: false})
         return false
     }
 
@@ -99,6 +99,7 @@ export default function NewCalendarEvent() {
         setSelectedChildrenOptions([])
         setSelectedShareWithOptions([])
         setDefaultShareWithOptions([])
+        setIsSubmitting(false)
         setTimeout(() => {
             setState({
                 ...state,
@@ -109,6 +110,7 @@ export default function NewCalendarEvent() {
     }
 
     const Submit = async () => {
+        setIsSubmitting(true)
         try {
             //#region FILL NEW EVENT
             if (isVisitation) {
@@ -136,21 +138,21 @@ export default function NewCalendarEvent() {
 
             if (Manager.IsValid(formRef.current)) {
                 //#region VALIDATION
-                if (!Manager.IsValid(formRef.current.title, true)) ThrowError("Please add an event title")
+                if (!Manager.IsValid(formRef.current.title, true)) return ThrowError("Please add an event title")
 
                 // Start Date
-                if (!Manager.IsValid(formRef.current.startDate)) ThrowError("Please add an event date")
+                if (!Manager.IsValid(formRef.current.startDate)) return ThrowError("Please add an event date")
 
                 // Custom Validation
-                if (Manager.IsValid(formRef.current.phone, true) && !validator.isMobilePhone(formRef.current.phone))
+                if (Manager.IsValid(formRef.current.phone, true) && !validator?.isMobilePhone(formRef.current.phone))
                     ThrowError("Please enter a valid phone number")
 
                 // Start Time
                 if (Manager.IsValid(formRef.current.reminderTimes) && !Manager.IsValid(formRef.current.startTime))
-                    ThrowError("Please add a start time")
+                    return ThrowError("Please add a start time")
 
                 // Recurring Frequency
-                if (eventIsRecurring && !Manager.IsValid(recurringFrequency)) ThrowError("Please add a recurring frequency")
+                if (eventIsRecurring && !Manager.IsValid(recurringFrequency)) return ThrowError("Please add a recurring frequency")
 
                 //#endregion VALIDATION
 
@@ -262,6 +264,7 @@ export default function NewCalendarEvent() {
                 className={`${theme} new-event-form new-calendar-event`}
                 onClose={() => ResetForm()}
                 onSubmit={Submit}
+                showLoadingSpinner={isSubmitting}
                 showCard={creationFormToShow === CreationForms.calendar}
                 wrapperClass={`new-calendar-event at-top`}
                 contentClass={eventLength === EventLengths.single ? "single-view" : "multiple-view"}
@@ -281,14 +284,6 @@ export default function NewCalendarEvent() {
                         }}
                     />
                 }>
-                <Button
-                    text={"Close Dropdown"}
-                    classes={"close-dropdown-button"}
-                    onClick={(e) => {
-                        e.target.classList.remove("active")
-                        DropdownManager.ToggleHiddenOnInputs("remove")
-                    }}
-                />
                 <div id="calendar-event-form-container" className={`${theme} form-container`}>
                     <FormDivider text={"Required"} />
                     {/* EVENT NAME */}

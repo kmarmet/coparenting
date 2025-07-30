@@ -9,6 +9,7 @@ import useChildren from "../../hooks/useChildren"
 import useCoParents from "../../hooks/useCoParents"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import useUsers from "../../hooks/useUsers"
+import AlertManager from "../../managers/alertManager"
 import DropdownManager from "../../managers/dropdownManager"
 import Manager from "../../managers/manager"
 import StringManager from "../../managers/stringManager"
@@ -58,16 +59,17 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
     // Form Ref
     const formRef = useRef({title: "", value: "text", shareWith: []})
 
+    const ThrowError = (title, message = "") => {
+        AlertManager.throwError(title, message)
+        return false
+    }
+
     const Add = async () => {
-        Manager.ValidateWithError(formRef.current.title, "Title")
-        if (selectedInfoType?.value === "phone") {
-            Manager.ValidateWithError(formRef.current.value, "Value", true, "Please enter a valid phone number", "phone")
-        } else {
-            Manager.ValidateWithError(formRef.current.value, "Value")
-        }
+        if (!Manager.IsValid(formRef.current.value)) return ThrowError("Please enter a value")
+        if (!Manager.IsValid(formRef.current.value) && selectedInfoType?.value === "phone")
+            return ThrowError("Invalid Phone Number", "Please enter a valid phone number")
 
         const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
-        console.log(selectedCategory)
 
         await DB_UserScoped.AddUserChildProp(
             currentUser,

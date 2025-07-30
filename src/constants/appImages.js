@@ -25,22 +25,31 @@ AppImages = {
     },
 
     // Firebase Storage Images
+    // TESTING
     testing: {
         legalDoc: {
             name: "legalDoc",
             url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Ftesting%2Flegal-doc.jpg?alt=media&token=8208f828-c8a5-42c3-809e-a43d3ed9fe3e",
         },
     },
+
+    // CHANGELOG
     changelog: {
         cardBackground: {
             name: "cardBackground",
             url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fchangelog%2Fchangelog-card-background.jpg?alt=media&token=077e9ea0-6c18-475e-8d3d-603b4b300058",
         },
     },
+
+    // MISC
     misc: {
-        inlineLoadingSvg: {
-            name: "inlineLoadingSvg",
-            url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fmisc%2Finline-loading-svg.svg?alt=media&token=181c16e6-e9ba-4ca0-99a8-53b21d077187",
+        whiteInlineSpinner: {
+            name: "whiteInlineSpinner",
+            url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fmisc%2Fwhite-inline-loading-spinner.svg?alt=media&token=94eb7f59-1c5c-4387-b45d-b71aa43d2647",
+        },
+        inlineLoadingSpinner: {
+            name: "inlineLoadingSpinner",
+            url: "https://firebasestorage.googleapis.com/v0/b/peaceful-coparenting.appspot.com/o/appImages%2Fmisc%2Finline-loading-svg.svg?alt=media&token=99a1799f-e126-49a1-b573-dd0fadf24461",
         },
         starBackground: {
             name: "starBackground",

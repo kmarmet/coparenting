@@ -107,8 +107,11 @@ function General({activeChild}) {
                                     const isAddress = Manager.Contains(lowerLabel, "address")
                                     const isNameField = lowerLabel === "name"
                                     const sharedBy = Manager.IsValid(prop[2]) ? ` (shared by ${StringManager.GetFirstNameOnly(prop[2])})` : ""
-                                    const placeholder = `${infoLabel}${sharedBy}`
+                                    const placeholder = StringManager.UppercaseFirstLetterOfAllWords(`${infoLabel}${sharedBy}`)
                                     const rowClass = `data-row ${isPhone ? "phone" : ""} ${isLast ? "last" : ""}`
+
+                                    // Don't show profile pic row
+                                    if (infoLabel.toLowerCase() === "profile pic") return
 
                                     return (
                                         <div key={index} className={rowClass}>

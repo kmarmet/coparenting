@@ -227,6 +227,11 @@
                 z-index: -1;
             }
 
+            [role="rowgroup"] {
+                overflow: visible !important;
+                padding-top: 8px;
+            }
+
             .MuiDayCalendar-monthContainer {
                 position: unset !important;
             }
