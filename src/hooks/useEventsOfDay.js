@@ -1,7 +1,5 @@
 import {getDatabase, off, onValue, ref} from "firebase/database"
-import moment from "moment"
 import {useContext, useEffect, useState} from "react"
-import DatetimeFormats from "../constants/datetimeFormats"
 import globalState from "../context"
 import DB from "../database/DB"
 import DatasetManager from "../managers/datasetManager"
@@ -11,107 +9,108 @@ import ObjectManager from "../managers/objectManager"
 import SecurityManager from "../managers/securityManager"
 import useCurrentUser from "./useCurrentUser"
 
-const useEventsOfDay = () => {
-      const {state, setState} = useContext(globalState)
-      const {selectedCalendarDate, refreshKey} = state
-      const {currentUser} = useCurrentUser()
-      const [eventsOfDay, setEventsOfDay] = useState([])
-      const [eventsAreLoading, setEventsAreLoading] = useState(true)
-      const [error, setError] = useState(null)
-      const path = `${DB.tables.calendarEvents}/${currentUser?.key}`
-      const queryKey = ["realtime", path]
+const useEventsOfDay = (selectedCalendarDate) => {
+    const {state, setState} = useContext(globalState)
+    const {refreshKey} = state
+    const {currentUser} = useCurrentUser()
+    const [genericEventsOfDay, setGenericEventsOfDay] = useState([])
+    const [allEventsOfDay, setAllEventsOfDay] = useState([])
+    const [holidayEventsOfDay, setHolidayEventsOfDay] = useState([])
+    const [visitationEventsOfDay, setVisitationEventsOfDay] = useState([])
+    const [eventsAreLoading, setEventsAreLoading] = useState(true)
+    const [error, setError] = useState(null)
+    const path = `${DB.tables.calendarEvents}/${currentUser?.key}`
+    const queryKey = ["realtime", path]
 
-      useEffect(() => {
-            const database = getDatabase()
-            const dataRef = ref(database, path)
+    useEffect(() => {
+        const database = getDatabase()
+        const dataRef = ref(database, path)
 
-            const listener = onValue(
-                  dataRef,
-                  async (snapshot) => {
-                        const editDate = Manager.IsValid(selectedCalendarDate)
-                              ? moment(selectedCalendarDate).format(DatetimeFormats.dateForDb)
-                              : moment().format(DatetimeFormats.dateForDb)
+        const listener = onValue(
+            dataRef,
+            async (snapshot) => {
+                // Calendar Events
+                const calendarEvents = DatasetManager.GetValidArray(snapshot.val())
 
-                        // Calendar Events
-                        const calendarEvents = DatasetManager.GetValidArray(snapshot.val())
+                // Early Exit if no Calendar Events Exist
+                if (!Manager.IsValid(calendarEvents)) {
+                    setGenericEventsOfDay([])
+                    setEventsAreLoading(false)
+                    return
+                }
 
-                        // Shared Calendar Events
-                        const shared = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents)
-                        const formattedShared = DatasetManager.GetValidArray(shared)
+                // Shared Calendar Events
+                const rawShared = await SecurityManager.getShareWithItems(currentUser, DB.tables.calendarEvents)
+                const shared = rawShared?.filter((x) => x?.startDate === selectedCalendarDate)
+                const standardEvents = calendarEvents.filter((x) => x?.owner?.key === currentUser?.key && x?.startDate === selectedCalendarDate)
 
-                        // Fetch and prepare holidays
-                        let holidays = (await DateManager.GetHolidaysAsEvents()) || []
+                const combinedEvents = DatasetManager.CombineArrays(standardEvents, shared, true, true)
+                const formatted_one = DatasetManager.GetValidArray(combinedEvents)
+                setGenericEventsOfDay(formatted_one)
 
-                        // Filter holidays that match the editDate
-                        let holidaysToLoop = holidays.filter(
-                              (h) => moment(h.startDate).format(DatetimeFormats.dateForDb) === moment(editDate).format(DatetimeFormats.dateForDb)
-                        )
+                // Fetch and prepare holidays
+                let holidays = (await DateManager.GetHolidaysAsEvents()) || []
 
-                        // Split events into those with time vs without time in a single pass
-                        let eventsWithoutTime = []
-                        let eventsWithTime = []
+                // Filter holidays that match the editDate
+                let holidayEvents = holidays?.filter((x) => x?.isHoliday === true && x?.startDate === selectedCalendarDate) || []
+                setHolidayEventsOfDay(DatasetManager.GetValidArray(holidayEvents, true, true))
 
-                        calendarEvents.forEach((event) => {
-                              if (Manager.IsValid(event?.startTime)) {
-                                    eventsWithTime.push(event)
-                              } else {
-                                    eventsWithoutTime.push(event)
-                              }
-                        })
+                // Split events into those with time vs without time in a single pass
+                let eventsWithoutTime = []
+                let eventsWithTime = []
 
-                        // All Day Events
-                        const allDayEvents = [...(eventsWithoutTime || []), ...(holidaysToLoop || [])]
-                        const visitationEvents = allDayEvents.filter((x) => x?.fromVisitationSchedule === true)
+                combinedEvents.forEach((event) => {
+                    if (Manager.IsValid(event?.startTime, true)) {
+                        eventsWithTime.push(event)
+                    } else {
+                        eventsWithoutTime.push(event)
+                    }
+                })
 
-                        let allEvents = [
-                              ...(eventsWithoutTime || []),
-                              ...(holidaysToLoop || []),
-                              ...(visitationEvents || []),
-                              ...(eventsWithTime || []),
-                              ...(formattedShared || []),
-                        ]
+                // All Day Events
+                const allDayEvents = [...(eventsWithoutTime || []), ...(holidayEvents || [])]
+                const visitationEvents = allDayEvents?.filter((x) => x?.fromVisitationSchedule === true)
+                setVisitationEventsOfDay(DatasetManager.GetValidArray(visitationEvents, true, true))
 
-                        const today = moment(editDate).startOf("day")
+                let allEvents = [
+                    ...(eventsWithoutTime || []),
+                    ...(holidayEvents || []),
+                    ...(visitationEvents || []),
+                    ...(eventsWithTime || []),
+                    ...(formatted_one || []),
+                ]
 
-                        // Get Events For Selected Date
-                        const selectedDateBasedEvents = allEvents.filter((event) => {
-                              const _editDate = moment(event.startDate, DatetimeFormats.dateForDb)
-                              return _editDate.isSame(today, "day")
-                        })
+                const sortedEvents = DatasetManager.SortByTime(
+                    allEvents.map((x) => ObjectManager.CleanObject(x)),
+                    "asc"
+                )
 
-                        // Sorted Events
-                        const sortedEvents = DatasetManager.SortByTime(
-                              selectedDateBasedEvents.map((x) => ObjectManager.CleanObject(x)),
-                              "asc"
-                        )
+                const formattedEvents = DatasetManager.GetValidArray(sortedEvents, true, true) || []
 
-                        const formattedEvents = DatasetManager.GetValidArray(sortedEvents)
-
-                        // Set events of day state
-                        if (Manager.IsValid(formattedEvents)) {
-                              setEventsOfDay(formattedEvents)
-                        } else {
-                              setEventsOfDay([])
-                        }
-                        setEventsAreLoading(false)
-                  },
-                  (err) => {
-                        setError(err)
-                        setEventsAreLoading(false)
-                  }
-            )
-
-            return () => {
-                  off(dataRef, "value", listener)
+                // Set events of day state
+                setAllEventsOfDay(formattedEvents)
+                setEventsAreLoading(false)
+            },
+            (err) => {
+                setError(err)
+                setEventsAreLoading(false)
             }
-      }, [path, currentUser, selectedCalendarDate])
+        )
 
-      return {
-            eventsOfDay,
-            eventsAreLoading,
-            error,
-            queryKey,
-      }
+        return () => {
+            off(dataRef, "value", listener)
+        }
+    }, [path, currentUser, selectedCalendarDate])
+
+    return {
+        genericEventsOfDay,
+        allEventsOfDay,
+        holidayEventsOfDay,
+        visitationEventsOfDay,
+        eventsAreLoading,
+        error,
+        queryKey,
+    }
 }
 
 export default useEventsOfDay

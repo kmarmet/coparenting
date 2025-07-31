@@ -27,7 +27,7 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
 
     // HOOKS
     const {currentUser} = useCurrentUser()
-    const {eventsOfDay} = useEventsOfDay()
+    const {allEventsOfDay, holidayEventsOfDay, visitationEventsOfDay} = useEventsOfDay(selectedCalendarDate)
     const {calendarEvents} = useCalendarEvents()
     const {calendarSearchResults, setQuery} = useCalendarSearch(calendarEvents)
     const {holidays} = useHolidays(currentUser, holidayOptions.returnType)
@@ -35,47 +35,24 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
     // STATE
     const [eventsToIterate, setEventsToIterate] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
+    const [comparisonDate, setComparisonDate] = useState(selectedCalendarDate)
 
-    const GetRowDotColor = (dayDate) => {
-        const eventsToUse = Manager.IsValid(calendarSearchResults) ? calendarSearchResults : eventsOfDay
-        const dayEvents = eventsToUse.filter((e) => e.startDate === dayDate)
-        if (!dayEvents?.length) return []
+    const GetRowDotColor = (event) => {
+        const eventsToUse = Manager.IsValid(calendarSearchResults) ? calendarSearchResults : allEventsOfDay
+        if (!eventsToUse?.length) return []
 
         const financialKeywords = ["pay", "paid", "salary", "expense", "refund", "payment ", "purchase", "budget"]
 
-        const dotObjects = dayEvents.flatMap((event) => {
-            const dots = []
-            const title = event?.title?.toLowerCase() || ""
-            const isCurrentUserDot = event?.owner?.key === currentUser?.key
+        const title = event?.title?.toLowerCase() || ""
+        const isCurrentUserDot = event?.owner?.key === currentUser?.key
 
-            // Holiday dot
-            if (event?.isHoliday && !event?.fromVisitationSchedule && !Manager.IsValid(event?.owner?.key)) {
-                dots.push({
-                    className: "holiday-event-dot",
-                    id: event?.id,
-                    date: event?.startDate,
-                })
-            }
+        // Holiday dot
+        if (event?.isHoliday && !event?.fromVisitationSchedule && !Manager.IsValid(event?.owner?.key)) return "holiday-event-dot"
 
-            // Financial dot
-            if (financialKeywords.some((keyword) => title.includes(keyword))) {
-                dots.push({
-                    className: "financial-dot",
-                    id: event?.id,
-                    date: event?.startDate,
-                })
-            }
+        // Financial dot
+        if (financialKeywords.some((keyword) => title.includes(keyword))) return "financial-dot"
 
-            // User ownership dots
-            dots.push({
-                className: isCurrentUserDot ? "current-user-event-dot" : "coParent-event-dot",
-                id: event?.id,
-                date: event?.startDate,
-            })
-            return dots
-        })
-
-        return DatasetManager.getUniqueArray(dotObjects, true)
+        return isCurrentUserDot ? "current-user-event-dot" : "coParent-event-dot"
     }
 
     const HandleEventRowClick = async (clickedEvent) => {
@@ -109,6 +86,12 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
     }
 
     useEffect(() => {
+        let updatedSelectedCalendarDate = selectedCalendarDate
+
+        if (comparisonDate !== selectedCalendarDate) {
+            updatedSelectedCalendarDate = comparisonDate
+        }
+
         const animateEvents = () => {
             setTimeout(() => {
                 DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
@@ -118,24 +101,17 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
         let nextEvents = []
 
         // ✅ Priority 1: Search Results
-        if (Manager.IsValid(calendarSearchResults)) {
-            console.log("pri 1")
-            nextEvents = calendarSearchResults
-        }
-
+        if (Manager.IsValid(calendarSearchResults)) nextEvents = calendarSearchResults
         // ✅ Priority 2: Holidays
-        else if (holidayOptions?.show && Manager.IsValid(holidays) && !Manager.IsValid(calendarSearchResults)) {
-            nextEvents = holidays
-        }
-
+        else if (holidayOptions?.show && Manager.IsValid(holidays) && !Manager.IsValid(calendarSearchResults)) nextEvents = holidays
         // ✅ Priority 3: Normal Events of Day
         else if (
             !holidayOptions?.show &&
-            Manager.IsValid(eventsOfDay) &&
-            Manager.IsValid(selectedCalendarDate) &&
+            Manager.IsValid(allEventsOfDay) &&
+            Manager.IsValid(updatedSelectedCalendarDate) &&
             !Manager.IsValid(calendarSearchResults)
         ) {
-            nextEvents = eventsOfDay
+            nextEvents = allEventsOfDay
         }
 
         // ✅ If no valid events → clear
@@ -147,9 +123,8 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
         // ✅ Set + animate
         setEventsToIterate(nextEvents)
         animateEvents()
-    }, [calendarSearchResults, holidayOptions?.show, holidays, eventsOfDay, selectedCalendarDate, currentScreen])
-
-    const displayedCategories = []
+        setComparisonDate(selectedCalendarDate)
+    }, [calendarSearchResults, holidayOptions?.show, holidays, selectedCalendarDate, currentScreen, allEventsOfDay])
 
     return (
         <div className="events">
@@ -188,7 +163,7 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
             </div>
 
             {/* NO EVENTS */}
-            {!Manager.IsValid(eventsOfDay) && <p className="no-data-fallback-text">No Events</p>}
+            {!Manager.IsValid(allEventsOfDay) && <p className="no-data-fallback-text">No Events</p>}
 
             {/* EVENTS */}
             {Manager.IsValid(eventsToIterate) &&
@@ -197,8 +172,6 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
                     if (event?.isDateRange) {
                         startDate = event?.staticStartDate
                     }
-                    let dotObjects = GetRowDotColor(event?.startDate)
-                    const dotObject = dotObjects?.find((x) => x.id === event?.id)
                     const isBirthdayEvent = event?.title?.toLowerCase()?.includes("birthday") || event?.title?.toLowerCase()?.includes("bday")
                     return (
                         <div
@@ -206,11 +179,11 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
                             key={index}
                             data-event-id={event?.id}
                             data-from-date={startDate}
-                            className={`row ${event?.fromVisitationSchedule ? "event-row visitation flex" : "event-row flex"} ${dotObject?.className}`}>
+                            className={`row ${event?.fromVisitationSchedule ? "event-row visitation flex" : "event-row flex"} ${GetRowDotColor(event)}`}>
                             <div className="text flex">
                                 {/* EVENT NAME */}
                                 <p className="flex row-title" data-event-id={event?.id}>
-                                    <span className={`${dotObject?.className} event-type-dot`}></span>
+                                    <span className={`${GetRowDotColor(event)} event-type-dot`}></span>
                                     <span className={"title-text"}>{isBirthdayEvent && `${StringManager.FormatTitle(event?.title)} 🎂`}</span>
                                     <span className={"title-text"}>{!isBirthdayEvent && StringManager.FormatTitle(event?.title)}</span>
                                 </p>
