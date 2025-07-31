@@ -2,16 +2,17 @@
 import {StaticDatePicker} from "@mui/x-date-pickers-pro"
 import moment from "moment"
 import React, {useContext, useEffect, useState} from "react"
-import {BsStars} from "react-icons/bs"
+import {BsFilterCircle, BsStars} from "react-icons/bs"
 import {FaMinus, FaPlus} from "react-icons/fa6"
-import {ImSearch} from "react-icons/im"
-import {MdOutlineSearchOff} from "react-icons/md"
+import {LuCalendarSearch} from "react-icons/lu"
+import {MdSearchOff} from "react-icons/md"
 import {PiCalendarDotsFill, PiCalendarXDuotone} from "react-icons/pi"
 import EditCalEvent from "../../../components/forms/editCalEvent"
 import NavBar from "../../../components/navBar.jsx"
 import Form from "../../../components/shared/form"
 import ButtonThemes from "../../../constants/buttonThemes"
 import DatetimeFormats from "../../../constants/datetimeFormats"
+import EventFilters from "../../../constants/eventFilters"
 import FinancialKeywords from "../../../constants/financialKeywords"
 import ScreenNames from "../../../constants/screenNames"
 import globalState from "../../../context.js"
@@ -25,6 +26,7 @@ import DomManager from "../../../managers/domManager"
 import Manager from "../../../managers/manager"
 import Button from "../../shared/button"
 import InputField from "../../shared/inputField"
+import Modal from "../../shared/modal.jsx"
 import Screen from "../../shared/screen"
 import ScreenHeader from "../../shared/screenHeader"
 import Spacer from "../../shared/spacer"
@@ -58,6 +60,8 @@ export default function EventCalendar() {
     const [dateValue, setDateValue] = React.useState(moment(selectedCalendarDate))
     const [holidayReturnType, setHolidayReturnType] = useState("all")
     const [showMonthDropdown, setShowMonthDropdown] = useState(false)
+    const [showFilterModal, setShowFilterModal] = useState(false)
+    const [activeFilter, setActiveFilter] = useState("all")
 
     // CARD STATE
     const [showEditCard, setShowEditCard] = useState(false)
@@ -96,7 +100,29 @@ export default function EventCalendar() {
             const dayMs = dayElement.dataset.timestamp
             const formattedDay = moment(DateManager.msToDate(dayMs)).format(DatetimeFormats.dateForDb)
             const dayEvent = calendarEvents.find((event) => moment(event?.startDate).format(DatetimeFormats.dateForDb) === formattedDay)
-            const dayEvents = calendarEvents.filter((e) => e?.startDate === formattedDay)
+            let dayEvents = calendarEvents.filter((e) => e?.startDate === formattedDay)
+
+            switch (true) {
+                case activeFilter === EventFilters.all:
+                    break
+                case activeFilter === EventFilters.holidays:
+                    dayEvents = dayEvents.filter((e) => e?.isHoliday === true)
+                    break
+                case activeFilter === EventFilters.shared:
+                    const sharedEvents = dayEvents.filter((e) => e?.owner?.key !== currentUser?.key && e?.shareWith?.includes(currentUser?.key))
+                    dayEvents = [...sharedEvents]
+                    break
+                case activeFilter === EventFilters.visitationHolidays:
+                    dayEvents = dayEvents.filter((e) => e?.isHoliday === true && e?.shareWith?.includes(currentUser?.key))
+                    break
+                case activeFilter === EventFilters.currentUser:
+                    dayEvents = dayEvents.filter((e) => e?.owner?.key === currentUser?.key && !e?.shareWith?.includes(currentUser?.key))
+                    break
+
+                default:
+                    break
+            }
+
             const {dotClasses, payEvents} = GetEventDotClasses(dayEvent, dayEvents, holidays)
             const dotWrapper = document.createElement("span")
             dotWrapper.classList.add("dot-wrapper")
@@ -218,19 +244,19 @@ export default function EventCalendar() {
         setShowHolidaysCard(false)
         setShowHolidays(false)
         if (!currentUserIsLoading) {
-            const staticCalendar = document.querySelector(".MuiDialogActions-root")
-            const holidaysButton = document.getElementById("holidays-button")
-            const todayButton = staticCalendar.querySelector(".MuiButtonBase-root")
+            const belowCalendarWrapper = document.querySelector(".MuiDialogActions-root")
+            const todayButton = belowCalendarWrapper.querySelector(".MuiButtonBase-root")
             const legendButton = document.getElementById("legend-button")
             const monthSelector = document.getElementById("month-selector")
+            const filterButton = document.getElementById("filter-button-wrapper")
+            const searchButton = document.getElementById("search-button-wrapper")
 
-            if (staticCalendar && holidaysButton) {
-                staticCalendar.prepend(holidaysButton)
-                todayButton.insertAdjacentElement("afterend", monthSelector)
-
-                holidaysButton.addEventListener("click", () => {
-                    setShowHolidaysCard(true)
-                })
+            if (belowCalendarWrapper) {
+                belowCalendarWrapper.appendChild(filterButton)
+                belowCalendarWrapper.appendChild(searchButton)
+                belowCalendarWrapper.appendChild(legendButton)
+                belowCalendarWrapper.appendChild(todayButton)
+                belowCalendarWrapper.appendChild(monthSelector)
             }
 
             if (legendButton) {
@@ -241,8 +267,66 @@ export default function EventCalendar() {
         }
     }, [currentScreen, currentUserIsLoading, showSearchInput])
 
+    useEffect(() => {
+        void AddDayIndicators()
+    }, [activeFilter])
+
+    const HandleFilterCheckboxSelection = (target) => {
+        const filterRow = target.currentTarget
+
+        // CLear All Filters and their active classes
+        const filterRows = document.querySelectorAll(".filter-row")
+        filterRows.forEach((row) => {
+            const filterCheckbox = row.querySelector(".filter-checkbox")
+            filterCheckbox.classList.remove("active")
+        })
+
+        const dataFilter = filterRow.getAttribute("data-filter")
+        const filterCheckbox = filterRow.querySelector(".filter-checkbox")
+        filterCheckbox.classList.toggle("active")
+        setShowFilterModal(false)
+        setActiveFilter(dataFilter)
+    }
+
     return (
         <Screen loadingByDefault={true} stopLoadingBool={contentIsLoaded} activeScreen={ScreenNames.calendar} classes={"calendar"}>
+            {/* FILTERS MODAL */}
+            <Modal title={"Event Filters"} show={showFilterModal} hide={() => setShowFilterModal(false)} className={`${theme}`}>
+                <p className={"view-label"}>VIEW</p>
+                <p className="view-text">
+                    View
+                    <u>
+                        <b>only</b>
+                    </u>
+                    events that match any of the following filter
+                </p>
+                <div className="filter-rows">
+                    <div data-filter={EventFilters.holidays} className="filter-row holidays" onClick={HandleFilterCheckboxSelection}>
+                        <div className="filter-checkbox"></div>
+                        <span>Holidays</span>
+                    </div>
+                    <div
+                        data-filter={EventFilters.visitationHolidays}
+                        className="filter-row visitation-holidays"
+                        onClick={HandleFilterCheckboxSelection}>
+                        <div className="filter-checkbox"></div>
+                        <span>Visitation Holidays</span>
+                    </div>
+                    <div data-filter={EventFilters.currentUser} className="filter-row your-events" onClick={HandleFilterCheckboxSelection}>
+                        <div className="filter-checkbox"></div>
+                        <span>Your Events</span>
+                    </div>
+                    <div data-filter={EventFilters.shared} className="filter-row shared-events" onClick={HandleFilterCheckboxSelection}>
+                        <div className="filter-checkbox"></div>
+                        <span>Shared with You</span>
+                    </div>
+                    <div data-filter={EventFilters.all} className="filter-row all-events active" onClick={HandleFilterCheckboxSelection}>
+                        <div className="filter-checkbox active"></div>
+                        <span>All Events</span>
+                    </div>
+                </div>
+            </Modal>
+
             {/* CARDS */}
             <>
                 {/* HOLIDAYS CARD */}
@@ -282,7 +366,6 @@ export default function EventCalendar() {
                 <div className="screen-content calendar">
                     {/* STATIC CALENDAR */}
                     <div id="static-calendar" className={`${theme}`}>
-                        {/* STATIC CALENDAR */}
                         <StaticDatePicker
                             slotProps={{
                                 actionBar: {
@@ -324,29 +407,27 @@ export default function EventCalendar() {
                         ))}
                     </div>
                     <Spacer height={1} />
-                    <div id="below-calendar" className={`${theme} flex`}>
+
+                    {/* BELOW CALENDAR */}
+                    <div id="below-calendar" className={`${theme} flex`} style={{border: "1px solid red !important"}}>
+                        <div id="filter-button-wrapper" onClick={() => setShowFilterModal(true)}>
+                            <BsFilterCircle />
+                        </div>
+                        <div id="search-button-wrapper">
+                            {showSearchInput ? (
+                                <MdSearchOff onClick={() => setShowSearchInput(false)} />
+                            ) : (
+                                <LuCalendarSearch onClick={() => setShowSearchInput(true)} />
+                            )}
+                        </div>
                         {/* LEGEND BUTTON */}
                         <p id="legend-button" className="animated-button">
                             Legend
                         </p>
 
                         {/* HOLIDAY BUTTON */}
-                        <p id="holidays-button">Holidays</p>
+                        {/*<p id="holidays-button">Holidays</p>*/}
 
-                        {/* SEARCH BUTTON */}
-                        <div
-                            id="search-icon-wrapper"
-                            className={`${showSearchInput ? "pending-close" : ""}`}
-                            onClick={() => {
-                                if (showSearchInput) {
-                                    setShowSearchInput(false)
-                                    setDateValue(moment())
-                                } else {
-                                    setShowSearchInput(true)
-                                }
-                            }}>
-                            {showSearchInput === true ? <MdOutlineSearchOff /> : <ImSearch />}
-                        </div>
                         <p id="month-selector" onClick={() => setShowMonthDropdown(!showMonthDropdown)}>
                             {moment(dateValue).format("MMMM")}
                             {showMonthDropdown ? <FaMinus /> : <FaPlus />}
@@ -359,8 +440,8 @@ export default function EventCalendar() {
                     {/* SCREEN CONTENT - MAP/LOOP CALENDAR EVENTS (CalendarEvents) */}
 
                     <CalendarEvents
-                        holidayOptions={{returnType: holidayReturnType, show: showHolidays}}
-                        showAllHolidays={showHolidays}
+                        activeFilter={activeFilter}
+                        showSearchInput={showSearchInput}
                         selectedDate={dateValue}
                         setEventToEdit={(ev) => {
                             setEventToEdit(ev)

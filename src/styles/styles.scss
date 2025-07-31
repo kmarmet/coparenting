@@ -1179,6 +1179,13 @@
         /*#endregion  ID's */
 
         /*#region  CLASSES */
+        .card-buttons {
+            @include mixins.cardButtons;
+        }
+        .modal {
+            @include mixins.modal;
+        }
+
         .input-label:not(.toggle) {
             background-color: palette.$inputBackground;
             width: max-content;

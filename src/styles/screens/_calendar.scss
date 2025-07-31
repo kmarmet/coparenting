@@ -260,7 +260,7 @@
                 align-items: center;
                 gap: 10px !important;
                 display: grid;
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: 1fr 1fr 3fr 3fr 3fr;
                 position: relative;
                 justify-content: center;
                 padding: 0 !important;
@@ -268,6 +268,23 @@
 
                 @media screen and (min-width: 1000px) {
                     width: auto;
+                }
+
+                #filter-button-wrapper,
+                #search-button-wrapper {
+                    display: flex;
+                    padding: 5px;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0;
+                    background-color: palette.$grey;
+                    border: 1px solid palette.$lightBorderColor;
+                    border-radius: variables.$buttonBorderRadius;
+                    @include mixins.square(32px);
+                    svg {
+                        color: #8b929f;
+                        transform: scale(0.9);
+                    }
                 }
 
                 #month-selector {

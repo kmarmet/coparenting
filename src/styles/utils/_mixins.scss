@@ -874,6 +874,131 @@ $shadows-big: multiple-box-shadow(100);
 /*#endregion  POSITIONING*/
 
 /*#region  COMPONENTS*/
+@mixin modal {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999999999999999999999999999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(15px);
+
+    &.active {
+        opacity: 1;
+        pointer-events: auto;
+        transition: all 0.4s ease;
+    }
+
+    .modal-title {
+        font-size: 26px;
+        color: white;
+        text-align: center;
+        width: max-content;
+        margin: 0 auto 20px auto;
+        border-bottom: 1px solid palette.$barelyVisibleWhite;
+        @include fonts.mediumBoldFont;
+
+        & {
+            line-height: 1;
+            white-space: nowrap;
+            padding-bottom: 5px;
+        }
+    }
+
+    #modal-card-buttons {
+        &.card-buttons {
+            background-color: transparent;
+            backdrop-filter: unset;
+            border-top: 0;
+            .card-button {
+                backdrop-filter: unset;
+                background-color: transparent;
+            }
+        }
+    }
+
+    .modal-content {
+        width: max-content;
+        position: relative;
+        background-color: palette.$blendDark;
+        border-radius: variables.$cardBorderRadius;
+        padding: 20px;
+        margin: 0 20px;
+        z-index: 999;
+        box-shadow: variables.$boxShadow_bottom_only_extra_dark;
+        opacity: 0;
+        transform: translateY(100vh) scale(0);
+        transition: all 0.8s ease;
+        &.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            transition: all 0.9s ease;
+        }
+
+        .filter-rows {
+            margin-top: 15px;
+            .filter-row {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                margin-bottom: 20px;
+
+                /*#region  ROW COLORS */
+                /*#endregion  ROW COLORS */
+
+                .filter-checkbox {
+                    margin-right: 10px;
+                    border: 1px solid palette.$lightBorderColor;
+                    border-radius: variables.$buttonBorderRadius;
+                    @include square(20px);
+
+                    &.active {
+                        background-color: palette.$flatGreen;
+                        border: 1px solid palette.$flatGreen;
+                    }
+                }
+                span {
+                    color: white;
+                    line-height: 1;
+                    white-space: nowrap;
+                    opacity: 0.5;
+                    @include fonts.lightFont;
+
+                    &.active {
+                        opacity: 1;
+                        @include fonts.regularFont;
+                    }
+                }
+            }
+        }
+
+        .view-label {
+            font-size: 15px;
+            color: white;
+            @include fonts.regularFont;
+        }
+        .view-text {
+            font-size: 14px;
+            color: white;
+            opacity: 0.65;
+            @include fonts.thinnestFont;
+
+            u,
+            b {
+                color: white;
+                padding: 0 2px;
+                letter-spacing: 1.8px;
+            }
+        }
+    }
+}
+
 @mixin cardButtons {
     // CARD BUTTONS
     display: flex;

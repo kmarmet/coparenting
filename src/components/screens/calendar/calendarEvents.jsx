@@ -21,7 +21,11 @@ import StringManager from "../../../managers/stringManager"
 import InputField from "../../shared/inputField"
 import Spacer from "../../shared/spacer"
 
-export default function CalendarEvents({setEventToEdit = (event) => {}, holidayOptions = {show: false, returnType: "none"}}) {
+export default function CalendarEvents({
+    setEventToEdit = (event) => {},
+    showSearchInput = false,
+    holidayOptions = {show: false, returnType: "none"},
+}) {
     const {state, setState} = useContext(globalState)
     const {selectedCalendarDate, refreshKey, currentScreen} = state
 
@@ -127,8 +131,8 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
     }, [calendarSearchResults, holidayOptions?.show, holidays, selectedCalendarDate, currentScreen, allEventsOfDay])
 
     return (
-        <div className="events">
-            <div id={"search-input-wrapper"}>
+        <>
+            <div id={"search-input-wrapper"} className={`${showSearchInput ? " active" : ""}`}>
                 <div id="input-row">
                     <InputField
                         defaultValue={searchQuery}
@@ -139,7 +143,7 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
                             setQuery(e.target.value)
                             setSearchQuery(e.target.value)
                         }}
-                        className={"search"}
+                        className={`search`}
                         wrapperClasses={"white-bg calendar-search"}
                     />
                     {Manager.IsValid(searchQuery, true) && (
@@ -161,104 +165,107 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
 
                 <Spacer height={10} />
             </div>
+            <div className="events">
+                {/* NO EVENTS */}
+                {!Manager.IsValid(allEventsOfDay) && <p className="no-data-fallback-text">No Events</p>}
 
-            {/* NO EVENTS */}
-            {!Manager.IsValid(allEventsOfDay) && <p className="no-data-fallback-text">No Events</p>}
+                {/* EVENTS */}
+                {Manager.IsValid(eventsToIterate) &&
+                    DatasetManager.getUniqueByPropValue(eventsToIterate, "title").map((event, index) => {
+                        let startDate = event?.startDate
+                        if (event?.isDateRange) {
+                            startDate = event?.staticStartDate
+                        }
+                        const isBirthdayEvent = event?.title?.toLowerCase()?.includes("birthday") || event?.title?.toLowerCase()?.includes("bday")
+                        return (
+                            <div
+                                onClick={() => HandleEventRowClick(event).then((r) => r)}
+                                key={index}
+                                data-event-id={event?.id}
+                                data-from-date={startDate}
+                                className={`row ${event?.fromVisitationSchedule ? "event-row visitation flex" : "event-row flex"} ${GetRowDotColor(event)}`}>
+                                <div className="text flex">
+                                    {/* EVENT NAME */}
+                                    <p className="flex row-title" data-event-id={event?.id}>
+                                        <span className={`${GetRowDotColor(event)} event-type-dot`}></span>
+                                        <span className={"title-text"}>{isBirthdayEvent && `${StringManager.FormatTitle(event?.title)} 🎂`}</span>
+                                        <span className={"title-text"}>{!isBirthdayEvent && StringManager.FormatTitle(event?.title)}</span>
+                                    </p>
 
-            {/* EVENTS */}
-            {Manager.IsValid(eventsToIterate) &&
-                DatasetManager.getUniqueByPropValue(eventsToIterate, "title").map((event, index) => {
-                    let startDate = event?.startDate
-                    if (event?.isDateRange) {
-                        startDate = event?.staticStartDate
-                    }
-                    const isBirthdayEvent = event?.title?.toLowerCase()?.includes("birthday") || event?.title?.toLowerCase()?.includes("bday")
-                    return (
-                        <div
-                            onClick={() => HandleEventRowClick(event).then((r) => r)}
-                            key={index}
-                            data-event-id={event?.id}
-                            data-from-date={startDate}
-                            className={`row ${event?.fromVisitationSchedule ? "event-row visitation flex" : "event-row flex"} ${GetRowDotColor(event)}`}>
-                            <div className="text flex">
-                                {/* EVENT NAME */}
-                                <p className="flex row-title" data-event-id={event?.id}>
-                                    <span className={`${GetRowDotColor(event)} event-type-dot`}></span>
-                                    <span className={"title-text"}>{isBirthdayEvent && `${StringManager.FormatTitle(event?.title)} 🎂`}</span>
-                                    <span className={"title-text"}>{!isBirthdayEvent && StringManager.FormatTitle(event?.title)}</span>
-                                </p>
+                                    {/* DATE WRAPPER */}
+                                    <div className="date-wrapper">
+                                        <div className="date-container">
+                                            {/* FROM DATE */}
+                                            {Manager.IsValid(startDate, true) && (
+                                                <span className="start-date row-subtitle">
+                                                    {moment(startDate).format(DatetimeFormats.readableMonthAndDay)}
+                                                </span>
+                                            )}
 
-                                {/* DATE WRAPPER */}
-                                <div className="date-wrapper">
-                                    <div className="date-container">
-                                        {/* FROM DATE */}
-                                        {Manager.IsValid(startDate, true) && (
-                                            <span className="start-date row-subtitle">
-                                                {moment(startDate).format(DatetimeFormats.readableMonthAndDay)}
-                                            </span>
-                                        )}
+                                            {/* TO WORD */}
+                                            {Manager.IsValid(event?.endDate, true) && event?.endDate !== startDate && (
+                                                <span className="end-date row-subtitle">&nbsp;to&nbsp;</span>
+                                            )}
 
-                                        {/* TO WORD */}
-                                        {Manager.IsValid(event?.endDate, true) && event?.endDate !== startDate && (
-                                            <span className="end-date row-subtitle">&nbsp;to&nbsp;</span>
-                                        )}
+                                            {/* TO DATE */}
+                                            {Manager.IsValid(event?.endDate, true) && event?.endDate !== startDate && (
+                                                <span className="row-subtitle">
+                                                    {moment(event?.endDate).format(DatetimeFormats.readableMonthAndDay)}
+                                                </span>
+                                            )}
 
-                                        {/* TO DATE */}
-                                        {Manager.IsValid(event?.endDate, true) && event?.endDate !== startDate && (
-                                            <span className="row-subtitle">{moment(event?.endDate).format(DatetimeFormats.readableMonthAndDay)}</span>
-                                        )}
+                                            {/* START/END TIMES */}
+                                            {Manager.IsValid(event?.endTime) && (
+                                                <span className="row-subtitle from-time">
+                                                    &nbsp;({event?.startTime} to {event?.endTime})
+                                                </span>
+                                            )}
 
-                                        {/* START/END TIMES */}
-                                        {Manager.IsValid(event?.endTime) && (
-                                            <span className="row-subtitle from-time">
-                                                &nbsp;({event?.startTime} to {event?.endTime})
-                                            </span>
-                                        )}
-
-                                        {/* START TIME ONLY */}
-                                        {Manager.IsValid(event?.startTime) && !Manager.IsValid(event?.endTime) && (
-                                            <span className="row-subtitle from-time">&nbsp;({event?.startTime})</span>
-                                        )}
+                                            {/* START TIME ONLY */}
+                                            {Manager.IsValid(event?.startTime) && !Manager.IsValid(event?.endTime) && (
+                                                <span className="row-subtitle from-time">&nbsp;({event?.startTime})</span>
+                                            )}
+                                        </div>
                                     </div>
+
+                                    {/* CATEGORIES */}
+                                    {Manager.IsValid(event?.categories) && event?.categories?.length > 0 && (
+                                        <div className="categories">
+                                            {(() => {
+                                                const seen = new Set()
+                                                return event?.categories?.map((category, index) => {
+                                                    const parentCategory = CalendarManager.MapCategoryToParent(category)
+                                                    const emoji = GetParentCategoryIcon(parentCategory)
+
+                                                    if (seen.has(parentCategory)) return null
+                                                    seen.add(parentCategory)
+
+                                                    return (
+                                                        <span key={index} className="emoji-only">
+                                                            {emoji}
+                                                        </span>
+                                                    )
+                                                })
+                                            })()}
+                                        </div>
+                                    )}
                                 </div>
-
-                                {/* CATEGORIES */}
-                                {Manager.IsValid(event?.categories) && event?.categories?.length > 0 && (
-                                    <div className="categories">
-                                        {(() => {
-                                            const seen = new Set()
-                                            return event?.categories?.map((category, index) => {
-                                                const parentCategory = CalendarManager.MapCategoryToParent(category)
-                                                const emoji = GetParentCategoryIcon(parentCategory)
-
-                                                if (seen.has(parentCategory)) return null
-                                                seen.add(parentCategory)
-
-                                                return (
-                                                    <span key={index} className="emoji-only">
-                                                        {emoji}
-                                                    </span>
-                                                )
-                                            })
-                                        })()}
+                                {/* ICONS */}
+                                {HasRowIcons(event) && (
+                                    <div className="icon-row">
+                                        {Manager.IsValid(event?.reminderTimes) && <BiSolidBellRing className={"reminders-icon"} />}
+                                        {Manager.IsValid(event?.notes) && <FaNoteSticky className="notes-icon" />}
+                                        {Manager.IsValid(event?.websiteUrl) && <PiLinkBold className="website-icon" />}
+                                        {Manager.IsValid(event?.phone) && <MdLocalPhone className="phone-icon" />}
+                                        {Manager.IsValid(event?.address) && <MdAssistantNavigation className="address-icon" />}
+                                        {Manager.IsValid(event?.children) && <FaChildren className="children-icon" />}
+                                        {event?.isRecurring && <MdEventRepeat />}
                                     </div>
                                 )}
                             </div>
-                            {/* ICONS */}
-                            {HasRowIcons(event) && (
-                                <div className="icon-row">
-                                    {Manager.IsValid(event?.reminderTimes) && <BiSolidBellRing className={"reminders-icon"} />}
-                                    {Manager.IsValid(event?.notes) && <FaNoteSticky className="notes-icon" />}
-                                    {Manager.IsValid(event?.websiteUrl) && <PiLinkBold className="website-icon" />}
-                                    {Manager.IsValid(event?.phone) && <MdLocalPhone className="phone-icon" />}
-                                    {Manager.IsValid(event?.address) && <MdAssistantNavigation className="address-icon" />}
-                                    {Manager.IsValid(event?.children) && <FaChildren className="children-icon" />}
-                                    {event?.isRecurring && <MdEventRepeat />}
-                                </div>
-                            )}
-                        </div>
-                    )
-                })}
-        </div>
+                        )
+                    })}
+            </div>
+        </>
     )
 }
