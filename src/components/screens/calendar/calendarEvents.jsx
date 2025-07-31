@@ -50,7 +50,7 @@ export default function CalendarEvents({setEventToEdit = (event) => {}, holidayO
         if (event?.isHoliday && !event?.fromVisitationSchedule && !Manager.IsValid(event?.owner?.key)) return "holiday-event-dot"
 
         // Financial dot
-        if (financialKeywords.some((keyword) => title.includes(keyword))) return "financial-dot"
+        if (financialKeywords.some((keyword) => title.toLowerCase().includes(keyword))) return "financial-dot"
 
         return isCurrentUserDot ? "current-user-event-dot" : "coParent-event-dot"
     }

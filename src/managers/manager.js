@@ -211,7 +211,7 @@ const Manager = {
                 return false
 
             // Explicit empty array check
-            case Array.isArray(variable) && variable.length === 0:
+            case Array.isArray(variable) && (variable.length === 0 || variable.filter(Boolean).length === 0):
                 return false
 
             // Everything else is valid

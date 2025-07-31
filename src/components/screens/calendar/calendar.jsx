@@ -18,7 +18,6 @@ import globalState from "../../../context.js"
 import useCalendarEvents from "../../../hooks/useCalendarEvents"
 import useCurrentUser from "../../../hooks/useCurrentUser"
 import useDetectElement from "../../../hooks/useDetectElement"
-import useEventsOfDay from "../../../hooks/useEventsOfDay"
 import useHolidays from "../../../hooks/useHolidays"
 import DatasetManager from "../../../managers/datasetManager"
 import DateManager from "../../../managers/dateManager"
@@ -69,7 +68,6 @@ export default function EventCalendar() {
     // HOOKS
     const {currentUser, currentUserIsLoading} = useCurrentUser()
     const {calendarEvents} = useCalendarEvents()
-    const {eventsOfDay} = useEventsOfDay()
     const {holidays} = useHolidays(currentUser, "all")
 
     const AddDayIndicators = async () => {
