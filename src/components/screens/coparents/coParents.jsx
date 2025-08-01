@@ -279,7 +279,7 @@ export default function CoParents() {
                                     infoLabel = StringManager.addSpaceBetweenWords(infoLabel)
                                     infoLabel = StringManager.FormatTitle(infoLabel, true)
                                     const value = propArray[1]
-                                    const inputsToSkip = ["address", "key", "id", "user key"]
+                                    const inputsToSkip = ["address", "key", "id", "user key", "account type", "notifications enabled"]
 
                                     return (
                                         <div key={index} className="info-row">

@@ -260,7 +260,7 @@
                 align-items: center;
                 gap: 10px !important;
                 display: grid;
-                grid-template-columns: 1fr 1fr 3fr 3fr 3fr;
+                grid-template-columns: repeat(5, 1fr);
                 position: relative;
                 justify-content: center;
                 padding: 0 !important;
@@ -273,27 +273,49 @@
                 #filter-button-wrapper,
                 #search-button-wrapper {
                     display: flex;
-                    padding: 5px;
                     align-items: center;
                     justify-content: center;
                     margin: 0;
                     background-color: palette.$grey;
-                    border: 1px solid palette.$lightBorderColor;
+                    width: 100%;
                     border-radius: variables.$buttonBorderRadius;
-                    @include mixins.square(32px);
+                    border: 1px solid palette.$lightBorderColor !important;
+                    height: 29px;
+                    &.active {
+                        svg {
+                            color: palette.$main !important;
+                        }
+                    }
+
+                    &#filter-button-wrapper {
+                        position: relative;
+                        top: 1px;
+                    }
+
                     svg {
-                        color: #8b929f;
-                        transform: scale(0.9);
+                        color: rgba(0, 0, 0, 0.35);
+                        transform: scale(0.7);
+                    }
+                }
+
+                #search-button-wrapper {
+                    .red {
+                        color: palette.$red;
+                    }
+                    .search {
+                        transform: scale(0.6);
                     }
                 }
 
                 #month-selector {
                     height: 30px;
+                    line-height: 1;
+                    white-space: nowrap;
                     svg {
                         margin-left: 5px;
                         position: relative;
-                        opacity: 0.7;
-                        @include mixins.square(13px);
+                        color: rgba(0, 0, 0, 0.35);
+                        @include mixins.square(11px);
                     }
                 }
 
@@ -305,7 +327,6 @@
                     border: 1px solid palette.$lightBorderColor;
                     border-radius: variables.$buttonBorderRadius;
                     width: 100%;
-                    padding: 3px 10px;
 
                     &.pending-close {
                         background-color: palette.$red !important;
@@ -323,7 +344,7 @@
                         top: 0;
                         left: -1px;
                         transform: scale(0.65);
-                        color: palette.$iconGrey;
+                        color: rgba(0, 0, 0, 0.35);
                         @include mixins.square(22px);
                     }
                 }
@@ -333,7 +354,7 @@
                 p {
                     text-transform: uppercase;
                     margin: 0;
-                    font-size: 12px !important;
+                    font-size: 11px !important;
                     line-height: 1 !important;
                     text-align: center !important;
                     position: relative;
@@ -341,21 +362,23 @@
                     flex: 1;
                     align-items: center;
                     justify-content: center;
-                    color: #8b929f;
+                    color: rgba(0, 0, 0, 0.35);
                     background-color: palette.$grey;
                     padding: 8px 10px;
                     border: 1px solid palette.$lightBorderColor !important;
                     border-radius: variables.$buttonBorderRadius;
+                    height: 29px;
+                    white-space: nowrap;
                     @include fonts.regularFont;
                 }
 
                 // TODAY BUTTON
                 .MuiButtonBase-root {
-                    font-size: 12px !important;
+                    font-size: 11px !important;
                     text-align: center !important;
                     height: auto;
                     opacity: 1 !important;
-                    color: #8b929f !important;
+                    color: rgba(0, 0, 0, 0.35) !important;
                     line-height: 1 !important;
                     white-space: nowrap !important;
                     background-color: palette.$grey;

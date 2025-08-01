@@ -895,6 +895,38 @@ $shadows-big: multiple-box-shadow(100);
         transition: all 0.4s ease;
     }
 
+    /*#region  SCOPED MODALS */
+    &.month-options {
+        .modal-title {
+            font-size: 26px;
+        }
+        .modal-content {
+            #month-options {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                .chip {
+                    color: palette.$subtitleWhite;
+                    font-size: 18px;
+                    padding: 10px;
+                    width: calc(50% - 10px);
+                    border: 1px solid palette.$subtitleWhite;
+                    margin-bottom: 10px;
+                    border-radius: variables.$buttonBorderRadius;
+                    text-align: center;
+
+                    &.active {
+                        color: white;
+                        border: 1px solid white;
+                        @include fonts.mediumBoldFont;
+                    }
+                }
+            }
+        }
+    }
+    /*#endregion  SCOPED MODALS */
+
     .modal-title {
         font-size: 26px;
         color: white;
@@ -941,6 +973,10 @@ $shadows-big: multiple-box-shadow(100);
             transition: all 0.9s ease;
         }
 
+        * {
+            font-size: 16px;
+        }
+
         .filter-rows {
             margin-top: 15px;
             .filter-row {
@@ -949,8 +985,17 @@ $shadows-big: multiple-box-shadow(100);
                 justify-content: flex-start;
                 margin-bottom: 20px;
 
-                /*#region  ROW COLORS */
-                /*#endregion  ROW COLORS */
+                &.active {
+                    .filter-checkbox {
+                        background-color: palette.$flatGreen;
+                        border: 1px solid palette.$flatGreen;
+                    }
+                    span {
+                        color: palette.$flatGreen;
+                        opacity: 1;
+                        @include fonts.mediumBoldFont;
+                    }
+                }
 
                 .filter-checkbox {
                     margin-right: 10px;
@@ -979,12 +1024,10 @@ $shadows-big: multiple-box-shadow(100);
         }
 
         .view-label {
-            font-size: 15px;
             color: white;
             @include fonts.regularFont;
         }
         .view-text {
-            font-size: 14px;
             color: white;
             opacity: 0.65;
             @include fonts.thinnestFont;
@@ -1010,7 +1053,6 @@ $shadows-big: multiple-box-shadow(100);
     height: 80px;
     backdrop-filter: blur(20px);
     border: none;
-    border-top: 1px solid palette.$almostInvisibleWhite;
     border-radius: 0;
     background-color: transparent;
 

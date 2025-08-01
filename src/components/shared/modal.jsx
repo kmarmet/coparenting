@@ -1,9 +1,9 @@
 import React from "react"
 import CardButton from "./cardButton"
 
-const Modal = ({show, hide = () => {}, children, title = "", icon = null}) => {
+const Modal = ({show, hide = () => {}, children, title = "", icon = null, scopedClass = ""}) => {
     return (
-        <div className={`modal${show ? " active" : ""}`}>
+        <div className={`modal${show ? " active" : ""}${scopedClass ? ` ${scopedClass}` : ""}`}>
             <div className={`modal-content${show ? " active" : ""}`}>
                 <div className="modal-title">
                     {title}

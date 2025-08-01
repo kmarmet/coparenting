@@ -62,7 +62,7 @@ const Chat = ({show, hide, recipient}) => {
         const message = element.target
         const messageId = message?.getAttribute("data-id")
         const thisMessage = messagesToLoop.find((x) => x.id === messageId)
-        if (Manager.IsValid(thisMessage?.message)) {
+        if (Manager.IsValid(thisMessage?.message) && !chat?.isPausedFor?.includes(currentUser?.key)) {
             setActiveMessage(thisMessage)
             setTimeout(() => {
                 setShowLongPressMenu(true)
@@ -628,7 +628,7 @@ const Chat = ({show, hide, recipient}) => {
                         )}
                     </div>
 
-                    {Manager.IsValid(chat) && chat?.isPausedFor?.includes(currentUser?.key) && (
+                    {Manager.IsValid(chat) && chat.isPausedFor?.includes(currentUser?.key) && (
                         <p id={"chat-paused-message"}>Chat Paused - Read Only</p>
                     )}
 

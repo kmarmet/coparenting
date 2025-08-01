@@ -708,11 +708,12 @@
                     margin-top: 15px;
 
                     &.notes {
-                        background-color: #fffaf0;
-                        border-radius: variables.$bigBorderRadius;
-                        padding: 20px 15px 15px 15px;
+                        border-radius: variables.$cardBorderRadius;
+                        padding: 30px 15px 15px 15px;
+                        position: relative;
+                        border: 1px solid palette.$barelyVisibleWhite;
+                        background-color: palette.$inputBackground;
 
-                        @include mixins.shadow;
                         svg {
                             color: #01e17b;
                             position: absolute;
@@ -720,16 +721,17 @@
                             right: 10px;
                             @include mixins.square(25px);
                         }
+
                         .block-text,
                         .block-title {
-                            color: palette.$primaryText;
                             opacity: 1;
                             @include fonts.lightThickerFont;
                         }
                         .block-text {
                             line-height: 1.5;
-                            opacity: 0.95;
-                            @include fonts.regularFont;
+                            opacity: 0.85;
+                            color: white;
+                            @include fonts.lightFont;
 
                             & {
                                 letter-spacing: 0.5px;
@@ -737,17 +739,21 @@
                         }
                         .block-title {
                             position: absolute;
-                            top: -18px;
-                            border-radius: 7px;
-                            width: max-content;
-                            background-color: #fffaf0;
-                            padding: 5px 20px;
+                            top: -15px;
                             display: flex;
-                            color: palette.$main;
+                            z-index: 9999999;
+                            border: 1px solid palette.$barelyVisibleWhite;
+                            border-radius: variables.$buttonBorderRadius;
+                            width: 100px;
+                            height: 30px;
+                            background-color: #fffaf0;
+                            color: palette.$blendDark;
+                            padding-bottom: 2px;
+                            backdrop-filter: blur(5px);
                             @include fonts.mediumBoldFont;
 
                             svg {
-                                color: palette.$main;
+                                color: palette.$blendDark;
                                 top: unset;
                                 right: unset;
                                 position: unset;

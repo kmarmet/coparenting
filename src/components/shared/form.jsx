@@ -82,7 +82,9 @@ export default function Form({
                     {Manager.IsValid(title) && (
                         <div className="header">
                             <div className="flex">
-                                <div className={"form-title"} dangerouslySetInnerHTML={{__html: StringManager.FormatTitle(title, true)}}></div>
+                                <div
+                                    className={`form-title${StringManager.GetWordCount(title) >= 3 ? " long-title" : ""}`}
+                                    dangerouslySetInnerHTML={{__html: StringManager.FormatTitle(title, true)}}></div>
                                 {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
                             </div>
                             <Spacer height={5} />

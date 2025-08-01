@@ -2,9 +2,9 @@
 import {StaticDatePicker} from "@mui/x-date-pickers-pro"
 import moment from "moment"
 import React, {useContext, useEffect, useState} from "react"
-import {BsFilterCircle, BsStars} from "react-icons/bs"
+import {BsStars} from "react-icons/bs"
 import {FaMinus, FaPlus} from "react-icons/fa6"
-import {LuCalendarSearch} from "react-icons/lu"
+import {LuCalendarSearch, LuListFilter} from "react-icons/lu"
 import {MdSearchOff} from "react-icons/md"
 import {PiCalendarDotsFill, PiCalendarXDuotone} from "react-icons/pi"
 import EditCalEvent from "../../../components/forms/editCalEvent"
@@ -278,12 +278,11 @@ export default function EventCalendar() {
         const filterRows = document.querySelectorAll(".filter-row")
         filterRows.forEach((row) => {
             const filterCheckbox = row.querySelector(".filter-checkbox")
+            row.classList.remove("active")
             filterCheckbox.classList.remove("active")
         })
 
         const dataFilter = filterRow.getAttribute("data-filter")
-        const filterCheckbox = filterRow.querySelector(".filter-checkbox")
-        filterCheckbox.classList.toggle("active")
         setShowFilterModal(false)
         setActiveFilter(dataFilter)
     }
@@ -291,7 +290,14 @@ export default function EventCalendar() {
     return (
         <Screen loadingByDefault={true} stopLoadingBool={contentIsLoaded} activeScreen={ScreenNames.calendar} classes={"calendar"}>
             {/* FILTERS MODAL */}
-            <Modal title={"Event Filters"} show={showFilterModal} hide={() => setShowFilterModal(false)} className={`${theme}`}>
+            <Modal
+                title={"Event Filters"}
+                show={showFilterModal}
+                hide={() => {
+                    setShowFilterModal(false)
+                    setActiveFilter("all")
+                }}
+                className={`${theme}`}>
                 <p className={"view-label"}>VIEW</p>
                 <p className="view-text">
                     View
@@ -300,30 +306,63 @@ export default function EventCalendar() {
                     </u>
                     events that match any of the following filter
                 </p>
-                <div className="filter-rows">
-                    <div data-filter={EventFilters.holidays} className="filter-row holidays" onClick={HandleFilterCheckboxSelection}>
+                <div key={refreshKey} className="filter-rows">
+                    <div
+                        data-filter={EventFilters.holidays}
+                        className={`filter-row holidays${activeFilter === EventFilters.holidays ? " active" : ""}`}
+                        onClick={HandleFilterCheckboxSelection}>
                         <div className="filter-checkbox"></div>
                         <span>Holidays</span>
                     </div>
                     <div
                         data-filter={EventFilters.visitationHolidays}
-                        className="filter-row visitation-holidays"
+                        className={`filter-row visitation-holidays${activeFilter === EventFilters.visitationHolidays ? " active" : ""}`}
                         onClick={HandleFilterCheckboxSelection}>
                         <div className="filter-checkbox"></div>
                         <span>Visitation Holidays</span>
                     </div>
-                    <div data-filter={EventFilters.currentUser} className="filter-row your-events" onClick={HandleFilterCheckboxSelection}>
+                    <div
+                        data-filter={EventFilters.currentUser}
+                        className={`filter-row your-events${activeFilter === EventFilters.currentUser ? " active" : ""}`}
+                        onClick={HandleFilterCheckboxSelection}>
                         <div className="filter-checkbox"></div>
                         <span>Your Events</span>
                     </div>
-                    <div data-filter={EventFilters.shared} className="filter-row shared-events" onClick={HandleFilterCheckboxSelection}>
+                    <div
+                        data-filter={EventFilters.shared}
+                        className={`filter-row shared-events${activeFilter === EventFilters.shared ? " active" : ""}`}
+                        onClick={HandleFilterCheckboxSelection}>
                         <div className="filter-checkbox"></div>
                         <span>Shared with You</span>
                     </div>
-                    <div data-filter={EventFilters.all} className="filter-row all-events active" onClick={HandleFilterCheckboxSelection}>
+                    <div
+                        data-filter={EventFilters.all}
+                        className={`filter-row all-events${activeFilter === EventFilters.all ? " active" : ""}`}
+                        onClick={HandleFilterCheckboxSelection}>
                         <div className="filter-checkbox active"></div>
                         <span>All Events</span>
                     </div>
+                </div>
+            </Modal>
+
+            <Modal
+                scopedClass={"month-options"}
+                show={showMonthDropdown}
+                hide={() => setShowMonthDropdown(false)}
+                className={`${theme}`}
+                title={"Select Month"}>
+                <div id="month-options" className={`${showMonthDropdown ? "active" : ""}`}>
+                    {months?.map((month, index) => (
+                        <div
+                            className={`chip${month.name === moment(dateValue, DatetimeFormats.dateForDb).format("MMMM") ? " active" : ""}`}
+                            key={index}
+                            onClick={() => {
+                                setDateValue(moment(`${month.number}/01/${moment().format("YYYY")}`))
+                                setShowMonthDropdown(false)
+                            }}>
+                            {month.name}
+                        </div>
+                    ))}
                 </div>
             </Modal>
 
@@ -392,32 +431,21 @@ export default function EventCalendar() {
                         />
                     </div>
 
-                    {/* MONTH OPTIONS */}
-                    <div id="month-options" className={`${showMonthDropdown ? "active" : ""}`}>
-                        {months?.map((month, index) => (
-                            <div
-                                className={`chip${month.name === moment(dateValue, DatetimeFormats.dateForDb).format("MMMM") ? " active" : ""}`}
-                                key={index}
-                                onClick={() => {
-                                    setDateValue(moment(`${month.number}/01/${moment().format("YYYY")}`))
-                                    setShowMonthDropdown(false)
-                                }}>
-                                {month.name}
-                            </div>
-                        ))}
-                    </div>
                     <Spacer height={1} />
 
                     {/* BELOW CALENDAR */}
                     <div id="below-calendar" className={`${theme} flex`} style={{border: "1px solid red !important"}}>
-                        <div id="filter-button-wrapper" onClick={() => setShowFilterModal(true)}>
-                            <BsFilterCircle />
+                        <div
+                            className={`${activeFilter !== EventFilters.all ? "active" : ""}`}
+                            id="filter-button-wrapper"
+                            onClick={() => setShowFilterModal(true)}>
+                            <LuListFilter />
                         </div>
                         <div id="search-button-wrapper">
                             {showSearchInput ? (
-                                <MdSearchOff onClick={() => setShowSearchInput(false)} />
+                                <MdSearchOff className={"red"} onClick={() => setShowSearchInput(false)} />
                             ) : (
-                                <LuCalendarSearch onClick={() => setShowSearchInput(true)} />
+                                <LuCalendarSearch className={"search"} onClick={() => setShowSearchInput(true)} />
                             )}
                         </div>
                         {/* LEGEND BUTTON */}
