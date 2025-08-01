@@ -133,6 +133,7 @@ export default function CalendarEvents({
     return (
         <>
             <div id={"search-input-wrapper"} className={`${showSearchInput ? " active" : ""}`}>
+                <Spacer height={3} />
                 <div id="input-row">
                     <InputField
                         defaultValue={searchQuery}

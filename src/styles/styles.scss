@@ -262,7 +262,6 @@
                 justify-content: center;
                 position: relative;
                 top: -20px;
-                @include mixins.sparkleButton;
                 @include fonts.fontBase;
 
                 svg {

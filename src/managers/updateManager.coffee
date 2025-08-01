@@ -95,7 +95,6 @@ export default UpdateManager =
     catch error
       LogManager.Log("Error: #{error} | Code File:  | Function:  ")
 
-
   getUserSubId: (currentUserPhoneOrEmail, phoneOrEmail = "email") ->
     existingRecord = await DB.find(DB.tables.updateSubscribers, [phoneOrEmail, currentUserPhoneOrEmail], true)
     existingRecord?.subscriptionId
@@ -112,9 +111,12 @@ export default UpdateManager =
   SendUpdate: (title, message, recipientKey, currentUser = null, category = '') ->
     allSubs = await DB.GetTableData("#{DB.tables.updateSubscribers}")
     subIdRecord = allSubs.find (sub) -> sub.key == recipientKey
-    console.log(subIdRecord)
     #    If user is not subscribed, do not send notification
     if !subIdRecord
+      return false
+      
+    # If notifications for user is muted -> do not send notification
+    if currentUser?.mutedUserKeys?.includes recipientKey
       return false
 
     subId = subIdRecord?.subscriptionId
@@ -139,7 +141,7 @@ export default UpdateManager =
     newNotification.title = title
     newNotification.text = message
     newNotification.category = category
-
+    
     await DB.Add "#{DB.tables.updates}/#{recipientKey}", [], newNotification
     await Apis.OneSignal.SendUpdate(subId, raw)
 
@@ -147,7 +149,7 @@ export default UpdateManager =
     if Manager.IsValid(shareWithKeys)
       for key in shareWithKeys
         await UpdateManager.SendUpdate(title, message, key, currentUser, category)
-
+ 
   enableNotifications: (subId) ->
     myHeaders = new Headers()
     myHeaders.append "Accept", "application/json"

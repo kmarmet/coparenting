@@ -117,6 +117,7 @@ function General({activeChild}) {
                                         <div key={index} className={rowClass}>
                                             {isAddress ? (
                                                 <AddressInput
+                                                    wrapperClasses={"white-bg"}
                                                     showAddressTypeSelector={false}
                                                     labelText="Home Address"
                                                     onChange={({address}) => Update({prop: infoLabel, value: address})}

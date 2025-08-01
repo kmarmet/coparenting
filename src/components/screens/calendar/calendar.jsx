@@ -113,7 +113,9 @@ export default function EventCalendar() {
                     dayEvents = [...sharedEvents]
                     break
                 case activeFilter === EventFilters.visitationHolidays:
-                    dayEvents = dayEvents.filter((e) => e?.isHoliday === true && e?.shareWith?.includes(currentUser?.key))
+                    dayEvents = dayEvents.filter(
+                        (e) => e?.isHoliday === true && !e?.shareWith?.includes(currentUser?.key) && e?.fromVisitationSchedule === true
+                    )
                     break
                 case activeFilter === EventFilters.currentUser:
                     dayEvents = dayEvents.filter((e) => e?.owner?.key === currentUser?.key && !e?.shareWith?.includes(currentUser?.key))
@@ -124,6 +126,12 @@ export default function EventCalendar() {
             }
 
             const {dotClasses, payEvents} = GetEventDotClasses(dayEvent, dayEvents, holidays)
+
+            // Filter out non-holiday events when visitationHolidays filter is active
+            if (activeFilter === EventFilters.visitationHolidays && dayEvent?.isHoliday !== true) {
+                continue
+            }
+
             const dotWrapper = document.createElement("span")
             dotWrapper.classList.add("dot-wrapper")
 
@@ -211,7 +219,6 @@ export default function EventCalendar() {
                 }
             }
         }
-
         dotClasses = DatasetManager.GetValidArray(dotClasses, true)
         return {
             dotClasses,
@@ -298,7 +305,6 @@ export default function EventCalendar() {
                     setActiveFilter("all")
                 }}
                 className={`${theme}`}>
-                <p className={"view-label"}>VIEW</p>
                 <p className="view-text">
                     View
                     <u>

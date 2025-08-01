@@ -928,7 +928,7 @@ $shadows-big: multiple-box-shadow(100);
     /*#endregion  SCOPED MODALS */
 
     .modal-title {
-        font-size: 26px;
+        font-size: 30px;
         color: white;
         text-align: center;
         width: max-content;
@@ -970,11 +970,7 @@ $shadows-big: multiple-box-shadow(100);
         &.active {
             opacity: 1;
             transform: translateY(0) scale(1);
-            transition: all 0.9s ease;
-        }
-
-        * {
-            font-size: 16px;
+            transition: all 0.5s ease;
         }
 
         .filter-rows {
@@ -987,11 +983,10 @@ $shadows-big: multiple-box-shadow(100);
 
                 &.active {
                     .filter-checkbox {
-                        background-color: palette.$flatGreen;
-                        border: 1px solid palette.$flatGreen;
+                        background-color: palette.$purpleForBlendBg;
+                        border: 1px solid palette.$purpleForBlendBg;
                     }
                     span {
-                        color: palette.$flatGreen;
                         opacity: 1;
                         @include fonts.mediumBoldFont;
                     }
@@ -1001,7 +996,7 @@ $shadows-big: multiple-box-shadow(100);
                     margin-right: 10px;
                     border: 1px solid palette.$lightBorderColor;
                     border-radius: variables.$buttonBorderRadius;
-                    @include square(20px);
+                    @include square(16px);
 
                     &.active {
                         background-color: palette.$flatGreen;
@@ -1023,14 +1018,11 @@ $shadows-big: multiple-box-shadow(100);
             }
         }
 
-        .view-label {
-            color: white;
-            @include fonts.regularFont;
-        }
         .view-text {
             color: white;
-            opacity: 0.65;
-            @include fonts.thinnestFont;
+            opacity: 0.85;
+            font-size: 16px;
+            @include fonts.lightFont;
 
             u,
             b {

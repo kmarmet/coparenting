@@ -95,11 +95,12 @@ const Contacts = () => {
         const updatedMutesUserKeys = mutedUserKeys || []
         if (mutedUserKeys?.includes(activeContact?.userKey)) {
             updatedMutesUserKeys.splice(mutedUserKeys.indexOf(activeContact?.userKey), 1)
+            setState({...state, bannerMessage: `Notifications from ${StringManager.GetFirstNameOnly(activeContact?.name)} have been enabled`})
         } else {
+            setState({...state, bannerMessage: `Notifications from ${StringManager.GetFirstNameOnly(activeContact?.name)} have been muted`})
             updatedMutesUserKeys.push(activeContact?.userKey)
         }
         await DB.UpdateByPath(`${DB.tables.users}/${currentUser?.key}/mutedUserKeys`, updatedMutesUserKeys)
-        setState({...state, bannerMessage: `${StringManager.GetFirstNameOnly(activeContact?.name)} updated!`})
         setShowModal(false)
     }
 
@@ -179,7 +180,7 @@ const Contacts = () => {
         if (activeContact?.hasOwnProperty("general")) {
             return "children"
         } else {
-            return "co-parents"
+            return "parent"
         }
     }
 

@@ -390,7 +390,7 @@
                     .section-wrapper {
                         transition: all 0.3s ease;
                         opacity: 1 !important;
-                        padding: 15px;
+                        //padding: 15px;
                     }
                 }
 
@@ -470,7 +470,7 @@
                 }
 
                 .plus-minus {
-                    font-size: 22px;
+                    @include mixins.square(18px);
                 }
 
                 .svg {

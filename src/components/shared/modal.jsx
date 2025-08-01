@@ -5,10 +5,10 @@ const Modal = ({show, hide = () => {}, children, title = "", icon = null, scoped
     return (
         <div className={`modal${show ? " active" : ""}${scopedClass ? ` ${scopedClass}` : ""}`}>
             <div className={`modal-content${show ? " active" : ""}`}>
-                <div className="modal-title">
+                <p className="modal-title">
                     {title}
                     {icon ? icon : ""}
-                </div>
+                </p>
                 {children}
             </div>
             <div id={"modal-card-buttons"} className="card-buttons">
