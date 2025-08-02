@@ -33,14 +33,14 @@ const NewCoParentForm = ({showCard, hideCard}) => {
     // Ref
     const formRef = React.useRef({...new CoParent()})
 
-    const ResetForm = (successMessage) => {
+    const ResetForm = (bannerMessage) => {
         Manager.ResetForm("new-coParent-wrapper")
         setCoParentHasAccount(false)
         setTimeout(() => {
             setState({...state, refreshKey: Manager.GetUid()})
         }, 100)
-        if (Manager.IsValid(successMessage, true)) {
-            setState({...state, bannerMessage: successMessage})
+        if (Manager.IsValid(bannerMessage, true)) {
+            setState({...state, bannerMessage: bannerMessage})
         }
         hideCard()
     }

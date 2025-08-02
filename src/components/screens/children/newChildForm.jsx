@@ -43,11 +43,11 @@ const NewChildForm = ({hideCard, showCard}) => {
         return false
     }
 
-    const ResetForm = (successMessage = "") => {
+    const ResetForm = (bannerMessage = "") => {
         Manager.ResetForm("new-child-wrapper")
         hideCard()
         setChildHasAccount(false)
-        setState({...state, refreshKey: Manager.GetUid(), bannerMessage: successMessage})
+        setState({...state, refreshKey: Manager.GetUid(), bannerMessage: bannerMessage})
     }
 
     const Submit = async () => {

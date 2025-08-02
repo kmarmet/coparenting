@@ -60,11 +60,11 @@ export default function Handoffs() {
     // Refs
     const formRef = React.useRef({...activeRequest, ...new HandoffChangeRequest()})
 
-    const ResetForm = (successMessage = "") => {
+    const ResetForm = (bannerMessage = "") => {
         Manager.ResetForm("edit-event-form")
         setShowDetails(false)
         setView({label: "Details", value: "Details"})
-        setState({...state, refreshKey: Manager.GetUid(), bannerMessage: successMessage})
+        setState({...state, refreshKey: Manager.GetUid(), bannerMessage: bannerMessage})
     }
 
     const Update = async () => {

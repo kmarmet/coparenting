@@ -65,6 +65,7 @@
                     opacity: 0 !important;
                     transition: all 0.3s ease;
                     .data-row {
+                        padding: 0 10px !important;
                         .label-wrapper {
                             &.always-show {
                                 &.filled-input-label {
@@ -78,13 +79,14 @@
                         .input-wrapper,
                         .input-field {
                             background-color: rgba(255, 255, 255, 0.9) !important;
-                            border: 1px solid palette.$lightBorderColor !important;
                             input {
                                 color: palette.$primaryText;
                             }
                             .input-and-children {
+                                background: palette.$grey;
+                                border-radius: variables.$buttonBorderRadius;
                                 input {
-                                    color: palette.$primaryText;
+                                    background: palette.$grey;
                                 }
                             }
                         }
@@ -95,7 +97,7 @@
 
                         svg {
                             color: palette.$iconGrey;
-                            opacity: 0.65;
+                            opacity: 1;
                         }
                     }
                 }
@@ -232,10 +234,12 @@
             }
 
             h3 {
-                border-radius: 8px !important;
+                #toggle-button {
+                    font-weight: 500 !important;
+                }
             }
             svg {
-                color: palette.$darkerGrey;
+                color: palette.$iconGrey;
             }
 
             button {
@@ -339,7 +343,7 @@
             /*#endregion  EXPENSES*/
 
             /*#region  CHILD INFO */
-            &.child-info {
+            &.children {
                 background: transparent !important;
                 border: 0 !important;
                 .MuiAccordion-heading {
@@ -364,50 +368,45 @@
                         border: 0 !important;
 
                         svg {
-                            font-size: 20px !important;
                             position: relative;
                             top: 2px;
+                            @include mixins.square(22px);
                             &.general,
                             &.behavior,
                             &.schooling,
                             &.medical {
-                                font-size: 22px !important;
                                 top: -1px !important;
 
-                                &.general,
                                 &.schooling {
-                                    font-size: 26px !important;
                                 }
                             }
 
+                            &.general {
+                                transform: scale(1.25);
+                            }
+                            &.schooling {
+                                transform: scale(1.2);
+                            }
+
                             &.to:not(.plus-minus) {
-                                font-size: 27px !important;
                             }
                         }
 
-                        &.general {
-                            svg {
-                                color: palette.$main;
+                        svg {
+                            &.general {
+                                color: palette.$blend !important;
                             }
-                        }
-                        &.schooling {
-                            svg {
+                            &.schooling {
                                 color: #2ecc71;
                             }
-                        }
-                        &.medical {
-                            svg {
+                            &.medical {
                                 color: #e74c3c;
                             }
-                        }
-                        &.behavior {
-                            svg {
+                            &.behavior {
                                 color: #dc7633;
                             }
-                        }
 
-                        &.checklist {
-                            svg {
+                            &.checklist {
                                 &.from {
                                     color: rgba(110, 78, 255, 0.88);
                                 }

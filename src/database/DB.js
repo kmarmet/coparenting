@@ -4,6 +4,7 @@ import _ from "lodash"
 import DatasetManager from "../managers/datasetManager"
 import LogManager from "../managers/logManager.js"
 import Manager from "../managers/manager"
+import ObjectManager from "../managers/objectManager"
 
 const DB = {
     tables: {
@@ -238,7 +239,7 @@ const DB = {
             // console.log('updatedRow', updatedRow)
             //updatedRow = ObjectManager.GetValidObject(updatedRow)
             console.log("DB -> ReplaceEntireRecord", updatedRow)
-            await set(ref(dbRef, path), updatedRow)
+            await set(ref(dbRef, path), ObjectManager.CleanObject(updatedRow))
                 .then()
                 .catch((error) => {
                     LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)

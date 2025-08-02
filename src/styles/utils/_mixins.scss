@@ -269,7 +269,7 @@ $shadows-big: multiple-box-shadow(100);
 
 /*#region  BUTTONS */
 @mixin defaultButton() {
-    border-radius: variables.$buttonBorderRadius;
+    border-radius: variables.$buttonBorderRadius !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -549,17 +549,26 @@ $shadows-big: multiple-box-shadow(100);
     color: #5500ea;
     background-image: linear-gradient(
         180deg,
-        hsl(248deg 71% 45%) 3%,
-        hsl(252deg 70% 46%) 42%,
-        hsl(256deg 68% 46%) 63%,
-        hsl(262deg 65% 48%) 86%,
-        hsl(265deg 63% 49%) 100%
+        hsl(252deg 97% 54%) 0%,
+        hsl(257deg 98% 53%) 34%,
+        hsl(260deg 99% 52%) 60%,
+        hsl(264deg 99% 52%) 78%,
+        hsl(267deg 100% 51%) 90%,
+        hsl(270deg 100% 50%) 98%
     );
 }
 
 @mixin screenHeaderGradient {
     color: #6f00ff;
-    background-image: linear-gradient(180deg, #4700ff 3%, #5100ff 42%, #6f00ff 100%);
+    background-image: linear-gradient(
+        180deg,
+        hsl(252deg 97% 54%) 0%,
+        hsl(257deg 98% 53%) 34%,
+        hsl(260deg 99% 52%) 60%,
+        hsl(264deg 99% 52%) 78%,
+        hsl(267deg 100% 51%) 90%,
+        hsl(270deg 100% 50%) 98%
+    );
 }
 
 @mixin fadeEdges {
@@ -1146,7 +1155,6 @@ $shadows-big: multiple-box-shadow(100);
                 }
             }
         }
-        border-right: 1px solid palette.$almostInvisibleWhite;
 
         &:last-child {
             border-right: 0;
@@ -1275,7 +1283,7 @@ $shadows-big: multiple-box-shadow(100);
     top: 0;
     width: 100vw;
     background: palette.$greenForWhiteText;
-    padding: 60px 12px 15px 12px;
+    padding: 50px 12px 15px 12px;
     bottom: 0;
     transition: all 2s cubic-bezier(0.17, 0.67, 0.21, 0.95);
     pointer-events: none;
@@ -2354,18 +2362,28 @@ $shadows-big: multiple-box-shadow(100);
             color: palette.$iconGrey;
         }
 
+        .label-wrapper {
+            &.always-show {
+                &.filled-input-label {
+                    label {
+                        color: rgba(80, 71, 255, 0.9);
+                        @include fonts.regularFont;
+                    }
+                }
+            }
+        }
+
         input,
         textarea {
             color: palette.$primaryText !important;
-            background-color: transparent;
             caret-color: black;
-
+            background: palette.$grey;
+            width: 100%;
             &::placeholder {
                 color: black;
                 opacity: 0.4;
             }
         }
-
         &.calendar-search {
             height: 40px;
             &.active {
@@ -2397,60 +2415,6 @@ $shadows-big: multiple-box-shadow(100);
 
     &.last {
         margin-bottom: 0;
-    }
-
-    * {
-        line-height: 1 !important;
-        background-color: transparent;
-    }
-
-    fieldset {
-        legend {
-            span {
-                display: none !important;
-            }
-        }
-    }
-
-    .input-and-children {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        width: calc(100% - 20px);
-
-        svg {
-            font-size: 15px;
-        }
-    }
-
-    p {
-        color: palette.$red;
-        position: relative;
-        margin-bottom: -20px;
-        font-size: 14px;
-        font-weight: variables.$fwMediumBold;
-        text-transform: lowercase;
-    }
-
-    .input-icon {
-        @include centerVert;
-        position: absolute;
-        color: palette.$transWhite;
-        left: 20px;
-        width: 20px;
-        height: 20px;
-        font-size: 22px;
-
-        &.website {
-            @include square(20px);
-        }
-        &.notes {
-            align-self: flex-start;
-            position: absolute;
-            top: 21px;
-            @include square(22px);
-        }
     }
 
     &.textarea {
@@ -2491,6 +2455,61 @@ $shadows-big: multiple-box-shadow(100);
             .label-wrapper {
                 padding-bottom: 6px;
             }
+        }
+    }
+
+    * {
+        line-height: 1 !important;
+        background-color: transparent;
+    }
+
+    p {
+        color: palette.$red;
+        position: relative;
+        margin-bottom: -20px;
+        font-size: 14px;
+        font-weight: variables.$fwMediumBold;
+        text-transform: lowercase;
+    }
+
+    fieldset {
+        legend {
+            span {
+                display: none !important;
+            }
+        }
+    }
+
+    .input-and-children {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: calc(100% - 20px);
+
+        svg {
+            font-size: 15px;
+        }
+    }
+
+    .input-icon {
+        @include centerVert;
+        position: absolute;
+        color: palette.$transWhite;
+        left: 20px;
+        width: 20px;
+        height: 20px;
+        font-size: 22px;
+        z-index: 99;
+
+        &.website {
+            @include square(20px);
+        }
+        &.notes {
+            align-self: flex-start;
+            position: absolute;
+            top: 21px;
+            @include square(22px);
         }
     }
 
@@ -5191,10 +5210,18 @@ $shadows-big: multiple-box-shadow(100);
                 position: relative;
                 top: 0;
                 #svg-wrapper {
-                    box-shadow: variables.$boxShadow_button_only_medium;
-                    border-radius: 100%;
+                    box-shadow: hsl(270deg 100% 50%) 0 10px -5px 2px;
                     margin: 0 15px;
-                    background: palette.$blend;
+                    border-radius: variables.$buttonBorderRadius;
+                    background-image: linear-gradient(
+                        180deg,
+                        hsl(252deg 100% 58%) 0%,
+                        hsl(256deg 100% 57%) 36%,
+                        hsl(259deg 100% 56%) 64%,
+                        hsl(263deg 100% 55%) 82%,
+                        hsl(266deg 100% 53%) 91%,
+                        hsl(270deg 100% 50%) 100%
+                    );
                     @include square(60px);
 
                     svg {

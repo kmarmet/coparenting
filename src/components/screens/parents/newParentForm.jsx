@@ -35,13 +35,13 @@ const NewParentForm = ({showCard, hideCard}) => {
     const [email, setEmail] = useState("")
     const [parentType, setParentType] = useState("")
 
-    const ResetForm = (successMessage = "") => {
+    const ResetForm = (bannerMessage = "") => {
         Manager.ResetForm("new-parent-wrapper")
         setName("")
         setAddress("")
         setEmail("")
         setParentType("")
-        setState({...state, refreshKey: Manager.GetUid(), bannerMessage: successMessage})
+        setState({...state, refreshKey: Manager.GetUid(), bannerMessage: bannerMessage})
         hideCard()
     }
 

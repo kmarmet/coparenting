@@ -1,9 +1,9 @@
-import {getDatabase, off, onValue, ref} from 'firebase/database'
-import {useContext, useEffect, useState} from 'react'
-import globalState from '../context'
-import DB from '../database/DB'
-import Manager from '../managers/manager'
-import useChildren from './useChildren'
+import {getDatabase, off, onValue, ref} from "firebase/database"
+import {useContext, useEffect, useState} from "react"
+import globalState from "../context"
+import DB from "../database/DB"
+import Manager from "../managers/manager"
+import useChildren from "./useChildren"
 
 const useActiveChild = (activeChildId) => {
     const {state, setState} = useContext(globalState)
@@ -14,7 +14,19 @@ const useActiveChild = (activeChildId) => {
     const [error, setError] = useState(null)
     const [activeChildIndex, setActiveChildIndex] = useState(null)
     const path = `${DB.tables.users}/${currentUser?.key}/children/${activeChildIndex}`
-    const queryKey = ['realtime', path]
+    const queryKey = ["realtime", path]
+
+    useEffect(() => {
+        const index = DB.GetChildIndex(children, activeChildId)
+
+        // Failure to find child
+        if (!Manager.IsValid(index)) {
+            setActiveChild(null)
+            setActiveChildIsLoading(false)
+        }
+
+        setActiveChildIndex(index)
+    }, [activeChild])
 
     useEffect(() => {
         const database = getDatabase()
@@ -22,22 +34,17 @@ const useActiveChild = (activeChildId) => {
         const listener = onValue(
             dataRef,
             (snapshot) => {
-                const index = DB.GetChildIndex(children, activeChildId)
-
-                // Failure to find child
-                if (!Manager.IsValid(index)) {
+                if (!Manager.IsValid(activeChildId) || !Manager.IsValid(children)) {
                     setActiveChild(null)
                     setActiveChildIsLoading(false)
                 }
-
-                setActiveChildIndex(index)
-
-                const child = children?.[index]
-
+                if (!Manager.IsValid(activeChildId) && Manager.IsValid(children)) {
+                    setActiveChild(children?.[0])
+                    setActiveChildIsLoading(false)
+                }
+                const child = children?.[activeChildIndex]
                 if (Manager.IsValid(child)) {
-                    if (Manager.IsValid(currentUser) && Manager.IsValid(children) && Manager.IsValid(activeChildId)) {
-                        setActiveChild(child)
-                    }
+                    setActiveChild(child)
                 } else {
                     setActiveChild(null)
                 }
@@ -51,7 +58,7 @@ const useActiveChild = (activeChildId) => {
         )
 
         return () => {
-            off(dataRef, 'value', listener)
+            off(dataRef, "value", listener)
         }
     }, [path, children, currentUser, activeChildId])
 

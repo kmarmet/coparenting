@@ -93,11 +93,11 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
         ResetForm(`${StringManager.UppercaseFirstLetterOfAllWords(selectedCategory)} Info Added`)
     }
 
-    const ResetForm = (successMessage = "") => {
+    const ResetForm = (bannerMessage = "") => {
         Manager.ResetForm("custom-child-info-wrapper")
         setInfoSection("")
         hideCard()
-        setState({...state, refreshKey: Manager.GetUid(), bannerMessage: successMessage})
+        setState({...state, refreshKey: Manager.GetUid(), bannerMessage: bannerMessage})
     }
 
     const SetDefaultDropdownOptions = () => {

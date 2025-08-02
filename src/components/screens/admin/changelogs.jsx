@@ -42,8 +42,8 @@ const Changelogs = () => {
                             const changelogMonth = moment(changelog?.releaseDate).format("MMMM")
                             const changelogDay = moment(changelog?.releaseDate).format("Do")
                             const htmlWithIcons = changelog?.html
-                                ?.replaceAll("New Feature", "✨ New Feature")
-                                ?.replaceAll("Squashed Bug", "🪲 Squashed Bug")
+                                ?.replaceAll("New Feature", "✨ New Features")
+                                ?.replaceAll("Squashed Bug", "🪲 Squashed Bugs")
                                 ?.replaceAll("Improvements", "🪄 Improvements")
 
                             return (

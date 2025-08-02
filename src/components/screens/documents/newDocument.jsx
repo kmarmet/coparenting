@@ -50,7 +50,7 @@ export default function NewDocument() {
     const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
     const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
 
-    const ResetForm = (successMessage = "") => {
+    const ResetForm = (bannerMessage = "") => {
         Manager.ResetForm("upload-doc-wrapper")
         setDocType(null)
         setDoc(null)
@@ -58,7 +58,7 @@ export default function NewDocument() {
             ...state,
             isLoading: false,
             creationFormToShow: "",
-            bannerMessage: successMessage,
+            bannerMessage: bannerMessage,
             currentScreen: ScreenNames.docsList,
         })
     }

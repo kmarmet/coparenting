@@ -154,7 +154,7 @@
             }
 
             .input-wrapper {
-                border: 1px solid palette.$lightBorderColor !important;
+                background-color: palette.$grey !important;
                 input {
                     color: palette.$labelText !important;
                     &::placeholder {

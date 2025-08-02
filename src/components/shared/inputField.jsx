@@ -20,7 +20,6 @@ import Label from "./label"
 
 function InputField({
     wrapperClasses = "",
-    labelText = "",
     inputType = InputTypes.text,
     required,
     onChange,
@@ -29,14 +28,12 @@ function InputField({
     onKeyUp = (e) => {},
     onDateOrTimeSelection = (e) => {},
     timeViews = ["hours", "minutes"],
-    dateViews = ["month", "day"],
     placeholder = "",
     dateFormat = DatetimeFormats.readableMonthAndDay,
     inputName = "",
+    labelClasses = "",
     children = null,
     isCurrency = false,
-    customDebounceDelay = null,
-    errorMessage = "",
 }) {
     const {state, setState} = useContext(globalState)
     const {refreshKey, theme} = state
@@ -60,7 +57,7 @@ function InputField({
     return (
         <>
             {Manager.IsValid(defaultValue) && inputType !== InputTypes.search && (
-                <Label text={placeholder} classes={"always-show filled-input-label"} />
+                <Label text={placeholder} classes={`always-show filled-input-label${labelClasses ? ` ${labelClasses}` : ""}`} />
             )}
             <div
                 onClick={(e) => {
@@ -92,7 +89,7 @@ function InputField({
                             },
                         }}
                         showDaysOutsideCurrentMonth={true}
-                        label={labelText ? labelText : placeholder}
+                        label={placeholder}
                         onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
                         views={["month", "day"]}
                         name={inputName}

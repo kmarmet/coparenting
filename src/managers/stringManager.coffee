@@ -165,7 +165,9 @@ StringManager = {
 
 
   SpaceBetweenWords: (input) ->
-    return input.toString().replace(/([a-z])([A-Z])/g, '$1 $2')
+    if !Manager.IsValid(input, true) or input?.length == 0
+      return input
+    return input?.toString()?.replace(/([a-z])([A-Z])/g, '$1 $2')
 
   addLongTextClass: (text) ->
     if StringManager.GetWordCount(text) > 10
