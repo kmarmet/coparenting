@@ -21,7 +21,7 @@ import Label from "./label"
 function InputField({
     wrapperClasses = "",
     inputType = InputTypes.text,
-    required,
+    dataValue = "",
     onChange,
     defaultValue = null,
     inputClasses = "",
@@ -162,13 +162,13 @@ function InputField({
 
                         <div className="input-and-children">
                             <DebounceInput
+                                data-value={dataValue}
                                 value={Manager.IsValid(defaultValue) ? defaultValue : ""}
                                 placeholder={placeholder}
                                 className={`${inputClasses} with-icon`}
                                 onChange={onChange}
                                 name={inputName}
                                 debounceTimeout={0}
-                                // debounceTimeout={customDebounceDelay !== 1000 ? customDebounceDelay : 1000}
                                 key={refreshKey}
                             />
                             {children}
@@ -187,7 +187,6 @@ function InputField({
                             onChange={onChange}
                             name={inputName}
                             debounceTimeout={0}
-                            // debounceTimeout={customDebounceDelay !== 1000 ? customDebounceDelay : 1000}
                             key={refreshKey}
                         />
                     </>
@@ -205,7 +204,6 @@ function InputField({
                             key={refreshKey}
                             pattern="[0-9]"
                             defaultValue={defaultValue}
-                            required={required}
                             onChange={onChange}
                         />
                     </>
@@ -226,7 +224,6 @@ function InputField({
                                 key={refreshKey}
                                 pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                                 defaultValue={defaultValue}
-                                required={required}
                                 onChange={(e) => {
                                     let value = e.target.value
                                     e.target.value = value.replace(/[^0-9+]/g, "")

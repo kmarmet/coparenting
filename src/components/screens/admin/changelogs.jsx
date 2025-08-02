@@ -33,6 +33,7 @@ const Changelogs = () => {
                         Authenticity and transparency are our core values. Because we are committed to keeping you informed about our progress, we
                         have created this page to share updates.
                     </p>
+
                     <Spacer height={5} />
                     <p>We will continuously highlight updates, whether we are adding a new feature or ✨ or fiercely squashing bugs 🪲.</p>
                 </div>
@@ -42,8 +43,8 @@ const Changelogs = () => {
                             const changelogMonth = moment(changelog?.releaseDate).format("MMMM")
                             const changelogDay = moment(changelog?.releaseDate).format("Do")
                             const htmlWithIcons = changelog?.html
-                                ?.replaceAll("New Feature", "✨ New Features")
-                                ?.replaceAll("Squashed Bug", "🪲 Squashed Bugs")
+                                ?.replaceAll("New", "✨ New Features")
+                                ?.replaceAll("Squashed", "🪲 Squashed Bugs")
                                 ?.replaceAll("Improvements", "🪄 Improvements")
 
                             return (

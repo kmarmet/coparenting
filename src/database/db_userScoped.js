@@ -10,6 +10,7 @@ import LogManager from "../managers/logManager"
 import Manager from "../managers/manager"
 import ObjectManager from "../managers/objectManager"
 import StringManager from "../managers/stringManager.coffee"
+import SharedCustomInfoEntry from "../models/child/sharedCustomInfoEntry"
 import FeedbackEmotionsTracker from "../models/feedbackEmotionsTracker"
 import User from "../models/users/user"
 import DB from "./DB"
@@ -281,7 +282,7 @@ const DB_UserScoped = {
             })
         })
     },
-    AddUserChildProp: async (currentUser, activeChild, infoSection, prop, value, shareWith) => {
+    AddChildInfoEntry: async ({currentUser, activeChild, category, entry, shareWith}) => {
         const dbRef = ref(getDatabase())
 
         // Get the child's index
@@ -290,31 +291,37 @@ const DB_UserScoped = {
         if (!childIndex) return
 
         // Prepare path for the child's property
-        const childPath = `${DB.tables.users}/${currentUser?.key}/children/${childIndex}/${infoSection}/${StringManager.formatDbProp(prop)}`
+        const childPath = `${DB.tables.users}/${currentUser?.key}/children/${childIndex}/details`
+        const existingData = activeChild["details"] || []
+        let tableData = []
+        if (Manager.IsValid(existingData)) {
+            tableData = DatasetManager.AddToArray(existingData, entry)
+        } else {
+            tableData = [entry]
+        }
 
         // Directly set the child's property
-        await set(child(dbRef, childPath), value)
+        await set(child(dbRef, childPath), DatasetManager.GetValidArray(tableData))
 
         // If there’s no shareWith list, skip sharing
         if (!Manager.IsValid(shareWith, true)) return
 
         // Share the property with other users
-        await DB_UserScoped.ShareChildInfo(shareWith, activeChild, currentUser, infoSection, prop, value)
+        await DB_UserScoped.ShareChildInfo(shareWith, activeChild, currentUser, category, entry)
     },
-    ShareChildInfo: async (shareWith, activeChild, currentUser, infoSection, prop, value) => {
+    ShareChildInfo: async (shareWith, activeChild, currentUser, entry) => {
         const dbRef = ref(getDatabase())
 
-        const sharedObject = {
-            prop,
-            infoSection,
+        const sharedObject = new SharedCustomInfoEntry({
+            ...entry,
             childName: activeChild?.general?.name,
             sharedByName: currentUser?.name,
             sharedByOwnerKey: currentUser?.key,
-            id: Manager.GetUid(),
-            value,
-        }
+        })
 
-        for (let userKey of shareWith) {
+        if (!Manager.IsValid(entry?.shareWith)) return
+
+        for (let userKey of entry?.shareWith) {
             const sharedPath = `${DB.tables.sharedChildInfo}/${userKey}`
             const shareWithSet = await DB.GetTableData(sharedPath)
 

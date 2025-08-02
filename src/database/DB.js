@@ -168,6 +168,7 @@ const DB = {
     DeleteByPath: async (path) => {
         const dbRef = ref(getDatabase())
         try {
+            console.log("DB -> DeleteByPath", path)
             await remove(child(dbRef, path))
         } catch (error) {
             LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)

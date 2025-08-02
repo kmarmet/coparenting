@@ -19,7 +19,8 @@
         border: 1px solid rgba(73, 88, 255, 0.15);
         background: rgba(73, 88, 255, 0.09);
         border-radius: variables.$cardBorderRadius;
-        box-shadow: rgba(73, 88, 255, 0.3) 0 1px 20px;
+        box-shadow: rgba(73, 88, 255, 0.3) 0 0 8px;
+
         .co-parent,
         .parent {
             padding: 20px;
@@ -43,7 +44,9 @@
                         .info-value {
                             opacity: 1;
                             text-decoration: none;
+                            color: palette.$blend;
                         }
+
                         svg {
                             color: palette.$blend;
 
@@ -139,17 +142,19 @@
         margin-top: 20px;
         .co-parent {
             &.active {
+                transform: scale(1.1);
+                transition: all 0.4s ease;
                 p {
-                    border: 1px solid palette.$blend;
-                    color: palette.$blend;
+                    border: 1px solid palette.$green;
+                    color: palette.$green;
                 }
             }
             p {
+                transition: all 0.4s ease;
                 border: 1px solid palette.$darkGrey;
                 border-radius: variables.$buttonBorderRadius;
                 padding: 5px 10px;
                 cursor: pointer;
-                transition: all 0.2s ease;
                 font-size: 14px;
                 color: palette.$darkGrey;
                 @include fonts.lightFont;

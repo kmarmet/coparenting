@@ -91,15 +91,12 @@ export default function Children() {
     // Set active child on page load
     useEffect(() => {
         if (Manager.IsValid(children)) {
-            console.log("on change")
             if (Manager.IsValid(activeChild)) {
                 const _activeChild = children?.find((c) => c.id === activeChild?.id)
                 if (Manager.IsValid(_activeChild)) {
-                    console.log("new", _activeChild)
                     setActiveChild(_activeChild)
                 }
             } else {
-                console.log("else")
                 setActiveChild(children?.[0])
             }
         }
@@ -259,6 +256,7 @@ export default function Children() {
                         <div id="child-wrapper">
                             {Manager.IsValid(children) &&
                                 children?.map((child, index) => {
+                                    console.log(child)
                                     return (
                                         <div key={index}>
                                             {/* PROFILE PIC */}
@@ -273,7 +271,11 @@ export default function Children() {
                                                             transition: "all .3s ease",
                                                         }}></div>
                                                     {/* CHILD NAME */}
-                                                    <span className="child-name">{StringManager.GetFirstNameOnly(child?.general?.name)}</span>
+                                                    <span className="child-name">
+                                                        {StringManager.GetFirstNameOnly(
+                                                            child?.details?.find((x) => x?.dbFormattedLabel === "name")?.value
+                                                        )}
+                                                    </span>
                                                 </div>
                                             )}
 
@@ -286,7 +288,9 @@ export default function Children() {
                                                         <FaUserAlt />
                                                     </div>
                                                     {/* CHILD NAME */}
-                                                    <span className="child-name">{StringManager.GetFirstNameOnly(child?.general?.name)}</span>
+                                                    <span className="child-name">
+                                                        {StringManager.GetFirstNameOnly(child?.name || child?.details?.name)}
+                                                    </span>
                                                 </div>
                                             )}
                                         </div>
@@ -298,21 +302,29 @@ export default function Children() {
                         <div id="child-info">
                             <>
                                 <InfoAccordion
+                                    setActiveChild={(child) => setActiveChild(child)}
                                     activeChild={activeChild}
                                     icon={<PiIdentificationCardFill className={"svg general"} />}
                                     infoParentTitle={"general"}
                                 />
                                 <InfoAccordion
+                                    setActiveChild={(child) => setActiveChild(child)}
                                     activeChild={activeChild}
                                     icon={<FaBriefcaseMedical className={"svg medical"} />}
                                     infoParentTitle={"medical"}
                                 />
                                 <InfoAccordion
+                                    setActiveChild={(child) => setActiveChild(child)}
                                     activeChild={activeChild}
                                     icon={<IoSchool className={"svg schooling"} />}
                                     infoParentTitle={"schooling"}
                                 />
-                                <InfoAccordion activeChild={activeChild} icon={<FaBrain className={"svg behavior"} />} infoParentTitle={"behavior"} />
+                                <InfoAccordion
+                                    setActiveChild={(child) => setActiveChild(child)}
+                                    activeChild={activeChild}
+                                    icon={<FaBrain className={"svg behavior"} />}
+                                    infoParentTitle={"behavior"}
+                                />
                                 <Checklist fromOrTo={"from"} activeChild={activeChild} />
                                 <Checklist fromOrTo={"to"} activeChild={activeChild} />
                             </>

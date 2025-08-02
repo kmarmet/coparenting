@@ -48,9 +48,9 @@ export default function CoParents() {
     const invite = useRef({name: "", email: ""})
 
     const DeleteProp = async (prop) => {
-        const coparentIndex = DB.GetTableIndexByUserKey(coParents, activeCoParent?.userKey)
-        if (Manager.IsValid(coparentIndex)) {
-            await DB_UserScoped.DeleteCoparentInfoProp(currentUser?.key, coparentIndex, StringManager.formatDbProp(prop), activeCoParent)
+        const coParentIndex = DB.GetTableIndexByUserKey(coParents, activeCoParent?.userKey)
+        if (Manager.IsValid(coParentIndex)) {
+            await DB_UserScoped.DeleteCoparentInfoProp(currentUser?.key, coParentIndex, StringManager.formatDbProp(prop), activeCoParent)
         }
     }
 

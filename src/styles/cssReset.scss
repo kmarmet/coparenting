@@ -6,75 +6,75 @@
 input:-webkit-autofill,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
-      box-shadow: 0 0 0px 1000px transparent inset !important;
-      -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
-      background-color: transparent !important;
-      -webkit-text-fill-color: inherit !important; /* keeps your normal text color */
-      transition: background-color 5000s ease-in-out 0s;
+    box-shadow: 0 0 0px 1000px transparent inset !important;
+    -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+    background-color: transparent !important;
+    -webkit-text-fill-color: inherit !important; /* keeps your normal text color */
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 input:-webkit-autofill,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
-      /* Force override Chrome's autofill background */
-      -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.08) inset !important; /* change white → your background */
-      box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.08) inset !important;
-      -webkit-text-fill-color: #000 !important; /* or inherit if you want normal text color */
-      caret-color: #000; /* makes the cursor visible */
-      transition: background-color 9999s ease-in-out 0s !important; /* kills the flash */
+    /* Force override Chrome's autofill background */
+    -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.08) inset !important; /* change white → your background */
+    box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.08) inset !important;
+    -webkit-text-fill-color: #000 !important; /* or inherit if you want normal text color */
+    caret-color: #000; /* makes the cursor visible */
+    transition: background-color 9999s ease-in-out 0s !important; /* kills the flash */
 }
 
 /* Firefox autofill reset */
 input:-moz-autofill,
 textarea:-moz-autofill,
 select:-moz-autofill {
-      box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.08) inset !important;
-      background-color: rgba(255, 255, 255, 0.08) !important;
-      color: inherit !important;
+    box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.08) inset !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: inherit !important;
 }
 
 /* Optional: remove blue border highlight */
 input {
-      &:focus {
-            outline: none;
-            box-shadow: none;
-      }
+    &:focus {
+        outline: none;
+        box-shadow: none;
+    }
 }
 
 *,
 *::before,
 *::after {
-      box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 /*
     2. Remove default margin
   */
 * {
-      margin: 0;
-      -webkit-font-smoothing: antialiased;
-      //  scrollbar-width: auto;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    //  scrollbar-width: auto;
 }
 
 /* width */
 ::-webkit-scrollbar {
-      display: none !important;
+    display: none !important;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-      display: none !important;
+    display: none !important;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-      display: none !important;
-      border-radius: 15px;
+    display: none !important;
+    border-radius: 15px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-      display: none !important;
+    display: none !important;
 }
 
 /*
@@ -84,30 +84,30 @@ input {
   */
 
 html {
-      background-color: white !important;
-      overflow: hidden;
-      p:not(#doc-text p) {
-            -webkit-tap-highlight-color: transparent;
-      }
+    background-color: white !important;
+    overflow: hidden;
+    p:not(#doc-text p) {
+        -webkit-tap-highlight-color: transparent;
+    }
 }
 
 #root {
-      overflow: hidden !important;
+    overflow: hidden !important;
 }
 
 /* Reset default list styles */
 ol,
 ul {
-      margin: 0; /* Remove browser default margins */
-      padding: 0; /* Remove browser default padding */
-      list-style-position: inside; /* Keeps numbers/bullets aligned inside */
+    margin: 0; /* Remove browser default margins */
+    padding: 0; /* Remove browser default padding */
+    list-style-position: inside; /* Keeps numbers/bullets aligned inside */
 }
 
 /* Optional: Add a custom consistent indent */
 ol li,
 ul li {
-      margin-left: 1.5rem; /* Equal indent for all list levels */
-      padding-left: 0.5rem; /* Slight padding for readability */
+    margin-left: 1.5rem; /* Equal indent for all list levels */
+    padding-left: 0.5rem; /* Slight padding for readability */
 }
 
 /* Ensure nested lists also align nicely */
@@ -115,44 +115,56 @@ ol ol,
 ol ul,
 ul ol,
 ul ul {
-      margin-left: 1.5rem; /* Indent nested lists */
+    margin-left: 1.5rem; /* Indent nested lists */
+}
+
+button,
+p,
+span {
+    &:focus,
+    &:active {
+        background-color: transparent !important;
+        box-shadow: none !important;
+        outline: none !important;
+        -webkit-tap-highlight-color: transparent;
+    }
 }
 
 // BODY
 body {
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-      overflow: hidden !important;
-      background-color: white !important;
-      //  height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
-      //  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-      //  min-height: calc(100% + env(safe-area-inset-top));
-      //  max-height: 100vh;
-      height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden !important;
+    background-color: white !important;
+    //  height: env(safe-area-inset-top) - env(safe-area-inset-bottom);
+    //  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    //  min-height: calc(100% + env(safe-area-inset-top));
+    //  max-height: 100vh;
+    height: 100vh;
 
-      &.dark {
-            background-color: palette.$darkBg !important;
-      }
+    &.dark {
+        background-color: palette.$darkBg !important;
+    }
 
-      /* width */
-      &::-webkit-scrollbar {
-            display: none !important;
-      }
+    /* width */
+    &::-webkit-scrollbar {
+        display: none !important;
+    }
 
-      /* Track */
-      &::-webkit-scrollbar-track {
-            display: none !important;
-      }
+    /* Track */
+    &::-webkit-scrollbar-track {
+        display: none !important;
+    }
 
-      /* Handle */
-      &::-webkit-scrollbar-thumb {
-            display: none !important;
-      }
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+        display: none !important;
+    }
 
-      /* Handle on hover */
-      &::-webkit-scrollbar-thumb:hover {
-            display: none !important;
-      }
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+        display: none !important;
+    }
 }
 
 /*
@@ -162,8 +174,8 @@ img,
 picture,
 video,
 canvas {
-      display: block;
-      max-width: 100%;
+    display: block;
+    max-width: 100%;
 }
 
 /*
@@ -173,7 +185,7 @@ input,
 button,
 textarea,
 select {
-      font: inherit;
+    font: inherit;
 }
 
 /*
@@ -181,5 +193,5 @@ select {
   */
 #root,
 #__next {
-      isolation: isolate;
+    isolation: isolate;
 }

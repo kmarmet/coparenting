@@ -69,6 +69,27 @@ DatasetManager = {
         }
         return returnArray
     },
+    AddRemoveOrSkipFromArray: function (arr, newItem, skipIfAlreadyExists = true, removeIfExistsAlready = false) {
+        if (!Manager.IsValid(arr)) {
+            return [newItem]
+        }
+        if (skipIfAlreadyExists && arr.includes(newItem)) {
+            return arr
+        }
+        if (!skipIfAlreadyExists && removeIfExistsAlready && arr.includes(newItem)) {
+            return arr.filter(function (x) {
+                return x !== newItem
+            })
+        }
+        if (!skipIfAlreadyExists && arr.includes(newItem)) {
+            return arr.filter(function (x) {
+                return x !== newItem
+            })
+        }
+        if (!skipIfAlreadyExists && !arr.includes(newItem)(!removeIfExistsAlready)) {
+            return arr.push(newItem)
+        }
+    },
     ToggleInArray: function (arr, key) {
         if (!Manager.IsValid(arr)) {
             return [key]

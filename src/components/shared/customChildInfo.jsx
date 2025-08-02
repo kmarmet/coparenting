@@ -14,6 +14,7 @@ import DropdownManager from "../../managers/dropdownManager"
 import Manager from "../../managers/manager"
 import StringManager from "../../managers/stringManager"
 import UpdateManager from "../../managers/updateManager"
+import CustomInfoEntry from "../../models/child/customInfoEntry"
 import AddressInput from "./addressInput"
 import Form from "./form"
 import FormDivider from "./formDivider"
@@ -24,11 +25,11 @@ import Spacer from "./spacer"
 const defaultInfoTypes = [
     {label: "Text", value: "text"},
     {label: "Phone", value: "phone"},
-    {label: "Location", value: "location"},
+    {label: "Address", value: "address"},
     {label: "Email", value: "email"},
 ]
 
-const defaultSections = [
+const defaultCategories = [
     {label: "General", value: "general"},
     {label: "Medical", value: "medical"},
     {label: "Schooling", value: "schooling"},
@@ -54,7 +55,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
     const [defaultInfoTypeOptions, setDefaultInfoTypeOptions] = useState(defaultInfoTypes)
     const [selectedShareWithOptions, setSelectedShareWithOptions] = useState([])
     const [defaultShareWithOptions, setDefaultShareWithOptions] = useState([])
-    const [selectedCategory, setSelectedCategory] = useState([])
+    const [selectedCategory, setSelectedCategory] = useState("")
 
     // Form Ref
     const formRef = useRef({title: "", value: "text", shareWith: []})
@@ -68,17 +69,26 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
         if (!Manager.IsValid(formRef.current.value)) return ThrowError("Please enter a value")
         if (!Manager.IsValid(formRef.current.value) && selectedInfoType?.value === "phone")
             return ThrowError("Invalid Phone Number", "Please enter a valid phone number")
+        console.log("SELECTED INFO TYPE", selectedInfoType)
+        const newInfoEntry = new CustomInfoEntry({
+            label: formRef.current.title,
+            category: selectedCategory,
+            value: formRef.current.value,
+            dataType: selectedInfoType,
+            shareWith: selectedShareWithOptions,
+        })
+
+        console.log(newInfoEntry)
 
         const shareWith = DropdownManager.MappedForDatabase.ShareWithFromArray(selectedShareWithOptions)
 
-        await DB_UserScoped.AddUserChildProp(
-            currentUser,
-            activeChild,
-            selectedCategory,
-            StringManager.toCamelCase(formRef.current.title),
-            formRef.current.value,
-            shareWith
-        )
+        await DB_UserScoped.AddChildInfoEntry({
+            currentUser: currentUser,
+            activeChild: activeChild,
+            category: selectedCategory,
+            entry: newInfoEntry,
+            shareWith: shareWith,
+        })
 
         if (Manager.IsValid(shareWith)) {
             await UpdateManager.SendToShareWith(
@@ -134,13 +144,13 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
             {/* INFO TYPE */}
             <FormDivider text={"Required"} />
 
-            {/* SECTION */}
+            {/* CATEGORY */}
             <SelectDropdown
                 onSelect={(section) => {
                     setSelectedCategory(section?.value)
                 }}
                 placeholder={"Select Category"}
-                options={defaultSections}
+                options={defaultCategories}
             />
 
             <Spacer height={5} />
@@ -231,7 +241,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
             )}
 
             {/* LOCATION */}
-            {selectedInfoType?.toString() === "location" && (
+            {selectedInfoType?.toString() === "address" && (
                 <>
                     <InputField
                         inputType={InputTypes.text}
@@ -245,6 +255,7 @@ export default function CustomChildInfo({hideCard, showCard, activeChild}) {
                         required={true}
                         onChange={(address) => {
                             formRef.current.value = address
+                            formRef.current.type = "address"
                         }}
                     />
                 </>

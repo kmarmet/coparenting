@@ -220,8 +220,8 @@
             }
         }
 
-        .sections {
-            .section {
+        .categorys {
+            .category {
                 justify-content: flex-start;
 
                 &.notifications {
@@ -336,7 +336,6 @@
                         width: 85%;
                         max-width: unset;
                         color: black;
-                        opacity: 0.8;
                         caret-color: black;
 
                         &::placeholder {
@@ -346,7 +345,7 @@
                     }
                     svg {
                         margin-left: auto;
-                        margin-right: 15px;
+                        margin-right: 20px;
                     }
                 }
 
@@ -382,13 +381,13 @@
                 }
             }
 
-            .info-section {
+            .info-category {
                 transition: max-height 0.3s ease-in-out;
                 max-width: calc(100vw - 30px);
                 overflow: hidden;
 
                 .MuiCollapse-entered {
-                    .section-wrapper {
+                    .category-wrapper {
                         transition: all 0.3s ease;
                         opacity: 1 !important;
                         //padding: 15px;

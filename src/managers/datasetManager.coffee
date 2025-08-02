@@ -58,6 +58,22 @@ DatasetManager = {
       returnArray = DatasetManager.GetValidArray(returnArray)
 
     return returnArray
+    
+  AddRemoveOrSkipFromArray: (arr, newItem, skipIfAlreadyExists = true, removeIfExistsAlready = false) ->
+    if not Manager.IsValid(arr)
+      return [newItem]
+      
+    if skipIfAlreadyExists and arr.includes(newItem)
+      return arr
+      
+    if !skipIfAlreadyExists and removeIfExistsAlready and arr.includes(newItem)
+      return arr.filter (x) -> x != newItem
+      
+    if !skipIfAlreadyExists and arr.includes(newItem)
+      return arr.filter (x) -> x != newItem
+    
+    if !skipIfAlreadyExists and !arr.includes(newItem) !removeIfExistsAlready
+      return arr.push newItem
 
   ToggleInArray: (arr, key) ->
     if !Manager.IsValid(arr)

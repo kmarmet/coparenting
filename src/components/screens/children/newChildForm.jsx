@@ -2,6 +2,7 @@
 import moment from "moment"
 import React, {useContext, useRef, useState} from "react"
 import DatetimeFormats from "../../../constants/datetimeFormats"
+import HiddenDataLabels from "../../../constants/hiddenDataLabels"
 import InputTypes from "../../../constants/inputTypes"
 import ScreenNames from "../../../constants/screenNames"
 import globalState from "../../../context"
@@ -16,6 +17,7 @@ import Manager from "../../../managers/manager"
 import ObjectManager from "../../../managers/objectManager"
 import StringManager from "../../../managers/stringManager.js"
 import Child from "../../../models/child/child"
+import CustomInfoEntry from "../../../models/child/customInfoEntry"
 import CalendarEvent from "../../../models/new/calendarEvent"
 import AddressInput from "../../shared/addressInput"
 import Form from "../../shared/form"
@@ -54,11 +56,10 @@ const NewChildForm = ({hideCard, showCard}) => {
         //#region VALIDATION
 
         // Child Name
-        if (!Manager.IsValid(newChild.current.general.name, true)) return ThrowError("Please enter a name")
+        if (!Manager.IsValid(newChild.current.name, true)) return ThrowError("Please enter a name")
 
         // If child has an account -> email is required
-        if (childHasAccount && !Manager.IsValid(newChild.current.general.email))
-            ThrowError("If the child has an account with us, their email is required")
+        if (childHasAccount && !Manager.IsValid(newChild.current.email)) ThrowError("If the child has an account with us, their email is required")
         //#endregion VALIDATION
 
         let _profilePic = newChild.current.profilePic
@@ -68,7 +69,23 @@ const NewChildForm = ({hideCard, showCard}) => {
             newChild.current.userKey = Manager.GetUid()
         }
 
-        const existingChildRecord = users.find((x) => x?.email === newChild.current.general.email)
+        const details = []
+
+        for (let prop in newChild.current) {
+            if (!HiddenDataLabels.includes(prop) && prop.toLowerCase() !== "details") {
+                const newEntry = new CustomInfoEntry({
+                    label: StringManager.FormatTitle(prop, true),
+                    value: newChild.current[prop],
+                    dataType: (typeof newChild.current[prop]).replace("string", "text"),
+                    category: "general",
+                })
+                details.push(newEntry)
+            }
+        }
+
+        newChild.current.details = details
+
+        const existingChildRecord = users.find((x) => x?.email === newChild.current.email)
 
         // Link to existing account
         if (Manager.IsValid(existingChildRecord) || childHasAccount || !ObjectManager.IsEmpty(existingChildRecord)) {
@@ -97,9 +114,9 @@ const NewChildForm = ({hideCard, showCard}) => {
         const cleaned = ObjectManager.CleanObject(newChild.current)
 
         // Add Child's Birthday to Calendar
-        if (Manager.IsValid(newChild.current.general.dateOfBirth, true)) {
+        if (Manager.IsValid(newChild.current.dateOfBirth, true)) {
             const childBirthdayEvent = new CalendarEvent()
-            childBirthdayEvent.title = `${newChild.current.general.name}'s Birthday`
+            childBirthdayEvent.title = `${newChild.current.name}'s Birthday`
             childBirthdayEvent.startDate = newChild.current.dateOfBirth
             childBirthdayEvent.ownerKey = currentUser.key
             await CalendarManager.addCalendarEvent(currentUser, childBirthdayEvent)
@@ -128,7 +145,7 @@ const NewChildForm = ({hideCard, showCard}) => {
                         placeholder={"Name"}
                         inputType={InputTypes.text}
                         required={true}
-                        onChange={(e) => (newChild.current.general.name = StringManager.FormatTitle(e.target.value, true))}
+                        onChange={(e) => (newChild.current.name = StringManager.FormatTitle(e.target.value, true))}
                     />
 
                     <FormDivider text={"Optional"} />
@@ -138,7 +155,7 @@ const NewChildForm = ({hideCard, showCard}) => {
                         placeholder={"Email Address"}
                         required={childHasAccount}
                         inputType={InputTypes.email}
-                        onChange={(e) => (newChild.current.general.email = e.target.value)}
+                        onChange={(e) => (newChild.current.email = e.target.value)}
                     />
                     <Spacer height={5} />
 
@@ -148,13 +165,13 @@ const NewChildForm = ({hideCard, showCard}) => {
                         placeholder={"Date of Birth"}
                         dateViews={["year", "month", "day"]}
                         inputType={InputTypes.date}
-                        onDateOrTimeSelection={(e) => (newChild.current.general.dateOfBirth = moment(e).format(DatetimeFormats.monthDayYear))}
+                        onDateOrTimeSelection={(e) => (newChild.current.dateOfBirth = moment(e).format(DatetimeFormats.monthDayYear))}
                     />
 
                     <Spacer height={5} />
 
                     {/* ADDRESS */}
-                    <AddressInput placeholder={"Home Address"} onChange={(address) => (newChild.current.general.address = address)} />
+                    <AddressInput placeholder={"Home Address"} onChange={(address) => (newChild.current.address = address)} />
                     <Spacer height={5} />
 
                     {/* PHONE NUMBER */}
@@ -162,7 +179,7 @@ const NewChildForm = ({hideCard, showCard}) => {
                         placeholder={"Phone Number"}
                         inputType={InputTypes.phone}
                         required={false}
-                        onChange={(e) => (newChild.current.general.phone = e.target.value)}
+                        onChange={(e) => (newChild.current.phone = e.target.value)}
                     />
 
                     <Spacer height={5} />
