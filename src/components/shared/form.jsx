@@ -29,8 +29,9 @@ export default function Form({
     onOpen = () => {},
 }) {
     const {state, setState} = useContext(globalState)
-    const {refreshKey, creationFormToShow} = state
+    const {creationFormToShow} = state
     const [submitted, setSubmitted] = useState(false)
+    const [resetKey, setResetKey] = useState("")
 
     const ScrollToTop = () => {
         const header = document.querySelector(".form-title")
@@ -72,11 +73,15 @@ export default function Form({
         }
         if (showCard) {
             if (onOpen) onOpen()
+        } else {
+            setTimeout(() => {
+                setResetKey(Manager.GetUid())
+            }, 500)
         }
     }, [showCard])
 
     return (
-        <div key={refreshKey} className={`form-wrapper${showCard ? ` active` : ""} ${wrapperClass}`}>
+        <div key={resetKey} className={`form-wrapper${showCard ? ` active` : ""} ${wrapperClass}`}>
             <div className={`form-card${showCard ? " active" : ""}`}>
                 <div className={`content-wrapper`}>
                     {Manager.IsValid(title) && (

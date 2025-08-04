@@ -15,18 +15,18 @@
             justify-content: center;
             align-items: center;
             margin-top: 25px;
+            @include fonts.mediumFont;
 
             svg {
                 margin-left: 8px;
             }
         }
         .section {
-            background: palette.$main;
+            background: palette.$blendPurple;
             padding: 20px;
             border-radius: variables.$cardBorderRadius;
-            box-shadow: variables.$boxShadow_bottom_only;
-            margin-bottom: 30px;
-            //opacity: 0;
+            margin-bottom: 50px;
+            box-shadow: variables.$boxShadow_bottom_only_best;
 
             .action-row {
                 color: white;

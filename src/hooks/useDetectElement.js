@@ -1,6 +1,6 @@
-import {useEffect} from 'react'
+import {useEffect} from "react"
 
-function useDetectElement(selector, onDomEnter = () => {}, onDomExit = () => {}) {
+function useDetectElement(selector, onDomEnter = () => {}, onDomExit = () => {}, resetKey = null) {
     useEffect(() => {
         const observer = new MutationObserver(() => {
             const el = document.querySelector(selector)
@@ -16,7 +16,7 @@ function useDetectElement(selector, onDomEnter = () => {}, onDomExit = () => {})
         observer.observe(document.body, {childList: true, subtree: true})
 
         return () => observer.disconnect()
-    }, [selector, onDomEnter])
+    }, [selector, onDomEnter, resetKey])
 }
 
 export default useDetectElement

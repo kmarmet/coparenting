@@ -2,6 +2,7 @@
 import moment from "moment"
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {BsCalendarCheck} from "react-icons/bs"
+import {TimePicker} from "react-ios-time-picker"
 import validator from "validator"
 import ButtonThemes from "../../constants/buttonThemes"
 import CreationForms from "../../constants/creationForms"
@@ -80,8 +81,8 @@ export default function NewCalendarEvent() {
     const formRef = useRef({...new CalendarEvent({startDate: moment(selectedCalendarDate).format(DatetimeFormats.dateForDb)})})
 
     const ThrowError = (message) => {
-        setIsSubmitting(false)
         setState({...state, isLoading: false, bannerMessage: message, bannerType: "error"})
+        setIsSubmitting(false)
         return false
     }
 
@@ -97,14 +98,19 @@ export default function NewCalendarEvent() {
         setSelectedChildrenOptions([])
         setSelectedShareWithOptions([])
         setDefaultShareWithOptions([])
-        setIsSubmitting(false)
+
         setTimeout(() => {
+            setIsSubmitting(false)
+
             setState({
                 ...state,
                 creationFormToShow: "",
                 bannerMessage: showSuccessAlert ? "Event Created" : null,
             })
-        }, 10)
+            if (showSuccessAlert) {
+                MyConfetti.fire()
+            }
+        }, 1000)
     }
 
     const Submit = async () => {
@@ -153,9 +159,6 @@ export default function NewCalendarEvent() {
                 if (eventIsRecurring && !Manager.IsValid(recurringFrequency)) return ThrowError("Please add a recurring frequency")
 
                 //#endregion VALIDATION
-
-                MyConfetti.fire()
-                setState({...state, creationFormToShow: ""})
 
                 //#region MULTIPLE DATES
                 // Date Range
@@ -254,6 +257,11 @@ export default function NewCalendarEvent() {
         }
     }, [eventIsCloned])
 
+    // Reset form on open
+    useEffect(() => {
+        formRef.current = {...new CalendarEvent()}
+    }, [])
+
     return (
         <>
             {/* FORM WRAPPER */}
@@ -336,16 +344,24 @@ export default function NewCalendarEvent() {
                     {view?.label === "Single Day" && (
                         <div className={"flex gap"}>
                             {/* EVENT WITH TIME */}
-                            <InputField
-                                placeholder={"Start Time"}
-                                inputType={InputTypes.time}
-                                onDateOrTimeSelection={(e) => (formRef.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}
+                            <TimePicker
+                                id="start-time-picker"
+                                onChange={(e) => {
+                                    formRef.current.startTime = moment(e, "hh:mma").format(DatetimeFormats.timeForDb)
+                                }}
+                                placeHolder="Start Time"
+                                use12Hours
+                                // pickerDefaultValue={"11:00am"}
+                                // onOpen={() => setTimePickerResetKey(Manager.GetUid())}
                             />
 
-                            <InputField
-                                placeholder={"End Time"}
-                                inputType={InputTypes.time}
-                                onDateOrTimeSelection={(e) => (formRef.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}
+                            <TimePicker
+                                id="end-time-picker"
+                                onChange={(e) => {
+                                    formRef.current.endTime = moment(e, "hh:mma").format(DatetimeFormats.timeForDb)
+                                }}
+                                placeHolder="End Time"
+                                use12Hours
                             />
                         </div>
                     )}

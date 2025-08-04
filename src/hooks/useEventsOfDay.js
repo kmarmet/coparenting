@@ -17,7 +17,7 @@ const useEventsOfDay = (selectedCalendarDate) => {
     const [allEventsOfDay, setAllEventsOfDay] = useState([])
     const [holidayEventsOfDay, setHolidayEventsOfDay] = useState([])
     const [visitationEventsOfDay, setVisitationEventsOfDay] = useState([])
-    const [eventsAreLoading, setEventsAreLoading] = useState(true)
+    const [eventsOfDayAreLoading, setEventsOfDayAreLoading] = useState(true)
     const [error, setError] = useState(null)
     const path = `${DB.tables.calendarEvents}/${currentUser?.key}`
     const queryKey = ["realtime", path]
@@ -35,7 +35,7 @@ const useEventsOfDay = (selectedCalendarDate) => {
                 // Early Exit if no Calendar Events Exist
                 if (!Manager.IsValid(calendarEvents)) {
                     setGenericEventsOfDay([])
-                    setEventsAreLoading(false)
+                    setEventsOfDayAreLoading(false)
                     return
                 }
 
@@ -85,15 +85,15 @@ const useEventsOfDay = (selectedCalendarDate) => {
                     "asc"
                 )
 
-                const formattedEvents = DatasetManager.GetValidArray(sortedEvents, true, true) || []
-
+                const formattedEvents = DatasetManager.GetUniqueByPropValue(sortedEvents, "id") || []
+                console.log(Date.now())
                 // Set events of day state
                 setAllEventsOfDay(formattedEvents)
-                setEventsAreLoading(false)
+                setEventsOfDayAreLoading(false)
             },
             (err) => {
                 setError(err)
-                setEventsAreLoading(false)
+                setEventsOfDayAreLoading(false)
             }
         )
 
@@ -107,7 +107,7 @@ const useEventsOfDay = (selectedCalendarDate) => {
         allEventsOfDay,
         holidayEventsOfDay,
         visitationEventsOfDay,
-        eventsAreLoading,
+        eventsOfDayAreLoading,
         error,
         queryKey,
     }

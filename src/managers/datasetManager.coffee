@@ -135,7 +135,7 @@ DatasetManager = {
       uniqueData = _.values(_.keyBy(arr, (item) -> "#{item[propOne]}-#{item[propTwo]}-#{item[propThree]}"))
     uniqueData
 
-  getUniqueByPropValue: (arr, propName) ->
+  GetUniqueByPropValue: (arr, propName) ->
     uniqueUsers = _.uniqBy(arr, propName);
     return uniqueUsers
 

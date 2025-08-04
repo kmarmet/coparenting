@@ -1240,7 +1240,7 @@ $shadows-big: multiple-box-shadow(100);
     &::after {
         content: "";
         flex: 1;
-        border-bottom: 1px solid #9c6cff;
+        border-bottom: 1px solid palette.$subtitleWhite;
         mask-image: linear-gradient(to right, transparent, black 25%, black 85%, transparent);
         -webkit-mask-image: linear-gradient(to right, transparent, black 25%, black 85%, transparent);
     }
@@ -1254,7 +1254,7 @@ $shadows-big: multiple-box-shadow(100);
     }
 
     span {
-        color: #9c6cff;
+        color: palette.$subtitleWhite;
         @include fonts.thinnestFont;
 
         & {
@@ -1284,7 +1284,7 @@ $shadows-big: multiple-box-shadow(100);
     pointer-events: none;
     z-index: 9999999999999999999;
     transform: translateY(-100px);
-    box-shadow: variables.$boxShadow_bottom_only_float;
+    box-shadow: variables.$boxShadow_float_bigger;
 
     &.active {
         opacity: 1;
@@ -2228,12 +2228,14 @@ $shadows-big: multiple-box-shadow(100);
             padding-bottom: 5px;
             color: white;
             font-size: 16px;
+            @include fonts.mediumFont;
         }
 
         &.white-bg {
             label {
                 color: black;
-                @include fonts.lightFont;
+                opacity: 0.65;
+                @include fonts.mediumFont;
             }
         }
 
@@ -2285,8 +2287,8 @@ $shadows-big: multiple-box-shadow(100);
             font-size: 12px;
             font-weight: 100;
             color: white;
-            opacity: 0.7;
-            @include fonts.thinnestFont;
+            opacity: 0.85;
+            @include fonts.mediumFont;
             & {
                 text-align: center;
                 letter-spacing: 0.8px;
@@ -2380,7 +2382,7 @@ $shadows-big: multiple-box-shadow(100);
                 &.filled-input-label {
                     label {
                         color: rgba(80, 71, 255, 0.9);
-                        @include fonts.regularFont;
+                        @include fonts.mediumFont;
                     }
                 }
             }
@@ -2545,14 +2547,6 @@ $shadows-big: multiple-box-shadow(100);
         &.with-icon {
             padding-left: 50px;
         }
-
-        //&[type="tel"] {
-        //    color: palette.$transWhite !important;
-        //
-        //    &::placeholder {
-        //        color: palette.$transWhite !important;
-        //    }
-        //}
 
         &::placeholder {
             font-style: italic;
@@ -3121,11 +3115,18 @@ $shadows-big: multiple-box-shadow(100);
         opacity: 1;
         pointer-events: auto;
         transition: all 0.4s ease;
+
+        &.submitting {
+            .form-card {
+                &.active {
+                    pointer-events: none;
+                }
+            }
+        }
     }
 
     &.submitting {
-        filter: grayscale(50%);
-        pointer-events: none;
+        filter: grayscale(70%);
     }
 
     .close-dropdown-button {
@@ -3606,6 +3607,12 @@ $shadows-big: multiple-box-shadow(100);
             .flex {
                 &.gap {
                     margin-bottom: 0;
+                    max-width: calc(100vw - 40px);
+                    overflow: hidden;
+
+                    input {
+                        width: 100%;
+                    }
                 }
 
                 &.title-suggestion-dropdown {
@@ -4675,8 +4682,7 @@ $shadows-big: multiple-box-shadow(100);
     }
 
     #full-menu-title {
-        color: palette.$purple;
-        filter: brightness(175%);
+        color: white;
         font-size: 28px;
         width: max-content;
         margin: 0 auto 10px auto;
@@ -4728,7 +4734,7 @@ $shadows-big: multiple-box-shadow(100);
         overflow: hidden;
         transition: all 0.5s ease;
         height: calc(100vh - 10vh);
-        max-height: 75vh;
+        max-height: 80vh;
         position: fixed;
         bottom: 0;
         max-width: 100%;
@@ -4761,25 +4767,18 @@ $shadows-big: multiple-box-shadow(100);
 
             .section {
                 background-color: rgba(135, 132, 255, 0.06);
-                border: 1px solid rgba(199, 144, 255, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.07);
                 padding: 15px;
                 opacity: 0;
                 width: 100%;
                 margin-bottom: 10px;
                 border-radius: variables.$cardBorderRadius;
 
-                &.active {
-                    .section-title {
-                        opacity: 1;
-                    }
-                }
-
                 .section-title {
                     font-size: 20px;
                     color: white;
-                    margin: 0 0 5px 5px;
-                    opacity: 0.55;
-                    @include fonts.thinnestFont;
+                    margin: 0 0 0 5px;
+                    @include fonts.mediumFont;
                 }
 
                 .menu-items {
@@ -4787,7 +4786,7 @@ $shadows-big: multiple-box-shadow(100);
                     justify-content: space-between;
                     flex-wrap: wrap;
                     display: flex;
-                    gap: 10px;
+                    gap: 5px 0;
                     max-width: 100%;
 
                     .menu-item {
@@ -4805,7 +4804,7 @@ $shadows-big: multiple-box-shadow(100);
                             justify-content: flex-end;
 
                             .svg-wrapper {
-                                margin-left: 40px;
+                                margin-left: 55px;
                             }
                         }
 
@@ -4825,6 +4824,7 @@ $shadows-big: multiple-box-shadow(100);
                             opacity: 1;
                             p {
                                 opacity: 1;
+                                @include fonts.regularFont;
                             }
 
                             .svg-wrapper {
@@ -5191,7 +5191,7 @@ $shadows-big: multiple-box-shadow(100);
                     margin: 0 15px;
                     border-radius: variables.$buttonBorderRadius;
                     background: palette.$green;
-                    box-shadow: rgb(42, 192, 138, 1) 0 20px 42px 0;
+                    box-shadow: rgb(42, 192, 138, 1) 0 10px 52px 0;
                     @include square(60px);
 
                     svg {
@@ -5210,12 +5210,12 @@ $shadows-big: multiple-box-shadow(100);
                 transform: scale(0.95);
                 span {
                     position: absolute;
-                    color: black;
-                    opacity: 0.45;
-                    padding-top: 8px;
+                    opacity: 0.6;
+                    color: palette.$iconGrey;
+                    padding-top: 10px;
                     font-size: 13px;
                     padding-right: 1px;
-                    font-weight: variables.$fwMediumBold;
+                    @include fonts.boldFont;
                 }
             }
 

@@ -1,7 +1,6 @@
 import {initializeApp} from "firebase/app"
 import {EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut, updateEmail} from "firebase/auth"
 import React, {useContext, useState} from "react"
-import {IoIosRemoveCircle} from "react-icons/io"
 import {MdOutlineAppShortcut, MdThumbsUpDown, MdTipsAndUpdates} from "react-icons/md"
 import validator from "validator"
 import InputTypes from "../../../constants/inputTypes"
@@ -362,6 +361,7 @@ export default function MakeItYours() {
                     {/* SETTINGS */}
                     <div className="section">
                         <Label classes={"always-show section-title"} text={"App Preferences"} />
+
                         <Spacer height={10} />
                         <Settings />
                     </div>
@@ -388,8 +388,7 @@ export default function MakeItYours() {
                     </div>
 
                     <p className="deactivate-account" onClick={CloseAccount}>
-                        Deactivate Account
-                        <IoIosRemoveCircle />
+                        Deactivate Account 😭
                     </p>
                 </div>
             </div>

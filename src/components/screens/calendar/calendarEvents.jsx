@@ -31,7 +31,7 @@ export default function CalendarEvents({
 
     // HOOKS
     const {currentUser} = useCurrentUser()
-    const {allEventsOfDay, holidayEventsOfDay, visitationEventsOfDay} = useEventsOfDay(selectedCalendarDate)
+    const {allEventsOfDay, eventsOfDayAreLoading} = useEventsOfDay(selectedCalendarDate)
     const {calendarEvents} = useCalendarEvents()
     const {calendarSearchResults, setQuery} = useCalendarSearch(calendarEvents)
     const {holidays} = useHolidays(currentUser, holidayOptions.returnType)
@@ -96,12 +96,6 @@ export default function CalendarEvents({
             updatedSelectedCalendarDate = comparisonDate
         }
 
-        const animateEvents = () => {
-            setTimeout(() => {
-                DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
-            }, 200)
-        }
-
         let nextEvents = []
 
         // ✅ Priority 1: Search Results
@@ -126,9 +120,18 @@ export default function CalendarEvents({
 
         // ✅ Set + animate
         setEventsToIterate(nextEvents)
-        animateEvents()
         setComparisonDate(selectedCalendarDate)
-    }, [calendarSearchResults, holidayOptions?.show, holidays, selectedCalendarDate, currentScreen, allEventsOfDay])
+    }, [calendarSearchResults, holidayOptions?.show, selectedCalendarDate, allEventsOfDay])
+
+    useEffect(() => {
+        console.log("change")
+        const animateEvents = () => {
+            setTimeout(() => {
+                DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
+            }, 200)
+        }
+        animateEvents()
+    }, [eventsToIterate])
 
     return (
         <>
@@ -172,7 +175,7 @@ export default function CalendarEvents({
 
                 {/* EVENTS */}
                 {Manager.IsValid(eventsToIterate) &&
-                    DatasetManager.getUniqueByPropValue(eventsToIterate, "title").map((event, index) => {
+                    DatasetManager.GetUniqueByPropValue(eventsToIterate, "title").map((event, index) => {
                         let startDate = event?.startDate
                         if (event?.isDateRange) {
                             startDate = event?.staticStartDate

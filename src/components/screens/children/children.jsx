@@ -44,6 +44,12 @@ export default function Children() {
     // Image Ref
     const imgRef = useRef(null)
 
+    const ThrowError = (title, message = "") => {
+        setState({...state, isLoading: false, bannerTitle: title, bannerMessage: message, bannerType: "error"})
+
+        return false
+    }
+
     const UploadProfilePic = async (fromButton = false) => {
         const uploadIcon = document.querySelector(`[data-id="${activeChild?.id}" ]`)
         const uploadButton = document.querySelector("#upload-image-input.from-button")
@@ -52,10 +58,7 @@ export default function Children() {
         if (fromButton) {
             imgFiles = uploadButton?.files
         }
-        if (imgFiles?.length === 0) {
-            AlertManager.throwError("Please choose an image")
-            return false
-        }
+        if (imgFiles?.length === 0) ThrowError("Please choose an image")
 
         // Upload to Firebase Storage -> Set child/general/profilePic
         const uploadedImageUrl = await Storage.UploadByPath(
@@ -66,11 +69,14 @@ export default function Children() {
 
         const activeChildIndex = children?.findIndex((c) => c.id === activeChild?.id)
 
+        console.log(activeChildIndex)
+
         // Update Child profilePic Record Prop
-        if (!Manager.IsValid(activeChildIndex)) return
+        if (activeChildIndex === -1) return
 
         const newChild = children[activeChildIndex]
         newChild.profilePic = uploadedImageUrl
+        console.log(`${DB.tables.users}/${currentUser?.key}/children/${activeChildIndex}`)
         await DB.ReplaceEntireRecord(`${DB.tables.users}/${currentUser?.key}/children/${activeChildIndex}`, newChild)
     }
 

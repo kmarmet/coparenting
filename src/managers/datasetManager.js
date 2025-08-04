@@ -176,7 +176,7 @@ DatasetManager = {
         }
         return uniqueData
     },
-    getUniqueByPropValue: function (arr, propName) {
+    GetUniqueByPropValue: function (arr, propName) {
         var uniqueUsers
         uniqueUsers = _.uniqBy(arr, propName)
         return uniqueUsers

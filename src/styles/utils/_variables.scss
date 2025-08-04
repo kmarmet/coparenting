@@ -4,8 +4,8 @@
 $smallestBorderRadius: 4px;
 $smallerBorderRadius: 6px;
 $borderRadius: 8px;
-$mediumBorderRadius: 10px;
-$buttonBorderRadius: 50px;
+$mediumBorderRadius: 10;
+$buttonBorderRadius: 50;
 $bigBorderRadius: 15px;
 $cardBorderRadius: 25px;
 
@@ -21,8 +21,8 @@ $lesserMaxZIndex: 9;
 $maxZIndex: 10;
 
 // Font Weights
-$fwThinnest: 100;
-$fwLight: 200;
+$fwThinnest: 200;
+$fwLight: 300;
 $fwLightThicker: 300;
 $fwRegular: 400;
 $fwMedium: 500;
@@ -32,40 +32,41 @@ $fwExtraBold: 800;
 
 // Box Shadows
 $boxShadow_basic: 0 0 12px -6px rgba(51, 51, 51, 1);
-$boxShadow_float: rgba(0, 0, 0, 0.96) 0 5px 60px 14px;
+$boxShadow_float: rgba(0, 0, 0, 0.96) 0 5px 60 14px;
 $boxShadow_float_smaller: rgba(0, 0, 0, 0.76) 0 5px 25px 4px;
 
 // TOP
-$boxShadow_top_only: 0px -18px 24px 5px rgba(0, 0, 0, 0.85);
+$boxShadow_top_only: 0 -18px 24px 5px rgba(0, 0, 0, 0.85);
 $boxShadow_top_only_extra_dark:
     rgba(0, 0, 0, 0.35) 0 -2px 1px,
     rgba(0, 0, 0, 0.35) 0 -4px 2px,
     rgba(0, 0, 0, 0.35) 0 -14px 14px,
     rgba(0, 0, 0, 0.35) 0 -12px 8px;
-$boxShadow_top_only_2: 0 -10px 12px 2px rgba(0, 0, 0, 0.25);
+$boxShadow_top_only_2: 0 -10 12px 2px rgba(0, 0, 0, 0.25);
 $boxShadow_top_only_short: 0 -2px 12px 2px rgba(0, 0, 0, 0.1);
-$boxShadow_card: 0px -5px 14px 7px palette.$blendDark;
+$boxShadow_card: 0 -5px 14px 7px palette.$blendDark;
 
 // BOTTOM
-$boxShadow_bottom_only_short: #1e2939 0 8px 10px;
-$boxShadow_button_only_medium: rgba(157, 129, 255, 0.71) 0 10px -5px 2px;
-$boxShadow_bottom_only: rgb(38, 57, 77) 0 20px 30px -10px;
-$boxShadow_bottom_only_bigger: rgb(38, 57, 77) 0 40px 30px -10px;
+$boxShadow_bottom_only_best: 0 58px 29px -30 rgba(0, 0, 0, 0.7);
+$boxShadow_bottom_only_short: #1e2939 0 8px 10;
+$boxShadow_button_only_medium: rgba(157, 129, 255, 0.71) 0 10 -5px 2px;
+$boxShadow_bottom_only: rgb(38, 57, 77) 0 20 30 -10;
+$boxShadow_bottom_only_bigger: rgb(38, 57, 77) 0 40 30 -10;
 $boxShadow_bottom_only_dark:
     rgba(0, 0, 0, 0.15) 0 2px 1px,
     rgba(0, 0, 0, 0.15) 0 4px 2px,
     rgba(0, 0, 0, 0.15) 0 14px 14px,
     rgba(0, 0, 0, 0.15) 0 16px 8px,
     rgba(0, 0, 0, 0.15) 0 22px 16px;
-$boxShadow_bottom_only_extra_dark: 0 40px 30px -10px;
-$boxShadow_fade_bottom: rgba(0, 0, 0, 0.65) 0 -40px 36px -8px inset;
-$boxShadow_bottom_only_float: 0px 16px 144px 38px rgba(0, 0, 0, 1);
+$boxShadow_bottom_only_extra_dark: 0 40 30 -10;
+$boxShadow_fade_bottom: rgba(0, 0, 0, 0.65) 0 -40 36px -8px inset;
+$boxShadow_float_bigger: 0 16px 144px 38px rgba(0, 0, 0, 1);
 
 // SURROUND
 $boxShadow_surround: rgba(0, 0, 0, 0.35) 0 5px 15px;
 $boxShadow_surround_big:
     rgba(0, 0, 0, 0.35) 0 54px 55px,
-    rgba(0, 0, 0, 0.22) 0 -12px 30px,
+    rgba(0, 0, 0, 0.22) 0 -12px 30,
     rgba(0, 0, 0, 0.22) 0 4px 6px,
     rgba(0, 0, 0, 0.27) 0 12px 13px,
     rgba(0, 0, 0, 0.19) 0 -3px 5px;

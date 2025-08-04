@@ -4,8 +4,6 @@ import moment from "moment"
 import React, {useContext, useEffect, useState} from "react"
 import {BsStars} from "react-icons/bs"
 import {FaMinus, FaPlus} from "react-icons/fa6"
-import {LuCalendarSearch, LuListFilter} from "react-icons/lu"
-import {MdSearchOff} from "react-icons/md"
 import {PiCalendarDotsFill, PiCalendarXDuotone} from "react-icons/pi"
 import EditCalEvent from "../../../components/forms/editCalEvent"
 import NavBar from "../../../components/navBar.jsx"
@@ -105,6 +103,11 @@ export default function EventCalendar() {
 
             switch (true) {
                 case activeFilter === EventFilters.all:
+                    break
+                case activeFilter === EventFilters.visitation:
+                    dayEvents = dayEvents.filter(
+                        (e) => e?.fromVisitationSchedule === true && !e?.shareWith?.includes(currentUser?.key) && currentUser?.key === e?.owner?.key
+                    )
                     break
                 case activeFilter === EventFilters.holidays:
                     dayEvents = dayEvents.filter((e) => e?.isHoliday === true)
@@ -234,6 +237,22 @@ export default function EventCalendar() {
         }
     }
 
+    const HandleFilterCheckboxSelection = (target) => {
+        const filterRow = target.currentTarget
+
+        // CLear All Filters and their active classes
+        const filterRows = document.querySelectorAll(".filter-row")
+        filterRows.forEach((row) => {
+            const filterCheckbox = row.querySelector(".filter-checkbox")
+            row.classList.remove("active")
+            filterCheckbox.classList.remove("active")
+        })
+
+        const dataFilter = filterRow.getAttribute("data-filter")
+        setShowFilterModal(false)
+        setActiveFilter(dataFilter)
+    }
+
     useDetectElement("#static-calendar", (el) => {
         setTimeout(() => {
             void AddDayIndicators()
@@ -286,22 +305,6 @@ export default function EventCalendar() {
         void AddDayIndicators()
     }, [activeFilter])
 
-    const HandleFilterCheckboxSelection = (target) => {
-        const filterRow = target.currentTarget
-
-        // CLear All Filters and their active classes
-        const filterRows = document.querySelectorAll(".filter-row")
-        filterRows.forEach((row) => {
-            const filterCheckbox = row.querySelector(".filter-checkbox")
-            row.classList.remove("active")
-            filterCheckbox.classList.remove("active")
-        })
-
-        const dataFilter = filterRow.getAttribute("data-filter")
-        setShowFilterModal(false)
-        setActiveFilter(dataFilter)
-    }
-
     return (
         <Screen loadingByDefault={true} stopLoadingBool={contentIsLoaded} activeScreen={ScreenNames.calendar} classes={"calendar"}>
             {/* FILTERS MODAL */}
@@ -328,6 +331,13 @@ export default function EventCalendar() {
                         onClick={HandleFilterCheckboxSelection}>
                         <div className="filter-checkbox"></div>
                         <span>Visitation Holidays</span>
+                    </div>
+                    <div
+                        data-filter={EventFilters.visitation}
+                        className={`filter-row visitation${activeFilter === EventFilters.visitation ? " active" : ""}`}
+                        onClick={HandleFilterCheckboxSelection}>
+                        <div className="filter-checkbox"></div>
+                        <span>Your Visitation Schedule</span>
                     </div>
                     <div
                         data-filter={EventFilters.currentUser}
@@ -447,13 +457,19 @@ export default function EventCalendar() {
                             className={`${activeFilter !== EventFilters.all ? "active" : ""}`}
                             id="filter-button-wrapper"
                             onClick={() => setShowFilterModal(true)}>
-                            <LuListFilter />
+                            <p id="filter-button" className="animated-button">
+                                Filter
+                            </p>
                         </div>
                         <div id="search-button-wrapper">
                             {showSearchInput ? (
-                                <MdSearchOff className={"red"} onClick={() => setShowSearchInput(false)} />
+                                <p id={"search-button-off"} className={"red"} onClick={() => setShowSearchInput(false)}>
+                                    Close Search
+                                </p>
                             ) : (
-                                <LuCalendarSearch className={"search"} onClick={() => setShowSearchInput(true)} />
+                                <p id={"search-button-on"} className={"search"} onClick={() => setShowSearchInput(true)}>
+                                    Search
+                                </p>
                             )}
                         </div>
                         {/* LEGEND BUTTON */}

@@ -237,14 +237,14 @@
                 justify-content: center;
                 align-items: center;
                 flex-wrap: wrap;
-                padding-top: 5px;
+                padding-top: 4px;
                 .dots {
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     gap: 5px;
                     padding-top: 3px;
-                    padding-bottom: 5px;
+                    padding-bottom: 7px;
                     .dot {
                         margin: 0;
                         height: 5px;
@@ -329,11 +329,6 @@
                         }
                     }
 
-                    &#filter-button-wrapper {
-                        position: relative;
-                        top: 1px;
-                    }
-
                     svg {
                         color: rgba(0, 0, 0, 0.3);
                         transform: scale(0.9);
@@ -344,17 +339,13 @@
                     .red {
                         color: palette.$red;
                     }
-                    .search {
-                        transform: scale(0.85);
-                        position: relative;
-                        left: -5px;
-                    }
                 }
 
                 #month-selector {
                     height: 30px;
                     line-height: 1;
                     white-space: nowrap;
+
                     svg {
                         margin-left: 5px;
                         position: relative;
@@ -413,7 +404,7 @@
                     border-radius: variables.$buttonBorderRadius;
                     height: 29px;
                     white-space: nowrap;
-                    @include fonts.regularFont;
+                    @include fonts.boldFont;
                 }
 
                 // TODAY BUTTON
@@ -510,8 +501,8 @@
 
                             [class*="day"],
                             &[class*="day"] {
-                                font-weight: variables.$fwLight !important;
-                                font-family: "SF-Pro-Display-Light", sans-serif !important;
+                                font-weight: variables.$fwRegular !important;
+                                font-family: "National Park", sans-serif !important;
                             }
 
                             // TODAY

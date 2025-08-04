@@ -1,26 +1,33 @@
 @use "utils/variables";
 @use "utils/_palette";
 
-@mixin fontBase {
+.national-park-regular {
+    font-family: "National Park", sans-serif;
+    font-weight: 200;
     font-optical-sizing: auto;
     font-style: normal;
-    letter-spacing: 0.8px;
-    font-family: "SF-Pro-Display-Regular", sans-serif;
+}
+
+@mixin fontBase {
+    font-optical-sizing: auto;
+    letter-spacing: 0.3px;
+    //font-family: "SF-Pro-Display-Regular", sans-serif;
+    font-family: "National Park", sans-serif;
 }
 
 /*#region  FONTS */
 @mixin lightFont() {
     @include fontBase;
     & {
-        font-weight: variables.$fwLight;
-        font-family: "SF-Pro-Display-Light", sans-serif;
+        font-weight: 300;
+        //font-family: "SF-Pro-Display-Light", sans-serif;
     }
 }
 
 @mixin thinnestFont {
     @include fontBase;
     & {
-        font-family: "SF-Pro-Text-Thin", sans-serif;
+        //font-family: "SF-Pro-Text-Thin", sans-serif;
         font-weight: variables.$fwThinnest;
     }
 }
@@ -29,7 +36,7 @@
     @include fontBase;
     & {
         font-weight: variables.$fwLightThicker;
-        font-family: "SF-Pro-Display-Light", sans-serif;
+        //font-family: "SF-Pro-Display-Light", sans-serif;
     }
 }
 
@@ -37,7 +44,7 @@
     @include fontBase;
     & {
         font-weight: variables.$fwMedium;
-        font-family: "SF-Pro-Display-Medium", sans-serif;
+        //font-family: "SF-Pro-Display-Medium", sans-serif;
     }
 }
 
@@ -45,7 +52,7 @@
     @include fontBase;
     & {
         font-weight: variables.$fwMedium;
-        font-family: "SF-Pro-Display-Semibold", sans-serif;
+        //font-family: "SF-Pro-Display-Semibold", sans-serif;
     }
 }
 
@@ -53,7 +60,14 @@
     @include fontBase;
     & {
         font-weight: variables.$fwRegular;
-        font-family: "SF-Pro-Display-Regular", sans-serif;
+    }
+}
+
+@mixin regularFontItalic() {
+    @include fontBase;
+    & {
+        font-weight: variables.$fwRegular;
+        font-style: italic;
     }
 }
 
@@ -61,7 +75,6 @@
     @include fontBase;
     & {
         font-weight: variables.$fwRegular;
-        font-family: "SF-Pro-Display-Regular", sans-serif;
     }
 }
 
@@ -69,7 +82,6 @@
     @include fontBase;
     & {
         font-weight: variables.$fwBold;
-        font-family: "SF-Pro-Display-Bold", sans-serif;
     }
 }
 
@@ -77,7 +89,6 @@
     @include fontBase;
     & {
         font-weight: variables.$fwLight;
-        font-family: "SF-Pro-Display", sans-serif;
     }
 }
 /*#endregion  FONTS */
