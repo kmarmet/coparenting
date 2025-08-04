@@ -29,6 +29,7 @@ const Changelogs = () => {
             <div className={"content"}>
                 <div className="screen-description">
                     <h1>Latest Updates</h1>
+
                     <p>
                         Authenticity and transparency are our core values. Because we are committed to keeping you informed about our progress, we
                         have created this page to share updates.

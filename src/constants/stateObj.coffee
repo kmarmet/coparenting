@@ -4,8 +4,12 @@ import moment from "moment"
 
 StateObj =
   # Getters
+  
   activeChatId: ''
   authUser: null
+  bannerMessage: null
+  bannerTitle: '',
+  bannerType: 'success'
   childAccessGranted: false,
   creationFormToShow: ''
   currentScreen: ScreenNames.landing
@@ -26,13 +30,12 @@ StateObj =
   showCreationMenu: false
   showOverlay: false
   showScreenActions: false
-  bannerMessage: null
-  bannerType: 'success'
   users: []
-  
   # Setters
   setActiveChatId: (id) ->
   setAuthUser: (user) ->
+  setBannerMessage: (message) ->
+  setBannerTitle: (title) ->
   setBannerType: (type) ->
   setChildAccessGranted: (bool) ->
   setContactInfoToUpdateType: ->
@@ -55,7 +58,6 @@ StateObj =
   setShowBottomMenu: (bool) ->
   setShowOverlay: (bool) ->
   setShowScreenActions: (bool) ->
-  setBannerMessage: (message) ->
   setTheme: (theme) ->
   setUserIsLoggedIn: (isLoggedIn) ->
   setUsers: (users) ->

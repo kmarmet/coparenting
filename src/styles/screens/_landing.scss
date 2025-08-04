@@ -1,7 +1,7 @@
-@use '../utils/variables';
-@use '../utils/_palette';
-@use '../_fonts';
-@use '../utils/mixins';
+@use "../utils/variables";
+@use "../utils/_palette";
+@use "../_fonts";
+@use "../utils/mixins";
 
 #external-overrides {
     .page-container {
@@ -521,7 +521,7 @@
                 display: grid;
                 grid-template-columns: 1.5fr 1fr;
                 align-items: center;
-                @include mixins.mainColorsGradient;
+                @include mixins.blendBg;
 
                 .text-wrapper {
                     max-width: 80%;

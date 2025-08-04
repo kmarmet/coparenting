@@ -218,7 +218,7 @@ DropdownManager =
       if Manager.IsValid(children)
         for child in children
           options.push
-            label: StringManager.FormatTitle(child?.general?.name)
+            label: StringManager.FormatTitle(DB_UserScoped.GetChildName(children, child?.id, true))
             value: child?.id
 
       return options

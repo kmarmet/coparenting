@@ -149,19 +149,19 @@
                             opacity: 1;
 
                             &.financial-dot {
-                                background-color: palette.$green;
+                                background-color: palette.$financialDot;
                             }
 
                             &.holiday-event-dot {
-                                background: palette.$holidayOrange;
+                                background: palette.$holidayDot;
                             }
 
                             &.coParent-event-dot {
-                                background: palette.$purple;
+                                background: palette.$sharedDot;
                             }
 
                             &.current-user-event-dot {
-                                background: palette.$blendDark;
+                                background: palette.$currentUserDot;
                             }
 
                             &.current-user-visitation {

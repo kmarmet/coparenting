@@ -14,7 +14,6 @@ import useChildren from "../../hooks/useChildren"
 import useCoParents from "../../hooks/useCoParents"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import useUsers from "../../hooks/useUsers"
-import AlertManager from "../../managers/alertManager"
 import CalendarManager from "../../managers/calendarManager"
 import DatasetManager from "../../managers/datasetManager"
 import DateManager from "../../managers/dateManager"
@@ -81,9 +80,8 @@ export default function NewCalendarEvent() {
     const formRef = useRef({...new CalendarEvent({startDate: moment(selectedCalendarDate).format(DatetimeFormats.dateForDb)})})
 
     const ThrowError = (message) => {
-        AlertManager.throwError(message)
         setIsSubmitting(false)
-        setState({...state, isLoading: false})
+        setState({...state, isLoading: false, bannerMessage: message, bannerType: "error"})
         return false
     }
 

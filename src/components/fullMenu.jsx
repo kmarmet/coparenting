@@ -3,7 +3,6 @@ import {getAuth, signOut} from "firebase/auth"
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {AiOutlineLogout} from "react-icons/ai"
 import {BsHouses, BsImages} from "react-icons/bs"
-import {GrUserAdmin} from "react-icons/gr"
 import {IoBugSharp, IoChatbubblesOutline, IoNotifications, IoNotificationsOutline} from "react-icons/io5"
 import {LiaFileInvoiceDollarSolid} from "react-icons/lia"
 import {LuCalendarDays} from "react-icons/lu"
@@ -100,7 +99,7 @@ export default function FullMenu() {
                         block: "center",
                     })
                 }
-            }, 1000)
+            }, 100)
         }
     }, [menuIsOpen])
 
@@ -110,10 +109,10 @@ export default function FullMenu() {
 
         // Section elements
         const sections = {
-            sharing: document.querySelector(".form-divider.sharing"),
-            coParenting: document.querySelector(".form-divider.coparenting"),
-            infoStorage: document.querySelector(".form-divider.info-storage"),
-            profileSettings: document.querySelector(".form-divider.profile-settings-support"),
+            sharing: document.querySelector(".section.sharing"),
+            coParenting: document.querySelector(".section.coparenting"),
+            infoStorage: document.querySelector(".section.info-storage"),
+            profileSettings: document.querySelector(".section.profile-settings-support"),
         }
 
         // Map screen groups to their corresponding section
@@ -396,10 +395,7 @@ export default function FullMenu() {
                                 id={"dashboard-button"}
                                 className={`dashboard ${currentScreen === ScreenNames.adminDashboard ? "active" : ""}`}
                                 onClick={(e) => ChangeCurrentScreen(ScreenNames.adminDashboard, e)}>
-                                <div className="svg-wrapper">
-                                    <GrUserAdmin />
-                                </div>
-                                <p>Dashboard</p>
+                                💩
                             </div>
                         )}
 

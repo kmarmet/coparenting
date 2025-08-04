@@ -27,204 +27,204 @@ import Manager from "./manager"
 import ObjectManager from "./objectManager"
 
 export default CalendarManager = {
-      AddMultipleCalEvents: async function (currentUser, newEvents, isRangeClonedOrRecurring = false) {
-            var currentEvents, dbRef, error, multipleDatesId, processedNewEvents, toAdd, userEventsPath
-            dbRef = ref(getDatabase())
-            userEventsPath = `${DB.tables.calendarEvents}/${currentUser.key}`
-            try {
-                  // Fetch existing events or default to []
-                  currentEvents = (await DB.GetTableData(userEventsPath)) || []
+    AddMultipleCalEvents: async function (currentUser, newEvents, isRangeClonedOrRecurring = false) {
+        var currentEvents, dbRef, error, multipleDatesId, processedNewEvents, toAdd, userEventsPath
+        dbRef = ref(getDatabase())
+        userEventsPath = `${DB.tables.calendarEvents}/${currentUser.key}`
+        try {
+            // Fetch existing events or default to []
+            currentEvents = (await DB.GetTableData(userEventsPath)) || []
 
-                  // If cloning/recurring, generate a shared multipleDatesId
-                  multipleDatesId = isRangeClonedOrRecurring ? Manager.GetUid() : null
+            // If cloning/recurring, generate a shared multipleDatesId
+            multipleDatesId = isRangeClonedOrRecurring ? Manager.GetUid() : null
 
-                  // Process new events (add multipleDatesId if needed)
-                  processedNewEvents = newEvents.map(function (event) {
-                        if (multipleDatesId != null) {
-                              return Object.assign({}, event, {
-                                    multipleDatesId: multipleDatesId,
-                              })
-                        } else {
-                              return event
-                        }
-                  })
-
-                  // Merge current events + new ones
-                  toAdd = (Array.isArray(currentEvents) ? currentEvents : []).concat(processedNewEvents)
-
-                  // Save to DB
-                  return await set(child(dbRef, userEventsPath), toAdd)
-            } catch (error1) {
-                  error = error1
-                  return LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
-            }
-      },
-      MapCategoryToParent: function (categoryName) {
-            var categories, group, i, len
-            categories = EventCategories
-            for (i = 0, len = categories.length; i < len; i++) {
-                  group = categories[i]
-                  if (group.categories.includes(categoryName)) {
-                        return group.parentCategory
-                  }
-            }
-            return null
-      },
-
-      // Example Usage:  console.log categoryToParentMap["Marathon"] # "Sports & Fitness 🏃"
-      BuildArrayOfEvents: function (currentUser, eventObject, arrayType = "recurring", startDate, endDate) {
-            var date, dateObject, datesToIterate, datesToPush, i, len
-            datesToPush = []
-            datesToIterate = []
-            // DATE RANGE / CLONED
-            if (arrayType === "range" || arrayType === "cloned") {
-                  datesToIterate = DateManager.GetDateRangeDates(startDate, endDate)
-            }
-            console.log("datesToIterate", datesToIterate)
-            // REPEATING
-            if (arrayType === "recurring") {
-                  datesToIterate = CalendarMapper.recurringEvents(
-                        eventObject.recurringInterval,
-                        moment(startDate).format(DateFormats.monthDayYear),
-                        endDate
-                  )
-            }
-            for (i = 0, len = datesToIterate.length; i < len; i++) {
-                  date = datesToIterate[i]
-                  dateObject = new CalendarEvent()
-                  // Required
-                  dateObject.title = eventObject.title
-                  dateObject.startDate = moment(date).format(DateFormats.dateForDb)
-                  dateObject.endDate = moment(endDate).format(DateFormats.dateForDb)
-                  if (arrayType === "range") {
-                        dateObject.staticStartDate = moment(datesToIterate[0]).format(DateFormats.dateForDb)
-                  }
-                  // Not Required
-                  dateObject.directionsLink = Manager.GetDirectionsLink(eventObject.address)
-                  dateObject.address = eventObject.address
-                  dateObject.children = eventObject.children
-                  dateObject.ownerKey = currentUser != null ? currentUser.key : void 0
-                  dateObject.createdBy = currentUser != null ? currentUser.name : void 0
-                  dateObject.phone = eventObject.phone
-                  dateObject.shareWith = DatasetManager.getUniqueArray(eventObject.shareWith, true)
-                  dateObject.notes = eventObject.notes
-                  dateObject.websiteUrl = eventObject.websiteUrl
-                  dateObject.isRecurring = eventObject.isRecurring
-                  dateObject.isDateRange = eventObject.isDateRange
-                  //      dateObject.isCloned = Manager.isValid(clonedDates)
-
-                  // Times
-                  if (Manager.IsValid(eventObject.startTime)) {
-                        dateObject.startTime = moment(eventObject.startTime).format(DateFormats.timeForDb)
-                  }
-                  if (Manager.IsValid(eventObject.endTime)) {
-                        dateObject.endTime = moment(eventObject.endTime).format(DateFormats.timeForDb)
-                  }
-                  dateObject.reminderTimes = eventObject.GetReminderTimes
-                  dateObject.recurrenceInterval = eventObject.recurringInterval
-                  datesToPush.push(ObjectManager.CleanObject(dateObject))
-            }
-            return datesToPush
-      },
-      SetHolidays: async function (holidays) {
-            var currentEvents, dbRef, error, eventsToAdd
-            dbRef = ref(getDatabase())
-            currentEvents = await DB.GetTableData(DB.tables.holidayEvents)
-            eventsToAdd = DatasetManager.GetValidArray([...currentEvents, ...holidays], true, true)
-            eventsToAdd = DatasetManager.GetValidArray(eventsToAdd, true, true)
-            try {
-                  return await set(child(dbRef, `${DB.tables.holidayEvents}`), eventsToAdd)
-            } catch (error1) {
-                  error = error1
-                  return LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
-            }
-      },
-      addCalendarEvent: async function (currentUser, newEvent) {
-            var currentEvents, dbRef, error, toAdd
-            dbRef = ref(getDatabase())
-            currentEvents = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser.key}`)
-            currentEvents = currentEvents.filter(function (n) {
-                  return n
+            // Process new events (add multipleDatesId if needed)
+            processedNewEvents = newEvents.map(function (event) {
+                if (multipleDatesId != null) {
+                    return Object.assign({}, event, {
+                        multipleDatesId: multipleDatesId,
+                    })
+                } else {
+                    return event
+                }
             })
-            toAdd = []
-            try {
-                  if (Manager.IsValid(currentEvents)) {
-                        toAdd = [...currentEvents, newEvent]
-                  } else {
-                        toAdd = [newEvent]
-                  }
-                  return set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.key}/`), toAdd)
-            } catch (error1) {
-                  error = error1
-                  return LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
+
+            // Merge current events + new ones
+            toAdd = (Array.isArray(currentEvents) ? currentEvents : []).concat(processedNewEvents)
+
+            // Save to DB
+            return await set(child(dbRef, userEventsPath), toAdd)
+        } catch (error1) {
+            error = error1
+            return LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
+        }
+    },
+    MapCategoryToParent: function (categoryName) {
+        var categories, group, i, len
+        categories = EventCategories
+        for (i = 0, len = categories.length; i < len; i++) {
+            group = categories[i]
+            if (group.categories.includes(categoryName)) {
+                return group.parentCategory
             }
-      },
-      UpdateEvent: async function (currentUserKey, updateIndex, updatedEvent) {
-            var dbRef, error
-            dbRef = getDatabase()
-            try {
-                  if (updateIndex) {
-                        return await update(ref(dbRef, `${DB.tables.calendarEvents}/${currentUserKey}/${updateIndex}`), updatedEvent)
-                  }
-            } catch (error1) {
-                  error = error1
-                  return Sentry.captureException(`Error: ${error} | Code File: CalendarManager | Function: UpdateExpense`)
+        }
+        return null
+    },
+
+    // Example Usage:  console.log categoryToParentMap["Marathon"] # "Sports & Fitness 🏃"
+    BuildArrayOfEvents: function (currentUser, eventObject, arrayType = "recurring", startDate, endDate) {
+        var date, dateObject, datesToIterate, datesToPush, i, len
+        datesToPush = []
+        datesToIterate = []
+        // DATE RANGE / CLONED
+        if (arrayType === "range" || arrayType === "cloned") {
+            datesToIterate = DateManager.GetDateRangeDates(startDate, endDate)
+        }
+        console.log("datesToIterate", datesToIterate)
+        // REPEATING
+        if (arrayType === "recurring") {
+            datesToIterate = CalendarMapper.recurringEvents(
+                eventObject.recurringInterval,
+                moment(startDate).format(DateFormats.monthDayYear),
+                endDate
+            )
+        }
+        for (i = 0, len = datesToIterate.length; i < len; i++) {
+            date = datesToIterate[i]
+            dateObject = new CalendarEvent()
+            // Required
+            dateObject.title = eventObject.title
+            dateObject.startDate = moment(date).format(DateFormats.dateForDb)
+            dateObject.endDate = moment(endDate).format(DateFormats.dateForDb)
+            if (arrayType === "range") {
+                dateObject.staticStartDate = moment(datesToIterate[0]).format(DateFormats.dateForDb)
             }
-      },
-      deleteMultipleEvents: async function (events, currentUser) {
-            var dbRef, i, idsToDelete, len, record, results, tableRecords
-            dbRef = ref(getDatabase())
-            tableRecords = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser.key}`)
-            idsToDelete = events.map(function (x) {
-                  return x.id
-            })
-            if (Manager.IsValid(tableRecords)) {
-                  results = []
-                  for (i = 0, len = tableRecords.length; i < len; i++) {
-                        record = tableRecords[i]
-                        if (Manager.Contains(idsToDelete, record.id)) {
-                              results.push(await CalendarManager.deleteEvent(currentUser, record.id))
-                        } else {
-                              results.push(void 0)
-                        }
-                  }
-                  return results
+            // Not Required
+            dateObject.directionsLink = Manager.GetDirectionsLink(eventObject.address)
+            dateObject.address = eventObject.address
+            dateObject.children = eventObject.children
+            dateObject.phone = eventObject.phone
+            dateObject.shareWith = DatasetManager.GetValidArray(eventObject.shareWith, true)
+            dateObject.notes = eventObject.notes
+            dateObject.websiteUrl = eventObject.websiteUrl
+            dateObject.isRecurring = eventObject.isRecurring
+            dateObject.isDateRange = eventObject.isDateRange
+            dateObject.owner = {
+                key: currentUser != null ? currentUser.key : void 0,
+                name: currentUser != null ? currentUser.name : void 0,
             }
-      },
-      deleteAllHolidayEvents: async function () {
-            var dbRef, i, idToDelete, len, record, results, tableRecords
-            dbRef = ref(getDatabase())
-            tableRecords = await DB.GetTableData(`${DB.tables.holidayEvents}`)
+            // Times
+            if (Manager.IsValid(eventObject.startTime)) {
+                dateObject.startTime = moment(eventObject.startTime).format(DateFormats.timeForDb)
+            }
+            if (Manager.IsValid(eventObject.endTime)) {
+                dateObject.endTime = moment(eventObject.endTime).format(DateFormats.timeForDb)
+            }
+            dateObject.reminderTimes = eventObject.GetReminderTimes
+            dateObject.recurrenceInterval = eventObject.recurringInterval
+            datesToPush.push(ObjectManager.CleanObject(dateObject))
+        }
+        return datesToPush
+    },
+    SetHolidays: async function (holidays) {
+        var currentEvents, dbRef, error, eventsToAdd
+        dbRef = ref(getDatabase())
+        currentEvents = await DB.GetTableData(DB.tables.holidayEvents)
+        eventsToAdd = DatasetManager.GetValidArray([...currentEvents, ...holidays], true, true)
+        eventsToAdd = DatasetManager.GetValidArray(eventsToAdd, true, true)
+        try {
+            return await set(child(dbRef, `${DB.tables.holidayEvents}`), eventsToAdd)
+        } catch (error1) {
+            error = error1
+            return LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
+        }
+    },
+    addCalendarEvent: async function (currentUser, newEvent) {
+        var currentEvents, dbRef, error, toAdd
+        dbRef = ref(getDatabase())
+        currentEvents = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser.key}`)
+        currentEvents = currentEvents.filter(function (n) {
+            return n
+        })
+        toAdd = []
+        try {
+            if (Manager.IsValid(currentEvents)) {
+                toAdd = [...currentEvents, newEvent]
+            } else {
+                toAdd = [newEvent]
+            }
+            return set(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.key}/`), toAdd)
+        } catch (error1) {
+            error = error1
+            return LogManager.Log(error.message, LogManager.LogTypes.error, error.stack)
+        }
+    },
+    UpdateEvent: async function (currentUserKey, updateIndex, updatedEvent) {
+        var dbRef, error
+        dbRef = getDatabase()
+        try {
+            if (updateIndex) {
+                return await update(ref(dbRef, `${DB.tables.calendarEvents}/${currentUserKey}/${updateIndex}`), updatedEvent)
+            }
+        } catch (error1) {
+            error = error1
+            return Sentry.captureException(`Error: ${error} | Code File: CalendarManager | Function: UpdateExpense`)
+        }
+    },
+    deleteMultipleEvents: async function (events, currentUser) {
+        var dbRef, i, idsToDelete, len, record, results, tableRecords
+        dbRef = ref(getDatabase())
+        tableRecords = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser.key}`)
+        idsToDelete = events.map(function (x) {
+            return x.id
+        })
+        if (Manager.IsValid(tableRecords)) {
             results = []
             for (i = 0, len = tableRecords.length; i < len; i++) {
-                  record = tableRecords[i]
-                  idToDelete = await DB.getSnapshotKey(`${DB.tables.holidayEvents}`, record, "id")
-                  results.push(await remove(child(dbRef, `${DB.tables.holidayEvents}/${idToDelete}`)))
+                record = tableRecords[i]
+                if (Manager.Contains(idsToDelete, record.id)) {
+                    results.push(await CalendarManager.deleteEvent(currentUser, record.id))
+                } else {
+                    results.push(void 0)
+                }
             }
             return results
-      },
-      deleteEvent: async function (currentUser, id) {
-            var dbRef, error, i, idToDelete, len, record, results, tableRecords
-            dbRef = ref(getDatabase())
-            idToDelete = null
-            tableRecords = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser.key}/`)
-            results = []
-            for (i = 0, len = tableRecords.length; i < len; i++) {
-                  record = tableRecords[i]
-                  if ((record != null ? record.id : void 0) === id) {
-                        idToDelete = await DB.getSnapshotKey(`${DB.tables.calendarEvents}/${currentUser.key}/`, record, "id")
-                        try {
-                              results.push(remove(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.key}/${idToDelete}`)))
-                        } catch (error1) {
-                              error = error1
-                              results.push(LogManager.Log(error.message, LogManager.LogTypes.error, error.stack))
-                        }
-                  } else {
-                        results.push(void 0)
-                  }
+        }
+    },
+    deleteAllHolidayEvents: async function () {
+        var dbRef, i, idToDelete, len, record, results, tableRecords
+        dbRef = ref(getDatabase())
+        tableRecords = await DB.GetTableData(`${DB.tables.holidayEvents}`)
+        results = []
+        for (i = 0, len = tableRecords.length; i < len; i++) {
+            record = tableRecords[i]
+            idToDelete = await DB.getSnapshotKey(`${DB.tables.holidayEvents}`, record, "id")
+            results.push(await remove(child(dbRef, `${DB.tables.holidayEvents}/${idToDelete}`)))
+        }
+        return results
+    },
+    deleteEvent: async function (currentUser, id) {
+        var dbRef, error, i, idToDelete, len, record, results, tableRecords
+        dbRef = ref(getDatabase())
+        idToDelete = null
+        tableRecords = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser.key}/`)
+        results = []
+        for (i = 0, len = tableRecords.length; i < len; i++) {
+            record = tableRecords[i]
+            if ((record != null ? record.id : void 0) === id) {
+                idToDelete = await DB.getSnapshotKey(`${DB.tables.calendarEvents}/${currentUser.key}/`, record, "id")
+                try {
+                    results.push(remove(child(dbRef, `${DB.tables.calendarEvents}/${currentUser.key}/${idToDelete}`)))
+                } catch (error1) {
+                    error = error1
+                    results.push(LogManager.Log(error.message, LogManager.LogTypes.error, error.stack))
+                }
+            } else {
+                results.push(void 0)
             }
-            return results
-      },
+        }
+        return results
+    },
 }
 
 //# sourceMappingURL=calendarManager.js.map

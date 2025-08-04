@@ -14,7 +14,6 @@ import useCoParents from "../../hooks/useCoParents"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import useMemories from "../../hooks/useMemories"
 import useUsers from "../../hooks/useUsers"
-import AlertManager from "../../managers/alertManager"
 import AppManager from "../../managers/appManager"
 import DatasetManager from "../../managers/datasetManager"
 import DropdownManager from "../../managers/dropdownManager"
@@ -61,9 +60,8 @@ export default function NewMemory() {
     }
 
     const ThrowError = (title, message = "") => {
-        AlertManager.throwError(title, message)
         setIsUploading(false)
-        setState({...state, isLoading: false, currentScreen: ScreenNames.docsList})
+        setState({...state, isLoading: false, bannerTitle: title, bannerMessage: message, bannerType: "error"})
         return false
     }
 
@@ -78,6 +76,7 @@ export default function NewMemory() {
         // ✅ Validation helper
 
         // ✅ Validation Checks
+
         if (validAccounts === 0)
             ThrowError(
                 `No ${currentUser?.accountType === "parent" ? "co-parents or children" : "parents"} to \n share memories with`,
@@ -85,10 +84,10 @@ export default function NewMemory() {
             )
 
         // Shared With
-        if (!Manager.IsValid(shareWith)) return ThrowError("Please choose who you would like to share this memory with")
+        if (!Manager.IsValid(shareWith)) return ThrowError("Unable to Share", "Please choose who you would like to share this memory with")
 
         // Images
-        if (!Manager.IsValid(images)) return ThrowError("Please upload at least one image")
+        if (!Manager.IsValid(images)) return ThrowError("Unable to Upload", "Please choose at least one image")
 
         // Not an image
         const notAnImage = Object.values(images).some((file) => file?.name?.includes(".doc"))

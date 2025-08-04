@@ -18,6 +18,20 @@ import Storage from "./storage"
 
 const DB_UserScoped = {
     // GET
+    GetChildName: (children, childId, firstNameOnly = false) => {
+        let child = children?.find((child) => child.id === childId)
+
+        if (!Manager.IsValid(child)) return
+
+        const details = child?.details
+
+        if (!Manager.IsValid(details)) return
+        const name = details?.find((x) => (x.dbFormattedLabel = "name"))?.value
+        if (firstNameOnly) {
+            return StringManager.GetFirstNameOnly(name)
+        }
+        return name
+    },
     getCoparentObjArray: (currentUser, coparents) => {
         let objArray = []
         let validCoparentsArray = DatasetManager.GetValidArray(coparents)

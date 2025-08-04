@@ -20,7 +20,7 @@ import ObjectManager from "../../../managers/objectManager"
 import SmsManager from "../../../managers/smsManager.js"
 import StringManager from "../../../managers/stringManager"
 import Child from "../../../models/child/child"
-import General from "../../../models/child/general"
+import CustomInfoEntry from "../../../models/child/customInfoEntry"
 import Form from "../../shared/form"
 import InputField from "../../shared/inputField"
 import SelectDropdown from "../../shared/selectDropdown"
@@ -63,41 +63,19 @@ export default function Registration() {
     // SUBMIT
     const Submit = async () => {
         setState({...state, isLoading: true})
-        if (!validator.isEmail(userRef.current.email)) {
-            AlertManager.throwError("Email address is not valid")
-            setState({...state, isLoading: false})
-            return false
-        }
-        if (!validator.isMobilePhone(userRef.current.phone) || !StringManager.IsNotAllSameNumber(userRef.current.phone)) {
-            AlertManager.throwError("Phone number is not valid")
-            setState({...state, isLoading: false})
-            return false
-        }
-        if (!Manager.IsValid(confirmedPassword) || !Manager.IsValid(password)) {
-            AlertManager.throwError("Please enter a password")
-            return false
-        }
 
-        if (password !== confirmedPassword) {
-            AlertManager.throwError("Passwords do not match")
-            setState({...state, isLoading: false})
-            return false
-        }
+        // EMAIL
+        if (!validator?.isEmail(userRef.current.email)) return ThrowError("Email address is not valid")
 
-        const errorString = Manager.GetInvalidInputsErrorString([
-            {name: "Your Name", value: userRef.current.name},
-            {name: "Your Phone Number", value: userRef.current.phone},
-            {name: "Profile Type", value: accountType},
-            {name: "Email", value: userRef.current.email},
-            {name: "Password", value: password},
-            {name: "Password Confirmation", value: confirmedPassword},
-        ])
+        // PHONE
+        if (!validator?.isMobilePhone(userRef.current.phone) || !StringManager.IsNotAllSameNumber(userRef.current.phone))
+            return ThrowError("Phone number is not valid")
 
-        if (Manager.IsValid(errorString, true)) {
-            AlertManager.throwError(errorString)
-            setState({...state, isLoading: false})
-            return false
-        }
+        // PASSWORD
+        if (!Manager.IsValid(confirmedPassword) || !Manager.IsValid(password)) return ThrowError("Please enter a password")
+
+        // CONFIRMED PASSWORD
+        if (password !== confirmedPassword) return ThrowError("Passwords do not match")
 
         localStorage.setItem("pcp_registration_started", "true")
 
@@ -170,46 +148,48 @@ export default function Registration() {
         )
     }
 
+    const ThrowError = (title, message = "") => {
+        AlertManager.throwError(title, message)
+        setState({...state, isLoading: false})
+        return false
+    }
+
     const SendParentAccessCode = async (codeResent = false) => {
         // Create profile for (this user) child
-        const errorString = Manager.GetInvalidInputsErrorString([
-            {name: "Parent Email", value: parentRef.current.email},
-            {name: "Parent Phone", value: parentRef.current.phoneNumber},
-        ])
 
-        if (Manager.IsValid(errorString)) {
-            AlertManager.throwError(errorString)
-            return false
-        }
-        if ((!parentRef.current.phoneNumber || !validator.isMobilePhone(parentRef.current.phoneNumber)) && !codeResent) {
-            AlertManager.throwError("Phone number is not valid")
-            return false
-        } else {
-            const parent = await DB.find(DB.tables.users, ["email", parentRef.current.email], true)
+        // NAME
+        if (!Manager.IsValid(name, true)) return ThrowError("Please enter a name")
 
-            if (!parent) {
-                AlertManager.throwError(
-                    "No Parent Profile Found",
-                    "Please check the email and enter again, or let your parent know they will need to register an account"
-                )
-                return false
-            }
+        // EMAIL
+        if (!Manager.IsValid(userRef.current.email, true)) return ThrowError("Please enter an email")
 
-            if (parentRef.current.phoneNumber === localCurrentUser?.phone) {
-                AlertManager.throwError("Unable to request access", "Your parent's phone number cannot be your phone number")
-                return false
-            }
+        // PHONE
+        if (!Manager.IsValid(userRef.current.phone, true)) return ThrowError("Please enter a phone number")
+        if ((!parentRef.current.phoneNumber || !validator?.isMobilePhone(parentRef.current.phoneNumber)) && !codeResent)
+            return ThrowError("Please enter a valid parent phone number")
 
-            const phoneCode = Manager.GetUid().slice(0, 6)
-            setVerificationCode(phoneCode)
-            setState({...state, isLoading: true, loadingText: "Sending access code to your parent..."})
-            await SmsManager.Send(
-                parentRef.current.phoneNumber,
-                SmsManager.Templates.ParentChildVerification(StringManager.GetFirstNameOnly(name), phoneCode)
+        const parent = await DB.find(DB.tables.users, ["email", parentRef.current.email], true)
+
+        // PARENT
+        if (!Manager.IsValid(parent))
+            return ThrowError(
+                "No Parent Profile Found",
+                "Please check the email and enter again, or let your parent know they will need to register an account"
             )
-            setState({...state, isLoading: false})
-            setActiveStep(Steps.VerifyParentAccessCode)
-        }
+
+        // PARENT PHONE
+        if (parentRef.current.phoneNumber === localCurrentUser?.phone)
+            return ThrowError("Unable to request access", "Your parent's phone number cannot be your phone number")
+
+        const phoneCode = Manager.GetUid().slice(0, 6)
+        setVerificationCode(phoneCode)
+        setState({...state, isLoading: true, loadingText: "Sending access code to your parent..."})
+        await SmsManager.Send(
+            parentRef.current.phoneNumber,
+            SmsManager.Templates.ParentChildVerification(StringManager.GetFirstNameOnly(name), phoneCode)
+        )
+        setState({...state, isLoading: false})
+        setActiveStep(Steps.VerifyParentAccessCode)
     }
 
     const VerifyParentAccessCode = async () => {
@@ -236,20 +216,37 @@ export default function Registration() {
                     // ADD OR UPDATE CHILD RECORD UNDER PARENT
                     // -> Add child to parent
                     if (!Manager.IsValid(existingChild)) {
-                        const childToAdd = new Child()
-                        const general = new General()
-                        general.phone = currentUserToUse?.phone
-                        general.name = StringManager.UppercaseFirstLetterOfAllWords(name)
-                        general.email = currentUserToUse?.email
-                        childToAdd.general = general
-                        childToAdd.userKey = currentUserToUse?.key
+                        const phone = new CustomInfoEntry({
+                            label: "Phone",
+                            value: currentUserToUse?.phone,
+                            dataType: "phone",
+                            category: "general",
+                        })
+                        const name = new CustomInfoEntry({
+                            label: "Name",
+                            value: StringManager.UppercaseFirstLetterOfAllWords(name),
+                            dataType: "name",
+                            category: "general",
+                        })
+                        const email = new CustomInfoEntry({
+                            label: "Email",
+                            value: currentUserToUse?.email,
+                            dataType: "email",
+                            category: "general",
+                        })
+                        const details = [phone, name, email]
+
+                        const childToAdd = new Child({
+                            details: details,
+                            userKey: currentUserToUse?.key,
+                        })
 
                         // Add child key to parent sharedDataUserKeys
                         const updatedSharedDataUsers = DatasetManager.AddToArray(existingParentAccount?.sharedDataUserKeys, currentUserToUse?.key)
                         await DB.UpdateByPath(`${DB.tables.users}/${existingParentAccount?.key}/sharedDataUserKeys`, updatedSharedDataUsers)
 
                         // Add child to parent's children array
-                        const cleanChild = ObjectManager.GetModelValidatedObject(childToAdd, ModelNames.child)
+                        const cleanChild = ObjectManager.CleanObject(childToAdd, ModelNames.child)
                         await DB_UserScoped.AddChildToParentProfile(existingParentAccount, cleanChild)
                     }
 
@@ -272,27 +269,25 @@ export default function Registration() {
                         userKey: existingParentAccount?.key,
                         email: existingParentAccount?.email,
                     }
-                    const cleanParent = ObjectManager.GetModelValidatedObject(newParent, ModelNames.parent)
+                    const cleanParent = ObjectManager.CleanObject(newParent)
                     await DB_UserScoped.AddParent(currentUserToUse, cleanParent)
                     await DB_UserScoped.updateUserRecord(currentUserToUse?.key, "parentAccessGranted", true)
                     await DB_UserScoped.updateUserRecord(currentUserToUse?.key, "sharedDataUserKeys", [existingParentAccount?.key])
                     localStorage.removeItem("pcp_registration_started")
                     setActiveStep(Steps.Onboarding)
                 } else {
-                    AlertManager.throwError(
+                    return ThrowError(
                         "No parent profile found with provided email",
                         "Please check the email and enter again or let your parent know they will need to register an account"
                     )
-                    return false
                 }
             } else {
                 if (codeRetryCount === 1) {
-                    AlertManager.throwError(
+                    setCodeRetryCount(codeRetryCount + 1)
+                    return ThrowError(
                         "Access code is incorrect",
                         "Registration will be aborted for security reasons if access code is incorrect after 5 attempts"
                     )
-                    setCodeRetryCount(codeRetryCount + 1)
-                    return false
                 }
                 if (codeRetryCount > 4) {
                     AlertManager.confirmAlert(
@@ -315,18 +310,12 @@ export default function Registration() {
     }
 
     useEffect(() => {
-        const errorString = Manager.GetInvalidInputsErrorString([
-            {name: "Your Name", value: name},
-            {name: "Your Phone Number", value: userRef.current.phone},
-            {name: "Profile Type", value: accountType},
-            {name: "Email", value: userRef.current.email},
-            {name: "Password", value: password},
-            {name: "Password Confirmation", value: confirmedPassword},
-        ])
-
-        if (!Manager.IsValid(errorString, true)) {
-            setShowCreateButton(true)
-        }
+        if (!Manager.IsValid(name, true)) return ThrowError("Please enter a name")
+        if (!Manager.IsValid(userRef.current.phone, true)) return ThrowError("Please enter a phone number")
+        if (!Manager.IsValid(userRef.current.email, true)) return ThrowError("Please enter an email")
+        if (!Manager.IsValid(password, true)) return ThrowError("Please enter a password")
+        if (!Manager.IsValid(confirmedPassword, true)) return ThrowError("Please confirm your password")
+        if (!Manager.IsValid(accountType, true)) return ThrowError("Please select a profile type")
     }, [userRef.current.phone, userRef.current.email, userRef.current.name, accountType, password, confirmedPassword])
 
     useEffect(() => {

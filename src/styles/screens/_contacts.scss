@@ -43,7 +43,7 @@
                 @include mixins.square(90px);
 
                 &.no-pic {
-                    @include mixins.mainColorsGradient;
+                    @include mixins.blendBg;
                     border-radius: 100%;
                     .header {
                         padding: 0;

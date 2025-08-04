@@ -10,6 +10,9 @@ StateObj = {
     // Getters
     activeChatId: "",
     authUser: null,
+    bannerMessage: null,
+    bannerTitle: "",
+    bannerType: "success",
     childAccessGranted: false,
     creationFormToShow: "",
     currentScreen: ScreenNames.landing,
@@ -30,13 +33,12 @@ StateObj = {
     showCreationMenu: false,
     showOverlay: false,
     showScreenActions: false,
-    bannerMessage: null,
-    bannerType: "success",
     users: [],
-
     // Setters
     setActiveChatId: function (id) {},
     setAuthUser: function (user) {},
+    setBannerMessage: function (message) {},
+    setBannerTitle: function (title) {},
     setBannerType: function (type) {},
     setChildAccessGranted: function (bool) {},
     setContactInfoToUpdateType: function () {},
@@ -59,7 +61,6 @@ StateObj = {
     setShowBottomMenu: function (bool) {},
     setShowOverlay: function (bool) {},
     setShowScreenActions: function (bool) {},
-    setBannerMessage: function (message) {},
     setTheme: function (theme) {},
     setUserIsLoggedIn: function (isLoggedIn) {},
     setUsers: function (users) {},

@@ -123,7 +123,7 @@ $shadows-big: multiple-box-shadow(100);
         justify-content: center;
         flex-wrap: wrap;
         padding: 55px 15px 50px;
-        @include screenHeaderGradient;
+        @include blendBg;
 
         &::after {
             content: "";
@@ -547,30 +547,8 @@ $shadows-big: multiple-box-shadow(100);
     white-space: nowrap;
 }
 
-@mixin mainColorsGradient {
-    color: #5500ea;
-    background-image: linear-gradient(
-        180deg,
-        hsl(252deg 97% 54%) 0%,
-        hsl(257deg 98% 53%) 34%,
-        hsl(260deg 99% 52%) 60%,
-        hsl(264deg 99% 52%) 78%,
-        hsl(267deg 100% 51%) 90%,
-        hsl(270deg 100% 50%) 98%
-    );
-}
-
-@mixin screenHeaderGradient {
-    color: #6f00ff;
-    background-image: linear-gradient(
-        180deg,
-        hsl(252deg 97% 54%) 0%,
-        hsl(257deg 98% 53%) 34%,
-        hsl(260deg 99% 52%) 60%,
-        hsl(264deg 99% 52%) 78%,
-        hsl(267deg 100% 51%) 90%,
-        hsl(270deg 100% 50%) 98%
-    );
+@mixin blendBg {
+    background: palette.$blend;
 }
 
 @mixin fadeEdges {
@@ -898,7 +876,7 @@ $shadows-big: multiple-box-shadow(100);
     opacity: 0;
     pointer-events: none;
     transition: all 0.4s ease;
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(18px);
 
     &.active {
         opacity: 1;
@@ -969,15 +947,18 @@ $shadows-big: multiple-box-shadow(100);
     .modal-content {
         width: max-content;
         position: relative;
-        background-color: palette.$blendDark;
-        border-radius: variables.$cardBorderRadius;
-        padding: 20px;
+        background-color: palette.$blend;
+        border-radius: 30px;
+        padding: 25px;
         margin: 0 20px;
         z-index: 999;
-        box-shadow: variables.$boxShadow_bottom_only_extra_dark;
         opacity: 0;
+        min-width: 85vw;
         transform: translateY(100vh) scale(0);
         transition: all 0.8s ease;
+        box-shadow: 0 46px 21px -22px rgba(77, 77, 77, 1);
+        -webkit-box-shadow: 0 46px 21px -22px rgba(77, 77, 77, 1);
+        -moz-box-shadow: 0 46px 21px -22px rgba(77, 77, 77, 1);
         &.active {
             opacity: 1;
             transform: translateY(0) scale(1);
@@ -991,6 +972,10 @@ $shadows-big: multiple-box-shadow(100);
                 align-items: center;
                 justify-content: flex-start;
                 margin-bottom: 20px;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
 
                 &.active {
                     .filter-checkbox {
@@ -1010,20 +995,25 @@ $shadows-big: multiple-box-shadow(100);
                     @include square(16px);
 
                     &.active {
-                        background-color: palette.$flatGreen;
-                        border: 1px solid palette.$flatGreen;
+                        background-color: palette.$secondaryGreen;
+                        border: 1px solid palette.$secondaryGreen;
                     }
                 }
                 span {
                     color: white;
                     line-height: 1;
                     white-space: nowrap;
-                    opacity: 0.5;
-                    @include fonts.lightFont;
+                    opacity: 0.7;
+                    @include fonts.thinnestFont;
 
+                    & {
+                        letter-spacing: 0.6px;
+                    }
                     &.active {
                         opacity: 1;
-                        @include fonts.regularFont;
+                        & {
+                            letter-spacing: 0.6px;
+                        }
                     }
                 }
             }
@@ -1032,7 +1022,7 @@ $shadows-big: multiple-box-shadow(100);
         .view-text {
             color: white;
             opacity: 0.85;
-            font-size: 16px;
+            font-size: 18px;
             @include fonts.lightFont;
 
             u,
@@ -1250,7 +1240,7 @@ $shadows-big: multiple-box-shadow(100);
     &::after {
         content: "";
         flex: 1;
-        border-bottom: 1px solid palette.$almostInvisibleWhite;
+        border-bottom: 1px solid #9c6cff;
         mask-image: linear-gradient(to right, transparent, black 25%, black 85%, transparent);
         -webkit-mask-image: linear-gradient(to right, transparent, black 25%, black 85%, transparent);
     }
@@ -1264,11 +1254,14 @@ $shadows-big: multiple-box-shadow(100);
     }
 
     span {
-        color: palette.$subtitleWhite;
-        font-weight: variables.$fwLight;
-        font-style: italic;
-        font-size: 16px;
-        letter-spacing: 1px;
+        color: #9c6cff;
+        @include fonts.thinnestFont;
+
+        & {
+            font-style: italic;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
     }
 }
 
@@ -1291,7 +1284,7 @@ $shadows-big: multiple-box-shadow(100);
     pointer-events: none;
     z-index: 9999999999999999999;
     transform: translateY(-100px);
-    box-shadow: variables.$boxShadow_bottom_only_bigger;
+    box-shadow: variables.$boxShadow_bottom_only_float;
 
     &.active {
         opacity: 1;
@@ -1301,25 +1294,43 @@ $shadows-big: multiple-box-shadow(100);
     }
 
     &.error {
-        background: palette.$bootstrapRed;
+        background: palette.$flatRed;
     }
 
     .banner-text {
-        display: block;
-        margin-right: auto;
-        background: transparent;
-        border-radius: variables.$borderRadius;
-        line-height: 1.3;
-        justify-self: flex-start;
+        position: relative;
         width: 100%;
-        color: white;
-        font-size: 18px;
-        text-align: center;
-        @include fonts.mediumBoldFont;
-    }
+        .banner-message {
+            display: block;
+            margin-right: auto;
+            margin-left: auto;
+            background: transparent;
+            line-height: 1.5;
+            justify-self: flex-start;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            max-width: 85%;
+            @include fonts.lightFont;
+        }
 
-    svg {
-        color: white;
+        .banner-title {
+            color: white;
+            font-size: 20px;
+            text-align: center;
+            padding-bottom: 8px;
+            line-height: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            @include fonts.mediumBoldFont;
+
+            svg {
+                color: white;
+                margin-left: 8px;
+                @include square(26px);
+            }
+        }
     }
 }
 
@@ -1568,7 +1579,7 @@ $shadows-big: multiple-box-shadow(100);
         margin-top: auto;
         border-radius: 35px 35px 0 0;
         box-shadow: variables.$boxShadow_top_only_2;
-        @include mainColorsGradient;
+        @include blendBg;
 
         &::before {
             content: "";
@@ -2499,13 +2510,11 @@ $shadows-big: multiple-box-shadow(100);
         position: absolute;
         color: palette.$transWhite;
         left: 20px;
-        width: 20px;
-        height: 20px;
         font-size: 22px;
         z-index: 99;
-
-        &.website {
-            @include square(20px);
+        @include square(20px);
+        &.date {
+            @include square(16px);
         }
         &.notes {
             align-self: flex-start;
@@ -3106,7 +3115,7 @@ $shadows-big: multiple-box-shadow(100);
     pointer-events: none;
     transition: all 0.7s ease;
     z-index: 99999999;
-    @include mainColorsGradient;
+    @include blendBg;
 
     &.active {
         opacity: 1;
@@ -3195,7 +3204,7 @@ $shadows-big: multiple-box-shadow(100);
         display: flex;
         align-items: center;
         justify-content: center;
-        @include mainColorsGradient;
+        @include blendBg;
 
         &.active {
             pointer-events: auto;
@@ -4666,42 +4675,18 @@ $shadows-big: multiple-box-shadow(100);
     }
 
     #full-menu-title {
-        color: white;
-        font-size: 24px;
-        font-weight: variables.$fwMediumBold;
+        color: palette.$purple;
+        filter: brightness(175%);
+        font-size: 28px;
+        width: max-content;
+        margin: 0 auto 10px auto;
+        border-bottom: 1px solid palette.$barelyVisibleWhite;
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 20px 20px 0 20px;
+        padding: 10px 20px 0 20px;
         letter-spacing: 2.5px;
-    }
-
-    .swipe-bar {
-        display: block;
-        background: #b8c1d2;
-        z-index: 999999999999;
-        position: relative;
-        align-self: flex-end;
-        height: 4px;
-        border-radius: variables.$cardBorderRadius;
-        width: 80px;
-        margin: 10px auto 0 auto;
-    }
-
-    .svg-wrapper {
-        &.admin {
-            background: palette.$green;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 45px;
-            width: 45px;
-            border-radius: 100%;
-            padding: 5px;
-            svg {
-                color: white;
-            }
-        }
+        @include fonts.boldFont;
     }
 
     #current-app-version {
@@ -4743,12 +4728,12 @@ $shadows-big: multiple-box-shadow(100);
         overflow: hidden;
         transition: all 0.5s ease;
         height: calc(100vh - 10vh);
-        max-height: 90vh;
+        max-height: 75vh;
         position: fixed;
         bottom: 0;
         max-width: 100%;
         box-shadow: variables.$boxShadow_top_only_2;
-        @include mainColorsGradient;
+        background-color: palette.$blend;
 
         #menu-sections {
             display: flex;
@@ -4762,7 +4747,6 @@ $shadows-big: multiple-box-shadow(100);
 
             #dashboard-button {
                 width: 100%;
-                background-color: palette.$green;
                 display: flex;
                 text-align: center;
                 align-items: center;
@@ -4770,69 +4754,32 @@ $shadows-big: multiple-box-shadow(100);
                 position: relative;
                 border-radius: variables.$buttonBorderRadius;
                 margin-bottom: 20px;
-                padding: 10px 0;
                 border: 0;
-
-                p {
-                    color: white;
-                    line-height: 1;
-                    white-space: nowrap;
-                    margin: 0;
-                }
-                .svg-wrapper {
-                    transform: scale(0.6);
-                    svg {
-                        color: white;
-                    }
-                }
-            }
-
-            .form-divider {
-                margin: 0 0 10px 0;
-                display: flex;
-                width: 260px;
-
-                &.info-storage {
-                    width: 270px;
-                }
-
-                &.active {
-                    span {
-                        opacity: 1;
-                        font-size: 17px;
-                        font-style: normal;
-                        letter-spacing: unset;
-                        @include fonts.mediumBoldFont;
-                    }
-                }
-
-                span {
-                    font-size: 15px;
-                    color: white;
-                    opacity: 0.6;
-                    @include fonts.lightFont;
-
-                    & {
-                        letter-spacing: 2px;
-                        font-style: italic;
-                    }
-                }
+                margin-top: 15px;
+                transform: scale(3);
             }
 
             .section {
-                background-color: rgba(135, 132, 255, 0.1);
+                background-color: rgba(135, 132, 255, 0.06);
+                border: 1px solid rgba(199, 144, 255, 0.15);
                 padding: 15px;
                 opacity: 0;
                 width: 100%;
                 margin-bottom: 10px;
                 border-radius: variables.$cardBorderRadius;
 
+                &.active {
+                    .section-title {
+                        opacity: 1;
+                    }
+                }
+
                 .section-title {
                     font-size: 20px;
                     color: white;
-                    margin: 0 0 10px 8px;
-                    opacity: 0.85;
-                    @include fonts.mediumFont;
+                    margin: 0 0 5px 5px;
+                    opacity: 0.55;
+                    @include fonts.thinnestFont;
                 }
 
                 .menu-items {
@@ -4852,6 +4799,7 @@ $shadows-big: multiple-box-shadow(100);
                         justify-content: flex-start;
                         position: relative;
                         transition: all 0.3s ease-out;
+                        overflow: visible;
 
                         &:nth-child(even) {
                             justify-content: flex-end;
@@ -4872,28 +4820,17 @@ $shadows-big: multiple-box-shadow(100);
                             }
                         }
 
-                        .content {
-                            display: flex;
-                            align-items: center;
-                            text-align: center;
-                            justify-content: flex-start;
-                            flex: 1;
-                        }
-
                         &.active {
                             position: relative;
                             opacity: 1;
                             p {
                                 opacity: 1;
-                                color: palette.$brightGreen;
-                                @include fonts.mediumBoldFont;
                             }
 
                             .svg-wrapper {
                                 opacity: 1;
                                 svg {
                                     opacity: 1;
-                                    color: palette.$brightGreen;
                                 }
                             }
                         }
@@ -4912,10 +4849,20 @@ $shadows-big: multiple-box-shadow(100);
                             }
                         }
 
+                        .content {
+                            display: flex;
+                            align-items: center;
+                            text-align: center;
+                            justify-content: flex-start;
+                            flex: 1;
+                            overflow: visible;
+                        }
+
                         .svg-wrapper,
                         p {
-                            opacity: 0.6;
                             color: white;
+                            opacity: 0.55;
+                            overflow: visible;
                         }
 
                         p {
@@ -4924,7 +4871,7 @@ $shadows-big: multiple-box-shadow(100);
                             white-space: nowrap;
                             padding-left: 5px;
 
-                            @include fonts.lightFont;
+                            @include fonts.thinnestFont;
                             & {
                                 letter-spacing: 0.8px;
                             }
@@ -5041,6 +4988,34 @@ $shadows-big: multiple-box-shadow(100);
             @include hover;
         }
     }
+
+    .swipe-bar {
+        display: block;
+        background: #b8c1d2;
+        z-index: 999999999999;
+        position: relative;
+        align-self: flex-end;
+        height: 4px;
+        border-radius: variables.$cardBorderRadius;
+        width: 80px;
+        margin: 10px auto 0 auto;
+    }
+
+    .svg-wrapper {
+        &.admin {
+            background: palette.$green;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 45px;
+            width: 45px;
+            border-radius: 100%;
+            padding: 5px;
+            svg {
+                color: white;
+            }
+        }
+    }
 }
 
 @mixin navBar {
@@ -5150,7 +5125,7 @@ $shadows-big: multiple-box-shadow(100);
         position: relative;
         bottom: 10px;
         box-shadow: 0 6px 10px 6px rgba(92, 94, 244, 0.59);
-        @include mainColorsGradient;
+        @include blendBg;
 
         transition: all 2s ease;
 
@@ -5177,6 +5152,7 @@ $shadows-big: multiple-box-shadow(100);
         position: relative;
         top: 10px;
         padding-top: 8px;
+        overflow: visible;
 
         .menu-item {
             transition: all 0.3s ease-in-out;
@@ -5212,23 +5188,15 @@ $shadows-big: multiple-box-shadow(100);
                 position: relative;
                 top: 0;
                 #svg-wrapper {
-                    box-shadow: hsl(270deg 100% 50%) 0 10px -5px 2px;
                     margin: 0 15px;
                     border-radius: variables.$buttonBorderRadius;
-                    background-image: linear-gradient(
-                        180deg,
-                        hsl(252deg 100% 58%) 0%,
-                        hsl(256deg 100% 57%) 36%,
-                        hsl(259deg 100% 56%) 64%,
-                        hsl(263deg 100% 55%) 82%,
-                        hsl(266deg 100% 53%) 91%,
-                        hsl(270deg 100% 50%) 100%
-                    );
+                    background: palette.$green;
+                    box-shadow: rgb(42, 192, 138, 1) 0 20px 42px 0;
                     @include square(60px);
 
                     svg {
                         color: white;
-                        opacity: 0.85;
+                        opacity: 1;
                         @include square(25px);
                     }
                 }
@@ -5283,7 +5251,7 @@ $shadows-big: multiple-box-shadow(100);
                 top: -10px;
 
                 &::after {
-                    background: radial-gradient(ellipse at center, #74c4a1 0%, rgba(0, 0, 0, 0) 80%);
+                    background: radial-gradient(ellipse at center, rgb(88, 88, 255, 0.4) 0%, rgba(0, 0, 0, 0) 80%);
                     content: "";
                     position: absolute;
                     left: 50%;
@@ -5303,8 +5271,7 @@ $shadows-big: multiple-box-shadow(100);
 
                 p,
                 svg {
-                    color: palette.$green;
-
+                    color: #5858ff;
                     opacity: 1;
                     font-weight: variables.$fwMediumBold;
                 }

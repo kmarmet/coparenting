@@ -96,6 +96,7 @@ export default function EventCalendar() {
             "12/31": "🥳",
         }
 
+        // ITERATE THROUGH EACH DAY
         for (const dayElement of dayElements) {
             const dayMs = dayElement.dataset.timestamp
             const formattedDay = moment(DateManager.msToDate(dayMs)).format(DatetimeFormats.dateForDb)
@@ -125,7 +126,7 @@ export default function EventCalendar() {
                     break
             }
 
-            const {dotClasses, payEvents} = GetEventDotClasses(dayEvent, dayEvents, holidays)
+            const {dotClasses, payEventDates} = GetEventDotClasses(dayEvent, dayEvents, holidays)
 
             // Filter out non-holiday events when visitationHolidays filter is active
             if (activeFilter === EventFilters.visitationHolidays && dayEvent?.isHoliday !== true) {
@@ -160,9 +161,9 @@ export default function EventCalendar() {
             })
 
             // 🔹 Payday Dot
-            if (payEvents.includes(dayEvent.startDate)) {
+            if (payEventDates.includes(dayEvent.startDate)) {
                 const paydayDot = document.createElement("span")
-                paydayDot.classList.add("payday-dot", "dot")
+                paydayDot.classList.add("financial", "dot")
                 dotWrapper.append(paydayDot)
             }
 
@@ -190,31 +191,38 @@ export default function EventCalendar() {
     }
 
     const GetEventDotClasses = (dayEvent, dayEvents) => {
-        const payEvents = []
+        const payEventDates = []
         let dotClasses = []
         const dayEventsOfAllTypes = DatasetManager.CombineArrays(dayEvents, holidays)
         const holidayDates = holidays?.map((holiday) => moment(holiday?.startDate).format(DatetimeFormats.dateForDb))
         for (const event of dayEventsOfAllTypes) {
-            if (!Manager.IsValid(event) || !Manager.IsValid(event?.startDate)) continue
-
+            if (!Manager.IsValid(event) || !Manager.IsValid(event?.startDate) || event.hasOwnProperty("ownerKey") || event?.owner?.key === "") {
+                continue
+            }
             if (event?.startDate === dayEvent?.startDate) {
                 const title = event.title?.toLowerCase() || ""
                 const isPayEvent = FinancialKeywords.some((keyword) => title.includes(keyword))
                 const currentUserEvent = event.owner?.key === currentUser?.key
-                const coParentOrChildEvent = !Manager.IsValid(event.owner) || event.owner?.key !== currentUser?.key
                 const isHoliday = event?.isHoliday || holidayDates.includes(event?.startDate)
+                const sharedEvent = event?.shareWith?.includes(currentUser?.key) && (!isHoliday || !currentUserEvent)
 
-                if (isPayEvent) payEvents.push(event.startDate)
+                if (isPayEvent) payEventDates.push(event.startDate)
 
                 switch (true) {
-                    case isHoliday:
-                        dotClasses.push("holiday-event-dot")
+                    case isHoliday && !currentUserEvent && !sharedEvent:
+                        dotClasses.push("holiday")
                         break
-                    case currentUserEvent && !isHoliday && !coParentOrChildEvent:
-                        dotClasses.push("current-user-event-dot")
+                    case currentUserEvent && !isHoliday && !sharedEvent:
+                        dotClasses.push("current-user")
                         break
-                    case coParentOrChildEvent && !isHoliday && !currentUserEvent:
-                        dotClasses.push("coParent-event-dot")
+                    case sharedEvent:
+                        dotClasses.push("shared")
+                        break
+                    case isPayEvent && !isHoliday:
+                        dotClasses.push("financial")
+                        payEventDates.push(event?.startDate)
+                        break
+                    default:
                         break
                 }
             }
@@ -222,7 +230,7 @@ export default function EventCalendar() {
         dotClasses = DatasetManager.GetValidArray(dotClasses, true)
         return {
             dotClasses,
-            payEvents,
+            payEventDates,
         }
     }
 
@@ -305,13 +313,7 @@ export default function EventCalendar() {
                     setActiveFilter("all")
                 }}
                 className={`${theme}`}>
-                <p className="view-text">
-                    View
-                    <u>
-                        <b>only</b>
-                    </u>
-                    events that match any of the following filter
-                </p>
+                <p className="view-text">View events by type</p>
                 <div key={refreshKey} className="filter-rows">
                     <div
                         data-filter={EventFilters.holidays}
@@ -457,6 +459,12 @@ export default function EventCalendar() {
                         {/* LEGEND BUTTON */}
                         <p id="legend-button" className="animated-button">
                             Legend
+                            <span className="dots">
+                                <span className={"current-user dot"}></span>
+                                <span className={"shared dot"}></span>
+                                <span className={"financial dot"}></span>
+                                <span className={"holiday dot"}></span>
+                            </span>
                         </p>
 
                         {/* HOLIDAY BUTTON */}

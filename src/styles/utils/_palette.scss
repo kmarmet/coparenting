@@ -4,13 +4,28 @@ $lightSecondaryAccent: rgba(108, 115, 200, 0.2);
 $lightMain: rgba(76, 111, 255, 0.2);
 $lightBlend: rgba(43, 60, 255, 0.29);
 $blendBorder: rgba(43, 60, 255, 0.19);
-$main: #4a4aff;
-$blendPurple: #6047ff;
-$blendDark: #5441da;
-$blend: #5047ff;
-$test: #8000ff;
+$main: #4141ff;
+$mainLight: #666ac7;
+$mainLighter: #eaebf7;
+$mainLightest: #eaebf7;
+$darkMain: #3d41a7;
+
+// Blend
+$blend: #4c2dd7;
+$blendPurple: #6c36ff;
+$blendLight: #d0c8f1;
+$blendLighter: #dbd5f4;
+$blendLightest: #f1effb;
+$blendDark: #462daf;
+
+// Purple
+$purple: #6f00ff;
+$purpleLight: #c5b1e7;
+$purpleLighter: #dcd0f1;
+$purpleLightest: #f3effa;
 
 $inactiveNavbarElement: rgba(255, 255, 255, 0.4);
+
 // Blues
 $linkColor: #4255ff;
 $formLinkColor: #87cefa;
@@ -29,21 +44,21 @@ $headerText: #4b5563;
 $labelText: #4b5563;
 
 // Input
-$inputBackground: rgba(255, 255, 255, 0.07);
+$inputBackground: rgba(255, 255, 255, 0.05);
 /*#endregion  PRIMARY COLORS */
 
 /*#region  GREENS */
 
 $green: #2ac08a;
+$secondaryGreen: #30c67d;
 $tertiaryGreen: #2ecc71;
-$brightGreen: #42ffb8;
 $mediumGreen: #57ff99;
+$brightGreen: #42ffb8;
 $bootstrapGreenBg: #d1e7dd;
 $bootstrapGreenBorder: rgba(96, 122, 114, 0.3);
-$bootstrapGreen: #0f5132;
+$bootstrapGreen: #096c3b;
 $darkGreen: #239960;
-$secondaryGreen: #30c67d;
-$greenForWhiteText: #3baf6e;
+$greenForWhiteText: #2ac075;
 $flatGreen: #7af1ca;
 /*#endregion  GREENS */
 
@@ -52,7 +67,7 @@ $bootstrapRedBorder: #f5c2c7;
 $bootstrapRedBg: #ffe3e8;
 $bootstrapRed: #c71436;
 $red: #ee4b2b;
-$flatRed: #ff6251;
+$flatRed: #e74c3c;
 $lightRed: #f5c6cb;
 $darkRed: #b91d51;
 $redForLightBg: #df2b2b;
@@ -75,13 +90,21 @@ $orange: #c0742d;
 $holidayOrange: #ffc511;
 /*#endregion  ORANGES */
 
+/*#region  DOT COLORS */
+$sharedDot: #9646ff;
+$currentUserDot: #4141ff;
+$financialDot: #07cf2c;
+$holidayDot: #18d7f4;
+/*#endregion  DOT COLORS */
+
 /*#region PURPLES */
 $purple: #6f42ff;
-$mediumPurple: #8c65ff;
-$lightPurple: #9d81ff;
+$mediumPurple: #8a54ff;
+$mediumDarkerPurple: #7b3eff;
+$lightPurple: #e2d4ff;
 $lighterPurple: #b5a8ff;
 $lightestPurple: #c1b7ff;
-$gradientPurple: #623ae2;
+$gradientPurple: #6b28ff;
 $purpleForBlendBg: #b46bff;
 $darkPurple: #5b39cb;
 /*#endregion PURPLES */

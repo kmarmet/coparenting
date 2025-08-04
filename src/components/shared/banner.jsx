@@ -6,24 +6,29 @@ import Manager from "../../managers/manager"
 
 const Banner = () => {
     const {state, setState} = useContext(globalState)
-    const {bannerMessage, authUser, bannerType} = state
+    const {bannerMessage, bannerTitle, bannerType} = state
 
     useEffect(() => {
-        if (!Manager.IsValid(bannerMessage, true)) return
+        if (!Manager.IsValid(bannerMessage, true) && !Manager.IsValid(bannerTitle, true)) return
 
-        if (Manager.IsValid(bannerMessage, true)) {
+        if (Manager.IsValid(bannerMessage, true) || Manager.IsValid(bannerTitle, true)) {
             setTimeout(() => {
-                setState({...state, bannerMessage: "", bannerType: ""})
+                setState({...state, bannerMessage: "", bannerType: "", bannerTitle: ""})
             }, 2000)
         }
-    }, [bannerMessage])
+    }, [bannerMessage, bannerTitle])
 
     return (
         <div
             id="banner-wrapper"
-            className={`banner${Manager.IsValid(bannerMessage, true) ? " active" : ""}${bannerType === "error" ? " error" : ""}`}>
-            <p className="banner-text">{bannerMessage}</p>
-            {bannerType === "error" ? <RiErrorWarningFill className="banner-icon" /> : <IoCheckmarkCircleSharp className="banner-icon" />}
+            className={`banner${Manager.IsValid(bannerMessage, true) || Manager.IsValid(bannerTitle, true) ? " active" : ""}${bannerType === "error" ? " error" : ""}`}>
+            <div className="banner-text">
+                <p className="banner-title">
+                    {Manager.IsValid(bannerTitle, true) ? bannerTitle : bannerType === "error" ? "Uh Oh" : "Success"}
+                    {bannerType === "error" ? <RiErrorWarningFill className="banner-icon" /> : <IoCheckmarkCircleSharp className="banner-icon" />}
+                </p>
+                <p className="banner-message">{bannerMessage}</p>
+            </div>
         </div>
     )
 }

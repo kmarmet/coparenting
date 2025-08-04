@@ -83,15 +83,16 @@ export default CalendarManager =
       dateObject.directionsLink = Manager.GetDirectionsLink(eventObject.address)
       dateObject.address = eventObject.address
       dateObject.children = eventObject.children
-      dateObject.ownerKey = currentUser?.key
-      dateObject.createdBy = currentUser?.name
       dateObject.phone = eventObject.phone
-      dateObject.shareWith = DatasetManager.getUniqueArray(eventObject.shareWith, true)
+      dateObject.shareWith = DatasetManager.GetValidArray(eventObject.shareWith, true)
       dateObject.notes = eventObject.notes
       dateObject.websiteUrl = eventObject.websiteUrl
       dateObject.isRecurring = eventObject.isRecurring
       dateObject.isDateRange = eventObject.isDateRange
-      #      dateObject.isCloned = Manager.isValid(clonedDates)
+      dateObject.owner = {
+        key: currentUser?.key,
+        name: currentUser?.name,
+      }
 
       # Times
       if Manager.IsValid(eventObject.startTime)

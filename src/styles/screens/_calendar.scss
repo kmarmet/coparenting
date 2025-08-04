@@ -16,29 +16,29 @@
             top: -5px;
 
             .dot {
-                margin: 0;
                 height: 5px;
                 width: 5px;
-                border: 0;
-                display: block;
                 border-radius: 100%;
-            }
+                position: relative;
+                @include mixins.square(5px);
 
-            .payday-dot {
-                background: palette.$green;
-            }
-            .current-user-visitation-dot,
-            .current-user-event-dot {
-                background-color: palette.$blend;
-            }
+                &.financial {
+                    background: palette.$financialDot;
+                }
+                &.current-user-visitation,
+                &.current-user {
+                    background-color: palette.$currentUserDot;
+                }
 
-            .coparent-visitation-dot,
-            .coParent-event-dot {
-                background-color: palette.$mediumPurple;
-            }
+                &.coparent-visitation,
+                &.coParent,
+                &.shared {
+                    background-color: palette.$sharedDot;
+                }
 
-            .holiday-event-dot {
-                background-color: palette.$holidayOrange;
+                .holiday {
+                    background-color: palette.$holidayDot;
+                }
             }
         }
         .invisible-dots {
@@ -109,66 +109,71 @@
                     position: absolute;
                     bottom: 0;
                     z-index: 1000;
-                    right: 8px;
-
+                    right: 0;
                     svg {
                         font-size: 26px !important;
                         color: palette.$red !important;
-                        margin: 0 !important;
+                        margin: 8px !important;
                     }
                 }
             }
 
             p {
                 opacity: 1 !important;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                justify-content: center;
+                flex-wrap: wrap;
                 @include fonts.mediumBoldFont;
-                &.coparent {
-                    color: palette.$purple;
+                .dot {
+                    height: 5px;
+                    width: 5px;
+                    border-radius: 100%;
+                    position: relative;
+                    @include mixins.square(5px);
+
+                    &.in-legend {
+                        margin-right: 10px;
+                        display: block;
+                    }
+
+                    &.shared {
+                        background: palette.$sharedDot;
+                        top: -5px;
+                    }
+
+                    &.holiday {
+                        background: palette.$holidayDot;
+                        top: 5px;
+                        right: 8px;
+                    }
+
+                    &.financial {
+                        background: palette.$financialDot;
+                        right: 11px;
+                    }
+
+                    &.current-user {
+                        left: 3px;
+                        background: palette.$currentUserDot;
+                    }
+                }
+
+                &.shared {
+                    color: palette.$sharedDot;
                 }
 
                 &.financial {
-                    color: palette.$green;
+                    color: palette.$financialDot;
                 }
 
                 &.holiday {
-                    color: palette.$holidayOrange;
+                    color: palette.$holidayDot;
                 }
 
                 &.current-user {
-                    color: palette.$main;
-                }
-            }
-
-            .dot {
-                height: 5px;
-                width: 5px;
-                border-radius: 100%;
-                position: relative;
-
-                &.in-legend {
-                    margin-right: 10px;
-                    display: block;
-                }
-
-                &.coparent {
-                    background: palette.$purple;
-                    top: -5px;
-                }
-
-                &.holiday {
-                    background: palette.$holidayOrange;
-                    top: 5px;
-                    right: 8px;
-                }
-
-                &.payday {
-                    background: palette.$green;
-                    right: 11px;
-                }
-
-                &.currentUser {
-                    left: 3px;
-                    background: palette.$main;
+                    color: palette.$currentUserDot;
                 }
             }
         }
@@ -225,6 +230,44 @@
 
             &.hidden {
                 z-index: -1;
+            }
+
+            #legend-button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-wrap: wrap;
+                padding-top: 5px;
+                .dots {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 5px;
+                    padding-top: 3px;
+                    padding-bottom: 5px;
+                    .dot {
+                        margin: 0;
+                        height: 5px;
+                        width: 5px;
+                        border: 0;
+                        display: block;
+                        border-radius: 100%;
+                        &.financial {
+                            background: palette.$financialDot;
+                        }
+                        &.current-user {
+                            background-color: palette.$currentUserDot;
+                        }
+
+                        &.shared {
+                            background-color: palette.$sharedDot;
+                        }
+
+                        &.holiday {
+                            background-color: palette.$holidayDot;
+                        }
+                    }
+                }
             }
 
             [role="rowgroup"] {
@@ -495,19 +538,20 @@
 
                             // SELECTED
                             &.Mui-selected {
-                                color: white !important;
+                                color: palette.$main !important;
                                 font-weight: variables.$fwBold !important;
                                 padding-bottom: 2px !important;
                                 padding-top: 2px !important;
                                 border-radius: 0 !important;
 
+                                // On Selected Day
                                 .dot-wrapper {
-                                    .current-user-event-dot {
-                                        background-color: #8195ff !important;
-                                    }
-                                    .coParent-event-dot {
-                                        background-color: #ab8fff;
-                                    }
+                                    //.current-user-event-dot {
+                                    //    background-color: #8195ff !important;
+                                    //}
+                                    //.coParent-event-dot {
+                                    //    background-color: #ab8fff;
+                                    //}
                                 }
 
                                 &:after {
@@ -520,8 +564,8 @@
                                     right: 0;
                                     bottom: 0;
                                     border-radius: 100% !important;
-                                    background: palette.$blend !important;
-                                    border: 1px solid rgba(87, 105, 255, 0.37) !important;
+                                    background: palette.$mainLighter !important;
+                                    border: 1px solid rgba(78, 60, 241, 0.16) !important;
                                     @include mixins.square(45px);
                                     @include mixins.centerHoriz;
                                 }

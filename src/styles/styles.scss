@@ -12,7 +12,7 @@
     overflow: auto;
     max-height: 100vh;
     padding: 60px 15px 200px 15px;
-    @include mixins.mainColorsGradient;
+    @include mixins.blendBg;
 
     * {
         @include fonts.lightFont;
@@ -1276,7 +1276,7 @@
         }
 
         .gradient {
-            @include mixins.mainColorsGradient;
+            @include mixins.blendBg;
 
             &.padding {
                 border-radius: variables.$bigBorderRadius;

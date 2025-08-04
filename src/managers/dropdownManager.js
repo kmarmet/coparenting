@@ -363,13 +363,13 @@ DropdownManager = {
             return options
         },
         Children: function (children) {
-            var child, i, len, options, ref
+            var child, i, len, options
             options = []
             if (Manager.IsValid(children)) {
                 for (i = 0, len = children.length; i < len; i++) {
                     child = children[i]
                     options.push({
-                        label: StringManager.FormatTitle(child != null ? ((ref = child.general) != null ? ref.name : void 0) : void 0),
+                        label: StringManager.FormatTitle(DB_UserScoped.GetChildName(children, child != null ? child.id : void 0, true)),
                         value: child != null ? child.id : void 0,
                     })
                 }

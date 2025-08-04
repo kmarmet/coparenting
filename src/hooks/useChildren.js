@@ -1,10 +1,10 @@
-import {getDatabase, off, onValue, ref} from 'firebase/database'
-import {useEffect, useState} from 'react'
-import DB from '../database/DB'
-import DatasetManager from '../managers/datasetManager'
-import Manager from '../managers/manager'
-import StringManager from '../managers/stringManager'
-import useCurrentUser from './useCurrentUser'
+import {getDatabase, off, onValue, ref} from "firebase/database"
+import {useEffect, useState} from "react"
+import DB from "../database/DB"
+import DB_UserScoped from "../database/db_userScoped"
+import DatasetManager from "../managers/datasetManager"
+import Manager from "../managers/manager"
+import useCurrentUser from "./useCurrentUser"
 
 const useChildren = () => {
     const {currentUser} = useCurrentUser()
@@ -13,7 +13,7 @@ const useChildren = () => {
     const [error, setError] = useState(null)
     const [childrenDropdownOptions, setChildrenDropdownOptions] = useState([])
     const path = `${DB.tables.users}/${currentUser?.key}/children`
-    const queryKey = ['realtime', path]
+    const queryKey = ["realtime", path]
 
     useEffect(() => {
         const database = getDatabase()
@@ -30,7 +30,7 @@ const useChildren = () => {
                         if (Manager.IsValid(child)) {
                             options.push({
                                 value: child?.id,
-                                label: StringManager.GetFirstNameAndLastInitial(child?.general?.name),
+                                label: DB_UserScoped.GetChildName(formattedChildren, child?.id, true),
                             })
                         }
                     }
@@ -47,7 +47,7 @@ const useChildren = () => {
         )
 
         return () => {
-            off(dataRef, 'value', listener)
+            off(dataRef, "value", listener)
         }
     }, [path])
 
