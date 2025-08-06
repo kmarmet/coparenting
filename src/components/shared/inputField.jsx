@@ -1,9 +1,9 @@
 // Path: src\components\shared\inputField.jsx
-import {MobileDatePicker, MobileDateRangePicker, SingleInputDateRangeField} from "@mui/x-date-pickers-pro"
+import {MobileDateRangePicker, SingleInputDateRangeField} from "@mui/x-date-pickers-pro"
 import moment from "moment"
 import React, {useContext, useRef, useState} from "react"
 import {DebounceInput} from "react-debounce-input"
-import {BsCalendar2CheckFill, BsCalendar2WeekFill} from "react-icons/bs"
+import {BsCalendar2CheckFill} from "react-icons/bs"
 import {ImSearch} from "react-icons/im"
 import {IoTime} from "react-icons/io5"
 import {MdEmail, MdNotes, MdOutlinePassword, MdOutlineTitle} from "react-icons/md"
@@ -123,50 +123,59 @@ function InputField({
                             <BsCalendar2CheckFill className={"input-icon text"} />
                             <Label text={placeholder} classes={`always-show filled-input-label${labelClasses ? ` ${labelClasses}` : ""}`} />
                         </div>
-                        <MobileDatePicker
-                            slotProps={{
-                                actionBar: {actions: ["clear", "accept"]},
-                                textField: {
-                                    label: (
-                                        <span>
-                                            <BsCalendar2WeekFill className={"input-icon date"} fontSize="small" />
-                                            {placeholder}
-                                        </span>
-                                    ),
-                                },
-                                mobilePaper: {
-                                    className: "date-picker", // ✅ this will be added to MuiPaper-root
-                                },
-                            }}
-                            showDaysOutsideCurrentMonth={true}
-                            label={""}
-                            minDate={moment()}
-                            onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
-                            views={["month", "day"]}
-                            name={inputName}
-                            className={`${theme} ${inputClasses} date-picker`}
-                            value={Manager.IsValid(defaultValue) ? moment(defaultValue) : null}
+                        <input
                             key={resetKey}
-                            multiple={false}
-                            onMonthChange={(e) => {
-                                const newMonth = moment(e).format("MMMM")
-                                const activePicker = document.querySelector(`.MuiPaper-root.date-picker`)
-
-                                if (!activePicker) return
-                                const pickerMonth = activePicker.querySelector("h4.MuiTypography-root.MuiDatePickerToolbar-title")
-
-                                if (!pickerMonth) return
-
-                                pickerMonth.textContent = newMonth
-                            }}
-                            format={dateFormat}
-                            onAccept={(e) => {
-                                console.log(e)
-                                onDateOrTimeSelection(e)
-                            }}
+                            onClick={onClick}
+                            name={"time-picker"}
+                            value={GetTimeValue()}
+                            onChange={() => {}}
+                            placeholder={placeholder}
                         />
                     </>
                 )}
+
+                {/*<MobileDatePicker*/}
+                {/*    slotProps={{*/}
+                {/*        actionBar: {actions: ["clear", "accept"]},*/}
+                {/*        textField: {*/}
+                {/*            label: (*/}
+                {/*                <span>*/}
+                {/*                            <BsCalendar2WeekFill className={"input-icon date"} fontSize="small" />*/}
+                {/*                    {placeholder}*/}
+                {/*                        </span>*/}
+                {/*            ),*/}
+                {/*        },*/}
+                {/*        mobilePaper: {*/}
+                {/*            className: "date-picker", // ✅ this will be added to MuiPaper-root*/}
+                {/*        },*/}
+                {/*    }}*/}
+                {/*    showDaysOutsideCurrentMonth={true}*/}
+                {/*    label={""}*/}
+                {/*    minDate={moment()}*/}
+                {/*    onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}*/}
+                {/*    views={["month", "day"]}*/}
+                {/*    name={inputName}*/}
+                {/*    className={`${theme} ${inputClasses} date-picker`}*/}
+                {/*    value={Manager.IsValid(defaultValue) ? moment(defaultValue) : null}*/}
+                {/*    key={resetKey}*/}
+                {/*    multiple={false}*/}
+                {/*    onMonthChange={(e) => {*/}
+                {/*        const newMonth = moment(e).format("MMMM")*/}
+                {/*        const activePicker = document.querySelector(`.MuiPaper-root.date-picker`)*/}
+                {/*        */}
+                {/*        if (!activePicker) return*/}
+                {/*        const pickerMonth = activePicker.querySelector("h4.MuiTypography-root.MuiDatePickerToolbar-title")*/}
+                {/*        */}
+                {/*        if (!pickerMonth) return*/}
+                {/*        */}
+                {/*        pickerMonth.textContent = newMonth*/}
+                {/*    }}*/}
+                {/*    format={dateFormat}*/}
+                {/*    onAccept={(e) => {*/}
+                {/*        console.log(e)*/}
+                {/*        onDateOrTimeSelection(e)*/}
+                {/*    }}*/}
+                {/*/>*/}
 
                 {/* DATE RANGE */}
                 {inputType === InputTypes.dateRange && (

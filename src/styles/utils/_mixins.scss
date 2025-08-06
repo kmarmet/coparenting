@@ -343,6 +343,7 @@ $shadows-big: multiple-box-shadow(100);
     &.white {
         &.color-blend {
             color: palette.$blend;
+            @include fonts.mediumFont;
         }
     }
 
@@ -357,7 +358,7 @@ $shadows-big: multiple-box-shadow(100);
     }
 
     &.green {
-        background: palette.$green;
+        background: palette.$greenForWhiteText;
         color: white;
     }
 

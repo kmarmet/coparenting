@@ -27,6 +27,7 @@ import CalendarEvent from "../../models/new/calendarEvent"
 import EventCategoryDropdown from "../screens/calendar/eventCategoryDropdown"
 import AddressInput from "../shared/addressInput"
 import Button from "../shared/button"
+import Datepicker from "../shared/datepicker"
 import Form from "../shared/form"
 import FormDivider from "../shared/formDivider"
 import InputField from "../shared/inputField"
@@ -66,6 +67,8 @@ export default function NewCalendarEvent() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [showStartTimePicker, setShowStartTimePicker] = useState(false)
     const [showEndTimePicker, setShowEndTimePicker] = useState(false)
+    const [showDatepicker, setShowDatepicker] = useState(false)
+    const [datepickerDate, setDatepickerDate] = useState(selectedCalendarDate)
 
     // DROPDOWN STATE
     const [selectedReminderOptions, setSelectedReminderOptions] = useState([])
@@ -100,6 +103,12 @@ export default function NewCalendarEvent() {
         setSelectedChildrenOptions([])
         setSelectedShareWithOptions([])
         setDefaultShareWithOptions([])
+
+        const calendar = document.querySelector(".datepicker")
+
+        if (Manager.IsValid(calendar)) {
+            calendar.classList.remove("active")
+        }
 
         setTimeout(() => {
             setIsSubmitting(false)
@@ -264,6 +273,10 @@ export default function NewCalendarEvent() {
         formRef.current = {...new CalendarEvent()}
     }, [])
 
+    useEffect(() => {
+        setDatepickerDate(selectedCalendarDate)
+    }, [selectedCalendarDate])
+
     return (
         <>
             <TimePicker
@@ -288,6 +301,7 @@ export default function NewCalendarEvent() {
                 className={`${theme} new-event-form new-calendar-event`}
                 onClose={() => ResetForm()}
                 onSubmit={Submit}
+                subtitle={`Event Date: ${moment(datepickerDate).format(DatetimeFormats.readableMonthAndDay)}`}
                 showLoadingSpinner={isSubmitting}
                 showCard={creationFormToShow === CreationForms.calendar}
                 wrapperClass={`new-calendar-event at-top`}
@@ -296,6 +310,7 @@ export default function NewCalendarEvent() {
                 submitIcon={<BsCalendarCheck />}
                 viewDropdown={
                     <ViewDropdown
+                        hasSpacer={true}
                         show={true}
                         views={[
                             {label: "Single Day", value: EventLengths.single},
@@ -308,6 +323,15 @@ export default function NewCalendarEvent() {
                         }}
                     />
                 }>
+                <Datepicker
+                    setDate={(date) => {
+                        formRef.current.startDate = moment(date).format(DatetimeFormats.dateForDb)
+                        setDatepickerDate(date)
+                        setShowDatepicker(false)
+                    }}
+                    show={showDatepicker}
+                    setShow={() => setShowDatepicker(false)}
+                />
                 <div id="calendar-event-form-container" className={`${theme} form-container`}>
                     <FormDivider text={"Required"} />
                     {/* EVENT NAME */}
@@ -326,17 +350,22 @@ export default function NewCalendarEvent() {
 
                     {/* START DATE */}
                     {view?.label === "Single Day" && (
-                        <InputField
-                            defaultValue={selectedCalendarDate}
-                            placeholder="Date"
-                            uidClass="event-start-date"
-                            inputType={InputTypes.date}
-                            required={true}
-                            onDateOrTimeSelection={(e) => {
-                                formRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb)
-                            }}
-                        />
+                        <Button text={"Change Event Date"} onClick={() => setShowDatepicker(true)} classes={"center color-blend"} />
                     )}
+                    {/*<InputField*/}
+                    {/*    defaultValue={formRef.current.startDate}*/}
+                    {/*    placeholder="Date"*/}
+                    {/*    uidClass="event-start-date"*/}
+                    {/*    inputType={InputTypes.date}*/}
+                    {/*    required={true}*/}
+                    {/*    onClick={(input) => {*/}
+                    {/*        // input.target.blur()*/}
+                    {/*        setShowDatepicker(true)*/}
+                    {/*    }}*/}
+                    {/*    onDateOrTimeSelection={(e) => {*/}
+                    {/*        formRef.current.startDate = moment(e).format(DatetimeFormats.dateForDb)*/}
+                    {/*    }}*/}
+                    {/*/>*/}
 
                     <Spacer height={5} />
 

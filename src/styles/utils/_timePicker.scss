@@ -1,7 +1,7 @@
-@use "../utils/palette";
-@use "../utils/variables";
-@use "../utils/mixins";
-@use "../_fonts";
+@use "palette";
+@use "variables";
+@use "mixins";
+@use "../fonts";
 
 #external-overrides {
     #app-container {
