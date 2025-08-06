@@ -1,0 +1,233 @@
+@use "../utils/palette";
+@use "../utils/variables";
+@use "../utils/mixins";
+@use "../_fonts";
+
+#external-overrides {
+    #app-container {
+        .timepicker-wrapper {
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            pointer-events: none;
+            position: fixed;
+            inset: 0;
+            height: 100vh;
+            width: 100vw;
+            background-color: palette.$blend;
+            z-index: 999999999;
+            opacity: 0;
+            transition: all 0.4s ease;
+            display: flex;
+            &.active {
+                transition: all 0.4s ease;
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .timepicker-content {
+                width: 100vw;
+                padding: 15px;
+                p {
+                    &.selected-time {
+                        font-size: 24px;
+                        width: max-content;
+                        color: white;
+                        margin: 0 auto;
+                        border-radius: variables.$bigBorderRadius;
+                        @include fonts.boldFont;
+                    }
+                }
+
+                .timepicker-method {
+                    z-index: -1;
+                    opacity: 0;
+                    display: none;
+                    &.active {
+                        z-index: 1;
+                        opacity: 1;
+                        display: block;
+
+                        &.on-scroll {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                        }
+                    }
+
+                    // SCROLLABLE
+                    &.on-scroll {
+                        margin-top: 35px;
+                        .colon {
+                            font-size: 25px;
+                            position: relative;
+                            top: -33px;
+                            color: white;
+                        }
+
+                        .hours,
+                        .minutes,
+                        .meridian {
+                            scroll-snap-type: y mandatory;
+                            overflow-y: scroll;
+                            height: 99px;
+                            width: 80px;
+                            position: relative;
+                            top: -30px;
+                            &.hours,
+                            &.minutes {
+                                mask-image: linear-gradient(to bottom, transparent, black 50%, black 70%, transparent);
+                                -webkit-mask-image: linear-gradient(to bottom, transparent, black 50%, black 70%, transparent);
+                            }
+
+                            &.meridian {
+                                align-items: center;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                                gap: 0 10px;
+
+                                .am-pm {
+                                    height: calc(100% / 3);
+                                    transition: all 0.4s ease;
+                                    transform: scale(0.8);
+                                }
+
+                                &.pm {
+                                    .pm {
+                                        order: 0;
+                                    }
+                                    .am {
+                                        order: 1;
+                                    }
+                                }
+                            }
+
+                            .hour,
+                            .minute,
+                            .am-pm {
+                                height: 35px;
+                                line-height: 1;
+                                white-space: nowrap;
+                                display: flex;
+                                align-items: center;
+                                scroll-snap-align: center;
+                                justify-content: center;
+                                font-size: 25px;
+                                opacity: 0.3;
+                                color: white;
+                                transition: all 0.4s ease;
+                                &.active {
+                                    opacity: 1;
+                                }
+
+                                &.placeholder {
+                                    height: 33px;
+                                }
+                            }
+                        }
+                    }
+
+                    // TAP
+                    &.on-tap {
+                        .meridians {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            gap: 0 10px;
+                            padding: 10px 0;
+                            .meridian {
+                                background: palette.$inputBackground;
+                                border-radius: variables.$buttonBorderRadius;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                color: white;
+                                @include mixins.square(55px);
+                                @include fonts.regularFont;
+
+                                &.active {
+                                    background: white;
+                                    color: palette.$main;
+                                    @include fonts.mediumFont;
+                                }
+                            }
+                        }
+                        .hours,
+                        .minutes,
+                        .meridian {
+                            width: 100%;
+                            justify-content: space-between;
+                            align-items: center;
+                            gap: 8px;
+                            flex-wrap: wrap;
+                            display: grid;
+                            grid-template-columns: repeat(6, 1fr);
+
+                            span {
+                                &.timepicker-selector-button,
+                                &.hour,
+                                &.minute {
+                                    padding: 12px;
+                                    background: palette.$inputBackground;
+                                    height: 50px;
+                                    border: 0;
+                                    color: white;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    border-radius: variables.$buttonBorderRadius;
+                                    transition: all 0.4s ease;
+                                    @include fonts.regularFont;
+
+                                    &.active {
+                                        background: white;
+                                        color: palette.$main;
+                                        @include fonts.mediumBoldFont;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .timepicker-selector {
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 0 10px;
+                    margin: 15px 0;
+
+                    button {
+                        background-color: transparent;
+                        border: 0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 22px;
+                        border-bottom: 1px solid palette.$barelyVisibleWhite;
+                        color: white;
+                        opacity: 0.5;
+                        width: 45%;
+                        border-radius: 0 !important;
+                        padding: 0;
+                        &.active {
+                            opacity: 1;
+                            border-bottom: 1px solid white;
+                        }
+
+                        svg {
+                            margin-right: 5px;
+                            @include mixins.square(20px);
+                        }
+                    }
+                }
+            }
+
+            .card-buttons {
+                z-index: 99;
+            }
+        }
+    }
+}

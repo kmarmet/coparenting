@@ -2,7 +2,6 @@
 import moment from "moment"
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {BsCalendarCheck} from "react-icons/bs"
-import {TimePicker} from "react-ios-time-picker"
 import validator from "validator"
 import ButtonThemes from "../../constants/buttonThemes"
 import CreationForms from "../../constants/creationForms"
@@ -35,6 +34,7 @@ import Label from "../shared/label"
 import MyConfetti from "../shared/myConfetti.js"
 import SelectDropdown from "../shared/selectDropdown"
 import Spacer from "../shared/spacer.jsx"
+import TimePicker from "../shared/timePicker"
 import ToggleButton from "../shared/toggleButton"
 import ViewDropdown from "../shared/viewDropdown"
 
@@ -64,6 +64,8 @@ export default function NewCalendarEvent() {
     const [view, setView] = useState({label: "Single Day", value: "Single Day"})
     const [categories, setCategories] = useState([])
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [showStartTimePicker, setShowStartTimePicker] = useState(false)
+    const [showEndTimePicker, setShowEndTimePicker] = useState(false)
 
     // DROPDOWN STATE
     const [selectedReminderOptions, setSelectedReminderOptions] = useState([])
@@ -264,6 +266,22 @@ export default function NewCalendarEvent() {
 
     return (
         <>
+            <TimePicker
+                show={showStartTimePicker}
+                buttonText={"Set Start Time"}
+                setTimepickerTime={(time) => {
+                    formRef.current.startTime = time
+                    setShowStartTimePicker(false)
+                }}
+            />
+            <TimePicker
+                buttonText={"Set End Time"}
+                show={showEndTimePicker}
+                setTimepickerTime={(time) => {
+                    formRef.current.endTime = time
+                    setShowEndTimePicker(false)
+                }}
+            />
             {/* FORM WRAPPER */}
             <Form
                 submitText={`Create`}
@@ -342,26 +360,23 @@ export default function NewCalendarEvent() {
                     <FormDivider text={"Optional"} />
 
                     {view?.label === "Single Day" && (
-                        <div className={"flex gap"}>
+                        <div className={"two-column"}>
                             {/* EVENT WITH TIME */}
-                            <TimePicker
-                                id="start-time-picker"
-                                onChange={(e) => {
-                                    formRef.current.startTime = moment(e, "hh:mma").format(DatetimeFormats.timeForDb)
-                                }}
-                                placeHolder="Start Time"
-                                use12Hours
-                                // pickerDefaultValue={"11:00am"}
-                                // onOpen={() => setTimePickerResetKey(Manager.GetUid())}
+                            <InputField
+                                inputClasses="event-time-input"
+                                inputType={InputTypes.time}
+                                placeholder="Start Time"
+                                timeValue={formRef.current.startTime}
+                                required={true}
+                                onClick={() => setShowStartTimePicker(true)}
                             />
-
-                            <TimePicker
-                                id="end-time-picker"
-                                onChange={(e) => {
-                                    formRef.current.endTime = moment(e, "hh:mma").format(DatetimeFormats.timeForDb)
-                                }}
-                                placeHolder="End Time"
-                                use12Hours
+                            <InputField
+                                inputClasses="event-time-input"
+                                inputType={InputTypes.time}
+                                placeholder="End Time"
+                                timeValue={formRef.current.endTime}
+                                required={true}
+                                onClick={() => setShowEndTimePicker(true)}
                             />
                         </div>
                     )}

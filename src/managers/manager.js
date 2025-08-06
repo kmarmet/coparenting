@@ -95,18 +95,22 @@ const Manager = {
     },
 
     ResetForm: (parentClass) => {
-        const inputWrappers = document.querySelectorAll(".input-container")
+        const inputFields = document.querySelectorAll(".input-field")
+        const parent = document.querySelector(`.${parentClass}`)
 
-        const parentClassInputs = document.querySelector(`.${parentClass}`)?.querySelectorAll("input, textarea")
+        const parentClassInputs = parent?.querySelectorAll(".input-field")
         const toggles = document.querySelectorAll(".react-toggle")
-        const checkboxes = document.querySelector(`.${parentClass}`)?.querySelectorAll(".box")
 
         // Input Wrappers
-        if (Manager.IsValid(inputWrappers, true)) {
-            inputWrappers.forEach((wrapper) => {
-                wrapper.classList.remove("active")
-                const input = wrapper.querySelector("input")
-                const textarea = wrapper.querySelector("textarea")
+        if (Manager.IsValid(inputFields, true)) {
+            inputFields.forEach((inputField) => {
+                const labelAndIconWrapper = inputField.querySelector(".label-and-icon")
+                if (labelAndIconWrapper) {
+                    labelAndIconWrapper.classList.remove("filled")
+                }
+                inputField.classList.remove("active")
+                const input = inputField.querySelector("input")
+                const textarea = inputField.querySelector("textarea")
                 if (input) {
                     input.value = ""
                 }
@@ -130,11 +134,6 @@ const Manager = {
                 toggle.classList.remove("react-toggle--checked")
                 toggle.querySelector("input").value = "off"
             })
-        }
-
-        // Checkboxes
-        if (Manager.IsValid(checkboxes, true)) {
-            checkboxes.forEach((checkbox) => checkbox.classList.remove("active"))
         }
     },
     GetUid: () => {

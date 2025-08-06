@@ -76,24 +76,20 @@ const AddressInput = ({onChange = (e) => {}, defaultValue, wrapperClasses = "", 
 
     return (
         <div className={`google-autocomplete-wrapper${wrapperClasses ? ` ${wrapperClasses}` : ""}`}>
-            {Manager.IsValid(defaultValue) && (
-                <Label
-                    text={Manager.IsValid(labelText, true) ? labelText : "Address"}
-                    classes={`always-show${Manager.IsValid(defaultValue) ? " filled-input-label" : ""}${Manager.IsValid(labelClasses) ? ` ${labelClasses}` : ""}`}
-                />
-            )}
-            <div className="input-wrapper">
-                <FaMapLocation className={"input-icon maps"} />
-                <input
-                    ref={inputRef}
-                    type={"text"}
-                    placeholder={Manager.IsValid(labelText, true) ? labelText : "Address"}
-                    defaultValue={defaultValue}
-                    className="google-autocomplete-input"
-                />
-                <span className={"clear-input-button"} onClick={ClearInput}>
-                    <CgClose />
-                </span>
+            <div className="input-field">
+                <div className="label-and-icon">
+                    <FaMapLocation className={"input-icon maps"} />
+                    <Label
+                        text={Manager.IsValid(labelText, true) ? labelText : "Address"}
+                        classes={`always-show filled-input-label${Manager.IsValid(labelClasses) ? ` ${labelClasses}` : ""}`}
+                    />
+                </div>
+                <div className="input-and-clear-button">
+                    <input ref={inputRef} type={"text"} defaultValue={defaultValue} className="google-autocomplete-input" />
+                    <span className={"clear-input-button"} onClick={ClearInput}>
+                        <CgClose />
+                    </span>
+                </div>
             </div>
         </div>
     )

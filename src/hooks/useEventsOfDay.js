@@ -86,7 +86,6 @@ const useEventsOfDay = (selectedCalendarDate) => {
                 )
 
                 const formattedEvents = DatasetManager.GetUniqueByPropValue(sortedEvents, "id") || []
-                console.log(Date.now())
                 // Set events of day state
                 setAllEventsOfDay(formattedEvents)
                 setEventsOfDayAreLoading(false)

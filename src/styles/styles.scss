@@ -174,77 +174,6 @@
     }
 }
 
-.react-ios-time-picker-popup {
-    align-items: center !important;
-    transition: all 0.4s ease !important;
-    .react-ios-time-picker {
-        width: 60vw !important;
-        background-color: white !important;
-        border: 1px solid palette.$barelyVisibleWhite !important;
-        border-radius: variables.$cardBorderRadius !important;
-        box-shadow: variables.$boxShadow_bottom_only_best !important;
-        transition: all 0.8s ease !important;
-
-        .react-ios-time-picker-btn-container {
-            background-color: palette.$grey !important;
-            border-bottom: 1px solid palette.$mediumGrey !important;
-        }
-
-        .react-ios-time-picker-colon {
-            color: palette.$main !important;
-        }
-
-        .react-ios-time-picker-btn {
-            color: black !important;
-            width: 50% !important;
-            font-weight: variables.$fwMedium !important;
-            padding: 12px 20px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            line-height: 1 !important;
-            white-space: nowrap !important;
-            &:nth-child(1) {
-                opacity: 0.7 !important;
-            }
-            &:nth-child(2) {
-                color: palette.$greenForWhiteText !important;
-            }
-        }
-
-        .react-ios-time-picker-container {
-            background-color: transparent !important;
-            margin: 0 auto !important;
-
-            .react-ios-time-picker-selected-overlay {
-                background-color: white !important;
-                border-radius: variables.$buttonBorderRadius !important;
-            }
-
-            .react-ios-time-picker-cell-inner-hour,
-            .react-ios-time-picker-cell-inner-minute,
-            .react-ios-time-picker-cell-inner-hour-format {
-                color: palette.$main !important;
-                opacity: 0.5 !important;
-                font-size: 18px !important;
-                &:active,
-                &:focus {
-                    background-color: palette.$blend !important;
-                    color: white !important;
-                }
-
-                &.react-ios-time-picker-cell-inner-selected,
-                &.react-ios-time-picker-cell-inner-hour-format-selected {
-                    background-color: transparent !important;
-                    color: palette.$main !important;
-                    opacity: 1 !important;
-                    font-weight: variables.$fwMediumBold !important;
-                }
-            }
-        }
-    }
-}
-
 /*#region  PASSWORD VALIDATION */
 .password-validation {
     .checklist-icon {
@@ -363,7 +292,7 @@
             margin-top: 100px;
             width: fit-content;
             font-size: 40px;
-            font-family: "National Park", sans-serif !important;
+            font-family: "SF Pro Display", sans-serif !important;
             font-weight: bold;
             text-transform: uppercase;
             color: #0000;
@@ -564,9 +493,14 @@
         /*#endregion ELEMENT DEFAULTS*/
 
         /*#region MIXINS */
+        #timepicker-wrapper {
+            @include mixins.Timepicker;
+        }
+
         .subtitle {
             @include mixins.Subtitle;
         }
+
         .paragraph {
             @include mixins.Paragraph;
         }
@@ -1533,11 +1467,6 @@
 
         .input-field {
             @include mixins.inputField;
-            height: 50px;
-            overflow: unset;
-            .label-wrapper {
-                padding-left: 10px;
-            }
         }
 
         .Inter-thin {

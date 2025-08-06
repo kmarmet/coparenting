@@ -124,7 +124,6 @@ export default function CalendarEvents({
     }, [calendarSearchResults, holidayOptions?.show, selectedCalendarDate, allEventsOfDay])
 
     useEffect(() => {
-        console.log("change")
         const animateEvents = () => {
             setTimeout(() => {
                 DomManager.ToggleAnimation("add", "event-row", DomManager.AnimateClasses.names.fadeInUp, 120)
@@ -158,8 +157,9 @@ export default function CalendarEvents({
                                 const searchInput = searchInputWrapper.querySelector("input")
                                 setQuery("")
                                 searchInput.value = ""
-                                searchInput.blur()
-                                searchInputWrapper.classList.remove("active")
+                                // searchInput.blur()
+                                // searchInputWrapper.classList.remove("active")
+
                                 searchInput.textContent = ""
                                 setSearchQuery("")
                             }}

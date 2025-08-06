@@ -11,7 +11,8 @@ ButtonThemes = {
   accent: "accent",
   purple: "purple",
   lightPurple: "lightPurple",
-  translucent: "translucent"
+  translucent: "translucent",
+  yellow: "yellow"
 };
 
 export default ButtonThemes;

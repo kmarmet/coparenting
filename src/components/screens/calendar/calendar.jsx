@@ -2,8 +2,10 @@
 import {StaticDatePicker} from "@mui/x-date-pickers-pro"
 import moment from "moment"
 import React, {useContext, useEffect, useState} from "react"
+import {BiSolidSearchAlt2} from "react-icons/bi"
 import {BsStars} from "react-icons/bs"
-import {FaMinus, FaPlus} from "react-icons/fa6"
+import {FaFilter} from "react-icons/fa"
+import {FaAngleLeft, FaAngleRight, FaMinus, FaPlus} from "react-icons/fa6"
 import {PiCalendarDotsFill, PiCalendarXDuotone} from "react-icons/pi"
 import EditCalEvent from "../../../components/forms/editCalEvent"
 import NavBar from "../../../components/navBar.jsx"
@@ -38,18 +40,18 @@ export default function EventCalendar() {
 
     // MONTHS FOR DATE PICKER DROPDOWN
     const months = [
-        {name: "January", number: 1},
-        {name: "February", number: 2},
-        {name: "March", number: 3},
-        {name: "April", number: 4},
+        {name: "Jan", number: 1},
+        {name: "Feb", number: 2},
+        {name: "Mar", number: 3},
+        {name: "Apr", number: 4},
         {name: "May", number: 5},
-        {name: "June", number: 6},
-        {name: "July", number: 7},
-        {name: "August", number: 8},
-        {name: "September", number: 9},
-        {name: "October", number: 10},
-        {name: "November", number: 11},
-        {name: "December", number: 12},
+        {name: "Jun", number: 6},
+        {name: "Jul", number: 7},
+        {name: "Aug", number: 8},
+        {name: "Sep", number: 9},
+        {name: "Oct", number: 10},
+        {name: "Nov", number: 11},
+        {name: "Dec", number: 12},
     ]
 
     // STATE
@@ -60,12 +62,14 @@ export default function EventCalendar() {
     const [showMonthDropdown, setShowMonthDropdown] = useState(false)
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [activeFilter, setActiveFilter] = useState("all")
+    const [showLegend, setShowLegend] = useState(false)
 
     // CARD STATE
     const [showEditCard, setShowEditCard] = useState(false)
     const [showHolidaysCard, setShowHolidaysCard] = useState(false)
     const [showSearchInput, setShowSearchInput] = useState(false)
     const [showHolidays, setShowHolidays] = useState(false)
+    const [showTools, setShowTools] = useState(false)
 
     // HOOKS
     const {currentUser, currentUserIsLoading} = useCurrentUser()
@@ -277,28 +281,6 @@ export default function EventCalendar() {
         setHolidayReturnType("none")
         setShowHolidaysCard(false)
         setShowHolidays(false)
-        if (!currentUserIsLoading) {
-            const belowCalendarWrapper = document.querySelector(".MuiDialogActions-root")
-            const todayButton = belowCalendarWrapper.querySelector(".MuiButtonBase-root")
-            const legendButton = document.getElementById("legend-button")
-            const monthSelector = document.getElementById("month-selector")
-            const filterButton = document.getElementById("filter-button-wrapper")
-            const searchButton = document.getElementById("search-button-wrapper")
-
-            if (belowCalendarWrapper) {
-                belowCalendarWrapper.appendChild(filterButton)
-                belowCalendarWrapper.appendChild(searchButton)
-                belowCalendarWrapper.appendChild(legendButton)
-                belowCalendarWrapper.appendChild(todayButton)
-                belowCalendarWrapper.appendChild(monthSelector)
-            }
-
-            if (legendButton) {
-                legendButton.addEventListener("click", () => {
-                    legendButton.classList.toggle("active")
-                })
-            }
-        }
     }, [currentScreen, currentUserIsLoading, showSearchInput])
 
     useEffect(() => {
@@ -372,7 +354,7 @@ export default function EventCalendar() {
                 <div id="month-options" className={`${showMonthDropdown ? "active" : ""}`}>
                     {months?.map((month, index) => (
                         <div
-                            className={`chip${month.name === moment(dateValue, DatetimeFormats.dateForDb).format("MMMM") ? " active" : ""}`}
+                            className={`chip${month.name === moment(dateValue, DatetimeFormats.dateForDb).format("MMM") ? " active" : ""}`}
                             key={index}
                             onClick={() => {
                                 setDateValue(moment(`${month.number}/01/${moment().format("YYYY")}`))
@@ -382,6 +364,17 @@ export default function EventCalendar() {
                         </div>
                     ))}
                 </div>
+                <Spacer height={5} />
+                <Button
+                    text={"Go to Today"}
+                    onClick={() => {
+                        setDateValue(moment())
+                        setShowMonthDropdown(false)
+                        setState({...state, selectedCalendarDate: moment().format(DatetimeFormats.dateForDb)})
+                    }}
+                    theme={ButtonThemes.white}
+                    classes={"today center"}
+                />
             </Modal>
 
             {/* CARDS */}
@@ -424,14 +417,13 @@ export default function EventCalendar() {
                     {/* STATIC CALENDAR */}
                     <div id="static-calendar" className={`${theme}`}>
                         <StaticDatePicker
-                            slotProps={{
-                                actionBar: {
-                                    actions: ["today"],
-                                },
-                            }}
-                            orientation="landscape"
+                            orientation="portrait"
                             value={dateValue}
                             views={["month", "day"]}
+                            showToolbar={false}
+                            slotProps={{
+                                actionBar: {actions: []},
+                            }}
                             showDaysOutsideCurrentMonth={true}
                             minDate={moment(`${moment().year()}-01-01`)}
                             maxDate={moment(`${moment().year()}-12-31`)}
@@ -439,8 +431,11 @@ export default function EventCalendar() {
                                 const formattedMonth = moment(month).format("MM")
                                 const formattedYear = moment(month).format("YYYY")
                                 const formattedDate = `${formattedMonth}/01/${formattedYear}`
-                                setDateValue(moment(formattedDate))
-                                setState({...state, selectedCalendarDate: moment(formattedDate).format(DatetimeFormats.dateForDb)})
+                                setShowTools(false)
+                                if (formattedMonth !== moment().format("MM")) {
+                                    setDateValue(moment(formattedDate))
+                                    setState({...state, selectedCalendarDate: moment(formattedDate).format(DatetimeFormats.dateForDb)})
+                                }
                             }}
                             onChange={(day) => {
                                 setDateValue(day)
@@ -452,48 +447,57 @@ export default function EventCalendar() {
                     <Spacer height={1} />
 
                     {/* BELOW CALENDAR */}
-                    <div id="below-calendar" className={`${theme} flex`} style={{border: "1px solid red !important"}}>
-                        <div
-                            className={`${activeFilter !== EventFilters.all ? "active" : ""}`}
-                            id="filter-button-wrapper"
-                            onClick={() => setShowFilterModal(true)}>
-                            <p id="filter-button" className="animated-button">
-                                Filter
+                    <div id="below-calendar" className={`${theme} flex`}>
+                        {!showTools && (
+                            <p id="toggle-button" className="open" onClick={() => setShowTools(true)}>
+                                <FaAngleLeft />
+                                TOOLS
                             </p>
-                        </div>
-                        <div id="search-button-wrapper">
+                        )}
+                        <div className={`content${showTools ? " active" : ""}`}>
+                            {/* LEGEND BUTTON */}
+                            <p id="legend-button" className="below-calendar-button" onClick={() => setShowLegend(true)}>
+                                <span className="dots">
+                                    <span className={"current-user dot"}></span>
+                                    <span className={"shared dot"}></span>
+                                    <span className={"financial dot"}></span>
+                                    <span className={"holiday dot"}></span>
+                                </span>
+                            </p>
+                            <p
+                                id="filter-button"
+                                className={`below-calendar-button${activeFilter !== EventFilters.all ? " active" : ""}`}
+                                onClick={() => setShowFilterModal(true)}>
+                                Filter <FaFilter />
+                            </p>
+
                             {showSearchInput ? (
-                                <p id={"search-button-off"} className={"red"} onClick={() => setShowSearchInput(false)}>
+                                <p id={"search-button-off"} className={"red below-calendar-button"} onClick={() => setShowSearchInput(false)}>
                                     Close Search
                                 </p>
                             ) : (
-                                <p id={"search-button-on"} className={"search"} onClick={() => setShowSearchInput(true)}>
-                                    Search
+                                <p id={"search-button-on"} className={"search below-calendar-button"} onClick={() => setShowSearchInput(true)}>
+                                    Search <BiSolidSearchAlt2 />
+                                </p>
+                            )}
+
+                            {/* HOLIDAY BUTTON */}
+                            {/*<p id="holidays-button">Holidays</p>*/}
+                            <p id="month-selector" className={"below-calendar-button"} onClick={() => setShowMonthDropdown(!showMonthDropdown)}>
+                                {moment(dateValue).format("MMM")}
+                                {showMonthDropdown ? <FaMinus /> : <FaPlus />}
+                            </p>
+
+                            {showTools && (
+                                <p id="toggle-button" className="close" onClick={() => setShowTools(false)}>
+                                    <FaAngleRight /> TOOLS
                                 </p>
                             )}
                         </div>
-                        {/* LEGEND BUTTON */}
-                        <p id="legend-button" className="animated-button">
-                            Legend
-                            <span className="dots">
-                                <span className={"current-user dot"}></span>
-                                <span className={"shared dot"}></span>
-                                <span className={"financial dot"}></span>
-                                <span className={"holiday dot"}></span>
-                            </span>
-                        </p>
-
-                        {/* HOLIDAY BUTTON */}
-                        {/*<p id="holidays-button">Holidays</p>*/}
-
-                        <p id="month-selector" onClick={() => setShowMonthDropdown(!showMonthDropdown)}>
-                            {moment(dateValue).format("MMMM")}
-                            {showMonthDropdown ? <FaMinus /> : <FaPlus />}
-                        </p>
                     </div>
 
                     {/* LEGEND */}
-                    <CalendarLegend />
+                    <CalendarLegend showLegend={showLegend} setShowLegend={setShowLegend} />
 
                     {/* SCREEN CONTENT - MAP/LOOP CALENDAR EVENTS (CalendarEvents) */}
 

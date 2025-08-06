@@ -10,5 +10,6 @@ ButtonThemes =
   purple: "purple"
   lightPurple: "lightPurple"
   translucent:  "translucent"
+  yellow: "yellow"
 
 export default ButtonThemes

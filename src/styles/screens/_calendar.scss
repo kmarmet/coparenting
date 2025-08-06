@@ -232,44 +232,6 @@
                 z-index: -1;
             }
 
-            #legend-button {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                flex-wrap: wrap;
-                padding-top: 4px;
-                .dots {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    gap: 5px;
-                    padding-top: 3px;
-                    padding-bottom: 7px;
-                    .dot {
-                        margin: 0;
-                        height: 5px;
-                        width: 5px;
-                        border: 0;
-                        display: block;
-                        border-radius: 100%;
-                        &.financial {
-                            background: palette.$financialDot;
-                        }
-                        &.current-user {
-                            background-color: palette.$currentUserDot;
-                        }
-
-                        &.shared {
-                            background-color: palette.$sharedDot;
-                        }
-
-                        &.holiday {
-                            background-color: palette.$holidayDot;
-                        }
-                    }
-                }
-            }
-
             [role="rowgroup"] {
                 overflow: visible !important;
                 padding-top: 8px;
@@ -677,7 +639,133 @@
 
         // BELOW CALENDAR
         #below-calendar {
-            display: none;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0 8px;
+
+            svg {
+                @include mixins.square(13px);
+            }
+
+            #toggle-button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 31px;
+                font-size: 14px;
+                color: palette.$darkerGrey;
+                text-align: center;
+                margin-left: auto;
+                @include fonts.mediumFont;
+
+                &.close {
+                    margin-left: 0;
+                    margin-right: 0;
+                }
+            }
+
+            .content {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0 8px;
+                max-width: 0;
+                opacity: 0;
+                transition: all 0.4s ease;
+
+                &.active {
+                    max-width: 100%;
+                    opacity: 1;
+                    transition: all 0.7s ease;
+                }
+
+                #legend-button {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    background-color: white;
+                    border: 1px solid palette.$main;
+                    border-radius: variables.$buttonBorderRadius;
+                    @include mixins.square(31px);
+
+                    .dots {
+                        justify-content: center;
+                        align-items: center;
+                        gap: 4px;
+                        display: grid;
+                        grid-template-columns: repeat(2, 1fr);
+
+                        .dot {
+                            margin: 0;
+                            height: 5px;
+                            width: 5px;
+                            border: 0;
+                            display: block;
+                            border-radius: 100%;
+                            &.financial {
+                                background: palette.$financialDot;
+                            }
+                            &.current-user {
+                                background-color: palette.$currentUserDot;
+                            }
+
+                            &.shared {
+                                background-color: palette.$sharedDot;
+                            }
+
+                            &.holiday {
+                                background-color: palette.$holidayDot;
+                            }
+                        }
+                    }
+                }
+
+                .below-calendar-button {
+                    background-color: palette.$lightGrey;
+                    border-radius: variables.$buttonBorderRadius;
+                    padding: 5px 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 5px;
+                    font-size: 14px;
+                    color: palette.$darkerGrey;
+                    text-align: center;
+                    width: 100%;
+                    white-space: nowrap;
+                    @include fonts.mediumFont;
+                    svg {
+                        color: white;
+                        @include mixins.square(13px);
+                    }
+
+                    &#filter-button {
+                        background-color: palette.$blend;
+                        color: white;
+                        svg {
+                            transform: scale(0.9);
+                        }
+                    }
+                    &#search-button-on,
+                    &#search-button-off {
+                        background-color: palette.$purple;
+                        color: white;
+
+                        svg {
+                            transform: scale(1.3);
+                        }
+                    }
+
+                    &#month-selector {
+                        background-color: palette.$main;
+                        color: white;
+                    }
+                }
+            }
         }
     }
 }

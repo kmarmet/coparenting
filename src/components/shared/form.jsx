@@ -39,6 +39,7 @@ export default function Form({
     }
 
     useEffect(() => {
+        Manager.ResetForm("form-card.active")
         let activeForm = document.querySelector(`.${wrapperClass}.form-wrapper.active`)
         // Check if creationFormToShow is valid -> find the form wrapper
         if (Manager.IsValid(creationFormToShow, true)) {
@@ -71,13 +72,9 @@ export default function Form({
                 }
             }
         }
-        if (showCard) {
-            if (onOpen) onOpen()
-        } else {
-            setTimeout(() => {
-                setResetKey(Manager.GetUid())
-            }, 500)
-        }
+
+        // On Open
+        if (showCard && onOpen) onOpen()
     }, [showCard])
 
     return (
