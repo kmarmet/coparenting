@@ -23,6 +23,7 @@ export default function Form({
     deleteButtonText = "Delete",
     titleIcon = null,
     viewDropdown,
+    cardButtonsClasses = "",
     cancelButtonText = "Close",
     showLoadingSpinner,
     extraButtons = [],
@@ -100,7 +101,7 @@ export default function Form({
             </div>
 
             {/* CARD BUTTONS */}
-            <div className={`flex card-buttons`}>
+            <div className={`flex card-buttons${Manager.IsValid(cardButtonsClasses, true) ? ` ${cardButtonsClasses}` : ""}`}>
                 {hasSubmitButton && (
                     <CardButton
                         buttonTheme={ButtonThemes.green}

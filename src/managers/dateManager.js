@@ -9,6 +9,45 @@ import DatasetManager from "./datasetManager"
 import StringManager from "./stringManager"
 
 const DateManager = {
+    KnownFormats: [
+        moment.ISO_8601,
+        "MM/DD/YYYY",
+        "DD/MM/YYYY",
+        "YYYY-MM-DD",
+        "YYYY/MM/DD",
+        "YYYY-MM-DDTHH:mm:ssZ",
+        "YYYY-MM-DD HH:mm:ss",
+        "MM/DD/YYYY h:mm A",
+        "HH:mm:ss",
+        "HH:mm",
+        "MM/DD/yyyy",
+        "DD/MM/yyyy",
+        "yyyy-MM-DD",
+        "yyyy/MM/DD",
+        "yyyy-MM-DDTHH:mm:ssZ",
+        "yyyy-MM-DD HH:mm:ss",
+        "MM/DD/yyyy h:mm A",
+        "HH:mm:ss",
+        "HH:mm",
+        "dddd, MMMM DD, YYYY",
+        "ddd, MMM DD (h:mma)",
+        "MM/DD/YYYY h:mma",
+        "dddd, MMMM Do",
+        "MMMM DD, YYYY",
+        "MMMM Do",
+        "MMMM Do, YYYY",
+        "MM/DD",
+        "MM/DD/YYYY",
+        "yyyy,MM,DD h:mm a",
+        "YYYY-MM-DD",
+        "h:mma",
+        "MM/DD/YYYY",
+        "dddd Do",
+        "MM/DD/yyyy h:mma",
+        "MM",
+        "MMMM",
+        "ha",
+    ],
     GetRepeatingEvents: async (object) => {
         const eventTitle = object.title
         let repeatingEvents = await DB.GetTableData(DB.tables.calendarEvents)
@@ -75,33 +114,75 @@ const DateManager = {
     },
     getMomentFormat: (date) => {
         // Date only
-        if (date.indexOf("/") > -1 && date.indexOf(":") === -1) {
+        if (date?.indexOf("/") > -1 && date?.indexOf(":") === -1) {
             return DatetimeFormats.dateForDb
-        } else if (date.indexOf("/") === -1 && date.indexOf(":") > -1) {
+        } else if (date?.indexOf("/") === -1 && date?.indexOf(":") > -1) {
             return DatetimeFormats.timeForDb
         }
-        if (date.indexOf("/") > -1 && date.indexOf(":") > -1) {
+        if (date?.indexOf("/") > -1 && date?.indexOf(":") > -1) {
             return DatetimeFormats.timestamp
         }
-        if (date.indexOf("-") > -1) {
+        if (date?.indexOf("-") > -1) {
             return DatetimeFormats.jsDate
         }
     },
-    GetValidDate: (date, outputFormat = DatetimeFormats.dateForDb) => {
-        if (typeof date === "string" && !Manager.IsValid(date, true)) {
-            return ""
+    ParseAnyDate: (input) => {
+        const knownFormats = [
+            moment.ISO_8601,
+            "MM/DD/YYYY",
+            "DD/MM/YYYY",
+            "YYYY-MM-DD",
+            "YYYY/MM/DD",
+            "YYYY-MM-DDTHH:mm:ssZ",
+            "YYYY-MM-DD HH:mm:ss",
+            "MM/DD/YYYY h:mm A",
+            "HH:mm:ss",
+            "HH:mm",
+            "MM/DD/yyyy",
+            "DD/MM/yyyy",
+            "yyyy-MM-DD",
+            "yyyy/MM/DD",
+            "yyyy-MM-DDTHH:mm:ssZ",
+            "yyyy-MM-DD HH:mm:ss",
+            "MM/DD/yyyy h:mm A",
+            "HH:mm:ss",
+            "HH:mm",
+            "dddd, MMMM DD, YYYY",
+            "ddd, MMM DD (h:mma)",
+            "MM/DD/YYYY h:mma",
+            "dddd, MMMM Do",
+            "MMMM DD, YYYY",
+            "MMMM Do",
+            "MMMM Do, YYYY",
+            "MM/DD",
+            "MM/DD/YYYY",
+            "yyyy,MM,DD h:mm a",
+            "YYYY-MM-DD",
+            "h:mma",
+            "MM/DD/YYYY",
+            "dddd Do",
+            "MM/DD/yyyy h:mma",
+            "MM",
+            "MMMM",
+            "ha",
+        ]
+        for (const fmt of knownFormats) {
+            const m = moment(input, fmt, true)
+            if (m.isValid()) {
+                return {moment: m, format: fmt}
+            }
         }
-        if (!Manager.IsValid(date)) {
-            return ""
+
+        return {moment: null, format: null}
+    },
+    GetValidDate: (momentDate, outputFormat = DatetimeFormats.dateForDb) => {
+        if (moment.isMoment(momentDate) && momentDate.isValid()) {
+            return momentDate
         }
-        const format = DateManager.getMomentFormat(date)
-        console.log(format)
-        const asMoment = moment(date, format).format(outputFormat)
-        if (Manager.Contains(asMoment, "Invalid")) {
-            return ""
-        }
-        console.log(asMoment)
-        return asMoment
+        return null
+    },
+    HasTime: (datetimeString) => {
+        return /T\d{2}:\d{2}/.test(datetimeString) || /\d{2}:\d{2}/.test(datetimeString)
     },
     msToDate: (ms) => {
         return moment(ms, "x").format(DatetimeFormats.dateForDb)
@@ -259,7 +340,7 @@ const DateManager = {
         }
     },
     addDays: (inputDate, numberOfDays) => {
-        return moment(new Date(inputDate.setDate(inputDate.getDate() + numberOfDays))).format(DatetimeFormats.dateForDb)
+        return moment(new Date(inputDate.callback(inputDate.getDate() + numberOfDays))).format(DatetimeFormats.dateForDb)
     },
     GetHolidaysAsEvents: async () => {
         const holidays = await DateManager.GetHolidays()

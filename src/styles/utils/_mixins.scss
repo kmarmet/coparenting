@@ -347,6 +347,11 @@ $shadows-big: multiple-box-shadow(100);
         }
     }
 
+    &.translucent {
+        background-color: palette.$inputBackground;
+        color: white;
+    }
+
     &.accent {
         background: palette.$purple;
         color: white;
@@ -1045,7 +1050,7 @@ $shadows-big: multiple-box-shadow(100);
     position: fixed;
     bottom: 0;
     width: 100%;
-    z-index: variables.$maxZIndex;
+    z-index: variables.$lesserMaxZIndex;
     height: 80px;
     backdrop-filter: blur(20px);
     border: none;
@@ -1058,7 +1063,6 @@ $shadows-big: multiple-box-shadow(100);
 
     .card-button {
         color: white;
-        z-index: 10000;
         position: relative;
         -ms-transform: none;
         transform: none;
@@ -3127,6 +3131,12 @@ $shadows-big: multiple-box-shadow(100);
                 }
             }
         }
+
+        &.place-behind {
+            .card-buttons {
+                z-index: -1;
+            }
+        }
     }
 
     &.submitting {
@@ -3651,7 +3661,7 @@ $shadows-big: multiple-box-shadow(100);
             .subtitle {
                 text-align: center;
                 width: 100%;
-                line-height: 1.3;
+                line-height: 1.5;
                 font-size: 17px;
             }
 
@@ -3721,6 +3731,11 @@ $shadows-big: multiple-box-shadow(100);
     // CARD BUTTONS
     .card-buttons {
         @include cardButtons;
+    }
+
+    .datetime-button {
+        width: 100%;
+        height: 50px;
     }
 
     // BUTTONS

@@ -1,16 +1,12 @@
-import moment from "moment"
 import React, {useContext, useEffect} from "react"
 import {GiClick} from "react-icons/gi"
 import {PiMouseScrollFill} from "react-icons/pi"
-import ButtonThemes from "../../constants/buttonThemes"
-import DatetimeFormats from "../../constants/datetimeFormats"
 import globalState from "../../context"
 import DomManager from "../../managers/domManager"
-import CardButton from "./cardButton"
 import Label from "./label"
 import Spacer from "./spacer"
 
-const TimePicker = ({setTimepickerTime = (time) => {}, show, buttonText = "Set Time"}) => {
+const TimePicker = ({defaultValue, callback = (time) => {}, show, buttonText = "Set Time"}) => {
     const {state, setState} = useContext(globalState)
     const {theme, showScreenActions} = state
 
@@ -18,7 +14,6 @@ const TimePicker = ({setTimepickerTime = (time) => {}, show, buttonText = "Set T
     const [meridian, setMeridian] = React.useState("am")
     const [hour, setHour] = React.useState("1")
     const [minute, setMinute] = React.useState("00")
-    const [time, setTime] = React.useState("")
     const [method, setMethod] = React.useState("tap")
 
     const OnScroll = (parent, childClass) => {
@@ -44,12 +39,7 @@ const TimePicker = ({setTimepickerTime = (time) => {}, show, buttonText = "Set T
         }
     }
 
-    const ComposeTime = () => {
-        let time = `${hour}:${minute}${meridian}`
-        time = moment(time, "h mma").format(DatetimeFormats.timeForDb)
-        setTime(time)
-        return time
-    }
+    const ComposeTime = () => callback(`${hour}:${minute}${meridian}`)
 
     useEffect(() => {
         if (method === "scroll") {
@@ -73,27 +63,8 @@ const TimePicker = ({setTimepickerTime = (time) => {}, show, buttonText = "Set T
     }, [hour, minute, meridian, method])
 
     return (
-        <div className={`timepicker-wrapper${show ? " active" : ""}`}>
+        <div className={`timepicker${show ? " active" : ""} view`}>
             <div className="timepicker-content">
-                {/* SELECTOR */}
-                <div className="timepicker-selector">
-                    {/* ON TAP */}
-                    <button className={`timepicker-method-button${method === "tap" ? " active" : ""}`} onClick={() => setMethod("tap")}>
-                        <GiClick />
-                        {DomManager.tapOrClick(true)}
-                    </button>
-
-                    {/* ON SCROLL */}
-                    <button className={`timepicker-method-button${method === "scroll" ? " active" : ""}`} onClick={(el) => setMethod("scroll")}>
-                        <PiMouseScrollFill />
-                        Scroll
-                    </button>
-                </div>
-                {/* TIME */}
-                <p className="selected-time">{time}</p>
-
-                <Spacer height={8} />
-
                 {/* ON TAP */}
                 <div className={`timepicker-method on-tap${method === "tap" ? " active" : ""}`}>
                     {/* HOURS AND MINUTES */}
@@ -197,17 +168,8 @@ const TimePicker = ({setTimepickerTime = (time) => {}, show, buttonText = "Set T
                         <span onClick={() => setMinute("50")} className={`timepicker-selector-button minute${minute === "50" ? " active" : ""}`}>
                             50
                         </span>
-                        <span onClick={() => setMinute("5")} className={`timepicker-selector-button minute${minute === "55" ? " active" : ""}`}>
+                        <span onClick={() => setMinute("55")} className={`timepicker-selector-button minute${minute === "55" ? " active" : ""}`}>
                             55
-                        </span>
-                    </div>
-                    <Spacer height={5} />
-                    <div className="meridians">
-                        <span onClick={() => setMeridian("am")} className={`meridian${meridian === "am" ? " active" : ""}`}>
-                            am
-                        </span>
-                        <span onClick={() => setMeridian("pm")} className={`meridian${meridian === "pm" ? " active" : ""}`}>
-                            pm
                         </span>
                     </div>
                 </div>
@@ -258,9 +220,32 @@ const TimePicker = ({setTimepickerTime = (time) => {}, show, buttonText = "Set T
                     </div>
                 </div>
             </div>
-            <div className="card-buttons">
-                <CardButton text={buttonText} buttonTheme={ButtonThemes.green} onClick={() => setTimepickerTime(time)} />
-                <CardButton text={"Remove Time"} buttonTheme={ButtonThemes.yellow} onClick={() => setTimepickerTime("")} />
+            <Spacer height={5} />
+            <div className="bottom-bar">
+                {/* SELECTOR */}
+                <div className="timepicker-selector">
+                    {/* ON TAP */}
+                    <button className={`timepicker-method-button${method === "tap" ? " active" : ""}`} onClick={() => setMethod("tap")}>
+                        <GiClick />
+                        {DomManager.tapOrClick(true)}
+                    </button>
+
+                    {/* ON SCROLL */}
+                    <button className={`timepicker-method-button${method === "scroll" ? " active" : ""}`} onClick={(el) => setMethod("scroll")}>
+                        <PiMouseScrollFill />
+                        Scroll
+                    </button>
+                </div>
+                {method === "tap" && (
+                    <div className="meridians">
+                        <span onClick={() => setMeridian("am")} className={`meridian${meridian === "am" ? " active" : ""}`}>
+                            am
+                        </span>
+                        <span onClick={() => setMeridian("pm")} className={`meridian${meridian === "pm" ? " active" : ""}`}>
+                            pm
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     )

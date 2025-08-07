@@ -1,15 +1,16 @@
 import moment from "moment"
 import React, {useContext, useEffect, useState} from "react"
 import {FaAngleLeft, FaAngleRight} from "react-icons/fa6"
+import DatetimeFormats from "../../constants/datetimeFormats"
 import globalState from "../../context"
 import Manager from "../../managers/manager"
 
-const Datepicker = ({show, setShow = (bool) => {}, setDate = (date) => {}}) => {
+const Datepicker = ({defaultValue, show, callback = (date) => {}}) => {
     const {state, setState} = useContext(globalState)
     const {theme, currentScreen, refreshKey, selectedCalendarDate} = state
 
     // STATE
-    const [activeDate, setActiveDate] = useState(moment())
+    const [activeDate, setActiveDate] = useState(selectedCalendarDate)
 
     const ChunkIntoWeeks = (daysArray) => {
         const weeks = []
@@ -18,13 +19,24 @@ const Datepicker = ({show, setShow = (bool) => {}, setDate = (date) => {}}) => {
         }
         return weeks
     }
-    const Init = () => {
+
+    const BuildCalendarUI = (direction) => {
+        let updatedDate
+
+        if (direction && direction === "previous") {
+            updatedDate = moment(moment(activeDate).subtract(1, "month"))
+        }
+        if (direction && direction === "next") {
+            updatedDate = moment(moment(activeDate).add(1, "month"))
+        }
+        setActiveDate(updatedDate)
         const year = moment().year()
-        const month = moment(activeDate).month()
+        const month = moment(updatedDate).month()
         const calendar = document.querySelector(".datepicker")
         const daysWrapper = calendar.querySelector(".days")
         const days = []
         const date = moment([year, month]) // month is 0-indexed
+        const daysInMonth = date.daysInMonth()
         const firstDayOfWeek = moment([year, month, 1]).day() // 0 = Sunday
         calendar.classList.add("active")
 
@@ -36,10 +48,6 @@ const Datepicker = ({show, setShow = (bool) => {}, setDate = (date) => {}}) => {
         for (let i = 0; i < firstDayOfWeek; i++) {
             days.push(null)
         }
-
-        const daysInMonth = date.daysInMonth()
-
-        console.log(daysInMonth)
 
         // Handle days before the first day of current month
         for (let i = 1; i <= daysInMonth; i++) {
@@ -53,9 +61,7 @@ const Datepicker = ({show, setShow = (bool) => {}, setDate = (date) => {}}) => {
         // Get days from weeks
         for (let week of weeks) {
             let weekDays = []
-            for (let date of week) {
-                weekDays.push(date)
-            }
+            for (let date of week) weekDays.push(date)
             daysFromWeeks.push(weekDays)
         }
 
@@ -63,10 +69,14 @@ const Datepicker = ({show, setShow = (bool) => {}, setDate = (date) => {}}) => {
         for (const week of daysFromWeeks) {
             for (const weekday of week) {
                 const date = moment(weekday)
-                const dayOfWeek = date.day()
+                const today = moment().format("MM/DD/yyyy")
+                const dayOfWeek = date.day().toString()
                 const newDayElement = document.createElement("span")
                 newDayElement.classList.add("day")
-                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                if (moment(date).format("MM/DD/yyyy") === today) {
+                    newDayElement.classList.add("today")
+                }
+                if (dayOfWeek === "0" || dayOfWeek === "6") {
                     newDayElement.classList.add("weekend-day")
                 }
                 newDayElement.setAttribute("date", moment(weekday).format("MM/DD/yyyy"))
@@ -77,49 +87,28 @@ const Datepicker = ({show, setShow = (bool) => {}, setDate = (date) => {}}) => {
         }
     }
 
-    const ResetCalendar = () => {
-        const calendar = document.querySelector(".datepicker")
-        const dayElements = document.querySelectorAll(".datepicker .day")
-        calendar.classList.remove("active")
+    const HandleCalendarClick = (e, direction = "next") => {
+        const clicked = e.target
+        const dayDate = clicked?.getAttribute("date")
 
-        if (Manager.IsValid(dayElements) && Manager.IsValid(dayElements[0])) {
-            dayElements.forEach((day) => {
-                day.classList.remove("active")
-            })
-            calendar.innerHTML = ""
+        const allDays = document.querySelectorAll(".day")
+        for (let day of allDays) day.classList.remove("active")
+
+        clicked.classList.toggle("active")
+
+        if (clicked?.classList.contains("day")) {
+            callback(moment(dayDate))
+            setActiveDate(moment(dayDate).format(DatetimeFormats.dateForDb))
         }
     }
 
     useEffect(() => {
-        if (show) Init()
+        if (show) BuildCalendarUI()
     }, [show])
 
-    useEffect(() => {
-        if (moment(activeDate).format("MM") !== moment().format("MM")) {
-            ResetCalendar()
-            Init()
-        }
-    }, [activeDate])
-
     return (
-        <div
-            className={`datepicker${show ? " active" : ""}`}
-            onClick={(e) => {
-                const dayElements = document.querySelectorAll(".datepicker .day")
-
-                if (Manager.IsValid(dayElements)) {
-                    dayElements.forEach((day) => {
-                        day.classList.remove("active")
-                    })
-                }
-                const clicked = e.target
-                if (clicked?.classList.contains("day")) {
-                    setDate(moment(clicked?.getAttribute("date")))
-                    setActiveDate(moment(clicked?.getAttribute("date")))
-                    clicked?.classList.add("active")
-                    setShow(false)
-                }
-            }}>
+        <div className={`datepicker${show ? " active" : ""} view`} onClick={HandleCalendarClick}>
+            {/* WEEKDAY HEADERS */}
             <div className="weekday-labels">
                 <span>Sun</span>
                 <span>Mon</span>
@@ -129,25 +118,26 @@ const Datepicker = ({show, setShow = (bool) => {}, setDate = (date) => {}}) => {
                 <span>Fri</span>
                 <span>Sat</span>
             </div>
+
+            {/* DAYS WRAPPER */}
             <div className="days"></div>
+
+            {/* ACTION ROW */}
             <div className="action-row">
+                {/* PREVIOUS MONTH */}
                 <span
-                    className="previous-month month-button"
-                    onClick={() => {
-                        if (moment(activeDate).month() > 0) {
-                            setActiveDate(moment(activeDate).subtract(1, "month"))
-                        }
-                    }}>
+                    className={`previous-month month-button${moment(activeDate).month() === 1 ? " disabled" : ""}`}
+                    onClick={() => BuildCalendarUI("previous")}>
                     <FaAngleLeft className={"left"} /> {moment(activeDate).subtract(1, "month").format("MMM")}
                 </span>
 
+                {/* ACTIVE MONTH */}
+                <span className="active-month">{moment(activeDate).format("MMMM")}</span>
+
+                {/* NEXT MONTH */}
                 <span
-                    className="next-month month-button"
-                    onClick={() => {
-                        if (moment(activeDate).month() < 11) {
-                            setActiveDate(moment(activeDate).add(1, "month"))
-                        }
-                    }}>
+                    className={`next-month month-button${moment(activeDate).month() === 10 ? " disabled" : ""}`}
+                    onClick={() => BuildCalendarUI("next")}>
                     {moment(activeDate).add(1, "month").format("MMM")} <FaAngleRight className={"right"} />
                 </span>
             </div>

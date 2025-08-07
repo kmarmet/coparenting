@@ -465,14 +465,6 @@
             }
         }
 
-        span {
-            color: inherit;
-
-            &.link {
-                color: palette.$linkColor;
-            }
-        }
-
         p {
             color: palette.$primaryText;
             user-select: unset;
