@@ -42,58 +42,6 @@ const Manager = {
             }
         }, 1000)
     },
-    ValidateFields: (validationFields) => {
-        const errors = []
-
-        const isMoment = (val) => val && typeof val === "object" && typeof val.isValid === "function" && val._isAMomentObject
-
-        const isEmpty = (val) =>
-            val === null || val === undefined || (typeof val === "string" && val.trim() === "") || (Array.isArray(val) && val.length === 0)
-
-        validationFields.forEach(({name, value, required = true, type, errorMessage}) => {
-            // 1️⃣ Required check
-            if (required && isEmpty(value)) {
-                errors.push(`${name} is required`)
-                return // move to next
-            }
-
-            // 2️⃣ Type check
-            if (type && value != null) {
-                let validType = true
-
-                switch (type.toLowerCase()) {
-                    case "string":
-                        validType = typeof value === "string"
-                        break
-                    case "number":
-                        validType = typeof value === "number" && !isNaN(value)
-                        break
-                    case "boolean":
-                        validType = typeof value === "boolean"
-                        break
-                    case "array":
-                        validType = Array.isArray(value)
-                        break
-                    case "object":
-                        validType = typeof value === "object" && !Array.isArray(value) && true
-                        break
-                    case "date":
-                        validType = value instanceof Date && !isNaN(value.getTime())
-                        break
-                    case "moment":
-                        validType = isMoment(value) && value.isValid()
-                        break
-                    default:
-                        validType = true // unknown type, skip
-                }
-
-                if (!validType) errors.push(`${name} must be a valid ${type}`)
-            }
-        })
-
-        return errors
-    },
-
     ResetForm: (parentClass) => {
         const inputFields = document.querySelectorAll(".input-field")
         const parent = document.querySelector(`.${parentClass}`)
@@ -134,6 +82,13 @@ const Manager = {
                 toggle.classList.remove("react-toggle--checked")
                 toggle.querySelector("input").value = "off"
             })
+        }
+    },
+    GetValidOrNull: (value, isString = false) => {
+        if (typeof value === "string" && Manager.IsValid(value, isString)) {
+            return value
+        } else {
+            return null
         }
     },
     GetUid: () => {
@@ -218,7 +173,6 @@ const Manager = {
                 return true
         }
     },
-
     GetDirectionsLink: (address) => {
         let directionsLink
         if (!Manager.IsValid(address, true)) {

@@ -12,16 +12,14 @@ const TimePicker = ({defaultValue, callback = (time) => {}, show, buttonText = "
 
     // STATE
     const [meridian, setMeridian] = React.useState("am")
-    const [hour, setHour] = React.useState("1")
-    const [minute, setMinute] = React.useState("00")
+    const [hour, setHour] = React.useState()
+    const [minute, setMinute] = React.useState(null)
     const [method, setMethod] = React.useState("tap")
 
     const OnScroll = (parent, childClass) => {
         const scrollable = parent?.target
-
         const boxRect = scrollable.getBoundingClientRect()
         const centerY = boxRect.top + boxRect.height / 3
-
         const elements = scrollable.querySelectorAll(`.${childClass}`)
 
         for (const el of elements) {
@@ -41,6 +39,7 @@ const TimePicker = ({defaultValue, callback = (time) => {}, show, buttonText = "
 
     const ComposeTime = () => callback(`${hour}:${minute}${meridian}`)
 
+    // Scroll to active time
     useEffect(() => {
         if (method === "scroll") {
             const allHours = document.querySelectorAll(".on-scroll .hour:not(.placeholder)")
@@ -132,7 +131,7 @@ const TimePicker = ({defaultValue, callback = (time) => {}, show, buttonText = "
                         </span>
                     </div>
 
-                    <Spacer height={10} />
+                    <Spacer height={20} />
                     <Label text={"Minutes"} classes={"always-show"} />
                     <div className="minutes">
                         <span onClick={() => setMinute("00")} className={`timepicker-selector-button minute${minute === "00" ? " active" : ""}`}>

@@ -5,12 +5,12 @@ import DatetimeFormats from "../../constants/datetimeFormats"
 import globalState from "../../context"
 import Manager from "../../managers/manager"
 
-const Datepicker = ({defaultValue, show, callback = (date) => {}}) => {
+const Datepicker = ({defaultValue, show, callback = (date) => {}, startOrEnd = "start"}) => {
     const {state, setState} = useContext(globalState)
     const {theme, currentScreen, refreshKey, selectedCalendarDate} = state
 
     // STATE
-    const [activeDate, setActiveDate] = useState(selectedCalendarDate)
+    const [activeDate, setActiveDate] = useState(startOrEnd === "start" ? selectedCalendarDate : null)
 
     const ChunkIntoWeeks = (daysArray) => {
         const weeks = []
@@ -26,19 +26,19 @@ const Datepicker = ({defaultValue, show, callback = (date) => {}}) => {
         if (direction && direction === "previous") {
             updatedDate = moment(moment(activeDate).subtract(1, "month"))
         }
+
         if (direction && direction === "next") {
             updatedDate = moment(moment(activeDate).add(1, "month"))
         }
         setActiveDate(updatedDate)
         const year = moment().year()
         const month = moment(updatedDate).month()
-        const calendar = document.querySelector(".datepicker")
+        const calendar = document.querySelector(".datepicker.active")
         const daysWrapper = calendar.querySelector(".days")
         const days = []
         const date = moment([year, month]) // month is 0-indexed
         const daysInMonth = date.daysInMonth()
         const firstDayOfWeek = moment([year, month, 1]).day() // 0 = Sunday
-        calendar.classList.add("active")
 
         if (Manager.IsValid(daysWrapper)) {
             daysWrapper.innerHTML = ""
@@ -81,7 +81,6 @@ const Datepicker = ({defaultValue, show, callback = (date) => {}}) => {
                 }
                 newDayElement.setAttribute("date", moment(weekday).format("MM/DD/yyyy"))
                 newDayElement.textContent = weekday ? moment(weekday).format("D") : ""
-
                 daysWrapper.append(newDayElement)
             }
         }

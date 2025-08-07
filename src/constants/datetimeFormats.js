@@ -14,6 +14,7 @@ DatetimeFormats = {
   jsDateTime: 'yyyy,MM,DD h:mm a',
   jsDate: 'YYYY-MM-DD',
   timeForDb: 'h:mma',
+  displayEndTime: '@ h:mma',
   monthDayYear: 'MM/DD/YYYY',
   readableDay: 'dddd Do',
   monthOnly: "MM",

@@ -27,85 +27,87 @@
             }
 
             .views-selector {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                width: calc(100vw - 30px);
-                height: 40px;
-                border: 1px solid palette.$purpleForBlendBg;
-                border-radius: variables.$buttonBorderRadius;
                 position: relative;
                 overflow: hidden;
                 background-color: transparent;
-                &::before {
-                    content: "";
-                    display: block;
-                    height: 100%;
-                    top: 0;
-                    left: 0;
-                    position: absolute;
-                    width: 50%;
-                    transition: transform 0.3s ease;
-                    z-index: 0;
-                    background-color: palette.$purpleForBlendBg;
+                top: -40px;
+                z-index: 999;
+
+                .selector-icon {
+                    font-size: 18px;
+                    width: max-content;
+                    @include fonts.mediumBoldFont;
                 }
 
-                &.date,
-                &.time {
-                    transition: color 0.3s ease;
-                }
+                .time-wrapper,
+                .date-wrapper {
+                    justify-content: flex-start;
+                    align-items: center;
+                    position: relative;
+                    display: flex;
+                    margin-bottom: 10px;
 
-                &.time {
-                    &::before {
-                        transform: translateX(100%);
+                    p:not(.selector-icon) {
+                        width: max-content;
                     }
-                }
+                    p {
+                        justify-content: center;
+                        text-align: center;
+                        height: 40px;
 
-                &.date {
-                    &::before {
-                        transform: translateX(0%);
+                        &.start-date,
+                        &.start-time {
+                            margin-right: 10px;
+                            width: 120px;
+                            margin-left: 10px;
+                        }
+
+                        &.end-date,
+                        &.end-time {
+                            width: 100px;
+                            justify-self: flex-end;
+                            text-align: right;
+                            margin-left: auto;
+                        }
+                        svg {
+                            justify-self: flex-start;
+                            margin: 0;
+                            @include mixins.square(20px);
+
+                            &.calendar {
+                                @include mixins.square(18px);
+                            }
+                        }
                     }
                 }
 
                 p {
-                    color: palette.$purpleForBlendBg;
-                    text-align: center;
-                    font-size: 18px;
+                    color: white;
+                    text-align: left;
+                    font-size: 15px;
                     width: 100%;
                     transition: all 0.4s ease;
                     height: 100%;
-                    align-self: stretch;
                     display: flex;
-                    justify-content: center;
+                    line-height: 1;
+                    justify-content: flex-start;
+                    white-space: nowrap;
                     align-items: center;
                     position: relative;
+                    padding: 5px 10px;
                     @include fonts.regularFont;
 
-                    &:first-child {
-                        border-radius: variables.$borderRadius 0 0 variables.$borderRadius;
-                    }
-                    &:last-child {
-                        border-radius: 0 variables.$borderRadius variables.$borderRadius 0;
-                    }
-
                     &.active {
-                        color: white;
+                        background-color: white;
+                        color: palette.$main;
                         cursor: pointer;
+                        border-radius: variables.$buttonBorderRadius;
                         transition: all 0.4s ease;
-
                         @include fonts.boldFont;
-                    }
-
-                    svg {
-                        margin-left: 8px;
-                        @include mixins.square(20px);
-
-                        &.calendar {
-                            @include mixins.square(18px);
-                        }
                     }
                 }
             }
+
             .view {
                 opacity: 0;
                 pointer-events: none;
@@ -126,17 +128,17 @@
             }
 
             .selected-datetime {
-                color: white;
+                color: palette.$main;
                 text-align: center;
-                font-size: 24px;
                 align-self: flex-start;
-                padding-bottom: 8px;
                 height: max-content;
                 margin: 30px auto;
-                line-height: 1;
-                white-space: nowrap;
+                line-height: 1.4;
                 width: max-content;
-                border-bottom: 1px solid palette.$barelyVisibleWhite;
+                max-width: 85%;
+                border-radius: variables.$bigBorderRadius;
+                padding: 10px 20px;
+                background-color: white;
                 @include fonts.boldFont;
             }
 
@@ -144,6 +146,7 @@
                 position: relative;
                 min-height: 500px;
                 width: 100%;
+
                 /*#region  DATE */
                 .datepicker {
                     width: 100%;
@@ -266,8 +269,8 @@
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
+                        padding: 0 15px 0 10px;
 
-                        padding: 0 10px;
                         .meridians {
                             display: flex;
                             justify-content: center;
@@ -281,7 +284,7 @@
                                 justify-content: center;
                                 align-items: center;
                                 color: white;
-                                @include mixins.square(55px);
+                                @include mixins.square(52px);
                                 @include fonts.regularFont;
 
                                 &.active {
@@ -323,6 +326,11 @@
                     .timepicker-content {
                         width: 100vw;
                         padding: 0 15px;
+
+                        label {
+                            margin-bottom: 5px;
+                        }
+
                         p {
                             &.selected-time {
                                 font-size: 24px;

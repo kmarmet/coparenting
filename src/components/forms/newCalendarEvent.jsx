@@ -36,7 +36,6 @@ import MyConfetti from "../shared/myConfetti.js"
 import SelectDropdown from "../shared/selectDropdown"
 import Spacer from "../shared/spacer.jsx"
 import ToggleButton from "../shared/toggleButton"
-import ViewDropdown from "../shared/viewDropdown"
 
 export default function NewCalendarEvent() {
     // APP STATE
@@ -50,6 +49,7 @@ export default function NewCalendarEvent() {
     const [eventIsRecurring, setEventIsRecurring] = useState(false)
     const [eventIsDateRange, setEventIsDateRange] = useState(false)
     const [eventIsCloned, setEventIsCloned] = useState(false)
+    const [eventTitle, setEventTitle] = useState("")
 
     // HOOKS
     const {currentUser} = useCurrentUser()
@@ -63,7 +63,7 @@ export default function NewCalendarEvent() {
     const [dynamicInputs, setDynamicInputs] = useState([])
     const [view, setView] = useState({label: "Single Day", value: "Single Day"})
     const [categories, setCategories] = useState([])
-    const [showDatepicker, setShowDatepicker] = useState(false)
+    const [showDateTimePicker, setShowDateTimePicker] = useState(false)
     const [datepickerDate, setDatepickerDate] = useState(selectedCalendarDate)
     const [formSubtitle, setFormSubtitle] = useState("")
 
@@ -267,73 +267,49 @@ export default function NewCalendarEvent() {
         setDatepickerDate(selectedCalendarDate)
     }, [selectedCalendarDate])
 
-    const GetFormSubtitle = () => {
-        const pickerDate = moment(datepickerDate, DateManager.KnownFormats, true)
-        console.log(pickerDate)
-        if (!Manager.IsValid(datepickerDate)) return false
-        const m = moment(pickerDate)
-        if (!m.isValid()) return false
+    const ComposeDateTime = (startDateTime, endDateTime, forDisplay) => {
+        // DATE
+        formRef.current.startDate = moment(startDateTime, DatetimeFormats.timestamp).format(DatetimeFormats.dateForDb)
 
-        const hasTime = !(m.hour() === 0 && m.minute() === 0 && m.second() === 0)
-        const dateStr = m.format(DatetimeFormats.readableMonthAndDay)
-        const timeStr = m.format("h:mma")
-        setFormSubtitle(hasTime ? `${dateStr} <br/> @ ${timeStr}` : dateStr)
+        // END DATE
+        const endDate = moment(endDateTime, DatetimeFormats.timestamp).format(DatetimeFormats.dateForDb)
+        console.log("End Date", endDate)
+        if (Manager.IsValid(endDate)) formRef.current.endDate = endDate
+
+        // TIME
+        const startTime = moment(startDateTime, DatetimeFormats.timestamp).format(DatetimeFormats.timeForDb)
+
+        // END TIME
+        if (Manager.IsValid(startTime)) formRef.current.startTime = startTime
+        const endTime = moment(endDateTime, DatetimeFormats.timestamp).format(DatetimeFormats.timeForDb)
+        if (Manager.IsValid(endTime)) formRef.current.endTime = endTime
+
+        setDatepickerDate(forDisplay)
     }
-
-    useEffect(() => {
-        if (Manager.IsValid(datepickerDate)) {
-            GetFormSubtitle()
-        }
-    }, [datepickerDate])
 
     return (
         <>
             {/* FORM WRAPPER */}
             <Form
-                submitText={`Create`}
+                submitText={"Create"}
                 className={`${theme} new-event-form new-calendar-event`}
                 onClose={() => ResetForm()}
                 onSubmit={Submit}
-                subtitle={formSubtitle}
+                subtitle={datepickerDate}
                 showCard={creationFormToShow === CreationForms.calendar}
-                wrapperClass={`new-calendar-event at-top ${showDatepicker ? "place-behind" : ""}`}
+                wrapperClass={`new-calendar-event at-top ${showDateTimePicker ? "place-behind" : ""}`}
                 contentClass={eventLength === EventLengths.single ? "single-view" : "multiple-view"}
-                title={`Create Event`}
-                submitIcon={<BsCalendarCheck />}
-                viewDropdown={
-                    <ViewDropdown
-                        hasSpacer={true}
-                        show={true}
-                        views={[
-                            {label: "Single Day", value: EventLengths.single},
-                            {label: "Multiple Days", value: EventLengths.multiple},
-                        ]}
-                        selectedView={view}
-                        dropdownPlaceholder={"Single Day"}
-                        onSelect={(view) => {
-                            setView(view)
-                        }}
-                    />
-                }>
-                {showDatepicker && (
+                title={`${Manager.IsValid(formRef.current.title) ? formRef.current.title : "Create Event"}`}
+                submitIcon={<BsCalendarCheck />}>
+                {showDateTimePicker && (
                     <DateTimePicker
                         defaultValue={datepickerDate}
-                        show={showDatepicker}
+                        show={showDateTimePicker}
+                        hide={() => setShowDateTimePicker(false)}
                         callback={(dateObj) => {
-                            const {date, time, datetime} = dateObj
-                            const m = moment(time)
-                            if (Manager.IsValid(date, true)) {
-                                if (Manager.IsValid(time, true)) {
-                                    formRef.current.startDate = moment(date, DatetimeFormats.dateForDb).format(DatetimeFormats.dateForDb)
-                                    formRef.current.startTime = moment(time, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)
-                                    setDatepickerDate(datetime)
-                                    setShowDatepicker(false)
-                                } else {
-                                    formRef.current.startDate = moment(date, DatetimeFormats.dateForDb).format(DatetimeFormats.dateForDb)
-                                    setDatepickerDate(date)
-                                    setShowDatepicker(false)
-                                }
-                            }
+                            const {startDateTime, endDateTime, forDisplay} = dateObj
+                            ComposeDateTime(startDateTime, endDateTime, forDisplay)
+                            setShowDateTimePicker(false)
                         }}
                     />
                 )}
@@ -347,6 +323,7 @@ export default function NewCalendarEvent() {
                         required={true}
                         onChange={(e) => {
                             const inputValue = e.target.value
+                            setEventTitle(inputValue)
                             formRef.current.title = StringManager.FormatTitle(inputValue, true)
                         }}
                     />
@@ -358,29 +335,12 @@ export default function NewCalendarEvent() {
                         <Button
                             text={"Change Date / Time"}
                             theme={ButtonThemes.translucent}
-                            onClick={() => setShowDatepicker(true)}
+                            onClick={() => setShowDateTimePicker(true)}
                             classes={"datetime-button"}
                         />
                     )}
 
                     <Spacer height={5} />
-
-                    {/* DATE RANGE */}
-                    {view?.label === "Multiple Days" && (
-                        <InputField
-                            wrapperClasses="date-range-input"
-                            placeholder={"Date Range"}
-                            required={true}
-                            inputType={InputTypes.dateRange}
-                            onDateOrTimeSelection={(dateArray) => {
-                                if (Manager.IsValid(dateArray)) {
-                                    formRef.current.startDate = moment(dateArray[0]).format(DatetimeFormats.dateForDb)
-                                    formRef.current.endDate = moment(dateArray[dateArray.length - 1]).format(DatetimeFormats.dateForDb)
-                                    setEventIsDateRange(true)
-                                }
-                            }}
-                        />
-                    )}
 
                     <FormDivider text={"Optional"} />
 
