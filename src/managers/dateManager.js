@@ -126,7 +126,7 @@ const DateManager = {
             return DatetimeFormats.jsDate
         }
     },
-    ParseAnyDate: (input) => {
+    GetMomentFormat: (input) => {
         const knownFormats = [
             moment.ISO_8601,
             "MM/DD/YYYY",
@@ -169,16 +169,15 @@ const DateManager = {
         for (const fmt of knownFormats) {
             const m = moment(input, fmt, true)
             if (m.isValid()) {
-                return {moment: m, format: fmt}
+                return fmt
             }
         }
 
-        return {moment: null, format: null}
+        return null
     },
+    IsPastDate: (startDate, endDate) => !moment(startDate).startOf("day").isBefore(moment(endDate).startOf("day")),
     GetValidDate: (momentDate, outputFormat = DatetimeFormats.dateForDb) => {
-        if (moment.isMoment(momentDate) && momentDate.isValid()) {
-            return momentDate
-        }
+        if (moment.isMoment(momentDate) && momentDate.isValid()) return momentDate
         return null
     },
     HasTime: (datetimeString) => {

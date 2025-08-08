@@ -3660,6 +3660,49 @@ $shadows-big: multiple-box-shadow(100);
                 }
             }
 
+            .date-subtitle {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                width: max-content;
+                margin: 0 auto;
+                justify-content: space-between;
+                p {
+                    color: white;
+                    white-space: nowrap;
+                    line-height: 1;
+                    width: 100%;
+                    font-size: 16px;
+                    text-align: left;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    @include fonts.regularFont;
+
+                    &:first-child {
+                        margin-bottom: 10px;
+                    }
+
+                    &.date-subtitle-placeholder {
+                        opacity: 0.5;
+                        font-style: italic;
+                    }
+
+                    .label {
+                        color: white;
+                        margin-right: 10px;
+                        justify-self: flex-start;
+                        @include fonts.mediumBoldFont;
+                    }
+                    span {
+                        text-align: right;
+                        align-self: flex-end;
+                        margin: 0;
+                        padding: 0;
+                    }
+                }
+            }
+
             .subtitle {
                 text-align: center;
                 width: 100%;

@@ -1,6 +1,8 @@
 // Path: src\components\shared\form.jsx
+import moment from "moment"
 import React, {cloneElement, useContext, useEffect, useState} from "react"
 import ButtonThemes from "../../constants/buttonThemes"
+import DatetimeFormats from "../../constants/datetimeFormats"
 import globalState from "../../context"
 import Manager from "../../managers/manager"
 import StringManager from "../../managers/stringManager"
@@ -16,6 +18,7 @@ export default function Form({
     children,
     title,
     subtitle = "",
+    subtitleClasses = "",
     showCard = false,
     hasDelete = false,
     hasSubmitButton = true,
@@ -27,17 +30,30 @@ export default function Form({
     cancelButtonText = "Close",
     showLoadingSpinner,
     extraButtons = [],
+    dateSubtitleObject = {startDate: "", endDate: "", startTime: "", endTime: ""},
     onOpen = () => {},
 }) {
     const {state, setState} = useContext(globalState)
     const {creationFormToShow} = state
     const [submitted, setSubmitted] = useState(false)
     const [resetKey, setResetKey] = useState("")
+    const [startDateSubtitle, setStartDateSubtitle] = useState("")
+    const [endDateSubtitle, setEndDateSubtitle] = useState("")
+    const [startTimeSubtitle, setStartTimeSubtitle] = useState("")
+    const [endTimeSubtitle, setEndTimeSubtitle] = useState("")
 
     const ScrollToTop = () => {
         const header = document.querySelector(".form-title")
         header.scrollIntoView({behavior: "smooth", block: "end"})
     }
+
+    useEffect(() => {
+        const {startDate, endDate, startTime, endTime} = dateSubtitleObject
+        if (Manager.IsValid(startDate)) setStartDateSubtitle(moment(startDate).format(DatetimeFormats.readableMonthAndDayShort))
+        if (Manager.IsValid(endDate)) setEndDateSubtitle(moment(endDate).format(DatetimeFormats.readableMonthAndDayShort))
+        if (Manager.IsValid(startTime)) setStartTimeSubtitle(moment(startTime, "h:mma").format(DatetimeFormats.timeForDb))
+        if (Manager.IsValid(endTime)) setEndTimeSubtitle(moment(endTime).format(DatetimeFormats.timeForDb))
+    }, [dateSubtitleObject])
 
     useEffect(() => {
         Manager.ResetForm("form-card.active")
@@ -74,6 +90,9 @@ export default function Form({
             }
         }
 
+        setStartDateSubtitle(null)
+        setEndDateSubtitle(null)
+
         // On Open
         if (showCard && onOpen) onOpen()
     }, [showCard])
@@ -83,6 +102,7 @@ export default function Form({
             <div className={`form-card${showCard ? " active" : ""}`}>
                 <div className={`content-wrapper`}>
                     {Manager.IsValid(title) && (
+                        // HEADER
                         <div className="header">
                             <div className="flex">
                                 <div
@@ -91,7 +111,41 @@ export default function Form({
                                 {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
                             </div>
                             <Spacer height={5} />
-                            {Manager.IsValid(subtitle, true) && <StringAsHtmlElement classes={"subtitle in-form"} text={subtitle} />}
+
+                            {/* SUBTITLE */}
+                            {Manager.IsValid(subtitle, true) && (
+                                <StringAsHtmlElement
+                                    classes={`subtitle in-form${Manager.IsValid(subtitleClasses, true) ? ` ${subtitleClasses}` : ""}`}
+                                    text={subtitle}
+                                />
+                            )}
+
+                            {/* DATE SUBTITLE */}
+                            {Manager.IsValid(dateSubtitleObject) && (
+                                <div className="date-subtitle">
+                                    {Manager.IsValid(startDateSubtitle) && (
+                                        <p>
+                                            {Manager.IsValid(endDateSubtitle) && <span className={"label"}>Start:</span>}
+                                            <span className="datetime">
+                                                {startDateSubtitle}
+                                                {Manager.IsValid(startTimeSubtitle) && ` - ${startTimeSubtitle}`}
+                                            </span>
+                                        </p>
+                                    )}
+                                    {Manager.IsValid(endDateSubtitle) && (
+                                        <p>
+                                            <span className={"label"}>End:</span>
+                                            <span className="datetime">
+                                                {endDateSubtitle}
+                                                {Manager.IsValid(endTimeSubtitle) && ` - ${endTimeSubtitle}`}
+                                            </span>
+                                        </p>
+                                    )}
+                                    {!Manager.IsValid(endDateSubtitle) && !Manager.IsValid(startDateSubtitle) && (
+                                        <p className={"date-subtitle-placeholder"}>No Date or Time Selected</p>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     )}
 

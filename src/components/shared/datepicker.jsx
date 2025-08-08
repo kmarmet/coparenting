@@ -40,19 +40,13 @@ const Datepicker = ({defaultValue, show, callback = (date) => {}, startOrEnd = "
         const daysInMonth = date.daysInMonth()
         const firstDayOfWeek = moment([year, month, 1]).day() // 0 = Sunday
 
-        if (Manager.IsValid(daysWrapper)) {
-            daysWrapper.innerHTML = ""
-        }
+        if (Manager.IsValid(daysWrapper)) daysWrapper.innerHTML = ""
 
         // Add empty slots before the 1st day
-        for (let i = 0; i < firstDayOfWeek; i++) {
-            days.push(null)
-        }
+        for (let i = 0; i < firstDayOfWeek; i++) days.push(null)
 
         // Handle days before the first day of current month
-        for (let i = 1; i <= daysInMonth; i++) {
-            days.push(moment([year, month, i]).format("MM/DD/yyyy"))
-        }
+        for (let i = 1; i <= daysInMonth; i++) days.push(moment([year, month, i]).format("MM/DD/yyyy"))
 
         // Get weeks
         const weeks = ChunkIntoWeeks(days)

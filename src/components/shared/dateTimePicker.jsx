@@ -6,6 +6,7 @@ import {TbClockHour4Filled} from "react-icons/tb"
 import ButtonThemes from "../../constants/buttonThemes"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import globalState from "../../context"
+import DateManager from "../../managers/dateManager"
 import Manager from "../../managers/manager"
 import CardButton from "./cardButton"
 import Datepicker from "./datepicker"
@@ -23,55 +24,55 @@ function DateTimePicker({defaultValue, show, callback = (datetime) => {}, hide =
     const [endDate, setEndDate] = useState()
 
     const [view, setView] = useState("start-date")
-    const [dateTime, setDateTime] = useState()
     const [displayDateTime, setDisplayDateTime] = useState()
 
-    const ComposeDateTime = () => {
-        const formattedStartDate = moment(startDate).format(DatetimeFormats.dateForDb)
-        const formattedEndDate = moment(endDate).format(DatetimeFormats.dateForDb)
-        const formattedStartTime = moment(startTime, "h:mma").format(DatetimeFormats.timeForDb)
-        const formattedEndTime = moment(endTime, "h:mma").format(DatetimeFormats.timeForDb)
-        let startDateTime = `${formattedStartDate} ${formattedStartTime}`
-        let endDateTime = `${formattedEndDate} ${formattedEndTime}`
-        console.log("end date", endDate)
-        console.log("Formatted End Date", formattedEndDate)
+    const ThrowError = (title, message = "") => {
+        setState({...state, isLoading: false, bannerTitle: title, bannerMessage: message, bannerType: "error"})
+        return false
+    }
 
-        let forDisplay = `${formattedStartDate}`
+    const ComposeDateTime = () => {
+        const formattedStartDate = moment(startDate).format(DatetimeFormats.readableMonthAndDayShort)
+        const formattedEndDate = Manager.IsValid(endDate) ? moment(endDate).format(DatetimeFormats.readableMonthAndDayShort) : null
+        const formattedStartTime = Manager.IsValid(startTime) ? moment(startTime, "h:mma").format(DatetimeFormats.timeForDb) : null
+        const formattedEndTime = Manager.IsValid(endTime) ? moment(endTime, "h:mma").format(DatetimeFormats.timeForDb) : null
+        let startDateTime = `${formattedStartDate}`
+        let endDateTime = ""
 
         // START TIME
-        if (Manager.IsValid(formattedStartTime, true)) {
-            forDisplay += ` @ ${formattedStartTime}`
-        }
+        if (Manager.IsValid(formattedStartTime, true)) startDateTime += ` ${formattedStartTime}`
 
         // END DATE
-        if (Manager.IsValid(endDate, true) && Manager.IsValid(formattedEndDate, true)) {
-            forDisplay += ` to ${formattedEndDate}`
-        }
+        if (Manager.IsValid(endDate) && Manager.IsValid(formattedEndDate)) endDateTime += ` ${formattedEndDate}`
 
         // END TIME
-        if (Manager.IsValid(endDate, true) && Manager.IsValid(formattedEndTime, true)) {
-            forDisplay += ` @ ${formattedEndTime}`
-        }
+        if (Manager.IsValid(endDate) && Manager.IsValid(formattedEndTime)) endDateTime += ` ${formattedEndTime}`
 
-        // Strip out "12:00am" unless it was explicitly chosen
-        forDisplay = forDisplay.replaceAll("12:00am", "").replace("to", "<br/>to<br/>").trim()
-        console.log(forDisplay)
-
-        setDateTime(startDateTime)
-        setDisplayDateTime(forDisplay)
+        // Get Raw Dates/Times
+        const rawStartDate = moment(startDate).format(DatetimeFormats.dateForDb)
+        const rawEndDate = Manager.IsValid(endDate) ? moment(endDate).format(DatetimeFormats.dateForDb) : null
+        const rawStartTime = Manager.IsValid(startTime) ? moment(startTime, "h:mma").format(DatetimeFormats.timeForDb) : null
+        const rawEndTime = Manager.IsValid(endTime) ? moment(endTime, "h:mma").format(DatetimeFormats.timeForDb) : null
+        // Compose & Set "toDisplay"
+        let toDisplay = moment(startDate).format(DatetimeFormats.readableMonthAndDayShort)
+        if (Manager.IsValid(formattedStartTime)) toDisplay += ` ${formattedStartTime}`
+        if (Manager.IsValid(formattedEndDate)) toDisplay += ` - ${formattedEndDate}`
+        if (Manager.IsValid(formattedEndTime)) toDisplay += ` ${formattedEndTime}`
+        setDisplayDateTime(toDisplay)
 
         return {
-            startDateTime,
-            endDateTime,
-            forDisplay,
+            startDate: rawStartDate,
+            endDate: rawEndDate,
+            startTime: rawStartTime,
+            endTime: rawEndTime,
         }
     }
 
     const ExecuteCallback = () => {
         const updated = ComposeDateTime()
-        const {startDateTime, endDateTime, forDisplay} = updated
+        const {startTime, endTime, startDate, endDate} = updated
 
-        callback({startDateTime, endDateTime, forDisplay})
+        callback({startTime, endTime, startDate, endDate})
     }
 
     const ResetViews = () => {
@@ -90,20 +91,38 @@ function DateTimePicker({defaultValue, show, callback = (datetime) => {}, hide =
         setView(view)
     }
 
+    const ThrowErrorFromUseEffect = (title, message) => ThrowError(title, message)
+
+    // Check for past date -> Compose DateTime if valid
     useEffect(() => {
-        console.log("End Date", endDate)
-        ComposeDateTime()
+        if (Manager.IsValid(startDate) && Manager.IsValid(endDate)) {
+            const isPastDate = DateManager.IsPastDate(startDate, endDate)
+            if (isPastDate) {
+                ThrowErrorFromUseEffect(
+                    "End Date is not After Start Date",
+                    `Please choose a date that is after ${moment(startDate).format(DatetimeFormats.dateForDb)}`
+                )
+            } else {
+                ComposeDateTime()
+            }
+        } else {
+            ComposeDateTime()
+        }
     }, [startDate, startTime, endDate, endTime])
 
     return (
         <div className={`date-time-picker${show ? " active" : ""}`}>
             <StringAsHtmlElement text={displayDateTime} classes={"selected-datetime"} />
+
+            {/* CONTENT -> PICKERS */}
             <div className="content">
                 <Datepicker startOrEnd={"start"} defaultValue={defaultValue} show={view === "start-date"} callback={(date) => setStartDate(date)} />
                 <Datepicker startOrEnd={"end"} defaultValue={defaultValue} show={view === "end-date"} callback={(date) => setEndDate(date)} />
                 <TimePicker defaultValue={defaultValue} show={view === "start-time"} callback={(time) => setStartTime(time)} />
                 <TimePicker defaultValue={defaultValue} show={view === "end-time"} callback={(time) => setEndTime(time)} />
             </div>
+
+            {/* VIEW SELECTOR */}
             <div className={`views-selector ${view}`}>
                 <div className="date-wrapper">
                     <p className="selector-icon">
@@ -115,7 +134,7 @@ function DateTimePicker({defaultValue, show, callback = (datetime) => {}, hide =
                         Start Date
                     </p>
                     <p className={`${view === "end-date" ? "active end-date" : "end-date"} view-button`} onClick={() => UpdateView("end-date")}>
-                        End Date
+                        End Date (optional)
                     </p>
                 </div>
                 <div className="time-wrapper">
@@ -128,7 +147,7 @@ function DateTimePicker({defaultValue, show, callback = (datetime) => {}, hide =
                         Start Time
                     </p>
                     <p className={`${view === "end-time" ? "active end-time" : "end-time"} view-button`} onClick={() => UpdateView("end-time")}>
-                        End Time
+                        End Time (optional)
                     </p>
                 </div>
             </div>

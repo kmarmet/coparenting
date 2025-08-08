@@ -6,6 +6,7 @@ DatetimeFormats = {
   readableDatetime: 'ddd, MMM DD (h:mma)',
   timestamp: 'MM/DD/YYYY h:mma',
   readableMonthAndDay: 'dddd, MMMM Do',
+  readableMonthAndDayShort: "MMM Do",
   readableMonthDayYear: 'MMMM DD, YYYY',
   readableMonthAndDayWithDayDigitOnly: 'MMMM Do',
   readableMonthAndDayWithYear: 'MMMM Do, YYYY',

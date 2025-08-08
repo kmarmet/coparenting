@@ -54,17 +54,18 @@
                         justify-content: center;
                         text-align: center;
                         height: 40px;
+                        padding: 0 15px;
 
                         &.start-date,
                         &.start-time {
                             margin-right: 10px;
-                            width: 120px;
+                            width: max-content;
                             margin-left: 10px;
                         }
 
                         &.end-date,
                         &.end-time {
-                            width: 100px;
+                            width: max-content;
                             justify-self: flex-end;
                             text-align: right;
                             margin-left: auto;

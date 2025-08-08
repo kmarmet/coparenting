@@ -49,7 +49,6 @@ export default function NewCalendarEvent() {
     const [eventIsRecurring, setEventIsRecurring] = useState(false)
     const [eventIsDateRange, setEventIsDateRange] = useState(false)
     const [eventIsCloned, setEventIsCloned] = useState(false)
-    const [eventTitle, setEventTitle] = useState("")
 
     // HOOKS
     const {currentUser} = useCurrentUser()
@@ -64,8 +63,7 @@ export default function NewCalendarEvent() {
     const [view, setView] = useState({label: "Single Day", value: "Single Day"})
     const [categories, setCategories] = useState([])
     const [showDateTimePicker, setShowDateTimePicker] = useState(false)
-    const [datepickerDate, setDatepickerDate] = useState(selectedCalendarDate)
-    const [formSubtitle, setFormSubtitle] = useState("")
+    const [subtitleDateObject, setSubtitleDateObject] = useState({})
 
     // DROPDOWN STATE
     const [selectedReminderOptions, setSelectedReminderOptions] = useState([])
@@ -263,28 +261,17 @@ export default function NewCalendarEvent() {
         formRef.current = {...new CalendarEvent()}
     }, [])
 
-    useEffect(() => {
-        setDatepickerDate(selectedCalendarDate)
-    }, [selectedCalendarDate])
-
-    const ComposeDateTime = (startDateTime, endDateTime, forDisplay) => {
+    const ComposeDateTime = (startDate, endDate, startTime, endTime) => {
         // DATE
-        formRef.current.startDate = moment(startDateTime, DatetimeFormats.timestamp).format(DatetimeFormats.dateForDb)
-
+        formRef.current.startDate = startDate
         // END DATE
-        const endDate = moment(endDateTime, DatetimeFormats.timestamp).format(DatetimeFormats.dateForDb)
-        console.log("End Date", endDate)
         if (Manager.IsValid(endDate)) formRef.current.endDate = endDate
 
         // TIME
-        const startTime = moment(startDateTime, DatetimeFormats.timestamp).format(DatetimeFormats.timeForDb)
 
         // END TIME
         if (Manager.IsValid(startTime)) formRef.current.startTime = startTime
-        const endTime = moment(endDateTime, DatetimeFormats.timestamp).format(DatetimeFormats.timeForDb)
         if (Manager.IsValid(endTime)) formRef.current.endTime = endTime
-
-        setDatepickerDate(forDisplay)
     }
 
     return (
@@ -295,20 +282,22 @@ export default function NewCalendarEvent() {
                 className={`${theme} new-event-form new-calendar-event`}
                 onClose={() => ResetForm()}
                 onSubmit={Submit}
-                subtitle={datepickerDate}
+                dateSubtitleObject={subtitleDateObject}
+                subtitleIcon={<BsCalendarCheck />}
+                subtitleClasses={"datetime-label-wrapper"}
                 showCard={creationFormToShow === CreationForms.calendar}
                 wrapperClass={`new-calendar-event at-top ${showDateTimePicker ? "place-behind" : ""}`}
                 contentClass={eventLength === EventLengths.single ? "single-view" : "multiple-view"}
-                title={`${Manager.IsValid(formRef.current.title) ? formRef.current.title : "Create Event"}`}
+                title={`${Manager.IsValid(formRef.current.title, true) ? formRef.current.title : "Create Event"}`}
                 submitIcon={<BsCalendarCheck />}>
                 {showDateTimePicker && (
                     <DateTimePicker
-                        defaultValue={datepickerDate}
                         show={showDateTimePicker}
                         hide={() => setShowDateTimePicker(false)}
                         callback={(dateObj) => {
-                            const {startDateTime, endDateTime, forDisplay} = dateObj
-                            ComposeDateTime(startDateTime, endDateTime, forDisplay)
+                            const {startDate, endDate, startTime, endTime} = dateObj
+                            setSubtitleDateObject(dateObj)
+                            ComposeDateTime(startDate, endDate, startTime, endTime)
                             setShowDateTimePicker(false)
                         }}
                     />
@@ -323,7 +312,6 @@ export default function NewCalendarEvent() {
                         required={true}
                         onChange={(e) => {
                             const inputValue = e.target.value
-                            setEventTitle(inputValue)
                             formRef.current.title = StringManager.FormatTitle(inputValue, true)
                         }}
                     />
