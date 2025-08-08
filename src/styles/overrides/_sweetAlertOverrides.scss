@@ -22,14 +22,10 @@
 
         .swal2-popup {
             z-index: 99999999999999999999999999999 !important;
-            padding: 20px !important;
+            //padding: 20px !important;
+            padding: 0 !important;
             border-radius: clamp(0px, 50%, 24px) !important;
-            box-shadow:
-                rgba(0, 0, 0, 0.2) 0 2px 1px,
-                rgba(0, 0, 0, 0.2) 0 4px 2px,
-                rgba(0, 0, 0, 0.2) 0 24px 24px,
-                rgba(0, 0, 0, 0.2) 0 26px 18px,
-                rgba(0, 0, 0, 0.2) 0 32px 26px !important;
+            box-shadow: 0 58px 29px -30 rgba(0, 0, 0, 1) !important;
         }
     }
 
@@ -101,9 +97,9 @@ div {
     font-size: 18px;
     line-height: 1.4;
     margin: 0 !important;
-    padding: 0;
+    padding: 20px 20px 0 20px !important;
     text-align: left;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     font-family: "National Park", sans-serif !important;
     b {
         //font-weight: variables.$fwBold !important;
@@ -131,14 +127,12 @@ div {
     gap: 12px;
     justify-content: center;
     max-width: 95vw !important;
-    //box-shadow: variables.$boxShadow_float !important;
     border-radius: variables.$cardBorderRadius !important;
 
     // Success Alert
     &.swal2-modal {
         margin-top: 65px !important;
         border-radius: variables.$cardBorderRadius !important;
-        //box-shadow: rgba(0, 0, 0, 0.9) 0 40px 30px -10px !important;
         padding: 20px 25px !important;
         button {
             border: 0 !important;
@@ -150,67 +144,57 @@ div {
         border: 0 !important;
         background: #b12643;
         padding: 25px !important;
-        * {
-            font-weight: 200 !important;
-        }
 
         #swal2-title {
             font-size: 18px;
             color: white !important;
-        }
-
-        .swal2-actions {
-            button {
-                width: 120px !important;
-                margin: 0 auto !important;
-                height: 38px !important;
-                background: palette.$translucentLightest !important;
-                font-size: 15px !important;
-                box-shadow: none !important;
-                color: rgba(255, 255, 255, 0.8) !important;
-                border: 0 !important;
-            }
         }
     }
 
     .swal2-actions {
         margin: 0 !important;
         padding: 0 !important;
-        gap: 8px !important;
         flex-wrap: nowrap !important;
         width: 100% !important;
-        margin-top: 15px !important;
+        position: relative !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        height: 50px !important;
+        border-radius: 0 0 variables.$cardBorderRadius variables.$cardBorderRadius !important;
 
         button {
             @include fonts.fontBase;
-            background-color: palette.$grey !important;
             color: palette.$darkestGrey;
-            border-radius: variables.$buttonBorderRadius !important;
+            background-color: transparent !important;
             text-align: center;
             margin: 0 !important;
-            white-space: nowrap;
             display: flex;
             align-items: center;
             min-width: 100px !important;
             justify-content: center;
-            font-weight: variables.$fwMedium;
-            line-height: 1;
-            padding: 10px 20px !important;
+            align-self: stretch !important;
             font-size: 13px;
             outline: none;
             user-select: none;
             border: 0 !important;
+            border-radius: 0 !important;
+            width: 100% !important;
+            font-weight: 600 !important;
+            line-height: 1 !important;
+            white-space: nowrap !important;
 
             // CONFIRM
             &:where(.swal2-styled):where(.swal2-confirm) {
-                background-color: palette.$green !important;
-                color: white !important;
+                border-radius: 0 0 0 variables.$cardBorderRadius !important;
+                color: palette.$flatGreen !important;
             }
 
             // DENY
             &:where(.swal2-styled):where(.swal2-deny) {
-                background-color: palette.$grey !important;
-                color: palette.$darkestGrey !important;
+                border-radius: 0 0 variables.$cardBorderRadius 0 !important;
+                color: rgba(255, 255, 255, 0.6) !important;
             }
         }
     }
@@ -298,11 +282,11 @@ div {
     .swal2-html-container {
         @include fonts.fontBase;
         font-size: 16px;
-        padding: 0;
+        padding: 0 20px !important;
         margin: 0;
         line-height: 1;
-        text-align: center;
-        width: 100%;
+        text-align: center !important;
+        width: 100% !important;
     }
     &.swal2-icon-success {
         .swal2-html-container {

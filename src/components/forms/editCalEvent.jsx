@@ -3,6 +3,7 @@ import MultilineDetailBlockDataTypes from "firebase/compat"
 import moment from "moment"
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {MdEventRepeat} from "react-icons/md"
+import ButtonThemes from "../../constants/buttonThemes"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import InputTypes from "../../constants/inputTypes"
 import ActivityCategory from "../../constants/updateCategory"
@@ -24,6 +25,8 @@ import StringManager from "../../managers/stringManager"
 import UpdateManager from "../../managers/updateManager"
 import EventCategoryDropdown from "../screens/calendar/eventCategoryDropdown"
 import AddressInput from "../shared/addressInput"
+import Button from "../shared/button"
+import DateTimePicker from "../shared/dateTimePicker"
 import DetailBlock from "../shared/detailBlock"
 import Form from "../shared/form"
 import FormDivider from "../shared/formDivider"
@@ -57,7 +60,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     const [clonedDates, setClonedDates] = useState([])
     const [view, setView] = useState({label: "Details", value: "Details"})
     const [categories, setCategories] = useState([])
-    const [showCategories, setShowCategories] = useState(false)
+    const [showDateTimePicker, setShowDateTimePicker] = useState(false)
+    const [dynamicTitle, setDynamicTitle] = useState(event?.title)
+    const [dynamicSubtitle, setDynamicSubtitle] = useState(moment(event?.startDate).format(DatetimeFormats.readableMonthAndDay))
 
     // Set Default Dropdown Options
     const [selectedChildrenOptions, setSelectedChildrenOptions] = useState(
@@ -114,6 +119,11 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         }
     }
 
+    const ThrowError = (title, message = "") => {
+        setState({...state, isLoading: false, bannerTitle: title, bannerMessage: message, bannerType: "error"})
+        return false
+    }
+
     // SUBMIT
     const Submit = async () => {
         try {
@@ -140,20 +150,16 @@ export default function EditCalEvent({event, showCard, hideCard}) {
             // Submission
             if (Manager.IsValid(updatedEvent)) {
                 //#region VALIDATION
-                if (!Manager.IsValid(updatedEvent?.title)) {
-                    AlertManager.throwError("Event name is required")
-                    return false
-                }
 
-                if (!Manager.IsValid(updatedEvent.startDate)) {
-                    AlertManager.throwError("Please select a date for this event")
-                    return false
-                }
+                // Event Name
+                if (!Manager.IsValid(formRef?.current?.title, true)) return ThrowError("Event name is required")
 
-                if (Manager.IsValid(updatedEvent.reminderTimes) && !Manager.IsValid(updatedEvent.startTime)) {
-                    AlertManager.throwError("Please select a start time when using reminders")
-                    return false
-                }
+                // Start Date
+                if (!Manager.IsValid(updatedEvent?.startDate, true)) return ThrowError("Please select a date for this event")
+
+                // Start Time + Reminders
+                if (Manager.IsValid(updatedEvent?.reminderTimes) && !Manager.IsValid(updatedEvent?.startTime, true))
+                    return ThrowError("Please select a start time when using reminders")
                 //#endregion VALIDATION
 
                 const dbPath = `${DB.tables.calendarEvents}/${currentUser?.key}`
@@ -264,8 +270,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
     useEffect(() => {
         if (Manager.IsValid(event)) {
+            setDynamicTitle(event?.title)
+            setDynamicSubtitle(moment(event?.startDate).format(DatetimeFormats.readableMonthAndDay))
             SetDropdownOptions().then((r) => r)
-            setShowCategories(Manager.IsValid(event?.categories))
         }
     }, [event])
 
@@ -286,14 +293,34 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 }}
                 hasDelete={currentUser?.key === event?.owner?.key}
                 onSubmit={Submit}
+                subtitle={dynamicSubtitle}
                 submitText={"Update"}
                 hasSubmitButton={view?.label === "Edit"}
                 onClose={() => ResetForm()}
-                title={StringManager.FormatTitle(event?.title, true)}
+                title={dynamicTitle}
                 showCard={showCard}
                 deleteButtonText="Delete"
-                wrapperClass={`edit-calendar-event at-top${event?.owner?.key === currentUser?.key ? " owner" : " non-owner"}`}
+                wrapperClass={`edit-calendar-event at-top${event?.owner?.key === currentUser?.key ? " owner" : " non-owner"} ${showDateTimePicker ? "place-behind" : ""}`}
                 viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={(view) => setView(view)} />}>
+                {showDateTimePicker && (
+                    <DateTimePicker
+                        show={showDateTimePicker}
+                        hide={() => setShowDateTimePicker(false)}
+                        callback={(dateObj) => {
+                            const {startDate, endDate, startTime, endTime} = dateObj
+                            formRef.current.startDate = startDate
+                            formRef.current.endDate = endDate
+                            formRef.current.startTime = startTime
+                            formRef.current.endTime = endTime
+                            console.log(Manager.IsValid(startDate))
+                            if (Manager.IsValid(startDate)) {
+                                setDynamicSubtitle(moment(startDate).format(DatetimeFormats.readableMonthAndDay))
+                            }
+
+                            setShowDateTimePicker(false)
+                        }}
+                    />
+                )}
                 {/*  CONTENT */}
                 <div id="edit-cal-event-container" className={`${theme} edit-event-form form-container`}>
                     {/* DETAILS */}
@@ -319,14 +346,14 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             {/*  Start Time */}
                             <DetailBlock
                                 valueToValidate={event?.startTime}
-                                text={moment(event?.startTime, DatetimeFormats.timeForDb).format("h:mma")}
+                                text={moment(event?.startTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)}
                                 title={"Start Time"}
                             />
 
                             {/*  End Time */}
                             <DetailBlock
                                 valueToValidate={event?.endTime}
-                                text={moment(event?.endTime, DatetimeFormats.timeForDb).format("h:mma")}
+                                text={moment(event?.endTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)}
                                 title={"End time"}
                             />
 
@@ -334,21 +361,23 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             <DetailBlock valueToValidate={event?.owner?.name} text={event?.owner?.name} title={"Creator"} />
                         </div>
                         <div className="multiline-blocks">
-                            {/*  Shared With */}
-                            <MultilineDetailBlock
-                                title={"Shared with"}
-                                array={DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users, true, currentUser?.key)}
-                            />
+                            <div className="blocks">
+                                {/*  Shared With */}
+                                <MultilineDetailBlock
+                                    title={"Shared with"}
+                                    array={DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users, true, currentUser?.key)}
+                                />
 
-                            {/* Reminders */}
-                            <MultilineDetailBlock
-                                title={"Reminders"}
-                                dataType={MultilineDetailBlockDataTypes.Reminders}
-                                array={DropdownManager.GetReadableReminderTimes(event?.reminderTimes)}
-                            />
+                                {/* Reminders */}
+                                <MultilineDetailBlock
+                                    title={"Reminders"}
+                                    dataType={MultilineDetailBlockDataTypes.Reminders}
+                                    array={DropdownManager.GetReadableReminderTimes(event?.reminderTimes)}
+                                />
 
-                            {/* Children */}
-                            <MultilineDetailBlock title={"Children"} array={event?.children} />
+                                {/* Children */}
+                                <MultilineDetailBlock title={"Children"} array={event?.children} />
+                            </div>
                         </div>
                         {/* Recurring Frequency */}
                         {event?.isRecurring && (
@@ -437,53 +466,50 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             required={true}
                             onChange={async (e) => {
                                 const inputValue = e.target.value
-                                if (inputValue.length > 1) {
-                                    formRef.current.title = StringManager.FormatEventTitle(inputValue)
-                                }
+                                setDynamicTitle(inputValue)
+                                formRef.current.title = StringManager.FormatEventTitle(inputValue)
                             }}
                         />
 
                         <Spacer height={5} />
 
-                        {/* DATE */}
-                        {!eventIsDateRange && (
-                            <InputField
-                                placeholder={"Date"}
-                                required={true}
-                                inputType={InputTypes.date}
-                                onDateOrTimeSelection={(date) => (formRef.current.startDate = moment(date).format(DatetimeFormats.dateForDb))}
-                                defaultValue={event?.startDate}
-                            />
-                        )}
+                        <Button
+                            text={"Change Date / Time"}
+                            theme={ButtonThemes.translucent}
+                            onClick={() => setShowDateTimePicker(true)}
+                            classes={"datetime-button"}
+                        />
+
+                        <Spacer height={5} />
 
                         <FormDivider text={"Optional"} />
 
                         {/* EVENT START/END TIME */}
-                        {!eventIsDateRange && (
-                            <>
-                                {/* START TIME */}
-                                <InputField
-                                    wrapperClasses="start-time"
-                                    placeholder={"Start Time"}
-                                    required={false}
-                                    inputType={InputTypes.time}
-                                    defaultValue={event?.startTime}
-                                    onDateOrTimeSelection={(e) => (formRef.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}
-                                />
+                        {/*{!eventIsDateRange && (*/}
+                        {/*    <>*/}
+                        {/*        /!* START TIME *!/*/}
+                        {/*        <InputField*/}
+                        {/*            wrapperClasses="start-time"*/}
+                        {/*            placeholder={"Start Time"}*/}
+                        {/*            required={false}*/}
+                        {/*            inputType={InputTypes.time}*/}
+                        {/*            defaultValue={event?.startTime}*/}
+                        {/*            onDateOrTimeSelection={(e) => (formRef.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}*/}
+                        {/*        />*/}
 
-                                <Spacer height={5} />
+                        {/*        <Spacer height={5} />*/}
 
-                                {/* END TIME */}
-                                <InputField
-                                    wrapperClasses="end-time"
-                                    placeholder={"End Time"}
-                                    required={false}
-                                    defaultValue={event?.endTime}
-                                    inputType={InputTypes.time}
-                                    onDateOrTimeSelection={(e) => (formRef.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}
-                                />
-                            </>
-                        )}
+                        {/*        /!* END TIME *!/*/}
+                        {/*        <InputField*/}
+                        {/*            wrapperClasses="end-time"*/}
+                        {/*            placeholder={"End Time"}*/}
+                        {/*            required={false}*/}
+                        {/*            defaultValue={event?.endTime}*/}
+                        {/*            inputType={InputTypes.time}*/}
+                        {/*            onDateOrTimeSelection={(e) => (formRef.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}*/}
+                        {/*        />*/}
+                        {/*    </>*/}
+                        {/*)}*/}
 
                         <Spacer height={5} />
 

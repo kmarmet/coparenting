@@ -291,14 +291,13 @@ export default function EventCalendar() {
         <Screen loadingByDefault={true} stopLoadingBool={contentIsLoaded} activeScreen={ScreenNames.calendar} classes={"calendar"}>
             {/* FILTERS MODAL */}
             <Modal
-                title={"Event Filters"}
+                title={`Event Filters   <span class="view-text">View events by type</span>`}
                 show={showFilterModal}
                 hide={() => {
                     setShowFilterModal(false)
                     setActiveFilter("all")
                 }}
                 className={`${theme}`}>
-                <p className="view-text">View events by type</p>
                 <div key={refreshKey} className="filter-rows">
                     <div
                         data-filter={EventFilters.holidays}
@@ -454,6 +453,11 @@ export default function EventCalendar() {
                                 TOOLS
                             </p>
                         )}
+                        {showTools && (
+                            <p id="toggle-button" className="close" onClick={() => setShowTools(false)}>
+                                TOOLS <FaAngleRight />
+                            </p>
+                        )}
                         <div className={`content${showTools ? " active" : ""}`}>
                             {/* LEGEND BUTTON */}
                             <p id="legend-button" className="below-calendar-button" onClick={() => setShowLegend(true)}>
@@ -487,12 +491,6 @@ export default function EventCalendar() {
                                 {moment(dateValue).format("MMM")}
                                 {showMonthDropdown ? <FaMinus /> : <FaPlus />}
                             </p>
-
-                            {showTools && (
-                                <p id="toggle-button" className="close" onClick={() => setShowTools(false)}>
-                                    <FaAngleRight /> TOOLS
-                                </p>
-                            )}
                         </div>
                     </div>
 

@@ -64,6 +64,7 @@ export default function NewCalendarEvent() {
     const [categories, setCategories] = useState([])
     const [showDateTimePicker, setShowDateTimePicker] = useState(false)
     const [subtitleDateObject, setSubtitleDateObject] = useState({})
+    const [dynamicTitle, setDynamicTitle] = useState("")
 
     // DROPDOWN STATE
     const [selectedReminderOptions, setSelectedReminderOptions] = useState([])
@@ -312,6 +313,7 @@ export default function NewCalendarEvent() {
                         required={true}
                         onChange={(e) => {
                             const inputValue = e.target.value
+                            setDynamicTitle(inputValue)
                             formRef.current.title = StringManager.FormatTitle(inputValue, true)
                         }}
                     />

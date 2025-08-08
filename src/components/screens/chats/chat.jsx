@@ -2,10 +2,10 @@
 import moment from "moment-timezone"
 import React, {useContext, useEffect, useMemo, useRef, useState} from "react"
 import {BsBookmarkDashFill, BsFillBookmarksFill, BsFillBookmarkStarFill} from "react-icons/bs"
+import {FaLock} from "react-icons/fa"
 import {IoChevronBack, IoCopy, IoSend} from "react-icons/io5"
 import {MdCancel, MdOutlineArrowOutward, MdOutlineSearchOff} from "react-icons/md"
 import {PiBookmarksSimpleDuotone} from "react-icons/pi"
-import {RiAlarmWarningFill} from "react-icons/ri"
 import {TbMessageCircleSearch} from "react-icons/tb"
 import TextareaAutosize from "react-textarea-autosize"
 import {useLongPress} from "use-long-press"
@@ -91,7 +91,7 @@ const Chat = ({show, hide, recipient}) => {
     }
 
     const ThrowError = (title, message = "") => {
-        AlertManager.throwError(title, message)
+        setState({...state, bannerTitle: title, bannerMessage: message, bannerType: "error"})
         return false
     }
 
@@ -626,7 +626,7 @@ const Chat = ({show, hide, recipient}) => {
                                         <IoSend className={`${toneObject?.color ? toneObject?.color : ""}`} onClick={SendMessage} id="send-button" />
                                     )}
                                     <p id="disclaimer-text">
-                                        Message cannot be unsent or cancelled <RiAlarmWarningFill />
+                                        Messages cannot be unsent or cancelled <FaLock />
                                     </p>
                                 </div>
                             </div>

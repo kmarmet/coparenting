@@ -285,20 +285,22 @@ export default function CoParents() {
                         </div>
 
                         {/* CO-PARENT SELECTOR */}
-                        <div id="co-parent-selector">
-                            {Manager.IsValid(coParents) &&
-                                coParents?.map((coParent, index) => {
-                                    const coParentKey = activeCoParent?.userKey
-                                    return (
-                                        <div
-                                            onClick={() => HandleCoParentChange(coParent)}
-                                            className={coParentKey === coParent?.userKey ? "active co-parent" : "co-parent"}
-                                            key={index}>
-                                            <p>{StringManager.GetFirstNameAndLastInitial(coParent?.name)}</p>
-                                        </div>
-                                    )
-                                })}
-                        </div>
+                        {coParents?.length > 1 && (
+                            <div id="co-parent-selector">
+                                {Manager.IsValid(coParents) &&
+                                    coParents?.map((coParent, index) => {
+                                        const coParentKey = activeCoParent?.userKey
+                                        return (
+                                            <div
+                                                onClick={() => HandleCoParentChange(coParent)}
+                                                className={coParentKey === coParent?.userKey ? "active co-parent" : "co-parent"}
+                                                key={index}>
+                                                <p>{StringManager.GetFirstNameAndLastInitial(coParent?.name)}</p>
+                                            </div>
+                                        )
+                                    })}
+                            </div>
+                        )}
 
                         {/* CO-PARENT INFO */}
                         <div id="co-parent-info" key={activeCoParent?.current?.userKey}>

@@ -485,6 +485,11 @@
         /*#endregion ELEMENT DEFAULTS*/
 
         /*#region MIXINS */
+        // MENU
+        #full-menu-wrapper {
+            @include mixins.fullMenu;
+        }
+
         #timepicker-wrapper {
             @include mixins.Timepicker;
         }
@@ -618,83 +623,87 @@
             margin-top: 0;
             padding: 0 0 20px 0;
 
-            .block {
-                padding-bottom: 0;
-                width: max-content;
+            .blocks {
+                display: flex;
+                gap: 0 20px;
+                .block {
+                    padding-bottom: 0;
+                    width: max-content;
 
-                a {
-                    border: 0;
+                    a {
+                        border: 0;
 
-                    &.nav-link,
-                    &.invite-button,
-                    &.email,
-                    &.phone,
-                    &.website {
-                        @include mixins.cardIconButton;
-                    }
-                }
-
-                p,
-                a {
-                    &.block-text {
-                        font-size: 18px;
-                        font-weight: variables.$fwMediumBold;
-                        line-height: 1.3;
-                        color: white;
-                        text-align: center;
-
-                        &:not(a) {
-                            width: 100%;
+                        &.nav-link,
+                        &.invite-button,
+                        &.email,
+                        &.phone,
+                        &.website {
+                            @include mixins.cardIconButton;
                         }
+                    }
 
-                        &.list {
-                            color: white;
+                    p,
+                    a {
+                        &.block-text {
+                            font-size: 18px;
                             font-weight: variables.$fwMediumBold;
-                            overflow: hidden;
                             line-height: 1.3;
+                            color: white;
+                            text-align: center;
 
-                            &.active {
-                                text-overflow: unset;
-                                white-space: wrap;
+                            &:not(a) {
+                                width: 100%;
+                            }
+
+                            &.list {
+                                color: white;
+                                font-weight: variables.$fwMediumBold;
+                                overflow: hidden;
+                                line-height: 1.3;
+
+                                &.active {
+                                    text-overflow: unset;
+                                    white-space: wrap;
+                                }
+                            }
+                        }
+                        &.block-title {
+                            font-size: 13px;
+                            font-weight: variables.$fwLight;
+                            color: palette.$mediumTransWhite;
+                            line-height: 1.3;
+                            padding-top: 3px;
+                            width: 100%;
+                            text-align: center;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            svg {
+                                @include mixins.square(15px);
+                                margin: 0 0 0 5px;
+                                padding: 0;
                             }
                         }
                     }
-                    &.block-title {
-                        font-size: 13px;
-                        font-weight: variables.$fwLight;
-                        color: palette.$mediumTransWhite;
-                        line-height: 1.3;
-                        padding-top: 3px;
-                        width: 100%;
-                        text-align: center;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
+                    .block-text {
+                        .ellipsis {
+                            &.hide {
+                                display: none;
+                            }
+                        }
+                    }
 
+                    .invite-button {
+                        @include mixins.cardIconButton;
+                        padding: 0;
                         svg {
-                            @include mixins.square(15px);
-                            margin: 0 0 0 5px;
-                            padding: 0;
+                            transform: scale(1.3);
+                            margin: 0;
+                            width: 20px;
+                            height: 100%;
+                            font-size: unset;
                         }
-                    }
-                }
-                .block-text {
-                    .ellipsis {
-                        &.hide {
-                            display: none;
-                        }
-                    }
-                }
-
-                .invite-button {
-                    @include mixins.cardIconButton;
-                    padding: 0;
-                    svg {
-                        transform: scale(1.3);
-                        margin: 0;
-                        width: 20px;
-                        height: 100%;
-                        font-size: unset;
                     }
                 }
             }
@@ -1743,10 +1752,5 @@
         }
         /*#endregion  CLASSES */
         /*#endregion  CLASS/ID DEFAULTS*/
-    }
-
-    // MENU
-    #full-menu-wrapper {
-        @include mixins.fullMenu;
     }
 }

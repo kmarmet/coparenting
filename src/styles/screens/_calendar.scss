@@ -642,25 +642,26 @@
             width: 100%;
             display: flex;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: space-between;
             gap: 0 8px;
-
             svg {
                 @include mixins.square(13px);
             }
 
             #toggle-button {
                 display: flex;
-                justify-content: center;
                 align-items: center;
                 height: 31px;
                 font-size: 14px;
                 color: palette.$darkerGrey;
-                text-align: center;
-                margin-left: auto;
+                text-align: right;
+                margin-right: 0;
+                width: 100%;
+                justify-content: flex-end;
                 @include fonts.mediumFont;
 
                 &.close {
+                    justify-content: flex-start;
                     margin-left: 0;
                     margin-right: 0;
                 }
@@ -679,7 +680,7 @@
                 &.active {
                     max-width: 100%;
                     opacity: 1;
-                    transition: all 0.7s ease;
+                    transition: all 1s ease;
                 }
 
                 #legend-button {

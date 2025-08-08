@@ -48,12 +48,39 @@ export default function Form({
     }
 
     useEffect(() => {
-        const {startDate, endDate, startTime, endTime} = dateSubtitleObject
-        if (Manager.IsValid(startDate)) setStartDateSubtitle(moment(startDate).format(DatetimeFormats.readableMonthAndDayShort))
-        if (Manager.IsValid(endDate)) setEndDateSubtitle(moment(endDate).format(DatetimeFormats.readableMonthAndDayShort))
-        if (Manager.IsValid(startTime)) setStartTimeSubtitle(moment(startTime, "h:mma").format(DatetimeFormats.timeForDb))
-        if (Manager.IsValid(endTime)) setEndTimeSubtitle(moment(endTime).format(DatetimeFormats.timeForDb))
+        if (Manager.IsValid(dateSubtitleObject)) {
+            const {startDate, endDate, startTime, endTime} = dateSubtitleObject
+            if (Manager.IsValid(startDate)) setStartDateSubtitle(moment(startDate).format(DatetimeFormats.readableMonthAndDayShort))
+            if (Manager.IsValid(endDate)) setEndDateSubtitle(moment(endDate).format(DatetimeFormats.readableMonthAndDayShort))
+            if (Manager.IsValid(startTime)) setStartTimeSubtitle(moment(startTime, "h:mma").format(DatetimeFormats.timeForDb))
+            if (Manager.IsValid(endTime)) setEndTimeSubtitle(moment(endTime).format(DatetimeFormats.timeForDb))
+        }
     }, [dateSubtitleObject])
+
+    useEffect(() => {
+        const activeForm = document.querySelector(`.form-wrapper.active`)
+        // On Open
+        if (showCard && Manager.IsValid(activeForm)) {
+            setTimeout(() => {
+                const allInputFields = activeForm?.querySelectorAll(".input-field")
+
+                if (Manager.IsValid(allInputFields)) {
+                    allInputFields.forEach((inputField) => {
+                        const input = inputField.querySelector("input")
+                        if (input && input.value.trim() !== "") {
+                            const labelAndIcon = inputField.querySelector(".label-and-icon")
+                            if (labelAndIcon) {
+                                labelAndIcon.classList.add("filled")
+                            }
+                        }
+                    })
+                }
+            }, 500)
+            if (Manager.IsValid(onOpen)) {
+                onOpen()
+            }
+        }
+    }, [showCard])
 
     useEffect(() => {
         Manager.ResetForm("form-card.active")
@@ -92,9 +119,6 @@ export default function Form({
 
         setStartDateSubtitle(null)
         setEndDateSubtitle(null)
-
-        // On Open
-        if (showCard && onOpen) onOpen()
     }, [showCard])
 
     return (
@@ -110,7 +134,6 @@ export default function Form({
                                     dangerouslySetInnerHTML={{__html: StringManager.FormatTitle(title, true)}}></div>
                                 {titleIcon && <span className="svg-wrapper">{titleIcon}</span>}
                             </div>
-                            <Spacer height={5} />
 
                             {/* SUBTITLE */}
                             {Manager.IsValid(subtitle, true) && (
@@ -141,9 +164,7 @@ export default function Form({
                                             </span>
                                         </p>
                                     )}
-                                    {!Manager.IsValid(endDateSubtitle) && !Manager.IsValid(startDateSubtitle) && (
-                                        <p className={"date-subtitle-placeholder"}>No Date or Time Selected</p>
-                                    )}
+                                    <Spacer height={5} />
                                 </div>
                             )}
                         </div>

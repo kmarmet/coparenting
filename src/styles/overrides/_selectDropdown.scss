@@ -3,11 +3,24 @@
 @use "../utils/mixins";
 @use "../_fonts";
 #external-overrides {
+    .label-wrapper {
+        &.dropdown {
+            top: 20px;
+            margin: 0 auto;
+
+            label {
+                font-style: italic !important;
+                color: white !important;
+                opacity: 0.5 !important;
+                font-size: 12px !important;
+                font-weight: variables.$fwLight !important;
+            }
+        }
+    }
     .select-dropdown {
         /*#region  WHITE BG */
         &.white-bg {
-            background: white !important;
-            border: 1px solid palette.$lightBorderColor !important;
+            background: palette.$grey !important;
 
             &[class*="-container"]:not(.MuiDialog-container) {
                 border-radius: clamp(0px, 50%, 24px) !important;
@@ -21,16 +34,15 @@
                     [id*="-listbox"] {
                         gap: 8px !important;
                         [class*="-option"] {
-                            color: palette.$darkestGrey !important;
-                            border: 1px solid palette.$iconGrey !important;
+                            color: rgba(0, 0, 0, 0.6) !important;
                             border-radius: 50px !important;
-                            font-weight: variables.$fwLightThicker !important;
+                            font-weight: 400 !important;
+                            background: palette.$grey !important;
                         }
                     }
                 }
                 [class*="-control"] {
-                    border: 1px solid palette.$lightBorderColor !important;
-
+                    background: palette.$grey !important;
                     [class*="css-"] {
                         color: palette.$darkerGrey !important;
                         font-size: 15px !important;
@@ -42,7 +54,14 @@
                         }
                     }
 
+                    [class*="-indicatorContainer"] {
+                        svg {
+                            color: palette.$darkerGrey !important;
+                        }
+                    }
+
                     [class*="-multiValue"] {
+                        background: palette.$grey !important;
                         border: 1px solid palette.$lightBorderColor !important;
                     }
 
@@ -53,7 +72,7 @@
                     [class*="-singleValue"],
                     [id*="-placeholder"],
                     [class*="-placeholder"] {
-                        color: palette.$labelText !important;
+                        color: rgba(0, 0, 0, 0.55) !important;
                         @include fonts.lightFont;
                     }
                 }

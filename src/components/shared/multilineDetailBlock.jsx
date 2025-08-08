@@ -1,10 +1,10 @@
-import React, {useContext, useState} from 'react'
-import globalState from '../../context'
-import DomManager from '../../managers/domManager'
-import Manager from '../../managers/manager'
-import StringManager from '../../managers/stringManager'
+import React, {useContext, useState} from "react"
+import globalState from "../../context"
+import DomManager from "../../managers/domManager"
+import Manager from "../../managers/manager"
+import StringManager from "../../managers/stringManager"
 
-const MultilineDetailBlock = ({array = [], title = ''}) => {
+const MultilineDetailBlock = ({array = [], title = ""}) => {
     const {state, setState} = useContext(globalState)
     const {theme, refreshKey} = state
     const [showAll, setShowAll] = useState(false)
@@ -20,10 +20,7 @@ const MultilineDetailBlock = ({array = [], title = ''}) => {
                         DomManager.ToggleActive(restOfList)
                         setShowAll(!showAll)
                     }}>
-                    <p className={`block-text list`}>
-                        {StringManager.FormatTitle(array[0], true)}
-                        {array?.length > 1 && !showAll && <span className="ellipsis">...</span>}
-                    </p>
+                    <p className={`block-text list`}>{StringManager.FormatTitle(array[0], true)}</p>
                     <div className="rest-of-list-items">
                         {array?.map((arrItem, index) => {
                             if (index < 1) return
@@ -36,7 +33,7 @@ const MultilineDetailBlock = ({array = [], title = ''}) => {
                     </div>
 
                     <p className="block-title">
-                        {title} {array.length > 1 ? `(${array.length})` : ''}
+                        {title} {array.length > 1 ? `(${array.length})` : ""}
                     </p>
                 </div>
             )}

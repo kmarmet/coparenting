@@ -14,7 +14,7 @@ const Banner = () => {
         if (Manager.IsValid(bannerMessage, true) || Manager.IsValid(bannerTitle, true)) {
             setTimeout(() => {
                 setState({...state, bannerMessage: "", bannerType: "", bannerTitle: ""})
-            }, 2000)
+            }, 2200)
         }
     }, [bannerMessage, bannerTitle])
 

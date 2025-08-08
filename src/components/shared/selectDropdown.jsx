@@ -39,7 +39,7 @@ export default function SelectDropdown({
     return (
         <>
             {!isFromViewDropdown && !placeholdersWithoutLabel.includes(placeholder) && Manager.IsValid(value) && (
-                <Label text={placeholder.replaceAll("Select", "").replaceAll("a ", "")} classes={"always-show filled-input-label"} />
+                <Label text={placeholder.replaceAll("Select", "").replaceAll("a ", "")} classes={"always-show filled-input-label dropdown"} />
             )}
             <Select
                 ref={selectRef}

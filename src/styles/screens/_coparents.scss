@@ -44,11 +44,11 @@
                         .info-value {
                             opacity: 1;
                             text-decoration: none;
-                            color: palette.$blend;
+                            color: palette.$primaryText;
                         }
 
                         svg {
-                            color: palette.$blend;
+                            color: palette.$iconGrey;
 
                             &.disabled {
                                 color: palette.$iconGrey;

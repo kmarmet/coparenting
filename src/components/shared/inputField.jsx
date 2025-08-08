@@ -185,7 +185,7 @@ function InputField({
                         slots={{field: SingleInputDateRangeField}}
                         key={resetKey}
                         onOpen={() => DomManager.AddThemeToDatePickers(currentUser)}
-                        label={labelText}
+                        label={Manager.IsValid(placeholder, true) ? placeholder : ""}
                         name="allowedRange"
                     />
                 )}

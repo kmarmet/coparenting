@@ -138,7 +138,6 @@ $shadows-big: multiple-box-shadow(100);
 
         .text {
             opacity: 0;
-            padding: 0 20px;
             height: max-content;
 
             p {
@@ -271,7 +270,7 @@ $shadows-big: multiple-box-shadow(100);
 
 /*#region  BUTTONS */
 @mixin defaultButton() {
-    border-radius: variables.$buttonBorderRadius !important;
+    border-radius: variables.$buttonBorderRadius;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -893,6 +892,18 @@ $shadows-big: multiple-box-shadow(100);
         transition: all 0.4s ease;
     }
 
+    #modal-card-buttons {
+        &.card-buttons {
+            background-color: transparent;
+            backdrop-filter: unset;
+            border-top: 0;
+            .card-button {
+                backdrop-filter: unset;
+                background-color: transparent;
+            }
+        }
+    }
+
     /*#region  SCOPED MODALS */
     &.month-options {
         .modal-title {
@@ -931,7 +942,10 @@ $shadows-big: multiple-box-shadow(100);
         text-align: center;
         width: max-content;
         margin: 0 auto 20px auto;
-        border-bottom: 1px solid palette.$barelyVisibleWhite;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
         @include fonts.mediumBoldFont;
 
         & {
@@ -939,16 +953,20 @@ $shadows-big: multiple-box-shadow(100);
             white-space: nowrap;
             padding-bottom: 5px;
         }
-    }
 
-    #modal-card-buttons {
-        &.card-buttons {
-            background-color: transparent;
-            backdrop-filter: unset;
-            border-top: 0;
-            .card-button {
-                backdrop-filter: unset;
-                background-color: transparent;
+        .view-text {
+            color: white;
+            opacity: 0.85;
+            font-size: 17px;
+            width: 100%;
+            padding-top: 5px;
+            @include fonts.lightFont;
+
+            u,
+            b {
+                color: white;
+                padding: 0 2px;
+                letter-spacing: 1.8px;
             }
         }
     }
@@ -1025,20 +1043,6 @@ $shadows-big: multiple-box-shadow(100);
                         }
                     }
                 }
-            }
-        }
-
-        .view-text {
-            color: white;
-            opacity: 0.85;
-            font-size: 18px;
-            @include fonts.lightFont;
-
-            u,
-            b {
-                color: white;
-                padding: 0 2px;
-                letter-spacing: 1.8px;
             }
         }
     }
@@ -1317,9 +1321,9 @@ $shadows-big: multiple-box-shadow(100);
             line-height: 1.5;
             justify-self: flex-start;
             color: white;
-            font-size: 18px;
+            font-size: 17px;
             text-align: center;
-            max-width: 85%;
+            padding: 0 15px;
             @include fonts.lightFont;
         }
 
@@ -1327,11 +1331,14 @@ $shadows-big: multiple-box-shadow(100);
             color: white;
             font-size: 20px;
             text-align: center;
-            padding-bottom: 8px;
             line-height: 1;
             display: flex;
             justify-content: center;
+            padding-bottom: 5px;
             align-items: center;
+            width: max-content;
+            margin: 0 auto 8px auto;
+            border-bottom: 1px solid palette.$barelyVisibleWhite;
             @include fonts.mediumBoldFont;
 
             svg {
@@ -2242,6 +2249,10 @@ $shadows-big: multiple-box-shadow(100);
                 color: black;
                 opacity: 0.65;
                 @include fonts.mediumFont;
+
+                & {
+                    letter-spacing: 0.5px;
+                }
             }
         }
 
@@ -2525,7 +2536,7 @@ $shadows-big: multiple-box-shadow(100);
                     font-style: italic;
                     color: white;
                     opacity: 0.5;
-                    font-size: 14px;
+                    font-size: 12px;
                     font-weight: variables.$fwLight;
                 }
             }
@@ -2535,7 +2546,7 @@ $shadows-big: multiple-box-shadow(100);
             color: white;
             opacity: 0.5;
             margin-right: 5px;
-            @include square(16px);
+            @include square(15px);
         }
     }
 
@@ -4826,9 +4837,7 @@ $shadows-big: multiple-box-shadow(100);
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-height: 90vh;
-            overflow: auto;
-            overflow-x: hidden;
+            overflow: hidden;
             padding: 8px 15px 100px 15px;
             max-width: 100%;
 
@@ -5072,7 +5081,7 @@ $shadows-big: multiple-box-shadow(100);
 
     .swipe-bar {
         display: block;
-        background: #b8c1d2;
+        background: rgba(255, 255, 255, 0.3);
         z-index: 999999999999;
         position: relative;
         align-self: flex-end;
