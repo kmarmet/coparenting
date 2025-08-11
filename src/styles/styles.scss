@@ -494,6 +494,30 @@
             @include mixins.Timepicker;
         }
 
+        #loading-screen-wrapper {
+            @include mixins.loadingScreen;
+        }
+
+        #numpad-wrapper {
+            @include mixins.numpad;
+        }
+
+        #menu-overlay {
+            &.dark {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: 100vh;
+                width: 100vw;
+            }
+        }
+
+        .detail-row-wrapper {
+            @include mixins.DetailRow;
+        }
+
         .subtitle {
             @include mixins.Subtitle;
         }
@@ -504,10 +528,6 @@
 
         .row-title {
             @include mixins.rowTitle;
-        }
-
-        #loading-screen-wrapper {
-            @include mixins.loadingScreen;
         }
 
         .form-divider {
@@ -528,10 +548,6 @@
             }
         }
 
-        #numpad-wrapper {
-            @include mixins.numpad;
-        }
-
         .label-wrapper {
             @include mixins.labelWrapper;
         }
@@ -550,18 +566,6 @@
                         margin: 0;
                     }
                 }
-            }
-        }
-
-        #menu-overlay {
-            &.dark {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                height: 100vh;
-                width: 100vw;
             }
         }
 
@@ -711,7 +715,10 @@
 
         .blocks {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            //grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
             justify-content: center;
 
             .block {
@@ -722,8 +729,12 @@
                 display: flex;
                 flex-direction: column;
                 padding-bottom: 20px;
+                width: calc(100% / 3);
 
                 &.full-width {
+                    width: 100%;
+                    display: block;
+                    border: 2px solid #00fff7 !important;
                     margin-top: 15px;
 
                     &.notes {

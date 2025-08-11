@@ -117,10 +117,6 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
         }
     }, [activeImageIndex])
 
-    useEffect(() => {
-        console.log(images)
-    }, [images])
-
     return (
         <div id={"slideshow-wrapper"} className={`${show ? "active" : ""}${wrapperClasses}`}>
             <div id="slideshow-overlay">

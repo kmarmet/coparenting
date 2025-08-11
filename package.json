@@ -100,7 +100,7 @@
     "workbox-cli": "7.1.0"
   },
   "scripts": {
-    "startWithoutSourceMaps": "npm run removeParcelCache && parcel public/index.html --no-source-maps",
+    "startWithoutSourceMaps": "npm run removeParcelCache && parcel public/index.html --no-source-maps --port 1234 --public-url /",
     "build": "npm run deleteBuild && npm run removeParcelCache && cd public && parcel build index.html  --no-source-maps && npm run deleteUnwantedFilesFromBuild && compress-cra",
     "start": "npm run removeParcelCache && cd public && parcel serve index.html",
     "watch-coffee": "coffee --watch --compile src",
@@ -132,6 +132,18 @@
     "extends": [
       "react-app/jest"
     ]
+  },
+  "alias": {
+    "*.woff": false,
+    "*.ttf": false,
+    "*.woff2": false,
+    "*.svg": false,
+    "*.ico": false,
+    "*.map": false,
+    "*.gif": false,
+    "*.png": false,
+    "*.jpg": false,
+    "*.otf": false
   },
   "browserslist": {
     "production": [

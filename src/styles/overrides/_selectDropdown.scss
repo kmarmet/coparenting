@@ -5,7 +5,7 @@
 #external-overrides {
     .label-wrapper {
         &.dropdown {
-            top: 20px;
+            top: 22px;
             margin: 0 auto;
 
             label {
@@ -13,11 +13,31 @@
                 color: white !important;
                 opacity: 0.5 !important;
                 font-size: 12px !important;
-                font-weight: variables.$fwLight !important;
+            }
+
+            &.white-bg {
+                label {
+                    color: rgba(0, 0, 0, 0.5) !important;
+                }
             }
         }
     }
     .select-dropdown {
+        &.has-value {
+            [class*="-control"] {
+                padding: 10px 10px 5px 10px !important;
+
+                [class*="css-"] {
+                    margin-top: 8px !important;
+                }
+
+                // svg
+                [class*="-indicatorContainer"] {
+                    position: relative !important;
+                    top: -10px !important;
+                }
+            }
+        }
         /*#region  WHITE BG */
         &.white-bg {
             background: palette.$grey !important;

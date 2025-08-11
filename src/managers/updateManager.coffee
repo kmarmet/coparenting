@@ -7,6 +7,7 @@ import UpdateSubscriber from "../models/updateSubscriber"
 import Update from "../models/new/update"
 import LogManager from "./logManager"
 import Apis from "../api/apis"
+import ObjectManager from "./objectManager"
 
 export default UpdateManager =
   currentUser: null
@@ -48,19 +49,20 @@ export default UpdateManager =
  request, please contact #{recipientName} to negotiate a potential agreement"
 
 #  PRODUCTION
-  apiKey: process.env.REACT_APP_ONE_SIGNAL_API_KEY_DEV
+  apiKey: process.env.REACT_APP_ONE_SIGNAL_API_KEY_PROD
   appId: 'b243a232-3072-4fa8-9395-b1475054c531'
 
 # LOCALHOST
-#  apiKey: process.env.REACT_APP_ONE_SIGNAL_API_KEY_PROD
+#  apiKey: process.env.REACT_APP_ONE_SIGNAL_API_KEY_DEV
 #  appId: '4f864936-7169-4b17-acfa-ef403cbbafe8'
 
+  
   init: (currentUser) ->
     try
       UpdateManager.currentUser = currentUser
       window.OneSignalDeferred = window.OneSignalDeferred or []
       OneSignalDeferred.push ->
-        OneSignal.init(appId: UpdateManager.appId).then ->
+        OneSignal.init(appId: UpdateManager.appId, allowLocalhostAsSecureOrigin: true).then ->
           OneSignal.User.PushSubscription.addEventListener 'change', UpdateManager.eventListener
 
     catch error
@@ -83,13 +85,25 @@ export default UpdateManager =
           fetch("https://api.onesignal.com/apps/#{UpdateManager.appId}/subscriptions/#{subId}/user/identity")
             .then (identity) ->
               userIdentity = await identity.json()
-              currentSubscribers = await DB.GetTableData("#{DB.tables.updateSubscribers}")
               newSubscriber.oneSignalId = userIdentity?.identity?.onesignal_id
-              existingSubscriber = currentSubscribers?.find (x) -> x?.email == UpdateManager?.currentUser?.email
-
-              # If subscriber does not exist, add
-              if not existingSubscriber
+              currentSubscribers = await DB.GetTableData("#{DB.tables.updateSubscribers}")
+              
+              if Manager.IsValid(currentSubscribers)
+                existingSubscriber = currentSubscribers?.find (x) -> x?.email == UpdateManager?.currentUser?.email
+                existingSubscriberIndex = DB.GetIndexById(currentSubscribers, existingSubscriber?.id)
+                
+                # If subscriber does not exist, add
+                if not existingSubscriber
+                  await DB.Add("#{DB.tables.updateSubscribers}", newSubscriber)
+                  
+                # If subscriber does exist, update
+                else
+                  existingSubscriber.subscriptionId = subId
+                  if existingSubscriberIndex and existingSubscriberIndex > -1
+                    await DB.updateEntireRecord("#{DB.tables.updateSubscribers}/#{existingSubscriberIndex}", existingSubscriber, existingSubscriber.id)
+              else
                 await DB.Add("#{DB.tables.updateSubscribers}", newSubscriber)
+                
         , 500
 
     catch error
@@ -120,27 +134,33 @@ export default UpdateManager =
       return false
 
     subId = subIdRecord?.subscriptionId
-
-    raw = JSON.stringify
-      contents:
-        en: message
-      headings:
-        en: title
-      target_channel: "push"
-      isAnyWeb: true
-      include_subscription_ids: [subId]
-      app_id: UpdateManager.appId
-
-
+    
+    raw = JSON.stringify(
+        {
+          app_id: UpdateManager.appId
+          contents:
+            en: message
+          headings:
+            en: title
+          include_subscription_ids: [subId]
+        }
+    )
+    
     # Add notification to database
     newNotification = new Update()
     newNotification.id = Manager.GetUid()
     newNotification.recipientKey = recipientKey
-    newNotification.ownerKey = currentUser?.key
     newNotification.sharedByName = currentUser?.name
     newNotification.title = title
     newNotification.text = message
     newNotification.category = category
+    newNotification.owner =
+      key: currentUser?.key
+      name: currentUser?.name
+      email: currentUser?.email
+      phone: currentUser?.phone
+      
+    newNotification = ObjectManager.CleanObject(newNotification)
     
     await DB.Add "#{DB.tables.updates}/#{recipientKey}", [], newNotification
     await Apis.OneSignal.SendUpdate(subId, raw)

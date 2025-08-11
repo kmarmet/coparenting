@@ -106,12 +106,9 @@ export default function NewCalendarEvent() {
             setState({
                 ...state,
                 creationFormToShow: "",
-                bannerMessage: showSuccessAlert ? "Event Created" : null,
+                bannerTitle: showSuccessAlert ? "Event Created" : null,
             })
-            if (showSuccessAlert) {
-                MyConfetti.fire()
-            }
-        }, 100)
+        }, 700)
     }
 
     const Submit = async () => {
@@ -149,7 +146,7 @@ export default function NewCalendarEvent() {
 
                 // Custom Validation
                 if (Manager.IsValid(formRef.current.phone, true) && !validator?.isMobilePhone(formRef.current.phone))
-                    ThrowError("Please enter a valid phone number")
+                    return ThrowError("Please enter a valid phone number")
 
                 // Start Time
                 if (Manager.IsValid(formRef.current.reminderTimes) && !Manager.IsValid(formRef.current.startTime))
@@ -159,6 +156,13 @@ export default function NewCalendarEvent() {
                 if (eventIsRecurring && !Manager.IsValid(recurringFrequency)) return ThrowError("Please add a recurring frequency")
 
                 //#endregion VALIDATION
+
+                // Close form and blow up confetti
+                setState({
+                    ...state,
+                    creationFormToShow: "",
+                })
+                MyConfetti.fire()
 
                 //#region MULTIPLE DATES
                 // Date Range

@@ -11,11 +11,9 @@
         z-index: 9999 !important;
         right: unset !important;
         left: 15px !important;
-        top: 50px !important;
-        transform: unset !important;
         border-radius: variables.$cardBorderRadius !important;
         padding: 10px !important;
-        box-shadow: variables.$boxShadow_bottom_only_best !important;
+        box-shadow: 0 58px 29px -30 rgba(0, 0, 0, 1) !important;
         background: white !important;
         border: 1px solid palette.$barelyVisibleWhite !important;
         * {

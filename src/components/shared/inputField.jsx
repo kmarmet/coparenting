@@ -11,6 +11,7 @@ import {PiLinkSimpleHorizontalBold} from "react-icons/pi"
 import {RiPhoneFill} from "react-icons/ri"
 import TextareaAutosize from "react-textarea-autosize"
 import DatetimeFormats from "../../constants/datetimeFormats"
+import DetailRowIcons from "../../constants/detailRowIcons"
 import InputTypes from "../../constants/inputTypes"
 import globalState from "../../context.js"
 import useCurrentUser from "../../hooks/useCurrentUser"
@@ -66,21 +67,6 @@ function InputField({
         }
     }
 
-    const OnFocus = (e) => {
-        const labelAndIcon = e.target.previousSibling
-        if (labelAndIcon) {
-            labelAndIcon.classList.add("filled")
-        }
-    }
-
-    const OnBlur = (e) => {
-        const labelAndIcon = e?.target?.previousSibling
-        const inputValue = e?.target?.value
-        if (labelAndIcon && !Manager.IsValid(inputValue, true)) {
-            labelAndIcon.classList.remove("filled")
-        }
-    }
-
     return (
         <>
             <div
@@ -88,18 +74,6 @@ function InputField({
                     const wrapper = e.currentTarget
                     if (wrapper) {
                         wrapper.classList.add("active")
-                    }
-                }}
-                onFocus={(e) => {
-                    const wrapper = e.currentTarget
-                    const inputValue = wrapper.querySelector("input")?.value
-                    const textareaValue = wrapper.querySelector("textarea")?.value
-                    const labelAndIcon = wrapper.querySelector(".label-and-icon")
-                    if (Manager.IsValid(inputValue, true)) {
-                        labelAndIcon.classList.add("filled")
-                    }
-                    if (Manager.IsValid(textareaValue, true)) {
-                        labelAndIcon.classList.add("filled")
                     }
                 }}
                 onBlur={(e) => {
@@ -217,8 +191,6 @@ function InputField({
                         </div>
 
                         <DebounceInput
-                            onFocus={OnFocus}
-                            onBlur={OnBlur}
                             data-value={dataValue}
                             value={Manager.IsValid(defaultValue) ? defaultValue : ""}
                             placeholder={placeholder}
@@ -228,6 +200,7 @@ function InputField({
                             debounceTimeout={0}
                             key={resetKey}
                         />
+
                         {children}
                     </>
                 )}
@@ -235,10 +208,13 @@ function InputField({
                 {/* SEARCH */}
                 {inputType === InputTypes.search && (
                     <>
-                        <ImSearch className={"input-icon text"} />
+                        <div className="label-and-icon">
+                            <ImSearch className={"input-icon text"} />
+                            <Label text={placeholder} classes={`always-show filled-input-label${labelClasses ? ` ${labelClasses}` : ""}`} />
+                        </div>
                         <DebounceInput
                             value={Manager.IsValid(defaultValue) ? defaultValue : ""}
-                            placeholder={placeholder}
+                            placeholder={""}
                             className={`${inputClasses} with-icon`}
                             onChange={onChange}
                             name={inputName}
@@ -251,12 +227,16 @@ function InputField({
                 {/* NUMBER */}
                 {inputType === InputTypes.number && (
                     <>
-                        {isCurrency && <span className="currency input-icon">$</span>}
+                        {/*{isCurrency && <span className="currency input-icon">$</span>}*/}
+                        <div className="label-and-icon">
+                            {DetailRowIcons.money}
+                            <Label text={placeholder} classes={`always-show filled-input-label${labelClasses ? ` ${labelClasses}` : ""}`} />
+                        </div>
                         <input
                             type="tel"
                             id="number"
                             name={inputName}
-                            placeholder={isCurrency ? "0" : placeholder}
+                            placeholder={placeholder}
                             key={resetKey}
                             pattern="[0-9]"
                             defaultValue={defaultValue}

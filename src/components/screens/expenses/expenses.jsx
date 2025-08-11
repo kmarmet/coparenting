@@ -10,6 +10,7 @@ import {HiGift} from "react-icons/hi"
 import {MdLocalActivity, MdPets, MdSportsFootball} from "react-icons/md"
 import ButtonThemes from "../../../constants/buttonThemes"
 import DatetimeFormats from "../../../constants/datetimeFormats.js"
+import DetailRowIcons from "../../../constants/detailRowIcons"
 import ExpenseCategories from "../../../constants/expenseCategories"
 import InputTypes from "../../../constants/inputTypes"
 import ScreenNames from "../../../constants/screenNames"
@@ -32,11 +33,10 @@ import NavBar from "../../navBar.jsx"
 import AccordionTitle from "../../shared/accordionTitle"
 import Button from "../../shared/button"
 import CardButton from "../../shared/cardButton"
-import DetailBlock from "../../shared/detailBlock"
+import DetailRow from "../../shared/detailRow"
 import Form from "../../shared/form.jsx"
 import InputField from "../../shared/inputField.jsx"
 import Label from "../../shared/label.jsx"
-import LazyImage from "../../shared/lazyImage"
 import MyConfetti from "../../shared/myConfetti"
 import Screen from "../../shared/screen"
 import ScreenHeader from "../../shared/screenHeader"
@@ -323,122 +323,48 @@ export default function Expenses() {
                     {/* DETAILS */}
                     {view?.label === "Details" && (
                         <>
-                            <div className="blocks">
-                                {/*  Amount */}
-                                <DetailBlock title={"Amount"} text={`$${activeExpense?.amount}`} valueToValidate={activeExpense?.amount} />
-
-                                {/*  Date Added */}
-                                <DetailBlock
-                                    title={"Date Added"}
-                                    text={moment(activeExpense?.creationDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                                    valueToValidate={moment(activeExpense?.creationDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
+                            <div className="detail-rows-flex">
+                                <DetailRow label={"Amount"} icon={DetailRowIcons.money} text={`$${activeExpense?.amount}`} />
+                                <DetailRow
+                                    label={"Status"}
+                                    classes={activeExpense?.paidStatus === "paid" ? "paid" : "unpaid"}
+                                    icon={DetailRowIcons.status}
+                                    text={`${StringManager.UppercaseFirstLetterOfAllWords(activeExpense?.paidStatus)}`}
                                 />
-
-                                {/*  Due Date */}
-                                {!activeExpense?.isRecurring && (
-                                    <DetailBlock
-                                        title={"Due Date"}
-                                        text={moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                                        valueToValidate={moment(activeExpense?.dueDate, DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                                    />
-                                )}
-
-                                {/*  Due Date - Recurring */}
-                                {activeExpense?.isRecurring && (
-                                    <DetailBlock
-                                        title={"Due Date"}
-                                        text={moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                                        valueToValidate={moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                                    />
-                                )}
-
-                                {/*  Frequency */}
-                                <DetailBlock
-                                    title={"Frequency"}
-                                    text={GetShortRecurringDateText(activeExpense)}
-                                    valueToValidate={activeExpense?.recurringFrequency}
+                                <DetailRow
+                                    label={"Date Added"}
+                                    icon={DetailRowIcons.date}
+                                    text={`${moment(activeExpense?.creationDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}`}
                                 />
-
-                                {/*  Time Remaining */}
-                                {!activeExpense?.isRecurring && (
-                                    <DetailBlock
-                                        classes={
-                                            moment(moment(activeExpense?.dueDate).startOf("day")).fromNow().toString().includes("ago")
-                                                ? "red"
-                                                : "green"
-                                        }
-                                        title={"Time Remaining"}
-                                        text={`${moment(moment(activeExpense?.dueDate).startOf("day")).fromNow().toString()}`}
-                                        valueToValidate={moment(moment(activeExpense?.dueDate).startOf("day")).fromNow().toString()}
-                                    />
-                                )}
-
-                                {/*  Pay To */}
-                                <DetailBlock
-                                    title={"Pay To"}
-                                    text={StringManager.GetFirstNameOnly(currentUser?.name)}
-                                    valueToValidate={StringManager.GetFirstNameOnly(currentUser?.name)}
+                                <DetailRow
+                                    label={"Due Date"}
+                                    icon={DetailRowIcons.date}
+                                    text={`${moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}`}
                                 />
-
-                                {/*  Payer */}
-                                <DetailBlock
-                                    title={"Payer"}
-                                    text={StringManager.GetFirstNameOnly(formRef?.current?.payer?.name)}
-                                    valueToValidate={StringManager.GetFirstNameOnly(formRef?.current?.payer?.name)}
+                                <DetailRow
+                                    label={"Due Date"}
+                                    icon={DetailRowIcons.time}
+                                    text={`${moment(activeExpense?.dueDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}`}
                                 />
-
-                                {/*  Recurring */}
-                                <DetailBlock
-                                    title={"Recurring"}
-                                    text={activeExpense?.isRecurring ? "Yes" : "No"}
-                                    valueToValidate={activeExpense?.isRecurring}
-                                />
-
-                                {/*  Category */}
-                                <DetailBlock title={"Category"} text={activeExpense?.category} valueToValidate={activeExpense?.category} />
-
-                                {/*  Recurring Frequency */}
-                                <DetailBlock
-                                    title={"Recurring Frequency"}
-                                    text={StringManager.UppercaseFirstLetterOfAllWords(activeExpense?.recurringFrequency)}
-                                    valueToValidate={activeExpense?.frequency}
-                                />
-
-                                {/* CHILDREN */}
-                                {Manager.IsValid(activeExpense?.children) && (
-                                    <div className="block">
-                                        {Manager.IsValid(activeExpense?.children) &&
-                                            activeExpense?.children?.map((child, index) => {
-                                                return (
-                                                    <p className="block-text" key={index}>
-                                                        {child}
-                                                    </p>
-                                                )
-                                            })}
-                                        <p className="block-title">Children</p>
-                                    </div>
-                                )}
-
-                                {/*  Notes */}
-                                <DetailBlock title={"Notes"} text={activeExpense?.notes} isFullWidth={true} valueToValidate={activeExpense?.notes} />
-
-                                {/* EXPENSE IMAGE */}
-                                {Manager.IsValid(activeExpense?.imageUrl) && (
-                                    <div id="expense-image" className="block">
-                                        <LazyImage
-                                            src={activeExpense?.imageUrl}
-                                            classes="flex"
-                                            onClick={() => {
-                                                setShowDetails(false)
-                                                setShowSlideshow(true)
-                                            }}
-                                        />
-                                        <p className="block-text">Image</p>
-                                    </div>
-                                )}
-
-                                <Spacer height={5} />
+                                <DetailRow label={"Payer"} icon={DetailRowIcons.user} text={activeExpense?.payer?.name} />
+                                <DetailRow label={"Pay to"} icon={DetailRowIcons.user} text={activeExpense?.owner?.name} />
+                                <DetailRow label={"Recurring"} icon={DetailRowIcons.recurring} text={activeExpense?.isRecurring ? "Yes" : "No"} />
+                                <DetailRow label={"Recurring Frequency"} icon={DetailRowIcons.recurring} text={activeExpense?.recurringFrequency} />
+                                <DetailRow label={"Category"} icon={DetailRowIcons.category} text={activeExpense?.category} />
                             </div>
+
+                            {/*  Time Remaining */}
+                            {!activeExpense?.isRecurring && (
+                                <DetailRow
+                                    label={"Until Due Date"}
+                                    icon={DetailRowIcons.time}
+                                    rowTextClasses={
+                                        moment(moment(activeExpense?.dueDate).startOf("day")).fromNow().toString().includes("ago") ? "red" : "green"
+                                    }
+                                    text={`${moment(moment(activeExpense?.dueDate).startOf("day")).fromNow().toString()}`}
+                                />
+                            )}
+                            <DetailRow label={"Notes"} icon={DetailRowIcons.notes} text={activeExpense?.notes} />
                         </>
                     )}
 

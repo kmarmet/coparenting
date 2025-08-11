@@ -1,10 +1,10 @@
 // Path: src\components\forms\EditCalEvent.jsx
-import MultilineDetailBlockDataTypes from "firebase/compat"
 import moment from "moment"
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {MdEventRepeat} from "react-icons/md"
 import ButtonThemes from "../../constants/buttonThemes"
 import DatetimeFormats from "../../constants/datetimeFormats"
+import DetailRowIcons from "../../constants/detailRowIcons"
 import InputTypes from "../../constants/inputTypes"
 import ActivityCategory from "../../constants/updateCategory"
 import globalState from "../../context"
@@ -28,12 +28,12 @@ import AddressInput from "../shared/addressInput"
 import Button from "../shared/button"
 import DateTimePicker from "../shared/dateTimePicker"
 import DetailBlock from "../shared/detailBlock"
+import DetailRow from "../shared/detailRow"
 import Form from "../shared/form"
 import FormDivider from "../shared/formDivider"
 import InputField from "../shared/inputField"
 import Label from "../shared/label"
 import Map from "../shared/map"
-import MultilineDetailBlock from "../shared/multilineDetailBlock"
 import SelectDropdown from "../shared/selectDropdown"
 import Spacer from "../shared/spacer.jsx"
 import ToggleButton from "../shared/toggleButton"
@@ -268,6 +268,16 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         setView({label: "Details", value: "Details"})
     }
 
+    const GetChildNames = () => {
+        let names = []
+        if (Manager.IsValid(event?.children)) {
+            for (let child of event?.children) {
+                names.push(`<span>${child}</span>`)
+            }
+        }
+        return names
+    }
+
     useEffect(() => {
         if (Manager.IsValid(event)) {
             setDynamicTitle(event?.title)
@@ -312,7 +322,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             formRef.current.endDate = endDate
                             formRef.current.startTime = startTime
                             formRef.current.endTime = endTime
-                            console.log(Manager.IsValid(startDate))
                             if (Manager.IsValid(startDate)) {
                                 setDynamicSubtitle(moment(startDate).format(DatetimeFormats.readableMonthAndDay))
                             }
@@ -326,59 +335,33 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                     {/* DETAILS */}
                     <div className={`view-wrapper${view?.label === "Details" ? " details active" : " details"}`}>
                         <Spacer height={15} />
-                        <div className="blocks">
-                            {/*  Date */}
-                            <DetailBlock
-                                valueToValidate={event?.isDateRange ? event?.staticStartDate : event?.startDate}
-                                text={moment(event?.isDateRange ? event?.staticStartDate : event?.startDate).format(
-                                    DatetimeFormats.readableMonthAndDayWithDayDigitOnly
-                                )}
-                                title={event?.isDateRange ? "Start Date" : "Date"}
-                            />
+                        <div className="detail-rows-flex">
+                            <DetailRow text={event?.startDate} label={"Start Date"} icon={DetailRowIcons.date} />
+                            <DetailRow text={event?.endDate} label={"End Date"} icon={DetailRowIcons.date} />
+                            <DetailRow text={event?.startTime} label={"Start Time"} icon={DetailRowIcons.time} />
+                            <DetailRow text={event?.endTime} label={"End Time"} icon={DetailRowIcons.time} />
 
-                            {/*  End Date */}
-                            <DetailBlock
-                                valueToValidate={event?.endDate}
-                                text={moment(event?.endDate).format(DatetimeFormats.readableMonthAndDayWithDayDigitOnly)}
-                                title={"End Date"}
-                            />
-
-                            {/*  Start Time */}
-                            <DetailBlock
-                                valueToValidate={event?.startTime}
-                                text={moment(event?.startTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)}
-                                title={"Start Time"}
-                            />
-
-                            {/*  End Time */}
-                            <DetailBlock
-                                valueToValidate={event?.endTime}
-                                text={moment(event?.endTime, DatetimeFormats.timeForDb).format(DatetimeFormats.timeForDb)}
-                                title={"End time"}
-                            />
-
-                            {/*  Created By */}
-                            <DetailBlock valueToValidate={event?.owner?.name} text={event?.owner?.name} title={"Creator"} />
+                            <DetailRow text={event?.children?.length} label={"Children"} icon={DetailRowIcons.children} />
+                            <DetailRow text={event?.shareWith?.length} label={"Shared With"} icon={DetailRowIcons.users} />
+                            <DetailRow text={event?.reminderTimes?.length} label={"Reminders"} icon={DetailRowIcons.reminders} />
                         </div>
-                        <div className="multiline-blocks">
-                            <div className="blocks">
-                                {/*  Shared With */}
-                                <MultilineDetailBlock
-                                    title={"Shared with"}
-                                    array={DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users, true, currentUser?.key)}
-                                />
+                        <DetailRow
+                            array={DropdownManager.GetReadableReminderTimes(event?.reminderTimes)}
+                            label={"Reminders"}
+                            icon={DetailRowIcons.reminders}
+                        />
+                        <DetailRow array={event?.children} label={"Children"} icon={DetailRowIcons.children} />
+                        <DetailRow
+                            array={DropdownManager.GetSelected.ShareWithFromKeys(event?.shareWith, users, true, currentUser?.key)}
+                            label={"Shared with"}
+                            icon={DetailRowIcons.users}
+                        />
+                        <DetailRow array={event?.categories} label={"Categories"} icon={DetailRowIcons.category} />
 
-                                {/* Reminders */}
-                                <MultilineDetailBlock
-                                    title={"Reminders"}
-                                    dataType={MultilineDetailBlockDataTypes.Reminders}
-                                    array={DropdownManager.GetReadableReminderTimes(event?.reminderTimes)}
-                                />
+                        <DetailRow text={event?.address} label={"Address"} icon={DetailRowIcons.address} />
 
-                                {/* Children */}
-                                <MultilineDetailBlock title={"Children"} array={event?.children} />
-                            </div>
-                        </div>
+                        <DetailRow text={event?.notes} label={"Notes"} icon={DetailRowIcons.notes} />
+
                         {/* Recurring Frequency */}
                         {event?.isRecurring && (
                             <div className="flex">
@@ -388,17 +371,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             </div>
                         )}
                         {/*  Notes */}
-                        <div className="blocks">
-                            {Manager.IsValid(event?.notes, true) && (
-                                <DetailBlock
-                                    classes={"full-width block notes"}
-                                    valueToValidate={event?.notes}
-                                    text={event?.notes}
-                                    isFullWidth={true}
-                                    title={"Notes"}
-                                />
-                            )}
-                        </div>
                         <div className="multiline-blocks">
                             {(Manager.IsValid(event?.address) || Manager.IsValid(event?.phone) || Manager.IsValid(event?.websiteUrl)) && (
                                 <>
@@ -439,16 +411,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                                     </div>
                                 </>
                             )}
-                        </div>
-                        <div className={"categories-wrapper"}>
-                            {Manager.IsValid(event?.categories) &&
-                                event?.categories.map((category, index) => {
-                                    return (
-                                        <div key={index} className="categories">
-                                            <div className="chip">{category}</div>
-                                        </div>
-                                    )
-                                })}
                         </div>
                         {/* Map */}
                         {Manager.IsValid(event?.address) && <Map locationString={event?.address} />}

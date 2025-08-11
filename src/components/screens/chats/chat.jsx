@@ -1,12 +1,13 @@
 // Path: src\components\screens\chats\chat.jsx
 import moment from "moment-timezone"
 import React, {useContext, useEffect, useMemo, useRef, useState} from "react"
-import {BsBookmarkDashFill, BsFillBookmarksFill, BsFillBookmarkStarFill} from "react-icons/bs"
+import {BsBookmarkDashFill, BsFillBookmarkStarFill} from "react-icons/bs"
 import {FaLock} from "react-icons/fa"
-import {IoChevronBack, IoCopy, IoSend} from "react-icons/io5"
-import {MdCancel, MdOutlineArrowOutward, MdOutlineSearchOff} from "react-icons/md"
+import {IoBookmarkOutline, IoChevronBack, IoCopy, IoSend} from "react-icons/io5"
+import {MdCancel, MdOutlineArrowOutward, MdOutlineMoreVert} from "react-icons/md"
 import {PiBookmarksSimpleDuotone} from "react-icons/pi"
 import {TbMessageCircleSearch} from "react-icons/tb"
+import {VscSearch} from "react-icons/vsc"
 import TextareaAutosize from "react-textarea-autosize"
 import {useLongPress} from "use-long-press"
 import DatetimeFormats from "../../../constants/datetimeFormats"
@@ -28,6 +29,7 @@ import UpdateManager from "../../../managers/updateManager"
 import ChatMessage from "../../../models/chat/chatMessage"
 import Form from "../../shared/form"
 import InputField from "../../shared/inputField"
+import Modal from "../../shared/modal"
 
 const Chat = ({show, hide, recipient}) => {
     const {state, setState} = useContext(globalState)
@@ -54,6 +56,7 @@ const Chat = ({show, hide, recipient}) => {
     const [showLongPressMenu, setShowLongPressMenu] = useState(false)
     const [activeMessage, setActiveMessage] = useState()
     const [messagesToLoop, setMessagesToLoop] = useState(chatMessages)
+    const [showScreenActions, setShowScreenActions] = useState(false)
 
     // Refs
     const messageWrapperRef = useRef(null)
@@ -333,6 +336,7 @@ const Chat = ({show, hide, recipient}) => {
 
     return (
         <>
+            {/* SEARCH FORM */}
             <Form
                 title={"Search"}
                 className="conversation-search-card"
@@ -371,6 +375,34 @@ const Chat = ({show, hide, recipient}) => {
                     inputClasses="search-input"
                 />
             </Form>
+
+            <Modal scopedClass="chat-modal" show={showScreenActions} title={"Tools"} hide={() => setShowScreenActions(false)}>
+                <p
+                    onClick={() => {
+                        setShowScreenActions(false)
+                        setShowSearchCard(true)
+                    }}>
+                    Search <VscSearch />
+                </p>
+                {Manager.IsValid(bookmarks) && !showBookmarks && (
+                    <p
+                        onClick={() => {
+                            setShowScreenActions(false)
+                            setShowBookmarks(true)
+                        }}>
+                        Bookmarks <IoBookmarkOutline />
+                    </p>
+                )}
+                {Manager.IsValid(bookmarks) && showBookmarks && (
+                    <p
+                        onClick={() => {
+                            setShowBookmarks(false)
+                            setShowScreenActions(false)
+                        }}>
+                        Close Bookmarks <IoBookmarkOutline />
+                    </p>
+                )}
+            </Modal>
 
             {/* PAGE CONTAINER */}
             {show && Manager.IsValid(recipient) && (
@@ -426,30 +458,7 @@ const Chat = ({show, hide, recipient}) => {
                         <div id="header">
                             <IoChevronBack className="back-arrow" onClick={hide} />
                             <p id="user-name">{StringManager.GetFirstNameOnly(recipient?.name)}</p>
-                            <div id="right-side" className="flex">
-                                {inSearchMode ? (
-                                    <MdOutlineSearchOff
-                                        id={"close-search-icon"}
-                                        onClick={() => {
-                                            setShowSearchInput(false)
-                                            setShowSearchCard(false)
-                                            setInSearchMode(false)
-                                            setSearchResults([])
-                                            ScrollToLatestMessage()
-                                        }}
-                                    />
-                                ) : (
-                                    <TbMessageCircleSearch id="search-icon" onClick={() => setShowSearchCard(true)} />
-                                )}
-
-                                {bookmarkedMessagesToIterate.length > 0 && (
-                                    <BsFillBookmarksFill
-                                        id="chat-bookmark-icon"
-                                        className={showBookmarks ? "material-icons  top-bar-icon" + " active" : "material-icons  top-bar-icon"}
-                                        onClick={ViewBookmarks}
-                                    />
-                                )}
-                            </div>
+                            <MdOutlineMoreVert className={"screen-actions-button"} onClick={() => setShowScreenActions(true)} />
                         </div>
                     )}
 

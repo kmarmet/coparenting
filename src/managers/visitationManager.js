@@ -189,7 +189,6 @@ const VisitationManager = {
         const currentUserEvents = await DB.GetTableData(`${DB.tables.calendarEvents}/${currentUser?.key}`)
 
         const userHolidays = currentUserEvents.filter((x) => x?.isHoliday && x?.owner?.key === currentUser?.key && x?.fromVisitationSchedule === true)
-        console.log("Vis:", userHolidays)
 
         return DatasetManager.GetValidArray(userHolidays, true)
     },

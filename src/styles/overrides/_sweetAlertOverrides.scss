@@ -6,13 +6,9 @@
 #external-overrides {
     // Container
     .sweet-alert-frost {
-        //backdrop-filter: blur(10px) !important;
         border-radius: 0 !important;
-        //background-color: rgba(0, 0, 0, 0.1) !important;
         padding: 0 !important;
         backdrop-filter: none !important;
-        //margin-top: 200px !important;
-        //transform: translateY(200px) !important;
         position: fixed;
         display: flex;
         align-items: center;
@@ -22,10 +18,24 @@
 
         .swal2-popup {
             z-index: 99999999999999999999999999999 !important;
-            //padding: 20px !important;
             padding: 0 !important;
             border-radius: clamp(0px, 50%, 24px) !important;
             box-shadow: 0 58px 29px -30 rgba(0, 0, 0, 1) !important;
+        }
+
+        &.pause-chat-alert {
+            .swal2-popup {
+                .swal2-actions {
+                    button {
+                        &.swal2-confirm {
+                            color: palette.$darkGreen !important;
+                        }
+                        &.swal2-deny {
+                            color: palette.$bootstrapYellow !important;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -221,6 +231,7 @@ div {
                 color: palette.$bootstrapYellow;
                 padding: 15px;
                 border-radius: variables.$borderRadius;
+                font-weight: variables.$fwMedium !important;
             }
 
             &.confirm-alert {
@@ -287,6 +298,7 @@ div {
         line-height: 1;
         text-align: center !important;
         width: 100% !important;
+        font-weight: variables.$fwRegular !important;
     }
     &.swal2-icon-success {
         .swal2-html-container {

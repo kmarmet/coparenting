@@ -69,6 +69,7 @@ animate__faster`,
         color = "black",
         html = "",
         theme = "light",
+        customClass = "",
     } = {}) {
         return Swal.fire({
             showClass: {
@@ -92,7 +93,7 @@ animate__faster`,
             denyButtonText: denyButtonText,
             confirmButtonColor: "#00b389",
             customClass: {
-                container: "sweet-alert-frost",
+                container: `sweet-alert-frost ${customClass}`,
             },
         }).then(function (result) {
             if (result.isConfirmed) {

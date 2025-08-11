@@ -1,4 +1,3 @@
-// Screens
 import emailjs from "@emailjs/browser"
 import {LocalizationProvider} from "@mui/x-date-pickers-pro/LocalizationProvider"
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment"
@@ -17,7 +16,6 @@ import NewVisitationChangeRequest from "./components/forms/newVisitationChangeRe
 import FullMenu from "./components/fullMenu"
 import AdminDashboard from "./components/screens/admin/adminDashboard"
 import Changelogs from "./components/screens/admin/changelogs"
-
 import Login from "./components/screens/auth/login.jsx"
 import Registration from "./components/screens/auth/registration.jsx"
 import EventCalendar from "./components/screens/calendar/calendar.jsx"
@@ -141,7 +139,6 @@ export default function App() {
                             return
                         }
                     }
-                    // await AppManager.setAppBadge(0)
                     await AppManager.clearAppBadge()
                     const users = await DB.GetTableData(DB.tables.users)
 
@@ -177,12 +174,13 @@ export default function App() {
                         }
 
                         // Get notifications
+                        await UpdateManager.SendUpdate("Title", "BRO", "LahViVZ3PAa3BXY8GbIVCRgqS5o", currentUserFromDb)
                         if (!window.location.href.includes("localhost") && !AppManager.IsDevMode()) {
                             const updateSubscribers = await DB.GetTableData(`${DB.tables.updateSubscribers}`)
                             const subscriber = updateSubscribers?.find((s) => s?.email === currentUserFromDb?.email)
-                            if (!Manager.IsValid(subscriber)) {
-                                UpdateManager.init(currentUserFromDb)
-                            }
+                            UpdateManager.init(currentUserFromDb)
+                            // if (!Manager.IsValid(subscriber)) {
+                            // }
                         }
 
                         // Back to Log in if user's email is not verified

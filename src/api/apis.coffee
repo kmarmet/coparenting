@@ -1,5 +1,4 @@
 import Manager from "../managers/manager"
-import UpdateManager from "../managers/updateManager"
 import LogManager from "../managers/logManager"
 import moment from "moment"
 
@@ -122,26 +121,25 @@ Apis =
 
   OneSignal:
     SendUpdate: (subId, raw) ->
-      new Promise (resolve, reject) ->
-        myHeaders = new Headers()
-        myHeaders.append "Accept", "application/json"
-        myHeaders.append "Content-Type", "application/json"
-        myHeaders.append "Authorization", "Basic #{UpdateManager.apiKey}"
+      myHeaders = new Headers()
+      myHeaders.append "Accept", "application/json"
+      myHeaders.append "Content-Type", "application/json"
+      myHeaders.append("Authorization", "Basic os_v2_app_wjb2emrqojh2re4vwfdvavgfggjfwsj5jpyek6nc65va7p3h3rqusp4v5z5ndqq2bmbu7mdak6ujm4fq5jaxenkk7djvzqxy6rgg7ca")
 
-        requestOptions =
-          method: "POST"
-          headers: myHeaders
-          body: raw
-          redirect: "follow"
+      requestOptions =
+        method: "POST"
+        headers: myHeaders
+        body: raw
+        redirect: "follow"
 
-        # Do not send notification in dev
-        if !window.location.href.includes("localhost")
-          fetch "https://api.onesignal.com/notifications", requestOptions
-            .then (response) -> response.text()
-            .then (result) ->
-              console.log("Sent to #{subId}")
-            .catch (error) ->
-              LogManager.Log("Error: #{error} | Code File: Apis | Function: OneSignal.SendUpdate")
+      # Do not send notification in dev
+#        if !window.location.href.includes("localhost")
+      fetch "https://api.onesignal.com/notifications?c=push", requestOptions
+        .then (response) -> response.text()
+        .then (result) ->
+          console.log("Sent to #{subId}")
+        .catch (error) ->
+          LogManager.Log("Error: #{error} | Code File: Apis | Function: OneSignal.SendUpdate")
 
   Dates:
     GetHolidays: () ->

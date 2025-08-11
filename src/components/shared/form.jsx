@@ -67,7 +67,14 @@ export default function Form({
                 if (Manager.IsValid(allInputFields)) {
                     allInputFields.forEach((inputField) => {
                         const input = inputField.querySelector("input")
+                        const textarea = inputField.querySelector("textarea")
                         if (input && input.value.trim() !== "") {
+                            const labelAndIcon = inputField.querySelector(".label-and-icon")
+                            if (labelAndIcon) {
+                                labelAndIcon.classList.add("filled")
+                            }
+                        } else if (textarea && textarea?.textContent.trim().length > 0) {
+                            console.log(textarea?.textContent)
                             const labelAndIcon = inputField.querySelector(".label-and-icon")
                             if (labelAndIcon) {
                                 labelAndIcon.classList.add("filled")

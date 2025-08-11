@@ -17,7 +17,6 @@ const Screen = ({activeScreen = "", stopLoadingBool, classes = "", children, loa
 
     useEffect(() => {
         const navbar = document.getElementById("navbar")
-
         const handleScroll = () => {
             if (!isScrolling) {
                 window.requestAnimationFrame(() => {
@@ -27,7 +26,7 @@ const Screen = ({activeScreen = "", stopLoadingBool, classes = "", children, loa
             }
 
             if (Manager.IsValid(navbar)) {
-                if (scrollRef.current.scrollTop >= 200) {
+                if (scrollRef.current.scrollTop >= 150) {
                     if (activeScreen === ScreenNames.docViewer) {
                         navbar.classList.add("compact")
                     } else {
@@ -63,8 +62,10 @@ const Screen = ({activeScreen = "", stopLoadingBool, classes = "", children, loa
     }, [isLoading, currentScreen])
 
     return (
-        <div ref={scrollRef} className={`screen${Manager.IsValid(classes, true) ? ` ${classes}` : ""}`}>
-            <div className={`screen-content-wrapper${currentScreen === activeScreen || stopLoadingBool ? " active" : ""}`}>{children}</div>
+        <div className={`screen${Manager.IsValid(classes, true) ? ` ${classes}` : ""}`}>
+            <div ref={scrollRef} className={`screen-content-wrapper${currentScreen === activeScreen || stopLoadingBool ? " active" : ""}`}>
+                {children}
+            </div>
         </div>
     )
 }

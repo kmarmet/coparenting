@@ -132,6 +132,15 @@ export default function CalendarEvents({
         animateEvents()
     }, [eventsToIterate])
 
+    // FOCUS INPUT ON OPEN
+    useEffect(() => {
+        if (showSearchInput) {
+            const searchInputWrapper = document.getElementById("search-input-wrapper")
+            const searchInput = searchInputWrapper.querySelector("input")
+            searchInput.focus()
+        }
+    }, [showSearchInput])
+
     return (
         <>
             <div id={"search-input-wrapper"} className={`${showSearchInput ? " active" : ""}`}>
@@ -140,6 +149,7 @@ export default function CalendarEvents({
                     <InputField
                         defaultValue={searchQuery}
                         inputType={InputTypes.search}
+                        inputClasses={"events-search"}
                         key={refreshKey}
                         placeholder={"Find events..."}
                         onChange={(e) => {

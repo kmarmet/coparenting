@@ -4,7 +4,6 @@ import DB_UserScoped from "../database/db_userScoped"
 import CalMapper from "../mappers/calMapper"
 import DateManager from "./dateManager"
 
-
 DomManager =
   AnimateDelayStyle: (index, delay = .2) ->
     return {animationDelay: "#{index * delay}s"}
@@ -406,7 +405,6 @@ DomManager =
       return pxCloseToEl <= -170
 
   AddScrollListener: (scrollableElement, callback, delay) ->
-    console.log(scrollableElement)
     scrollableElement.addEventListener 'scroll', DomManager.debounce  ->
       callback()
     , delay

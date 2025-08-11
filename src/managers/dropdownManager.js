@@ -216,18 +216,6 @@ DropdownManager = {
         ExpenseSortByTypes: function () {
             return [
                 {
-                    label: "Recently Added",
-                    value: "recentlyAdded",
-                },
-                {
-                    label: "Nearest Due Date",
-                    value: "nearestDueDate",
-                },
-                {
-                    label: "Oldest Creation Date",
-                    value: "oldestCreationDate",
-                },
-                {
                     label: "Amount: High to Low",
                     value: "amountDesc",
                 },
@@ -242,6 +230,18 @@ DropdownManager = {
                 {
                     label: "Name (descending)",
                     value: "nameDesc",
+                },
+                {
+                    label: "Nearest Due Date",
+                    value: "nearestDueDate",
+                },
+                {
+                    label: "Oldest",
+                    value: "oldestCreationDate",
+                },
+                {
+                    label: "Recently Added",
+                    value: "recentlyAdded",
                 },
             ]
         },
@@ -292,7 +292,7 @@ DropdownManager = {
             }
             return options
         },
-        ValueRecordTypes: function () {
+        VaultRecordTypes: function () {
             return [
                 {
                     label: "Expenses",

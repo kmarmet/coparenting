@@ -139,13 +139,13 @@ DropdownManager =
 
     ExpenseSortByTypes: () ->
       return [
-        {label: "Recently Added", value: "recentlyAdded"},
-        {label: "Nearest Due Date", value: "nearestDueDate"},
-        {label: "Oldest Creation Date", value: "oldestCreationDate"},
         {label: "Amount: High to Low", value: "amountDesc"},
         {label: "Amount: Low to High", value: "amountAsc"},
         {label: "Name (ascending)", value: "nameAsc"},
         {label: "Name (descending)", value: "nameDesc"},
+        {label: "Nearest Due Date", value: "nearestDueDate"},
+        {label: "Oldest", value: "oldestCreationDate"},
+        {label: "Recently Added", value: "recentlyAdded"},
       ]
       
     Holidays: () ->
@@ -177,7 +177,7 @@ DropdownManager =
           label: category
       return options
 
-    ValueRecordTypes: () ->
+    VaultRecordTypes: () ->
       return [{label: "Expenses", value: "expenses"}, {label: "Chats", value: "chats"}]
 
 

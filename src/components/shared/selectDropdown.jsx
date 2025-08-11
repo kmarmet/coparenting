@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react"
+import React, {useContext, useEffect, useState} from "react"
 import {FaMinus, FaPlus} from "react-icons/fa6"
 import Select, {components} from "react-select"
 import makeAnimated from "react-select/animated"
@@ -20,6 +20,7 @@ const DropdownIndicator = (props) => {
 export default function SelectDropdown({
     value,
     wrapperClasses,
+    labelClasses = "",
     selectMultiple = false,
     isFromViewDropdown = false,
     onSelect = (e) => {},
@@ -27,6 +28,7 @@ export default function SelectDropdown({
     options = [],
 }) {
     const {state, setState} = useContext(globalState)
+    const [hasValue, setHasValue] = useState(false)
 
     const placeholdersWithoutLabel = ["Select", "Edit", "Details"]
 
@@ -36,10 +38,21 @@ export default function SelectDropdown({
     // REF
     const selectRef = React.useRef(null)
 
+    useEffect(() => {
+        if (!isFromViewDropdown && !placeholdersWithoutLabel.includes(placeholder) && Manager.IsValid(value)) {
+            setHasValue(true)
+        } else {
+            setHasValue(false)
+        }
+    }, [isFromViewDropdown, placeholder, value])
+
     return (
         <>
             {!isFromViewDropdown && !placeholdersWithoutLabel.includes(placeholder) && Manager.IsValid(value) && (
-                <Label text={placeholder.replaceAll("Select", "").replaceAll("a ", "")} classes={"always-show filled-input-label dropdown"} />
+                <Label
+                    text={placeholder.replaceAll("Select", "").replaceAll("a ", "")}
+                    classes={`always-show filled-input-label dropdown${labelClasses ? ` ${labelClasses}` : ""}`}
+                />
             )}
             <Select
                 ref={selectRef}
@@ -50,7 +63,7 @@ export default function SelectDropdown({
                 captureMenuScroll={false}
                 blurInputOnSelect={false}
                 closeMenuOnSelect={!selectMultiple}
-                className={`${wrapperClasses} select-dropdown`}
+                className={`${wrapperClasses} select-dropdown ${hasValue ? "has-value" : ""}`}
                 isMulti={selectMultiple}
                 menuShouldScrollIntoView={true}
                 value={defaultValue !== value ? value : defaultValue}

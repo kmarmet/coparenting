@@ -58,7 +58,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
                                     allowFullScreen></iframe>
                             </div>
 
-                            <Spacer height={10} />
+                            <Spacer height={20} />
                             {/* VENMO */}
                             <div className="option venmo">
                                 <div className="flex brand-name-wrapper venmo">
@@ -82,7 +82,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
                                     allowFullScreen></iframe>
                             </div>
 
-                            <Spacer height={10} />
+                            <Spacer height={20} />
 
                             {/* APPLE PAY */}
                             <div className="option apple-cash">
@@ -102,7 +102,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
                                 </div>
                             </div>
 
-                            <Spacer height={10} />
+                            <Spacer height={20} />
                             {/* PAYPAL */}
                             <div className="option paypal">
                                 <div className="flex brand-name-wrapper paypal">
@@ -119,7 +119,7 @@ export default function PaymentOptions({onClose, showPaymentOptionsCard}) {
                                 </div>
                             </div>
 
-                            <Spacer height={10} />
+                            <Spacer height={20} />
                             {/* CASHAPP */}
                             <div className="option cashapp">
                                 <div className="flex brand-name-wrapper cashapp">
