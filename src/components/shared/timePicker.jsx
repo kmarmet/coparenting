@@ -3,17 +3,18 @@ import {GiClick} from "react-icons/gi"
 import {PiMouseScrollFill} from "react-icons/pi"
 import globalState from "../../context"
 import DomManager from "../../managers/domManager"
+import Manager from "../../managers/manager"
 import Label from "./label"
 import Spacer from "./spacer"
 
-const TimePicker = ({defaultValue, callback = (time) => {}, show, buttonText = "Set Time"}) => {
+const TimePicker = ({defaultValue, callback = (time) => {}, timeResetKey, show, buttonText = "Set Time"}) => {
     const {state, setState} = useContext(globalState)
     const {theme, showScreenActions} = state
 
     // STATE
-    const [meridian, setMeridian] = React.useState("am")
-    const [hour, setHour] = React.useState()
-    const [minute, setMinute] = React.useState(null)
+    const [meridian, setMeridian] = React.useState("")
+    const [hour, setHour] = React.useState("")
+    const [minute, setMinute] = React.useState("")
     const [method, setMethod] = React.useState("tap")
 
     const OnScroll = (parent, childClass) => {
@@ -37,7 +38,12 @@ const TimePicker = ({defaultValue, callback = (time) => {}, show, buttonText = "
         }
     }
 
-    const ComposeTime = () => callback(`${hour}:${minute}${meridian}`)
+    const ComposeTime = () => {
+        if (Manager.IsValid(hour, true) && Manager.IsValid(minute, true)) {
+            const time = `${hour}:${minute}${meridian}`
+            callback(time)
+        }
+    }
 
     // Scroll to active time
     useEffect(() => {
@@ -61,6 +67,37 @@ const TimePicker = ({defaultValue, callback = (time) => {}, show, buttonText = "
         ComposeTime()
     }, [hour, minute, meridian, method])
 
+    useEffect(() => {
+        if (timeResetKey !== "0") {
+            setHour(null)
+            setMinute(null)
+            setMeridian(null)
+        }
+    }, [timeResetKey])
+
+    const MinuteClass = (inputMinute) => {
+        if (Manager.IsValid(hour, true)) {
+            if (minute === inputMinute) {
+                return "active"
+            }
+        } else {
+            return "disabled"
+        }
+    }
+
+    const SetHourInline = (inputHour) => {
+        if (Manager.IsValid(inputHour, true)) {
+            console.log(minute)
+            if (!Manager.IsValid(minute, true)) {
+                setMinute("00")
+            }
+            if (!Manager.IsValid(meridian, true)) {
+                setMeridian("am")
+            }
+            setHour(inputHour)
+        }
+    }
+
     return (
         <div className={`timepicker${show ? " active" : ""} view`}>
             <div className="timepicker-content">
@@ -70,62 +107,62 @@ const TimePicker = ({defaultValue, callback = (time) => {}, show, buttonText = "
                     <Label text={"Hours"} classes={"always-show"} />
                     <div className="hours">
                         <span
-                            onClick={(hour) => setHour(hour.currentTarget.textContent)}
+                            onClick={(hour) => SetHourInline(hour.currentTarget.textContent)}
                             className={`timepicker-selector-button hour${hour === "1" ? " active" : ""}`}>
                             1
                         </span>
                         <span
-                            onClick={(hour) => setHour(hour.currentTarget.textContent)}
+                            onClick={(hour) => SetHourInline(hour.currentTarget.textContent)}
                             className={`timepicker-selector-button hour${hour === "2" ? " active" : ""}`}>
                             2
                         </span>
                         <span
-                            onClick={(hour) => setHour(hour.currentTarget.textContent)}
+                            onClick={(hour) => SetHourInline(hour.currentTarget.textContent)}
                             className={`timepicker-selector-button hour${hour === "3" ? " active" : ""}`}>
                             3
                         </span>
                         <span
-                            onClick={(hour) => setHour(hour.currentTarget.textContent)}
+                            onClick={(hour) => SetHourInline(hour.currentTarget.textContent)}
                             className={`timepicker-selector-button hour${hour === "4" ? " active" : ""}`}>
                             4
                         </span>
                         <span
-                            onClick={(hour) => setHour(hour.currentTarget.textContent)}
+                            onClick={(hour) => SetHourInline(hour.currentTarget.textContent)}
                             className={`timepicker-selector-button hour${hour === "5" ? " active" : ""}`}>
                             5
                         </span>
                         <span
-                            onClick={(hour) => setHour(hour.currentTarget.textContent)}
+                            onClick={(hour) => SetHourInline(hour.currentTarget.textContent)}
                             className={`timepicker-selector-button hour${hour === "6" ? " active" : ""}`}>
                             6
                         </span>
                         <span
-                            onClick={(hour) => setHour(hour.currentTarget.textContent)}
+                            onClick={(hour) => SetHourInline(hour.currentTarget.textContent)}
                             className={`timepicker-selector-button hour${hour === "7" ? " active" : ""}`}>
                             7
                         </span>
                         <span
-                            onClick={(hour) => setHour(hour.currentTarget.textContent)}
+                            onClick={(hour) => SetHourInline(hour.currentTarget.textContent)}
                             className={`timepicker-selector-button hour${hour === "8" ? " active" : ""}`}>
                             8
                         </span>
                         <span
-                            onClick={(hour) => setHour(hour.currentTarget.textContent)}
+                            onClick={(hour) => SetHourInline(hour.currentTarget.textContent)}
                             className={`timepicker-selector-button hour${hour === "9" ? " active" : ""}`}>
                             9
                         </span>
                         <span
-                            onClick={(hour) => setHour(hour.currentTarget.textContent)}
+                            onClick={(hour) => SetHourInline(hour.currentTarget.textContent)}
                             className={`timepicker-selector-button hour${hour === "10" ? " active" : ""}`}>
                             10
                         </span>
                         <span
-                            onClick={(hour) => setHour(hour.currentTarget.textContent)}
+                            onClick={(hour) => SetHourInline(hour.currentTarget.textContent)}
                             className={`timepicker-selector-button hour${hour === "11" ? " active" : ""}`}>
                             11
                         </span>
                         <span
-                            onClick={(hour) => setHour(hour.currentTarget.textContent)}
+                            onClick={(hour) => SetHourInline(hour.currentTarget.textContent)}
                             className={`timepicker-selector-button hour${hour === "12" ? " active" : ""}`}>
                             12
                         </span>
@@ -134,40 +171,37 @@ const TimePicker = ({defaultValue, callback = (time) => {}, show, buttonText = "
                     <Spacer height={20} />
                     <Label text={"Minutes"} classes={"always-show"} />
                     <div className="minutes">
-                        <span onClick={() => setMinute("00")} className={`timepicker-selector-button minute${minute === "00" ? " active" : ""}`}>
-                            00
-                        </span>
-                        <span onClick={() => setMinute("5")} className={`timepicker-selector-button minute${minute === "5" ? " active" : ""}`}>
+                        <span onClick={() => setMinute("5")} className={`timepicker-selector-button minute ${MinuteClass("5")}`}>
                             5
                         </span>
-                        <span onClick={() => setMinute("10")} className={`timepicker-selector-button minute${minute === "10" ? " active" : ""}`}>
+                        <span onClick={() => setMinute("10")} className={`timepicker-selector-button minute ${MinuteClass("10")}`}>
                             10
                         </span>
-                        <span onClick={() => setMinute("15")} className={`timepicker-selector-button minute${minute === "15" ? " active" : ""}`}>
+                        <span onClick={() => setMinute("15")} className={`timepicker-selector-button minute ${MinuteClass("15")}`}>
                             15
                         </span>
-                        <span onClick={() => setMinute("20")} className={`timepicker-selector-button minute${minute === "20" ? " active" : ""}`}>
+                        <span onClick={() => setMinute("20")} className={`timepicker-selector-button minute ${MinuteClass("20")}`}>
                             20
                         </span>
-                        <span onClick={() => setMinute("25")} className={`timepicker-selector-button minute${minute === "25" ? " active" : ""}`}>
+                        <span onClick={() => setMinute("25")} className={`timepicker-selector-button minute ${MinuteClass("25")}`}>
                             25
                         </span>
-                        <span onClick={() => setMinute("30")} className={`timepicker-selector-button minute${minute === "30" ? " active" : ""}`}>
+                        <span onClick={() => setMinute("30")} className={`timepicker-selector-button minute ${MinuteClass("30")}`}>
                             30
                         </span>
-                        <span onClick={() => setMinute("35")} className={`timepicker-selector-button minute${minute === "35" ? " active" : ""}`}>
+                        <span onClick={() => setMinute("35")} className={`timepicker-selector-button minute ${MinuteClass("35")}`}>
                             35
                         </span>
-                        <span onClick={() => setMinute("40")} className={`timepicker-selector-button minute${minute === "40" ? " active" : ""}`}>
+                        <span onClick={() => setMinute("40")} className={`timepicker-selector-button minute ${MinuteClass("40")}`}>
                             40
                         </span>
-                        <span onClick={() => setMinute("45")} className={`timepicker-selector-button minute${minute === "45" ? " active" : ""}`}>
+                        <span onClick={() => setMinute("45")} className={`timepicker-selector-button minute ${MinuteClass("45")}`}>
                             45
                         </span>
-                        <span onClick={() => setMinute("50")} className={`timepicker-selector-button minute${minute === "50" ? " active" : ""}`}>
+                        <span onClick={() => setMinute("50")} className={`timepicker-selector-button minute ${MinuteClass("50")}`}>
                             50
                         </span>
-                        <span onClick={() => setMinute("55")} className={`timepicker-selector-button minute${minute === "55" ? " active" : ""}`}>
+                        <span onClick={() => setMinute("55")} className={`timepicker-selector-button minute ${MinuteClass("55")}`}>
                             55
                         </span>
                     </div>

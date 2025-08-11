@@ -353,7 +353,6 @@ const Contacts = () => {
                         inputType={InputTypes.text}
                         placeholder={"Name"}
                         defaultValue={GetContactName()}
-                        wrapperClasses="show-label"
                         required={true}
                         customDebounceDelay={2000}
                         onChange={async (e) => {
@@ -371,7 +370,6 @@ const Contacts = () => {
                             inputType={InputTypes.email}
                             placeholder={"Email Address"}
                             defaultValue={GetContactEmail()}
-                            wrapperClasses="show-label"
                             required={true}
                             onChange={async (e) => {
                                 const inputValue = e.target.value
@@ -390,7 +388,6 @@ const Contacts = () => {
                             inputType={InputTypes.phone}
                             placeholder={"Phone Number"}
                             defaultValue={GetContactPhone()}
-                            wrapperClasses="show-label"
                             required={true}
                             onChange={async (e) => {
                                 const inputValue = e.target.value

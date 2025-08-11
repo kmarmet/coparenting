@@ -382,12 +382,7 @@ export default function NewCalendarEvent() {
                     <Spacer height={5} />
 
                     {/* ADDRESS */}
-                    <AddressInput
-                        wrapperClasses={Manager.IsValid(formRef.current.address, true) ? "show-label" : ""}
-                        placeholder={"Location"}
-                        required={false}
-                        onChange={(address) => (formRef.current.address = address)}
-                    />
+                    <AddressInput placeholder={"Location"} required={false} onChange={(address) => (formRef.current.address = address)} />
 
                     <Spacer height={5} />
 

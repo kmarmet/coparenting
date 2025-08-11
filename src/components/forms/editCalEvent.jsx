@@ -152,7 +152,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 //#region VALIDATION
 
                 // Event Name
-                if (!Manager.IsValid(formRef?.current?.title, true)) return ThrowError("Event name is required")
+                if (!Manager.IsValid(updatedEvent?.title, true)) return ThrowError("Event name is required")
 
                 // Start Date
                 if (!Manager.IsValid(updatedEvent?.startDate, true)) return ThrowError("Please select a date for this event")
@@ -268,16 +268,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
         setView({label: "Details", value: "Details"})
     }
 
-    const GetChildNames = () => {
-        let names = []
-        if (Manager.IsValid(event?.children)) {
-            for (let child of event?.children) {
-                names.push(`<span>${child}</span>`)
-            }
-        }
-        return names
-    }
-
     useEffect(() => {
         if (Manager.IsValid(event)) {
             setDynamicTitle(event?.title)
@@ -336,11 +326,15 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                     <div className={`view-wrapper${view?.label === "Details" ? " details active" : " details"}`}>
                         <Spacer height={15} />
                         <div className="detail-rows-flex">
-                            <DetailRow text={event?.startDate} label={"Start Date"} icon={DetailRowIcons.date} />
+                            <DetailRow
+                                text={event?.startDate}
+                                label={Manager.IsValid(event?.endDate) ? "Start Date" : "Date"}
+                                icon={DetailRowIcons.date}
+                                onClick={() => setShowDateTimePicker(true)}
+                            />
                             <DetailRow text={event?.endDate} label={"End Date"} icon={DetailRowIcons.date} />
                             <DetailRow text={event?.startTime} label={"Start Time"} icon={DetailRowIcons.time} />
                             <DetailRow text={event?.endTime} label={"End Time"} icon={DetailRowIcons.time} />
-
                             <DetailRow text={event?.children?.length} label={"Children"} icon={DetailRowIcons.children} />
                             <DetailRow text={event?.shareWith?.length} label={"Shared With"} icon={DetailRowIcons.users} />
                             <DetailRow text={event?.reminderTimes?.length} label={"Reminders"} icon={DetailRowIcons.reminders} />
@@ -446,33 +440,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
                         <FormDivider text={"Optional"} />
 
-                        {/* EVENT START/END TIME */}
-                        {/*{!eventIsDateRange && (*/}
-                        {/*    <>*/}
-                        {/*        /!* START TIME *!/*/}
-                        {/*        <InputField*/}
-                        {/*            wrapperClasses="start-time"*/}
-                        {/*            placeholder={"Start Time"}*/}
-                        {/*            required={false}*/}
-                        {/*            inputType={InputTypes.time}*/}
-                        {/*            defaultValue={event?.startTime}*/}
-                        {/*            onDateOrTimeSelection={(e) => (formRef.current.startTime = moment(e).format(DatetimeFormats.timeForDb))}*/}
-                        {/*        />*/}
-
-                        {/*        <Spacer height={5} />*/}
-
-                        {/*        /!* END TIME *!/*/}
-                        {/*        <InputField*/}
-                        {/*            wrapperClasses="end-time"*/}
-                        {/*            placeholder={"End Time"}*/}
-                        {/*            required={false}*/}
-                        {/*            defaultValue={event?.endTime}*/}
-                        {/*            inputType={InputTypes.time}*/}
-                        {/*            onDateOrTimeSelection={(e) => (formRef.current.endTime = moment(e).format(DatetimeFormats.timeForDb))}*/}
-                        {/*        />*/}
-                        {/*    </>*/}
-                        {/*)}*/}
-
                         <Spacer height={5} />
 
                         {/* SHARE WITH */}
@@ -531,7 +498,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                         <InputField
                             defaultValue={event?.websiteUrl}
                             placeholder={"URL/Website"}
-                            wrapperClasses={Manager.IsValid(formRef?.current?.websiteUrl) ? "show-label" : ""}
                             required={false}
                             inputType={InputTypes.url}
                             onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
@@ -550,7 +516,6 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
                         {/* PHONE */}
                         <InputField
-                            wrapperClasses={Manager.IsValid(event?.phone) ? "show-label" : ""}
                             defaultValue={event?.phone}
                             inputType={InputTypes.phone}
                             placeholder={"Phone"}
@@ -564,7 +529,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             defaultValue={event?.notes}
                             placeholder={"Notes"}
                             required={false}
-                            wrapperClasses={Manager.IsValid(event?.notes) ? "show-label textarea" : "textarea"}
+                            wrapperClasses={"textarea"}
                             inputType={InputTypes.textarea}
                             onChange={(e) => (formRef.current.notes = e.target.value)}
                         />

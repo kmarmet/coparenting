@@ -312,7 +312,6 @@ export default function VisitationRequests() {
                                 inputType={InputTypes.date}
                                 placeholder={"Date"}
                                 uidClass="visitation-request-date"
-                                wrapperClasses={`${Manager.IsValid(activeRequest?.startDate) ? "show-label" : ""}`}
                                 onDateOrTimeSelection={(day) => formRef.current.startDate(moment(day).format(DatetimeFormats.dateForDb))}
                             />
                         )}
@@ -320,7 +319,6 @@ export default function VisitationRequests() {
                         {/* RESPONSE DUE DATE */}
                         <InputField
                             uidClass="response-due-date"
-                            wrapperClasses={`${Manager.IsValid(activeRequest?.requestedResponseDate) ? "show-label" : ""}`}
                             inputType={InputTypes.date}
                             placeholder={"Requested Response Date"}
                             defaultValue={moment(activeRequest?.requestedResponseDate)}
@@ -341,7 +339,6 @@ export default function VisitationRequests() {
                         {/* REASON */}
                         <InputField
                             uidClass="visitation-request-reason"
-                            wrapperClasses={`${Manager.IsValid(activeRequest?.reason) ? "show-label" : ""}`}
                             inputType={InputTypes.textarea}
                             placeholder={"Reason"}
                             defaultValue={activeRequest?.reason}

@@ -68,13 +68,14 @@ export default function Form({
                     allInputFields.forEach((inputField) => {
                         const input = inputField.querySelector("input")
                         const textarea = inputField.querySelector("textarea")
-                        if (input && input.value.trim() !== "") {
+                        if (input && (input?.value?.trim() !== "" || input?.textContent?.trim()?.length > 0)) {
+                            inputField.classList.add("filled")
                             const labelAndIcon = inputField.querySelector(".label-and-icon")
                             if (labelAndIcon) {
                                 labelAndIcon.classList.add("filled")
                             }
-                        } else if (textarea && textarea?.textContent.trim().length > 0) {
-                            console.log(textarea?.textContent)
+                        } else if (textarea && textarea?.textContent?.trim()?.length > 0) {
+                            inputField.classList.add("filled")
                             const labelAndIcon = inputField.querySelector(".label-and-icon")
                             if (labelAndIcon) {
                                 labelAndIcon.classList.add("filled")

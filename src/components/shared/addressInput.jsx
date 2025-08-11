@@ -9,6 +9,7 @@ import Label from "./label"
 const AddressInput = ({onChange = (e) => {}, defaultValue, wrapperClasses = "", labelClasses = "", labelText = ""}) => {
     const {state} = useContext(globalState)
     const {refreshKey} = state
+    const [value, setValue] = React.useState(defaultValue)
 
     // Refs
     const inputRef = useRef(null)
@@ -22,6 +23,7 @@ const AddressInput = ({onChange = (e) => {}, defaultValue, wrapperClasses = "", 
         input.value = ""
         input.placeholder = "Address"
         inputRef.current.placeholder = "Address"
+        setValue("")
         onChange("")
     }
 
@@ -50,6 +52,7 @@ const AddressInput = ({onChange = (e) => {}, defaultValue, wrapperClasses = "", 
             listenerRef.current = autocompleteRef.current.addListener("place_changed", () => {
                 const place = autocompleteRef.current.getPlace()
                 if (onChange) {
+                    setValue(place.formatted_address)
                     onChange(place.formatted_address)
                 }
             })
@@ -81,14 +84,33 @@ const AddressInput = ({onChange = (e) => {}, defaultValue, wrapperClasses = "", 
                     <FaMapLocation className={"input-icon maps"} />
                     <Label
                         text={Manager.IsValid(labelText, true) ? labelText : "Address"}
-                        classes={`always-show filled-input-label${Manager.IsValid(labelClasses) ? ` ${labelClasses}` : ""}`}
+                        classes={`${Manager.IsValid(labelClasses) ? ` ${labelClasses}` : ""}`}
                     />
                 </div>
                 <div className="input-and-clear-button">
-                    <input ref={inputRef} type={"text"} defaultValue={defaultValue} className="google-autocomplete-input" />
-                    <span className={"clear-input-button"} onClick={ClearInput}>
-                        <CgClose />
-                    </span>
+                    <input
+                        onChange={(e) => {
+                            const _this = e.currentTarget
+                            const value = _this.value
+
+                            if (Manager.IsValid(value, true)) {
+                                const parent = _this.closest(".input-field")
+                                parent.classList.add("filled")
+                            } else {
+                                const parent = _this.parentElement
+                                parent.classList.remove("filled")
+                            }
+                        }}
+                        ref={inputRef}
+                        type={"text"}
+                        defaultValue={defaultValue}
+                        className="google-autocomplete-input"
+                    />
+                    {Manager.IsValid(value, true) && (
+                        <span className={"clear-input-button"} onClick={ClearInput}>
+                            <CgClose />
+                        </span>
+                    )}
                 </div>
             </div>
         </div>

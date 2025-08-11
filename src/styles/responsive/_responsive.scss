@@ -1,7 +1,7 @@
-@use '../utils/variables';
-@use '../utils/_palette';
-@use '../_fonts';
-@use '../utils/mixins';
+@use "../utils/variables";
+@use "../utils/_palette";
+@use "../_fonts";
+@use "../utils/mixins";
 
 #external-overrides {
     /*#region  OUTSIDE APP CONTAINER */
@@ -53,6 +53,27 @@
     /*#region  > 800px CONTAINER*/
     #app-container {
         @media screen and (min-width: 800px) {
+            .date-date-picker {
+                .content {
+                    .timepicker {
+                        .timepicker-content {
+                            .timepicker-method {
+                                &.on-tap {
+                                    .minutes {
+                                        span {
+                                            &.timepicker-selector-button {
+                                                &.disabled {
+                                                    cursor: not-allowed;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             .actions {
                 .actions-button-wrapper {
                     position: relative;

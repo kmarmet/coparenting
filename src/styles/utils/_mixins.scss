@@ -424,6 +424,12 @@ $shadows-big: multiple-box-shadow(100);
 /*#endregion  SIZING */
 
 /*#region  EFFECTS*/
+@mixin AutofillReset($color: "white") {
+    -webkit-text-fill-color: $color !important;
+    -webkit-text-decoration-color: $color !important;
+    -moz-text-decoration-color: $color !important;
+    text-decoration-color: $color !important;
+}
 @mixin blurBg {
     position: relative;
     left: 0;
@@ -873,18 +879,20 @@ $shadows-big: multiple-box-shadow(100);
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    padding: 0 10px;
 
     &.with-tags {
         flex-wrap: wrap;
         .tags {
             padding-left: 38px;
-            padding-top: 3px;
             width: 100%;
             display: flex;
             justify-content: flex-start;
             gap: 8px;
             flex-wrap: wrap;
+            position: relative;
+            top: -3px;
 
             .tag {
                 width: max-content;
@@ -946,7 +954,6 @@ $shadows-big: multiple-box-shadow(100);
             color: white;
             opacity: 0.6;
             font-size: 15px;
-            padding-top: 3px;
             @include fonts.regularFont;
 
             &.green {
@@ -2314,7 +2321,6 @@ $shadows-big: multiple-box-shadow(100);
     width: min-content;
     position: relative;
     z-index: variables.$lowerZIndex;
-    display: none;
 
     label {
         margin: 0;
@@ -2348,7 +2354,6 @@ $shadows-big: multiple-box-shadow(100);
         }
     }
 
-    &.always-show,
     &.toggle {
         display: block;
         label {
@@ -2407,27 +2412,6 @@ $shadows-big: multiple-box-shadow(100);
         }
     }
 
-    &.filled-input-label {
-        display: block;
-        width: max-content;
-
-        label {
-            line-height: 1;
-            padding: 0;
-            white-space: nowrap;
-            text-transform: uppercase;
-            font-size: 14px;
-            font-weight: 100;
-            color: white;
-            opacity: 0.85;
-            @include fonts.mediumFont;
-            & {
-                text-align: center;
-                letter-spacing: 0.8px;
-            }
-        }
-    }
-
     &.time {
         display: block;
         @include centerVert;
@@ -2469,7 +2453,6 @@ $shadows-big: multiple-box-shadow(100);
     &.address-label {
         label {
             color: palette.$darkerGrey;
-            text-transform: uppercase;
             font-size: 12px;
             padding-left: 5px;
             font-weight: variables.$fwMedium;
@@ -2491,14 +2474,28 @@ $shadows-big: multiple-box-shadow(100);
     align-items: flex-start;
     justify-content: flex-end;
     width: 100%;
-    transition: all 0.1s ease-in-out;
     border-radius: variables.$buttonBorderRadius;
     background-color: palette.$inputBackground;
     overflow: hidden;
-    padding-bottom: 6px;
-    min-height: 60px;
+    min-height: 50px;
+    transition: all 0.4s ease;
+
     &.active {
         border: 1px solid palette.$barelyVisibleWhite;
+        min-height: 60px;
+        transition: all 0.4s ease;
+        padding-bottom: 5px;
+    }
+
+    &.filled {
+        min-height: 55px;
+        transition: all 0.4s ease;
+        padding-bottom: 6px;
+
+        input,
+        textarea {
+            color: white;
+        }
     }
 
     &.white,
@@ -2513,18 +2510,6 @@ $shadows-big: multiple-box-shadow(100);
         .label-and-icon {
             svg {
                 color: palette.$iconGrey;
-            }
-        }
-
-        .label-wrapper {
-            &.always-show {
-                &.filled-input-label {
-                    label {
-                        color: black;
-                        opacity: 0.4;
-                        @include fonts.mediumFont;
-                    }
-                }
             }
         }
 
@@ -2635,16 +2620,18 @@ $shadows-big: multiple-box-shadow(100);
         z-index: 99;
 
         .label-wrapper {
-            &.filled-input-label {
-                text-align: center;
-                opacity: 0.8;
+            label {
+                color: white;
+                font-size: 12px;
+                line-height: 1;
+                padding: 0;
+                opacity: 0.5;
+                white-space: nowrap;
+                @include fonts.mediumFont;
 
-                label {
-                    font-style: italic;
-                    color: white;
-                    opacity: 0.5;
-                    font-size: 14px;
-                    font-weight: variables.$fwLight;
+                & {
+                    text-align: center;
+                    letter-spacing: 0.8px;
                 }
             }
         }
@@ -2654,7 +2641,7 @@ $shadows-big: multiple-box-shadow(100);
             opacity: 0.5;
             margin-right: 5px;
             font-size: unset;
-            @include square(17px);
+            @include square(15px);
         }
     }
 
@@ -2678,8 +2665,17 @@ $shadows-big: multiple-box-shadow(100);
         overflow: auto;
         height: 100%;
         text-align: center;
-
         @include fonts.lightFont;
+
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus {
+            @include AutofillReset;
+        }
+
+        &:-moz-autofill {
+            @include AutofillReset;
+        }
 
         &::placeholder {
             font-style: italic;
@@ -3351,6 +3347,19 @@ $shadows-big: multiple-box-shadow(100);
 
         &.dropdown-open {
             pointer-events: none;
+        }
+
+        .label-wrapper {
+            label {
+                font-style: normal;
+                line-height: 1;
+                white-space: nowrap;
+                display: flex;
+                font-size: 12px;
+                color: white;
+                opacity: 0.5;
+                @include fonts.regularFont;
+            }
         }
 
         .detail-rows-flex {

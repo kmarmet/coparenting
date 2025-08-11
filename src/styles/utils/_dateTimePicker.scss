@@ -56,6 +56,11 @@
                         height: 40px;
                         padding: 0 15px;
 
+                        &.disabled {
+                            pointer-events: none;
+                            opacity: 0.5;
+                        }
+
                         &.start-date,
                         &.start-time {
                             margin-right: 10px;
@@ -257,7 +262,13 @@
                                 background-color: palette.$blendDark;
                                 border-radius: variables.$buttonBorderRadius;
                                 cursor: pointer;
+                                color: white;
                                 @include fonts.boldFont;
+
+                                &.active {
+                                    background-color: white;
+                                    color: palette.$blendDark;
+                                }
                             }
                         }
                     }
@@ -298,9 +309,9 @@
                         .timepicker-selector {
                             width: 100%;
                             display: flex;
-                            justify-content: center;
+                            justify-content: flex-start;
                             align-items: center;
-                            gap: 0 40px;
+                            gap: 0 20px;
 
                             button {
                                 background-color: transparent;
@@ -449,6 +460,12 @@
                                     grid-template-columns: repeat(6, 1fr);
 
                                     span {
+                                        &.minute {
+                                            &.disabled {
+                                                opacity: 0.3;
+                                                pointer-events: none;
+                                            }
+                                        }
                                         &.timepicker-selector-button,
                                         &.hour,
                                         &.minute {

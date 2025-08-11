@@ -30,7 +30,7 @@ const EventCategoryDropdown = ({updateCategories = (category) => {}, selectedCat
 
     return (
         <>
-            {selectedCategories?.length > 0 ? <Label text={"Selected Categories"} classes={"always-show filled-input-label"} /> : ""}
+            {selectedCategories?.length > 0 ? <Label text={"Selected Categories"} /> : ""}
             <Accordion className={`${theme} event-categories`} expanded={showCategories}>
                 <AccordionSummary onClick={() => setShowCategories(!showCategories)}>
                     <AccordionTitle

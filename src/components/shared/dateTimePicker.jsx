@@ -1,8 +1,6 @@
 // Path: src\components\shared\dateTimePicker.jsx
 import moment from "moment"
 import React, {useContext, useEffect, useState} from "react"
-import {BsCalendarWeekFill} from "react-icons/bs"
-import {TbClockHour4Filled} from "react-icons/tb"
 import ButtonThemes from "../../constants/buttonThemes"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import globalState from "../../context"
@@ -22,6 +20,7 @@ function DateTimePicker({defaultValue, show, callback = (datetime) => {}, hide =
     const [endTime, setEndTime] = useState()
     const [startDate, setStartDate] = useState()
     const [endDate, setEndDate] = useState()
+    const [timeResetKey, setTimeResetKey] = useState("0")
 
     const [view, setView] = useState("start-date")
     const [displayDateTime, setDisplayDateTime] = useState()
@@ -118,48 +117,57 @@ function DateTimePicker({defaultValue, show, callback = (datetime) => {}, hide =
             <div className="content">
                 <Datepicker startOrEnd={"start"} defaultValue={defaultValue} show={view === "start-date"} callback={(date) => setStartDate(date)} />
                 <Datepicker startOrEnd={"end"} defaultValue={defaultValue} show={view === "end-date"} callback={(date) => setEndDate(date)} />
-                <TimePicker defaultValue={defaultValue} show={view === "start-time"} callback={(time) => setStartTime(time)} />
-                <TimePicker defaultValue={defaultValue} show={view === "end-time"} callback={(time) => setEndTime(time)} />
+                <TimePicker
+                    timeResetKey={timeResetKey}
+                    defaultValue={defaultValue}
+                    show={view === "start-time"}
+                    callback={(time) => setStartTime(time)}
+                />
+                <TimePicker
+                    timeResetKey={timeResetKey}
+                    defaultValue={defaultValue}
+                    show={view === "end-time"}
+                    callback={(time) => setEndTime(time)}
+                />
             </div>
 
             {/* VIEW SELECTOR */}
             <div className={`views-selector ${view}`}>
                 <div className="date-wrapper">
-                    <p className="selector-icon">
-                        <BsCalendarWeekFill className={"calendar"} />
-                    </p>
                     <p
                         className={`${view === "start-date" ? "active start-date" : "start-date"} view-button`}
                         onClick={() => UpdateView("start-date")}>
                         Start Date
                     </p>
-                    <p className={`${view === "end-date" ? "active end-date" : "end-date"} view-button`} onClick={() => UpdateView("end-date")}>
+                    <p
+                        className={`${Manager.IsValid(startTime, true) ? "" : "disabled "}${view === "end-date" ? "active end-date" : "end-date"} view-button`}
+                        onClick={() => UpdateView("end-date")}>
                         End Date (optional)
                     </p>
                 </div>
                 <div className="time-wrapper">
-                    <p className="selector-icon">
-                        <TbClockHour4Filled />
-                    </p>
                     <p
                         className={`${view === "start-time" ? "active start-time" : "start-time"} view-button`}
                         onClick={() => UpdateView("start-time")}>
                         Start Time
                     </p>
-                    <p className={`${view === "end-time" ? "active end-time" : "end-time"} view-button`} onClick={() => UpdateView("end-time")}>
+                    <p
+                        className={`${Manager.IsValid(startTime, true) ? "" : "disabled "}${view === "end-time" ? "active end-time" : "end-time"} view-button`}
+                        onClick={() => UpdateView("end-time")}>
                         End Time (optional)
                     </p>
                 </div>
             </div>
             <div className="card-buttons">
                 <CardButton text={"Save"} buttonTheme={ButtonThemes.green} onClick={ExecuteCallback} />
-                {Manager.IsValid(startTime, true) && (
+                {Manager.IsValid(startTime) && (
                     <CardButton
                         text={"Remove Time"}
                         buttonTheme={ButtonThemes.yellow}
                         onClick={() => {
                             setStartTime(null)
                             setEndTime(null)
+                            setTimeResetKey(Manager.GetUid())
                         }}
                     />
                 )}

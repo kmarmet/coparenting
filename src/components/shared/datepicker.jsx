@@ -69,6 +69,7 @@ const Datepicker = ({defaultValue, show, callback = (date) => {}, startOrEnd = "
                 newDayElement.classList.add("day")
                 if (moment(date).format("MM/DD/yyyy") === today) {
                     newDayElement.classList.add("today")
+                    newDayElement.classList.add("active")
                 }
                 if (dayOfWeek === "0" || dayOfWeek === "6") {
                     newDayElement.classList.add("weekend-day")
