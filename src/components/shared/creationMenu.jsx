@@ -207,7 +207,7 @@ const CreationMenu = () => {
                         onClick={() => setState({...state, showOverlay: false, showCreationMenu: false})}
                         className={`action-item close ${DomManager.Animate.FadeInUp(showCreationMenu, ".action-item")}`}>
                         <div className="content">
-                            <p className="close">Close</p>
+                            <p className="close">Dismiss</p>
                             <div className="svg-wrapper close">
                                 <FaArrowDown className={"close"} />
                             </div>

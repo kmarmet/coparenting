@@ -140,8 +140,9 @@ export default function NewCalendarEvent() {
                 //#region VALIDATION
                 if (!Manager.IsValid(formRef.current.title, true)) return ThrowError("Please add an event title")
 
+                console.log(formRef.current.startDate)
                 // Start Date
-                if (!Manager.IsValid(formRef.current.startDate)) return ThrowError("Please add an event date")
+                if (!Manager.IsValid(formRef.current.startDate, true)) return ThrowError("Please add an event date")
 
                 // Custom Validation
                 if (Manager.IsValid(formRef.current.phone, true) && !validator?.isMobilePhone(formRef.current.phone))
@@ -247,6 +248,7 @@ export default function NewCalendarEvent() {
     useEffect(() => {
         if (selectedCalendarDate) {
             formRef.current.startDate = moment(selectedCalendarDate).format(DatetimeFormats.dateForDb)
+            console.log(moment(selectedCalendarDate).format(DatetimeFormats.dateForDb))
             setSubtitleDateObject({
                 startDate: moment(selectedCalendarDate).format(DatetimeFormats.dateForDb),
             })
@@ -262,11 +264,6 @@ export default function NewCalendarEvent() {
             }
         }
     }, [eventIsCloned])
-
-    // Reset form on open
-    useEffect(() => {
-        formRef.current = {...new CalendarEvent()}
-    }, [])
 
     const ComposeDateTime = (startDate, endDate, startTime, endTime) => {
         // DATE

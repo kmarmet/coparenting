@@ -172,8 +172,6 @@ export default function ChatRow({index, onClick, chat}) {
                                     },
                                     onDeny: null,
                                     customClass: "pause-chat-alert",
-                                    bg: "#fbd872",
-                                    color: "#897235",
                                     html: `When you pause the chat, it will remain accessible for your reference. <br><br> However, you will not receive notifications <br> related to this particular chat until you decide to unpause it. <br><br> You can resume the chat at any time. <br><br> Are you sure?`,
                                 })
                             }}

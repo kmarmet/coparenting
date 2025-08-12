@@ -6,12 +6,13 @@
 #external-overrides {
     #app-container {
         .date-time-picker {
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             flex-direction: column;
             pointer-events: none;
             position: fixed;
             inset: 0;
+            padding-top: 55px;
             height: 100vh;
             width: 100vw;
             background-color: palette.$blend;
@@ -29,9 +30,18 @@
             .views-selector {
                 position: relative;
                 overflow: hidden;
-                background-color: transparent;
-                top: -40px;
                 z-index: 999;
+                background-color: rgba(255, 255, 255, 0.06);
+                width: calc(100% - 30px);
+                border-radius: variables.$bigBorderRadius;
+                padding: 15px;
+
+                .multi-day-toggle-wrapper {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 15px;
+                }
 
                 .selector-icon {
                     font-size: 18px;
@@ -41,11 +51,10 @@
 
                 .time-wrapper,
                 .date-wrapper {
-                    justify-content: flex-start;
+                    justify-content: space-between;
                     align-items: center;
                     position: relative;
                     display: flex;
-                    margin-bottom: 10px;
 
                     p:not(.selector-icon) {
                         width: max-content;
@@ -53,8 +62,6 @@
                     p {
                         justify-content: center;
                         text-align: center;
-                        height: 40px;
-                        padding: 0 15px;
 
                         &.disabled {
                             pointer-events: none;
@@ -63,9 +70,7 @@
 
                         &.start-date,
                         &.start-time {
-                            margin-right: 10px;
                             width: max-content;
-                            margin-left: 10px;
                         }
 
                         &.end-date,
@@ -73,7 +78,6 @@
                             width: max-content;
                             justify-self: flex-end;
                             text-align: right;
-                            margin-left: auto;
                         }
                         svg {
                             justify-self: flex-start;
@@ -100,16 +104,18 @@
                     white-space: nowrap;
                     align-items: center;
                     position: relative;
-                    padding: 5px 10px;
+                    padding-left: 0;
+                    margin-bottom: 15px;
                     @include fonts.regularFont;
 
                     &.active {
-                        background-color: white;
-                        color: palette.$main;
+                        color: palette.$purpleForBlendBg;
+                        filter: brightness(150%);
                         cursor: pointer;
-                        border-radius: variables.$buttonBorderRadius;
                         transition: all 0.4s ease;
-                        @include fonts.boldFont;
+                        padding-bottom: 3px;
+                        border-bottom: 1px solid rgba(180, 107, 255, 0.3);
+                        @include fonts.mediumBoldFont;
                     }
                 }
             }
@@ -134,7 +140,6 @@
             }
 
             .selected-datetime {
-                color: palette.$main;
                 text-align: center;
                 align-self: flex-start;
                 height: max-content;
@@ -144,13 +149,14 @@
                 max-width: 85%;
                 border-radius: variables.$bigBorderRadius;
                 padding: 10px 20px;
-                background-color: white;
+                background-color: palette.$bootstrapGreenBg;
+                color: palette.$bootstrapGreen;
                 @include fonts.boldFont;
             }
 
             .content {
                 position: relative;
-                min-height: 500px;
+                min-height: 400px;
                 width: 100%;
 
                 /*#region  DATE */
@@ -160,13 +166,6 @@
                     transition: all 0.5s ease;
                     height: max-content;
                     padding: 0 15px;
-
-                    .multi-day-toggle-wrapper {
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        margin-top: 15px;
-                    }
 
                     .selected-date {
                         color: white;
@@ -182,7 +181,7 @@
                         align-items: center;
                         width: 100%;
                         position: relative;
-                        margin-top: 10px;
+                        margin-bottom: 10px;
 
                         .active-month {
                             color: white;
@@ -191,10 +190,7 @@
                         }
 
                         .month-button {
-                            background-color: palette.$inputBackground;
                             color: white;
-                            border-radius: variables.$buttonBorderRadius;
-                            min-width: 80px;
                             text-align: center;
                             display: flex;
                             justify-content: center;
@@ -211,13 +207,15 @@
                             svg {
                                 transform: scale(0.5);
                                 opacity: 0.5;
+                                margin: 0;
+                                padding: 0;
                             }
 
                             &.previous-month {
-                                padding: 5px 15px 5px 0;
                             }
                             &.next-month {
-                                padding: 5px 0 5px 15px;
+                                justify-self: flex-end;
+                                text-align: right;
                             }
                         }
                     }
@@ -231,6 +229,7 @@
 
                         span {
                             color: white;
+                            opacity: 0.5;
                             @include fonts.regularFont;
                         }
                     }

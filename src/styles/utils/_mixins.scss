@@ -887,24 +887,25 @@ $shadows-big: multiple-box-shadow(100);
     &.with-tags {
         flex-wrap: wrap;
         .tags {
-            padding-left: 38px;
+            padding-left: 30px;
             width: 100%;
             display: flex;
             justify-content: flex-start;
             gap: 8px;
             flex-wrap: wrap;
             position: relative;
-            top: -3px;
 
             .tag {
                 width: max-content;
                 padding: 5px 15px;
                 background-color: palette.$inputBackground;
                 font-size: 13px;
-                color: rgba(255, 255, 255, 0.75);
+                color: #b47fff;
+                filter: brightness(110%);
                 line-height: 1;
                 white-space: nowrap;
                 border-radius: variables.$buttonBorderRadius;
+                @include fonts.mediumFont;
             }
         }
     }
@@ -927,8 +928,10 @@ $shadows-big: multiple-box-shadow(100);
     }
 
     .svg-wrapper {
-        margin-right: 15px;
+        margin-right: 10px;
         flex-shrink: 0;
+        position: relative;
+        top: -1px;
         @include square(22px);
 
         svg {
@@ -1408,7 +1411,7 @@ $shadows-big: multiple-box-shadow(100);
             color: palette.$flatRed;
             font-weight: variables.$fwBold;
             border: 0;
-            padding: 0 0 0 2px;
+            padding-left: 0;
         }
     }
 }
@@ -1438,7 +1441,7 @@ $shadows-big: multiple-box-shadow(100);
         opacity: 1;
         pointer-events: auto;
         transform: translateY(0);
-        transition: all 1s cubic-bezier(0.17, 0.67, 0.21, 0.95);
+        transition: all 0.8s cubic-bezier(0.17, 0.67, 0.21, 0.95);
     }
 
     &.error {
@@ -2338,7 +2341,7 @@ $shadows-big: multiple-box-shadow(100);
         transition: all 0.3s ease-in-out;
         display: flex;
         width: min-content;
-        font-size: 17px;
+        font-size: 16px;
         color: white;
         @include fonts.regularFont;
 
@@ -2613,23 +2616,23 @@ $shadows-big: multiple-box-shadow(100);
         .label-wrapper {
             label {
                 color: white;
-                font-size: 14px;
+                font-size: 16px;
                 line-height: 1;
                 padding: 0;
-                opacity: 0.5;
+                opacity: 0.7;
                 white-space: nowrap;
                 @include fonts.mediumFont;
 
                 & {
                     text-align: center;
-                    letter-spacing: 0.8px;
+                    letter-spacing: 0.6px;
                 }
             }
         }
 
         svg {
             color: white;
-            opacity: 0.5;
+            opacity: 0.7;
             margin-right: 5px;
             font-size: unset;
             @include square(15px);
@@ -3339,19 +3342,6 @@ $shadows-big: multiple-box-shadow(100);
 
         &.dropdown-open {
             pointer-events: none;
-        }
-
-        .label-wrapper {
-            label {
-                font-style: normal;
-                line-height: 1;
-                white-space: nowrap;
-                display: flex;
-                font-size: 12px;
-                color: white;
-                opacity: 0.5;
-                @include fonts.regularFont;
-            }
         }
 
         .detail-rows-flex {

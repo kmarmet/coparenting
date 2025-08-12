@@ -171,11 +171,11 @@ export default function Slideshow({activeIndex = 0, images = [], wrapperClasses 
                     {images?.length > 1 && (
                         <>
                             <CardButton onClick={() => Navigate("left")} classes="button" text={"Previous"} />
-                            <CardButton buttonTheme={ButtonThemes.white} classes="button close" onClick={hide} text={"Close"} />
+                            <CardButton buttonTheme={ButtonThemes.white} classes="button close" onClick={hide} text={"Dismiss"} />
                             <CardButton onClick={() => Navigate("right")} classes="button" text={"Next"} />
                         </>
                     )}
-                    {images?.length === 1 && <CardButton buttonTheme={ButtonThemes.white} classes="button close" onClick={hide} text={"Close"} />}
+                    {images?.length === 1 && <CardButton buttonTheme={ButtonThemes.white} classes="button close" onClick={hide} text={"Dismiss"} />}
                 </div>
             </div>
         </div>

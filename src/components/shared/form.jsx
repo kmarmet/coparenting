@@ -29,7 +29,7 @@ export default function Form({
     titleIcon = null,
     viewDropdown,
     cardButtonsClasses = "",
-    cancelButtonText = "Close",
+    cancelButtonText = "Dismiss",
     showLoadingSpinner,
     extraButtons = [],
     subtitleDateObject = {startDate: "", endDate: "", startTime: "", endTime: ""},

@@ -10,7 +10,7 @@ const Modal = ({show, hide = () => {}, children, title = "", icon = null, scoped
                 {children}
             </div>
             <div id={"modal-card-buttons"} className="card-buttons">
-                <CardButton text={"Close"} onClick={hide} classes={"close-modal-button"} />
+                <CardButton text={"Dismiss"} onClick={hide} classes={"close-modal-button"} />
             </div>
         </div>
     )

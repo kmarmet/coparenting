@@ -3,50 +3,9 @@
 @use "../utils/variables";
 @use "../utils/mixins";
 
-#external-overrides {
-    // Container
-    .sweet-alert-frost {
-        border-radius: 0 !important;
-        padding: 0 !important;
-        backdrop-filter: none !important;
-        position: fixed;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 99999999999999999999999999999 !important;
-        pointer-events: all !important;
-
-        .swal2-popup {
-            z-index: 99999999999999999999999999999 !important;
-            padding: 0 !important;
-            border-radius: clamp(0px, 50%, 24px) !important;
-            box-shadow: 0 58px 29px -30 rgba(0, 0, 0, 1) !important;
-        }
-
-        &.pause-chat-alert {
-            .swal2-popup {
-                .swal2-actions {
-                    button {
-                        &.swal2-confirm {
-                            color: palette.$darkGreen !important;
-                        }
-                        &.swal2-deny {
-                            color: palette.$bootstrapYellow !important;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Popup
-    .sweet-alert-popup {
-        //margin-top: 200px !important;
-        //border-radius: 50px !important;
-        //padding: 0 !important;
-        //transform: translateY(200px) !important;
-        //border: 2px dashed red !important;
-    }
+.swal2-icon {
+    transform: scale(0.9);
+    display: none !important;
 }
 
 .swal2-timer-progress-bar {
@@ -57,258 +16,223 @@
     margin: 0 auto;
 }
 
-.swal2-html-container {
-    line-height: 1.3 !important;
-    text-align: left !important;
-}
-div {
-    &:where(.swal2-icon) {
-        * {
-            user-select: none !important;
-            outline: none !important;
-        }
-        &.swal2-error {
-            color: white !important;
-            &.swal2-icon-show {
-                transform: scale(0.75);
-                color: white !important;
-                .swal2-x-mark {
-                    animation-duration: 0.8s !important;
-                    transition: all 0.9s ease-in-out;
-                    .swal2-x-mark-line-left,
-                    .swal2-x-mark-line-right {
-                        background: white;
+// OVERLAY/PARENT WRAPPER
+.swal2-container {
+    background: rgba(76, 41, 232, 0.7) !important;
+    backdrop-filter: blur(20px) !important;
+    height: 100vh !important;
+    transition: all 0.4s ease !important;
+    z-index: 999999999999 !important;
+
+    .swal2-popup {
+        padding: 20px !important;
+        margin: 0 !important;
+        align-items: center !important;
+        animation-duration: 0.8s !important;
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+        max-width: 95vw !important;
+        border-radius: 0 !important;
+
+        // Success Alert
+        &.swal2-modal {
+            padding: 20px 25px !important;
+            border-radius: 16px !important;
+            border: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+
+            button {
+                border: 0 !important;
+            }
+
+            .swal2-html-container {
+                &#swal2-html-container {
+                    @include fonts.fontBase;
+
+                    & {
+                        line-height: 1.5 !important;
+                        font-size: 16px;
+                        color: rgba(255, 255, 255, 0.9) !important;
+                        padding: 0 !important;
+                        margin: 0;
+                        text-align: left !important;
+                        width: 100% !important;
+                        font-weight: variables.$fwRegular !important;
                     }
                 }
             }
         }
-    }
-    &:where(.swal2-container) {
-        button {
-        }
-    }
-}
 
-// Textarea
-div {
-    &:where(.swal2-container) {
-        #swal2-textarea {
-            @include fonts.fontBase;
-            margin: 0;
-            border-radius: variables.$borderRadius !important;
-            width: 100% !important;
-            outline: 0 !important;
-            user-select: none !important;
-        }
-    }
-}
-
-.swal2-title {
-    font-size: 18px;
-    line-height: 1.4;
-    margin: 0 !important;
-    padding: 20px 20px 0 20px !important;
-    text-align: left;
-    font-weight: 600 !important;
-    font-family: "National Park", sans-serif !important;
-    b {
-        //font-weight: variables.$fwBold !important;
-    }
-}
-
-.swal2-icon {
-    transform: scale(0.9);
-    display: none !important;
-}
-
-div {
-    &:where(.swal2-container) {
-        height: 100vh !important;
-    }
-}
-
-.swal2-popup {
-    padding: 20px !important;
-    margin: 0 !important;
-    align-items: center !important;
-    animation-duration: 0.8s !important;
-    display: flex !important;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
-    max-width: 95vw !important;
-    border-radius: variables.$cardBorderRadius !important;
-
-    // Success Alert
-    &.swal2-modal {
-        margin-top: 65px !important;
-        border-radius: variables.$cardBorderRadius !important;
-        padding: 20px 25px !important;
-        button {
+        &.swal2-icon-error {
+            justify-content: center !important;
             border: 0 !important;
+            background: #b12643 !important;
+            padding: 25px !important;
+
+            #swal2-title {
+                font-size: 18px;
+                color: white !important;
+            }
         }
-    }
 
-    &.swal2-icon-error {
-        justify-content: center !important;
-        border: 0 !important;
-        background: #b12643;
-        padding: 25px !important;
-
-        #swal2-title {
-            font-size: 18px;
-            color: white !important;
-        }
-    }
-
-    .swal2-actions {
-        margin: 0 !important;
-        padding: 0 !important;
-        flex-wrap: nowrap !important;
-        width: 100% !important;
-        position: relative !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        background-color: rgba(255, 255, 255, 0.1) !important;
-        height: 50px !important;
-        border-radius: 0 0 variables.$cardBorderRadius variables.$cardBorderRadius !important;
-
-        button {
-            @include fonts.fontBase;
-            color: palette.$darkestGrey;
-            background-color: transparent !important;
-            text-align: center;
-            margin: 0 !important;
-            display: flex;
-            align-items: center;
-            min-width: 100px !important;
-            justify-content: center;
-            align-self: stretch !important;
-            font-size: 13px;
-            outline: none;
-            user-select: none;
-            border: 0 !important;
-            border-radius: 0 !important;
+        .swal2-actions {
+            margin: 20px 0 0 0 !important;
+            padding: 0 !important;
+            flex-wrap: nowrap !important;
             width: 100% !important;
-            font-weight: 600 !important;
-            line-height: 1 !important;
-            white-space: nowrap !important;
+            position: relative !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
 
-            // CONFIRM
-            &:where(.swal2-styled):where(.swal2-confirm) {
-                border-radius: 0 0 0 variables.$cardBorderRadius !important;
-                color: palette.$flatGreen !important;
-            }
+            button {
+                @include fonts.fontBase;
+                color: palette.$darkestGrey;
+                background-color: transparent !important;
+                text-align: center;
+                margin: 0 15px !important;
+                display: flex;
+                align-items: center;
+                min-width: 100px !important;
+                justify-content: center;
+                align-self: stretch !important;
+                font-size: 13px;
+                outline: none;
+                user-select: none;
+                border: 0 !important;
+                border-radius: 0 !important;
+                font-weight: 600 !important;
+                line-height: 1 !important;
+                white-space: nowrap !important;
 
-            // DENY
-            &:where(.swal2-styled):where(.swal2-deny) {
-                border-radius: 0 0 variables.$cardBorderRadius 0 !important;
-                color: rgba(255, 255, 255, 0.6) !important;
-            }
-        }
-    }
+                &:where(.swal2-styled) {
+                    padding: 0 0 5px 0 !important;
+                }
 
-    &.confirm-alert,
-    &.yellow,
-    &.banner {
-        &.banner {
-            background: palette.$bootstrapGreenBg !important;
-            color: palette.$bootstrapGreen !important;
+                // CONFIRM
+                &:where(.swal2-styled):where(.swal2-confirm) {
+                    color: #4fffa7 !important;
+                    filter: brightness(130%) !important;
+                    border-bottom: 1px solid rgba(79, 255, 167, 0.4) !important;
+                }
 
-            .swal2-html-container {
-                text-align: center !important;
-                font-weight: variables.$fwMedium !important;
-                font-size: 16px !important;
-            }
-        }
-
-        &.confirm-alert,
-        &.yellow {
-            .swal2-html-container {
-                border: 1px solid palette.$bootstrapYellowBorder !important;
-                background: palette.$bootstrapYellowBg !important;
-                color: palette.$bootstrapYellow;
-                padding: 15px;
-                border-radius: variables.$borderRadius;
-                font-weight: variables.$fwMedium !important;
-            }
-
-            &.confirm-alert {
-                .swal2-title {
-                    border: 1px solid palette.$bootstrapYellowBorder !important;
-                    background: palette.$bootstrapYellowBg !important;
-                    color: palette.$bootstrapYellow;
-                    padding: 15px;
-                    border-radius: variables.$borderRadius;
+                // DENY
+                &:where(.swal2-styled):where(.swal2-deny) {
+                    color: palette.$yellow !important;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.4) !important;
                 }
             }
         }
 
+        &.confirm-alert,
         &.yellow,
-        &.confirm-alert {
-            input {
-                @include fonts.fontBase;
-                outline: 0 !important;
-                user-select: none !important;
-                background: white !important;
-                color: black;
+        &.banner {
+            &.banner {
+                background: palette.$bootstrapGreenBg !important;
+                color: palette.$bootstrapGreen !important;
+
+                .swal2-html-container {
+                    text-align: center !important;
+                    font-weight: variables.$fwMedium !important;
+                    font-size: 16px !important;
+                }
+            }
+
+            &.confirm-alert,
+            &.yellow {
+                .swal2-html-container {
+                    border: 1px solid palette.$bootstrapYellowBorder !important;
+                    background: palette.$bootstrapYellowBg !important;
+                    color: palette.$yellow;
+                    padding: 15px;
+                    border-radius: variables.$borderRadius;
+                    font-weight: variables.$fwMedium !important;
+                }
+
+                &.confirm-alert {
+                    .swal2-title {
+                        border: 1px solid palette.$bootstrapYellowBorder !important;
+                        background: palette.$bootstrapYellowBg !important;
+                        color: palette.$yellow;
+                        padding: 15px;
+                        border-radius: variables.$borderRadius;
+                    }
+                }
+            }
+
+            &.yellow,
+            &.confirm-alert {
+                input {
+                    @include fonts.fontBase;
+                    outline: 0 !important;
+                    user-select: none !important;
+                    background: white !important;
+                    color: black;
+                }
             }
         }
 
-        .swal2-confirm {
-            //      background: $gold !important;
-            //      color: palette.$bootstrapYellow !important;
+        @media screen and (min-width: 800px) {
+            flex-wrap: wrap;
+
+            * {
+                text-align: center !important;
+            }
+
+            .swal2-title {
+                margin: 0 auto !important;
+            }
+
+            .swal2-actions {
+                gap: 8px !important;
+            }
         }
-        .swal2-deny {
-            //      background: $grey !important;
+
+        #swal2-input {
+            width: 100%;
+            border-radius: variables.$borderRadius !important;
+            margin: 0 !important;
+            margin-top: 10px !important;
+            background: palette.$inputBackground !important;
+            border: 0 !important;
+        }
+
+        &.swal2-icon-success {
+            .swal2-html-container {
+                color: palette.$green;
+            }
         }
     }
 
-    @media screen and (min-width: 800px) {
-        flex-wrap: wrap;
-
-        * {
-            text-align: center !important;
-        }
-
-        .swal2-title {
-            margin: 0 auto !important;
-        }
-
-        .swal2-actions {
-            gap: 8px !important;
-        }
-    }
-
-    #swal2-input {
-        width: 100%;
-        border-radius: variables.$borderRadius !important;
+    .swal2-title {
+        font-size: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        line-height: 1.4;
         margin: 0 !important;
-        margin-top: 10px !important;
-        background: palette.$inputBackground !important;
-        border: 0 !important;
+        padding: 0 !important;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-weight: 600 !important;
+        font-family: "National Park", sans-serif !important;
     }
 
-    .swal2-html-container {
+    #swal2-textarea {
         @include fonts.fontBase;
-        font-size: 16px;
-        padding: 0 20px !important;
         margin: 0;
-        line-height: 1;
-        text-align: center !important;
+        border-radius: variables.$borderRadius !important;
         width: 100% !important;
-        font-weight: variables.$fwRegular !important;
+        outline: 0 !important;
+        user-select: none !important;
     }
-    &.swal2-icon-success {
-        .swal2-html-container {
-            color: palette.$green;
+
+    &.red {
+        .swal2-modal {
+            .swal2-title {
+                color: #ff5374 !important;
+            }
         }
     }
-}
-
-.swal2-backdrop-show {
-    background: rgba(0, 0, 0, 0.72) !important;
-    backdrop-filter: blur(3px);
-    transition: all 0.3s ease-in-out !important;
 }

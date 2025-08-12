@@ -288,8 +288,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                         onConfirm: async () => {
                             await DeleteEvent()
                         },
-                        color: "#fff",
-                        bg: "#b91d51",
+                        color: "white",
+                        customClass: "red",
+                        bg: "transparent",
                     })
                 }}
                 hasDelete={currentUser?.key === event?.owner?.key}
@@ -309,6 +310,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={(view) => setView(view)} />}>
                 {showDateTimePicker && (
                     <DateTimePicker
+                        defaultValue={event?.startDate}
                         show={showDateTimePicker}
                         hide={() => setShowDateTimePicker(false)}
                         callback={(dateObj) => {
@@ -447,7 +449,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             onSelect={setSelectedShareWithOptions}
                         />
 
-                        <Spacer height={5} />
+                        <Spacer height={15} />
 
                         {/* REMINDERS */}
                         <SelectDropdown
