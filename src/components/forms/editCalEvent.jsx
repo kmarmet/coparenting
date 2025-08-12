@@ -39,7 +39,7 @@ import ViewDropdown from "../shared/viewDropdown"
 
 export default function EditCalEvent({event, showCard, hideCard}) {
     const {state, setState} = useContext(globalState)
-    const {theme, refreshKey} = state
+    const {theme, selectedCalendarDate} = state
 
     // Hooks
     const {currentUser} = useCurrentUser()
@@ -60,7 +60,10 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     const [categories, setCategories] = useState([])
     const [showDateTimePicker, setShowDateTimePicker] = useState(false)
     const [dynamicTitle, setDynamicTitle] = useState(event?.title)
-    const [dynamicSubtitle, setDynamicSubtitle] = useState(moment(event?.startDate).format(DatetimeFormats.readableMonthAndDay))
+    const [subtitleDateObject, setSubtitleDateObject] = useState({
+        startDate: moment(event?.startDate).format(DatetimeFormats.dateForDb),
+    })
+    const [dateFromDatePicker, setDateFromDatePicker] = useState()
 
     // Set Default Dropdown Options
     const [selectedChildrenOptions, setSelectedChildrenOptions] = useState(
@@ -269,7 +272,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     useEffect(() => {
         if (Manager.IsValid(event)) {
             setDynamicTitle(event?.title)
-            setDynamicSubtitle(moment(event?.startDate).format(DatetimeFormats.readableMonthAndDay))
+            setSubtitleDateObject({...dateFromDatePicker, startDate: moment(event?.startDate).format(DatetimeFormats.dateForDb)})
             SetDropdownOptions().then((r) => r)
         }
     }, [event])
@@ -295,7 +298,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                     setView({label: "Edit", value: "Edit"})
                     setShowDateTimePicker(true)
                 }}
-                subtitle={dynamicSubtitle}
+                subtitleDateObject={{...subtitleDateObject}}
                 submitText={"Update"}
                 hasSubmitButton={view?.label === "Edit"}
                 onClose={() => ResetForm()}
@@ -303,19 +306,20 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 showCard={showCard}
                 deleteButtonText="Delete"
                 wrapperClass={`edit-calendar-event at-top${event?.owner?.key === currentUser?.key ? " owner" : " non-owner"} ${showDateTimePicker ? "place-behind" : ""}`}
-                viewDropdown={<ViewDropdown hasSpacer={true} dropdownPlaceholder="Details" selectedView={view} onSelect={(view) => setView(view)} />}>
+                viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={(view) => setView(view)} />}>
                 {showDateTimePicker && (
                     <DateTimePicker
                         show={showDateTimePicker}
                         hide={() => setShowDateTimePicker(false)}
                         callback={(dateObj) => {
                             const {startDate, endDate, startTime, endTime} = dateObj
+                            setSubtitleDateObject(dateObj)
                             formRef.current.startDate = startDate
                             formRef.current.endDate = endDate
                             formRef.current.startTime = startTime
                             formRef.current.endTime = endTime
                             if (Manager.IsValid(startDate)) {
-                                setDynamicSubtitle(moment(startDate).format(DatetimeFormats.readableMonthAndDay))
+                                setSubtitleDateObject(dateObj)
                             }
 
                             setShowDateTimePicker(false)

@@ -63,29 +63,6 @@ export default function Form({
         const activeForm = document.querySelector(`.form-wrapper.active`)
         // On Open
         if (showCard && Manager.IsValid(activeForm)) {
-            setTimeout(() => {
-                const allInputFields = activeForm?.querySelectorAll(".input-field")
-
-                if (Manager.IsValid(allInputFields)) {
-                    allInputFields.forEach((inputField) => {
-                        const input = inputField.querySelector("input")
-                        const textarea = inputField.querySelector("textarea")
-                        if (input && (input?.value?.trim() !== "" || input?.textContent?.trim()?.length > 0)) {
-                            inputField.classList.add("filled")
-                            const labelAndIcon = inputField.querySelector(".label-and-icon")
-                            if (labelAndIcon) {
-                                labelAndIcon.classList.add("filled")
-                            }
-                        } else if (textarea && textarea?.textContent?.trim()?.length > 0) {
-                            inputField.classList.add("filled")
-                            const labelAndIcon = inputField.querySelector(".label-and-icon")
-                            if (labelAndIcon) {
-                                labelAndIcon.classList.add("filled")
-                            }
-                        }
-                    })
-                }
-            }, 500)
             if (Manager.IsValid(onOpen)) {
                 onOpen()
             }
@@ -127,8 +104,10 @@ export default function Form({
             }
         }
 
-        setStartDateSubtitle(null)
-        setEndDateSubtitle(null)
+        if (!showCard) {
+            setStartDateSubtitle(null)
+            setEndDateSubtitle(null)
+        }
     }, [showCard])
 
     return (

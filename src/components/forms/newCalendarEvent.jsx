@@ -63,11 +63,7 @@ export default function NewCalendarEvent() {
     const [view, setView] = useState({label: "Single Day", value: "Single Day"})
     const [categories, setCategories] = useState([])
     const [showDateTimePicker, setShowDateTimePicker] = useState(false)
-    const [subtitleDateObject, setSubtitleDateObject] = useState({
-        startDate: moment(selectedCalendarDate).format(DatetimeFormats.dateForDb),
-    })
-    const [dynamicTitle, setDynamicTitle] = useState("")
-    const [dynamicSubtitle, setDynamicSubtitle] = useState("")
+    const [subtitleDateObject, setSubtitleDateObject] = useState({startDate: "", endDate: "", startTime: "", endTime: ""})
 
     // DROPDOWN STATE
     const [selectedReminderOptions, setSelectedReminderOptions] = useState([])
@@ -251,6 +247,9 @@ export default function NewCalendarEvent() {
     useEffect(() => {
         if (selectedCalendarDate) {
             formRef.current.startDate = moment(selectedCalendarDate).format(DatetimeFormats.dateForDb)
+            setSubtitleDateObject({
+                startDate: moment(selectedCalendarDate).format(DatetimeFormats.dateForDb),
+            })
         }
     }, [selectedCalendarDate])
 
@@ -321,7 +320,6 @@ export default function NewCalendarEvent() {
                         required={true}
                         onChange={(e) => {
                             const inputValue = e.target.value
-                            setDynamicTitle(inputValue)
                             formRef.current.title = StringManager.FormatTitle(inputValue, true)
                         }}
                     />
