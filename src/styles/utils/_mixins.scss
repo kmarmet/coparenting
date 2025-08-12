@@ -393,6 +393,7 @@ $shadows-big: multiple-box-shadow(100);
     align-items: center;
     display: flex;
     background: palette.$inputBackground;
+    overflow: visible;
     @include square(55px);
 
     svg {
@@ -400,16 +401,17 @@ $shadows-big: multiple-box-shadow(100);
         width: unset;
         display: inline;
         transform: scale(1);
-
+        overflow: visible;
+        padding: 0;
+        margin: 0;
         &.email {
             transform: scale(0.9);
         }
         &.phone {
             transform: scale(0.9);
         }
-        &.website,
-        &.nav-link {
-            //      transform: scale(0.9);
+        &.website {
+            transform: scale(0.95);
         }
     }
 }
@@ -879,7 +881,7 @@ $shadows-big: multiple-box-shadow(100);
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     padding: 0 10px;
 
     &.with-tags {
@@ -1371,35 +1373,42 @@ $shadows-big: multiple-box-shadow(100);
     display: flex;
     align-items: center;
     text-align: center;
+    justify-content: center;
     margin: 20px auto;
-    width: 90%;
+    padding: 10px 15px;
+    width: 100%;
 
-    &::before,
-    &::after {
-        content: "";
-        flex: 1;
-        border-bottom: 1px solid palette.$barelyVisibleWhite;
-        mask-image: linear-gradient(to right, transparent, black 25%, black 85%, transparent);
-        -webkit-mask-image: linear-gradient(to right, transparent, black 25%, black 85%, transparent);
+    &.required {
+        span {
+            border-bottom: 1px solid rgba(255, 235, 20, 0.3);
+            color: palette.$flatYellow;
+        }
     }
 
-    &:not(:empty)::before {
-        margin-right: 10px;
-    }
-
-    &:not(:empty)::after {
-        margin-left: 10px;
+    &.optional {
+        span {
+            border-bottom: 1px solid rgba(100, 255, 203, 0.3);
+            color: palette.$flatGreen;
+        }
     }
 
     span {
+        text-align: center;
         color: white;
-        opacity: 0.75;
-        @include fonts.thinnestFont;
+        border-bottom: 1px solid palette.$inputBorder;
+        padding: 0 8px 2px 8px;
+        @include fonts.mediumFont;
 
         & {
-            font-style: italic;
-            font-size: 14px;
+            font-size: 16px;
             letter-spacing: 1px;
+        }
+
+        &.asterisk {
+            color: palette.$flatRed;
+            font-weight: variables.$fwBold;
+            border: 0;
+            padding: 0 0 0 2px;
         }
     }
 }
@@ -2474,28 +2483,13 @@ $shadows-big: multiple-box-shadow(100);
     align-items: flex-start;
     justify-content: flex-end;
     width: 100%;
-    border-radius: variables.$buttonBorderRadius;
-    background-color: palette.$inputBackground;
     overflow: hidden;
-    min-height: 50px;
     transition: all 0.4s ease;
-
+    background: transparent;
+    border-bottom: 1px solid palette.$inputBorder;
     &.active {
-        border: 1px solid palette.$barelyVisibleWhite;
-        min-height: 60px;
         transition: all 0.4s ease;
-        padding-bottom: 5px;
-    }
-
-    &.filled {
-        min-height: 55px;
-        transition: all 0.4s ease;
-        padding-bottom: 6px;
-
-        input,
-        textarea {
-            color: white;
-        }
+        border-bottom: 1px solid rgba(255, 255, 255, 0.45);
     }
 
     &.white,
@@ -2550,7 +2544,6 @@ $shadows-big: multiple-box-shadow(100);
 
     &.textarea {
         height: 100%;
-        border-radius: 20px;
     }
 
     &.chat-input {
@@ -2610,19 +2603,17 @@ $shadows-big: multiple-box-shadow(100);
     .label-and-icon {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: left;
         width: 100%;
         margin: auto;
         padding: 0;
-        position: absolute;
         align-self: center;
-        top: 8px;
         z-index: 99;
 
         .label-wrapper {
             label {
                 color: white;
-                font-size: 12px;
+                font-size: 14px;
                 line-height: 1;
                 padding: 0;
                 opacity: 0.5;
@@ -2652,7 +2643,6 @@ $shadows-big: multiple-box-shadow(100);
     input,
     textarea {
         outline: 0;
-        border-radius: variables.$buttonBorderRadius;
         caret-color: white;
         display: flex;
         justify-content: flex-start;
@@ -2664,7 +2654,10 @@ $shadows-big: multiple-box-shadow(100);
         width: 100%;
         overflow: auto;
         height: 100%;
-        text-align: center;
+        text-align: left;
+        background: transparent;
+        padding: 3px 0;
+
         @include fonts.lightFont;
 
         &:-webkit-autofill,
@@ -2691,13 +2684,12 @@ $shadows-big: multiple-box-shadow(100);
         display: flex;
         overflow: auto;
         line-height: 1.3 !important;
-        min-height: 120px;
         align-items: center;
         max-width: 100%;
         width: 100%;
-        padding: 30px 10px 0 10px;
+        padding: 5px 0 0 0;
         height: max-content;
-        justify-content: center;
+        justify-content: flex-start;
         justify-self: flex-start;
         border-radius: 0;
     }
@@ -3479,8 +3471,9 @@ $shadows-big: multiple-box-shadow(100);
             }
 
             .parent-category-wrapper {
-                padding: 0 20px 0 20px;
-
+                &:first-child {
+                    padding-top: 12px !important;
+                }
                 .parent-category {
                     color: white;
                     font-size: 16px;
@@ -3503,7 +3496,7 @@ $shadows-big: multiple-box-shadow(100);
                     gap: 8px;
                     border-radius: variables.$bigBorderRadius;
                     opacity: 0;
-                    padding: 8px 0 10px 0;
+                    padding: 8px 0 15px 0;
                     pointer-events: none;
                     transition: all 0.3s ease-in-out;
                     max-height: 0;
@@ -3654,17 +3647,19 @@ $shadows-big: multiple-box-shadow(100);
 
             .date-subtitle {
                 display: flex;
-                align-items: center;
                 flex-wrap: wrap;
                 width: max-content;
                 margin: 0 auto;
-                justify-content: space-between;
+                align-items: flex-start;
+                justify-content: center;
+                padding-top: 5px;
                 p {
                     color: white;
                     white-space: nowrap;
                     line-height: 1;
                     width: 100%;
-                    font-size: 16px;
+                    font-size: 18px;
+                    opacity: 0.85;
                     text-align: left;
                     display: flex;
                     align-items: center;
@@ -3692,15 +3687,15 @@ $shadows-big: multiple-box-shadow(100);
                         margin: 0;
                         padding: 0;
                     }
-                }
-            }
 
-            .subtitle {
-                text-align: center;
-                width: 100%;
-                line-height: 1.5;
-                font-size: 18px;
-                padding: 5px 0 0 0;
+                    svg {
+                        color: palette.$purpleForBlendBg;
+                        font-size: unset;
+                        filter: brightness(120%);
+                        margin-left: 5px;
+                        @include square(18px);
+                    }
+                }
             }
 
             .header {

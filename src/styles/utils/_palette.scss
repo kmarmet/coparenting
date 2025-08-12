@@ -46,7 +46,9 @@ $headerText: #4b5563;
 $labelText: #4b5563;
 
 // Input
-$inputBackground: rgba(255, 255, 255, 0.06);
+$inputBackground: rgba(255, 255, 255, 0.07);
+$inputBorder: rgba(255, 255, 255, 0.25);
+
 /*#endregion  PRIMARY COLORS */
 
 /*#region  GREENS */
@@ -61,7 +63,7 @@ $bootstrapGreenBorder: rgba(96, 122, 114, 0.3);
 $bootstrapGreen: #096c3b;
 $darkGreen: #239960;
 $greenForWhiteText: #2ac075;
-$flatGreen: #7af1ca;
+$flatGreen: #64ffcb;
 /*#endregion  GREENS */
 
 /*#region  REDS */
@@ -80,6 +82,7 @@ $bootstrapYellowBg: #fff3cd;
 $bootstrapYellowBorder: #cebb87;
 $bootstrapYellow: #897235;
 $yellow: #fbd872;
+$flatYellow: #ffeb14;
 $gold: #ffcf66;
 $softYellow: #f6e8b3;
 $softerYellow: rgba(243, 232, 179, 0.52);

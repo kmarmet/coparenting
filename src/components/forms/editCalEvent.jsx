@@ -2,7 +2,6 @@
 import moment from "moment"
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {MdEventRepeat} from "react-icons/md"
-import ButtonThemes from "../../constants/buttonThemes"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import DetailRowIcons from "../../constants/detailRowIcons"
 import InputTypes from "../../constants/inputTypes"
@@ -25,7 +24,6 @@ import StringManager from "../../managers/stringManager"
 import UpdateManager from "../../managers/updateManager"
 import EventCategoryDropdown from "../screens/calendar/eventCategoryDropdown"
 import AddressInput from "../shared/addressInput"
-import Button from "../shared/button"
 import DateTimePicker from "../shared/dateTimePicker"
 import DetailBlock from "../shared/detailBlock"
 import DetailRow from "../shared/detailRow"
@@ -293,6 +291,10 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 }}
                 hasDelete={currentUser?.key === event?.owner?.key}
                 onSubmit={Submit}
+                onSubtitleClick={() => {
+                    setView({label: "Edit", value: "Edit"})
+                    setShowDateTimePicker(true)
+                }}
                 subtitle={dynamicSubtitle}
                 submitText={"Update"}
                 hasSubmitButton={view?.label === "Edit"}
@@ -301,7 +303,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 showCard={showCard}
                 deleteButtonText="Delete"
                 wrapperClass={`edit-calendar-event at-top${event?.owner?.key === currentUser?.key ? " owner" : " non-owner"} ${showDateTimePicker ? "place-behind" : ""}`}
-                viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={(view) => setView(view)} />}>
+                viewDropdown={<ViewDropdown hasSpacer={true} dropdownPlaceholder="Details" selectedView={view} onSelect={(view) => setView(view)} />}>
                 {showDateTimePicker && (
                     <DateTimePicker
                         show={showDateTimePicker}
@@ -320,6 +322,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                         }}
                     />
                 )}
+
                 {/*  CONTENT */}
                 <div id="edit-cal-event-container" className={`${theme} edit-event-form form-container`}>
                     {/* DETAILS */}
@@ -427,20 +430,9 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             }}
                         />
 
-                        <Spacer height={5} />
-
-                        <Button
-                            text={"Change Date / Time"}
-                            theme={ButtonThemes.translucent}
-                            onClick={() => setShowDateTimePicker(true)}
-                            classes={"datetime-button"}
-                        />
-
-                        <Spacer height={5} />
+                        <Spacer height={15} />
 
                         <FormDivider text={"Optional"} />
-
-                        <Spacer height={5} />
 
                         {/* SHARE WITH */}
                         <SelectDropdown
@@ -462,7 +454,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             onSelect={setSelectedReminderOptions}
                         />
 
-                        <Spacer height={5} />
+                        <Spacer height={15} />
 
                         {/* INCLUDING WHICH CHILDREN */}
                         <SelectDropdown
@@ -473,7 +465,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             selectMultiple={true}
                         />
 
-                        <Spacer height={5} />
+                        <Spacer height={15} />
 
                         {/* CATEGORIES SELECTOR */}
                         <EventCategoryDropdown
@@ -492,7 +484,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             }}
                         />
 
-                        <Spacer height={5} />
+                        <Spacer height={15} />
 
                         {/* URL/WEBSITE */}
                         <InputField
@@ -503,7 +495,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
                         />
 
-                        <Spacer height={5} />
+                        <Spacer height={15} />
 
                         {/* ADDRESS */}
                         <AddressInput
@@ -512,7 +504,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             onChange={(address) => (formRef.current.address = address)}
                         />
 
-                        <Spacer height={5} />
+                        <Spacer height={15} />
 
                         {/* PHONE */}
                         <InputField
@@ -522,7 +514,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             onChange={(e) => (formRef.current.phone = StringManager.FormatPhone(e.target.value))}
                         />
 
-                        <Spacer height={5} />
+                        <Spacer height={15} />
 
                         {/* NOTES */}
                         <InputField
@@ -534,7 +526,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             onChange={(e) => (formRef.current.notes = e.target.value)}
                         />
 
-                        <Spacer height={5} />
+                        <Spacer height={15} />
 
                         {/* IS VISITATION? */}
                         <div className="flex visitation-toggle">

@@ -63,8 +63,11 @@ export default function NewCalendarEvent() {
     const [view, setView] = useState({label: "Single Day", value: "Single Day"})
     const [categories, setCategories] = useState([])
     const [showDateTimePicker, setShowDateTimePicker] = useState(false)
-    const [subtitleDateObject, setSubtitleDateObject] = useState({})
+    const [subtitleDateObject, setSubtitleDateObject] = useState({
+        startDate: moment(selectedCalendarDate).format(DatetimeFormats.dateForDb),
+    })
     const [dynamicTitle, setDynamicTitle] = useState("")
+    const [dynamicSubtitle, setDynamicSubtitle] = useState("")
 
     // DROPDOWN STATE
     const [selectedReminderOptions, setSelectedReminderOptions] = useState([])
@@ -287,7 +290,8 @@ export default function NewCalendarEvent() {
                 className={`${theme} new-event-form new-calendar-event`}
                 onClose={() => ResetForm()}
                 onSubmit={Submit}
-                dateSubtitleObject={subtitleDateObject}
+                onSubtitleClick={() => setShowDateTimePicker(true)}
+                subtitleDateObject={{...subtitleDateObject}}
                 subtitleIcon={<BsCalendarCheck />}
                 subtitleClasses={"datetime-label-wrapper"}
                 showCard={creationFormToShow === CreationForms.calendar}
@@ -322,23 +326,7 @@ export default function NewCalendarEvent() {
                         }}
                     />
 
-                    <Spacer height={5} />
-
-                    {/* START DATE BUTTON */}
-                    {view?.label === "Single Day" && (
-                        <Button
-                            text={"Change Date / Time"}
-                            theme={ButtonThemes.translucent}
-                            onClick={() => setShowDateTimePicker(true)}
-                            classes={"datetime-button"}
-                        />
-                    )}
-
-                    <Spacer height={5} />
-
                     <FormDivider text={"Optional"} />
-
-                    <Spacer height={5} />
 
                     {/* SHARE WITH */}
                     <SelectDropdown
@@ -348,7 +336,7 @@ export default function NewCalendarEvent() {
                         onSelect={setSelectedShareWithOptions}
                     />
 
-                    <Spacer height={5} />
+                    <Spacer height={15} />
 
                     {/* REMINDER */}
                     {view?.label === "Single Day" && (
@@ -362,7 +350,7 @@ export default function NewCalendarEvent() {
                         />
                     )}
 
-                    <Spacer height={5} />
+                    <Spacer height={15} />
 
                     {/* INCLUDING WHICH CHILDREN */}
                     {Manager.IsValid(children) && (
@@ -374,17 +362,17 @@ export default function NewCalendarEvent() {
                         />
                     )}
 
-                    <Spacer height={5} />
+                    <Spacer height={15} />
 
                     {/* CATEGORIES SELECTOR */}
                     <EventCategoryDropdown updateCategories={(category) => setCategories((prev) => [...prev, category])} />
 
-                    <Spacer height={5} />
+                    <Spacer height={15} />
 
                     {/* ADDRESS */}
                     <AddressInput placeholder={"Location"} required={false} onChange={(address) => (formRef.current.address = address)} />
 
-                    <Spacer height={5} />
+                    <Spacer height={15} />
 
                     {/* URL/WEBSITE */}
                     <InputField
@@ -394,7 +382,7 @@ export default function NewCalendarEvent() {
                         onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
                     />
 
-                    <Spacer height={5} />
+                    <Spacer height={15} />
 
                     {/* PHONE */}
                     <InputField
@@ -403,7 +391,7 @@ export default function NewCalendarEvent() {
                         onChange={(e) => (formRef.current.phone = StringManager.FormatPhone(e.target.value))}
                     />
 
-                    <Spacer height={5} />
+                    <Spacer height={15} />
 
                     {/* NOTES */}
                     <InputField

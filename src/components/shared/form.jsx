@@ -1,6 +1,7 @@
 // Path: src\components\shared\form.jsx
 import moment from "moment"
 import React, {cloneElement, useContext, useEffect, useState} from "react"
+import {RiEdit2Fill} from "react-icons/ri"
 import ButtonThemes from "../../constants/buttonThemes"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import globalState from "../../context"
@@ -16,6 +17,7 @@ export default function Form({
     onDelete,
     onClose,
     children,
+    onSubtitleClick = () => {},
     title,
     subtitle = "",
     subtitleClasses = "",
@@ -30,7 +32,7 @@ export default function Form({
     cancelButtonText = "Close",
     showLoadingSpinner,
     extraButtons = [],
-    dateSubtitleObject = {startDate: "", endDate: "", startTime: "", endTime: ""},
+    subtitleDateObject = {startDate: "", endDate: "", startTime: "", endTime: ""},
     onOpen = () => {},
 }) {
     const {state, setState} = useContext(globalState)
@@ -48,14 +50,14 @@ export default function Form({
     }
 
     useEffect(() => {
-        if (Manager.IsValid(dateSubtitleObject)) {
-            const {startDate, endDate, startTime, endTime} = dateSubtitleObject
+        if (Manager.IsValid(subtitleDateObject)) {
+            const {startDate, endDate, startTime, endTime} = subtitleDateObject
             if (Manager.IsValid(startDate)) setStartDateSubtitle(moment(startDate).format(DatetimeFormats.readableMonthAndDayShort))
             if (Manager.IsValid(endDate)) setEndDateSubtitle(moment(endDate).format(DatetimeFormats.readableMonthAndDayShort))
             if (Manager.IsValid(startTime)) setStartTimeSubtitle(moment(startTime, "h:mma").format(DatetimeFormats.timeForDb))
             if (Manager.IsValid(endTime)) setEndTimeSubtitle(moment(endTime).format(DatetimeFormats.timeForDb))
         }
-    }, [dateSubtitleObject])
+    }, [subtitleDateObject])
 
     useEffect(() => {
         const activeForm = document.querySelector(`.form-wrapper.active`)
@@ -145,15 +147,17 @@ export default function Form({
 
                             {/* SUBTITLE */}
                             {Manager.IsValid(subtitle, true) && (
-                                <StringAsHtmlElement
-                                    classes={`subtitle in-form${Manager.IsValid(subtitleClasses, true) ? ` ${subtitleClasses}` : ""}`}
-                                    text={subtitle}
-                                />
+                                <div className="subtitle-wrapper" onClick={onSubtitleClick}>
+                                    <StringAsHtmlElement
+                                        classes={`subtitle in-form${Manager.IsValid(subtitleClasses, true) ? ` ${subtitleClasses}` : ""}`}
+                                        text={subtitle}
+                                    />
+                                </div>
                             )}
 
                             {/* DATE SUBTITLE */}
-                            {Manager.IsValid(dateSubtitleObject) && (
-                                <div className="date-subtitle">
+                            {Manager.IsValid(subtitleDateObject) && (
+                                <div className="date-subtitle" onClick={onSubtitleClick}>
                                     {Manager.IsValid(startDateSubtitle) && (
                                         <p>
                                             {Manager.IsValid(endDateSubtitle) && <span className={"label"}>Start:</span>}
@@ -161,6 +165,7 @@ export default function Form({
                                                 {startDateSubtitle}
                                                 {Manager.IsValid(startTimeSubtitle) && ` - ${startTimeSubtitle}`}
                                             </span>
+                                            <RiEdit2Fill />
                                         </p>
                                     )}
                                     {Manager.IsValid(endDateSubtitle) && (
@@ -170,8 +175,10 @@ export default function Form({
                                                 {endDateSubtitle}
                                                 {Manager.IsValid(endTimeSubtitle) && ` - ${endTimeSubtitle}`}
                                             </span>
+                                            <RiEdit2Fill />
                                         </p>
                                     )}
+
                                     <Spacer height={5} />
                                 </div>
                             )}

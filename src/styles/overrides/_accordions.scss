@@ -10,12 +10,13 @@
             text-align: center !important;
             box-shadow: none !important;
             border: 0 !important;
-            border-radius: 8px !important;
             background: palette.$lightBg !important;
 
             &.event-categories {
-                background-color: palette.$inputBackground !important;
-                border-radius: clamp(0px, 50%, 24px) !important;
+                background: transparent !important;
+                border-bottom: 1px solid palette.$inputBorder !important;
+                border-radius: 0 !important;
+                width: 100% !important;
 
                 .MuiCollapse-root {
                     .MuiAccordionDetails-root {
@@ -24,14 +25,12 @@
                 }
 
                 .MuiAccordion-heading {
-                    height: 50px !important;
                     .MuiAccordionSummary-root {
                         .MuiAccordionSummary-content {
                             button {
                                 background-color: transparent !important;
                                 border-radius: variables.$buttonBorderRadius !important;
-                                padding: 0 15px 0 20px !important;
-
+                                padding-bottom: 3px !important;
                                 svg {
                                     color: white !important;
                                     opacity: 0.6 !important;

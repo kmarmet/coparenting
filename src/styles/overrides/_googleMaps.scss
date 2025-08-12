@@ -84,7 +84,7 @@
     .google-autocomplete-wrapper {
         width: 100%;
         gap: 0 5px;
-
+        border-bottom: 1px solid palette.$inputBorder;
         &.white-bg {
             border-radius: clamp(0px, 50%, 24px) !important;
 
@@ -172,28 +172,28 @@
 
         .input-field {
             position: relative;
-            background: palette.$inputBackground;
-            border-radius: 50px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            width: 100%;
+
+            input {
+                border: 0 !important;
+            }
 
             // Address input
-
             .input-and-clear-button {
                 width: 100%;
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                padding: 0 10px;
+                justify-content: left;
                 border-radius: 0;
                 input {
-                    padding-left: 0 !important;
                     background: transparent;
-                    text-align: center;
-                    margin: 0 auto;
+                    text-align: left;
+                    margin: 0;
+                    width: 100%;
                     border-radius: 0;
-                    white-space: wrap;
                     overflow: visible;
                 }
                 .clear-input-button {
@@ -224,7 +224,6 @@
                 justify-content: center;
                 width: 100%;
                 margin: 0 auto;
-                padding: 8px 0 3px 0;
 
                 svg {
                     color: white;
@@ -250,18 +249,7 @@
                 overscroll-behavior: none;
                 overflow: auto;
                 height: 100%;
-                width: 100% !important;
-                max-width: calc(100% - 50px) !important;
-                padding: 0;
                 font-family: "National Park", sans-serif !important;
-
-                &::placeholder {
-                    font-style: italic;
-                    color: palette.$transWhite;
-                    font-size: 15px;
-                    font-weight: variables.$fwRegular;
-                    text-transform: capitalize;
-                }
             }
 
             svg {

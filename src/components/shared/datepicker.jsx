@@ -4,13 +4,17 @@ import {FaAngleLeft, FaAngleRight} from "react-icons/fa6"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import globalState from "../../context"
 import Manager from "../../managers/manager"
+import Label from "./label"
+import ToggleButton from "./toggleButton"
 
 const Datepicker = ({defaultValue, show, callback = (date) => {}, startOrEnd = "start"}) => {
     const {state, setState} = useContext(globalState)
     const {theme, currentScreen, refreshKey, selectedCalendarDate} = state
 
     // STATE
-    const [activeDate, setActiveDate] = useState(startOrEnd === "start" ? selectedCalendarDate : null)
+    const [activeDate, setActiveDate] = useState(startOrEnd === "start" ? selectedCalendarDate : "")
+    const [multipleDaySelection, setMultipleDaySelection] = useState(false)
+    const [multipleDaySelectionDates, setMultipleDaySelectionDates] = useState([])
 
     const ChunkIntoWeeks = (daysArray) => {
         const weeks = []
@@ -86,15 +90,29 @@ const Datepicker = ({defaultValue, show, callback = (date) => {}, startOrEnd = "
         const dayDate = clicked?.getAttribute("date")
 
         const allDays = document.querySelectorAll(".day")
-        for (let day of allDays) day.classList.remove("active")
+
+        if (!multipleDaySelection) {
+            for (let day of allDays) day.classList.remove("active")
+        }
 
         clicked.classList.toggle("active")
 
         if (clicked?.classList.contains("day")) {
-            callback(moment(dayDate))
-            setActiveDate(moment(dayDate).format(DatetimeFormats.dateForDb))
+            if (multipleDaySelection) {
+                setMultipleDaySelectionDates([...multipleDaySelectionDates, dayDate])
+            } else {
+                callback(moment(dayDate))
+                setActiveDate(moment(dayDate).format(DatetimeFormats.dateForDb))
+            }
         }
     }
+
+    useEffect(() => {
+        if (multipleDaySelection) {
+            const today = document.querySelector(".day.today")
+            today.classList.remove("active")
+        }
+    }, [multipleDaySelection])
 
     useEffect(() => {
         if (show) BuildCalendarUI()
@@ -134,6 +152,11 @@ const Datepicker = ({defaultValue, show, callback = (date) => {}, startOrEnd = "
                     onClick={() => BuildCalendarUI("next")}>
                     {moment(activeDate).add(1, "month").format("MMM")} <FaAngleRight className={"right"} />
                 </span>
+            </div>
+
+            <div className="multi-day-toggle-wrapper">
+                <Label text={"Multiple Days"} />
+                <ToggleButton onCheck={() => setMultipleDaySelection(true)} onUncheck={() => setMultipleDaySelection(false)} />
             </div>
         </div>
     )
