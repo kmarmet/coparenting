@@ -1,7 +1,10 @@
+import moment from "moment"
 import React, {useContext, useEffect} from "react"
 import {GiClick} from "react-icons/gi"
 import {PiMouseScrollFill} from "react-icons/pi"
+import DatetimeFormats from "../../constants/datetimeFormats"
 import globalState from "../../context"
+import DateManager from "../../managers/dateManager"
 import DomManager from "../../managers/domManager"
 import Manager from "../../managers/manager"
 import Label from "./label"
@@ -27,10 +30,10 @@ const TimePicker = ({defaultValue, callback = (time) => {}, timeResetKey, show, 
             const rect = el.getBoundingClientRect()
             if (rect.top <= centerY && rect.bottom >= centerY) {
                 if (childClass === "hour:not(.placeholder)") {
-                    el.classList.add("active")
-                    setHour(el.textContent)
+                    el?.classList?.add("active")
+                    setHour(el?.textContent)
                 } else if (childClass === "minute") {
-                    el.classList.add("active")
+                    el?.classList?.add("active")
                     setMinute(el.textContent)
                 }
                 break
@@ -38,10 +41,32 @@ const TimePicker = ({defaultValue, callback = (time) => {}, timeResetKey, show, 
         }
     }
 
-    const ComposeTime = () => {
+    const FormatTimeAndExecuteCallback = () => {
         if (Manager.IsValid(hour, true) && Manager.IsValid(minute, true)) {
             const time = `${hour}:${minute}${meridian}`
             callback(time)
+        }
+    }
+
+    const MinuteClass = (inputMinute) => {
+        if (Manager.IsValid(hour, true)) {
+            if (minute === inputMinute) {
+                return "active"
+            }
+        } else {
+            return "disabled"
+        }
+    }
+
+    const SetHourInline = (inputHour) => {
+        if (Manager.IsValid(inputHour, true)) {
+            if (!Manager.IsValid(minute, true)) {
+                setMinute("00")
+            }
+            if (!Manager.IsValid(meridian, true)) {
+                setMeridian("am")
+            }
+            setHour(inputHour)
         }
     }
 
@@ -64,7 +89,7 @@ const TimePicker = ({defaultValue, callback = (time) => {}, timeResetKey, show, 
     }, [method])
 
     useEffect(() => {
-        ComposeTime()
+        FormatTimeAndExecuteCallback()
     }, [hour, minute, meridian, method])
 
     useEffect(() => {
@@ -75,28 +100,18 @@ const TimePicker = ({defaultValue, callback = (time) => {}, timeResetKey, show, 
         }
     }, [timeResetKey])
 
-    const MinuteClass = (inputMinute) => {
-        if (Manager.IsValid(hour, true)) {
-            if (minute === inputMinute) {
-                return "active"
-            }
-        } else {
-            return "disabled"
+    // Handle defaultValue
+    useEffect(() => {
+        if (Manager.IsValid(defaultValue, true)) {
+            const formattedTime = moment(defaultValue, DateManager.GetMomentFormat(defaultValue)).format(DatetimeFormats.timeForDb)
+            const hour = moment(formattedTime, DatetimeFormats.timeForDb).format("h")
+            const minute = moment(formattedTime, DatetimeFormats.timeForDb).format("mm")
+            const meridian = moment(formattedTime, DatetimeFormats.timeForDb).format("A")
+            setHour(hour)
+            setMinute(minute)
+            setMeridian(meridian)
         }
-    }
-
-    const SetHourInline = (inputHour) => {
-        if (Manager.IsValid(inputHour, true)) {
-            console.log(minute)
-            if (!Manager.IsValid(minute, true)) {
-                setMinute("00")
-            }
-            if (!Manager.IsValid(meridian, true)) {
-                setMeridian("am")
-            }
-            setHour(inputHour)
-        }
-    }
+    }, [defaultValue])
 
     return (
         <div className={`timepicker${show ? " active" : ""} view`}>

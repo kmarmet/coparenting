@@ -3,6 +3,7 @@ import React, {useContext, useEffect, useState} from "react"
 import {FaAngleLeft, FaAngleRight} from "react-icons/fa6"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import globalState from "../../context"
+import DateManager from "../../managers/dateManager"
 import Manager from "../../managers/manager"
 
 const Datepicker = ({defaultValue, show, callback = (date) => {}, startOrEnd = "start", multipleDaySelection = false}) => {
@@ -63,24 +64,31 @@ const Datepicker = ({defaultValue, show, callback = (date) => {}, startOrEnd = "
         // Append days
         for (const week of daysFromWeeks) {
             for (const weekday of week) {
-                const date = moment(weekday)
+                const date = moment(weekday, DateManager.GetMomentFormat(weekday))
                 const today = moment().format("MM/DD/yyyy")
                 const dayOfWeek = date.day().toString()
                 const newDayElement = document.createElement("span")
+                let sanitizedDefaultValue = defaultValue.replaceAll("12:00am", "").replaceAll("@ ", "")
+                sanitizedDefaultValue = moment(sanitizedDefaultValue, DateManager.GetMomentFormat(sanitizedDefaultValue)).format("MM/DD/yyyy")
+                const formattedDefaultValue = moment(defaultValue, DateManager.GetMomentFormat(sanitizedDefaultValue)).format("MM/DD/yyyy")
                 newDayElement.classList.add("day")
 
+                // INVALID DATE -> SKIP
+                if (!Manager.IsValid(date, true)) continue
+
                 // TODAY
-                if (moment(date).format("MM/DD/yyyy") === today && !Manager.IsValid(defaultValue, true)) {
-                    newDayElement.classList.add("today", "active")
+                if (moment(date).format("MM/DD/yyyy") === today && !Manager.IsValid(sanitizedDefaultValue, true)) {
+                    newDayElement.classList.add("today")
                 }
 
                 // HAS DEFAULT VALUE
-                if (Manager.IsValid(defaultValue, true) && moment(date).format("MM/DD/yyyy") === defaultValue) {
+                if (
+                    Manager.IsValid(sanitizedDefaultValue, true) &&
+                    moment(date, DateManager.GetMomentFormat(sanitizedDefaultValue)).format("MM/DD/yyyy") === formattedDefaultValue
+                ) {
                     newDayElement.classList.add("active")
                 }
-                if (dayOfWeek === "0" || dayOfWeek === "6") {
-                    newDayElement.classList.add("weekend-day")
-                }
+                if (dayOfWeek === "0" || dayOfWeek === "6") newDayElement.classList.add("weekend-day")
                 newDayElement.setAttribute("date", moment(weekday).format("MM/DD/yyyy"))
                 newDayElement.textContent = weekday ? moment(weekday).format("D") : ""
                 daysWrapper.append(newDayElement)
@@ -120,6 +128,17 @@ const Datepicker = ({defaultValue, show, callback = (date) => {}, startOrEnd = "
     useEffect(() => {
         if (show) BuildCalendarUI()
     }, [show])
+
+    // Handle defaultValue
+    useEffect(() => {
+        if (Manager.IsValid(defaultValue, true)) {
+            const formattedDate = moment(defaultValue, DateManager.GetMomentFormat(defaultValue)).format(DatetimeFormats.dateForDb)
+
+            if (Manager.IsValid(formattedDate, true)) {
+                setActiveDate(formattedDate)
+            }
+        }
+    }, [defaultValue])
 
     return (
         <div className={`datepicker${show ? " active" : ""} view`} onClick={HandleCalendarClick}>

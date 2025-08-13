@@ -2,6 +2,7 @@
 import moment from "moment"
 import React, {useContext, useEffect, useRef, useState} from "react"
 import {MdEventRepeat} from "react-icons/md"
+import ButtonThemes from "../../constants/buttonThemes"
 import DatetimeFormats from "../../constants/datetimeFormats"
 import DetailRowIcons from "../../constants/detailRowIcons"
 import InputTypes from "../../constants/inputTypes"
@@ -16,6 +17,7 @@ import useUsers from "../../hooks/useUsers"
 import AlertManager from "../../managers/alertManager"
 import CalendarManager from "../../managers/calendarManager.js"
 import DatasetManager from "../../managers/datasetManager"
+import DateManager from "../../managers/dateManager"
 import DropdownManager from "../../managers/dropdownManager"
 import LogManager from "../../managers/logManager"
 import Manager from "../../managers/manager"
@@ -24,6 +26,7 @@ import StringManager from "../../managers/stringManager"
 import UpdateManager from "../../managers/updateManager"
 import EventCategoryDropdown from "../screens/calendar/eventCategoryDropdown"
 import AddressInput from "../shared/addressInput"
+import Button from "../shared/button"
 import DateTimePicker from "../shared/dateTimePicker"
 import DetailBlock from "../shared/detailBlock"
 import DetailRow from "../shared/detailRow"
@@ -60,10 +63,8 @@ export default function EditCalEvent({event, showCard, hideCard}) {
     const [categories, setCategories] = useState([])
     const [showDateTimePicker, setShowDateTimePicker] = useState(false)
     const [dynamicTitle, setDynamicTitle] = useState(event?.title)
-    const [subtitleDateObject, setSubtitleDateObject] = useState({
-        startDate: moment(event?.startDate).format(DatetimeFormats.dateForDb),
-    })
-    const [dateFromDatePicker, setDateFromDatePicker] = useState()
+    const [datetimeSubtitle, setDatetimeSubtitle] = useState("")
+    const [rawDatetime, setRawDatetime] = useState("")
 
     // Set Default Dropdown Options
     const [selectedChildrenOptions, setSelectedChildrenOptions] = useState(
@@ -271,8 +272,21 @@ export default function EditCalEvent({event, showCard, hideCard}) {
 
     useEffect(() => {
         if (Manager.IsValid(event)) {
+            const composed = DateManager.ComposeDateTime({
+                startDate: event?.startDate,
+                endDate: event?.endDate,
+                startTime: event?.startTime,
+                endTime: event?.endTime,
+            })
+            const {datetime, displayDatetime} = composed
             setDynamicTitle(event?.title)
-            setSubtitleDateObject({...dateFromDatePicker, startDate: moment(event?.startDate).format(DatetimeFormats.dateForDb)})
+            setDatetimeSubtitle(
+                moment(displayDatetime, DateManager.GetMomentFormat(displayDatetime.replace(" @ ", " "))).format(
+                    DatetimeFormats.readableMonthAndDayWithFullMonth
+                )
+            )
+            setRawDatetime(datetime)
+
             SetDropdownOptions().then((r) => r)
         }
     }, [event])
@@ -299,7 +313,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                     setView({label: "Edit", value: "Edit"})
                     setShowDateTimePicker(true)
                 }}
-                subtitleDateObject={{...subtitleDateObject}}
+                subtitle={datetimeSubtitle}
                 submitText={"Update"}
                 hasSubmitButton={view?.label === "Edit"}
                 onClose={() => ResetForm()}
@@ -307,23 +321,20 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                 showCard={showCard}
                 deleteButtonText="Delete"
                 wrapperClass={`edit-calendar-event at-top${event?.owner?.key === currentUser?.key ? " owner" : " non-owner"} ${showDateTimePicker ? "place-behind" : ""}`}
-                viewDropdown={<ViewDropdown dropdownPlaceholder="Details" selectedView={view} onSelect={(view) => setView(view)} />}>
+                viewDropdown={<ViewDropdown hasSpacer={true} dropdownPlaceholder="Details" selectedView={view} onSelect={(view) => setView(view)} />}>
                 {showDateTimePicker && (
                     <DateTimePicker
-                        defaultValue={event?.startDate}
+                        defaultValue={rawDatetime}
                         show={showDateTimePicker}
                         hide={() => setShowDateTimePicker(false)}
                         callback={(dateObj) => {
-                            const {startDate, endDate, startTime, endTime} = dateObj
-                            setSubtitleDateObject(dateObj)
+                            const {startDate, endDate, startTime, endTime, datetime, displayDatetime} = dateObj
                             formRef.current.startDate = startDate
                             formRef.current.endDate = endDate
                             formRef.current.startTime = startTime
                             formRef.current.endTime = endTime
-                            if (Manager.IsValid(startDate)) {
-                                setSubtitleDateObject(dateObj)
-                            }
-
+                            setDatetimeSubtitle(displayDatetime)
+                            setRawDatetime(datetime)
                             setShowDateTimePicker(false)
                         }}
                     />
@@ -436,7 +447,17 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             }}
                         />
 
-                        <Spacer height={15} />
+                        <Spacer height={8} />
+
+                        {/* CHANGE DATE/TIME BUTTON */}
+                        <Button
+                            classes={"center"}
+                            text={"Change Date / Time"}
+                            theme={ButtonThemes.brightPurple}
+                            onClick={() => setShowDateTimePicker(true)}
+                        />
+
+                        <Spacer height={5} />
 
                         <FormDivider text={"Optional"} />
 
@@ -449,7 +470,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             onSelect={setSelectedShareWithOptions}
                         />
 
-                        <Spacer height={15} />
+                        <Spacer height={5} />
 
                         {/* REMINDERS */}
                         <SelectDropdown
@@ -460,7 +481,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             onSelect={setSelectedReminderOptions}
                         />
 
-                        <Spacer height={15} />
+                        <Spacer height={5} />
 
                         {/* INCLUDING WHICH CHILDREN */}
                         <SelectDropdown
@@ -471,7 +492,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             selectMultiple={true}
                         />
 
-                        <Spacer height={15} />
+                        <Spacer height={5} />
 
                         {/* CATEGORIES SELECTOR */}
                         <EventCategoryDropdown
@@ -490,7 +511,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             }}
                         />
 
-                        <Spacer height={15} />
+                        <Spacer height={10} />
 
                         {/* URL/WEBSITE */}
                         <InputField
@@ -501,7 +522,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
                         />
 
-                        <Spacer height={15} />
+                        <Spacer height={10} />
 
                         {/* ADDRESS */}
                         <AddressInput
@@ -510,7 +531,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             onChange={(address) => (formRef.current.address = address)}
                         />
 
-                        <Spacer height={15} />
+                        <Spacer height={10} />
 
                         {/* PHONE */}
                         <InputField
@@ -520,7 +541,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             onChange={(e) => (formRef.current.phone = StringManager.FormatPhone(e.target.value))}
                         />
 
-                        <Spacer height={15} />
+                        <Spacer height={10} />
 
                         {/* NOTES */}
                         <InputField
@@ -532,7 +553,7 @@ export default function EditCalEvent({event, showCard, hideCard}) {
                             onChange={(e) => (formRef.current.notes = e.target.value)}
                         />
 
-                        <Spacer height={15} />
+                        <Spacer height={10} />
 
                         {/* IS VISITATION? */}
                         <div className="flex visitation-toggle">

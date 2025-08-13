@@ -48,6 +48,48 @@ const DateManager = {
         "MMMM",
         "ha",
     ],
+    ComposeDateTime: ({startDate, endDate, startTime, endTime}) => {
+        const GetFormatted = (dateOrTime, outputFormat) =>
+            Manager.IsValid(dateOrTime) ? moment(dateOrTime, DateManager.GetMomentFormat(dateOrTime)).format(outputFormat) : null
+
+        // FORMATTED DATES/TIMES
+        const formattedStartDate = GetFormatted(startDate, DatetimeFormats.dateForDb)
+        const formattedEndDate = GetFormatted(endDate, DatetimeFormats.dateForDb)
+        const formattedStartTime = GetFormatted(startTime, DatetimeFormats.timeForDb)
+        const formattedEndTime = GetFormatted(endTime, DatetimeFormats.timeForDb)
+
+        // Build start/end datetime strings
+        let returnDatetime = formattedStartDate || ""
+        let displayDatetime = ""
+
+        // Build Raw Datetime
+        if (Manager.IsValid(formattedStartTime)) returnDatetime += ` ${formattedStartTime}`
+        if (Manager.IsValid(endDate)) {
+            if (Manager.IsValid(formattedEndDate)) returnDatetime += `${formattedEndDate}`
+            if (Manager.IsValid(formattedEndTime)) returnDatetime += ` ${formattedEndTime}`
+        }
+
+        const BuildDisplayDatetime = () => {
+            if (Manager.IsValid(formattedStartDate)) displayDatetime += `${formattedStartDate}`
+            if (Manager.IsValid(formattedStartTime)) displayDatetime += ` @ ${formattedStartTime}`
+            if (Manager.IsValid(formattedEndDate)) {
+                if (Manager.IsValid(formattedEndDate)) displayDatetime += `<br/>${formattedEndDate}`
+                if (Manager.IsValid(formattedEndTime)) displayDatetime += ` @ ${formattedEndTime}`
+            }
+            return displayDatetime
+        }
+
+        displayDatetime = BuildDisplayDatetime()
+
+        return {
+            displayDatetime,
+            startDate: formattedStartDate,
+            endDate: formattedEndDate,
+            startTime: formattedStartTime,
+            endTime: formattedEndTime,
+            datetime: returnDatetime,
+        }
+    },
     GetRepeatingEvents: async (object) => {
         const eventTitle = object.title
         let repeatingEvents = await DB.GetTableData(DB.tables.calendarEvents)

@@ -8,6 +8,7 @@ ButtonThemes =
   grey: "grey"
   accent: "accent"
   purple: "purple"
+  brightPurple: "bright-purple"
   lightPurple: "lightPurple"
   translucent:  "translucent"
   yellow: "yellow"

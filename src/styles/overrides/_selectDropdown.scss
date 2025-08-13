@@ -116,12 +116,15 @@
         // DROPDOWN WRAPPER
         [class*="-control"] {
             background: transparent !important;
-            padding: 0 !important;
-            border: 0 !important;
-            border-radius: 0 !important;
             min-height: 0 !important;
             box-shadow: none !important;
-            border-bottom: 1px solid palette.$inputBorder !important;
+            padding: 12px 15px !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: variables.$bigBorderRadius !important;
+            line-height: 1 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
 
             * {
                 padding: 0 !important;
@@ -192,6 +195,7 @@
             [class*="-placeholder"] {
                 grid-area: 1 / 1 / 1 / 1 !important;
                 text-align: left !important;
+                opacity: 0.9 !important;
                 margin: 0 !important;
                 font-weight: variables.$fwRegular !important;
             }
@@ -222,15 +226,13 @@
                 [class*="-option"] {
                     z-index: variables.$maxZIndex !important;
                     pointer-events: all !important;
-                    border-radius: variables.$buttonBorderRadius !important;
-                    border: 0 !important;
+                    border-radius: variables.$bigBorderRadius !important;
                     text-align: center !important;
                     //flex: 1 1 calc(33.333% - 1rem) !important; /* 3 columns by default */
-                    color: white !important;
-                    font-size: 13px !important;
-                    background-color: palette.$blendDark !important;
+                    color: rgba(255, 255, 255, 0.85) !important;
+                    font-size: 15px !important;
+                    background-color: transparent !important;
                     padding: 8px 15px !important;
-                    min-width: 100px !important;
                     letter-spacing: 0.8px !important;
                     line-height: 1 !important;
                     white-space: nowrap !important;
@@ -240,6 +242,18 @@
                     justify-content: center !important;
                     font-weight: variables.$fwLight !important;
                     font-family: "National Park", sans-serif !important;
+                    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+
+                    &::after {
+                        content: "+";
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        opacity: 0.8 !important;
+                        margin-left: 5px;
+                        height: 20px !important;
+                        font-size: 20px !important;
+                    }
                 }
             }
         }

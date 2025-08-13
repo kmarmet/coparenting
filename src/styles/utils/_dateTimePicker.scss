@@ -20,7 +20,8 @@
             opacity: 0;
             transition: all 0.4s ease;
             display: flex;
-
+            max-height: calc(100vh - 90px);
+            overflow: auto;
             &.active {
                 transition: all 0.4s ease;
                 opacity: 1;
@@ -154,10 +155,11 @@
                 @include fonts.boldFont;
             }
 
-            .content {
+            .datetime-picker-content {
                 position: relative;
-                min-height: 400px;
+                min-height: 380px;
                 width: 100%;
+                overflow: auto;
 
                 /*#region  DATE */
                 .datepicker {
@@ -477,7 +479,6 @@
                                         &.minute {
                                             padding: 12px;
                                             background: palette.$inputBackground;
-                                            height: 52px;
                                             border: 0;
                                             color: white;
                                             display: flex;
@@ -485,12 +486,12 @@
                                             align-items: center;
                                             border-radius: variables.$buttonBorderRadius;
                                             transition: all 0.4s ease;
-                                            @include fonts.regularFont;
+                                            flex: 1;
+                                            @include fonts.boldFont;
 
                                             &.active {
                                                 background: white;
                                                 color: palette.$main;
-                                                @include fonts.mediumBoldFont;
                                             }
                                         }
                                     }

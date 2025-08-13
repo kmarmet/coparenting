@@ -64,6 +64,7 @@ export default function NewCalendarEvent() {
     const [categories, setCategories] = useState([])
     const [showDateTimePicker, setShowDateTimePicker] = useState(false)
     const [subtitleDateObject, setSubtitleDateObject] = useState({startDate: "", endDate: "", startTime: "", endTime: ""})
+    const [dynamicTitle, setDynamicTitle] = useState("Create Event")
 
     // DROPDOWN STATE
     const [selectedReminderOptions, setSelectedReminderOptions] = useState([])
@@ -239,6 +240,19 @@ export default function NewCalendarEvent() {
         setView({label: "Single Day", value: "Single Day"})
     }
 
+    const ComposeDateTime = (startDate, endDate, startTime, endTime) => {
+        // DATE
+        formRef.current.startDate = startDate
+        // END DATE
+        if (Manager.IsValid(endDate)) formRef.current.endDate = endDate
+
+        // TIME
+
+        // END TIME
+        if (Manager.IsValid(startTime)) formRef.current.startTime = startTime
+        if (Manager.IsValid(endTime)) formRef.current.endTime = endTime
+    }
+
     useEffect(() => {
         if (Manager.IsValid(children) || Manager.IsValid(users)) {
             SetDefaultDropdownOptions()
@@ -265,19 +279,6 @@ export default function NewCalendarEvent() {
         }
     }, [eventIsCloned])
 
-    const ComposeDateTime = (startDate, endDate, startTime, endTime) => {
-        // DATE
-        formRef.current.startDate = startDate
-        // END DATE
-        if (Manager.IsValid(endDate)) formRef.current.endDate = endDate
-
-        // TIME
-
-        // END TIME
-        if (Manager.IsValid(startTime)) formRef.current.startTime = startTime
-        if (Manager.IsValid(endTime)) formRef.current.endTime = endTime
-    }
-
     return (
         <>
             {/* FORM WRAPPER */}
@@ -293,14 +294,14 @@ export default function NewCalendarEvent() {
                 showCard={creationFormToShow === CreationForms.calendar}
                 wrapperClass={`new-calendar-event at-top ${showDateTimePicker ? "place-behind" : ""}`}
                 contentClass={eventLength === EventLengths.single ? "single-view" : "multiple-view"}
-                title={`${Manager.IsValid(formRef.current.title, true) ? formRef.current.title : "Create Event"}`}
-                submitIcon={<BsCalendarCheck />}>
+                title={dynamicTitle}>
                 {showDateTimePicker && (
                     <DateTimePicker
                         show={showDateTimePicker}
                         hide={() => setShowDateTimePicker(false)}
                         callback={(dateObj) => {
                             const {startDate, endDate, startTime, endTime} = dateObj
+                            console.log("DATE OBJ", dateObj)
                             setSubtitleDateObject(dateObj)
                             ComposeDateTime(startDate, endDate, startTime, endTime)
                             setShowDateTimePicker(false)
@@ -308,7 +309,7 @@ export default function NewCalendarEvent() {
                     />
                 )}
                 <div id="calendar-event-form-container" className={`${theme} form-container`}>
-                    <FormDivider text={"Required"} />
+                    <FormDivider text={"Required"} topMargin={8} />
                     {/* EVENT NAME */}
                     <InputField
                         inputClasses="event-title-input"
@@ -317,8 +318,24 @@ export default function NewCalendarEvent() {
                         required={true}
                         onChange={(e) => {
                             const inputValue = e.target.value
+
+                            if (inputValue?.length === 0) {
+                                setDynamicTitle("Create Event")
+                            } else {
+                                setDynamicTitle(inputValue)
+                            }
                             formRef.current.title = StringManager.FormatTitle(inputValue, true)
                         }}
+                    />
+
+                    <Spacer height={8} />
+
+                    {/* CHANGE DATE/TIME BUTTON */}
+                    <Button
+                        classes={"center"}
+                        text={"Change Date / Time"}
+                        theme={ButtonThemes.brightPurple}
+                        onClick={() => setShowDateTimePicker(true)}
                     />
 
                     <FormDivider text={"Optional"} />
@@ -367,7 +384,7 @@ export default function NewCalendarEvent() {
                     {/* ADDRESS */}
                     <AddressInput placeholder={"Location"} required={false} onChange={(address) => (formRef.current.address = address)} />
 
-                    <Spacer height={15} />
+                    <Spacer height={10} />
 
                     {/* URL/WEBSITE */}
                     <InputField
@@ -377,7 +394,7 @@ export default function NewCalendarEvent() {
                         onChange={(e) => (formRef.current.websiteUrl = e.target.value)}
                     />
 
-                    <Spacer height={15} />
+                    <Spacer height={10} />
 
                     {/* PHONE */}
                     <InputField
@@ -386,7 +403,7 @@ export default function NewCalendarEvent() {
                         onChange={(e) => (formRef.current.phone = StringManager.FormatPhone(e.target.value))}
                     />
 
-                    <Spacer height={15} />
+                    <Spacer height={10} />
 
                     {/* NOTES */}
                     <InputField

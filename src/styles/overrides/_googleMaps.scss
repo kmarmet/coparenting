@@ -84,7 +84,6 @@
     .google-autocomplete-wrapper {
         width: 100%;
         gap: 0 5px;
-        border-bottom: 1px solid palette.$inputBorder;
         &.white-bg {
             border-radius: clamp(0px, 50%, 24px) !important;
 

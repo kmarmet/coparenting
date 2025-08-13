@@ -85,7 +85,7 @@ ObjectManager = {
       return result
 
 
-CleanObject: (obj) ->
+  CleanObject: (obj) ->
     # If the object is an array, clean each element
     if Array.isArray(obj)
       if !Manager.IsValid(obj)

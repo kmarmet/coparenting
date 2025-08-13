@@ -4,12 +4,10 @@ class CalendarEvent
   constructor: (options = {}) ->
   # STRINGS
     @id = Manager.GetUid()
-    @multipleDatesId = options?.multipleDatesId ? ''
     @websiteUrl = options?.websiteUrl ? ''
     @notes = options?.notes ? ''
     @endDate = options?.endDate ? ''
     @startDate = options?.startDate ? ''
-    @staticStartDate = options?.staticStartDate ? ''
     @startTime = options?.startTime ? ''
     @address = options?.address ? ''
     @title = options?.title ? ''
@@ -19,7 +17,6 @@ class CalendarEvent
     @recurringInterval = options?.recurringInterval ? ''
     @visitationPeriodEndDate = options?.visitationPeriodEndDate ? ''
     @holidayName = options?.holidayName ? ''
-    @visitationSchedule = options?.visitationSchedule ? ''
 
   # OWNER
     @owner =
