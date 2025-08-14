@@ -12,7 +12,7 @@ import AlertManager from "./managers/alertManager"
 import AppManager from "./managers/appManager"
 
 // CACHING
-const CACHE_KEY = "v1.0.75"
+const CACHE_KEY = "v1.0.77"
 const FILES_TO_CACHE = ["/", "/index.html", "/src/index.js", "/src/App.js", "/src/styles/bundle.css"]
 
 const logout = () => {
@@ -400,7 +400,9 @@ if ("serviceWorker" in navigator) {
                 caches.keys().then((keyList) =>
                     Promise.all(
                         keyList.map((key) => {
-                            if (key !== CACHE_KEY) return caches.delete(key)
+                            if (key !== CACHE_KEY) {
+                                return caches.delete(key)
+                            }
                         })
                     )
                 )
