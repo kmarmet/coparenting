@@ -270,7 +270,7 @@ $shadows-big: multiple-box-shadow(100);
 
 /*#region  BUTTONS */
 @mixin defaultButton() {
-    border-radius: variables.$buttonBorderRadius;
+    border-radius: variables.$mediumBorderRadius;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -285,7 +285,7 @@ $shadows-big: multiple-box-shadow(100);
     white-space: nowrap;
     color: palette.$darkerGrey;
     background: palette.$lightBg;
-    @include fonts.regularFont;
+    @include fonts.mediumBoldFont;
 
     * {
         line-height: 1;
@@ -340,6 +340,7 @@ $shadows-big: multiple-box-shadow(100);
     }
 
     &.white {
+        color: rgba(0, 0, 0, 0.7);
         &.color-blend {
             color: palette.$blend;
             @include fonts.mediumFont;
@@ -373,7 +374,7 @@ $shadows-big: multiple-box-shadow(100);
 
     &.bright-purple {
         background: palette.$purpleForBlendBg;
-        color: white;
+        color: #3200ff;
     }
 
     &.purple {
@@ -1395,7 +1396,7 @@ $shadows-big: multiple-box-shadow(100);
     span {
         border-radius: variables.$borderRadius;
         text-align: left;
-        color: palette.$green;
+        color: rgba(255, 255, 255, 0.7);
         padding: 3px 8px;
         width: 100%;
         display: flex;
@@ -1403,8 +1404,8 @@ $shadows-big: multiple-box-shadow(100);
         line-height: 1;
         white-space: nowrap;
         justify-content: flex-start;
-        filter: brightness(115%);
-        @include fonts.boldFont;
+        filter: brightness(1.1);
+        @include fonts.mediumBoldFont;
 
         & {
             font-size: 16px;
@@ -3697,7 +3698,7 @@ $shadows-big: multiple-box-shadow(100);
                     text-align: center;
                     position: relative;
                     font-size: 26px;
-                    color: white;
+                    color: palette.$flatGreen;
                     padding: 20px 0 0 0;
                     margin: 0 auto;
                     text-decoration: none;
@@ -4829,18 +4830,24 @@ $shadows-big: multiple-box-shadow(100);
             }
 
             .section {
-                background-color: rgba(135, 132, 255, 0.06);
-                border: 1px solid rgba(255, 255, 255, 0.07);
-                padding: 15px;
+                background-color: white;
+
                 opacity: 0;
                 width: 100%;
                 margin-bottom: 10px;
+                overflow: hidden;
                 border-radius: variables.$cardBorderRadius;
 
                 .section-title {
+                    overflow: hidden;
                     font-size: 18px;
-                    color: white;
-                    margin: 0 0 5px 5px;
+                    border-radius: variables.$cardBorderRadius variables.$cardBorderRadius 0 0;
+                    border-bottom: 1px solid #c8beff;
+                    color: palette.$blend;
+                    padding: 10px 0 10px 20px;
+                    line-height: 1;
+                    white-space: nowrap;
+                    background: palette.$blendLightest;
                     @include fonts.mediumFont;
                 }
 
@@ -4851,6 +4858,7 @@ $shadows-big: multiple-box-shadow(100);
                     display: flex;
                     gap: 5px 0;
                     max-width: 100%;
+                    padding: 15px;
 
                     .menu-item {
                         width: calc(50% - 20px);
@@ -4885,13 +4893,15 @@ $shadows-big: multiple-box-shadow(100);
                         &.active {
                             position: relative;
                             opacity: 1;
+                            p,
+                            svg {
+                                opacity: 0.85;
+                            }
                             p {
-                                opacity: 1;
-                                @include fonts.regularFont;
+                                @include fonts.mediumBoldFont;
                             }
 
                             .svg-wrapper {
-                                opacity: 1;
                                 svg {
                                     opacity: 1;
                                 }
@@ -4923,8 +4933,8 @@ $shadows-big: multiple-box-shadow(100);
 
                         .svg-wrapper,
                         p {
-                            color: white;
-                            opacity: 0.55;
+                            color: black;
+                            opacity: 0.7;
                             overflow: visible;
                         }
 
@@ -4934,7 +4944,7 @@ $shadows-big: multiple-box-shadow(100);
                             white-space: nowrap;
                             padding-left: 5px;
 
-                            @include fonts.thinnestFont;
+                            @include fonts.lightFont;
                             & {
                                 letter-spacing: 0.8px;
                             }
